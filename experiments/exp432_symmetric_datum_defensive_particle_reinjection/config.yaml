@@ -1,0 +1,332 @@
+experiment:
+  name: "exp432_symmetric_datum_defensive_particle_reinjection"
+  description: "At the first frozen persistent HMM rate-gap event, use one importance-corrected 80/10/10 base-minus-plus datum proposal to defensively restore PF particle support."
+  hypothesis: "A single direction-free symmetric datum proposal at the frozen rate-gap event can restore finite-particle support while exact log-domain p0/q correction preserves the exp404 PF target."
+  route: pf_beam
+  status: stage0_fail_closed
+  created_at: "2026-07-28"
+
+lineage:
+  parent: exp404_scale5_likpf_selector
+  cause_evidence: exp410_likpf_particle_resampling_basin_audit
+  trigger_reference: exp412_beta_filter_rate_disagreement_two_pass_reset
+  comparison:
+    - exp425_symmetric_rate_gap_hmm_branching
+  diff_summary: "Keep the original PF target and all updates; change only the proposal once at the first direction-free persistent HMM rate-gap event, with exact importance correction."
+
+design:
+  priority: P3
+  risk: high
+  implementation_allowed_now: true
+  implementation_approval_source: "user_message_implement_exp432_2026_07_28"
+  canonical_notebook_adoption_allowed: true
+  canonical_notebook_adoption_approval_source: "user_message_execute_exp432_2026_07_29"
+  kaggle_stage0_push_allowed: false
+  kaggle_stage0_approval_source: "user_message_execute_exp432_2026_07_29"
+  full_execution_allowed: false
+  inference_allowed: false
+  submission_allowed: false
+
+validation:
+  stage0_manifest:
+    source: exp412_stage0_fixed32
+    backward_cause_wells: 8
+    forward_cause_wells: 8
+    matched_nonpersistent_control_wells: 16
+    total_wells: 32
+    reporting_folds: 5
+    expected_sha256: "1edb1e1481af84af4e8178fb6e0743fa40315eab0b7441eeff9232b571f93c30"
+  truth_join: after_trigger_proposal_prediction_and_artifact_sha_freeze
+  stage0_is_prediction_cv: false
+  evaluation_window_rows_inclusive: 512
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  observed_log_column: GR
+  id_column: id
+  stage_0_manifest:
+    filename: stage0_fixed32_manifest.csv
+    local: experiments/exp412_beta_filter_rate_disagreement_two_pass_reset/assets/stage0_fixed32_manifest.csv
+    expected_sha256: "1edb1e1481af84af4e8178fb6e0743fa40315eab0b7441eeff9232b571f93c30"
+  stage_0_manifest_metadata:
+    filename: stage0_fixed32_manifest_metadata.json
+    local: experiments/exp412_beta_filter_rate_disagreement_two_pass_reset/assets/stage0_fixed32_manifest_metadata.json
+    expected_sha256: "3c696de9afa5b8782d614664bc65d909a80a086e6a67f54c0be9e732518838ba"
+  exp209_saved_control:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    prediction_column: hmm_mean_tvt
+    expected_decompressed_sha256: "8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5"
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts
+    patterns:
+      - "**/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz"
+  exp404_saved_control:
+    filename: exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin
+    prediction_column: likpf_scale_5_x1p0
+    expected_raw_sha256: "b3699432a691229da5a6562ce74e0b84f1bee3021bd80d650526906f5aa390f8"
+    expected_decompressed_sha256: "00fe1b90fce84bd601b4b91442d9fc698200aafadd48658f7d8c26ec1fbe0d00"
+    candidates:
+      - /kaggle/input/exp404-v1-frozen-predictions
+      - /kaggle/input/datasets/kentookumura/exp404-v1-frozen-predictions
+      - /tmp/exp404-v1-frozen-predictions-dataset
+    patterns:
+      - "**/exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin"
+
+trigger:
+  source: unchanged_exp209_first_pass_hmm
+  statistic: standardized_smoothed_minus_filtered_rate
+  denominator_floor: 0.005
+  absolute_z_threshold: 2.0
+  rolling_window_rows: 16
+  qualifying_rows_min: 8
+  same_sign_fraction_min: 0.75
+  tie_policy: inactive
+  event: first_inactive_to_active_row_only
+  maximum_events_per_well: 1
+  beta_sign_used_by_treatment: false
+  freeze_before_truth: true
+  filtered_position_std_at_event_saved: true
+
+hmm:
+  step: 0.35
+  n_rates: 41
+  rate_span: 0.10
+  sig_r: 0.002
+  sig_p: 0.02
+  lam: 1.0
+  start_sig: 0.75
+  r0_sig: 0.01
+  band_pad: 100.0
+  momentum: 0.998
+  saved_parent_prediction_tolerance_ft: 1.0e-5
+
+pf:
+  parent_compatibility: exp404_x1p0
+  particles: 500
+  seeds: 128
+  scale: 1.0
+  target_transition: parent_p0_unchanged
+  filtering_particle_likelihood: parent_gaussian_unchanged
+  rate_transition: parent_unchanged
+  emission: parent_unchanged
+  resampling: parent_unchanged
+  readout:
+    evidence: parent_gaussian_full_suffix
+    aggregation: centered_softmax_weighted_seed_mean
+    temperature: 5.0
+  dynamics:
+    momentum: 0.998
+    rate_noise: 0.002
+    position_noise: 0.005
+    minimum_md_delta: 1.0
+    initial_position_spread_ft: 4.5
+    initial_rate_spread: 0.01
+    resample_threshold_fraction: 0.5
+    rough_position_ft: 0.10
+    rough_rate: 0.001
+    typewell_grid_step_ft: 0.2
+    gr_sigma_clip: [10.0, 60.0]
+    emission_clip_z2: 600.0
+
+model:
+  name: none_importance_corrected_defensive_pf
+  estimator: none_physical_pf_only
+
+proposal:
+  application: transition_entering_first_event_row_once_per_well
+  components:
+    base:
+      mass: 0.80
+      position_shift_ft: 0.0
+    minus_datum:
+      mass: 0.10
+      position_shift_ft: "-datum"
+    plus_datum:
+      mass: 0.10
+      position_shift_ft: "+datum"
+  datum_ft: "max(filtered_hmm_position_std_at_event, 0.35)"
+  covariance: parent_transition_covariance_for_all_components
+  rate_dynamics: parent_unchanged_for_all_components
+  importance_ratio: p0_over_full_three_component_mixture_q
+  mixture_density_evaluation: stable_logsumexp_all_components
+  numerical_weight_update: add_finite_log_p0_minus_log_q_then_log_normalize
+  materialize_ratio_for_weighting: false
+  importance_clip: null
+  theoretical_ratio_upper_bound: 1.25
+  post_event_policy: return_to_parent_pf_branch_label_ancestry_only
+  no_event_policy: bitwise_parent_parity
+
+rng:
+  base_propagation: common_with_baseline
+  component_stream_key:
+    - experiment
+    - immutable_well_id
+    - seed_index
+    - event_row
+    - particle_index
+  component_stream_independent_of_base: true
+  parallel_policy: independent_of_shard_and_resume_order
+  global_rng_forbidden: true
+
+run_contract:
+  stage0:
+    hmm_trigger_well_runs: 32
+    baseline_pf_well_runs: 32
+    treatment_pf_well_runs: 32
+    total_pf_well_runs: 64
+    seed_well_trajectories: 8192
+    particle_starts: 4096000
+    pf_variants: 2
+    lightgbm_configs: 0
+    folds_trained: 0
+    boosters: 0
+    beam_runs: 0
+    gpu_runs: 0
+    parent_control_rerun: true
+    kaggle_push_requires_separate_approval: true
+  full:
+    hmm_trigger_well_runs: 773
+    treatment_pf_well_runs: 773
+    seed_well_trajectories: 98944
+    particle_starts: 49472000
+    cpu_pf_shards: 4
+    parent_independent_full_pf_reruns: 0
+    lightgbm_configs: 0
+    folds_trained: 0
+    boosters: 0
+    beam_runs: 0
+    gpu_runs: 0
+    requires_stage0_all_gate_pass: true
+    requires_separate_user_approval: true
+
+technical_gate:
+  maximum_events_per_well: 1
+  require_no_event_bitwise_parent_parity: true
+  require_finite_q_weight_prediction: true
+  require_finite_log_importance: true
+  importance_ratio_min_strict: 0.0
+  importance_ratio_max: 1.250000000001
+  require_exact_component_mass_contract: true
+  require_symmetric_datum_shifts: true
+  require_importance_moment_contract: true
+  require_base_component_rng_separation: true
+  saved_parent_prediction_tolerance_ft: 1.0e-5
+  require_truth_reads_before_freeze_zero: true
+  require_runtime_and_rss_projection_pass: true
+
+mechanism_gate:
+  triggered_wells_min: 8
+  majority_seed_truth_outside_support_fraction_absolute_reduction_min: 0.05
+  triggered_window_sse_reduction_min: 0.10
+  nonworse_reporting_folds_min: 4
+  matched_control_pooled_rmse_delta_max_ft: 0.02
+  matched_control_worst_well_rmse_delta_max_ft: 0.25
+
+promotion_gate:
+  overall_rmse_gain_vs_saved_exp404_t5_min: 0.10
+  nonworse_reporting_folds_min: 4
+  require_all_scopes_nonworse: true
+  paired_well_squared_error_delta_p95_max: 0.0
+  worst_paired_well_rmse_delta_max_ft: 0.25
+  support_fraction_absolute_reduction_min: 0.05
+  triggered_window_sse_reduction_min: 0.10
+  require_no_event_parent_numerical_parity: true
+
+runtime:
+  accelerator: cpu
+  numba: true
+  full_execution_layout:
+    - separate_hmm_trigger_cache
+    - four_pf_shards
+    - strict_merge
+  use_amp: false
+  numba_threads_per_worker: 4
+  hard_runtime_limit_seconds: 32400
+  peak_rss_limit_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp432-symmetric-defensive-reinjection-train
+    train_title: exp432 symmetric defensive reinjection train
+    train_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+    dataset_sources:
+      - kentookumura/exp404-v1-frozen-predictions
+    bootstrap_dependency_files:
+      - source: experiments/exp412_beta_filter_rate_disagreement_two_pass_reset/assets/stage0_fixed32_manifest.csv
+        destination: assets/stage0_fixed32_manifest.csv
+      - source: experiments/exp412_beta_filter_rate_disagreement_two_pass_reset/assets/stage0_fixed32_manifest_metadata.json
+        destination: assets/stage0_fixed32_manifest_metadata.json
+
+execution:
+  selected_stage: null
+  kaggle_execution_authorized: false
+  authorization_source: "user_message_execute_exp432_2026_07_29"
+  stage0_completed: true
+  stage0_result: stage0_fail_closed
+  stage0_technical_pass_logged: false
+  stage0_mechanism_pass: false
+  full_eligible: false
+  kaggle_kernel_id: kentookumura/exp432-symmetric-defensive-reinjection-train
+  kaggle_kernel_version: 1
+  kaggle_kernel_id_no: 128974856
+  implementation_complete: true
+  active_scientific_variants: 1
+  stage_0_hmm_trigger_well_runs: 32
+  stage_0_baseline_pf_well_runs: 32
+  stage_0_treatment_pf_well_runs: 32
+  stage_0_total_pf_well_runs: 64
+  stage_0_seed_well_trajectories: 8192
+  stage_0_particle_starts: 4096000
+  full_hmm_trigger_well_runs: 773
+  full_treatment_pf_well_runs: 773
+  full_seed_well_trajectories: 98944
+  full_particle_starts: 49472000
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  beam_runs: 0
+  gpu_runs: 0
+
+reproducibility:
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_immutable_well_seed_event_particle
+  stochastic_components:
+    - particle_transition
+    - proposal_component_draw
+    - resampling
+  parallel_rng_policy: local_keyed_streams_independent_of_shard_and_resume_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    package_versions: true
+    input_sha: true
+    sample_manifest_sha: true
+    trigger_schedule_sha: true
+    event_ledger_sha: true
+    common_random_ledger_sha: true
+    branch_ancestry_sha: true
+    importance_ratio_sha: true
+    trajectory_sha: true
+    prediction_sha: true
+    metrics_sha: true
+
+forbidden:
+  - beta_direction_or_sign_in_treatment
+  - change_pf_target_density
+  - omit_or_clip_importance_ratio
+  - repeated_reinjection
+  - trigger_or_mixture_or_datum_grid
+  - global_roughening_or_process_noise_change
+  - huber_affine_ar1_or_self_gr
+  - implementation_or_execution_without_explicit_approval
+
+notes:
+  - "exp410 and exp412 remain terminal negative results; this is a new direction-free proposal mechanism."
+  - "Stage0 fixed32 is a mechanism sample, not CV or promotion evidence."

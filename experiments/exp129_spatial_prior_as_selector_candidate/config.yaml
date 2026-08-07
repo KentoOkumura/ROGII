@@ -1,0 +1,235 @@
+experiment:
+  name: "exp129_spatial_prior_as_selector_candidate"
+  description: Add fold-safe spatial prior TVT paths from exp114 to the exp099/101 candidate selector surface and audit oracle/topK plus Viterbi-smoothed selector headroom.
+  route: ensemble
+  status: completed_train_side_audit_rejected
+  created_at: "2026-06-25"
+  updated_at: "2026-06-26"
+
+lineage:
+  parent: exp101_pf_candidate_ranker_or_nway_classifier
+  cache_parent: exp099_pf_multi_observation_likelihood_probe
+  spatial_prior_parent: exp114_spatial_neighbor_prior_signal_audit
+  diagnostic_parents:
+    - exp099_pf_multi_observation_likelihood_probe
+    - exp101_pf_candidate_ranker_or_nway_classifier
+    - exp112_learned_pf_likelihood_weight_or_feature_followup
+    - exp114_spatial_neighbor_prior_signal_audit
+    - exp118_spatial_neighbor_prior_confidence_gate_on_exp092
+  implementation_source: spatial_prior_as_selector_candidate.py
+  diff_summary: Uses exp099 v2 fixed PF/Beam/likPF candidate cache and exp114 fold-safe spatial prior OOF diagnostics as fixed inputs, adds xy_plus_trajectory_shape_k8_prior_tvt and xy_only_k8_prior_tvt as candidate paths, audits expanded oracle/topK headroom, then trains a candidate-long predicted-error ranker and Viterbi switch-penalty selectors. It does not regenerate PF/Beam, create a submission, or soft-average candidate paths.
+
+validation:
+  strategy: train_well_pseudotail_spatial_candidate_selector_oof
+  metric: rmse
+  secondary_metrics:
+    - oracle_label_accuracy
+    - within_1ft
+    - within_2ft
+    - within_5ft
+    - within_10ft
+    - spatial_oracle_selection_rate
+    - true_error_topk_spatial_rate
+    - predicted_topk_oracle_coverage
+    - selection_distribution
+    - path_switch_count
+    - bucket_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp099_rows
+  leakage_policy:
+    - Candidate values and target-free likelihood features are read from exp099 v2 train-side pseudo-tail cache.
+    - Spatial prior candidates and confidence columns are read from exp114 fold-safe OOF artifact, where validation wells used only train-fold wells as neighbor sources.
+    - The selector target is oracle-best candidate index from train pseudo-tail true TVT and is used only for supervised train-side OOF evaluation.
+    - Feature columns exclude target, true_tvt, oracle label, oracle candidate, and direct target residuals.
+    - GroupKFold is grouped by well, so a well never appears in train and validation in the same fold.
+    - This experiment does not create a submission candidate; positive results require raw-test/full-train parity and hidden-like stress follow-up.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp114_oof_predictions_local: experiments/exp114_spatial_neighbor_prior_signal_audit/kaggle/output/train_v1/artifacts/exp114_spatial_neighbor_prior_signal_audit_oof_predictions.csv.gz
+  exp114_summary_local: experiments/exp114_spatial_neighbor_prior_signal_audit/kaggle/output/train_v1/artifacts/exp114_spatial_neighbor_prior_signal_audit_summary.json
+
+model:
+  name: spatial_prior_candidate_error_ranker_viterbi_selector
+  target: oracle_best_candidate_index_or_candidate_abs_error
+  base_prediction: candidate_selected_tvt
+  estimator:
+    - expanded_oracle_audit
+    - lightgbm_candidate_long_error_ranker
+    - viterbi_switch_penalty_selector
+
+selector:
+  mode: spatial_prior_as_selector_candidate
+  max_rows: null
+  run_lgbm: true
+  log_period: 100
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+      family: base
+    - name: beam_mean
+      column: beam_mean
+      family: base
+    - name: likpf_mean
+      column: likpf_mean
+      family: base
+    - name: sc_ens
+      column: sc_ens
+      family: base
+    - name: hyb
+      column: hyb
+      family: base
+    - name: xy_plus_trajectory_shape_k8_prior_tvt
+      column: xy_plus_trajectory_shape_k8_prior_tvt
+      family: spatial
+      source_variant: xy_plus_trajectory_shape_k8
+    - name: xy_only_k8_prior_tvt
+      column: xy_only_k8_prior_tvt
+      family: spatial
+      source_variant: xy_only_k8
+  context_columns:
+    - last_known_tvt
+    - pf_ancc_std
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+    - eval_len
+    - md_since
+    - likpf_mean_d
+  multiobs_feature_columns:
+    - multiobs_score_max
+    - multiobs_score_mean
+    - multiobs_score_gap
+    - multiobs_top1_source_id
+    - multiobs_top1_mae
+    - multiobs_top1_ncc
+    - multiobs_score_pf_ancc
+    - multiobs_mae_pf_ancc
+    - multiobs_ncc_pf_ancc
+    - multiobs_score_beam_mean
+    - multiobs_mae_beam_mean
+    - multiobs_ncc_beam_mean
+    - multiobs_score_likpf_mean
+    - multiobs_mae_likpf_mean
+    - multiobs_ncc_likpf_mean
+    - multiobs_score_sc_ens
+    - multiobs_mae_sc_ens
+    - multiobs_ncc_sc_ens
+    - multiobs_score_hyb
+    - multiobs_mae_hyb
+    - multiobs_ncc_hyb
+  optional_columns:
+    - multiobs_top1
+    - multiobs_softmax_t0p15
+    - multiobs_softmax_t0p3
+    - likpf_multiobs_blend_w0p25
+    - likpf_multiobs_blend_w0p5
+  spatial_feature_columns:
+    - xy_plus_trajectory_shape_k8_prior_tvt
+    - xy_plus_trajectory_shape_k8_prior_std
+    - xy_plus_trajectory_shape_k8_prior_count
+    - xy_plus_trajectory_shape_k8_neighbor_wells
+    - xy_plus_trajectory_shape_k8_distance_mean
+    - xy_plus_trajectory_shape_k8_same_typewell_share
+    - xy_plus_trajectory_shape_k8_azimuth_mismatch
+    - xy_plus_trajectory_shape_k8_dz_dmd_mismatch
+    - xy_only_k8_prior_tvt
+    - xy_only_k8_prior_std
+    - xy_only_k8_prior_count
+    - xy_only_k8_neighbor_wells
+    - xy_only_k8_distance_mean
+    - xy_only_k8_same_typewell_share
+    - xy_only_k8_azimuth_mismatch
+    - xy_only_k8_dz_dmd_mismatch
+  viterbi_switch_penalties: [0.25, 0.50, 1.00, 2.00, 5.00, 10.00]
+  long_model:
+    max_train_rows_per_fold: 450000
+    error_lgbm:
+      params:
+        n_estimators: 650
+        learning_rate: 0.04
+        num_leaves: 63
+        min_child_samples: 180
+        subsample: 0.85
+        subsample_freq: 1
+        colsample_bytree: 0.85
+        reg_alpha: 0.1
+        reg_lambda: 1.0
+        n_jobs: -1
+        verbose: -1
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp114-spatial-neighbor-prior-signal-audit-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_groupkfold_and_fold_local_rng_for_long_row_subsample
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp099
+    - upstream_spatial_prior_oof_from_exp114
+    - lightgbm_histogram_training
+    - candidate_long_training_row_subsample
+  parallel_rng_policy: no_global_rng_in_feature_generation_or_parallel_sections
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a train-side selector audit, not a deterministic submission anchor.
+    - Spatial prior candidates are fold-safe OOF values from exp114 and must be regenerated separately for raw-test/full-train parity before any inference work.
+
+audit:
+  mode: spatial_prior_as_selector_candidate
+  output_prefix: exp129_spatial_prior_as_selector_candidate
+  baselines:
+    - likpf_mean_single
+    - oracle_base_only
+    - oracle_spatial_only
+    - oracle_expanded
+  expected_train_artifacts:
+    - exp129_spatial_prior_as_selector_candidate_metrics.csv
+    - exp129_spatial_prior_as_selector_candidate_oof_selected_predictions.csv.gz
+    - exp129_spatial_prior_as_selector_candidate_selection_distribution.csv
+    - exp129_spatial_prior_as_selector_candidate_by_well.csv
+    - exp129_spatial_prior_as_selector_candidate_bucket_metrics.csv
+    - exp129_spatial_prior_as_selector_candidate_candidate_metrics.csv
+    - exp129_spatial_prior_as_selector_candidate_true_error_topk_metrics.csv
+    - exp129_spatial_prior_as_selector_candidate_predicted_topk_metrics.csv
+    - exp129_spatial_prior_as_selector_candidate_feature_importance.csv
+    - exp129_spatial_prior_as_selector_candidate_feature_importance_mean.csv
+    - exp129_spatial_prior_as_selector_candidate_feature_schema.csv
+    - exp129_spatial_prior_as_selector_candidate_model_manifest.json
+    - exp129_spatial_prior_as_selector_candidate_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - No inference notebook candidate is selected by this implementation.
+    - If OOF beats likpf_mean with non-trivial spatial selection and lower path switching, run raw-test/full-train parity and hidden-like stress before any submission work.
+
+notes:
+  - Implements and rejects the backlog item spatial_prior_as_selector_candidate as a direct selector path.
+  - Does not train direct TVT regression, use soft-average candidate blending, replace hidden branch output, or submit.

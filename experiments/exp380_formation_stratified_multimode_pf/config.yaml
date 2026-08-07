@@ -1,0 +1,111 @@
+experiment:
+  name: "exp380_formation_stratified_multimode_pf"
+  description: "PF粒子をbaseと6地層modeに層別化し、formation-relative遷移仮説の消失を防ぐ"
+  route: pf_beam
+  status: design_closed_by_exp377_stage1_scientific_fail
+  created_at: "2026-07-24"
+
+lineage:
+  parent: exp271_feature_rich_pf_rerank_on_exp148_exp264
+  algorithm_parent: exp072_pf_ancc
+  physics_source: exp378_formation_relative_exp226_multisurface_candidate_audit
+  diff_summary: "PF_ANCC系の粒子群をbase 300、各地層50に事前層別し、resample後もbase 150・各地層25を最低保持する。残り300だけをposterior比例で再配分する。"
+
+validation:
+  split: exp271_outer_5fold_well_split
+  primary_scope: all_3783989_rows
+  report_scopes:
+    - h512
+    - long401
+    - clean273
+  by_fold_required: true
+  by_well_required: true
+
+pf:
+  total_particles: 600
+  initial_particles:
+    base: 300
+    each_formation: 50
+  post_resample_minimum:
+    base: 150
+    each_formation: 25
+  adaptive_posterior_particles: 300
+  modes:
+    - base
+    - formation_ANCC
+    - formation_ASTNU
+    - formation_ASTNL
+    - formation_EGFDU
+    - formation_EGFDL
+    - formation_BUDA
+  estimator: mean_across_seeds
+
+model:
+  name: formation_stratified_multimode_particle_filter
+
+gates:
+  stage0_seed0:
+    seeds:
+      - 0
+    well_seed_runs: 773
+    direct_rmse_gain_vs_exp271_seed0_ft_min: 0.10
+    positive_fold_count_min: 4
+    scope_regression_tolerance_ft: 0.02
+    mode_survival_fraction_min: 0.99
+    ess_over_particle_count_p05_min: 0.05
+    h512_novelty_gain_ft_min: 0.05
+  stage1_mean4:
+    seeds:
+      - 0
+      - 1
+      - 2
+      - 3
+    well_seed_runs: 3092
+    direct_rmse_gain_vs_exp271_mean4_ft_min: 0.10
+    positive_fold_count_min: 4
+    scope_regression_tolerance_ft: 0.02
+    p95_well_regression_max_ft: 0.0
+    worst_well_regression_max_ft: 0.25
+    h512_novelty_gain_ft_min: 0.05
+    whole_novelty_gain_ft_min: 0.05
+
+runtime:
+  use_amp: false
+  accelerator: cpu
+  stage0_runs: 773
+  stage1_runs: 3092
+  stage1_requires_separate_user_approval: true
+  replay_parent_control: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: "stable_sha256(base_seed, split, fold, well_id, mode, seed)"
+  stochastic_components:
+    - particle_initialization
+    - process_noise
+    - systematic_resampling
+    - posterior_particle_allocation
+  parallel_rng_policy: "坑井・mode・seedごとに独立Generatorを生成しglobal RNGを共有しない"
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - "同一wellを単独実行・並列実行・順序変更で一致させる再現性テストをStage0に含める。"
+    - "粒子配分、ESS、mode survival、resample回数をwell単位で保存する。"
+
+dependencies:
+  requires_pass:
+    - exp377_identifiability
+    - exp378_candidate_novelty
+
+notes:
+  - "設計確定のみ。実装、PF実行、Kaggle実行は未着手。"
+  - "Stage1 mean4はStage0合格後にコストを提示して別途ユーザー承認を得る。"
+  - "exp377 v2のformation-relative pathがdirectより全fold・全6面で悪化したため、PF粒子配分で救済せず閉鎖する。"

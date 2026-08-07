@@ -1,0 +1,201 @@
+{
+  "boosters": 0,
+  "branch_posterior_content_sha256": "d46f56d7be71d2c1feca759d2f4b48c76b63ba44d97fcdcc872dfcffadc77f5a",
+  "control_reruns": 0,
+  "decode_wall_seconds": 589.6001031659999,
+  "experiment": "exp399_soft_sticky_fused_exact_runtime_audit",
+  "gate": {
+    "checks": {
+      "completed_wells": true,
+      "finite_prediction_coverage": true,
+      "h_full_grid_coverage": true,
+      "input_identity": true,
+      "leakage_guard": true,
+      "parent_numerical_parity": true,
+      "posterior_normalization": true,
+      "rss_projection": true,
+      "runtime_projection": true,
+      "state_time_normalized_speedup": true,
+      "transition_row_sum": true
+    },
+    "decision": "technical_preflight_passed_full_oof_requires_separate_approval",
+    "passed": true,
+    "rmse_used_as_gate": false,
+    "stage": "technical_preflight",
+    "technical": {
+      "completed_wells": 16,
+      "error_rows_before_freeze": 0,
+      "finite_prediction_coverage": 1.0,
+      "h_full_grid_coverage": 1.0,
+      "hidden_role_rows_before_freeze": 0,
+      "input_identity_passed": true,
+      "maximum_posterior_normalization_error": 1e-08,
+      "maximum_projected_peak_rss_gb": 25.0,
+      "maximum_projected_runtime_seconds": 30600.0,
+      "maximum_transition_row_sum_error": 1e-10,
+      "minimum_state_time_normalized_speedup": 3.684212073159366,
+      "parent_parity_passed": true,
+      "posterior_normalization_max_abs_error": 4.241051954068098e-14,
+      "projected_peak_rss_gb": 2.544818878173828,
+      "projected_runtime_seconds": 18277.26545502363,
+      "required_completed_wells": 16,
+      "required_finite_prediction_coverage": 1.0,
+      "required_h_full_grid_coverage": 1.0,
+      "scientific_score_used_as_gate": false,
+      "state_time_normalized_speedup": 6.168148269431506,
+      "transition_row_sum_max_abs_error": 8.881784197001252e-16,
+      "truth_rows_before_freeze": 0
+    }
+  },
+  "generated_at_utc": "2026-07-25T06:20:24.900332+00:00",
+  "inference_enabled": false,
+  "input_identity": {
+    "geometry": {
+      "columns_loaded": [
+        "well_id",
+        "row_idx",
+        "suffix_offset",
+        "tvt_geop",
+        "fold"
+      ],
+      "decompressed_sha256": "709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609",
+      "path": "/kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz",
+      "rows": 3783989,
+      "safe_content_sha256": "35a9cdd6fe337b332a782f7967375fdbdd57868265ae14c1ab1396d0d82498bb",
+      "safe_schema_sha256": "d359b1ae353f4dfb37be9ffd0d08e42cb454d0daf13461a210f4a0d46e050a2e",
+      "wells": 773
+    },
+    "raw": {
+      "content_sha256": "bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32",
+      "path": "/kaggle/input/competitions/rogii-wellbore-geology-prediction/train",
+      "wells": 773
+    }
+  },
+  "models": 0,
+  "parent_parity": {
+    "checks": {
+      "branch_probability": true,
+      "diagnostics": true,
+      "identity": true,
+      "primary_prediction": true,
+      "schedule_identity": true,
+      "speedup": true,
+      "state_time_units": true
+    },
+    "observed": {
+      "branch_probability_max_abs_diff": 5.1103590636980556e-08,
+      "candidate_decode_wall_seconds": 589.6001031659999,
+      "candidate_state_time_units": 3290350409,
+      "diagnostic_max_abs_diff": 2.978181134594138e-06,
+      "expected_schedule_content_sha256": "c05a0764382c0fb0f366614bff642e2f2ffb41f865190b56d13f0c4e32c9843b",
+      "identity_match": true,
+      "parent_decode_seconds": 3636.740856,
+      "parent_file_state_time_units": 3290350409,
+      "parent_recorded_state_time_units": 3290350409,
+      "primary_max_abs_diff_ft": 7.883838406996801e-06,
+      "schedule_content_sha256": "c05a0764382c0fb0f366614bff642e2f2ffb41f865190b56d13f0c4e32c9843b",
+      "schedule_identity_match": true,
+      "schedule_non_numeric_match": true,
+      "schedule_numeric_max_abs_diff": 9.913673614664331e-17,
+      "state_time_normalized_speedup": 6.168148269431506
+    },
+    "passed": true,
+    "thresholds": {
+      "maximum_branch_probability_abs_diff": 2e-06,
+      "maximum_diagnostic_abs_diff": 2e-05,
+      "maximum_prediction_abs_diff_ft": 1e-05,
+      "practical_equivalence_rationale": "Fixed-width max-plus-sum reduction changes floating-point association. The fixed16 observed prediction-difference RMSE is 5.65e-7 ft, p99 is 3.63e-6 ft, and maximum is 7.89e-6 ft; 1e-5 ft is sub-millimetre practical equivalence without changing any state, probability, schedule, or scientific parameter.",
+      "require_schedule_content_sha_match": true
+    }
+  },
+  "prediction_content_sha256": "52c17434eee99c6aa6867a3406cfe354621a5f8f801b65663b8df974f0083068",
+  "projected_full_runtime_seconds": 18277.26545502363,
+  "projected_peak_rss_gb": 2.544818878173828,
+  "reports": {
+    "contract": {
+      "path": "/kaggle/working/artifacts/exp399_soft_sticky_fused_exact_runtime_audit_preflight_scientific_contract.json",
+      "raw_sha256": "7b22776803b4d4acab9f855257637c61e45d0f1967f04794cc99752354f6a8a5"
+    },
+    "gate": {
+      "path": "/kaggle/working/artifacts/exp399_soft_sticky_fused_exact_runtime_audit_preflight_gate.json",
+      "raw_sha256": "ddae4f7ca8381c2579c6c1da10141fc430a670e601a01f7a3c8683b018df8ad3"
+    },
+    "parent_parity": {
+      "path": "/kaggle/working/artifacts/exp399_soft_sticky_fused_exact_runtime_audit_preflight_parent_parity.json",
+      "raw_sha256": "758852a64dcd2f0e09ebef00fa1c501628d3596ddfd062b50694c3b23b2889ab"
+    },
+    "predictions": {
+      "content_sha256": "c46e8aff7e44494ace3b12e70ac8b3b0600d9004f287c5ececb803957ba80aec",
+      "decompressed_sha256": "dc33828d8a42efca7aac084e783afd2a9bccfbfb0f31ca2bf4e03c0c8e4de629",
+      "path": "/kaggle/working/artifacts/exp399_soft_sticky_fused_exact_runtime_audit_preflight_predictions.csv.gz",
+      "raw_sha256": "eb29be9b110e6c28805a0c7f076cd58f096bac18454fe6935b9555fb54ebe5d8",
+      "rows": 140721,
+      "schema_sha256": "5f36a6460e5710cf2ad680bdf51f95a9043666399680af1e741a5dce8a74690e"
+    },
+    "raw_identity": {
+      "content_sha256": "bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32",
+      "path": "/kaggle/working/artifacts/exp399_soft_sticky_fused_exact_runtime_audit_preflight_raw_well_identity.csv",
+      "raw_sha256": "f0dec823fc1f490722a48a68c94de185c8f96f5f203b6991083fc52d7d31e422",
+      "rows": 773,
+      "schema_sha256": "94a00f5efb07983a088aaeee579106ff3b0f75e15bb4376207b81d060b0370b4"
+    },
+    "runtime": {
+      "content_sha256": "49c70a1e74ca4a276bb2da22a7b131d488d87c6e7672073a792e3b3166c2451e",
+      "path": "/kaggle/working/artifacts/exp399_soft_sticky_fused_exact_runtime_audit_preflight_runtime.csv",
+      "raw_sha256": "5583e17d974b93a6a2d98882e54be4cc682df3058a093bdec86765577b8ad94b",
+      "rows": 16,
+      "schema_sha256": "c2e157e01f7612064da629ccf9584dc2a273e8948f2d7705917a59dfbe2a162a"
+    },
+    "schedule": {
+      "content_sha256": "c05a0764382c0fb0f366614bff642e2f2ffb41f865190b56d13f0c4e32c9843b",
+      "decompressed_sha256": "358c0574fb14891005b98c127c43a68969ef7c9178a1c1f30c7e35030ac09d83",
+      "path": "/kaggle/working/artifacts/exp399_soft_sticky_fused_exact_runtime_audit_preflight_rate_schedule.csv.gz",
+      "raw_sha256": "001004dff67f13f631e6cc25c6873812c0e6a05274e61a6ca992b7568961ee50",
+      "rows": 140721,
+      "schema_sha256": "71d9fb8dd2b74c0a38c08bea6095b79a1100db68e01a5e300cd37173fe3735f7"
+    },
+    "selection": {
+      "content_sha256": "71649ddcc4978f3746081690885c4d2ae8c9bdad7120a9fd3626f89c26928c54",
+      "path": "/kaggle/working/artifacts/exp399_soft_sticky_fused_exact_runtime_audit_preflight_well_ledger.csv",
+      "raw_sha256": "7fe36ff7b0198471efbe09a09904b67d675684777216dd9cabebadd625298e08",
+      "rows": 16,
+      "schema_sha256": "4ad7d6846a63ba2c5bf1439d9c39267a953f8c563e30af046b8c5e553cbe0c8e"
+    }
+  },
+  "rmse_computed": false,
+  "rows": 140721,
+  "runtime_seconds": 632.688257344,
+  "runtime_versions": {
+    "numba": "0.60.0",
+    "numba_available": true,
+    "numpy": "2.0.2",
+    "pandas": "2.3.3",
+    "python": "3.12.13"
+  },
+  "schedule_content_sha256": "c05a0764382c0fb0f366614bff642e2f2ffb41f865190b56d13f0c4e32c9843b",
+  "scientific_contract_sha256": "4482dc675401c1dc8aa94e8320badd6b5bc2406801540bfb140eddde3c93c442",
+  "selected_wells": [
+    "c84c65be",
+    "46a301e9",
+    "ae0784a8",
+    "d90aa14c",
+    "96ae5806",
+    "bd2c2f34",
+    "684a6fc1",
+    "53f23031",
+    "6e9ccd38",
+    "ea3a0e38",
+    "374be387",
+    "35b30c7f",
+    "70e1788b",
+    "b37fd114",
+    "86454a6f",
+    "cdc31d65"
+  ],
+  "stage": "technical_preflight",
+  "status": "technical_preflight_passed_full_oof_not_approved",
+  "submission_created": false,
+  "sum_per_well_elapsed_seconds": 1174.779628527,
+  "truth_rows_read": 0,
+  "wells": 16
+}

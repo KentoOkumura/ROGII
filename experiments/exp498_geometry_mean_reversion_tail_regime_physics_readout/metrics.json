@@ -1,0 +1,103 @@
+{
+  "experiment": "exp498_geometry_mean_reversion_tail_regime_physics_readout",
+  "status": "completed_terminal_fail",
+  "route": "pf_beam",
+  "stage": "saved_full_oof_truth_late_physics_regime_diagnostic",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "descriptive_candidate_minus_parent_by_well_rmse_not_cv",
+  "kernel": {
+    "id": "kentookumura/exp498-geometry-mean-reversion-tail-regime-train",
+    "id_no": 129328553,
+    "completed_version": 2,
+    "status": "KernelWorkerStatus.COMPLETE",
+    "private": true,
+    "cpu_only": true,
+    "internet_enabled": false
+  },
+  "technical": {
+    "passed": true,
+    "checks": {
+      "all_fixed_input_sha_match": true,
+      "prediction_rows_match": true,
+      "well_identity_one_to_one": true,
+      "finite_feature_coverage": true,
+      "bucket_assignment_complete": true,
+      "horizontal_suffix_truth_reads_zero": true,
+      "outcome_reads_before_freeze_zero": true,
+      "new_prediction_hmm_model_pf_beam_gpu_zero": true
+    }
+  },
+  "execution": {
+    "scientific_readouts": 1,
+    "rows": 3783989,
+    "target_free_well_aggregations": 773,
+    "truth_late_folds": 5,
+    "new_hmm_well_runs": 0,
+    "new_predictions": 0,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "pf_runs": 0,
+    "beam_runs": 0,
+    "gpu_runs": 0,
+    "inference": false,
+    "submission": false
+  },
+  "result": {
+    "primary_regime": "weak_gr_geometry_conflict",
+    "passed": false,
+    "regime_wells": 0,
+    "regime_coverage_fraction": 0.0,
+    "supported_folds": 0,
+    "weak_observation_wells": 359,
+    "geometry_conflict_wells": 0,
+    "material_early_offset_wells": 1,
+    "geometry_disagreement_max_ft": 5.337990905240076,
+    "early_abs_offset_max_ft": 5.037075796366853,
+    "catastrophic_tail_wells_total": 51,
+    "catastrophic_tail_capture_fraction": 0.0,
+    "checks": {
+      "coverage_and_fold_support": false,
+      "pooled_harmful_rate_ratio": false,
+      "fold_harmful_rate_direction": false,
+      "pooled_mean_delta_difference": false,
+      "fold_mean_delta_direction": false,
+      "catastrophic_capture_with_bounded_coverage": false
+    },
+    "complement": {
+      "wells": 773,
+      "harmful_wells": 211,
+      "harmful_rate": 0.2729624838292367,
+      "catastrophic_tail_wells": 51,
+      "catastrophic_tail_rate": 0.06597671410090557,
+      "mean_delta_rmse_ft": -0.7694959001665796,
+      "median_delta_rmse_ft": -0.0571049479740075,
+      "persistent_episodes": 638,
+      "persistent_sse_reduction_fraction": 0.41409965371504653
+    },
+    "decision": "terminate_mean_reversion_tail_regime_cause_tracking",
+    "parent_terminal_close_preserved": true
+  },
+  "runtime": {
+    "elapsed_seconds": 76.68530434299998,
+    "peak_rss_gib": 0.36054229736328125,
+    "python": "3.12.13",
+    "numpy": "2.0.2",
+    "pandas": "2.3.3",
+    "pyyaml": "6.0.3"
+  },
+  "artifacts": {
+    "directory": "kaggle/output/train_v2/artifacts",
+    "input_manifest_sha256": "450e2cfba697cbe700338b3b5e430bed04bf01e72c659ec0ab81121ab4c93ae2",
+    "feature_contract_file_sha256": "ccdc3d5d5233546a350385f6f5f8b5d1ac351488bb3c62acd50af20df37d55c1",
+    "feature_contract_sha256": "92d1e78a197a9726640ea049891a6081e30784b98f3faa0b8ab113af8eb2416c",
+    "feature_content_sha256": "c1d31113e7247ada9be0d6fd1e183808f7fbc04af256612481363ee900e0f5ad",
+    "by_fold_sha256": "eaa7cea3b0a6cd0164495ddf85573f7e28c219787b7ded9da78f2fa0394357fb",
+    "bucket_summary_sha256": "c1a0e5ebb69ac95dfd4af3fda6e421caeb99d02b03971aefffb4b1c91039a406",
+    "summary_sha256": "485964967acf3a6cc913eaeba6ebaa458384d37090bb0f71d1a16e1f298c1df7",
+    "kaggle_metrics_sha256": "74a02ecbf176ed68b76f906c6069fd133857ce4aa6a219309d790124d4b3fee9"
+  },
+  "notes": "The pre-registered regime was empty. All six physics checks failed; no threshold, bucket, same-OOF, inference, or submission rescue is allowed."
+}

@@ -1,0 +1,307 @@
+experiment:
+  name: "exp060_lgbm_capacity_pseudotail_public_features"
+  description: Add exp056 multi-cutoff public sel15 PF/Beam and NCC/GR-match features to the exp051/052 LightGBM capacity pseudo-tail residual model.
+  route: ml_model
+  status: submitted_complete
+  created_at: "2026-06-11"
+  updated_at: "2026-06-12"
+
+lineage:
+  parent: exp056_public_sel15_pf_oof_multicutoff_artifact
+  model_anchor_parent: exp051_pseudo_tail_lgbm_param_micro_tune
+  inference_anchor_parent: exp052_lgbm_capacity_pseudotail_inference_submit
+  implementation_source: exp059_pf_model_diff_foldsafe_surface_shrink
+  diff_summary: Use exp056 as the parent and feature source, keeping the exp051/052 LightGBM capacity pseudo-tail training setup while adding public sel15 PF/Beam prediction, uncertainty, beam disagreement, and a small NCC/GR-match plus PF-context feature subset. Compare cutoff-0.65 control rows against multi-cutoff public-feature augmentation on the same original-fold and well-hash audit surfaces.
+
+validation:
+  leakage_policy:
+    - Input rows come from exp056 multi-cutoff public sel15 PF/Beam artifacts where each train well was masked after the cutoff before public features were generated.
+    - Splits are well-level only; the same well is never in train and validation for a candidate model.
+    - target_tvt is used only as the supervised label and scoring label.
+    - Error diagnostic columns pf_error, last_anchor_error, and beam_error are excluded from features.
+    - Train-only formation columns are not read.
+    - Raw PF/Beam predictions are used only as add-only model features, not as direct replacement candidates.
+    - NCC/GR-match features are regenerated from each train well's visible prefix, typewell TVT/GR, and evaluation GR; raw GR values are not passed directly to the model.
+    - Public LB references from exp052 and exp054 are reported separately from the exp056 pseudo-test surface RMSE.
+
+data:
+  feature_path: experiments/exp056_public_sel15_pf_oof_multicutoff_artifact/features/public_sel15_pf_oof_features.csv.gz
+  source_well_summary_path: experiments/exp056_public_sel15_pf_oof_multicutoff_artifact/artifacts/public_sel15_pf_oof_well_summary.csv
+
+model:
+  name: lgbm_capacity_pseudotail_public_features
+  target: target_tvt_minus_last_anchor_tvt
+  base_prediction: last_anchor_tvt
+  estimator: LGBMRegressor
+  params:
+    n_estimators: 800
+    learning_rate: 0.03
+    num_leaves: 47
+    min_child_samples: 60
+    subsample: 0.9
+    colsample_bytree: 0.9
+    reg_lambda: 0.1
+    n_jobs: 2
+  prediction:
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  training:
+    max_train_rows_per_split: 300000
+    max_train_rows_per_bucket: 60000
+    seed: 42
+  feature_sets:
+    geometry_anchor_context:
+      - pseudo_cutoff_fraction
+      - cutoff_row
+      - row_idx
+      - prefix_length
+      - eval_step
+      - eval_fraction
+      - MD
+      - X
+      - Y
+      - Z
+      - gr_isna
+      - gr_prefix_availability
+      - gr_eval_availability
+      - last_anchor_tvt
+    public_pf_prediction:
+      - pf_pred
+      - pf_selected_scale_pred
+      - pf_scale_3
+      - pf_scale_5
+      - pf_scale_8
+      - pf_scale_12
+      - pf_seed_mean
+      - pf_seed_std
+      - pf_pred_minus_last_anchor
+      - pf_vs_last_anchor
+      - abs_pf_vs_last_anchor
+      - pf_ancc_delta_per_eval_step
+    public_pf_uncertainty:
+      - pf_ancc_std
+      - pf_scale_mean_delta
+      - pf_scale_std
+      - pf_scale_range
+      - pf_selected_vs_scale_mean
+      - pf_scale_range_to_seed_std
+      - pf_likelihood_margin
+      - pf_lik_best
+      - pf_lik_mean
+      - pf_lik_std
+      - pf_weight_entropy
+      - pf_weight_top
+      - pf_weight_best_second_gap
+      - pf_effective_seeds
+      - pf_gr_sigma_mean
+      - pf_initial_rate_mean
+      - pf_mean_effective_particles
+      - pf_min_effective_particles
+      - pf_resample_count_mean
+    public_beam_disagreement:
+      - beam_pred
+      - beam_spread
+      - beam_min
+      - beam_max
+      - beam_final_cost_mean
+      - beam_final_cost_min
+      - pf_beam_diff
+      - abs_pf_beam_diff
+    ncc_gr_match_minimal:
+      - ncc_sc_ens_delta
+      - ncc_score_mean
+      - ncc_score_std
+      - ncc_score_gap_best_second
+      - ncc_best_scale
+      - ncc_sc_trust
+      - ncc_sc_range
+      - ncc_sc_ens_vs_public_beam
+      - abs_ncc_sc_ens_vs_public_beam
+      - ncc_sc_ens_vs_pf
+      - abs_ncc_sc_ens_vs_pf
+      - gr_match_prefix_rmse
+      - gr_vs_tw_anchor
+      - gr_vs_sc_ens
+      - gr_vs_public_beam
+      - gr_vs_pf
+    spatial_context:
+      - spatial_xy_from_cutoff
+      - spatial_xyz_from_cutoff
+      - spatial_md_xy_ratio
+      - spatial_z_per_md
+      - spatial_abs_z_per_md
+      - spatial_path_azimuth_sin
+      - spatial_path_azimuth_cos
+      - spatial_first_x
+      - spatial_first_y
+      - spatial_first_z
+  variants:
+    - name: lgbm_capacity_geometry_control_cutoff065
+      estimator: LGBMRegressor
+      params: {}
+      feature_families: [geometry_anchor_context]
+      training_policy: &cutoff065_policy
+        name: exp051_cutoff065_control
+        cutoff_quantiles: [0.65]
+        strict_cutoff_coverage: true
+        max_rows_per_pseudo_tail: 260
+        distance_balanced: true
+        balanced_rows_per_bucket: 60000
+        max_train_rows_per_split: 300000
+        seed: 42
+    - name: lgbm_capacity_public_pf_core_cutoff065
+      estimator: LGBMRegressor
+      params: {}
+      feature_families:
+        - geometry_anchor_context
+        - public_pf_prediction
+        - public_pf_uncertainty
+        - public_beam_disagreement
+      training_policy: *cutoff065_policy
+    - name: lgbm_capacity_public_pf_core_multicutoff_equal_budget
+      estimator: LGBMRegressor
+      params: {}
+      feature_families:
+        - geometry_anchor_context
+        - public_pf_prediction
+        - public_pf_uncertainty
+        - public_beam_disagreement
+      training_policy: &multicutoff_equal_budget_policy
+        name: exp056_multicutoff_equal_budget
+        cutoff_quantiles: [0.45, 0.65, 0.82]
+        strict_cutoff_coverage: true
+        max_rows_per_pseudo_tail: 260
+        distance_balanced: true
+        balanced_rows_per_bucket: 60000
+        max_train_rows_per_split: 300000
+        seed: 42
+    - name: lgbm_capacity_public_pf_core_multicutoff_keep065
+      estimator: LGBMRegressor
+      params: {}
+      feature_families:
+        - geometry_anchor_context
+        - public_pf_prediction
+        - public_pf_uncertainty
+        - public_beam_disagreement
+      training_policy: &multicutoff_keep065_policy
+        name: exp056_multicutoff_keep065_then_aug
+        cutoff_quantiles: [0.45, 0.65, 0.82]
+        preserve_cutoffs: [0.65]
+        strict_cutoff_coverage: true
+        max_rows_per_pseudo_tail: 260
+        distance_balanced: true
+        balanced_rows_per_bucket: 60000
+        max_train_rows_per_split: 360000
+        seed: 42
+    - name: lgbm_capacity_public_ncc_gr_pf_context_multicutoff
+      estimator: LGBMRegressor
+      params: {}
+      feature_families:
+        - geometry_anchor_context
+        - public_pf_prediction
+        - public_pf_uncertainty
+        - public_beam_disagreement
+        - ncc_gr_match_minimal
+      training_policy: *multicutoff_equal_budget_policy
+    - name: lgbm_capacity_public_core_spatial_multicutoff
+      estimator: LGBMRegressor
+      params: {}
+      feature_families:
+        - geometry_anchor_context
+        - public_pf_prediction
+        - public_pf_uncertainty
+        - public_beam_disagreement
+        - ncc_gr_match_minimal
+        - spatial_context
+      training_policy: *multicutoff_equal_budget_policy
+
+postprocess:
+  selected_method: audit_selected_by_holdout
+  candidate_methods:
+    - raw
+    - distance_bucket_shrink
+  methods:
+    raw: {}
+    distance_bucket_shrink:
+      name: exp014_bucket_shrink_params
+      buckets:
+        - {name: rows_0_49, max_step: 49, alpha: 0.20}
+        - {name: rows_50_249, max_step: 249, alpha: 0.5917180252647632}
+        - {name: rows_250_999, max_step: 999, alpha: 1.15}
+        - {name: rows_1000_2499, max_step: 2499, alpha: 1.15}
+        - {name: rows_2500_plus, max_step: 1000000000, alpha: 1.0490770312511664}
+
+inference:
+  selected_variant: lgbm_capacity_public_core_spatial_multicutoff
+  selected_candidate: lgbm_capacity_public_core_spatial_multicutoff_raw
+  output_branch: public_feature_raw_hidden
+  submission_ref: "53581051"
+  public_lb: 12.046
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  chunk_rows: 500000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp056-sel15-pf-oof-multicutoff
+
+audit:
+  parent_exp051_cv: 12.634392
+  parent_exp052_public_lb: 12.076
+  parent_exp054_public_lb: 11.856
+  parent_exp056_rows: 5499624
+  parent_exp056_cutoff_rows:
+    "0.45": 2800741
+    "0.65": 1782279
+    "0.82": 916604
+  reference_control: lgbm_capacity_geometry_control_cutoff065_raw
+  require_beat_reference_control: true
+  paired_success_controls:
+    - candidate_prefix: lgbm_capacity_public_pf_core_cutoff065
+      control_prefix: lgbm_capacity_geometry_control_cutoff065
+    - candidate_prefix: lgbm_capacity_public_pf_core_multicutoff_equal_budget
+      control_prefix: lgbm_capacity_public_pf_core_cutoff065
+    - candidate_prefix: lgbm_capacity_public_pf_core_multicutoff_keep065
+      control_prefix: lgbm_capacity_public_pf_core_cutoff065
+    - candidate_prefix: lgbm_capacity_public_ncc_gr_pf_context_multicutoff
+      control_prefix: lgbm_capacity_public_pf_core_multicutoff_equal_budget
+    - candidate_prefix: lgbm_capacity_public_core_spatial_multicutoff
+      control_prefix: lgbm_capacity_public_ncc_gr_pf_context_multicutoff
+  required_controls:
+    - lgbm_capacity_geometry_control_cutoff065_raw
+    - lgbm_capacity_public_pf_core_cutoff065_raw
+    - public_pf_selector
+    - pf090_hold010
+  success_controls: []
+  require_beat_success_controls: false
+  supported_candidate_markers:
+    - _raw
+    - _bucket_shrink
+  report_controls:
+    - last_anchor
+    - public_pf_selector
+    - pf090_hold010
+    - beam
+  well_holdout_folds: 5
+  include_exp026_regenerated_control: false
+  source_feature_generation:
+    source_experiment: exp056_public_sel15_pf_oof_multicutoff_artifact
+    expected_cutoff_fractions: [0.45, 0.65, 0.82]
+    expected_rows: 5499624
+    expected_wells: 773
+  distance_buckets:
+    - {name: rows_0_49, max_step: 49}
+    - {name: rows_50_249, max_step: 249}
+    - {name: rows_250_999, max_step: 999}
+    - {name: rows_1000_2499, max_step: 2499}
+    - {name: rows_2500_plus, max_step: 1000000000}
+
+notes:
+  - This experiment implements the high-priority backlog item lgbm_capacity_pseudotail_public_features.
+  - The experiment parent is exp056 because the key change is using the exp056 multi-cutoff public feature artifact.
+  - exp059 is only the implementation source for the reusable audit script skeleton.
+  - The 0.65 control and multi-cutoff variants are kept separate so augmentation is not confused with a row-budget change.

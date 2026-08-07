@@ -1,0 +1,116 @@
+{
+  "experiment": "exp440_ambiguity_gated_predictive_prior_hmm",
+  "route": "pf_beam",
+  "status": "stage1_full_oof_failed_closed",
+  "cv": 12.992063009374759,
+  "parent_cv": 11.938287234887435,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "execution": {
+    "scientific_variants": 1,
+    "candidate_hmm_well_runs": 773,
+    "parent_control_hmm_well_runs": 0,
+    "reporting_folds": 5,
+    "rows": 3783989,
+    "wells": 773,
+    "lightgbm_configs": 0,
+    "trained_ml_folds": 0,
+    "boosters": 0,
+    "fitted_models": 0,
+    "pf_runs": 0,
+    "beam_runs": 0,
+    "gpu_runs": 0
+  },
+  "stage0": {
+    "status": "stage0_fail_closed",
+    "technical_gates_passed": 13,
+    "technical_gates_total": 15,
+    "mechanism_gates_passed": 2,
+    "mechanism_gates_total": 8,
+    "fixed32_is_mechanism_only_not_cv": true
+  },
+  "stage1": {
+    "decision": "close_without_blend_selector_continuous_gate_or_same_oof_rescue",
+    "technical_passed": true,
+    "scientific_passed": false,
+    "candidate_rmse_ft": 12.992063009374759,
+    "parent_exp209_rmse_ft": 11.938287234887435,
+    "direct_gain_ft": -1.053775774487324,
+    "positive_fold_count": 1,
+    "ambiguous_rows": 653589,
+    "ambiguous_row_sse_reduction_fraction": -0.21311673021229613,
+    "by_well_delta_p95_ft": 11.631748657435109,
+    "worst_well_regression_ft": 45.00348959364111,
+    "required_nonworse_scopes": {
+      "raw_gr_observed": false,
+      "raw_gr_missing": false,
+      "high_missing_fraction": false,
+      "md_1000_plus": false,
+      "hidden_like_spatial": false,
+      "hidden_like_typewell_purged": false
+    }
+  },
+  "kaggle": {
+    "shards": [
+      {
+        "kernel": "kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s0",
+        "version": 1,
+        "status": "KernelWorkerStatus.COMPLETE",
+        "wells": 193,
+        "rows": 946128,
+        "elapsed_seconds": 5603.734178324,
+        "peak_rss_gb": 1.5707511901855469
+      },
+      {
+        "kernel": "kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s1",
+        "version": 1,
+        "status": "KernelWorkerStatus.COMPLETE",
+        "wells": 193,
+        "rows": 946017,
+        "elapsed_seconds": 8695.082837760001,
+        "peak_rss_gb": 1.4987106323242188
+      },
+      {
+        "kernel": "kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s2",
+        "version": 1,
+        "status": "KernelWorkerStatus.COMPLETE",
+        "wells": 193,
+        "rows": 946112,
+        "elapsed_seconds": 8162.895694197,
+        "peak_rss_gb": 1.5092811584472656
+      },
+      {
+        "kernel": "kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s3",
+        "version": 1,
+        "status": "KernelWorkerStatus.COMPLETE",
+        "wells": 194,
+        "rows": 945732,
+        "elapsed_seconds": 5549.29588244,
+        "peak_rss_gb": 1.5273208618164062
+      }
+    ],
+    "merge": {
+      "kernel": "kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-merge",
+      "version": 1,
+      "status": "KernelWorkerStatus.COMPLETE",
+      "elapsed_seconds": 292.18146922200003,
+      "peak_rss_gb": 4.773448944091797
+    }
+  },
+  "artifacts": {
+    "scientific_contract_sha256": "6fb3c6d849ad9a257088423a8a1c34b21f8e35e27cbb18ef83a6a8d534f98676",
+    "raw_well_identity_sha256": "bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32",
+    "prediction_logical_sha256": "d7745518e64f732c24d9a7323e55eae8be90384fd4112dd4bd827fc2e1513d79",
+    "ambiguity_schedule_logical_sha256": "decf076e6ce0b4912c33a42dcbe1fb20361b683b980ded7fa62f0f0a1a82d546",
+    "target_free_diagnostic_logical_sha256": "d804ce7eb3eb7ac71eb1a6abd53e317a18b3e611b581aa8d0e1f7244be96ecab",
+    "scope_metrics_sha256": "baf4bf60ebcd8317d709f082883efc39aed5966754902d25bcdc64b0e6444a3d",
+    "by_well_metrics_sha256": "ef87808f6f4d89b8c66638ee5e28f791af96b661ba6dc2405879f531ea662f71",
+    "gate_sha256": "409747334948e70995bc08267c0566846a9d0cd4e302c9ca2b9bb013ac7ebf93",
+    "summary_sha256": "88dd2a28a9b86d3fe3b97de30b0d561d9cd05d80f564606c211ac14b1e42c13c",
+    "downloaded_evaluation_files": "artifacts/kaggle_stage1_v1",
+    "readback_verified": true,
+    "truth_role_fold_reads_before_freeze": 0
+  },
+  "next_action": "Terminal close without rerun, inference, submission, blend, selector, continuous gate, or same-OOF rescue."
+}

@@ -1,0 +1,160 @@
+{
+  "artifacts": {
+    "episode_truth_late_readout": {
+      "logical_sha256": "a378b7897158a3ac623bb531d22fb9a541976a4cecef2551fdc5c81c20403236",
+      "path": "/kaggle/working/artifacts/exp424_exp209_momentum1_exact_hmm_ablation_stage0_episode_truth_late_readout.csv",
+      "rows": 25,
+      "sha256": "a378b7897158a3ac623bb531d22fb9a541976a4cecef2551fdc5c81c20403236"
+    },
+    "input_manifest": {
+      "bytes": 1491,
+      "path": "/kaggle/working/artifacts/exp424_exp209_momentum1_exact_hmm_ablation_stage0_input_manifest.json",
+      "sha256": "704b173ae59756400db22a058b9ddeda37a377bba19a43d3433771681dc495e4"
+    },
+    "predictions": {
+      "decompressed_sha256": "77a26a70dcbfe64e1ff9b75df3a65ec4f65d3e0f3bbc7da01c2d5884784e3271",
+      "logical_sha256": "77a26a70dcbfe64e1ff9b75df3a65ec4f65d3e0f3bbc7da01c2d5884784e3271",
+      "path": "/kaggle/working/artifacts/exp424_exp209_momentum1_exact_hmm_ablation_stage0_predictions.csv.gz",
+      "raw_sha256": "7f3a43299c27b3d2e5a7198aeabf19c5b2f79ad2a8cfd4be02ca1b671dac1898",
+      "readback_logical_sha256": "77a26a70dcbfe64e1ff9b75df3a65ec4f65d3e0f3bbc7da01c2d5884784e3271",
+      "rows": 156088
+    },
+    "rate_readouts": {
+      "decompressed_sha256": "9eb313efcefc4fe90374a9d05b60df1a387a9e7a00eb519718017747c9abd270",
+      "logical_sha256": "9eb313efcefc4fe90374a9d05b60df1a387a9e7a00eb519718017747c9abd270",
+      "path": "/kaggle/working/artifacts/exp424_exp209_momentum1_exact_hmm_ablation_stage0_rate_readouts.csv.gz",
+      "raw_sha256": "255aeedf59d42bf30d80c6faaab9e475390b70fc5e2007fca751616f45889f16",
+      "readback_logical_sha256": "9eb313efcefc4fe90374a9d05b60df1a387a9e7a00eb519718017747c9abd270",
+      "rows": 156088
+    },
+    "summary": {
+      "bytes": 7431,
+      "path": "/kaggle/working/artifacts/exp424_exp209_momentum1_exact_hmm_ablation_stage0_summary.json",
+      "sha256": "a3b99f3864201e431477f22135f92c2d796af1f4f2cdb9e72c4c799829075af4"
+    },
+    "well_metrics": {
+      "logical_sha256": "d33001a341f2c0f597aa424dc029818ad6c07dc5a04a0b010955f90aca9ef250",
+      "path": "/kaggle/working/artifacts/exp424_exp209_momentum1_exact_hmm_ablation_stage0_well_metrics.csv",
+      "rows": 32,
+      "sha256": "d33001a341f2c0f597aa424dc029818ad6c07dc5a04a0b010955f90aca9ef250"
+    }
+  },
+  "execution_contract": {
+    "active_variants": 1,
+    "beam_runs": 0,
+    "boosters": 0,
+    "gpu_runs": 0,
+    "lightgbm_configs": 0,
+    "models": 0,
+    "parent_control_hmm_reruns_stage_0": 32,
+    "parent_control_hmm_reruns_stage_1": 0,
+    "pf_runs": 0,
+    "planned_stage_1_treatment_hmm_well_runs": 773,
+    "stage_0_baseline_hmm_well_runs": 32,
+    "stage_0_total_hmm_well_runs": 64,
+    "stage_0_treatment_hmm_well_runs": 32,
+    "trained_folds": 0
+  },
+  "experiment": "exp424_exp209_momentum1_exact_hmm_ablation",
+  "mechanism_gates": {
+    "matched_control_by_well_p95_safety": true,
+    "matched_control_rmse_safety": true,
+    "persistent_episode_sse_reduction": false,
+    "persistent_improved_wells": false,
+    "persistent_sse_improving_folds": false,
+    "rate_edge_mass_nonworse": false,
+    "underresponse_sse_share_reduction": true
+  },
+  "result": {
+    "baseline_episode_sse": 13363704.683818914,
+    "baseline_smoothed_rate_edge_mass_mean": 0.0009196688513005021,
+    "baseline_underresponse_sse_share": 0.4660185405787714,
+    "control_by_well_rmse_delta_p95_ft": 0.15706634196438152,
+    "control_parent_rmse_ft": 3.4284362857550077,
+    "control_rmse_delta_ft": -0.05476859748386742,
+    "control_treatment_rmse_ft": 3.3736676882711403,
+    "finite_coverage": 1.0,
+    "fixed32_is_mechanism_only_not_cv_or_promotion": true,
+    "maximum_baseline_saved_parent_abs_diff_ft": 0.0,
+    "maximum_normalization_error": 2.1846701558914106e-08,
+    "nonfinite_rate_moments": 0,
+    "parent_episode_sse": 13363710.665030783,
+    "peak_rss_gb": 1.0309257507324219,
+    "persistent_episode_sse_reduction": 0.0047555022017919946,
+    "persistent_improved_wells": 8,
+    "persistent_sse_by_fold": [
+      {
+        "episodes": 5,
+        "fold": 0,
+        "improved": false,
+        "parent_sse": 896156.1413032373,
+        "treatment_sse": 926304.8348209276
+      },
+      {
+        "episodes": 8,
+        "fold": 1,
+        "improved": false,
+        "parent_sse": 10703122.81163203,
+        "treatment_sse": 10932035.682316564
+      },
+      {
+        "episodes": 4,
+        "fold": 2,
+        "improved": true,
+        "parent_sse": 455802.3357237567,
+        "treatment_sse": 440573.64341575745
+      },
+      {
+        "episodes": 4,
+        "fold": 3,
+        "improved": true,
+        "parent_sse": 507762.8221170078,
+        "treatment_sse": 257458.45332226862
+      },
+      {
+        "episodes": 4,
+        "fold": 4,
+        "improved": true,
+        "parent_sse": 800866.5542547524,
+        "treatment_sse": 743786.8956636
+      }
+    ],
+    "persistent_sse_improving_folds": 3,
+    "smoothed_rate_edge_mass_delta": 0.00037795387922243237,
+    "stage0_elapsed_seconds": 2077.533832343,
+    "stage1_treatment_runtime_projection_seconds": 24402.68580533072,
+    "total_suffix_rows": 156088,
+    "total_wells": 32,
+    "treatment_episode_sse": 13300159.509539118,
+    "treatment_smoothed_rate_edge_mass_mean": 0.0012976227305229345,
+    "treatment_underresponse_sse_share": 0.3675185867447218,
+    "underresponse_sse_share_reduction_points": 0.09849995383404958
+  },
+  "route": "pf_beam",
+  "scientific_contract_sha256": "8d2d6ab5376ae78bdd8c3128da8499cae701e4d375d53ad2aefd5203a838c6cd",
+  "stage0_all_gates_pass": false,
+  "stage1_eligible_for_separate_approval": false,
+  "status": "stage0_fail_closed",
+  "technical_gates": {
+    "baseline_saved_exp209_parity": true,
+    "episode_reads_before_all_freeze": true,
+    "finite_prediction_and_rate_coverage": true,
+    "fixed32_fold_counts": true,
+    "fixed32_roles_and_unique_wells": true,
+    "nonfinite_rate_moments": true,
+    "peak_rss": true,
+    "posterior_normalization": true,
+    "prediction_readback_sha": true,
+    "rate_readout_readback_sha": true,
+    "runtime_projection": true,
+    "transition_mean_contract": true,
+    "truth_reads_before_all_freeze": true
+  },
+  "validation": {
+    "cv": null,
+    "fixed32_is_mechanism_only": true,
+    "lb": null,
+    "stage": "stage_0_fixed32",
+    "strategy": "stage_0_fixed32_then_stage_1_full_773"
+  }
+}

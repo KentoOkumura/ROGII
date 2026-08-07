@@ -1,0 +1,158 @@
+experiment:
+  name: "exp140_z_slope_posthoc_correction_on_pfbeam_candidates"
+  description: Train-side audit for gated dZ/dMD posthoc correction on fixed PF/Beam candidates.
+  route: pf_beam
+  status: completed_train_side_rejected_no_submit
+  created_at: "2026-06-27"
+  updated_at: "2026-06-27"
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  diagnostic_parents:
+    - exp083_pf_beam_true_tvt_2d_well_eda
+    - exp100_pf_z_unified_velocity_observation_prior
+    - exp104_pf_z_seedbag_scale_cache
+    - exp106_strict_exp072_pf_z_multiseed_scale_cache
+    - exp126_exp073_exp092_pf_beam_pseudotail_failure_map
+  implementation_source: z_slope_posthoc_correction_on_pfbeam_candidates.py
+  diff_summary: Keeps exp072 PF/Beam/likPF candidate cache fixed and applies a small, gated posthoc correction derived from target-free local -dZ/dMD versus candidate dTVT/dMD slope gap. It does not rerun PF/Beam, train a supervised selector, or create a submission.
+
+validation:
+  strategy: train_well_pseudotail_posthoc_candidate_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within10
+    - distance_bucket_rmse
+    - z_abs_top_quartile_rmse
+    - representative_z_driven_well_rmse
+    - max_well_regression_vs_likpf_mean
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp072_rows
+  leakage_policy:
+    - Existing PF/Beam/likPF candidates are read from exp072 raw-train deterministic feature cache.
+    - MD, Z, dZ/dMD, and candidate path slopes use raw horizontal well covariates and fixed candidate values only.
+    - Evaluation-zone true TVT is materialized as last_known_tvt + target only for scoring metrics.
+    - Gate conditions do not use true TVT, oracle candidate, or candidate error labels.
+    - This experiment is train-side diagnostic only; inference port requires separate raw-test parity and worst-well guard review.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+model:
+  name: z_slope_posthoc_correction_on_pfbeam_candidates
+  estimator: none_posthoc_candidate_audit
+  target: true_tvt_for_scoring_only
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  z_slope:
+    smooth_window: 11
+    base_slope_smooth_window: 15
+    gap_smooth_window: 21
+    clip_abs: 2.0
+    correction_grid:
+      base_candidates: [likpf_mean, pf_ancc, beam_mean]
+      alphas: [0.10, 0.20, 0.35, 0.50]
+      clip_ft: [10.0, 20.0]
+      z_abs_min: [0.03, 0.06, 0.10]
+      aux_modes: [none, pfz_agree, pfz_pull]
+      disagreement_min: [0.0, 5.0]
+      near_guard_ft: [50.0]
+      fade_end_ft: [250.0]
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_posthoc_grid
+  stochastic_components:
+    - upstream_exp072_pf_beam_likpf_cache
+  parallel_rng_policy: no_parallel_rng_in_exp140
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    oof_prediction_sha: true
+    metrics_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it is a train-side posthoc audit.
+    - Source gzip cache decompressed content SHA and output gzip decompressed SHA are recorded in summary JSON.
+
+audit:
+  mode: z_slope_posthoc_correction_on_pfbeam_candidates
+  output_prefix: exp140_z_slope_posthoc_correction_on_pfbeam_candidates
+  primary_baseline: likpf_mean
+  max_rows: null
+  max_wells: null
+  save_oof_top_k: 8
+  representative_wells:
+    - 91b301ce
+    - ba48188d
+    - fef8af96
+    - 1b1eba53
+  candidates:
+    - name: pf_ancc
+      role: selected_pf
+      source_columns: [pf_ancc]
+      transform: absolute
+    - name: beam_mean
+      role: selected_beam
+      source_columns: [beam_mean_d, beam_mean]
+      transform: base_plus_delta
+    - name: likpf_mean
+      role: likelihood_pf
+      source_columns: [likpf_mean_d, likpf_mean]
+      transform: base_plus_delta
+    - name: sc_ens
+      role: ncc_scale_ensemble
+      source_columns: [sc_ens_d, sc_ens]
+      transform: base_plus_delta
+    - name: hyb
+      role: public_hybrid
+      source_columns: [hyb_d, hyb]
+      transform: base_plus_delta
+    - name: pf_z
+      role: z_velocity_pf_auxiliary
+      source_columns: [pf_z]
+      transform: absolute
+  expected_train_artifacts:
+    - exp140_z_slope_posthoc_correction_on_pfbeam_candidates_candidate_metrics.csv
+    - exp140_z_slope_posthoc_correction_on_pfbeam_candidates_bucket_metrics.csv
+    - exp140_z_slope_posthoc_correction_on_pfbeam_candidates_by_well.csv
+    - exp140_z_slope_posthoc_correction_on_pfbeam_candidates_group_metrics.csv
+    - exp140_z_slope_posthoc_correction_on_pfbeam_candidates_oof_predictions.csv.gz
+    - exp140_z_slope_posthoc_correction_on_pfbeam_candidates_feature_schema.csv
+    - exp140_z_slope_posthoc_correction_on_pfbeam_candidates_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_rejected
+  selected_candidate: null
+  notes:
+    - No inference candidate is selected at implementation time.
+    - Positive train-side results must pass near-prefix, representative-well, max-well-regression, and raw-test parity checks before any inference port.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog z_slope_posthoc_correction_on_pfbeam_candidates.
+  - Direct pf_z replacement is explicitly out of scope; pf_z is only used as an auxiliary direction/pull gate.
+  - Kaggle train v2 showed no global improvement over likpf_mean; no inference port or submission is selected.

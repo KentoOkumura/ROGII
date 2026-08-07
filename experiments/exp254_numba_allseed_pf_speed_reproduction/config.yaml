@@ -1,0 +1,183 @@
+experiment:
+  name: exp254_numba_allseed_pf_speed_reproduction
+  description: >-
+    Reproduces the exact exp243/exp072 likelihood-PF as a Python-driven legacy
+    seed loop and a Numba all-seed kernel, then benchmarks cached all-seed warm
+    candidate aggregation without changing PF dynamics or using target values.
+  route: pf_beam
+  status: completed_not_adopted_branch_closed
+  created_at: "2026-07-15"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.metric
+
+lineage:
+  parent: exp243_pf_seed_medoids
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md numba_allseed_pf_speed_reproduction
+  diff_summary: >-
+    Keeps the exp243 v3 likelihood-PF body, float64 dtype, 500 particles,
+    exp072 stable seed order, transition, observation likelihood, and
+    conditional systematic resampling fixed. It changes only whether the seed
+    loop is driven by Python or compiled inside one Numba all-seed call, and
+    separates one-time seed-bank generation from deterministic warm candidate
+    aggregation.
+
+validation:
+  strategy: fixed_exp243_runtime_parity_and_determinism_probe
+  metric: runtime_seconds_with_exact_parity_guards
+  n_folds: 0
+  group_column: well
+  score_rows: none_runtime_only
+  leakage_policy:
+    - Raw evaluation TVT and error columns are never loaded.
+    - Representative wells are selected only from exp243 eval-row length.
+    - Candidate specifications are generated before PF output is inspected.
+    - No CV, oracle, selector, inference, Public LB, or submission is produced.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  exp243_kernel: kentookumura/exp243-pf-seed-medoids-train
+  expected_rows: 3783989
+  expected_wells: 773
+  exp243_row_candidates:
+    filename: exp243_pf_seed_medoids_row_candidates.csv.gz
+    paths:
+      - experiments/exp243_pf_seed_medoids/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp243-pf-seed-medoids-train/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz
+      - /kaggle/input/exp243-pf-seed-medoids-train/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz
+    sha_kind: decompressed
+    expected_sha256: 0583836a76e1b9515f8289965a25b0f41cf661294a20195a3021efbcd43e32bd
+  exp243_cluster_summary:
+    filename: exp243_pf_seed_medoids_cluster_summary.csv
+    paths:
+      - experiments/exp243_pf_seed_medoids/artifacts/exp243_pf_seed_medoids_cluster_summary.csv
+      - /kaggle/input/notebooks/kentookumura/exp243-pf-seed-medoids-train/artifacts/exp243_pf_seed_medoids_cluster_summary.csv
+      - /kaggle/input/exp243-pf-seed-medoids-train/artifacts/exp243_pf_seed_medoids_cluster_summary.csv
+    sha_kind: raw
+    expected_sha256: d3eea9f7c4ff777bed0a3c2ff2c60a076a1d49257c85b547a7b279df9735d333
+
+model:
+  name: exact_exp072_likelihood_pf_runtime_reproduction
+  estimator: none_runtime_audit
+  runtime:
+    particles: 500
+    seed_count: 128
+    resample_threshold: 0.5
+    init_spread: 4.5
+    momentum: 0.998
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_pos_noise: 0.10
+    resample_velocity_noise: 0.001
+    grid_step: 0.2
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+  benchmark:
+    representative_length_quantiles: [0.10, 0.50, 0.90]
+    seed_counts: [1, 4, 16, 32, 64, 128]
+    candidate_spec_counts: [1, 10, 100, 300]
+    temperatures: [3.0, 5.0, 8.0, 12.0]
+    subset_seed_counts: [1, 4, 16, 32, 64, 128]
+    subset_strides: [1, 3, 5, 7, 11, 13, 17, 19]
+    aggregation_rules: [mean, likelihood_weighted]
+    legacy_wall_time_budget_seconds: 14400
+    repeat_max_seed_count: true
+    cache_format: npz_uncompressed_array_content_sha_primary
+    python_processes: 1
+    numba_threads: 1
+    projection_target_wells: 773
+
+execution:
+  mode: probe
+  active_variant_count: 1
+  lightgbm_config_count: 0
+  fold_count: 0
+  total_boosters: 0
+  control_or_parent_retraining: false
+  pf_dynamics_variants: 1
+  probe:
+    representative_well_count: 3
+  full_workload:
+    enabled_only_when_mode_is_full_workload: true
+    probe_summary_candidates:
+      - experiments/exp254_numba_allseed_pf_speed_reproduction/artifacts/exp254_numba_allseed_pf_speed_reproduction_summary.json
+      - /kaggle/input/notebooks/kentookumura/exp254-numba-allseed-pf-speed-reproduction-probe/artifacts/exp254_numba_allseed_pf_speed_reproduction_summary.json
+    probe_summary_expected_sha256: ""
+    require_probe_passed: true
+    run_legacy_grid: false
+    persist_per_well_seed_cache: false
+
+audit:
+  exact_parity_tolerance: 0.0
+  saved_exp243_float32_tolerance: 0.0
+  required_guards:
+    - legacy_vs_allseed_trajectory_exact
+    - legacy_vs_allseed_log_likelihood_exact
+    - legacy_vs_allseed_final_mean_exact
+    - allseed_repeat_sha_exact
+    - saved_exp243_mean_float32_exact
+    - cache_roundtrip_exact
+    - warm_candidate_repeat_sha_exact
+  outputs:
+    probe_wells_filename: exp254_numba_allseed_pf_speed_reproduction_probe_wells.csv
+    parity_filename: exp254_numba_allseed_pf_speed_reproduction_parity.csv
+    timings_filename: exp254_numba_allseed_pf_speed_reproduction_timings.csv
+    speedups_filename: exp254_numba_allseed_pf_speed_reproduction_speedups.csv
+    candidate_specs_filename: exp254_numba_allseed_pf_speed_reproduction_candidate_specs.csv
+    cache_manifest_filename: exp254_numba_allseed_pf_speed_reproduction_cache_manifest.csv
+    projections_filename: exp254_numba_allseed_pf_speed_reproduction_full_runtime_projection.csv
+    input_manifest_filename: exp254_numba_allseed_pf_speed_reproduction_input_manifest.csv
+    summary_filename: exp254_numba_allseed_pf_speed_reproduction_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp243-pf-seed-medoids-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: exp072_sha256_modulo_plus_one_then_seed_index
+  pf_input_dtype: float64
+  persisted_reference_dtype: float32
+  stochastic_components:
+    - likelihood_pf_particle_initialization
+    - likelihood_pf_particle_propagation
+    - likelihood_pf_conditional_systematic_resampling
+  parallel_rng_policy: python_process_1_numba_thread_1_explicit_seed_per_seed_index
+  feature_sha_policy: decompressed_content_sha_for_gzip_array_content_sha_for_npz
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Determinism is claimed only for the fixed PF runtime benchmark and cached candidate generation.
+    - Numba cache is disabled inside notebook cells; JIT cold time is measured explicitly.
+    - The exp243 persisted replay mean is float32, while all PF trajectories and warm aggregation remain float64.
+
+inference:
+  enabled: false
+  mode: disabled_runtime_foundation_only
+  create_submission: false
+  selected_candidate: null
+
+notes:
+  - One diagnostic variant, no model configs, no folds, no boosters, no GPU, no parent/control retraining.
+  - Probe execution and full-workload execution are separate Kaggle versions/configurations.
+  - The branch is closed as not adopted; the empty probe SHA keeps full_workload fail-closed.

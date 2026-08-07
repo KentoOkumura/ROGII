@@ -1,0 +1,242 @@
+experiment:
+  name: "exp181_cluster_outlier_pfbeam_prior_gate"
+  description: Train-side no-training audit for applying exp109/114 prior corrections only to cluster-outlier PF/Beam/likPF OOF candidates.
+  route: pf_beam
+  status: completed_train_side_rejected_no_submit
+  created_at: "2026-07-03"
+  updated_at: "2026-07-03"
+
+lineage:
+  parent: exp109_typewell_neighbor_prior_features
+  comparison_parent: exp114_spatial_neighbor_prior_signal_audit
+  cache_parent: exp099_pf_multi_observation_likelihood_probe
+  gate_parent: exp175_cluster_outlier_typewell_prior_gate
+  cluster_parent: exp065_typewell_supertype_cluster_cv_audit
+  diagnostic_parents:
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - exp175_cluster_outlier_typewell_prior_gate
+  implementation_source: cluster_outlier_pfbeam_prior_gate.py
+  diff_summary: Reuses exp175 cluster-outlier gate features, but applies the weak clipped exp109/114 priors directly to fixed exp099 PF/Beam/likPF OOF candidates. It does not train a model, regenerate PF/Beam, create an inference port, or submit.
+
+validation:
+  strategy: fixed_oof_posthoc_cluster_outlier_pfbeam_prior_gate
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - gate_rate
+    - gated_wells
+    - distance_bucket_rmse
+    - cluster_outlier_subset_rmse
+    - exp115_hidden_like_stress_rmse
+    - worst_well_rmse_delta
+    - path_continuity
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: fixed_exp099_pfbeam_oof_rows
+  leakage_policy:
+    - Base PF/Beam/likPF candidates are fixed upstream OOF outputs from exp099 as carried by exp109.
+    - exp109 typewell priors and exp114 spatial priors are fixed upstream fold-safe train-neighbor outputs.
+    - exp065 native typewell cluster assignment and exp114 raw geometry summaries are target-free gate features.
+    - True TVT is used only for scoring policies and never for gate, prior, or candidate selection.
+    - A positive train-side policy is diagnostic only until raw-test/full-train parity passes.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp065_cluster_assignments_local: experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/common_typewell_cluster_assignments.csv
+  exp109_oof_predictions_local: experiments/exp109_typewell_neighbor_prior_features/kaggle/output/train_v2/artifacts/exp109_typewell_neighbor_prior_features_oof_predictions.csv.gz
+  exp109_summary_local: experiments/exp109_typewell_neighbor_prior_features/kaggle/output/train_v2/artifacts/exp109_typewell_neighbor_prior_features_summary.json
+  exp114_oof_predictions_local: experiments/exp114_spatial_neighbor_prior_signal_audit/kaggle/output/train_v1/artifacts/exp114_spatial_neighbor_prior_signal_audit_oof_predictions.csv.gz
+  exp114_well_geometry_local: experiments/exp114_spatial_neighbor_prior_signal_audit/kaggle/output/train_v1/artifacts/exp114_spatial_neighbor_prior_signal_audit_well_geometry_summary.csv
+  exp114_summary_local: experiments/exp114_spatial_neighbor_prior_signal_audit/kaggle/output/train_v1/artifacts/exp114_spatial_neighbor_prior_signal_audit_summary.json
+  exp115_fold_assignments_local: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+base_candidates:
+  - name: likpf_mean
+    display_name: likelihood PF mean
+    column: likpf_mean
+  - name: pf_ancc
+    display_name: PF ANCC
+    column: pf_ancc
+  - name: beam_mean
+    display_name: beam mean
+    column: beam_mean
+
+model:
+  name: cluster_outlier_pfbeam_prior_gate
+  estimator: none
+  target: true_tvt_for_scoring_only
+  base_prediction: fixed_exp099_pfbeam_oof_candidate
+  correction_family: clipped_prior_delta_to_fixed_pfbeam_candidate
+
+cluster:
+  assignment_method: native_overlap
+  assignment_threshold: "1"
+  min_cluster_size: 2
+  robust_scale_floor_ft: 250.0
+  outlier_z_thresholds: [1.5, 2.0]
+  nearby_k_values: [5, 8, 12]
+  nearby_majority_min_share: 0.5
+  gates:
+    - name: own_z_gt1p5
+      own_cluster_dist_z_gt: 1.5
+    - name: own_z_gt2p0
+      own_cluster_dist_z_gt: 2.0
+    - name: nearest_other_closer
+      nearest_other_closer: true
+    - name: nearby_majority_diff_k8
+      nearby_majority_diff: true
+      nearby_k: 8
+    - name: own_z_gt1p5_nearest_other
+      own_cluster_dist_z_gt: 1.5
+      nearest_other_closer: true
+    - name: own_z_gt1p5_nearby_diff_k8
+      own_cluster_dist_z_gt: 1.5
+      nearby_majority_diff: true
+      nearby_k: 8
+    - name: all_outlier_signals_k8
+      own_cluster_dist_z_gt: 1.5
+      nearest_other_closer: true
+      nearby_majority_diff: true
+      nearby_k: 8
+    - name: any_outlier_signal_k8
+      any_of:
+        - own_cluster_dist_z_gt: 1.5
+        - nearest_other_closer: true
+        - nearby_majority_diff: true
+          nearby_k: 8
+
+gate:
+  prior_variants:
+    - name: typewell_native_overlap_1
+      family: typewell
+      prior_tvt: native_overlap_1_prior_tvt
+      prior_std: native_overlap_1_prior_std
+      prior_count: native_overlap_1_prior_count
+      neighbor_wells: native_overlap_1_neighbor_wells
+    - name: typewell_native_overlap_0p999
+      family: typewell
+      prior_tvt: native_overlap_0p999_prior_tvt
+      prior_std: native_overlap_0p999_prior_std
+      prior_count: native_overlap_0p999_prior_count
+      neighbor_wells: native_overlap_0p999_neighbor_wells
+    - name: spatial_xy_plus_trajectory_shape_k8
+      family: spatial
+      prior_tvt: xy_plus_trajectory_shape_k8_prior_tvt
+      prior_std: xy_plus_trajectory_shape_k8_prior_std
+      prior_count: xy_plus_trajectory_shape_k8_prior_count
+      neighbor_wells: xy_plus_trajectory_shape_k8_neighbor_wells
+      distance_mean: xy_plus_trajectory_shape_k8_distance_mean
+      azimuth_mismatch: xy_plus_trajectory_shape_k8_azimuth_mismatch
+    - name: spatial_xy_only_k8
+      family: spatial
+      prior_tvt: xy_only_k8_prior_tvt
+      prior_std: xy_only_k8_prior_std
+      prior_count: xy_only_k8_prior_count
+      neighbor_wells: xy_only_k8_neighbor_wells
+      distance_mean: xy_only_k8_distance_mean
+      azimuth_mismatch: xy_only_k8_azimuth_mismatch
+  correction_alphas: [0.05, 0.10, 0.20]
+  correction_clip_ft: [5.0, 10.0, 20.0, 40.0]
+  prior_quality:
+    - name: valid_prior
+    - name: std_le20
+      max_prior_std: 20.0
+    - name: std_le40
+      max_prior_std: 40.0
+    - name: neighbor_wells_ge3
+      min_neighbor_wells: 3
+    - name: std_le40_neighbor_wells_ge3
+      max_prior_std: 40.0
+      min_neighbor_wells: 3
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 32
+  read_chunksize: 1000000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp109-typewell-neighbor-prior-train
+      - kentookumura/exp114-spatial-neighbor-prior-signal-audit-train
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: deterministic_posthoc_grid_no_model_rng
+  stochastic_components:
+    - upstream_exp072_pf_beam_replay_cache
+    - upstream_exp099_likelihood_pf_oof_candidates
+    - upstream_exp109_typewell_neighbor_prior_oof
+    - upstream_exp114_spatial_neighbor_prior_oof
+    - upstream_exp065_typewell_cluster_discovery
+  parallel_rng_policy: no_rng_in_exp181
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a deterministic posthoc grid over fixed upstream Kaggle outputs.
+    - It is not a deterministic submission anchor and does not create submission.csv.
+
+audit:
+  mode: cluster_outlier_pfbeam_prior_gate
+  source_name: pfbeam_oof
+  output_prefix: exp181_cluster_outlier_pfbeam_prior_gate
+  max_rows: null
+  top_n_detailed_policies: 20
+  top_n_prediction_policies: 10
+  max_regression_warn_rmse: 0.25
+  reference_policies:
+    - name: exp109_global_best_native_overlap_0p999_likpf_a0p2_c40
+      base_candidate: likpf_mean
+      prior: typewell_native_overlap_0p999
+      alpha: 0.20
+      clip: 40.0
+      cluster_gate: exp109_global_best_all_rows
+      quality_gate: valid_prior
+    - name: exp114_global_best_xy_plus_trajectory_shape_likpf_a0p2_c40
+      base_candidate: likpf_mean
+      prior: spatial_xy_plus_trajectory_shape_k8
+      alpha: 0.20
+      clip: 40.0
+      cluster_gate: exp114_global_best_all_rows
+      quality_gate: valid_prior
+  expected_train_artifacts:
+    - exp181_cluster_outlier_pfbeam_prior_gate_gate_metrics.csv
+    - exp181_cluster_outlier_pfbeam_prior_gate_by_well.csv
+    - exp181_cluster_outlier_pfbeam_prior_gate_by_well_delta.csv
+    - exp181_cluster_outlier_pfbeam_prior_gate_bucket_metrics.csv
+    - exp181_cluster_outlier_pfbeam_prior_gate_subgroup_metrics.csv
+    - exp181_cluster_outlier_pfbeam_prior_gate_path_continuity.csv
+    - exp181_cluster_outlier_pfbeam_prior_gate_cluster_outlier_well_features.csv
+    - exp181_cluster_outlier_pfbeam_prior_gate_top_gated_predictions.csv.gz
+    - exp181_cluster_outlier_pfbeam_prior_gate_feature_schema.csv
+    - exp181_cluster_outlier_pfbeam_prior_gate_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - This experiment is a posthoc train-side audit only.
+    - Any positive policy requires raw-test/full-train parity before inference work.
+
+notes:
+  - Implements the `cluster_outlier_pfbeam_prior_gate` backlog item.
+  - The correction target is PF/Beam/likPF OOF candidates, not exp148/exp092 ML output.

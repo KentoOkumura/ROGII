@@ -1,0 +1,40 @@
+{
+  "artifacts": {
+    "guard_output_inventory": "/home/kento/work/kaggle/ROGII/experiments/exp122_exact_override_negative_control/artifacts/guard_output_inventory.csv",
+    "notebook_risk_summary": "/home/kento/work/kaggle/ROGII/experiments/exp122_exact_override_negative_control/artifacts/notebook_risk_summary.csv",
+    "summary": "/home/kento/work/kaggle/ROGII/experiments/exp122_exact_override_negative_control/artifacts/exact_override_negative_control_summary.json"
+  },
+  "cv": null,
+  "decision": {
+    "adoption": "exclude_same_well_exact_or_guarded_override",
+    "caveats": [
+      "This audit does not rule out the same physical well appearing under a different anonymized id.",
+      "Any optional exact/override layer is diagnostic only and must not be a submit candidate.",
+      "The archived notebook source contains enabled same-well shortcut flags, while exp079 source specs expected exact/override-disabled checks; this conflict is recorded as risk rather than improvement evidence."
+    ],
+    "confidence": "medium",
+    "exp079_expected_disabled": true,
+    "final_equals_base": true,
+    "guard_changed": false,
+    "guard_rows": 0,
+    "hidden_assertion_not_triggered": true,
+    "reason": "Pilkwang final equals the archived base branch, and exp064 hidden code submission did not trigger the exposed well-id overlap assertion.",
+    "source_flags_enabled": true,
+    "status": "negative_control_passed_current_evidence"
+  },
+  "experiment": "exp122_exact_override_negative_control",
+  "key_idea": "exact-match / guarded overlap override negative control",
+  "kaggle_train": {
+    "kernel": "kentookumura/exp122-exact-override-negative-control-train",
+    "kernel_version": 1,
+    "kernel_url": "https://www.kaggle.com/code/kentookumura/exp122-exact-override-negative-control-train",
+    "output_dir": "experiments/exp122_exact_override_negative_control/kaggle/output/train_v1",
+    "summary": "experiments/exp122_exact_override_negative_control/kaggle/output/train_v1/artifacts/exact_override_negative_control_summary.json"
+  },
+  "metric": "diagnostic_status",
+  "private_lb": null,
+  "public_lb": null,
+  "route": "pf_beam",
+  "status": "negative_control_passed_current_evidence",
+  "updated_at": "2026-06-25T10:52:05.093594+00:00"
+}

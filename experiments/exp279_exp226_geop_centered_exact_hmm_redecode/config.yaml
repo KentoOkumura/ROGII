@@ -1,0 +1,236 @@
+experiment:
+  name: exp279_exp226_geop_centered_exact_hmm_redecode
+  description: >-
+    Re-decode the fixed exp209 exact HMM with a per-row Gaussian unary centered
+    on group-safe exp226 geometry-only tvt_geop, testing whether an absolute
+    geometric reference prevents persistent GR mode-slip offsets.
+  route: pf_beam
+  status: completed_train_side_guard_failed_branch_closed
+  created_at: "2026-07-18"
+  updated_at: "2026-07-19"
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.score_rows
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  sources:
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp263_last_anchor_better_candidate_confidence_pair_cache
+  diff_summary: >-
+    Keeps the exp209 grid, 41 rate states, transition grammar, Gaussian raw-GR
+    emission, known-prefix calibration, initial position/rate priors, and
+    missing-GR interpolation fixed. Adds exactly one Gaussian unary with
+    sigma=20 ft and lambda=0.50 centered on the saved group-safe exp226
+    geometry-only tvt_geop for every evaluation row. exp226 tvt_pred is
+    forbidden to avoid using GR twice. Saved exp226, exp209, and exp072
+    predictions reconstruct the exp263 fixed formula as readout-only controls;
+    no parent is regenerated or retrained.
+
+validation:
+  strategy: group_safe_exp226_geop_unary_exact_hmm_unknown_suffix_oof
+  metric: rmse_tvt
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  promotion_baseline:
+    candidate: exp263_fixed_exp226_w500_50_50
+    oof_rmse: 8.238331
+    parity_atol_ft: 0.00001
+    public_lb: 7.800
+  guards:
+    minimum_oof_gain_ft: 0.02
+    minimum_improved_folds: 3
+    maximum_scope_rmse_regression_ft: 0.02
+    maximum_worst_well_rmse_regression_ft: 0.25
+    required_geop_grid_coverage: 1.0
+    required_finite_coverage: 1.0
+  leakage_policy:
+    - exp226 OOF is generated with the target well excluded from donor fields and fold kappa fitting.
+    - The decoder receives raw horizontal/typewell inputs, known TVT_input prefix, and saved group-safe tvt_geop only.
+    - exp226 tvt_pred, gr_delta, unknown-suffix true TVT, error, and abs_error are absent from decoder inputs.
+    - Unknown-suffix true TVT is attached by id only after the candidate path for every well is frozen.
+    - Recovery episodes and all performance guards are truth-only post-generation readouts and cannot select a parameter.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    well_column: well_id
+    row_idx_column: row_idx
+    fold_column: fold
+    truth_column: tvt_true
+    prediction_column: tvt_pred
+    geometry_column: tvt_geop
+  exp209_oof:
+    filename: exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    candidates:
+      - /tmp/exp209_blend_audit/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    expected_decompressed_sha256: ee3b548b0d38f78966742542e86fa31b7e64698d4762b924c924a5895d2ee3f4
+    prediction_column: hmm_mean_tvt
+  exp072_oof:
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v2_stream/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    expected_decompressed_sha256: 99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350
+    delta_column: likpf_mean_d
+    anchor_column: last_known_tvt
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /tmp/exp275-output-v2/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+
+model:
+  name: exp226_geop_centered_exact_hmm
+  estimator: deterministic_exact_hmm_forward_backward
+  target: train_unknown_suffix_tvt_for_post_generation_scoring_only
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+  geometry_unary:
+    source: exp226_group_safe_oof_tvt_geop
+    sigma_ft: 20.0
+    lambda: 0.50
+    log_likelihood_clip: 600.0
+    active_variants: [geop_sigma20_lambda050]
+    forbid_columns: [tvt_pred, gr_delta, tvt_true, abs_error, error]
+  fixed_formula_control:
+    name: exp263_fixed_exp226_w500_50_50
+    weights:
+      exp226_pred: 0.50
+      likelihood_pf_mean: 0.25
+      exact_hmm: 0.25
+
+audit:
+  output_prefix: exp279_exp226_geop_centered_exact_hmm_redecode
+  distance_buckets_ft: [50, 100, 250, 500, 1000]
+  promotion_scopes:
+    near:
+      minimum_md_since_ft: 0.0
+      maximum_md_since_ft: 250.0
+    long_tail:
+      minimum_md_since_ft: 1000.0
+      maximum_md_since_ft: null
+  persistent_offset:
+    error_threshold_ft: 10.0
+    minimum_consecutive_rows: 128
+    return_threshold_ft: 5.0
+    recovery_horizons_rows: [256, 512]
+  persist_full_posterior: false
+  persist_oracle_predictions: false
+  persist_selector: false
+  persist_candidate_blend: false
+  expected_artifacts:
+    - exp279_exp226_geop_centered_exact_hmm_redecode_oof_predictions.csv.gz
+    - exp279_exp226_geop_centered_exact_hmm_redecode_candidate_metrics.csv
+    - exp279_exp226_geop_centered_exact_hmm_redecode_fold_metrics.csv
+    - exp279_exp226_geop_centered_exact_hmm_redecode_distance_bucket_metrics.csv
+    - exp279_exp226_geop_centered_exact_hmm_redecode_hidden_like_metrics.csv
+    - exp279_exp226_geop_centered_exact_hmm_redecode_by_well_metrics.csv
+    - exp279_exp226_geop_centered_exact_hmm_redecode_recovery_episodes.csv
+    - exp279_exp226_geop_centered_exact_hmm_redecode_recovery_summary.csv
+    - exp279_exp226_geop_centered_exact_hmm_redecode_well_manifest.csv
+    - exp279_exp226_geop_centered_exact_hmm_redecode_input_manifest.csv
+    - exp279_exp226_geop_centered_exact_hmm_redecode_decoder_manifest.json
+    - exp279_exp226_geop_centered_exact_hmm_redecode_summary.json
+
+execution:
+  active_hmm_variants: 1
+  total_hmm_well_runs: 773
+  outer_workers: 1
+  numba_num_threads: 4
+  progress_every_wells: 2
+  max_wells: null
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  control_or_parent_retraining: false
+  cpu_exact_hmm_control_regenerated: false
+  gpu: false
+  inference: false
+  submission: false
+  kaggle_push_approved: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_sorted_well_order_saved_exp226_group_fold
+  stochastic_components: []
+  parallel_rng_policy: no_rng_outer_workers1_numba_threads4
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Exact HMM forward-backward and the exp226 geometry unary consume no random numbers.
+    - The decoder manifest SHA covers the scientific HMM and unary config because no fitted model exists.
+    - Raw and decompressed gzip SHA are recorded separately and decompressed content SHA is primary.
+    - Numba parallel floating arithmetic may vary at tiny precision, so this is not a deterministic anchor before a Kaggle rerun check.
+
+inference:
+  enabled: false
+  mode: disabled_until_all_train_guards_pass_and_user_approves
+  create_submission: false
+  selected_candidate: null
+
+notes:
+  - The initial implementation is one fixed falsifiable variant, not a sigma/lambda search.
+  - exp263 is reconstructed only as a saved-prediction comparison and is not blended with the new candidate.
+  - A PF rejuvenation follow-up is outside this experiment and requires separate evidence and approval.

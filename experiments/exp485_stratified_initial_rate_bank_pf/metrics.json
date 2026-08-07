@@ -1,0 +1,171 @@
+{
+  "experiment": "exp485_stratified_initial_rate_bank_pf",
+  "status": "stage1_gate_failed_terminal_close",
+  "route": "pf_beam",
+  "cv": 11.092618091249959,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "primary_candidate": "likpf_scale5_equal_strata_initial_rate_bank5",
+  "primary_control": "exp404_exp417_likpf_scale5_x1p0_tail30",
+  "stage0": {
+    "status_under_original_gate": "stage0_fail_closed",
+    "fixed32_is_cv": false,
+    "wells": 32,
+    "rows": 156088,
+    "checks_passed": 13,
+    "checks_total": 14,
+    "failed_checks": [
+      "runtime_projection_within_limit"
+    ],
+    "candidate_seconds": 1278.9420568943024,
+    "projected_full_seconds": 30894.44406185299,
+    "original_limit_seconds": 30600.0,
+    "excess_seconds": 294.4440618529915,
+    "runtime_exception_approved": true,
+    "original_gate_reclassified": false
+  },
+  "stage1": {
+    "status": "stage1_gate_failed_terminal_close",
+    "rows": 3783989,
+    "wells": 773,
+    "folds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "candidate_rmse": 11.092618091249959,
+    "saved_control_rmse": 10.914522073423171,
+    "improvement_ft": -0.1780960178267872,
+    "improved_folds": 1,
+    "minimum_improved_folds": 4,
+    "minimum_improvement_ft": 0.05,
+    "fold_improvement_ft": {
+      "fold_0": -0.024325066367392623,
+      "fold_1": -0.15620911526580272,
+      "fold_2": 0.012064366002290328,
+      "fold_3": -0.03368089419392106,
+      "fold_4": -0.5774119591565583
+    },
+    "scope_improvement_ft": {
+      "raw_gr_observed": -0.25049586412640146,
+      "raw_gr_missing": -0.02082186713121814,
+      "missing_fraction_high": 0.018240363707503704,
+      "md_since_1000_plus": -0.20708484007782957,
+      "hidden_like_spatial": -0.10804950912142175,
+      "hidden_like_typewell_purged": -0.10905915035072944
+    },
+    "scope_gate_pass": {
+      "raw_gr_observed": false,
+      "raw_gr_missing": false,
+      "missing_fraction_high": true,
+      "md_since_1000_plus": false,
+      "hidden_like_spatial": false,
+      "hidden_like_typewell_purged": false
+    },
+    "by_well_delta_p95_ft": 0.4223886315290676,
+    "maximum_by_well_delta_p95_ft": 0.0,
+    "worst_well_regression_ft": 33.05351511716487,
+    "maximum_worst_well_regression_ft": 0.25,
+    "fixed_hmm_pf_50_50": {
+      "candidate_rmse": 10.117590984878806,
+      "control_rmse": 10.084909848760013,
+      "delta_rmse_candidate_minus_control": 0.032681136118792864,
+      "maximum_regression_ft": 0.0,
+      "passed": false
+    },
+    "technical_gate_passed": true,
+    "primary_scientific_gate_passed": false,
+    "fixed_hmm_pf_50_50_guard_passed": false,
+    "promotion_gate_passed": false,
+    "decision": "terminal_close_without_rate_bank_or_pf_rescue"
+  },
+  "execution_contract": {
+    "scientific_variants": 1,
+    "candidate_pf_well_runs": 773,
+    "candidate_pf_well_runs_in_resume_kernel": 0,
+    "seed_well_trajectories": 98944,
+    "particle_starts": 49472000,
+    "saved_control_pf_well_runs": 0,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "hmm_well_runs": 0,
+    "beam_well_runs": 0,
+    "gpu_runs": 0
+  },
+  "technical_gate": {
+    "passed": true,
+    "checks_passed": 19,
+    "checks_total": 19,
+    "truth_control_fold_hidden_reads_before_freeze": 0,
+    "saved_control_rmse_absolute_difference": 4.2317083170928527e-10,
+    "fixed_hmm_pf_50_50_control_rmse_absolute_difference": 1.6919963030659346e-07,
+    "runtime_seconds_aggregate_stage1": 9935.484822590277,
+    "runtime_seconds_source_kernel_to_error": 9825.627376635,
+    "runtime_seconds_resume_stage": 109.85744595527649,
+    "runtime_seconds_resume_notebook_wall": 357.526128708,
+    "original_runtime_limit_seconds": 30600.0,
+    "stage1_actual_runtime_gate_passed": true,
+    "runtime_exception_applied_to_stage1_actual": false,
+    "peak_rss_gb": 3.4704132080078125
+  },
+  "kaggle_runs": {
+    "stage0_version1": {
+      "kernel_version": 1,
+      "status": "COMPLETE",
+      "kernel_id_no": 129169067
+    },
+    "stage1_version2": {
+      "kernel_version": 2,
+      "status": "ERROR",
+      "runtime_seconds_to_error": 9825.627376635,
+      "failure": "saved_exp209_hmm_decompressed_sha_mismatch",
+      "target_free_outputs_frozen": true
+    },
+    "stage1_resume_version3": {
+      "kernel_version": 3,
+      "status": "COMPLETE",
+      "kernel_id_no": 129169067,
+      "url": "https://www.kaggle.com/code/kentookumura/exp485-stratified-initial-rate-bank-pf-train",
+      "completed_at_utc": "2026-07-30T22:22:59.250298+00:00",
+      "runtime": "private_cpu",
+      "gpu": false,
+      "internet": false
+    }
+  },
+  "reproducibility": {
+    "scientific_contract_sha256": "599d39931c9e5f820469b531d1ed64b383f381918cdb0055700aa0beb7dd4233",
+    "prediction_logical_sha256": "246e7473289bc19743fc3957b319b95a8b72543fb1f5748e0f34f390e980ea46",
+    "prediction_decompressed_sha256": "7cb11d339d92ca0ae3fef2de243e9754b83f2ec74211707b898f7ff7a2e77750",
+    "rate_bank_decompressed_sha256": "c1d9d4b9acdafc2d02115de0d848e22cdb9d67586ff816debf297f1fa29efc38",
+    "component_ancestry_decompressed_sha256": "d81b1b93ff0c47947ee27a9cc18e24fe8ed0686347fd4394f8e6a46fec018f80",
+    "truth_late_rows_decompressed_sha256": "1803dbf94169838d4ba980aeee6e218e1d25b15a34cab3b0d737a608e1fca66d",
+    "exp209_selected_columns_sha256": "41957dff094daddc7c9f73ac52baf6bbc22332e8ec8534aedb73fdc0e84b649c",
+    "source_manifest_sha256": "350a89350e2877e38362fe158a6ec96a6f7f99de24fab7aeae0d33173dc23452",
+    "summary_sha256": "58d9c425d0ca86c2eeafc67d2b3e8194e4b3f47f50e7652b2eb7bcd0dc67de8a",
+    "primary_metrics_sha256": "e475d9e9e2a1ccdac45556e3f6ccef81d5fdd7898307861d7a4bdc6a1acb5498",
+    "by_well_metrics_sha256": "a0adce7bae3fd5035f37c49f5417bb911c5aaf35718f1e951643ca37c40eeaa1",
+    "blend_metrics_sha256": "02652fabf744ba54d5851ea290d95a1ab5ac882e9b6ed9abd7bc7b8ba83984db",
+    "promotion_gate_sha256": "05644fd4a0fb4fe65ac44790ba75c32401e285807b0a54dad77eb6a90894559f",
+    "runtime_ledger_sha256": "b77e9bbc8e1d183db63e5c3ef1f6db507f3e5ae69ac3d04b14675310fb2fe4c8",
+    "terminal_log_sha256": "a8a68a23ab123fa0e0fcff2cfcf494d444e8ef28b5a43daed6a825adf1f5d3fb",
+    "deterministic_anchor": false
+  },
+  "contract_tests": {
+    "passed": 11,
+    "failed": 0,
+    "jupytext_roundtrip": true,
+    "py_compile": true,
+    "ruff": true,
+    "strict_experiment_validation": true,
+    "kaggle_unpacked_resume_dataset_validation": true
+  },
+  "output_archive_downloaded": true,
+  "inference_run": false,
+  "submission_created": false,
+  "next_action": "Close the branch without parameter, gate, blend, selector, or same-OOF rescue. Do not run inference or submission.",
+  "notes": "The equal-strata five-center initial-rate prior regressed the saved exp404 PF overall, in four of five folds, and on five of six preregistered diagnostic scopes. Only the high-missing-fraction scope improved. The fixed HMM+PF 50:50 safety guard also regressed."
+}

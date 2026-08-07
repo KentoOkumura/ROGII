@@ -1,0 +1,119 @@
+{
+  "experiment": "exp195_denoised_calibrated_matching_replacement_only_on_exp148",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "source": "kaggle_train_v1_logs",
+  "kernel": "kentookumura/exp195-dcm-replace-exp148-train",
+  "kernel_version": 1,
+  "matching_audit_parents": [
+    "exp167_fft_denoised_gr_matching_audit",
+    "exp170_heel_calibrated_shift_scan_pfbeam_audit",
+    "exp171_bimodal_posterior_pfbeam_candidate_audit",
+    "exp190_denoised_calibrated_matching_features_on_exp148"
+  ],
+  "cv": {
+    "status": "train_completed",
+    "variant": "denoised_calibrated_matching_replacement_only",
+    "mode": "gpu_repro_guard_dp_threads8",
+    "rows": 3783989,
+    "wells": 773,
+    "features": 377,
+    "feature_groups": "projection_correction,u_disagreement,denoised_calibrated_matching",
+    "removed_feature_group": "learned_likelihood_confidence",
+    "best_model": "lgb_mean",
+    "best_pooled_rmse_tvt": 9.409612610766938,
+    "best_pooled_rmse_target": 9.409612527876918,
+    "prediction_sha256": "cab0cd29913e8cae39c807f3588e170a93b3590f7ad90f0601dc048af624fb76",
+    "pooled_metrics": {
+      "lgb0": {
+        "rmse_tvt": 9.612543035441323,
+        "rmse_target": 9.612542993038362,
+        "prediction_sha256": "f455fcf18496820e5da96c27bea9cf680c2b8a86fafd134d075a528ef5c7dd53",
+        "delta_vs_exp148_lgb0": 1.0127571760624328,
+        "delta_vs_exp190_lgb0": 1.0108647599829599
+      },
+      "lgb1": {
+        "rmse_tvt": 9.405030561019409,
+        "rmse_target": 9.40503046315631,
+        "prediction_sha256": "a871ccfa10f14f37b7000f6bfc4f045b9e8136d90a38cf53d7c1081c2cc34f3e",
+        "delta_vs_exp148_lgb1": 0.8410594397897402,
+        "delta_vs_exp190_lgb1": 0.8654060808851156
+      },
+      "lgb2": {
+        "rmse_tvt": 9.388749748145075,
+        "rmse_target": 9.38874975471354,
+        "prediction_sha256": "65c3c269a223bd6328fd53d2665766e5daba7ada6711128fff1d27e47c6e0f98",
+        "delta_vs_exp148_lgb2": 0.8789300293510003,
+        "delta_vs_exp190_lgb2": 0.8486761866381229
+      },
+      "lgb_mean": {
+        "rmse_tvt": 9.409612610766938,
+        "rmse_target": 9.409612527876918,
+        "prediction_sha256": "cab0cd29913e8cae39c807f3588e170a93b3590f7ad90f0601dc048af624fb76",
+        "delta_vs_exp148_lgb_mean": 0.9083314288711186,
+        "delta_vs_exp190_lgb_mean": 0.9060164512821132
+      }
+    },
+    "feature_join_coverage": {
+      "base_rows_before_feature_join": 3783989,
+      "base_wells_before_feature_join": 773,
+      "learned_feature_rows": 3783989,
+      "learned_feature_wells": 773,
+      "joined_rows": 3783989,
+      "joined_wells": 773,
+      "dropped_base_rows": 0,
+      "dropped_base_wells": 0,
+      "full_train_coverage_pass": true
+    },
+    "elapsed_seconds": 15193.865
+  },
+  "inference": {
+    "status": "not_implemented_rejected_train_side",
+    "selected_variant": null,
+    "selected_model": null
+  },
+  "submitted": false,
+  "planned_train": {
+    "active_variants": [
+      "denoised_calibrated_matching_replacement_only"
+    ],
+    "disabled_variants": [
+      "exp148_fulltrain_control"
+    ],
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "active_modes": [
+      "gpu_repro_guard_dp_threads8"
+    ],
+    "total_boosters": 15,
+    "control_retraining": false,
+    "train_notebook_split_by_lgb_config": false,
+    "gpu": true
+  },
+  "replacement_policy": {
+    "kept_feature_groups": [
+      "projection_correction",
+      "u_disagreement"
+    ],
+    "removed_feature_group": "learned_likelihood_confidence",
+    "replacement_feature_group": "denoised_calibrated_matching",
+    "removed_column_count": 54
+  },
+  "reference_metrics": {
+    "exp148_lgb_mean_pooled_rmse": 8.50128118189582,
+    "exp148_public_lb": 7.96,
+    "exp190_lgb_mean_pooled_rmse": 8.503596159484825,
+    "exp190_lgb1_delta_vs_exp148_lgb1": -0.024346641095376,
+    "exp160_lgb_mean_pooled_rmse": 8.463718773783008,
+    "exp160_public_lb": 8.061
+  },
+  "decision": {
+    "submit_candidate": false,
+    "inference_candidate": false,
+    "reason": "Replacement-only DCM block loses too much signal after removing exp148 learned_likelihood_confidence; lgb_mean worsened by +0.908331 RMSE vs exp148 and +0.906016 vs exp190 add-only.",
+    "recommendation": "do_not_port_to_inference_or_submit"
+  },
+  "key_idea": "Replace exp148 learned_likelihood_confidence ll_* features with denoised calibrated GR matching confidence features; rejected because train-side CV worsened sharply.",
+  "updated_at": "2026-07-05"
+}

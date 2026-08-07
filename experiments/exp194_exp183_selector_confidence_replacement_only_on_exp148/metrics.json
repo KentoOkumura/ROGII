@@ -1,0 +1,130 @@
+{
+  "experiment": "exp194_exp183_selector_confidence_replacement_only_on_exp148",
+  "status": "train_completed_not_selected",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "selector_parent": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector",
+  "baseline": {
+    "experiment": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+    "model": "lgb_mean",
+    "cv_rmse": 8.50128118189582,
+    "public_lb": 7.96
+  },
+  "planned_train": {
+    "active_variants": [
+      "exp183_selector_confidence_replacement_only"
+    ],
+    "disabled_variants": [
+      "exp148_fulltrain_control"
+    ],
+    "feature_groups": [
+      "projection_correction",
+      "u_disagreement",
+      "exp183_selector_confidence"
+    ],
+    "excluded_feature_groups": [
+      "learned_likelihood_confidence"
+    ],
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "active_modes": [
+      "gpu_repro_guard_dp_threads8"
+    ],
+    "total_boosters": 15,
+    "control_retraining": false,
+    "gpu": true
+  },
+  "cv": {
+    "status": "train_completed",
+    "source": "kaggle_output_train_v1",
+    "variant": "exp183_selector_confidence_replacement_only",
+    "mode": "gpu_repro_guard_dp_threads8",
+    "rows": 3783989,
+    "wells": 773,
+    "features": 272,
+    "feature_groups": "projection_correction,u_disagreement,exp183_selector_confidence",
+    "best_model": "lgb_mean",
+    "best_pooled_rmse_tvt": 9.329893102424073,
+    "best_pooled_rmse_target": 9.329893279258004,
+    "prediction_sha256": "141bf1a21d5c074e61c6a8e162a46cd7d5b0220c28c7a84a0d022cb584724b62",
+    "delta_vs_exp148_lgb_mean": 0.828611920528253,
+    "delta_vs_exp188_addonly_lgb_mean": 0.7903193121757501,
+    "pooled_metrics": {
+      "lgb0": {
+        "rmse_tvt": 9.489350463466863,
+        "rmse_target": 9.48935044511123,
+        "prediction_sha256": "1d6bda977299954bdbb8f60c11b6513dc13eafb533f05df92af1940e3592854a"
+      },
+      "lgb1": {
+        "rmse_tvt": 9.338468846943693,
+        "rmse_target": 9.33846894710468,
+        "prediction_sha256": "e87c0c58467b60d0cd6887b2a280fb78f0835f392127bed757013d77644998cf"
+      },
+      "lgb2": {
+        "rmse_tvt": 9.306169088255615,
+        "rmse_target": 9.306168975446598,
+        "prediction_sha256": "b52d0383059cf37ba0ee1ad174ff5105facc1a2e4eb05137279f9720f441c2d9"
+      },
+      "lgb_mean": {
+        "rmse_tvt": 9.329893102424073,
+        "rmse_target": 9.329893279258004,
+        "prediction_sha256": "141bf1a21d5c074e61c6a8e162a46cd7d5b0220c28c7a84a0d022cb584724b62"
+      }
+    },
+    "feature_join_coverage": {
+      "base_rows_before_feature_join": 3783989,
+      "base_wells_before_feature_join": 773,
+      "learned_feature_rows": 3783989,
+      "learned_feature_wells": 773,
+      "joined_rows": 3783989,
+      "joined_wells": 773,
+      "dropped_base_rows": 0,
+      "dropped_base_wells": 0,
+      "learned_features_attached_to_frame": false,
+      "full_train_coverage_pass": true
+    },
+    "anchor_source": {
+      "anchor_wells": 773,
+      "anchor_t0_vs_last_known_abs_max": 0.0,
+      "anchor_t0_vs_last_known_abs_mean": 0.0,
+      "known_prefix_rows_min": 851,
+      "known_prefix_rows_max": 2392
+    },
+    "distance_bucket_rmse_tvt": {
+      "000_050": 1.1942155361175537,
+      "050_100": 1.4171826839447021,
+      "100_250": 2.1664223670959473,
+      "250_500": 3.4217069149017334,
+      "500_1000": 5.154569625854492,
+      "1000_plus": 10.246416091918945
+    },
+    "model_manifest_sha256": "8a3ea0d8986d1d30afeef28b52079bd46601258ad9cacac1182f049a5f049df8",
+    "feature_schema_sha256": "79acdacc4938e036f2d9b5f1096f9a42426ce6a0ce646c9641bc499fadf24f26"
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "submitted": false,
+  "kaggle_train": {
+    "version": 1,
+    "status": "COMPLETE",
+    "kernel": "kentookumura/exp194-exp183-selconf-repl-exp148-train",
+    "url": "https://www.kaggle.com/code/kentookumura/exp194-exp183-selconf-repl-exp148-train",
+    "pushed_at": "2026-07-04",
+    "completed_at": "2026-07-05",
+    "enable_gpu": true,
+    "enable_internet": false,
+    "output_dir": "experiments/exp194_exp183_selector_confidence_replacement_only_on_exp148/kaggle/output/train_v1",
+    "elapsed_seconds": 15226.192
+  },
+  "inference": {
+    "status": "not_selected",
+    "selected_variant": null,
+    "selected_model": null
+  },
+  "decision": {
+    "submit_candidate": false,
+    "reason": "replacement-only OOF worsened heavily versus exp148 and exp188 add-only; do not implement inference port or submit."
+  },
+  "notes": "Kaggle train v1 completed. Feature join coverage passed, but replacing learned_likelihood_confidence with exp183 selector confidence degraded pooled OOF."
+}

@@ -1,0 +1,199 @@
+experiment:
+  name: "exp035_public_sel15_pf_meta_inference_port"
+  description: Port the exp034 selected Ridge meta residual stack into the public sel15 inference flow.
+  route: pf_beam
+  status: implemented
+  created_at: "2026-06-07"
+  updated_at: "2026-06-07"
+
+lineage:
+  parent: exp034_public_sel15_pf_meta_stack
+  diff_summary: Fit the exp034 selected ridge_meta_residual_shrink0p75_clip60p0 on exp029 PF/Beam features generated under the pseudo-test condition plus an exp026-style pseudo-tail anchor, then apply it to unseen test wells in the exp027 public sel15 inference flow.
+
+source_notebook:
+  ref: needless090/lb8-781-rogii-sel15-spread3
+  title: "[LB8.781]rogii-sel15-spread3"
+  archived_path: docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_latest/needless090__lb8-781-rogii-sel15-spread3/lb8-781-rogii-sel15-spread3.ipynb
+  archived_metadata: docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_latest/needless090__lb8-781-rogii-sel15-spread3/kernel-metadata.json
+  known_public_lb_from_title: 8.781
+  replay_policy: preserve_public_visible_physical_branch_and_apply_selected_meta_stack_to_hidden_wells
+
+validation:
+  leakage_policy:
+    - Meta model training reads the exp029 pseudo-test artifact, where target_tvt is available only for train wells masked to look like test rows.
+    - The exp026-style anchor model is fit from train wells only and is used to create both sampled train well の途中以降を隠した疑似 test training anchors and 見えない test 用 anchor.
+    - Hidden/test meta features use MD, X, Y, Z, GR, typewell TVT/GR, exp026 anchor, selector/PF/Beam predictions, and known TVT_input prefix only.
+    - Hidden/test evaluation-zone TVT is never read.
+    - Visible public sample wells keep the original physical-model branch unchanged.
+    - The only ported meta candidate is exp034 selected ridge_meta_residual_shrink0p75_clip60p0.
+
+data:
+  feature_path: experiments/exp029_public_sel15_pf_oof_feature_generation/features/public_sel15_pf_oof_features.csv.gz
+
+model:
+  name: public_sel15_pf_meta_inference_port
+  target: target_tvt_minus_exp026_anchor
+  base_prediction: exp026_pred
+  primary_strategy: drift_model
+  drift_strategy: drift_model
+  feature_set: no_gr_signal
+  strategies:
+    - last_anchor
+    - recent_linear
+    - drift_model
+  params:
+    n_particles: 500
+    n_seeds: 128
+    selector_scales: [3.0, 5.0, 8.0, 12.0]
+    beam_configs: 14
+    candidate: ridge_meta_residual_shrink0p75_clip60p0
+    meta_estimator: ridge
+    ridge_alpha: 30.0
+    target_clip: 80.0
+    residual_shrink: 0.75
+    residual_clip: 60.0
+    max_train_rows: 550000
+    max_train_rows_per_bucket: 130000
+    random_seed: 42
+    apply_to: hidden_wells_only
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+    gr_slope_window: 200
+    max_abs_gr_slope: 2.0
+    gr_roll_short: 25
+    gr_roll_long: 100
+    max_abs_residual: 80.0
+  drift_model:
+    estimator: LGBMRegressor
+    params:
+      n_estimators: 800
+      learning_rate: 0.03
+      num_leaves: 31
+      min_child_samples: 80
+      subsample: 0.9
+      colsample_bytree: 0.9
+      reg_lambda: 0.1
+      n_jobs: 2
+  training:
+    max_train_rows_final: 450000
+    max_train_rows_per_well: 800
+  features:
+    - exp026_pred
+    - pf_pred
+    - beam_pred
+    - last_anchor_tvt
+    - pf090_hold010
+    - exp026_minus_pf
+    - abs_exp026_minus_pf
+    - exp026_minus_last_anchor
+    - pf_pred_minus_last_anchor
+    - pf_beam_diff
+    - abs_pf_beam_diff
+    - beam_spread
+    - beam_min
+    - beam_max
+    - pf_selected_scale_pred
+    - pf_scale_3
+    - pf_scale_5
+    - pf_scale_8
+    - pf_scale_12
+    - pf_seed_mean
+    - pf_seed_std
+    - pf_lik_best
+    - pf_lik_mean
+    - pf_lik_std
+    - pf_lik_gap_best_second
+    - pf_weight_entropy
+    - pf_weight_top
+    - pf_weight_best_second_gap
+    - pf_effective_seeds
+    - selector_code
+    - selector_scale
+    - selector_beam_weight
+    - selector_hold_weight
+    - selector_n_eval
+    - selector_z_span
+    - pseudo_cutoff_fraction
+    - cutoff_row
+    - row_idx
+    - prefix_length
+    - eval_step
+    - eval_fraction
+    - MD
+    - X
+    - Y
+    - Z
+    - GR
+    - gr_isna
+    - gr_prefix_availability
+    - gr_eval_availability
+    - pf_gr_sigma_mean
+    - pf_initial_rate_mean
+    - pf_mean_effective_particles
+    - pf_min_effective_particles
+    - pf_resample_count_mean
+
+postprocess:
+  selected_method: distance_bucket_shrink
+  output_file: submission.csv
+  submit_check_required: true
+  audit_files:
+    - public_sel15_exp026_anchor_submission.csv
+    - public_sel15_meta_corrected_diff.csv
+    - public_sel15_meta_corrected_summary.json
+  methods:
+    distance_bucket_shrink:
+      name: exp014_bucket_shrink_params
+      buckets:
+        - {name: rows_0_49, max_step: 49, alpha: 0.20}
+        - {name: rows_50_249, max_step: 249, alpha: 0.5917180252647632}
+        - {name: rows_250_999, max_step: 999, alpha: 1.15}
+        - {name: rows_1000_2499, max_step: 2499, alpha: 1.15}
+        - {name: rows_2500_plus, max_step: 1000000000, alpha: 1.0490770312511664}
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  chunk_rows: 500000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp029-sel15-pf-oof-train
+    expected_sources:
+      dataset_sources: []
+      kernel_sources:
+        - kentookumura/exp029-sel15-pf-oof-train
+      model_sources: []
+
+audit:
+  parent_exp034_original_fold_cv: 14.313668
+  parent_exp034_well_hash_cv: 14.172010
+  parent_public_lb_anchor: 8.781
+  training_variants:
+    selected_variant: pseudo_tail_3_cutoffs_distance_balanced
+    variants:
+      - name: pseudo_tail_3_cutoffs_distance_balanced
+        cutoffs_per_well: 3
+        cutoff_quantiles: [0.45, 0.65, 0.82]
+        distance_balanced: true
+        max_rows_per_pseudo_tail: 260
+        balanced_rows_per_bucket: 60000
+  pseudo_tail:
+    min_prefix_rows: 200
+    min_pseudo_eval_rows: 250
+    cutoff_strategy: quantile
+  distance_buckets:
+    - {name: rows_0_49, max_step: 49}
+    - {name: rows_50_249, max_step: 249}
+    - {name: rows_250_999, max_step: 999}
+    - {name: rows_1000_2499, max_step: 2499}
+    - {name: rows_2500_plus, max_step: 1000000000}
+
+notes:
+  - CV is not computed in this inference port; supporting OOF-like evidence comes from exp034.
+  - exp034 selected candidate improved exp026-row control, public PF selector, and pf090_hold010 on original-fold and well-hash holdout.
+  - exp031 and exp033 train-side improvements did not transfer to 見えない test well 評価の LB, so submit only after Kaggle output diff, range, changed wells, and submit-check are recorded.

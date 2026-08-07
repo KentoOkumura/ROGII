@@ -1,0 +1,23 @@
+contract_version: 2
+candidate_id: exp509_final_slot_1
+route: ensemble
+role: private_generalization_first_non_single_anchor
+inputs:
+  - dynamic_hidden_safe_exp413_saved_model_prediction
+  - exp497_stage_i_v4_saved_model_strict_public_core_prediction
+formula:
+  exp413_weight: 0.8628352666928758
+  strict_public_core_weight: 0.13716473330712417
+  dtype: float64
+weight_fit_allowed: false
+postprocess_after_blend: none
+conditional_routing: false
+scientific_promotion: false
+visible_historical_equivalence:
+  strict_public_core_max_abs: 0.002
+  exp413_max_abs: 0.02
+  prior_blend_max_abs: 0.02
+final_formula_parity_max_abs: 1.0e-12
+intermediate_submission_policy: isolate_parent_and_prior_blend_from_final_name
+technical_fail_policy: fail_closed
+submission_requires_separate_approval: true

@@ -1,0 +1,162 @@
+{
+  "experiment": "exp199_typewell_hard_window_pct40_base_surface_keep_exp145_ll_on_exp148",
+  "status": "completed_train_side_supported_no_submit",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "base_surface_parent": "exp196_typewell_late_range_hard_window_pct40_full_cache_replacement",
+  "learned_likelihood_parent": "exp145_learned_likelihood_rawtest_feature_generator_parity",
+  "active_variant": "pct40_base_surface_keep_exp145_ll_mixed_provenance",
+  "active_mode": "gpu_repro_guard_dp_threads8",
+  "decision": "train-side CV improved slightly, but this is mixed provenance and must not be submitted directly; clean learned-likelihood regeneration follow-up was removed from backlog due to low expected value versus implementation cost.",
+  "kaggle_train": {
+    "kernel": "kentookumura/exp199-pct40-base-keep-ll-train",
+    "kernel_version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp199-pct40-base-keep-ll-train",
+    "status": "KernelWorkerStatus.COMPLETE",
+    "id_no": 126002124,
+    "enable_gpu": true,
+    "machine_shape": "Gpu",
+    "enable_internet": false,
+    "kernel_sources": [
+      "kentookumura/exp145-train",
+      "kentookumura/exp196-typewell-hard-window-pct40-train"
+    ],
+    "output_archive_local": "/tmp/kaggle-output/exp199_typewell_hard_window_pct40_base_surface_keep_exp145_ll_on_exp148/train_v1"
+  },
+  "planned_train_cost": {
+    "active_variants": 1,
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "active_modes": 1,
+    "total_boosters": 15,
+    "control_retraining": false
+  },
+  "reference_metrics": {
+    "exp148_lgb0_pooled_rmse": 8.59978585937889,
+    "exp148_lgb1_pooled_rmse": 8.563971121229668,
+    "exp148_lgb2_pooled_rmse": 8.509819718794075,
+    "exp148_lgb_mean_pooled_rmse": 8.50128118189582,
+    "exp148_public_lb": 7.96,
+    "exp196_likpf_mean_rmse_vs_exp072": 11.576062,
+    "exp196_pf_ancc_rmse_vs_exp072": 14.020904,
+    "exp196_beam_mean_rmse_vs_exp072": 15.711042,
+    "exp196_pf_z_rmse_vs_exp072": 18.834133
+  },
+  "result": {
+    "status": "train_completed",
+    "source": "kaggle_output_train_v1",
+    "elapsed_seconds": 12568.078,
+    "rows": 3783989,
+    "wells": 773,
+    "features": 294,
+    "model_manifest_model_count": 15,
+    "feature_groups": "projection_correction,u_disagreement,learned_likelihood_confidence",
+    "best_model": "lgb_mean",
+    "best_pooled_rmse_tvt": 8.496204218351805,
+    "best_pooled_rmse_target": 8.496204224464895,
+    "delta_vs_exp148_lgb_mean": -0.005076963544015,
+    "prediction_sha256": "4e4ba51f815a8d64939c8b4acf4c91ef52af0666565b33a3b1de14f00fdf8585",
+    "model_manifest_sha256": "516fe14fabd30c34dab8c85da2166e9ce0d0bc9ce629537975b2a9194f62ad21",
+    "feature_schema_sha256": "da85f659658d3b50bb88aa863ceb89546dd99e361c669f79aa3dfe131259d944",
+    "summary_sha256": "9fd4d991255d64b38b9b1e969de929c6b24afac55139fe0412ea7e2266e54f63",
+    "feature_join_coverage": {
+      "base_rows_before_feature_join": 3783989,
+      "base_wells_before_feature_join": 773,
+      "learned_feature_rows": 3783989,
+      "learned_feature_wells": 773,
+      "joined_rows": 3783989,
+      "joined_wells": 773,
+      "dropped_base_rows": 0,
+      "dropped_base_wells": 0,
+      "full_train_coverage_pass": true
+    },
+    "input_sources": {
+      "exp196_base_surface_source_sha256": "7b1f51b1c4de16bbff59c9a0c1bd015fc3b6d6152c32a3a93b2f5a694a37576b",
+      "exp196_base_surface_decompressed_sha256": "106cdfb266f93a0e45f25b281d3238c1fab0a24a84dac4c23187044022b5127e",
+      "exp145_learned_likelihood_source_sha256": "298fdafd7376d0d551083cac26491901658001ed717b4caa7a9f8b32103886ff",
+      "exp145_learned_likelihood_decompressed_sha256": "e1c276d69e9355f6c03c18ac51a0883ee99ec6d80d040a5c62e5d55048bb7456",
+      "exp145_learned_likelihood_schema_sha256": "b1285777136304d65c927d28a1d0f57d68c0e45a9c4d8a0cbaaff054e4315cf8"
+    },
+    "pooled_metrics": {
+      "lgb0": {
+        "rmse_tvt": 8.551067730689416,
+        "rmse_target": 8.551067862732788,
+        "delta_vs_exp148_same_model": -0.048718128689474,
+        "prediction_sha256": "ee91943810b9617de0d070113703d48df8d5aa07ee6b94c397674be49ed28703"
+      },
+      "lgb1": {
+        "rmse_tvt": 8.533458031963196,
+        "rmse_target": 8.533458118413986,
+        "delta_vs_exp148_same_model": -0.030513089266472,
+        "prediction_sha256": "32c7d58d9a23617f2f6db1d58f9bddcf5c8a747db09abb29c0e5a010338bdad6"
+      },
+      "lgb2": {
+        "rmse_tvt": 8.570960612427667,
+        "rmse_target": 8.570960666745847,
+        "delta_vs_exp148_same_model": 0.061140893633592,
+        "prediction_sha256": "bdbf7c76685f0436ec2cca82989908241f4db670c67d7849e05ce0f1cce4b527"
+      },
+      "lgb_mean": {
+        "rmse_tvt": 8.496204218351805,
+        "rmse_target": 8.496204224464895,
+        "delta_vs_exp148_lgb_mean": -0.005076963544015,
+        "prediction_sha256": "4e4ba51f815a8d64939c8b4acf4c91ef52af0666565b33a3b1de14f00fdf8585"
+      }
+    },
+    "distance_bucket_rmse_tvt_lgb_mean": {
+      "000_050": 0.9731447696685791,
+      "050_100": 1.2837470769882202,
+      "100_250": 2.042684555053711,
+      "250_500": 3.290816307067871,
+      "500_1000": 4.804614067077637,
+      "1000_plus": 9.319353103637695
+    },
+    "worst_wells_lgb_mean": [
+      {
+        "well": "1b1eba53",
+        "rows": 4655,
+        "rmse_tvt": 48.148292541503906,
+        "error_abs_mean": 43.43703079223633
+      },
+      {
+        "well": "86454a6f",
+        "rows": 7964,
+        "rmse_tvt": 45.20775604248047,
+        "error_abs_mean": 40.12456130981445
+      },
+      {
+        "well": "fb03ae90",
+        "rows": 6431,
+        "rmse_tvt": 42.261505126953125,
+        "error_abs_mean": 39.808589935302734
+      }
+    ],
+    "top_feature_importance_mean": [
+      {
+        "feature": "frac",
+        "mean_importance": 3676.266666666667
+      },
+      {
+        "feature": "slp_b_d_50",
+        "mean_importance": 3628.5333333333333
+      },
+      {
+        "feature": "spatial_knn_dist",
+        "mean_importance": 3566.733333333333
+      },
+      {
+        "feature": "dx",
+        "mean_importance": 3358.2
+      },
+      {
+        "feature": "ll_learned_pred_abs_error_beam_mean",
+        "mean_importance": 2765.9333333333334
+      },
+      {
+        "feature": "ll_candidate_tvt_likpf_mean_minus_likpf_mean_tvt",
+        "mean_importance": 2551.9333333333334
+      }
+    ]
+  },
+  "next": "No direct inference or submission. The clean learned-likelihood regeneration follow-up was removed from the backlog by user decision on 2026-07-05."
+}

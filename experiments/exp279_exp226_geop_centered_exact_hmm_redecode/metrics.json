@@ -1,0 +1,56 @@
+{
+  "experiment": "exp279_exp226_geop_centered_exact_hmm_redecode",
+  "status": "completed_train_side_guard_failed_branch_closed",
+  "kernel_id_no": 127766774,
+  "kernel_version": 1,
+  "route": "pf_beam",
+  "metric": "rmse_tvt",
+  "cv": 10.0359869413341,
+  "public_lb": null,
+  "private_lb": null,
+  "rows": 3783989,
+  "wells": 773,
+  "elapsed_seconds": 18663.388503313065,
+  "active_hmm_variants": 1,
+  "hmm_well_runs": 773,
+  "lightgbm_configs": 0,
+  "trained_folds": 0,
+  "boosters": 0,
+  "parent_control_retraining": false,
+  "gpu": false,
+  "inference": false,
+  "submission": false,
+  "candidate_rmse": {
+    "exp226_pred": 9.427109596582222,
+    "exact_hmm": 11.938287234887435,
+    "exp263_fixed": 8.2383317454837,
+    "geop_hmm": 10.0359869413341
+  },
+  "promotion_guard": {
+    "passed": false,
+    "gain_ft": -1.7976551958503997,
+    "improved_folds": 0,
+    "baseline_parity_abs_diff_ft": 7.454836996600989e-7,
+    "geop_grid_coverage": 1.0,
+    "finite_coverage": 1.0,
+    "scope_delta_rmse_vs_exp263_fixed": {
+      "near": 0.19884588959926197,
+      "long_tail": 1.9839525268083307,
+      "hidden_like_spatial": 1.381883686230216,
+      "hidden_like_typewell_purged": 1.4516139029954616
+    },
+    "worst_well_delta_rmse_vs_exp263_fixed": 27.15848136682658
+  },
+  "persistent_offset_recovery_512_rate": {
+    "exp226_pred": 0.05891472868217054,
+    "exact_hmm": 0.10188087774294671,
+    "exp263_fixed": 0.09074410163339383,
+    "geop_hmm": 0.11845386533665836
+  },
+  "prediction_content_sha256": "335ba03183d5c18140d237a2d9adf7a39bb5fdb5dd00c56c507dcd59bc9e613c",
+  "decoder_manifest_sha256": "0a3af93a14376925e08340265fb42a6f694203ac5fc131087bb4675f22ecc021",
+  "oof_raw_gzip_sha256": "2f94f4977004d35c3ce443dffe241d3500a250042ece120b05114dc795732d6b",
+  "oof_decompressed_sha256": "9e29e70783eb13abff5ccbee23acbb274589457f233fdb266094a4db0a24d7c0",
+  "summary_sha256": "b4332b3c72da37447bfc45cf4b974a45b4571682a46346da671374fed6e9ae87",
+  "notes": "Kaggle CPU version 1 completed with complete row/well coverage and SHA parity. The geometry unary improved exact HMM but regressed exp263 in all five folds and all protected scopes; the branch is closed without rescue search, inference, or submission."
+}

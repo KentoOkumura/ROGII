@@ -1,0 +1,160 @@
+{
+  "experiment": "exp427_affine_ar1_whitened_gr_likelihood_readout",
+  "status": "stage_0_completed_gate_failed_closed",
+  "decision": "stage_0_failed_close_without_rescue",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "mrr_top3_factorial_main_effect_and_saved_gaussian_comparison",
+  "validation": {
+    "stage": "stage_0",
+    "strategy": "fixed_exp280_surface_affine_ar1_factorial_target_free_score_freeze_then_late_shift_rank",
+    "n_folds": 5,
+    "rows": 3783989,
+    "wells": 773,
+    "blocks": 7787,
+    "eligible_wells": 697,
+    "eligible_blocks": 5615
+  },
+  "execution_contract": {
+    "scientific_primary_scores": 1,
+    "diagnostic_ablation_scores": 2,
+    "matched_control_scores": 1,
+    "saved_control_scores": 1,
+    "reporting_folds": 5,
+    "hmm_well_runs": 0,
+    "pf_runs": 0,
+    "beam_runs": 0,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "gpu_runs": 0,
+    "parent_control_regeneration": 0
+  },
+  "kaggle_kernel": {
+    "id": "kentookumura/exp427-affine-ar1-whitened-gr-readout-train",
+    "version": 2,
+    "id_no": 128931242,
+    "enable_gpu": false,
+    "enable_internet": false,
+    "started_at_utc": "2026-07-28 13:12:38 UTC",
+    "completed_at_utc": "2026-07-28 14:25:45 UTC",
+    "runtime_seconds": 4358.768411159515,
+    "peak_rss_gb": 1.2640533447265625,
+    "package_sha256": {
+      "config": "7fa5b1d7b111785e2b0d3252c2edd42cd7779cfe73e1add6471e44d0860d8073",
+      "notebook": "ab071183b31f8e484fee1f36a7f62d3a667650f18fc4ce2ca017e741bb9afa03",
+      "metadata": "898b738a0e97ba2f1a35c8f16deddd486bd6ef0001ea41af4ae115755a919471"
+    }
+  },
+  "primary": "affine_ar1",
+  "overall": {
+    "identity_iid_matched": {
+      "mrr": 0.38800261972123057,
+      "top3_rate": 0.45040071237756013,
+      "top1_regret_rmse_p90": 38.5772589527377
+    },
+    "affine_iid": {
+      "mrr": 0.3856036330346214,
+      "top3_rate": 0.4375779162956367,
+      "top1_regret_rmse_p90": 39.80252014836725
+    },
+    "identity_ar1": {
+      "mrr": 0.38647655896097577,
+      "top3_rate": 0.45129118432769366,
+      "top1_regret_rmse_p90": 38.71280199817203
+    },
+    "affine_ar1": {
+      "mrr": 0.38609004481221754,
+      "top3_rate": 0.4391807658058771,
+      "top1_regret_rmse_p90": 39.852948783041676
+    },
+    "saved_exp280": {
+      "mrr": 0.3881463777144988,
+      "top3_rate": 0.44986642920748,
+      "top1_regret_rmse_p90": 38.49943101518852
+    },
+    "affine_ar1_shuffled": {
+      "mrr": 0.23587248212359524,
+      "top3_rate": 0.22315227070347285,
+      "top1_regret_rmse_p90": 75.3576682034419
+    }
+  },
+  "primary_deltas": {
+    "vs_identity_iid_matched": {
+      "mrr": -0.00191257490901303,
+      "top3_rate": -0.01121994657168305
+    },
+    "vs_saved_exp280": {
+      "mrr": -0.00205633290228126,
+      "top3_rate": -0.0106856634016029
+    },
+    "vs_affine_iid": {
+      "mrr": 0.00048641177759614,
+      "top3_rate": 0.0016028495102404
+    },
+    "vs_identity_ar1": {
+      "mrr": -0.00038651414875823,
+      "top3_rate": -0.01211041852181656
+    }
+  },
+  "improved_folds": {
+    "matched_mrr": 2,
+    "matched_top3": 1,
+    "saved_mrr": 2,
+    "saved_top3": 1,
+    "affine_iid_mrr": 2,
+    "identity_ar1_mrr": 2,
+    "shuffle_mrr": 5,
+    "shuffle_top3": 5
+  },
+  "technical": {
+    "passed": false,
+    "eligible_well_fraction": 0.9016817593790427,
+    "eligible_block_fraction": 0.7210735841787594,
+    "affine_eligible_well_fraction": 1.0,
+    "score_finite_coverage": 1.0,
+    "row_identity_coverage": 1.0,
+    "candidate_count": 13,
+    "maximum_abs_fold_rho": 0.754092147001378,
+    "outer_valid_rho_source_overlap": 0,
+    "dense_woodbury_max_abs_error": 1.4210854715202004e-14,
+    "truth_rows_before_freeze": 0,
+    "hidden_rows_before_freeze": 0,
+    "failed_checks": [
+      "eligible_block_fraction"
+    ]
+  },
+  "scientific": {
+    "passed": false,
+    "passed_checks": [
+      "real_above_shuffle_all_folds",
+      "hidden_like_spatial_mrr_vs_both_controls",
+      "hidden_like_typewell_purged_mrr_vs_both_controls"
+    ],
+    "failed_check_count": 17
+  },
+  "frozen_bundle": {
+    "scientific_contract_sha256": "75241052d0bdeba3dcbad6548167bb1193f4375b1035e8de625591d4fdb24773",
+    "target_free_bundle_sha256": "3cae530e8c2629eea16468383ae06edc3e971d1ed77fb3a4d8d71d4043ba8a4d",
+    "target_free_scores_content_sha256": "62f8d44475666552ad046e3c093f10f66ed7f62f00376266d117aebc93d87050",
+    "eligibility_content_sha256": "6bc27561921873603e45293ebaff82a242e7cbbb9e20a67c6bc5cca7ed5cfa65",
+    "prefix_affine_posterior_content_sha256": "6f751896ac059877ad7455cd898aa8572e16e346672b448e545a17e4ebaeb855",
+    "fold_ar1_prior_content_sha256": "e9f042b05cc12240b2fd08cd02cf9a5f54b1c5d10ab53779f51d1a7c2cf77aeb",
+    "negative_control_content_sha256": "731038de7a5756f68fe5583209546a5bd7c1904425416e96d269b2826171e64d",
+    "saved_control_alignment_content_sha256": "5b316bb202ebb5a0158e1ce92879a3bbf92abd57e3779f47f31fc45d77f30a91"
+  },
+  "local_result_artifacts": {
+    "factorial_metrics": "artifacts/exp427_affine_ar1_whitened_gr_likelihood_readout_factorial_metrics.csv",
+    "fold_metrics": "artifacts/exp427_affine_ar1_whitened_gr_likelihood_readout_fold_metrics.csv",
+    "scope_metrics": "artifacts/exp427_affine_ar1_whitened_gr_likelihood_readout_scope_metrics.csv",
+    "fold_ar1_prior": "artifacts/exp427_affine_ar1_whitened_gr_likelihood_readout_fold_ar1_prior.csv",
+    "gate": "artifacts/exp427_affine_ar1_whitened_gr_likelihood_readout_gate.json",
+    "summary": "artifacts/exp427_affine_ar1_whitened_gr_likelihood_readout_summary.json"
+  },
+  "inference_enabled": false,
+  "prediction_created": false,
+  "submission_created": false,
+  "notes": "Version 1 stopped on an empty-score schema bug. Version 2 completed the unchanged scientific contract. Both technical and scientific gates failed, so the branch is closed without rerun or rescue."
+}

@@ -1,0 +1,26 @@
+version: 1
+candidate_source: exp263_last_anchor_better_candidate_confidence_pair_cache
+primitives:
+  - id: exp226_k16
+    family: geometry
+  - id: selfgr_hmm_a070
+    family: self_gr_hmm
+  - id: likpf_mean
+    family: likelihood_pf
+  - id: exact_hmm
+    family: exact_hmm
+  - id: pf_ancc
+    family: particle_filter
+  - id: beam_mean
+    family: beam
+pair_policy:
+  mode: all_unordered_pairs
+  expected_count: 15
+feature_policy:
+  candidate_absolute_value: forbidden
+  candidate_pair_difference: allowed
+  raw_md_or_block_proxy: forbidden
+  target_or_error_derived: forbidden
+evaluation_policy:
+  exp264_candidate_score_oof: post_assignment_only
+  best_candidate_domain: primitives_only

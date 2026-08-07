@@ -1,0 +1,171 @@
+experiment:
+  name: exp385_gr_typewell_likelihood_on_vector_drift_paths
+  description: >-
+    Reweight exp384 base/component physical paths with target horizontal-GR
+    versus typewell-GR likelihood using deterministic exact forward-backward.
+  route: pf_beam
+  status: design_closed_by_exp383_stage0_resource_fail
+  created_at: "2026-07-24"
+
+lineage:
+  parent: exp384_fault_aware_piecewise_stratigraphic_vector_field
+  prerequisites:
+    - exp383_stage0_and_stage1_pass
+    - exp384_stage0_and_stage1_pass
+  diff_summary: >-
+    Keep every physical path fixed and add only typewell GR projection,
+    fixed Student-t window emissions, persistent state dynamics, and
+    posterior path averaging with exact parent fallback under missing GR.
+
+validation:
+  strategy: exp384_same_outer_5fold_well_split
+  metric: rmse
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  control:
+    experiment: exp384_fault_aware_piecewise_stratigraphic_vector_field
+    regenerate: false
+    requires_saved_sha: true
+  leakage_policy:
+    - Suffix true TVT and target formation columns are unavailable to likelihood and state selection.
+    - Known-prefix TVT_input is allowed for sigma and rolling-origin backtest only.
+    - Visible sample test never selects emission or transition settings.
+
+data:
+  horizontal_columns: [MD, X, Y, Z, GR, TVT_input]
+  typewell_columns: [TVT, GR, Geology]
+  target_suffix_truth_reads_before_freeze: 0
+  target_formation_reads: 0
+
+candidate_bank:
+  source: exp384_saved_base_and_component_paths
+  order: base_then_component_id_ascending
+  base_count: 1
+  max_component_count: 8
+  max_candidate_count: 9
+  missing_component_handling: availability_mask
+  candidate_value_modification: forbidden
+
+likelihood:
+  typewell_interpolation: stable_linear_with_duplicate_tvt_gr_median
+  typewell_extrapolation: missing
+  sigma:
+    source: known_prefix_parent_path_gr_residual_mad
+    scale: 1.4826
+    clip_gr_api: [5, 60]
+    min_prefix_pairs: 64
+    fallback: outer_train_loo_sigma_median
+  window:
+    length_rows: 256
+    stride_rows: 64
+    min_valid_pairs: 64
+  emission:
+    distribution: student_t
+    df: 4
+    aggregate: valid_count_mean_loglik
+    loglik_clip: [-25, 0]
+    insufficient_window: neutral
+  control:
+    name: circular_shift_512
+    direction: positive
+
+decoder:
+  family: exact_forward_backward
+  prior: exp384_window_mean_domain_posterior
+  transition:
+    stay_probability: 0.98
+    refresh_probability: 0.02
+    formula: "0.98 * identity + 0.02 * current_window_prior"
+  unavailable_state_probability: 0.0
+  row_projection: overlap_add_window_posterior
+  primary_output: posterior_weighted_candidate_tvt
+  hard_top1: forbidden
+  no_eligible_window_fallback: exact_exp384
+
+model:
+  name: deterministic_gr_typewell_exact_path_posterior
+  fitted_model: false
+
+gates:
+  stage0_target_free:
+    candidate_count_min: 1
+    candidate_count_max: 9
+    base_availability_min: 1.0
+    eligible_gr_window_fraction_min: 0.25
+    eligible_well_fraction_min: 0.50
+    posterior_normalization_max_abs_error: 1.0e-12
+    ineligible_parent_parity_max_abs_ft: 1.0e-8
+    known_prefix_heldout_rows: 256
+    known_prefix_min_rows: 384
+    known_prefix_rmse_gain_vs_exp384_ft_min: 0.10
+    known_prefix_positive_folds_min: 4
+    real_minus_circular_mrr_gain_min: 0.01
+    real_entropy_better_folds_min: 4
+    target_suffix_truth_reads_max: 0
+    target_formation_reads_max: 0
+    resource_audit_wells: 16
+    projected_runtime_seconds_max: 30600
+    projected_peak_rss_gb_max: 25
+  stage1_direct:
+    pooled_rmse_gain_vs_exp384_ft_min: 0.50
+    positive_folds_min: 4
+    long_1000_plus_gain_ft_min: 0.50
+    hidden_like_spatial_gain_ft_min: 0.25
+    hidden_like_typewell_purged_gain_ft_min: 0.25
+    gr_missing_bucket_regression_max_ft: 0.0
+    ineligible_parent_parity_max_abs_ft: 1.0e-8
+    by_well_tail: report_only_for_initial_identifiability
+
+runtime:
+  accelerator: cpu
+  internet: false
+  use_amp: false
+  scientific_candidates: 1
+  reporting_folds: 5
+  fitted_models: 0
+  stage0_full_hmm_runs: 0
+  stage1_exact_decoder_well_runs: 773
+  pf_runs: 0
+  beam_runs: 0
+  lightgbm_boosters: 0
+  replay_parent_control: false
+  stage1_requires_separate_user_approval: true
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_well_candidate_window_state_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_and_stable_well_row_state_sort
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Pin exp384 candidate paths by logical content SHA.
+    - Record typewell index, real/circular scores, transition, posterior, and prediction SHA.
+    - Do not call the first successful run a deterministic anchor.
+
+dependencies:
+  requires_pass:
+    - exp383_all_tvt_stratigraphic_vector_drift_field
+    - exp384_fault_aware_piecewise_stratigraphic_vector_field
+
+closure:
+  confirmed: true
+  confirmed_at: "2026-07-25"
+  source: user_message_close_exp383_and_downstream
+  parent_decision: exp383_stage0_resource_fail_closed
+  allow_implementation: false
+
+notes:
+  - Design closed without implementation because exp383 failed its Stage 0 resource gate.
+  - Train/inference notebooks remain unimplemented template scaffolds.
+  - No Kaggle run, inference, or submission is authorized.
+  - The user explicitly confirmed closure of exp383 and downstream experiments.

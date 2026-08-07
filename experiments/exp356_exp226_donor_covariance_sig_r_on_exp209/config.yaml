@@ -1,0 +1,159 @@
+experiment:
+  name: exp356_exp226_donor_covariance_sig_r_on_exp209
+  description: >-
+    Independent two-stage audit of an exp226 donor-covariance K16 sig_r
+    schedule as the only transition-variance change on trusted exp209.
+  route: pf_beam
+  status: blocked_donor_support_non_degeneracy_evidence_required
+  created_at: "2026-07-23"
+  updated_at: "2026-07-24"
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260723-exp356-exp226-donor-covariance-sig-r-on-exp209
+  history: exp324_exp226_donor_covariance_segment_sig_r
+  references:
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp338_exp209_well_adaptive_transition_noise
+    - exp362_segment_local_donor_slope_exact_hmm
+  diff_summary: >-
+    Removes exp323 and the failed exp307--309 chain. It keeps the exp209 constant
+    rate mean and every observation, position, grid, momentum, prior, and output
+    setting fixed and changes only sig_r from 0.002 to a K16 donor-covariance schedule.
+
+implementation:
+  enabled: false
+  scope: design_only
+  train_notebook_state: placeholder_only
+  inference_notebook_state: placeholder_only
+  compact_selfcontained_source_created: false
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: exp209_grouped_two_stage_exp226_donor_covariance_sig_r_audit
+  metric: transition_nll_calibration_then_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  expected_folds: [0, 1, 2, 3, 4]
+  score_rows: unknown_suffix_truth_only_after_sig_r_schedule_freeze
+  truth_attachment: after_donor_support_scale_clip_fallback_and_content_sha_freeze
+  leakage_policy:
+    - Validation wells and same-fold validation wells are excluded from all donor statistics.
+    - Donor identity, weight, projected rate, support, scale, clip, fallback, and schedule are frozen before suffix truth is read.
+    - Suffix TVT, error, abs_error, oracle choice, and well-id rules are forbidden from schedule construction.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  exp226_oof_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  exp209_control:
+    expected_hmm_cache_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    direct_rmse: 11.938287417
+
+model:
+  name: exp226_donor_covariance_sig_r_on_exp209
+  estimator: none
+  segment_scale:
+    k_segments: 16
+    donor_selection: exp226_local_linear_k50_bandwidth500_outer_fold_safe
+    donor_quantity: projected_delta_tvt_plus_delta_z_div_delta_md
+    center: exp226_local_linear_projected_rate
+    robust_scale: 1.4826_times_weighted_mad_about_center
+    effective_sample_size: squared_sum_weights_div_sum_squared_weights
+    minimum_effective_donors: 10
+    shrinkage_alpha: n_eff_div_n_eff_plus_50
+    shrinkage_space: log
+    parent_scale: 0.002
+    clip: [0.001, 0.004]
+    row_schedule: piecewise_constant_inside_k16_segment
+    fallback: 0.002
+  stage_0:
+    standardized_residual: actual_rate_minus_exp209_constant_rate_mean_div_sig_r_t_sqrt_delta_md
+    compare_against: exp209_constant_sig_r_0p002
+    pass_requires_all:
+      minimum_transition_nll_gain_fraction: 0.01
+      minimum_improved_folds: 4
+      require_68_and_95_coverage_error_non_regression: true
+      require_1000_plus_nll_non_regression: true
+      require_hidden_like_nll_non_regression: true
+      maximum_fallback_fraction: 0.50
+      maximum_total_clip_fraction: 0.50
+  stage_1:
+    enabled_condition: stage_0_all_gates_pass_and_separate_user_approval
+    active_variants: [k16_donor_covariance_sig_r]
+    hmm_well_runs: 773
+    pass_requires_all:
+      minimum_rmse_gain_vs_exp209_ft: 0.05
+      minimum_improved_folds: 4
+      require_1000_plus_non_regression: true
+      require_hidden_like_spatial_non_regression: true
+      require_hidden_like_typewell_purged_non_regression: true
+      require_by_well_p95_non_regression: true
+      maximum_worst_well_regression_ft: 0.25
+  fixed_parent:
+    rate_prior_mean: exact_exp209_constant
+    observation_model: exact_exp209
+    sig_p: 0.02
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    momentum: 0.998
+    prior: exact_exp209
+    output: posterior_mean
+  forbidden:
+    - exp323_or_exp355_rate_prior_schedule
+    - exp307_or_exp308_or_exp309_or_exp338_inputs
+    - changing_rate_prior_mean
+    - changing_momentum_or_sigma_gr
+    - suffix_truth_variance_fit
+    - donor_distance_or_clip_grid
+    - prediction_blend
+
+execution_contract:
+  stage_0: {diagnostic_variants: 1, reporting_folds: 5, hmm_well_runs: 0, model_configs: 0, trained_folds: 0, boosters: 0}
+  stage_1_if_pass: {scientific_variants: 1, hmm_well_runs: 773, model_configs: 0, trained_folds: 0, boosters: 0}
+  parent_control_retraining: false
+
+execution:
+  implementation_approved: false
+  kaggle_push_approved: false
+  active_stage: blocked_donor_support_non_degeneracy_evidence_required
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  numba_num_threads: 2
+  kaggle: {enable_gpu: false, enable_internet: false, runtime_limit_seconds: 30600, train_run_on_push: false}
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_outer_fold_well_segment_donor_and_row_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads_and_stable_reduction_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: true, submission_sha: false}
+
+inference: {enabled: false, create_submission: false}
+
+notes:
+  - Design frozen on 2026-07-23; implementation and execution are not approved.
+  - This is independent of exp355 and keeps the exp209 rate mean constant.
+  - Exp338 is a negative identifiability reference, not an input dependency.
+  - Exp362 post-run audit found n_eff >= 10 on 0 of 12,368 K16 target segments with k50/bandwidth500 and 772 nearest-distance failures.
+  - Implementation is blocked until independent truth-free evidence shows non-degenerate donor support without an OOF-tuned threshold grid.

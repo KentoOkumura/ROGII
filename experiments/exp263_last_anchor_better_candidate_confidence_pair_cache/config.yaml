@@ -1,0 +1,372 @@
+experiment:
+  name: exp263_last_anchor_better_candidate_confidence_pair_cache
+  description: >-
+    last_anchorより良いknown 33 pathをcatalog固定し、core 12 primitiveの値・target-free
+    confidence・有望8 pair・3 named combinationを共通candidate-major cache化する。
+  route: pf_beam
+  status: stage1_namespaced_confidence_kaggle_v3_completed
+  created_at: "2026-07-16"
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  references:
+    - exp103_pf_z_xy_likpf_ensemble_parity
+    - exp104_pf_z_seedbag_scale_cache
+    - exp192_typewell_late_range_hard_window_pct50_full_cache_replacement
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp223_joint_typewell_self_gr_hmm_likelihood_probe
+    - exp225_state_known_tvt_self_gr_hmm_emission
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission
+    - exp232_adaptive_robust_likelihood_pf
+    - exp233_adaptive_outlier_mixture_likelihood_pf
+    - exp243_pf_seed_medoids
+  diff_summary: >-
+    HMM+LGB exp221/234/240とselector/TVT model outputsを除外する。known 33本は
+    reference catalogに固定するが、row cacheはfamily圧縮したcore 12本だけとする。
+    378 pairを複製せず8 pairとw500 alias + 3 named formulaをvirtual loaderで再構成する。
+
+validation:
+  strategy: deterministic_group_balance_by_well
+  n_folds: 5
+  seed: 42
+  metric: rmse
+  group_column: well
+  anchor_candidate: last_anchor
+  anchor_rmse: 15.909866082
+  eligibility_basis: outer_train_only_excludes_outer_valid_fold
+  distance_buckets: [0, 50, 100, 250, 500, 1000]
+
+data:
+  search_roots:
+    - .
+    - /tmp
+  hidden_like_assignments: >-
+    experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  inputs:
+    exp072_oof:
+      paths:
+        - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v2_stream/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      patterns:
+        - "**/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz"
+    exp103_oof:
+      paths:
+        - /tmp/candidate_blend_source/exp103/artifacts/exp103_pf_z_xy_likpf_ensemble_parity_candidate_wide.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp103-pf-z-xy-likpf-ensemble-train/artifacts/exp103_pf_z_xy_likpf_ensemble_parity_candidate_wide.csv.gz
+      patterns:
+        - "**/exp103_pf_z_xy_likpf_ensemble_parity_candidate_wide.csv.gz"
+    exp192_oof:
+      paths:
+        - /tmp/kaggle-output/exp192_typewell_late_range_hard_window_pct50_full_cache_replacement/train_v1_stream/artifacts/exp192_typewell_late_range_hard_window_pct50_full_cache_replacement_full_replay_cache_pixiux_likpf_hard_window_pct50_public_replay_train_features.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp192-typewell-hard-window-pct50-train/artifacts/exp192_typewell_late_range_hard_window_pct50_full_cache_replacement_full_replay_cache_pixiux_likpf_hard_window_pct50_public_replay_train_features.csv.gz
+      patterns:
+        - "**/exp192_typewell_late_range_hard_window_pct50_full_cache_replacement_full_replay_cache_pixiux_likpf_hard_window_pct50_public_replay_train_features.csv.gz"
+    exp209_oof:
+      paths:
+        - /tmp/exp209_blend_audit/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+      patterns:
+        - "**/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz"
+    exp223_oof:
+      paths:
+        - /tmp/kaggle-output/exp223-selfgr-hmm-train-v1/artifacts/exp223_joint_typewell_self_gr_hmm_likelihood_probe_joint_typewell_self_gr_hmm_likelihood_probe_train_features.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp223-selfgr-hmm-train/artifacts/exp223_joint_typewell_self_gr_hmm_likelihood_probe_joint_typewell_self_gr_hmm_likelihood_probe_train_features.csv.gz
+      patterns:
+        - "**/exp223_joint_typewell_self_gr_hmm_likelihood_probe_joint_typewell_self_gr_hmm_likelihood_probe_train_features.csv.gz"
+    exp225_oof:
+      paths:
+        - /tmp/kaggle-output/exp225-state-known-tvt-self-gr-hmm-emission-train-v1/artifacts/exp225_state_known_tvt_self_gr_hmm_emission_state_known_tvt_curve_boost_only_a070_c100_train_features.csv.gz
+        - /tmp/kaggle-output/exp225-state-known-tvt-self-gr-hmm-emission-train-v1/artifacts/exp225_state_known_tvt_self_gr_hmm_emission_state_known_tvt_self_gr_hmm_emission_train_features.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp225-state-known-tvt-self-gr-hmm-emission-train/artifacts/exp225_state_known_tvt_self_gr_hmm_emission_state_known_tvt_self_gr_hmm_emission_train_features.csv.gz
+      patterns:
+        - "**/exp225_state_known_tvt_self_gr_hmm_emission_*train_features.csv.gz"
+    exp226_oof:
+      paths:
+        - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      patterns:
+        - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+    exp231_oof:
+      paths:
+        - /tmp/exp231_v3_output/artifacts/exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission_same_typewell_horizontal_gr_atlas_gated_hmm_emission_train_features.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp231-same-typewell-gr-atlas-hmm-train/artifacts/exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission_same_typewell_horizontal_gr_atlas_gated_hmm_emission_train_features.csv.gz
+      patterns:
+        - "**/exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission_*train_features.csv.gz"
+    exp243_oof:
+      paths:
+        - /kaggle/input/notebooks/kentookumura/exp243-pf-seed-medoids-shard0/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp243-pf-seed-medoids-shard1-v1/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp243-pf-seed-medoids-shard2-v1/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp243-pf-seed-medoids-shard3-v1/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz
+      patterns:
+        - "/tmp/exp243_outputs/shard*/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz"
+        - "/kaggle/input/exp243-pf-seed-medoids-shards/shard*/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz"
+
+cache:
+  schema_version: 1.0.0
+  expected_rows: 3783989
+  expected_wells: 773
+  chunk_rows: 100000
+  rolling_windows: [32, 128, 512]
+  partitioning: candidate_major_outer_fold
+  candidate_dtype: float32
+  parquet_compression: zstd
+  parity_sample_rows: 64
+  materialize_pair_tensor: false
+  materialize_named_combination_tensor: false
+
+candidate_contract:
+  reference_count: 33
+  core_count: 12
+  rawtest_core_count: 6
+  pair_count: 8
+  rawtest_pair_count: 5
+  named_triple_count: 3
+  w500_alias_count: 1
+  excluded_candidates:
+    - hmm_lgb_exp148
+    - hmm_exp218_residual_scale
+    - hmm_exp218_shrink_a050
+  forbidden_row_sources:
+    - target
+    - true_tvt
+    - absolute_error
+    - oracle_label
+    - selector_output
+    - tvt_model_output
+    - outer_valid_target
+
+stage0:
+  enabled: true
+  output_contract:
+    - candidate_catalog.json
+    - candidate_values/<candidate_id>/fold=<f>/part-000.parquet
+    - candidate_confidence/<candidate_id>/fold=<f>/part-000.parquet
+    - outer_fold_eligibility.csv
+    - pair_shortlist.csv
+    - pair_readout.csv
+    - named_combinations.json
+    - cache_manifest.json
+    - small_parity_sample.parquet
+
+stage1:
+  enabled: true
+  mode: hidden_safe_raw_test_regeneration_and_fixed_submission
+  create_submission: true
+  selected_submission_candidate: exp226_w500_50_50
+  selected_submission_oof_rmse: 8.238331
+  submission:
+    kernel: kentookumura/exp263-last-anchor-pair-cache-inference
+    kernel_version: 2
+    ref: 54761954
+    status: complete
+    public_lb: 7.800
+    private_lb: null
+    submission_sha256: 6316695197ee67c9a2aaa23754e6f2a5cf30dd0ec4ef1a018921f9ea640a1dbc
+  enable_after: stage0_manifest_sha_and_all_rawtest_generators_resolved
+  output: current_test_formula_parity.parquet
+  confidence_output:
+    encoding: confidence__<candidate_id>__<field>
+    formula_policy: keep_primitive_parent_namespaced_do_not_average_cross_family
+    missing_policy: fail_closed_for_required_native_fields
+    required_fields_by_primitive:
+      exp226_k16: [confidence_valid, geometry_gr_delta]
+      selfgr_hmm_a070:
+        - confidence_valid
+        - sigma_tvt
+        - source_loglik
+        - loglik_per_row
+        - candidate_finite_source
+        - selfgr_quality
+        - selfgr_peak_tvt
+        - score_margin
+        - selfgr_typewell_agreement
+        - selfgr_valid
+      likpf_mean: [confidence_valid]
+      exact_hmm: [confidence_valid, sigma_tvt, source_loglik, loglik_per_row]
+      pf_ancc: [confidence_valid, sigma_tvt]
+      beam_mean: [confidence_valid, beam_family_std]
+  confidence_rerun:
+    kernel: kentookumura/exp263-last-anchor-pair-cache-inference
+    kernel_version: 3
+    status: complete
+    rows: 14151
+    wells: 3
+    runtime_seconds: 354.341
+    namespaced_confidence_column_count: 21
+    formula_parity_file_sha256: bda0502894d6a20cc3c332d729cf120b17ceed2e1773093bd7140c6df71e360c
+    prediction_content_sha256: a418876d319301702cc6c3e28b0d30e95518510ef9c83823197c4ecff2e3ce4b
+    submission_sha256: 6316695197ee67c9a2aaa23754e6f2a5cf30dd0ec4ef1a018921f9ea640a1dbc
+    v2_value_columns_exact: true
+    submit_check: passed
+    competition_submit: false
+  stage0_manifest:
+    patterns: ["**/cache_manifest.json"]
+    expected_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+  current_test_reference:
+    enabled: true
+    patterns: ["**/*exp237*rawtest_candidate_features.csv.gz"]
+    max_abs_tolerance: 0.001
+    hidden_id_mismatch_policy: skip_reference_only
+  raw_test_generation:
+    pf_replay:
+      source_filename: public_notebook_replay_audit.py
+      source_path_token: exp073-full-replay-repro-guard-infer
+      n_jobs: 8
+      pf_seeds: 128
+      pf_particles: 500
+      fast: false
+      use_gpu: cpu
+      seed_policy: stable_sha256_per_well
+    exact_hmm:
+      source_filename: exact_hmm_smoother.py
+      source_path_token: exp209-joint-exact-parity-train
+      params:
+        step: 0.35
+        n_rates: 41
+        rate_span: 0.10
+        sig_r: 0.002
+        sig_p: 0.02
+        df: 4.0
+        emission: gauss
+        lam: 1.0
+        sigma_mode: std
+        start_sig: 0.75
+        r0_sig: 0.01
+        band_pad: 100.0
+        mom: 0.998
+        rate_center: zero
+    selfgr_hmm_a070:
+      source_filename: exact_hmm_smoother.py
+      source_path_token: exp223-selfgr-hmm-train
+      alpha: 0.07
+      clip: 1.0
+      mode: boost_only
+      surface:
+        enabled: true
+        alpha_grid: [0.07]
+        clip_grid: [1.0]
+        modes: [boost_only]
+        max_variants: 1
+        window_radius_rows: 12
+        descriptor_offsets: [-12, -8, -4, 0, 4, 8, 12]
+        top_k: 5
+        prefix_anchor_stride: 3
+        max_prefix_anchors: 128
+        keep_last_prefix_anchors: 32
+        min_prefix_anchors: 12
+        max_window_missing_rate: 0.35
+        gaussian_sigma_tvt: 12.0
+        descriptor_distance_temperature: 1.5
+        typewell_agreement_sigma_tvt: 18.0
+        surface_quadratic_clip: 60.0
+        surface_chunk_size: 256
+    exp226_k16:
+      source_filename: connortynan_k16_reproduction.py
+      source_path_token: exp226-k16-kappa-repro-inference
+      source_config_filename: config.yaml
+  primitive_inputs:
+    exp226_k16:
+      source_key: exp237_current_test_reference
+      patterns: ["**/*exp237*rawtest_candidate_features.csv.gz"]
+      well_column: well
+      id_column: id
+      value_column: exp226_v6_k16_geometry_gr_u_projection
+    selfgr_hmm_a070:
+      source_key: exp237_current_test_reference
+      patterns: ["**/*exp237*rawtest_candidate_features.csv.gz"]
+      well_column: well
+      id_column: id
+      value_column: hmm_selfgr_boost_only_a070_c100_mean_tvt
+    likpf_mean:
+      source_key: exp237_current_test_reference
+      patterns: ["**/*exp237*rawtest_candidate_features.csv.gz"]
+      well_column: well
+      id_column: id
+      value_column: likpf_mean
+    exact_hmm:
+      source_key: exp237_current_test_reference
+      patterns: ["**/*exp237*rawtest_candidate_features.csv.gz"]
+      well_column: well
+      id_column: id
+      value_column: hmm_exact_mean_tvt
+    pf_ancc:
+      source_key: exp237_current_test_reference
+      patterns: ["**/*exp237*rawtest_candidate_features.csv.gz"]
+      well_column: well
+      id_column: id
+      value_column: pf_ancc
+    beam_mean:
+      source_key: exp237_current_test_reference
+      patterns: ["**/*exp237*rawtest_candidate_features.csv.gz"]
+      well_column: well
+      id_column: id
+      value_column: beam_mean
+
+model:
+  name: deterministic_candidate_cache_transform
+  active_variants: []
+  lightgbm_config_count: 0
+  fold_training_count: 0
+  booster_count: 0
+  parent_control_retraining: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: null
+  kaggle:
+    enable_gpu: false
+    internet: false
+    accelerator: none
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp103-pf-z-xy-likpf-ensemble-train
+      - kentookumura/exp192-typewell-hard-window-pct50-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp225-state-known-tvt-self-gr-hmm-emission-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp231-same-typewell-gr-atlas-hmm-train
+      - kentookumura/exp243-pf-seed-medoids-shard0
+      - kentookumura/exp243-pf-seed-medoids-shard1-v1
+      - kentookumura/exp243-pf-seed-medoids-shard2-v1
+      - kentookumura/exp243-pf-seed-medoids-shard3-v1
+    inference_kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp073-full-replay-repro-guard-infer
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp226-k16-kappa-repro-inference
+      - kentookumura/exp237-hmm-exp226-candidate-selector-exp183-infer
+    bootstrap_files:
+      - cache_schema.json
+      - loader_contract.md
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: true
+  seed_policy: stage0_no_rng_stage1_exp073_stable_sha256_per_well
+  stochastic_components: [stage1_pf_beam_likelihood_pf_raw_test_regeneration]
+  parallel_rng_policy: stable_per_well_seed_independent_of_worker_schedule
+  feature_sha_policy: decompressed_content_sha_for_gzip_and_logical_parquet_content_sha
+  record_decompressed_source_sha: true
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+  not_applicable:
+    model_sha: no_training
+
+notes:
+  - Stage 0 transformは乱数を使用しない。Stage 1 PF/Beamはexp073 stable per-well seedを使う。
+  - Stage 1 submissionは固定exp226_w500_50_50だけをsample submission順で生成する。
+  - confidenceは保存sourceに存在するtarget-free列だけを使用し、推測値を作らない。
+  - pair/tripleのtarget-derived監査値はmanifest/readout専用でrow featureへ入れない。
+  - exp104 seedbag 5本はsuperseded referenceであり、pair sweepもrow cache複製も行わない。
+  - K8 m1-m6はexternal diagnostic bankのままとしcore cacheへ複製しない。

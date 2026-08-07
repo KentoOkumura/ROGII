@@ -1,0 +1,147 @@
+experiment:
+  name: exp311_typewell_group_prefix_suffix_gr_calibration_readout
+  description: Outer-train TVT truthだけで同一Type Well群のprefixからsuffixへのGR校正転送性を測る0-booster readout
+  route: pf_beam
+  status: kaggle_cpu_v1_completed_gate_failed_branch_closed
+  created_at: "2026-07-21"
+
+lineage:
+  parent: exp211_affine_calibrated_gr_observation_pfbeam
+  references:
+    - exp065_typewell_supertype_cluster_cv_audit
+    - exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit
+    - exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission
+  diff_summary: 直接補正やdecodeは行わず、native-overlap Type Well群ごとのrobust affine/noise統計が未知well suffixへ転送できるかだけをouter-fold安全に監査する。
+
+implementation:
+  enabled: true
+  scope: train_side_zero_booster_diagnostic
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: sha256_well_grouped_5fold
+  n_folds: 5
+  group_column: well_id
+  score_rows: evaluation_suffix
+  fit_scope: outer_train_wells_only
+  row_weighting: equal_well_weight
+  truth_join_policy: fit_tables_before_outer_valid_truth_join
+  stress_surfaces:
+    - same_typewell_heldout_well
+    - leave_one_typewell_group_out
+    - spatial_typewell_purged
+  primary_surface: same_typewell_heldout_well
+  minimum_scored_suffix_rows_per_well: 32
+  minimum_scored_wells: 1
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  typewell_group_assignments:
+    filename: common_typewell_cluster_assignments.csv
+    candidates:
+      - experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/common_typewell_cluster_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp065-typewell-supertype-cluster-cv-audit-train/artifacts/common_typewell_cluster_assignments.csv
+      - /kaggle/input/exp065-typewell-supertype-cluster-cv-audit-train/artifacts/common_typewell_cluster_assignments.csv
+  spatial_typewell_purged_assignments:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+calibration:
+  typewell_group: native_overlap_1
+  sensitivity_group: exact_typewell_content_sha
+  group_definitions:
+    native_overlap_1: {method: native_overlap, threshold: "1"}
+    exact_typewell_content_sha: {method: exact_hash, threshold: byte_hash}
+  overlap_rows_min: 32
+  tvt_duplicate_reducer: median
+  interpolation: linear_no_extrapolation
+  estimator: huber_affine_with_identity_shrinkage
+  huber_delta: 1.345
+  huber_max_iterations: 50
+  huber_tolerance: 1.0e-8
+  identity_shrinkage_support_k: 200.0
+  minimum_peer_wells: 1
+  minimum_peer_effective_rows: 32
+  score_unit: horizontal_gr_api
+  score_baseline: identity_typewell_gr
+  aggregate_reducer: equal_well_median
+  group_fallback: identity_no_correction
+  primary_outputs: [slope, intercept, bias_at_gr50, residual_sigma_mad, fit_rmse, support_rows]
+  negative_controls: [group_label_shuffle, horizontal_gr_circular_shift]
+  circular_shift_min_fraction: 0.10
+  circular_shift_max_fraction: 0.90
+
+execution_contract:
+  diagnostic_variants: 1
+  model_configs: 0
+  folds: 5
+  boosters: 0
+  decoder_runs: 0
+
+model:
+  name: none
+  params: {}
+
+promotion_gates:
+  group_loo_r2_noise_min: 0.20
+  group_loo_r2_fit_rmse_min: 0.20
+  calibrated_suffix_gr_rmse_gain_min: 0.05
+  folds_improved_min: 4
+  real_minus_shuffled_gr_gain_min: 0.03
+  worst_well_gr_rmse_delta_max: 0.25
+
+artifacts:
+  output_prefix: exp311_typewell_group_prefix_suffix_gr_calibration_readout
+  expected_train_artifacts:
+    - exp311_typewell_group_prefix_suffix_gr_calibration_readout_fold_manifest.csv
+    - exp311_typewell_group_prefix_suffix_gr_calibration_readout_group_membership.csv
+    - exp311_typewell_group_prefix_suffix_gr_calibration_readout_prefix_calibration.csv
+    - exp311_typewell_group_prefix_suffix_gr_calibration_readout_group_priors.csv
+    - exp311_typewell_group_prefix_suffix_gr_calibration_readout_suffix_by_well.csv
+    - exp311_typewell_group_prefix_suffix_gr_calibration_readout_surface_metrics.csv
+    - exp311_typewell_group_prefix_suffix_gr_calibration_readout_r2_metrics.csv
+    - exp311_typewell_group_prefix_suffix_gr_calibration_readout_pair_table.csv.gz
+    - exp311_typewell_group_prefix_suffix_gr_calibration_readout_feature_schema.csv
+    - exp311_typewell_group_prefix_suffix_gr_calibration_readout_summary.json
+
+runtime:
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+inference:
+  enabled: false
+  create_submission: false
+  reason: train_side_calibration_readout_only
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_well_fold_variant
+  stochastic_components: []
+  parallel_rng_policy: no_global_rng; stable well ordering; deterministic reducers
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+
+notes:
+  - Train TVT truth is permitted only inside the outer-train calibration fit and after-freeze outer-valid scoring.
+  - This experiment does not alter GR, candidates, HMM/PF/Beam emissions, or TVT predictions.
+  - Suffix reconstruction is scored in horizontal GR API units. A TVT/ft score would require a candidate or decoder and is intentionally out of scope.

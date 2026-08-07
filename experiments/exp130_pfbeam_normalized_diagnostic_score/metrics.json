@@ -1,0 +1,40 @@
+{
+  "experiment": "exp130_pfbeam_normalized_diagnostic_score",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "ml_model",
+  "parent": "exp092_u_projection_correction_disagreement_fullrun",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "kaggle_train": {
+    "kernel_id": "kentookumura/exp130-pfbn-normalized-score-train",
+    "status": "failed_oom",
+    "ui_message": "Your notebook tried to allocate more memory than is available.",
+    "failure_note": "The failed v1 package trained exp092_full_row_control before pfbeam_normalized_diagnostic_addonly, then OOMed during addonly lgb2."
+  },
+  "partial_metrics": {
+    "warning": "Partial fold-log readout only. The run did not produce pooled metrics, by-well metrics, predictions, or a model manifest.",
+    "lgb0": {
+      "folds_compared": 5,
+      "control_rmse_mean": 9.499024044641668,
+      "addonly_rmse_mean": 9.563375023298024,
+      "delta_addonly_minus_control": 0.0643509786563552
+    },
+    "lgb1": {
+      "folds_compared": 5,
+      "control_rmse_mean": 9.291006467308378,
+      "addonly_rmse_mean": 9.3365098121395,
+      "delta_addonly_minus_control": 0.04550334483112195
+    },
+    "lgb2": {
+      "folds_compared": 1,
+      "control_rmse_mean": 8.380248588215812,
+      "addonly_rmse_mean": 8.3730102620085,
+      "delta_addonly_minus_control": -0.007238326207312795
+    }
+  },
+  "decision": {
+    "direct_submission_candidate": "not_selected",
+    "inference_port": false,
+    "rerun_recommended": false,
+    "reason": "Rejected. Completed lgb0/lgb1 partial comparisons worsened versus control, lgb2 has only one fold, and the run failed with OOM before trustworthy full metrics."
+  }
+}

@@ -1,0 +1,147 @@
+experiment:
+  name: "exp016_public_postprocess_ablation"
+  description: Compare public-notebook-style postprocess candidates on exp013 LightGBM no-GR OOF
+  route: ml_model
+  status: completed
+  created_at: "2026-06-05"
+  updated_at: "2026-06-05"
+
+lineage:
+  parent: exp013_model_diversity_or_postprocess
+  diff_summary: OOF-only ablation of SG smoothing, prediction-start fade-in, hold-last-known blend, alpha/tau shrink, and exp013 bucket shrink
+
+validation:
+  leakage_policy:
+    - Same-well OOF predictions come from exp013 GroupKFold by well.
+    - This experiment trains no new model and creates no inference feature.
+    - Candidate ranking on the same OOF rows is recorded as optimistic.
+    - Primary support comes from leave-one-original-fold-out and stable well-hash holdout candidate selection.
+
+data: {}
+
+model:
+  name: public_postprocess_ablation
+  source_experiment: exp013_model_diversity_or_postprocess
+  source_variant: lightgbm_no_gr
+  raw_clean_cv: 13.549257
+  exp013_public_lb: 12.271
+
+audit:
+  source_oof_predictions: data/external/kaggle-output/exp013_model_diversity_or_postprocess/train/artifacts/row_oof_predictions.csv
+  source_variant: lightgbm_no_gr
+  chunk_rows: 250000
+  well_holdout_folds: 5
+  selection:
+    include_anchor: false
+  distance_buckets:
+    - name: rows_0_49
+      max_step: 49
+    - name: rows_50_249
+      max_step: 249
+    - name: rows_250_999
+      max_step: 999
+    - name: rows_1000_2499
+      max_step: 2499
+    - name: rows_2500_plus
+      max_step: 1000000000
+  candidates:
+    - name: raw_lightgbm_no_gr
+      method: raw
+      selectable: true
+      params: {}
+    - name: last_anchor
+      method: last_anchor
+      selectable: false
+      params: {}
+    - name: sg_smooth_w21_p2
+      method: sg_smooth
+      selectable: true
+      params:
+        window: 21
+        polyorder: 2
+        blend: 1.0
+    - name: sg_smooth_w51_p2
+      method: sg_smooth
+      selectable: true
+      params:
+        window: 51
+        polyorder: 2
+        blend: 1.0
+    - name: fade_in_50_a020
+      method: fade_in
+      selectable: true
+      params:
+        fade_rows: 50
+        start_alpha: 0.20
+        end_alpha: 1.0
+    - name: fade_in_250_a020
+      method: fade_in
+      selectable: true
+      params:
+        fade_rows: 250
+        start_alpha: 0.20
+        end_alpha: 1.0
+    - name: hold_blend_50_w080
+      method: hold_blend
+      selectable: true
+      params:
+        hold_rows: 50
+        start_weight: 0.80
+    - name: hold_blend_250_w080
+      method: hold_blend
+      selectable: true
+      params:
+        hold_rows: 250
+        start_weight: 0.80
+    - name: alpha_tau_50_a020_115
+      method: alpha_tau
+      selectable: true
+      params:
+        tau: 50
+        alpha_min: 0.20
+        alpha_max: 1.15
+    - name: alpha_tau_250_a020_115
+      method: alpha_tau
+      selectable: true
+      params:
+        tau: 250
+        alpha_min: 0.20
+        alpha_max: 1.15
+    - name: sg21_then_fade50_a020
+      method: sg_then_fade
+      selectable: true
+      params:
+        window: 21
+        polyorder: 2
+        fade_rows: 50
+        start_alpha: 0.20
+        end_alpha: 1.0
+    - name: exp013_bucket_shrink
+      method: distance_bucket_shrink
+      selectable: false
+      params:
+        buckets:
+          - name: rows_0_49
+            max_step: 49
+            alpha: 0.20
+          - name: rows_50_249
+            max_step: 249
+            alpha: 0.5917180252647632
+          - name: rows_250_999
+            max_step: 999
+            alpha: 1.15
+          - name: rows_1000_2499
+            max_step: 2499
+            alpha: 1.15
+          - name: rows_2500_plus
+            max_step: 1000000000
+            alpha: 1.0490770312511664
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+
+notes:
+  - This is an OOF artifact audit and is not intended for Kaggle submission.
+  - PF/beam w_pf postprocess is excluded because the exp013 source OOF does not include PF/beam predictions.

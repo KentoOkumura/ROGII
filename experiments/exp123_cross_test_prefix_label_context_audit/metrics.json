@@ -1,0 +1,97 @@
+{
+  "experiment": "exp123_cross_test_prefix_label_context_audit",
+  "status": "audit_completed",
+  "updated_at": "2026-06-25T11:01:35.105295+00:00",
+  "cv": 15.909852870734554,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "key_idea": "Diagnose whether other same-batch wells' visible TVT_input prefix labels support batch-level bias/slope/scale correction.",
+  "notes": "Diagnostic only; no inference port or submit from this result alone.",
+  "summary": {
+    "experiment": "exp123_cross_test_prefix_label_context_audit",
+    "status": "audit_completed",
+    "created_at": "2026-06-25T11:01:34.289542+00:00",
+    "debug_max_wells": null,
+    "n_wells": 773,
+    "n_folds": 5,
+    "best_candidate": {
+      "candidate": "hold_prefix_control",
+      "rows": 3783989,
+      "rmse": 15.909852870734554,
+      "mae": 11.196479701711615,
+      "bias": -1.5959871791381781,
+      "within10": 0.5786285319539777
+    },
+    "self_linear_baseline": {
+      "candidate": "self_linear_prefix_control",
+      "rows": 3783989,
+      "rmse": 1404.7283360969718,
+      "mae": 1196.2018529508616,
+      "bias": 1196.2018529508616,
+      "within10": 0.0
+    },
+    "hold_baseline": {
+      "candidate": "hold_prefix_control",
+      "rows": 3783989,
+      "rmse": 15.909852870734554,
+      "mae": 11.196479701711615,
+      "bias": -1.5959871791381781,
+      "within10": 0.5786285319539777
+    },
+    "delta_vs_self_linear": -1388.8184832262373,
+    "delta_vs_hold": 0.0,
+    "selection": {
+      "fold_selection_rows": [
+        {
+          "fold": 0,
+          "selected_candidate": "hold_prefix_control",
+          "selection_train_rmse": 16.110953254168003,
+          "valid_rows": 755859,
+          "valid_rmse": 15.077328781109076
+        },
+        {
+          "fold": 1,
+          "selected_candidate": "hold_prefix_control",
+          "selection_train_rmse": 16.094479815358365,
+          "valid_rows": 777866,
+          "valid_rmse": 15.17524846499967
+        },
+        {
+          "fold": 2,
+          "selected_candidate": "hold_prefix_control",
+          "selection_train_rmse": 15.992726344495718,
+          "valid_rows": 758564,
+          "valid_rmse": 15.574937798932378
+        },
+        {
+          "fold": 3,
+          "selected_candidate": "hold_prefix_control",
+          "selection_train_rmse": 15.857665179751594,
+          "valid_rows": 746299,
+          "valid_rmse": 16.120531174674287
+        },
+        {
+          "fold": 4,
+          "selected_candidate": "hold_prefix_control",
+          "selection_train_rmse": 15.488234670697377,
+          "valid_rows": 745401,
+          "valid_rmse": 17.52391082549787
+        }
+      ],
+      "fold_selection_rmse": 15.909852870734554,
+      "fold_selection_n": 3783989
+    },
+    "artifacts": {
+      "candidate_metrics": "/kaggle/working/artifacts/cross_test_prefix_label_candidate_metrics.csv",
+      "fold_metrics": "/kaggle/working/artifacts/cross_test_prefix_label_fold_metrics.csv",
+      "by_well": "/kaggle/working/artifacts/cross_test_prefix_label_by_well.csv",
+      "bucket_metrics": "/kaggle/working/artifacts/cross_test_prefix_label_bucket_metrics.csv",
+      "context_stats": "/kaggle/working/artifacts/cross_test_prefix_label_context_stats.csv"
+    },
+    "notes": [
+      "This is a rules-risk diagnostic; it uses other validation wells' finite TVT_input prefix labels.",
+      "No inference notebook should produce a submission from this audit without organizer/rules approval."
+    ]
+  }
+}

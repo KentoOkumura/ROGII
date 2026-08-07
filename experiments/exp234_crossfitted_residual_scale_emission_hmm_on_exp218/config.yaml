@@ -1,0 +1,307 @@
+experiment:
+  name: "exp234_crossfitted_residual_scale_emission_hmm_on_exp218"
+  description: Keep saved exp218 lgb_mean OOF as the exact HMM emission center and use only a well-cross-fitted residual scale as row-wise sigma.
+  route: ensemble
+  status: completed_train_side_rejected_no_inference_no_submit
+  created_at: "2026-07-12"
+  updated_at: "2026-07-13"
+  inference_enabled: false
+
+lineage:
+  parent: crossfitted_residual_scale_emission_hmm_on_exp218 backlog
+  references:
+    - exp218_gr_wavelet_rotation_confidence_features_on_exp148
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+    - exp229_lgb_quantile_band_emission_hmm_on_exp148
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - KAGGLE_DIRECTION.md crossfitted_residual_scale_emission_hmm_on_exp218
+  implementation_source:
+    - residual_scale_crossfit.py
+    - residual_scale_emission_hmm_audit.py
+    - exact_hmm_smoother.py
+    - direct_hmm_comparison.py
+  diff_summary: >
+    Reuses the saved exp218 lgb_mean OOF point prediction without any LightGBM
+    retraining. A separate GroupKFold-by-well residual-scale model produces
+    only held-out row sigma values from target-free row context and the fixed
+    point center. Error lift, decile calibration, fold separation, and
+    floor/cap rates are written before one fixed HMM emission variant is
+    allowed to run. No raw-test regeneration, inference, or submission is in
+    scope.
+
+validation:
+  strategy: saved_exp218_oof_plus_inner_groupkfold_residual_scale_then_single_hmm_train_side_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  success_criteria:
+    - exp218 lgb_mean OOF center must be ID-unique and exactly cover the train unknown-suffix rows.
+    - Every residual-scale prediction must be made by a model that excluded the row's well.
+    - Residual scale must show positive held-out error lift and avoid a dominant floor/cap clamp before HMM runs.
+    - The one HMM variant must be compared with exp218 point OOF overall, by distance, hidden-like split, by well, and step delta.
+    - Inference or submission remains disabled unless a later explicit decision records all train-side guards as passed.
+  leakage_policy:
+    - exp218 lgb_mean is loaded only from its saved OOF artifact; exp218 boosters and controls are not retrained.
+    - A residual-scale fold fits only other wells' squared residuals. Its held-out fold is never used for fitting or parameter selection.
+    - HMM center and sigma are both prediction-side inputs. Unknown-suffix TVT is used only to form residual-scale training targets and readout metrics.
+    - Lambda, sigma floor/cap, model hyperparameters, and guard thresholds are fixed in config; no per-row or post-hoc label tuning is allowed.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp218_oof_predictions_local: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_predictions.csv.gz
+
+model:
+  name: crossfitted_residual_scale_emission_hmm_on_exp218
+  estimator: hist_gradient_boosting_residual_scale_plus_exact_hmm
+  target: target
+  base_prediction: saved_exp218_lgb_mean_oof
+  feature_ablation:
+    selected_variant: exp218_center_crossfitted_residual_scale
+    active_variants:
+      - name: exp218_center_crossfitted_residual_scale
+        enabled: true
+        description: Fixed exp218 lgb_mean center with only a GroupKFold cross-fitted residual scale as emission sigma.
+        feature_groups:
+          - saved_exp218_oof_center
+          - target_free_row_context
+          - crossfitted_residual_scale
+      - name: exp218_control_retrain
+        enabled: false
+        description: Prohibited cost-control placeholder; completed exp218 metrics are the baseline.
+        feature_groups:
+          - saved_exp218_oof_center
+  training:
+    active_modes:
+      - cpu_crossfitted_scale_single_hmm
+    modes:
+      cpu_crossfitted_scale_single_hmm:
+        description: Five deterministic residual-scale cross-fit fits followed by one CPU exact-HMM candidate.
+        use_gpu: false
+        residual_scale_model_count: 5
+        hmm_variant_count: 1
+        parent_control_retraining: false
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+
+residual_scale:
+  center_source: exp218_lgb_mean_oof_source
+  context_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  required_context_columns:
+    - id
+    - well
+    - target
+    - last_known_tvt
+    - md_since
+  n_splits: 5
+  squared_residual_clip: 100.0
+  sigma_floor: 2.5
+  sigma_cap: 40.0
+  feature_columns:
+    - log1p_md_since
+    - center_abs_delta
+    - center_abs_step_delta
+    - last_known_tvt
+  estimator:
+    name: HistGradientBoostingRegressor
+    loss: squared_error
+    learning_rate: 0.08
+    max_iter: 100
+    max_leaf_nodes: 15
+    min_samples_leaf: 2048
+    l2_regularization: 10.0
+    early_stopping: false
+    random_state: 42
+  calibration_bins: 10
+  guard:
+    min_spearman_abs_error: 0.05
+    min_top_to_bottom_rmse_ratio: 1.05
+    max_sigma_floor_rate: 0.80
+    max_sigma_cap_rate: 0.25
+    require_strict_fold_separation: true
+
+lgb_emission:
+  enabled: true
+  active_sources:
+    - exp218_lgb_mean
+  lambda_grid:
+    - 0.50
+  sigma_floor_grid:
+    - 2.5
+  sigma_cap_grid:
+    - 40.0
+  emission_clip: 600.0
+  max_variants: 1
+  sources:
+    exp218_lgb_mean:
+      description: Saved exp218 lgb_mean OOF is the immutable center; exp234 writes the fold-safe sigma_tvt sidecar before HMM runs.
+      id_column: id
+      prediction_column: pred_tvt
+      sigma_column: sigma_tvt
+      candidates:
+        - /kaggle/working/artifacts/exp234_crossfitted_residual_scale_emission_hmm_on_exp218_residual_scale_predictions.csv.gz
+        - artifacts/exp234_crossfitted_residual_scale_emission_hmm_on_exp218_residual_scale_predictions.csv.gz
+    exp218_lgb_mean_oof_source:
+      description: Saved exp218 GPU train lgb_mean OOF point prediction used only to build the residual-scale sidecar.
+      id_column: id
+      prediction_column: pred_tvt
+      model_filter: lgb_mean
+      candidates:
+        - /kaggle/input/notebooks/kentookumura/exp218-gr-wavelet-rotation-exp148-train/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_predictions.csv.gz
+        - /kaggle/input/exp218-gr-wavelet-rotation-exp148-train/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_predictions.csv.gz
+        - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_predictions.csv.gz
+    exp148_lgb_mean:
+      description: Saved exp148 GPU lgb_mean OOF baseline for the direct train-side comparator.
+      id_column: id
+      prediction_column: pred_tvt
+      model_filter: lgb_mean
+      candidates:
+        - /kaggle/input/notebooks/kentookumura/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+        - /kaggle/input/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+        - experiments/exp148_learned_likelihood_fulltrain_addonly_on_exp092/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+    exp193_lgb_mean:
+      description: Saved exp193 lgb_mean OOF comparison baseline.
+      id_column: id
+      prediction_column: pred_tvt
+      model_filter: lgb_mean
+      candidates:
+        - /kaggle/input/notebooks/kentookumura/exp193-typewell-late-context-exp148-train/artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_predictions.csv.gz
+        - /kaggle/input/exp193-typewell-late-context-exp148-train/artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_predictions.csv.gz
+        - experiments/exp193_typewell_late_interval_context_features_addonly_on_exp148/kaggle/output/train_v1/artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_predictions.csv.gz
+
+feature_cache:
+  hmm:
+    variant: crossfitted_residual_scale_emission_hmm
+    output_prefix: exp234_crossfitted_residual_scale_emission_hmm_on_exp218
+    expected_feature_count: 7
+    outer_workers: 1
+
+comparison:
+  output_prefix: exp234_crossfitted_residual_scale_hmm
+  baseline_feature_cache:
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  hmm_feature_cache:
+    - /kaggle/input/exp234-v1-hmm-cache-readout/exp234_crossfitted_residual_scale_emission_hmm_on_exp218_crossfitted_residual_scale_emission_hmm_train_features.csv
+    - /kaggle/input/notebooks/kentookumura/exp234-crossfitted-residual-scale-hmm-exp218-train/artifacts/exp234_crossfitted_residual_scale_emission_hmm_on_exp218_crossfitted_residual_scale_emission_hmm_train_features.csv.gz
+    - /kaggle/input/exp234-crossfitted-residual-scale-hmm-exp218-train/artifacts/exp234_crossfitted_residual_scale_emission_hmm_on_exp218_crossfitted_residual_scale_emission_hmm_train_features.csv.gz
+    - /tmp/kaggle-output/exp234_crossfitted_residual_scale_emission_hmm_on_exp218/train_v1/artifacts/exp234_crossfitted_residual_scale_emission_hmm_on_exp218_crossfitted_residual_scale_emission_hmm_train_features.csv.gz
+    - /kaggle/working/artifacts/exp234_crossfitted_residual_scale_emission_hmm_on_exp218_crossfitted_residual_scale_emission_hmm_train_features.csv.gz
+    - artifacts/exp234_crossfitted_residual_scale_emission_hmm_on_exp218_crossfitted_residual_scale_emission_hmm_train_features.csv.gz
+  baseline_candidate_columns:
+    - likpf_mean
+  lgb_baseline_sources:
+    - exp218_lgb_mean_oof_source
+    - exp148_lgb_mean
+    - exp193_lgb_mean
+  primary_baselines:
+    - exp218_lgb_mean_oof_source
+    - exp148_lgb_mean
+    - exp193_lgb_mean
+  step_delta_thresholds:
+    - 5.0
+    - 10.0
+    - 25.0
+  uncertainty_bins: 10
+  write_enriched_cache: false
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+  reference_train_side_metrics:
+    exp221_fixed_sigma_hmm_rmse: 8.32773695096078
+    exp229_quantile_band_hmm_rmse: 8.684401098734789
+    exp218_lgb_mean_rmse: 8.475793751656624
+  comparison_only:
+    source_kernel: kentookumura/exp234-crossfitted-residual-scale-hmm-exp218-train
+    source_kernel_version: 1
+    source_hmm_cache_gzip_sha256: 86d6cebc43ceeb21af230a23a131629454f512047d433c8908cd642d784eac60
+    source_hmm_cache_decompressed_sha256: 45c3b4a60a1f83e55c0b2aa965a4971adeb79bb637688b31de78fa88cfa6a911
+    hmm_recomputation_allowed: false
+    cache_dataset: kentookumura/exp234-v1-hmm-cache-readout
+    reason: >
+      Reuse the v1 HMM cache, which completed before the missing exp115
+      hidden-like assignment stopped the direct comparison. This supplemental
+      notebook only writes comparison summaries and must not call HMM cache
+      generation or residual-scale fitting.
+
+runtime:
+  numba_num_threads: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    machine_shape: None
+    train_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp218-gr-wavelet-rotation-exp148-train
+      - kentookumura/exp148-train
+      - kentookumura/exp193-typewell-late-context-exp148-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    train_aggregate:
+      enable_gpu: false
+      machine_shape: None
+    train_aggregate_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp218-gr-wavelet-rotation-exp148-train
+      - kentookumura/exp148-train
+      - kentookumura/exp193-typewell-late-context-exp148-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    train_aggregate_dataset_sources:
+      - kentookumura/exp234-v1-hmm-cache-readout
+    inference_kernel_sources: []
+    copy_repository_src: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: GroupKFold by well without shuffle; HistGradientBoostingRegressor random_state=42; exact HMM has no RNG.
+  stochastic_components:
+    - HistGradientBoostingRegressor internal randomized feature binning is fixed by random_state
+  parallel_rng_policy: residual-scale fits and HMM well generation are sequential; no global RNG or thread-scheduled random stream is used.
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - docs/06_reproducibility.md checked on 2026-07-12.
+    - No raw-test sigma regeneration, inference, or submission is implemented in this train-side audit.
+
+notes:
+  - Kaggle push guard: one active variant, five CPU residual-scale cross-fit fits, one HMM variant, zero LightGBM boosters, and no parent/control retraining.
+  - The HMM stage is skipped if the residual-scale calibration guard fails.
+  - exp221 / exp229 are scalar train-side references only; their control models are not rerun.

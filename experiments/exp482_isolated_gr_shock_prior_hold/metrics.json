@@ -1,0 +1,89 @@
+{
+  "experiment": "exp482_isolated_gr_shock_prior_hold",
+  "status": "stage_a0_eligibility_failed_closed",
+  "route": "pf_beam",
+  "validation": {
+    "stage": "stage_a0_raw_only_census",
+    "status": "stage_a0_eligibility_failed_closed",
+    "cv": null,
+    "public_lb": null,
+    "private_lb": null,
+    "metric": "rmse",
+    "eligibility": {
+      "passed": false,
+      "checks": {
+        "minimum_isolated_raw_shock_rows": true,
+        "minimum_support_wells": true,
+        "minimum_zero_shock_control_wells": false
+      },
+      "isolated_raw_shock_rows": 17047,
+      "support_wells": 763,
+      "zero_shock_control_wells": 10,
+      "minimum_zero_shock_control_wells_required": 32
+    }
+  },
+  "design": {
+    "scientific_variants": 1,
+    "stage0_manifest_wells": 64,
+    "stage0_parent_message_hmm_replays": 64,
+    "stage1_parent_message_hmm_replays_max": 773,
+    "candidate_state_modifying_hmm_runs": 0,
+    "saved_parent_prediction_reruns": 0,
+    "lightgbm_configs": 0,
+    "boosters": 0,
+    "fitted_models": 0,
+    "pf_runs": 0,
+    "beam_runs": 0,
+    "gpu_runs": 0
+  },
+  "authorization": {
+    "implementation": true,
+    "canonical_notebook_adoption": true,
+    "kaggle_package": true,
+    "stage0_run": true,
+    "stage1_run": false,
+    "inference": false,
+    "submission": false
+  },
+  "deterministic_anchor": false,
+  "kaggle_run": {
+    "kernel_version": 1,
+    "kernel_id_no": 129168015,
+    "status": "complete",
+    "pushed_at_utc": "2026-07-30 12:05:48 UTC",
+    "completed_at_utc": "2026-07-30 12:10:10 UTC",
+    "log_elapsed_seconds": 263.99671437,
+    "actual_counts": {
+      "raw_census_wells": 773,
+      "raw_shock_rows_written": 21027,
+      "parent_message_hmm_replays": 0,
+      "candidate_state_modifying_hmm_runs": 0,
+      "saved_parent_prediction_reruns": 0,
+      "lightgbm_configs": 0,
+      "boosters": 0,
+      "pf_runs": 0,
+      "beam_runs": 0,
+      "gpu_runs": 0
+    },
+    "artifacts": {
+      "raw_census_rows": 773,
+      "raw_census_sha256": "fdbb653e13bdd6132ffbe08d129fc44a744ed72b81fdc4d41ae04aa0848202cb",
+      "raw_shock_rows": 21027,
+      "raw_shock_rows_decompressed_sha256": "1615aa3504eba71a90dc5c36f782ba79ea34162f3bd2876043b132f703332116",
+      "raw_shock_rows_raw_sha256": "b8236c4d31ffb5c4659bf091f851b5badab9d048e8358a25fa30877658ac40e2"
+    }
+  },
+  "implementation_validation": {
+    "dedicated_tests": 14,
+    "dedicated_tests_passed": true,
+    "parent_and_loo_numeric_parity_absolute_tolerance": 5e-07,
+    "jupytext_round_trip_passed": true,
+    "py_compile_passed": true,
+    "ruff_f821_e9_passed": true,
+    "strict_experiment_validation_passed": true,
+    "canonical_notebooks_modified": true,
+    "kaggle_package_created": true,
+    "experiment_run": true
+  },
+  "notes": "Stage A0 raw-only census completed, but only 10 zero-shock wells were available versus the preregistered minimum of 32. The run failed closed before manifest construction, HMM replay, candidate prediction, truth join, Stage A1, Stage 1, inference, or submission."
+}

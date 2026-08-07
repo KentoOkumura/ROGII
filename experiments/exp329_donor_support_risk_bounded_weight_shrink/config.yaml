@@ -1,0 +1,314 @@
+experiment:
+  name: exp329_donor_support_risk_bounded_weight_shrink
+  description: >-
+    Design-frozen two-stage readout that reconstructs the fold-safe exp226 K16
+    donor support, tests whether it identifies segments where the exp226 share
+    of the saved exp263 formula is harmful, and only then permits one bounded
+    shrink of that share toward the two saved non-exp226 parents.
+  route: pf_beam
+  status: stage0_scientific_gate_failed_branch_closed
+  created_at: "2026-07-21"
+  updated_at: "2026-07-21"
+
+lineage:
+  parent: exp263_last_anchor_better_candidate_confidence_pair_cache
+  anchor: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  steering: ../../.steering/20260721-exp329-donor-support-risk-bounded-weight-shrink
+  references:
+    - exp302_exp226_multiscale_k_segment_candidate_audit
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264
+    - exp322_gr_likelihood_weak_exp226_soft_shrink_readout
+    - exp279_exp226_geop_centered_exact_hmm_redecode
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe
+  diff_summary: >-
+    Keeps all three saved primitive predictions and the exp263 base formula
+    fixed. Adds one target-free donor-support risk score at the exp226 K16
+    segment scale. If the readout passes, reduces only the exp226 contribution
+    by at most 25 percent and redistributes it equally to saved likPF and exact
+    HMM, with a 5 ft row cap and a 0--250 ft veto. This is the opposite direction
+    and a different gate from the closed exp322 GR-weak branch.
+
+implementation:
+  enabled: true
+  scope: stage0_train_side_readout
+  train_notebook_state: canonical_adopted_from_compact_selfcontained
+  inference_notebook_state: untouched_template_scaffold_do_not_run
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: saved_exp263_oof_fold_safe_exp226_donor_support_two_stage_readout
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  group_column: well_id
+  expected_rows: 3783989
+  expected_wells: 773
+  readout_fold_policy: use_saved_exp263_outer_fold_for_metrics
+  exp226_source_fold_policy: >-
+    Reconstruct each exp226 prediction with its saved source fold and exclude
+    that complete validation fold from donor fields. Do not require the exp226
+    source fold to equal the exp263 readout fold.
+  score_rows: train_unknown_suffix_truth_only_after_support_and_prediction_freeze
+  scopes:
+    near:
+      minimum_md_since_ft: 0.0
+      maximum_md_since_ft: 250.0
+    long_tail:
+      minimum_md_since_ft: 1000.0
+      maximum_md_since_ft: null
+  leakage_policy:
+    - Validation wells and all wells in the same exp226 source fold are excluded from donor fields.
+    - Donor values may use complete outer-train wells; validation-well suffix TVT, error, and oracle labels are forbidden before freeze.
+    - Each exp263 readout fold uses empirical CDFs fit on the other four readout folds only.
+    - Support features, CDFs, segment risk, activation, real/control predictions, and their content SHA are frozen before suffix truth is attached.
+    - Signed neighbor error, neighbor correction direction, K12/K24 disagreement, GR likelihood, and HMM posterior information are forbidden risk inputs.
+  technical_guards:
+    required_row_identity_coverage: 1.0
+    required_well_identity_coverage: 1.0
+    required_segment_feature_coverage: 1.0
+    required_finite_prediction_coverage: 1.0
+    maximum_exp263_formula_parity_abs_ft: 0.00001
+    minimum_activated_row_fraction: 0.05
+    maximum_activated_row_fraction: 0.30
+    minimum_activated_wells: 100
+    minimum_folds_with_activation: 4
+    coverage_fail_status: inconclusive_coverage_no_rescue
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  input_target_column: TVT_input
+  id_column: id
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  raw_train_dir_patterns:
+    - data/raw/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+  raw_horizontal_glob: "*__horizontal_well.csv"
+  exp263_cache:
+    candidate_id: exp226_w500_50_50
+    expected_formula:
+      exp226_k16: 0.50
+      likpf_mean: 0.25
+      exact_hmm: 0.25
+    expected_oof_rmse: 8.238331715
+    manifest_pattern: "**/cache_manifest.json"
+    expected_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+    manifest_candidates:
+      - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1_small/artifacts/cache_manifest.json
+      - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+      - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+    kaggle_sources:
+      - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train
+      - /kaggle/input/exp263-last-anchor-pair-cache-train
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    target_free_columns: [well_id, fold, row_idx, suffix_offset, tvt_pred]
+    forbidden_pre_freeze_columns: [tvt_true, TVT, error, abs_error, oracle_label]
+    expected_oof_rmse: 9.427109596582213
+  hidden_like:
+    enabled: true
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+model:
+  name: none_deterministic_donor_support_risk_readout
+  estimator: none
+  params: {}
+
+exp226_geometry:
+  theta0: 118.4
+  k_segments: 16
+  local_linear_k: 50
+  local_linear_bandwidth: 500.0
+  local_linear_ridge: 1.0
+  smooth_rho: 10.0
+  field_min_proj: 0.3
+
+support_risk:
+  segment_scale: exp226_k16
+  donor_selection: exact_exp226_source_fold_safe_local_linear_k50_bandwidth500_ridge1
+  donor_distance: sqrt_median_of_nearest_15_squared_distances
+  kernel_weight: exp_negative_distance_squared_div_2_bandwidth_squared
+  effective_sample_size: squared_sum_weights_div_sum_squared_weights
+  local_linear_condition: log1p_condition_number_of_ridged_3x3_normal_matrix
+  weighted_mad_center: weighted_median
+  primitive_features:
+    - donor_distance_high
+    - effective_sample_size_low
+    - local_linear_condition_high
+    - raw_donor_weighted_mad_high
+    - smoothed_donor_weighted_mad_high
+    - raw_smoothed_local_linear_disagreement_high
+  feature_transform: outer_train_empirical_percentile_with_stable_well_segment_tie_order
+  raw_composite: arithmetic_mean_of_six_feature_percentiles
+  final_score: outer_train_empirical_percentile_of_raw_composite
+  range: [0.0, 1.0]
+  signed_direction_allowed: false
+
+stage_0_readout:
+  enabled_after_implementation: true
+  unit: k16_segment
+  destination_formula:
+    likpf_mean: 0.50
+    exact_hmm: 0.50
+  segment_benefit_ft: rmse_exp263_base_minus_rmse_destination
+  positive_label: segment_benefit_strictly_greater_than_zero
+  negative_control:
+    kind: within_well_nonzero_circular_shift_of_k16_risk
+    offset: one_plus_sha256_well_prefix_mod_15
+    key_prefix: exp329
+    preserve_segment_count: true
+  pass_requires_all:
+    minimum_pooled_auc: 0.60
+    minimum_folds_with_auc_above_half: 4
+    minimum_real_minus_control_auc: 0.05
+    minimum_top_risk_decile_mean_benefit_ft: 0.10
+    minimum_top_minus_bottom_risk_decile_benefit_ft: 0.25
+    require_1000_plus_direction_non_regression: true
+    require_hidden_like_spatial_direction_non_regression: true
+    require_hidden_like_typewell_purged_direction_non_regression: true
+  top_risk_minimum: 0.90
+  bottom_risk_maximum: 0.10
+  activation_risk_strictly_greater_than: 0.80
+  fail_action: close_branch_without_threshold_alpha_clip_destination_or_feature_rescue
+
+stage_1_bounded_shrink:
+  enabled_after_implementation: false
+  enable_condition: stage_0_all_gates_pass_and_separate_user_approval
+  base_formula: 0.50_exp226_plus_0.25_likpf_plus_0.25_exact_hmm
+  destination_formula: 0.50_likpf_plus_0.50_exact_hmm
+  activation: clip_risk_minus_0.80_div_0.20_to_zero_one
+  maximum_shrink_fraction: 0.25
+  formula: base_plus_clip_0.25_times_activation_times_destination_minus_base
+  maximum_absolute_move_ft: 5.0
+  minimum_md_since_last_known_ft: 250.0
+  near_policy: bitwise_parent_parity
+  boundary_taper: false
+  hard_replacement: false
+  negative_control: exact_stage_0_within_well_circular_risk_shift
+
+execution_contract:
+  stage: stage0_completed_fail_closed
+  stage_0:
+    scientific_risk_scores: 1
+    diagnostic_controls: 1
+    support_well_runs: 773
+    active_prediction_candidates: 0
+    hmm_well_runs: 0
+    pf_well_runs: 0
+    beam_well_runs: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+  stage_1_if_pass:
+    scientific_candidates: 1
+    matched_controls: 1
+    parent_prediction_regeneration: false
+    hmm_well_runs: 0
+    pf_well_runs: 0
+    beam_well_runs: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+  parent_control_retraining: false
+
+promotion_gates:
+  minimum_rmse_gain_vs_exp263_ft: 0.02
+  minimum_improved_folds: 4
+  minimum_activated_subset_rmse_gain_ft: 0.10
+  require_near_prediction_bitwise_parity: true
+  maximum_1000_plus_rmse_delta_ft: 0.0
+  maximum_hidden_like_spatial_rmse_delta_ft: 0.0
+  maximum_hidden_like_typewell_purged_rmse_delta_ft: 0.0
+  maximum_by_well_delta_p95_ft: 0.0
+  maximum_worst_well_delta_ft: 0.25
+  minimum_real_gain_minus_control_gain_ft: 0.02
+
+forbidden:
+  - signed_neighbor_error_or_bias_transfer
+  - true_error_or_oracle_gate
+  - k12_k24_stability_gate
+  - gr_likelihood_gate
+  - hard_routing_or_hard_replacement
+  - exp226_likpf_hmm_prediction_regeneration
+  - threshold_alpha_clip_or_destination_grid
+  - hmm_pf_beam_or_model_training
+
+execution:
+  implementation_approved: true
+  kaggle_push_approved: true
+  run_stage_0: true
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    train_kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_real_score_stable_sha256_per_well_control
+  stochastic_components:
+    - deterministic_circular_risk_control_only
+  parallel_rng_policy: no_global_rng_canonical_fold_well_segment_donor_sort
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+
+inference: {enabled: false, create_submission: false}
+
+artifacts:
+  output_prefix: exp329
+  expected_stage_0:
+    - exp329_input_manifest.csv
+    - exp329_raw_well_manifest.csv
+    - exp329_donor_ledger.csv.gz
+    - exp329_support_primitives.csv.gz
+    - exp329_outer_train_cdf.csv.gz
+    - exp329_segment_risk.csv.gz
+    - exp329_target_free_rows.csv.gz
+    - exp329_target_free_contract.json
+    - exp329_segment_benefit.csv
+    - exp329_auc_metrics.csv
+    - exp329_scope_metrics.csv
+    - exp329_stage0_decision.json
+    - exp329_summary.json
+
+notes:
+  - Design frozen on 2026-07-21; Stage 0 implementation and Kaggle CPU execution approved.
+  - Donor support predicts risk only. It never supplies a correction sign or magnitude from neighboring error.
+  - Stage 0 completed on Kaggle CPU version 2 and failed the scientific gates; Stage 1 and rescue grids are closed.
+  - exp330 required a Stage 0 PASS and is therefore closed without implementation or execution.

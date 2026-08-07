@@ -1,0 +1,144 @@
+{
+  "experiment": "exp305_tempered_raw_smoothed_exact_hmm_emission",
+  "status": "train_side_tempered_exact_hmm_gate_failed_closed",
+  "route": "pf_beam",
+  "metric": "rmse",
+  "hypothesis": "A fixed 15 percent SWT log-emission contribution improves both exact-HMM posterior mean and the saved-likPF 50/50 blend without changing the decoder contract.",
+  "cv": 13.218199371895286,
+  "paired_readout": {
+    "rows": 3783989,
+    "wells": 773,
+    "direct": {
+      "candidate_rmse": 13.218199371895286,
+      "control_rmse": 11.938287234887435,
+      "improvement_ft": -1.2799121370078517,
+      "folds_improved": 1,
+      "fold_candidate_minus_control_rmse": [
+        2.9730107251989732,
+        -0.03281071661556112,
+        2.6770779934627402,
+        0.3814197436155329,
+        0.45740257927309713
+      ],
+      "scope_candidate_minus_control_rmse": {
+        "md_since_1000_plus": 1.395238386696338,
+        "hidden_like_spatial": 1.0524770934624659,
+        "hidden_like_typewell_purged": 0.9937185508283299,
+        "by_well_p95": 1.9065630914702965,
+        "worst_well": 56.98960527375788
+      },
+      "passed": false
+    },
+    "blend": {
+      "candidate_rmse": 10.76767444930376,
+      "control_rmse": 10.269692505026358,
+      "improvement_ft": -0.4979819442774023,
+      "folds_improved": 1,
+      "fold_candidate_minus_control_rmse": [
+        1.4434767181404347,
+        -0.15017974556863933,
+        1.0138593182726794,
+        0.09623903404220968,
+        0.18039664083377005
+      ],
+      "scope_candidate_minus_control_rmse": {
+        "md_since_1000_plus": 0.5427136832438659,
+        "hidden_like_spatial": 0.44263673589740193,
+        "hidden_like_typewell_purged": 0.4296423233640301,
+        "by_well_p95": 1.8689608437538858,
+        "worst_well": 29.298735648752324
+      },
+      "passed": false
+    }
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "execution_plan": {
+    "active_scientific_variants": 1,
+    "expected_wells": 773,
+    "hmm_well_runs": 773,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "pf_well_runs": 0,
+    "beam_well_runs": 0,
+    "boosters": 0,
+    "parent_control_reruns": 0
+  },
+  "fixed_design": {
+    "selected_denoiser": "swt_db4_l3",
+    "raw_weight": 0.85,
+    "swt_weight": 0.15,
+    "likpf_blend_weight": 0.5,
+    "likpf_materialization": "last_known_tvt + likpf_mean_d"
+  },
+  "technical_gate": {
+    "passed": false,
+    "input_preflight_passed": true,
+    "finite_coverage": 1.0,
+    "id_mismatches": 0,
+    "silent_fallback_count": 0,
+    "prediction_rows": 3783989,
+    "prediction_wells": 773,
+    "hmm_well_runs": 773,
+    "runtime_seconds": 15983.83995771408,
+    "runtime_limit_seconds": 30600.0,
+    "baseline_metric_parity": {
+      "raw_hmm": {
+        "actual": 11.938287234887435,
+        "expected": 11.9382872349,
+        "absolute_difference": 1.2565948281917372e-11,
+        "passed": true
+      },
+      "saved_likpf": {
+        "actual": 11.594894395642696,
+        "expected": 11.5948976722,
+        "absolute_difference": 3.276557304587868e-06,
+        "passed": false
+      },
+      "raw_hmm_likpf_50_50": {
+        "actual": 10.269692505026358,
+        "expected": 10.2696961466,
+        "absolute_difference": 3.6415736417438893e-06,
+        "passed": false
+      }
+    },
+    "interpretation": "The strict 1e-6 baseline parity gate fails only for the materialized saved-likPF controls by about 3e-6 ft. This does not rescue the candidate because the scientific degradations are 0.498 to 1.280 ft and every required stress scope fails."
+  },
+  "promotion_gate": {
+    "passed": false,
+    "decision": "close_without_rescue_and_keep_reserved_pf_transfer_closed"
+  },
+  "reproducibility": {
+    "scientific_contract_sha256": "343084494621e1a3bb15899f6c3c441507f4dfd3af671e8de7c08f3f8867bd1b",
+    "input_control_manifest_sha256": "48f3c68cc1d02f60871a111f0cb473cc9a67d29963cc5d4c79143c69c00d15f7",
+    "prediction_raw_sha256": "6419657d633564325ced8cabfde22532737cdabd1c7844686317d8dd7efe2552",
+    "prediction_content_sha256": "86b1768f18d31ba296774054c14b24e2e4650ddc74d9858d9baea8b534027302",
+    "promotion_gate_sha256": "9edc8fa51f070d38420bc6b84ec5e329a1b5c7425a46234f4e85cf5741ee1c71",
+    "overall_fold_scope_metrics_sha256": "efe59c08753072d658eac1138cb1702ac4579939734de68e1aec89a615f4532e",
+    "by_well_metrics_sha256": "4b810d2620172427e6da2373a0a23813d127325f9f3beb9db4d85943ec1070b2"
+  },
+  "implementation_approved": true,
+  "kaggle_push_approved": true,
+  "kaggle": {
+    "kernel_id": "kentookumura/exp305-tempered-raw-swt-exact-hmm-emission-train",
+    "kernel_id_no": 128079137,
+    "current_version": 3,
+    "current_status": "COMPLETE",
+    "version_1": "ERROR_preflight_silent_fallback_field_path",
+    "version_2": "ERROR_after_773_hmm_well_runs_likpf_delta_column_contract",
+    "periodic_monitoring": false
+  },
+  "validation": {
+    "jupytext_roundtrip": "passed",
+    "py_compile": "passed",
+    "ruff_f821": "passed",
+    "synthetic_and_contract_tests": {
+      "passed": 9,
+      "failed": 0
+    },
+    "validate_exp": "passed_strict",
+    "validate_template": "passed"
+  },
+  "next_action": "Close exp305 without beta, sigma, HMM, or blend rescue; keep inference, submission, and the reserved PF transfer branch disabled.",
+  "notes": "The negative decision is trustworthy despite the strict saved-likPF baseline parity miss: the parity discrepancy is roughly 3e-6 ft, while both candidates degrade by 0.498 to 1.280 ft and fail every required stress scope."
+}

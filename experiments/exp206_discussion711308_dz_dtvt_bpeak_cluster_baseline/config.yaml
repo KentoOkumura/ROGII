@@ -1,0 +1,146 @@
+experiment:
+  name: "exp206_discussion711308_dz_dtvt_bpeak_cluster_baseline"
+  description: Reproduce Kaggle discussion 711308 no-ML dZ/dTVT b-peak cluster baseline and generate diagnostic artifacts plus a direct submission path.
+  route: pf_beam
+  status: submitted_v4_public_lb_57p063_failed_requirement
+  created_at: "2026-07-06"
+  updated_at: "2026-07-08"
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.n_folds
+    - validation.metric
+
+lineage:
+  parent: discussion711308_dz_dtvt_bpeak_cluster_baseline backlog
+  references:
+    - KAGGLE_DIRECTION.md discussion711308_dz_dtvt_bpeak_cluster_baseline
+    - https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction/discussion/711308
+    - exp113_linear_md_z_prior_global_search
+    - exp117_linear_md_z_prior_residual_target
+    - exp148_exact_replacement_prune_on_exp148
+    - exp198_exact_replacement_prune_on_exp148
+  diff_summary: >
+    v1 fitted per-source-well dTVT/dMD ~= a*dZ/dMD + b and submitted Public LB 41.214,
+    missing the required LB around 12.8. v2 follows the discussion wording more closely by
+    fitting row-step dTVT ~= a*dZ + b, adding X/Y/Z + last-300 TVT/Z feature-nearest
+    clustering, and adding prefix-holdout source selection diagnostics. v3 adds explicit
+    deterministic feature clustering over full X/Y/Z well geometry plus last-300 TVT/XYZ
+    shape samples, then uses local/cluster source a,b parameters. v4 selects a direct
+    known-TVT prefix fit: each query/test well fits dTVT ~= a*dZ+b on all available
+    TVT_input rows, anchors at the last known TVT_input, and transforms the unknown
+    suffix by cumulative a*dZ+b steps.
+
+validation:
+  strategy: leave_one_well_out_pseudo_tail_target_free_prefix_assignment
+  metric: rmse_tvt
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: TVT_input_isna
+  leakage_policy:
+    - Validation target well is removed from the source pool before b-peak center detection and a/b aggregation.
+    - Query assignment uses known prefix TVT_input, MD, X, Y, Z, GR availability, and typewell exact hash only.
+    - Full train true TVT fit and full b peak labels are allowed for source train wells and diagnostics, not for target query assignment.
+    - Test inference uses all train source full-fit a/b, never test tail true TVT.
+    - v4 selected inference uses test known TVT_input to fit a,b directly and only uses train source a,b as a finite-fit fallback.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: dz_dtvt_bpeak_cluster_no_ml
+  estimator: none
+  fit_equation: dTVT = a * dZ + b
+  anchor: last_known_TVT_input
+  params:
+    prefix_tail_rows: 300
+    min_fit_steps: 20
+    b_peak_bins: 32
+    b_peak_min_count: 8
+    b_peak_max_peaks: 8
+    b_peak_fallback_quantiles: 5
+    nearest_k: 8
+    aggregation: weighted_mean
+    distance_floor_ft: 100.0
+    selected_variant: known_tvt_fit_full
+    variants:
+      - known_tvt_fit_full
+  diagnostics:
+    distance_buckets:
+      - 0
+      - 50
+      - 100
+      - 250
+      - 500
+      - 1000
+      - 1000000000
+    write_train_predictions: true
+    write_svg_maps: true
+
+artifacts:
+  output_prefix: exp206_discussion711308_dz_dtvt_bpeak_cluster_baseline
+  expected_train:
+    - exp206_full_fit_by_well.csv
+    - exp206_b_peak_summary.csv
+    - exp206_train_variant_metrics.csv
+    - exp206_distance_bucket_metrics.csv
+    - exp206_by_well_metrics.csv
+    - exp206_cluster_purity.csv
+    - exp206_reference_assignment_summary.csv
+    - exp206_train_oof_predictions.csv.gz
+    - exp206_b_peak_xy_map.svg
+    - exp206_prefix_b_peak_xy_map.svg
+    - exp206_summary.json
+  expected_inference:
+    - exp206_test_assignments.csv
+    - exp206_test_prediction_summary.json
+    - submission.csv
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources: []
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_deterministic_sorting
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - No random numbers are consumed; nearest-neighbor ties are resolved by sorted well id.
+    - This is not promoted to final deterministic anchor until Kaggle train/inference version and SHA evidence are recorded.
+    - There is no model manifest.
+
+inference:
+  mode: direct_submission
+  selected_variant: known_tvt_fit_full
+  output_file: submission.csv
+  notes:
+    - v4 direct path fits dTVT ~= a*dZ+b from each test well's known TVT_input rows and cumulatively predicts the unknown suffix from the last known TVT_input anchor.
+
+notes:
+  - Full train true b peak labels are diagnostic-only for target wells.
+  - discussion comment 3477158 GR cluster confirmation is treated as a negative control; GR is not a success criterion here.

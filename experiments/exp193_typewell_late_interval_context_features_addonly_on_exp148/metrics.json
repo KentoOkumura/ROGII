@@ -1,0 +1,229 @@
+{
+  "experiment": "exp193_typewell_late_interval_context_features_addonly_on_exp148",
+  "status": "submitted_public_lb_7p946_not_adopted_vs_exp148_cpu_7p921",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "late_range_context_parents": [
+    "exp174_typewell_late_range_ml_posthoc_clip_audit",
+    "exp176_typewell_late_range_pfbeam_candidate_prior",
+    "exp191_typewell_late_range_continuity_selector_on_exp176"
+  ],
+  "cv": {
+    "status": "train_completed",
+    "source": "kaggle_train_v1_logs_and_output",
+    "variant": "typewell_late_interval_context_addonly",
+    "mode": "gpu_repro_guard_dp_threads8",
+    "rows": 3783989,
+    "wells": 773,
+    "features": 313,
+    "feature_groups": "projection_correction,u_disagreement,learned_likelihood_confidence,typewell_late_interval_context",
+    "best_model": "lgb_mean",
+    "best_pooled_rmse_tvt": 8.456665438542778,
+    "best_pooled_rmse_target": 8.456665716853479,
+    "delta_vs_exp148_lgb_mean": -0.04461574335304164,
+    "pooled_metrics": {
+      "lgb0": {
+        "rmse_tvt": 8.553543816914422,
+        "rmse_target": 8.553543967372468,
+        "delta_vs_exp148_lgb0": -0.046242042464468724,
+        "prediction_sha256": "3d34f51cb77d70a7fb1ed97bef3b48ff509c9f57bdf1f24c3af4a5a78c72b59a"
+      },
+      "lgb1": {
+        "rmse_tvt": 8.475340902293846,
+        "rmse_target": 8.475341082322357,
+        "delta_vs_exp148_lgb1": -0.08863021893582257,
+        "prediction_sha256": "3430c2e47546843c44cc271f4d4d625842ef9fcf35f0014e039a2f2e1919ee54"
+      },
+      "lgb2": {
+        "rmse_tvt": 8.510015020743442,
+        "rmse_target": 8.510015071869802,
+        "delta_vs_exp148_lgb2": 0.00019530194936656642,
+        "prediction_sha256": "7bf5746d0c9e828952d5f9e315de09240c6e303827176ad7d8d810fb15ac5618"
+      },
+      "lgb_mean": {
+        "rmse_tvt": 8.456665438542778,
+        "rmse_target": 8.456665716853479,
+        "delta_vs_exp148_lgb_mean": -0.04461574335304164,
+        "prediction_sha256": "3a314436d8e4e291eb6d63607d06d27a6ecb05735827111cd24aa49b41d59d04"
+      }
+    },
+    "fold_metrics": {
+      "lgb0": [
+        {"fold": 0, "rows": 757738, "best_iteration": 4998, "rmse_tvt": 8.825960312734171, "model_sha256": "7239094711dfddfd861029121a15a59d5bd4a6c1b9f833b6d5b967be40f0a7cf"},
+        {"fold": 1, "rows": 756650, "best_iteration": 404, "rmse_tvt": 8.8280459751941, "model_sha256": "d1907e57da44360251fe7fbca8f326cc7c6c92c559b6cad241e1406a3a4cb592"},
+        {"fold": 2, "rows": 756255, "best_iteration": 737, "rmse_tvt": 7.634608194670667, "model_sha256": "6d76260852012c73c6e3a001582cf3c841b171d5c645b666a2d5ea258bd248e5"},
+        {"fold": 3, "rows": 757101, "best_iteration": 258, "rmse_tvt": 8.285296926784543, "model_sha256": "3384c00b5866f274cd8bef897ff7f1174a820c4821b07066baa2ceb2668e0585"},
+        {"fold": 4, "rows": 756245, "best_iteration": 324, "rmse_tvt": 9.112826558105068, "model_sha256": "513f9f5b5cf4f03d5c85c1508bf3fbef129f00e0c20a7838704ff95bd4667847"}
+      ],
+      "lgb1": [
+        {"fold": 0, "rows": 757738, "best_iteration": 9999, "rmse_tvt": 8.622115173871894, "model_sha256": "b78a4148206e71fd4c7f055b8c42c1021f8440a1c3a57b2712bddcf89648ae9d"},
+        {"fold": 1, "rows": 756650, "best_iteration": 5335, "rmse_tvt": 8.507907468568625, "model_sha256": "6b51c2807057a89278d916f72148fa2788913dc4ec124bf4a519fbc000940524"},
+        {"fold": 2, "rows": 756255, "best_iteration": 2289, "rmse_tvt": 7.556387638480449, "model_sha256": "8ad955939d330fac30caf9888a5b5ea43fc6c520f5a7bdc4c37c7f1bf1899239"},
+        {"fold": 3, "rows": 757101, "best_iteration": 656, "rmse_tvt": 8.508163401945362, "model_sha256": "24d457e36d9a805daaa7b0e86bd7a33b5751e00723355a3e79b394255ffa3ce3"},
+        {"fold": 4, "rows": 756245, "best_iteration": 1411, "rmse_tvt": 9.107037512088818, "model_sha256": "2f2c9e227f2181a86db87f1a6ca3bc36ef180aabc9ea6463d37307f042d94b80"}
+      ],
+      "lgb2": [
+        {"fold": 0, "rows": 757738, "best_iteration": 9994, "rmse_tvt": 8.666423683828805, "model_sha256": "5149c4d7d3ec92283ca2f6c886d4ac873254e79f15dfd7032c3c37847bd85448"},
+        {"fold": 1, "rows": 756650, "best_iteration": 5111, "rmse_tvt": 8.525558638699467, "model_sha256": "a067428cf96715a751832839c1c80dccd52a576a5f3da621dbccde18c8242589"},
+        {"fold": 2, "rows": 756255, "best_iteration": 2403, "rmse_tvt": 7.575663216680444, "model_sha256": "1159d8e8fcc61049ea73ffb085c396d6ad9c5869388dca6c1f00cbf30086e554"},
+        {"fold": 3, "rows": 757101, "best_iteration": 681, "rmse_tvt": 8.593319026187988, "model_sha256": "892d413d56d1707aeabeac8d703d10d4a74a4c5cbbc6cd57b6aa1969c9e198f0"},
+        {"fold": 4, "rows": 756245, "best_iteration": 1282, "rmse_tvt": 9.114113451415344, "model_sha256": "4f202fabe6aed25d17ff2402f964a8225550b550f0eca2c186c368d65781c7ed"}
+      ]
+    }
+  },
+  "feature_join_coverage": {
+    "base_rows_before_feature_join": 3783989,
+    "base_wells_before_feature_join": 773,
+    "learned_feature_rows": 3783989,
+    "learned_feature_wells": 773,
+    "joined_rows": 3783989,
+    "joined_wells": 773,
+    "dropped_base_rows": 0,
+    "dropped_base_wells": 0,
+    "full_train_coverage_pass": true
+  },
+  "typewell_context_feature_source": {
+    "generated_feature_count": 19,
+    "context_rows": 773,
+    "valid_context_rows": 773,
+    "missing_rate_max": 0.0,
+    "known_last_source": "anchor_t0",
+    "typewell_file_set_sha256": "a9ada5643bbd2775adab48cc53872610868eae8fae313eb5a23ba60b049e8938",
+    "known_last_pct_mean": 0.810139,
+    "known_last_pct_min": 0.409059,
+    "known_last_pct_max": 0.98194
+  },
+  "feature_importance": {
+    "feature_count": 313,
+    "top_typewell_context_features": [
+      {"feature": "tlic_known_last_pct", "rank": 46, "mean_importance": 1987.133333},
+      {"feature": "tlic_known_last_to_late70_min_delta", "rank": 89, "mean_importance": 1235.0},
+      {"feature": "tlic_known_last_to_late50_min_delta", "rank": 109, "mean_importance": 1068.466667},
+      {"feature": "tlic_known_last_to_late60_min_delta", "rank": 114, "mean_importance": 1044.733333},
+      {"feature": "tlic_typewell_min", "rank": 121, "mean_importance": 992.2}
+    ]
+  },
+  "kaggle_train": {
+    "version": 1,
+    "status": "complete",
+    "kernel": "kentookumura/exp193-typewell-late-context-exp148-train",
+    "url": "https://www.kaggle.com/code/kentookumura/exp193-typewell-late-context-exp148-train",
+    "pushed_at": "2026-07-04",
+    "recorded_at": "2026-07-05",
+    "elapsed_seconds": 12979.861
+  },
+  "artifacts": {
+    "output_dir": "experiments/exp193_typewell_late_interval_context_features_addonly_on_exp148/kaggle/output/train_v1",
+    "metrics": "artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_metrics.csv",
+    "predictions": "artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_predictions.csv.gz",
+    "feature_schema": "artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_feature_schema.csv",
+    "model_manifest": "artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_lgb_models/manifest.json",
+    "feature_importance_mean": "artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_feature_importance_mean.csv",
+    "by_well": "artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_by_well.csv",
+    "bucket_metrics": "artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_bucket_metrics.csv",
+    "model_count": 15
+  },
+  "artifact_sha256": {
+    "summary_json": "80d1c1871c1a6c9830952a5799c743bfb76dcd92117719918e781cbc44162c6b",
+    "model_manifest": "e8336b7a2058e584219750b26b30cb582802cf9b030e9ed728346230cd7d1e67",
+    "feature_schema": "c762e6987be934ce6145ba954e2f60e68c5c36c7a54b2912253d610aac16fd80",
+    "predictions_gzip": "0a613e0b9ee06a65247a02a401b5be58e8d57b10931aabdc1b9bf6df5edd4676",
+    "predictions_decompressed": "c171a0655ff3011e198d8b5ad1c74c5d3a8b9f086b09cd47dd613385133721dc"
+  },
+  "reference_metrics": {
+    "exp148_lgb0_pooled_rmse": 8.59978585937889,
+    "exp148_lgb1_pooled_rmse": 8.563971121229669,
+    "exp148_lgb2_pooled_rmse": 8.509819718794075,
+    "exp148_lgb_mean_pooled_rmse": 8.50128118189582,
+    "exp148_gpu_public_lb": 7.96,
+    "exp148_cpu_public_lb": 7.921,
+    "exp160_lgb_mean_pooled_rmse": 8.463718773783008,
+    "exp174_best_firing_delta_vs_exp148": 0.000609,
+    "exp176_lgb_candidate_error_ranker_rmse": 10.64129809970173
+  },
+  "inference": {
+    "status": "completed_submit_check_pass",
+    "mode": "saved_lgb_booster_inference_with_raw_test_feature_replay_and_typewell_context",
+    "selected_variant": "typewell_late_interval_context_addonly",
+    "selected_mode": "gpu_repro_guard_dp_threads8",
+    "selected_model": "lgb_mean",
+    "model_count": 15,
+    "expected_feature_count": 313,
+    "expected_typewell_context_feature_count": 19,
+    "kaggle_package": {
+      "path": "experiments/exp193_typewell_late_interval_context_features_addonly_on_exp148/kaggle/inference",
+      "kernel": "kentookumura/exp193-typewell-late-context-exp148-inference",
+      "title": "exp193 typewell late context exp148 inference",
+      "enable_gpu": true,
+      "enable_internet": false,
+      "run_on_push": true,
+      "prepared_at": "2026-07-05"
+    },
+    "kaggle_inference": {
+      "version": 2,
+      "status": "complete",
+      "kernel": "kentookumura/exp193-typewell-late-context-exp148-inference",
+      "url": "https://www.kaggle.com/code/kentookumura/exp193-typewell-late-context-exp148-inference",
+      "pushed_at": "2026-07-05",
+      "recorded_at": "2026-07-05",
+      "elapsed_seconds": 116.88,
+      "v1_error": "generator.candidates missing in exp193 config; fixed by adding the exp145/exp148 generator block and rerunning v2."
+    },
+    "output": {
+      "output_dir": "experiments/exp193_typewell_late_interval_context_features_addonly_on_exp148/kaggle/output/inference_v2",
+      "submission": "submission.csv",
+      "metrics": "artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_inference_metrics.csv",
+      "summary": "artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_inference_summary.json",
+      "predictions": "artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_inference_test_predictions.csv.gz",
+      "feature_schema": "artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_inference_feature_schema.csv",
+      "typewell_context_feature_summary": "artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_inference_typewell_context_feature_summary.csv"
+    },
+    "metrics": {
+      "feature_count": 313,
+      "base_feature_count": 196,
+      "projection_feature_count": 69,
+      "learned_likelihood_feature_count": 54,
+      "typewell_context_feature_count": 19,
+      "test_rows": 14151,
+      "submission_rows": 14151,
+      "predicted_rows": 14151,
+      "fallback_rows": 0,
+      "prediction_min": 11590.3720703125,
+      "prediction_max": 12240.1171875,
+      "prediction_mean": 11905.43199423296,
+      "prediction_std": 278.79483926833177,
+      "prediction_sha256": "3567ebd4e48b1ab08e3b2ebf05dfa5061c65303e6f9081be262edd7940cbd0f8",
+      "submission_sha256": "9265e3e19e7eea20c6e0097b3b581b4a15c29353ebb77875d09ac30475502695"
+    },
+    "checks": {
+      "feature_schema_exact_match_train_manifest": true,
+      "sample_submission_id_order_match": true,
+      "submit_check": "PASS",
+      "submit_check_fail": 0,
+      "submit_check_warn": 0
+    }
+  },
+  "submission": {
+    "status": "complete",
+    "ref": 54347471,
+    "submitted_at_utc": "2026-07-05 02:12:58.030000",
+    "submitted_at_jst": "2026-07-05 11:12:58.030000",
+    "kernel": "kentookumura/exp193-typewell-late-context-exp148-inference",
+    "kernel_version": 2,
+    "file": "experiments/exp193_typewell_late_interval_context_features_addonly_on_exp148/kaggle/output/inference_v2/submission.csv",
+    "submission_sha256": "9265e3e19e7eea20c6e0097b3b581b4a15c29353ebb77875d09ac30475502695",
+    "public_lb": 7.946,
+    "private_lb": null,
+    "delta_vs_exp148_gpu_public_lb": -0.014,
+    "delta_vs_exp148_cpu_public_lb": 0.025,
+    "delta_vs_exp160_public_lb": -0.115,
+    "delta_vs_exp162_public_lb": -0.154,
+    "adopted_as_ml_route_submitted_anchor": false
+  },
+  "submitted": true,
+  "decision": {
+    "train_side_supported": true,
+    "submit_candidate": "submitted_not_adopted_vs_exp148_cpu",
+    "reason": "OOF lgb_mean improves exp148 GPU CV by -0.044615743 RMSE, Kaggle inference v2 completed with fallback_rows=0, feature schema parity passed, submit-check passed, and code submission ref=54347471 scored Public LB 7.946. This improves exp148 GPU inference v7 Public LB 7.960 by -0.014, but is worse than the user-confirmed exp148 CPU runtime submission Public LB 7.921 by +0.025. Therefore exp193 is not adopted as the ML route submitted anchor. Ensemble route anchor exp082 Public LB 7.601 remains overall best."
+  }
+}

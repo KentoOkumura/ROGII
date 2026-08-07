@@ -1,0 +1,266 @@
+experiment:
+  name: exp240_shrinkage_residual_scale_emission_hmm_on_exp218
+  description: Compare an exp218-center scalar-sigma HMM with predeclared variance-shrinkage stages toward the exp234 cross-fitted row scale.
+  route: ensemble
+  status: closed_train_side_alpha050_best_rmse_mixed_guards_no_inference_no_submit
+  created_at: "2026-07-13"
+  updated_at: "2026-07-13"
+  inference_enabled: false
+
+lineage:
+  parent: exp234_crossfitted_residual_scale_emission_hmm_on_exp218
+  references:
+    - exp218_gr_wavelet_rotation_confidence_features_on_exp148
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+    - exp234_crossfitted_residual_scale_emission_hmm_on_exp218
+    - KAGGLE_DIRECTION.md shrinkage_residual_scale_emission_hmm_on_exp218
+  implementation_source:
+    - residual_scale_crossfit.py
+    - shrinkage_residual_scale_hmm_audit.py
+    - exact_hmm_smoother.py
+    - direct_hmm_comparison.py
+  diff_summary: >
+    Keeps the saved exp218 lgb_mean OOF center and exp234 exact-HMM dynamics.
+    The first mandatory stage is a same-center scalar sigma=20 control. Later
+    stages may run only one predeclared variance-shrinkage alpha per Kaggle
+    version, using a well-GroupKFold cross-fitted residual scale. No LightGBM,
+    parent/control retraining, inference, or submission is included.
+
+validation:
+  strategy: staged_train_side_oof_scalar_control_then_finite_variance_shrinkage
+  metric: rmse
+  seed: 42
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  success_criteria:
+    - The scalar sigma=20 HMM with the exp218 center must complete before any shrinkage stage is enabled.
+    - Each Kaggle version runs exactly one HMM variant.
+    - A shrinkage stage is useful only if it improves the same-center scalar control, not merely the exp218 point OOF.
+    - Overall, all distance buckets, both hidden-like subgroups, by-well regressions, and step-delta diagnostics are recorded.
+  leakage_policy:
+    - exp218 lgb_mean is loaded only from its saved OOF artifact and is never retrained.
+    - A shrinkage sigma uses only a residual-scale model trained on other wells.
+    - Unknown-suffix true TVT is used only for the cross-fitted scale target and evaluation.
+    - Scalar sigma, shrinkage alphas, lambda, floor, and cap are fixed before Kaggle execution.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: shrinkage_residual_scale_emission_hmm_on_exp218
+  estimator: saved_exp218_oof_plus_exact_hmm
+  target: target
+  base_prediction: saved_exp218_lgb_mean_oof
+  feature_ablation:
+    selected_variant: variance_shrinkage_alpha050
+    active_variants:
+      - name: scalar_control
+        enabled: false
+        description: Mandatory exp218-center scalar sigma=20 control.
+      - name: variance_shrinkage_alpha025
+        enabled: false
+        description: Deferred variance shrinkage alpha=0.25 after scalar-control readout.
+      - name: variance_shrinkage_alpha050
+        enabled: false
+        description: Deferred variance shrinkage alpha=0.50 after scalar-control readout.
+  training:
+    active_modes:
+      - cpu_single_hmm_stage
+    modes:
+      cpu_single_hmm_stage:
+        use_gpu: false
+        active_hmm_variants: 1
+        lightgbm_configs: 0
+        lightgbm_boosters: 0
+        parent_control_retraining: false
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+
+shrinkage:
+  formula: sqrt((1-alpha)*scalar_sigma^2 + alpha*crossfitted_sigma^2)
+  scalar_sigma: 20.0
+  allowed_alphas: [0.25, 0.50]
+  selected_stage: shrinkage_alpha050
+  stages:
+    scalar_control:
+      enabled: false
+      kind: scalar_control
+      scalar_sigma: 20.0
+    shrinkage_alpha025:
+      enabled: false
+      kind: variance_shrinkage
+      alpha: 0.25
+    shrinkage_alpha050:
+      enabled: false
+      kind: variance_shrinkage
+      alpha: 0.50
+
+residual_scale:
+  center_source: exp218_lgb_mean_oof_source
+  context_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  required_context_columns: [id, well, target, last_known_tvt, md_since]
+  n_splits: 5
+  squared_residual_clip: 100.0
+  sigma_floor: 2.5
+  sigma_cap: 40.0
+  feature_columns:
+    - log1p_md_since
+    - center_abs_delta
+    - center_abs_step_delta
+    - last_known_tvt
+  estimator:
+    name: HistGradientBoostingRegressor
+    loss: squared_error
+    learning_rate: 0.08
+    max_iter: 100
+    max_leaf_nodes: 15
+    min_samples_leaf: 2048
+    l2_regularization: 10.0
+    early_stopping: false
+    random_state: 42
+  calibration_bins: 10
+  guard:
+    min_spearman_abs_error: 0.05
+    min_top_to_bottom_rmse_ratio: 1.05
+    max_sigma_floor_rate: 0.80
+    max_sigma_cap_rate: 0.25
+    require_strict_fold_separation: true
+
+lgb_emission:
+  enabled: true
+  lambda_grid: [0.50]
+  emission_clip: 600.0
+  sigma_floor: 2.5
+  sigma_cap: 40.0
+  sigma_floor_grid: [2.5]
+  sigma_cap_grid: [40.0]
+  max_variants: 1
+  sources:
+    exp218_scalar:
+      description: Saved exp218 lgb_mean OOF used with scalar sigma=20.
+      id_column: id
+      prediction_column: pred_tvt
+      model_filter: lgb_mean
+      candidates:
+        - /kaggle/input/notebooks/kentookumura/exp218-gr-wavelet-rotation-exp148-train/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_predictions.csv.gz
+        - /kaggle/input/exp218-gr-wavelet-rotation-exp148-train/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_predictions.csv.gz
+        - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_predictions.csv.gz
+    exp218_lgb_mean_oof_source:
+      description: Saved exp218 lgb_mean OOF source for cross-fitted residual-scale generation.
+      id_column: id
+      prediction_column: pred_tvt
+      model_filter: lgb_mean
+      candidates:
+        - /kaggle/input/notebooks/kentookumura/exp218-gr-wavelet-rotation-exp148-train/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_predictions.csv.gz
+        - /kaggle/input/exp218-gr-wavelet-rotation-exp148-train/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_predictions.csv.gz
+        - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_predictions.csv.gz
+    exp148_lgb_mean:
+      id_column: id
+      prediction_column: pred_tvt
+      model_filter: lgb_mean
+      candidates:
+        - /kaggle/input/notebooks/kentookumura/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+        - /kaggle/input/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+    exp193_lgb_mean:
+      id_column: id
+      prediction_column: pred_tvt
+      model_filter: lgb_mean
+      candidates:
+        - /kaggle/input/notebooks/kentookumura/exp193-typewell-late-context-exp148-train/artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_predictions.csv.gz
+        - /kaggle/input/exp193-typewell-late-context-exp148-train/artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_predictions.csv.gz
+
+feature_cache:
+  hmm:
+    variant: shrinkage_residual_scale_emission_hmm
+    output_prefix: exp240_shrinkage_residual_scale_emission_hmm_on_exp218
+    outer_workers: 1
+
+comparison:
+  output_prefix: exp240_shrinkage_residual_scale_hmm
+  baseline_feature_cache:
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  hmm_feature_cache:
+    - /kaggle/working/artifacts/exp240_shrinkage_residual_scale_emission_hmm_on_exp218_shrinkage_residual_scale_emission_hmm_train_features.csv.gz
+    - artifacts/exp240_shrinkage_residual_scale_emission_hmm_on_exp218_shrinkage_residual_scale_emission_hmm_train_features.csv.gz
+  baseline_candidate_columns: [likpf_mean]
+  lgb_baseline_sources: [exp218_lgb_mean_oof_source, exp148_lgb_mean, exp193_lgb_mean]
+  primary_baselines: [exp218_lgb_mean_oof_source, exp148_lgb_mean, exp193_lgb_mean]
+  step_delta_thresholds: [5.0, 10.0, 25.0]
+  uncertainty_bins: 10
+  write_enriched_cache: false
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+  reference_train_side_metrics:
+    exp221_fixed_sigma_exp148_center_hmm_rmse: 8.32773695096078
+    exp234_rowwise_sigma_exp218_center_hmm_rmse: 8.427231402
+    exp218_lgb_mean_rmse: 8.475793751656624
+
+runtime:
+  numba_num_threads: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    machine_shape: None
+    train_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp218-gr-wavelet-rotation-exp148-train
+      - kentookumura/exp148-train
+      - kentookumura/exp193-typewell-late-context-exp148-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+    copy_repository_src: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: Scalar HMM is deterministic; deferred GroupKFold uses shuffle=false and HistGradientBoostingRegressor random_state=42.
+  stochastic_components:
+    - Deferred HistGradientBoostingRegressor internal randomized feature binning is fixed by random_state.
+  parallel_rng_policy: HMM outer_workers=1 and numba_num_threads=1; deferred residual-scale fits are sequential.
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - docs/06_reproducibility.md checked on 2026-07-13.
+    - No raw-test regeneration, inference, or submission is implemented.
+
+notes:
+  - "Current push guard: 1 active scalar-control variant, 1 HMM variant, 0 residual-scale fits, 0 LightGBM configs, 0 boosters, no parent/control retraining."
+  - "Deferred shrinkage stage cost: 1 active alpha, 5 CPU residual-scale fits, 1 HMM variant, 0 LightGBM boosters."
+  - The scalar-control result must be recorded before enabling alpha=0.25 or alpha=0.50.

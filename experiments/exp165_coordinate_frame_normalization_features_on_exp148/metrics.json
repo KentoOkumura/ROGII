@@ -1,0 +1,44 @@
+{
+  "experiment": "exp165_coordinate_frame_normalization_features_on_exp148",
+  "status": "completed_train_side_rejected",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "route": "ml_model",
+  "cv": 8.549931601603163,
+  "delta_vs_exp148_lgb_mean": 0.04865041970734296,
+  "decision": "reject_no_inference_or_submission",
+  "key_idea": "Add target-free anchor-normalized coordinate-frame trajectory confidence features to exp148.",
+  "reference_metrics": {
+    "exp148_lgb_mean_pooled_rmse": 8.50128118189582,
+    "exp148_public_lb": 7.96,
+    "exp092_lgb1_pooled_rmse": 9.322479895503927,
+    "exp092_public_lb": 8.35
+  },
+  "split_rmse_tvt": {
+    "lgb0": 8.62303947719018,
+    "lgb1": 8.586673412864167,
+    "lgb2": 8.61675359016484,
+    "lgb_mean": 8.549931601603163
+  },
+  "prediction_sha256_id_pred8": "e58c971423e3972bd29a8bd3cfd328835964df93e95315c1c07528849909e535",
+  "rows": 3783989,
+  "features": 331,
+  "planned_training": {
+    "active_variants": 1,
+    "lgb_configs": 3,
+    "folds": 5,
+    "boosters_total": 15,
+    "split_notebooks": [
+      "lgb0",
+      "lgb1",
+      "lgb2"
+    ],
+    "gpu": false,
+    "control_retrain": false
+  },
+  "kaggle_kernels": {
+    "train_lgb0": "kentookumura/exp165-coordinate-frame-exp148-lgb0-train",
+    "train_lgb1": "kentookumura/exp165-coordinate-frame-exp148-lgb1-train",
+    "train_lgb2": "kentookumura/exp165-coordinate-frame-exp148-lgb2-train",
+    "train_aggregate": "kentookumura/exp165-coordinate-frame-exp148-aggregate-train"
+  }
+}

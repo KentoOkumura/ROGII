@@ -1,0 +1,86 @@
+{
+  "experiment": "exp157_candidate_ranker_feature_enrichment",
+  "status": "completed_train_side_supported_followup_required",
+  "cv": 10.79579983712686,
+  "metric": "rmse_tvt",
+  "public_lb": "",
+  "private_lb": "",
+  "updated_at": "2026-06-29",
+  "key_idea": "Add tvt_dense-family candidates and high-drift/disagreement confidence features to the exp101 supervised PF/Beam candidate ranker; train-side supported, but continuity follow-up required before inference.",
+  "route": "pf_beam",
+  "parent": "exp101_pf_candidate_ranker_or_nway_classifier",
+  "cache_parent": "exp099_pf_multi_observation_likelihood_probe",
+  "feature_cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "kaggle_kernel": "kentookumura/exp157-cand-ranker-enrich-train",
+  "kaggle_url": "https://www.kaggle.com/code/kentookumura/exp157-cand-ranker-enrich-train",
+  "kaggle_kernel_version": 1,
+  "output_dir": "experiments/exp157_candidate_ranker_feature_enrichment/kaggle/output/train_v1",
+  "runtime": {
+    "kaggle_enable_gpu": false,
+    "runtime_seconds": 10421.75764298439,
+    "active_selector_experiments": 1,
+    "lightgbm_model_families": 3,
+    "folds": 5,
+    "total_boosters": 15,
+    "control_retraining": false
+  },
+  "data": {
+    "rows": 3783989,
+    "wells": 773,
+    "candidate_count": 8,
+    "feature_count": 97,
+    "generated_feature_count": 23,
+    "dense_candidates": ["tvt_dense", "tvt_densew", "tvt_dense50"]
+  },
+  "metrics": {
+    "best_oof_variant": "lgb_candidate_error_ranker",
+    "best_oof_rmse_tvt": 10.79579983712686,
+    "best_oof_mae_tvt": 6.476996066363846,
+    "best_oof_within_10ft": 0.7925049464995803,
+    "best_oof_oracle_label_accuracy": 0.25868811986504187,
+    "delta_rmse_vs_likpf_mean": -0.7990978350908424,
+    "delta_within10_vs_likpf_mean": 0.01969746740807135,
+    "delta_rmse_vs_exp101_best_oof": -0.8042967776208767,
+    "likpf_mean_rmse_tvt": 11.594897672217703,
+    "likpf_mean_within_10ft": 0.772807479091509,
+    "exp101_best_oof_rmse_tvt": 11.600096614747736,
+    "oracle_rmse_tvt": 4.564605114796885,
+    "oracle_within_10ft": 0.960053530811004,
+    "best_oof_pf_ancc_selection_rate": 0.371373965410576,
+    "best_oof_dense_family_selection_rate": 0.1818298097589607,
+    "best_oof_max_path_switch_per_1000_rows": 357.19905586152635,
+    "worst_well": "86454a6f",
+    "worst_well_rmse_tvt": 57.96720074097387
+  },
+  "bucket_notes": {
+    "near_000_050_rmse_likpf": 1.1888775182606774,
+    "near_000_050_rmse_best": 0.49949990968281655,
+    "longtail_1000_plus_rmse_likpf": 12.704015215339874,
+    "longtail_1000_plus_rmse_best": 11.850102657773462,
+    "pf_seed_std_q4_rmse_likpf": 11.071059515003263,
+    "pf_seed_std_q4_rmse_best": 10.53130293165377
+  },
+  "decision": {
+    "recommendation": "ranker_supported_for_followup_continuity_audit",
+    "submit_candidate": false,
+    "next_action": "Use exp157 score surface in a segment/Viterbi or confidence-gated continuity audit before any inference port."
+  },
+  "sha256": {
+    "exp099_source_decompressed": "1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a",
+    "exp072_aux_source_decompressed": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350",
+    "feature_schema": "891226fdf0f82c384e2fcca77f3c7d47b964d5837251ce9594249951d4e5b87c",
+    "metrics": "ee5c857292913f13f5600a1aabf4fce382f2cab7c62956439d5dc5266ee37f94",
+    "model_manifest": "ab25fbfc0c8b92915bfbd11e62c8ffa6d84eadb3d8abf10e039927e2df7d4fb1",
+    "predictions_decompressed": "8e24ea7a55ec88360fd9245b34501fc3fc3adb868a335a93b37e8194b66dc2f0",
+    "best_oof_prediction": "f56c02cde1050a50fa4d760a4d3046c13f6a12b44a420d48880a2caa87d63506"
+  },
+  "artifacts": {
+    "summary": "experiments/exp157_candidate_ranker_feature_enrichment/kaggle/output/train_v1/artifacts/exp157_candidate_ranker_feature_enrichment_summary.json",
+    "metrics": "experiments/exp157_candidate_ranker_feature_enrichment/kaggle/output/train_v1/artifacts/exp157_candidate_ranker_feature_enrichment_metrics.csv",
+    "selection_distribution": "experiments/exp157_candidate_ranker_feature_enrichment/kaggle/output/train_v1/artifacts/exp157_candidate_ranker_feature_enrichment_selection_distribution.csv",
+    "by_well": "experiments/exp157_candidate_ranker_feature_enrichment/kaggle/output/train_v1/artifacts/exp157_candidate_ranker_feature_enrichment_by_well.csv",
+    "bucket_metrics": "experiments/exp157_candidate_ranker_feature_enrichment/kaggle/output/train_v1/artifacts/exp157_candidate_ranker_feature_enrichment_bucket_metrics.csv",
+    "feature_importance_mean": "experiments/exp157_candidate_ranker_feature_enrichment/kaggle/output/train_v1/artifacts/exp157_candidate_ranker_feature_enrichment_feature_importance_mean.csv",
+    "model_manifest": "experiments/exp157_candidate_ranker_feature_enrichment/kaggle/output/train_v1/artifacts/exp157_candidate_ranker_feature_enrichment_model_manifest.json"
+  }
+}

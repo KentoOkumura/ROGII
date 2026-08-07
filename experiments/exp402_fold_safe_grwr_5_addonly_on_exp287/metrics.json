@@ -1,0 +1,183 @@
+{
+  "experiment": "exp402_fold_safe_grwr_5_addonly_on_exp287",
+  "status": "stage_1_gpu_train_version_4_running",
+  "route": "ml_model",
+  "parent": "exp287_fold_safe_formation_74_addonly_on_exp264",
+  "clean_tail_control": "exp264_exp263_candidate_confidence_dual_selector",
+  "feature_counts": {
+    "parent": 421,
+    "added_grwr": 5,
+    "final": 426
+  },
+  "planned_training": {
+    "variants": 1,
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "gpu_boosters": 15,
+    "control_boosters": 0
+  },
+  "implementation": true,
+  "canonical_notebook_adopted": true,
+  "canonical_train_notebook_sha256": "310e3fd356d8f444761d571a78533c9a83ed2c87304798c281ca147e7874ef55",
+  "candidate_notebooks_created": true,
+  "tests": {
+    "count": 13,
+    "passed": 13
+  },
+  "stage_0_current_test_regeneration": {
+    "test_wells": 3,
+    "pf_ancc_well_runs": 3,
+    "pf_z_well_runs": 3,
+    "beam_paths": 21,
+    "likelihood_pf_well_runs": 3,
+    "likelihood_pf_seed_well_trajectories": 384,
+    "likelihood_pf_particle_starts": 192000
+  },
+  "preflight_run": true,
+  "stage_0_completed": true,
+  "monolithic_version_1": {
+    "kernel_id": "kentookumura/exp402-foldsafe-grwr5-on-exp287-train",
+    "kernel_version": 1,
+    "kernel_id_no": 128627922,
+    "url": "https://www.kaggle.com/code/kentookumura/exp402-foldsafe-grwr5-on-exp287-train",
+    "is_private": true,
+    "enable_gpu": false,
+    "enable_internet": false,
+    "last_known_status": "KernelWorkerStatus.CANCEL_ACKNOWLEDGED",
+    "last_status_checked_at": "2026-07-26T23:03:03+09:00",
+    "last_run_time_utc": "2026-07-26T00:06:39.493000",
+    "terminal_cause": "probable_runtime_limit_but_kaggle_api_does_not_distinguish_manual_cancel",
+    "terminal_log_last_time_seconds": 15.354064475,
+    "published_output_file_count": 0,
+    "monitoring_enabled": false,
+    "monitoring_pause_source": "user_message_stop_monitoring_2026_07_26"
+  },
+  "split_retry": {
+    "approved": true,
+    "approval_source": "user_message_fix_and_rerun_2026_07_28",
+    "config_sha256": "82bcce7c7d6e0694ffc67a2898068213e68d1b52cb560f89f63f8788f701bce0",
+    "implementation_source_sha256": "7098ebe2063faeaee2d0d9b65d910648777da7726f682679ce1f17a8548c4ac4",
+    "stage_0_train_source": {
+      "kernel_id": "kentookumura/exp402-foldsafe-grwr5-train-source",
+      "kernel_version": 1,
+      "kernel_id_no": 128774689,
+      "status": "passed"
+    },
+    "stage_0_current_test": {
+      "kernel_id": "kentookumura/exp402-foldsafe-grwr5-current-test-v2",
+      "kernel_version": 1,
+      "kernel_id_no": 128774781,
+      "status": "passed"
+    },
+    "stage_0_train_folds": [
+      {
+        "outer_fold": 0,
+        "kernel_id": "kentookumura/exp402-foldsafe-grwr5-train-fold0",
+        "status": "passed",
+        "partition_rows": 3783989,
+        "runtime_seconds": 13837.056619744
+      },
+      {
+        "outer_fold": 1,
+        "kernel_id": "kentookumura/exp402-foldsafe-grwr5-train-fold1",
+        "status": "passed",
+        "partition_rows": 3783989,
+        "runtime_seconds": 15614.736155574
+      },
+      {
+        "outer_fold": 2,
+        "kernel_id": "kentookumura/exp402-foldsafe-grwr5-train-fold2",
+        "status": "passed",
+        "partition_rows": 3783989,
+        "runtime_seconds": 7493.622544618
+      },
+      {
+        "outer_fold": 3,
+        "kernel_id": "kentookumura/exp402-foldsafe-grwr5-train-fold3",
+        "status": "passed",
+        "partition_rows": 3783989,
+        "runtime_seconds": 13728.844910402
+      },
+      {
+        "outer_fold": 4,
+        "kernel_id": "kentookumura/exp402-foldsafe-grwr5-train-fold4-v2",
+        "status": "passed",
+        "partition_rows": 3783989,
+        "runtime_seconds": 14368.182702116
+      }
+    ],
+    "stage_0_aggregate": {
+      "kernel_id": "kentookumura/exp402-foldsafe-grwr5-stage0-aggregate",
+      "kernel_version": 2,
+      "kernel_id_no": 128831850,
+      "status": "KernelWorkerStatus.COMPLETE",
+      "version_1_failure": "fold4_old_slug_missing_and_same_sentinel_fallback_returned_five_roots",
+      "runtime_alias": "/kaggle/input/notebooks/kentookumura/exp402-foldsafe-grwr5-train-fold4-v2/artifacts",
+      "wrapper_sha256": "7558165751a7bd63f0f5593b4d3e1a35e3c96a7274ad289fbac9e69600e79cc0",
+      "preflight_status": "zero_booster_preflight_passed",
+      "passed": true,
+      "checks_passed": 18,
+      "checks_total": 18,
+      "runtime_seconds": 8.19382479699999,
+      "peak_rss_gb": 0.24061203002929688,
+      "outer_role_partitions": 10,
+      "current_test_rows": 14151,
+      "current_test_wells": 3,
+      "models_trained": 0,
+      "boosters_trained": 0,
+      "prediction_rows_generated": 0,
+      "submission_rows_generated": 0,
+      "scientific_contract_sha256": "8b2befb44bc22b6e62675edda48c90c0593932b815c00fab0915e817c24e6635",
+      "partition_manifest_sha256": "704d8a9163f5a82c9b28f3866e2de6d3a7dfac78a4236b5352436431674f365b",
+      "preflight_manifest_sha256": "c8af15ad8502b172031eaa862878ba07f2a94b6eba5913259c3a4ba0e5142de8",
+      "reproducibility_manifest_sha256": "5456cfd9b0d2df3cac5848cb234cf382f9ebd1515439742fcff6afa3f0560fda"
+    }
+  },
+  "stage_1_training": {
+    "approved": true,
+    "approval_source": "user_message_implementation_and_execution_2026_07_28",
+    "active_variants": 1,
+    "lightgbm_config_indices": [0, 1, 2],
+    "folds": 5,
+    "planned_gpu_boosters": 15,
+    "control_retraining_boosters": 0,
+    "feature_count": 426,
+    "source_sha256": "1d7666edfe81e274f1a0db58499dd465b5a5724c80b661a028e4004765774491",
+    "canonical_notebook_sha256": "310e3fd356d8f444761d571a78533c9a83ed2c87304798c281ca147e7874ef55",
+    "kernel_id": "kentookumura/exp402-foldsafe-grwr5-on-exp287-train",
+    "kernel_id_no": 128627922,
+    "active_kernel_version": 4,
+    "active_status": "KernelWorkerStatus.RUNNING",
+    "accelerator_requested": "NvidiaTeslaT4",
+    "runtime_t4_guard_enabled": true,
+    "enable_internet": false,
+    "input_kernel_count": 11,
+    "version_2_failure": {
+      "runtime_seconds": 10.6418,
+      "boosters_trained": 0,
+      "cause": "stage_0_aggregate_mount_path_not_discovered_before_sha_resolution"
+    },
+    "version_3_fix": "discover mounted artifact roots by required manifest name and fixed file SHA before training",
+    "version_3_failure": {
+      "runtime_seconds": 227.2871,
+      "boosters_trained": 0,
+      "t4_verified": true,
+      "cause": "exp145_learned_likelihood_train_input_missing"
+    },
+    "version_4_fix": "attach exp145-train and fail fast on exactly 11 inputs plus the three required exp145 files",
+    "active_package_sha256": {
+      "config": "3aa1cdde16141acd2a385b228feefdc4e96e600f999cab036e694060b741df1c",
+      "notebook": "a503778e0841f5910a7600b5deb0aec789deb77acb4289d48ef8dadc1e49c29f",
+      "metadata": "816907a0c430621df07c5d69315c7beef771011a41a7f4f35a913980f25a097e"
+    },
+    "last_status_checked_at": "2026-07-28T18:41:05+09:00"
+  },
+  "training_run": true,
+  "inference_run": false,
+  "submission_run": false,
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "notes": "Stage 0 is complete with 18/18 checks passing. Stage 1 training is approved for one variant, three configs, five folds, 15 T4 boosters, and zero control retraining. Version 2 failed before training because the aggregate input mount path was not discovered. Version 3 verified two physical T4 GPUs and the SHA-qualified roots, then failed at 227.2871 seconds with zero boosters because exp145 was not attached. Version 4 attaches exp145, validates exactly 11 inputs and its three required files before reconstruction, and is running. Inference and submission remain disabled."
+}

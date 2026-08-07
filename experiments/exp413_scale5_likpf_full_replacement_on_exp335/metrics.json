@@ -1,0 +1,418 @@
+{
+  "experiment": "exp413_scale5_likpf_full_replacement_on_exp335",
+  "status": "code_submission_v4_complete_public_lb_7p201",
+  "cv": 7.884802794404715,
+  "public_lb": 7.201,
+  "private_lb": null,
+  "metric": "rmse",
+  "route": "ml_model",
+  "parent": {
+    "experiment": "exp335_signed_residual_meta_on_exp264",
+    "cv": 8.146107755881022,
+    "public_lb": 7.517,
+    "submission_ref": 54928806,
+    "control_retraining_boosters": 0
+  },
+  "replacement_evidence": {
+    "experiment": "exp404_scale5_sigma_gr_likelihood_pf_ablation",
+    "scale5_x1p0_rmse": 10.914522073423171,
+    "arithmetic_mean_x1p0_rmse": 11.59489788373621,
+    "gain_ft": 0.6803758103130392
+  },
+  "planned_execution": {
+    "variants": 1,
+    "cpu_nested_selector_boosters": 40,
+    "cpu_signed_selector_boosters": 20,
+    "gpu_downstream_boosters": 15,
+    "total_boosters": 75,
+    "train_pf_well_runs": 0,
+    "parent_control_retraining_boosters": 0
+  },
+  "implementation_validation": {
+    "dedicated_tests_passed": 10,
+    "parent_regression_tests_passed": 25,
+    "current_test_inference_regression_suite": "22 passed (10 dedicated + 8 exp335 + 4 package helper)",
+    "jupytext_roundtrip": "passed",
+    "py_compile": "passed",
+    "ruff_f821_f401_f811": "passed",
+    "strict_experiment_validation": "passed"
+  },
+  "stage_0": {
+    "status": "complete",
+    "technical_pass": true,
+    "kernel_id": "kentookumura/exp413-scale5-likpf-replacement-preflight",
+    "kernel_id_no": 128773100,
+    "kernel_version": 3,
+    "runtime_seconds": 210.182,
+    "rows": 3783989,
+    "wells": 773,
+    "fold_partitions": 5,
+    "changed_candidates": 5,
+    "unchanged_candidates": 7,
+    "changed_candidate_rows": 3698554,
+    "unchanged_candidate_max_abs_error": 0.0,
+    "formula_parity_max_abs_error": 0.0,
+    "parent_old_mean_parity_max_abs_error": 0.0,
+    "selector_feature_count": 88,
+    "compact_feature_count": 74,
+    "models_trained": 0,
+    "pf_well_runs": 0,
+    "preflight_file_sha256": "c1c536daaa4d0250578ba427882745f131223ed988f7b3adc812ed7daa33b258",
+    "semantic_manifest_file_sha256": "b3c98af2198b92756ac1db342e34bcf7bfc31ee54d9b2d85e5a01c0141fd34c7",
+    "semantic_manifest_logical_sha256": "8b2ff389467abb2480eeb00d55e8898fa777dbda5c0523b35ac7709bff425fdf",
+    "executed_config_sha256": "c06d0468bdb2798628989d362ad6729ab3bacafd78f3b883e5bccf088ff6f43a",
+    "executed_source_sha256": "470f04d97a840bda3535a46888a39c7d0116f8acd2fdbab64643374ac3aaded8",
+    "output_log_sha256": "377c88772826c15eff4784004127c4d3b8528d974cfe20947da2339412acfbb3"
+  },
+  "stage_c": {
+    "status": "complete",
+    "technical_pass": true,
+    "score_guard_pass": true,
+    "leakage_audit_pass": true,
+    "hard_readout_enabled": false,
+    "kernel_id": "kentookumura/exp413-scale5-likpf-selector-train",
+    "kernel_id_no": 128776527,
+    "kernel_version": 3,
+    "runtime_seconds": 6378.321285492,
+    "models_trained": 40,
+    "objectives": [
+      "pred_abs_error",
+      "p_within10"
+    ],
+    "outer_folds": 5,
+    "inner_folds": 4,
+    "compact_partitions": 25,
+    "compact_rows": 18919945,
+    "outer_valid_score_long_rows": 45407868,
+    "pooled_score_metrics": {
+      "expected_error_mae": 3.7206340209583226,
+      "expected_error_prior_mae": 5.70019990923869,
+      "within10_logloss": 0.34957913108150057,
+      "within10_prior_logloss": 0.49981391647035633,
+      "within10_brier": 0.10806449114014476,
+      "within10_prior_brier": 0.16070347246562533
+    },
+    "score_guard_improved_folds": {
+      "expected_error_mae": 5,
+      "within10_logloss": 5,
+      "within10_brier": 5
+    },
+    "control_models_retrained": 0,
+    "pf_well_runs": 0,
+    "executed_config_sha256": "a84c088da829584ab097bb5dc8ecd883362e2c8eb909f6ff1c3733c594369e1e",
+    "executed_source_sha256": "5757eef8c0aea3ad52e5f3538a44146aec494ea0b393c192c59b423a8ac478e6",
+    "output_log_sha256": "fe9c8f94d7b386305e8268e28b163b2e39368931d8147b98a59a76ed2692f35f",
+    "metrics_file_sha256": "4642e1b22662d830fcd601f5d46452657e51546f1d741b1e0ae4a8e1c836168d",
+    "model_manifest_sha256": "7badcf45bccab0e2b0535ab7e7171e4c6cb7bf81e0bb115d5e283b1486b7b875",
+    "compact_manifest_sha256": "507429faa4fbc336dbc00e8edfee5a45788b8a58dbc2e15a440d5e7780d5f07f",
+    "compact_partition_manifest_sha256": "b79b5193beef67c022addbaff90aee8bd96995b8392d8e40d753b29095d86132",
+    "fold_manifest_sha256": "fa41084c5fcb4adffb88d44211b4cc5d2d2f46b5bd4d65828b6af941184b2a6d",
+    "outer_valid_candidate_score_sha256": "016408a6e77a3708be5cec285976b95b9f178921a51cac79780b169111c242cd",
+    "replacement_stage_c_lineage_sha256": "2e0a36a7383d45a2f2aae7bba21c8160abff4a9d47e47a4d814300e729774aa1",
+    "reproducibility_manifest_sha256": "ecf4b9a1e41199705438cf44982f417a4055a23f33e8b29e0d44c7b03093441a"
+  },
+  "stage_s": {
+    "status": "complete",
+    "technical_pass": true,
+    "score_gate_pass": true,
+    "stage_s_gate_passed": true,
+    "kernel_id": "kentookumura/exp413-scale5-likpf-signed-train",
+    "kernel_id_no": 128832243,
+    "kernel_version": 1,
+    "runtime_seconds": 2984.19408965,
+    "models_trained": 20,
+    "objective": "signed_residual_l2",
+    "lightgbm_objective": "regression_l2",
+    "outer_folds": 5,
+    "inner_folds": 4,
+    "best_iteration": {
+      "min": 58,
+      "median": 85.5,
+      "max": 147
+    },
+    "compact_partitions": 25,
+    "compact_rows": 18919945,
+    "outer_valid_score_long_rows": 45407868,
+    "pooled_signed_residual_rmse": 8.291963292672019,
+    "pooled_candidate_outer_train_mean_prior_rmse": 10.854995765411246,
+    "pooled_improvement": 2.563032472739227,
+    "improved_outer_folds": 5,
+    "required_improved_outer_folds": 4,
+    "fold_rmse": [
+      8.357040929594355,
+      8.32892780144901,
+      7.942127436849972,
+      8.069782869026774,
+      8.73928159848023
+    ],
+    "fold_prior_rmse": [
+      10.662662426822966,
+      10.812323321778187,
+      10.530471852242362,
+      10.701567515629966,
+      11.539240703972531
+    ],
+    "improved_candidates": 11,
+    "candidate_count": 12,
+    "nonimproved_candidate": {
+      "candidate_id": "exp226_w500_50_50",
+      "signed_residual_rmse": 8.176647174598537,
+      "prior_rmse": 8.053033737366317,
+      "improvement_prior_minus_model_ft": -0.12361343723222085
+    },
+    "formula_parity_max_abs_error": 0.0,
+    "saved_exp264_top1_value_parity_max_abs_error": 0.0,
+    "control_models_retrained": 0,
+    "pf_well_runs": 0,
+    "executed_config_sha256": "532372898a2a5cff0cbd99b817f82f71f0423626d79b607193cbbcbc8cca92eb",
+    "executed_source_sha256": "5757eef8c0aea3ad52e5f3538a44146aec494ea0b393c192c59b423a8ac478e6",
+    "output_log_sha256": "1cf13bf0fd0f6a001061f9b050cf1077c5433c6eca68d822012c52cb0a07fe40",
+    "metrics_json_file_sha256": "ce540b392f23e3becd0b65bceb01589424dac0b0593646c93043d75f81525410",
+    "metrics_csv_sha256": "68abf6acb658b379a3b9ad7429249d84a63f77fbdde9d412ecb813ebc9b5874d",
+    "model_manifest_sha256": "84a0047667ce9209ce63e3b9e935ff6c379d2d38b1ae4262318db94a47aaca9f",
+    "compact_manifest_sha256": "7a4282a25d7e7887e314cd3d01b8a09c81ff91ba3c1b1cf62e3197079ac93323",
+    "compact_partition_manifest_sha256": "893d144fa1956b0cdcc4f4d75b9cfe3ebc05fd5bc54df0e7345a47f4b2c70ff1",
+    "fold_manifest_sha256": "fa41084c5fcb4adffb88d44211b4cc5d2d2f46b5bd4d65828b6af941184b2a6d",
+    "outer_valid_candidate_score_sha256": "004b0830fdc1a7893e5fdac77a217d717c6f7673a36065f50d297fa44c426841",
+    "replacement_stage_s_lineage_sha256": "d0e279e2c844d557c731107a0925f2d1c27de77eb64cfad9a498ab0b10ea0c13",
+    "reproducibility_manifest_sha256": "6acebb4461ac2df6f94c6edf1068a0ba9e42bc8c8877d83b4b3ccfa586a3e7c1"
+  },
+  "stage_d": {
+    "status": "complete",
+    "technical_pass": true,
+    "primary_gate_pass": true,
+    "kernel_id": "kentookumura/exp413-scale5-likpf-downstream-train",
+    "kernel_id_no": 128914549,
+    "kernel_version": 2,
+    "runtime_seconds": 17386.338296418,
+    "models_trained": 15,
+    "unique_model_sha_count": 15,
+    "lightgbm_config_indices": [
+      0,
+      1,
+      2
+    ],
+    "outer_folds": 5,
+    "best_iteration": {
+      "min": 235,
+      "median": 1796,
+      "max": 8230
+    },
+    "feature_counts": {
+      "clean_base": 273,
+      "nested": 74,
+      "signed": 23,
+      "final": 370
+    },
+    "saved_exp335_rmse": 8.146107755881022,
+    "replacement_rmse": 7.884802794404715,
+    "gain_ft": 0.26130496147630744,
+    "delta_replacement_minus_parent_ft": -0.26130496147630744,
+    "nonworse_folds": 5,
+    "required_nonworse_folds": 3,
+    "fold_metrics": [
+      {
+        "fold": 0,
+        "saved_exp335_rmse": 8.00056181144867,
+        "replacement_rmse": 7.919988324359447,
+        "delta_ft": -0.08057348708922252
+      },
+      {
+        "fold": 1,
+        "saved_exp335_rmse": 8.685333868691478,
+        "replacement_rmse": 8.37738133284066,
+        "delta_ft": -0.30795253585081817
+      },
+      {
+        "fold": 2,
+        "saved_exp335_rmse": 7.672684841097233,
+        "replacement_rmse": 7.539713352260811,
+        "delta_ft": -0.1329714888364224
+      },
+      {
+        "fold": 3,
+        "saved_exp335_rmse": 7.832720178696507,
+        "replacement_rmse": 7.574331166543342,
+        "delta_ft": -0.2583890121531649
+      },
+      {
+        "fold": 4,
+        "saved_exp335_rmse": 8.493249805815765,
+        "replacement_rmse": 7.982868392834478,
+        "delta_ft": -0.5103814129812871
+      }
+    ],
+    "scope_metrics": {
+      "md_since_0_250": {
+        "saved_exp335_rmse": 1.4927324738661478,
+        "replacement_rmse": 1.472437864808617,
+        "delta_ft": -0.020294609057530888
+      },
+      "md_since_250_1000": {
+        "saved_exp335_rmse": 3.910355874321575,
+        "replacement_rmse": 3.8908576704969935,
+        "delta_ft": -0.019498203824581672
+      },
+      "md_since_1000_plus": {
+        "saved_exp335_rmse": 8.959723094341745,
+        "replacement_rmse": 8.663017155972323,
+        "delta_ft": -0.2967059383694224
+      },
+      "hidden_like_spatial": {
+        "saved_exp335_rmse": 8.852269346569246,
+        "replacement_rmse": 8.364712529921954,
+        "delta_ft": -0.48755681664729167
+      },
+      "hidden_like_typewell_purged": {
+        "saved_exp335_rmse": 8.809396458582164,
+        "replacement_rmse": 8.307714847328658,
+        "delta_ft": -0.5016816112535061
+      }
+    },
+    "maximum_scope_delta_rmse_ft": -0.019498203824581672,
+    "allowed_maximum_scope_delta_rmse_ft": 0.02,
+    "tail_readout": {
+      "policy": "report_only_not_automatic_stop",
+      "by_well_delta_p95": 1.228715121598846,
+      "worst_well_id": "fa31da94",
+      "worst_well_delta_rmse_ft": 9.033462062369244,
+      "worsened_well_count_plus_1ft": 55,
+      "worsened_well_count_plus_3ft": 8,
+      "worsened_well_count_plus_5ft": 6
+    },
+    "control_models_retrained": 0,
+    "pf_well_runs": 0,
+    "inference_executed": true,
+    "submission_generated": false,
+    "executed_config_sha256": "67bea06a6082892cb93c6ac4e9be6dfe15665d48caca34c6b0da7878bf5a1c0e",
+    "executed_notebook_source_sha256": "5757eef8c0aea3ad52e5f3538a44146aec494ea0b393c192c59b423a8ac478e6",
+    "executed_likpf_module_sha256": "3b557b3a19c5dcc62dfe6567bfe4fdf6b47f3d2691549b87671d03763d0da566",
+    "output_log_sha256": "9e4b0a11003f53f5d0e81074bd5709a5e448006883b89246bd159f5d19bd7327",
+    "metrics_file_sha256": "3ea2229b6174a1bc37960e425e05994645cfbedd3636f0d33a856aacf0f579e7",
+    "oof_prediction_sha256": "9bd2d17778b3b27d771b12cbff72def8b87e6cdf14062e1c0ba192434cef4a9d",
+    "fold_metrics_sha256": "82e70b6674f218f2892d6e5f70e327dfcbbdaf0fa5e431c4e07231009e9e2d8f",
+    "scope_metrics_sha256": "c89add97cd4cae628b79774615a717e4cfbffe7b65a4a68c58b2c2e2737948ed",
+    "hidden_scope_metrics_sha256": "eafa3546e4ea5c0d180d380f7fe2c39b5cac970ea4c8097b68b077017da1f1b8",
+    "by_well_metrics_sha256": "e82c6908ed2caa9b3e5c1664bc66a3226b3bc6d9284f4863bd4fa941ae32d080",
+    "feature_importance_sha256": "48cf4fa355fa57e235c8d396a07afbb04938ea9aca6cf5df685fc0aae0fea484",
+    "model_manifest_sha256": "4b4f988154468ba6697cdd57c0a0c6bf7cc631e7b2bbe1f15fa8f51fdeb7c3df",
+    "reproducibility_manifest_sha256": "5cfcf6d5fb76bd1b23782016967d95c4de86ac82489ab6f6f95a86bd41c1e472"
+  },
+  "current_test_inference": {
+    "status": "complete",
+    "output_validation_status": "pass",
+    "kernel_id": "kentookumura/exp413-scale5-likpf-current-test-inference",
+    "kernel_id_no": 128975306,
+    "kernel_version": 4,
+    "runtime_seconds": 432.68,
+    "log_max_timestamp_seconds": 462.24985278,
+    "rows": 14151,
+    "wells": 3,
+    "candidate_count": 12,
+    "namespaced_confidence_column_count": 21,
+    "feature_counts": {
+      "selector": 88,
+      "parent_compact": 74,
+      "signed_compact": 23,
+      "base": 273,
+      "source_base": 380,
+      "final": 370
+    },
+    "saved_model_counts": {
+      "parent_selector": 40,
+      "signed_selector": 20,
+      "tvt": 15
+    },
+    "booster_training_count": 0,
+    "replacement_pf": {
+      "particles": 500,
+      "seeds": 128,
+      "temperature": 5.0,
+      "gr_scale_multiplier": 1.0,
+      "changed_rows_vs_arithmetic_mean": 14093,
+      "absolute_delta_roundtrip_max_abs_ft": 0.0,
+      "arithmetic_mean_content_sha256": "b267952461cd2c54622a918adc775093a87cdd4c11087b05966bdf488fe74fd0",
+      "scale5_content_sha256": "b713ade7adb5b185dacc941edf19aec324bcd7e075a8e903d33a23f59eb809f3"
+    },
+    "formula_parity_max_abs_error": 0.0,
+    "signed_top1_value_parity_max_abs_error": 0.0,
+    "current_sparse_feature_count": 25,
+    "current_missing_cell_count": 2978967,
+    "infinite_cell_count": 0,
+    "zero_imputation_performed": false,
+    "prediction_stats": {
+      "min": 11591.484375,
+      "max": 12239.875,
+      "mean": 11904.8408203125,
+      "std": 278.1505432128906
+    },
+    "submission_file_generated": true,
+    "external_submission_performed": false,
+    "hidden_runtime_cardinality_contract": "sample_submission_rows_ids_and_nonempty_wells",
+    "executed_config_sha256": "7b99d4533b86966e7004b1dd401cdd0f628dff755441aa15239b4e4cf0ffef03",
+    "executed_source_sha256": "0f6fc81e56556aa6db828584ab2a2e58dde9db9cc4b54d6c12fa60e1c68f1388",
+    "prediction_file_sha256": "52ffb49110673f90b9b83b2e296e09b4ad0839164eda9ec13a91859937ebf136",
+    "prediction_decompressed_sha256": "875a1334ae3c90f841414f8f98d8877fb06234e17e0fd0b8d46385170a584dc4",
+    "inference_metrics_sha256": "8c26c5035c6b422738b351dd403674aa077bae5f838249f7e8ac5755943b3847",
+    "reproducibility_manifest_sha256": "8c26c5035c6b422738b351dd403674aa077bae5f838249f7e8ac5755943b3847",
+    "output_log_sha256": "3b4f2cbe105770adf5bbf2a64290062a667d87c19460c147c576b8551c600090"
+  },
+  "code_submission": {
+    "ref": 55078306,
+    "submitted_at_utc": "2026-07-29T09:48:51.480Z",
+    "kernel_id": "kentookumura/exp413-scale5-likpf-current-test-inference",
+    "kernel_version": 3,
+    "script_version_id": 338788498,
+    "status": "hidden_rerun_unhandled_error",
+    "public_score": null,
+    "private_score": null,
+    "diagnosed_cause": "public_test_row_and_well_cardinality_hard_assert",
+    "repair_kernel_version": 4,
+    "repair_scope": "dynamic_sample_row_id_and_nonempty_well_contract_only",
+    "repair_status": "public_commit_complete_submit_check_pass_ready_for_user_resubmit",
+    "repair_public_output_parity_to_version_3": "exact"
+  },
+  "successful_code_submission": {
+    "ref": 55080377,
+    "submitted_at_utc": "2026-07-29T11:29:12.383Z",
+    "confirmed_at_jst": "2026-07-30",
+    "kernel_id": "kentookumura/exp413-scale5-likpf-current-test-inference",
+    "kernel_version": 4,
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": 7.201,
+    "private_score": null,
+    "cv": 7.884802794404715,
+    "delta_public_lb_vs_exp335": -0.316,
+    "delta_public_lb_vs_exp082_ensemble": -0.4,
+    "user_external_submission_performed": true,
+    "codex_external_submission_performed": false,
+    "ml_public_lb_reference_updated": true
+  },
+  "submission_file": {
+    "status": "hidden_compatible_kaggle_v4_submission_output_complete_submit_check_pass",
+    "kaggle_kernel_id": "kentookumura/exp413-scale5-likpf-current-test-inference",
+    "kaggle_kernel_version": 4,
+    "path": "kaggle/output/inference_v4_hidden_compatible/submission.csv",
+    "rows": 14151,
+    "columns": [
+      "id",
+      "tvt"
+    ],
+    "unique_ids": 14151,
+    "missing_values": 0,
+    "nonfinite_values": 0,
+    "source_value_parity": "exact",
+    "version_3_public_output_parity": "exact",
+    "source_prediction_file_sha256": "52ffb49110673f90b9b83b2e296e09b4ad0839164eda9ec13a91859937ebf136",
+    "source_prediction_decompressed_sha256": "875a1334ae3c90f841414f8f98d8877fb06234e17e0fd0b8d46385170a584dc4",
+    "sample_file_sha256": "7498f19ba1be281328c31a39044d4ba5f84e71c8f4115c613b5531f42aaff85a",
+    "submission_file_sha256": "e9bb6bca7e19a087997c1f8d1d708d8ba0af21e770f5e44e1f1a52078142772f",
+    "submission_file_bytes": 338475,
+    "external_submission_authorized": false,
+    "external_submission_performed": false,
+    "user_external_submission_performed": true,
+    "successful_submission_ref": 55080377,
+    "public_score": 7.201
+  },
+  "notes": "Stage 0, Stage C, Stage S, and Stage D completed. User code submission ref 55078306 failed during hidden rerun because inference version 3 hard-asserted the public test cardinality of 14,151 rows and 3 wells. Hidden-compatible current-test inference version 4 replaced only that guard with dynamic sample/ID/nonempty-well checks, completed on Kaggle, generated submission.csv, matched version 3 public predictions exactly, and passed submit-check. User-submitted version 4 ref 55080377 completed with Public LB 7.201, improving exp335 7.517 by 0.316. Codex did not perform the external submission."
+}

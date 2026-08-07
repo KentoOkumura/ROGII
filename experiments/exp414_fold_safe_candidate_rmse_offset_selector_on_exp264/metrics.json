@@ -1,0 +1,69 @@
+{
+  "experiment": "exp414_fold_safe_candidate_rmse_offset_selector_on_exp264",
+  "route": "ml_model",
+  "status": "implementation_only_complete_kaggle_not_run",
+  "parent": "exp264_exp263_candidate_confidence_dual_selector_corrected_stage_b_v5",
+  "comparator": "exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "implementation": {
+    "candidate_rmse_offset_helper": true,
+    "root_cause_readout_helper": true,
+    "jupytext_candidate": true,
+    "canonical_notebook_adopted": false,
+    "kaggle_execution_performed": false,
+    "dedicated_tests_passed": 6,
+    "dedicated_and_related_selector_tests_passed": 32,
+    "py_compile": "passed",
+    "ruff_f821_f811_f401_e501": "passed",
+    "jupytext_roundtrip": "passed",
+    "notebook_cells": {
+      "total": 18,
+      "markdown": 10,
+      "code": 8
+    }
+  },
+  "compute_contract": {
+    "variants": 1,
+    "objectives": 1,
+    "outer_folds": 5,
+    "planned_cpu_boosters": 5,
+    "classifier_boosters": 0,
+    "parent_control_retraining": 0,
+    "gpu_boosters": 0,
+    "inference": 0,
+    "submission": 0
+  },
+  "root_cause_preimplementation_readout": {
+    "base_rows": 3783989,
+    "parent_hard_rmse": 8.587004386703422,
+    "exp407_hard_rmse": 8.66814102464331,
+    "global_shift_only_hard_rmse": 8.580476914703985,
+    "global_shift_only_nonworse_folds": 4,
+    "local_change_only_hard_rmse": 8.673599263270791,
+    "local_change_only_nonworse_folds": 1,
+    "final_weight_delta_pred_std_spearman": -0.5933870519588776,
+    "final_weight_delta_score_mae_spearman": -0.4116699083078634,
+    "final_weight_delta_logloss_spearman": -0.6037788274520701,
+    "final_weight_delta_pred_mean_spearman": -0.07324256737982773,
+    "root_cause_gate_checks_passed": 9,
+    "root_cause_gate_checks_total": 9,
+    "reusable_module_real_oof_reproduction": "passed",
+    "interpretation": "inverse_rmse_task_importance_caused_distributed_row_local_score_surface_drift_not_candidate_constant_bias"
+  },
+  "method": {
+    "name": "fold_safe_candidate_rmse_additive_base_offset",
+    "training_target": "candidate_abs_error_minus_fit_candidate_rmse",
+    "score_reconstruction": "max_zero_of_residual_prediction_plus_fit_candidate_rmse",
+    "sample_weight": "none",
+    "binary_objective_fit": false
+  },
+  "input_sha256": {
+    "parent_candidate_score_oof": "9a91b62599278d4e56d57074df4725d4a09391460458b8eccc02dd50af34d48a",
+    "exp407_candidate_score_oof": "d993b806d92c2462c1509f110669b272b27d48806c0280a2cf54e87c7f32f1e8",
+    "feature_schema_logical": "aaef4ffdd90667893b099b76a52f1957b22197aea9cee5e5b57bc81048ddd3a4",
+    "candidate_contract_file": "4f4d3f77db01d7477f9e73066ac311cfdc2c14b15eba84fab9830f4cf5486c20"
+  },
+  "notes": "Kaggle execution remains disabled pending explicit canonical adoption and run approval."
+}

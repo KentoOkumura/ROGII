@@ -1,0 +1,103 @@
+{
+  "experiment": "exp252_pf_seed_medoid_selectability_audit",
+  "status": "completed_candidate_likelihood_signal_bank_gate_weak_no_selector",
+  "route": "pf_beam",
+  "metric": "diagnostic_auc_regret_coverage",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "rows": 3783989,
+  "wells": 773,
+  "runtime_seconds": 86.05320119857788,
+  "model_configs": 0,
+  "folds": 0,
+  "boosters": 0,
+  "pf_replays": 0,
+  "kaggle_run": {
+    "kernel": "kentookumura/exp252-pf-seed-medoid-selectability-audit-train",
+    "version": 1,
+    "id_no": 127304849,
+    "status": "complete",
+    "docker_image": "gcr.io/kaggle-images/python@sha256:dafd4ce5668bbf1ad422e4c109e0f18c9623c3a7c7f48b0235f13142755c40b9"
+  },
+  "whole_well": {
+    "base8_oracle_rmse": 6.59242615675934,
+    "k8_oracle_rmse": 7.493876015203153,
+    "base8_plus_k8_oracle_rmse": 5.499586841981156,
+    "union_delta_rmse_vs_base8": -1.0928393147781845,
+    "useful_bank_units": 374,
+    "units": 773,
+    "useful_bank_rate": 0.48382923673997413
+  },
+  "selectability": {
+    "bank": {
+      "resampling_rate": {
+        "mean_auc_real": 0.5417852255471933,
+        "mean_auc_delta_vs_shuffled": 0.04020401220162799,
+        "positive_scopes": 5,
+        "whole_well_auc_real": 0.5605926581158779,
+        "whole_well_auc_shuffled": 0.5052604773967003
+      },
+      "decision": "weak_no_bank_gate"
+    },
+    "candidate": {
+      "cluster_likelihood_mass": {
+        "mean_auc_real": 0.5747308175490118,
+        "mean_auc_delta_vs_shuffled": 0.061857587365589675,
+        "positive_scopes": 5,
+        "whole_well_auc_real": 0.675213765681519,
+        "whole_well_auc_shuffled": 0.5579472972102313,
+        "whole_well_top1_useful_coverage": 0.516042780748663,
+        "whole_well_top1_union_best_match": 0.2807486631016043,
+        "whole_well_top1_regret_mean": 2.4160447824664444,
+        "whole_well_top1_selected_minus_best_base_loss_mean": 3.1949467848682773
+      },
+      "medoid_likelihood_rank_score": {
+        "mean_auc_real": 0.5786653269272899,
+        "mean_auc_delta_vs_shuffled": 0.07616194318891537,
+        "positive_scopes": 5,
+        "whole_well_auc_real": 0.655102303791177,
+        "whole_well_auc_shuffled": 0.5174312222150634
+      },
+      "medoid_likelihood_gap_from_best": {
+        "mean_auc_real": 0.5751430044572736,
+        "mean_auc_delta_vs_shuffled": 0.07239042487219559,
+        "positive_scopes": 5,
+        "whole_well_auc_real": 0.6542348155034193,
+        "whole_well_auc_shuffled": 0.5086435888703784
+      },
+      "decision": "likelihood_ranking_signal_only_no_direct_top1"
+    }
+  },
+  "selector_position": {
+    "eligible_features": [
+      "cluster_likelihood_mass",
+      "medoid_likelihood_rank_score",
+      "medoid_likelihood_gap_from_best"
+    ],
+    "role": "add_only_candidate_ranking_features_in_fold_safe_two_stage_selector",
+    "required_fallback": "base8",
+    "requires_separate_bank_gate": true,
+    "standalone_fixed_score_selector_supported": false,
+    "raw_test_inference_ready": false
+  },
+  "generation_runtime": {
+    "saved_candidate_selectability_readout_seconds_773_wells": 86.05320119857788,
+    "raw_pf_seed_bank_medoid_generation_seconds_773_wells": 37067.406158447266,
+    "raw_generation_seconds_per_well_average": 47.95265997211807,
+    "hidden_test_wells_reference": 200,
+    "hidden_test_simple_well_scaled_seconds": 9590.531994423614,
+    "hidden_test_simple_well_scaled_hours": 2.6640366651176706,
+    "hidden_test_estimate_is_measured": false,
+    "notes": "The hidden-test estimate is a simple well-count projection from exp243 v3. K8-only savings and selector model runtime are not measured."
+  },
+  "artifact_sha256": {
+    "by_well": "2ad021ca53c13478cfe0d2cc453fc521e704722a0dd2430e323de9f5c7a79ba1",
+    "scope_metrics": "4026b414486fe1cfb24ed46014aa25e3b2712d40a413080b183158fbbc0b3ad9",
+    "score_contract": "fe7c4fc2589e6e1723ce6e7c139826ad693762792efa7c330d46c907c73a8514",
+    "score_metrics": "fb95a238403d1e3c5bb6b58a1f56f1766678456904417ef995afc8f51f99fb81",
+    "summary": "62ecb2a3747e83da5dba75ab9ac4ac0b885975d17b78e8a492570bd6d0ff9f98",
+    "top1_regret": "70ca703bb0c0740f500db2493ec2a18f2d8f35471987b4296e919938bddfdd89"
+  },
+  "notes": "K8 candidate likelihood signal was consistent versus shuffled control, but the bank gate was weak and fixed top1 remained worse than the best base8 candidate on average. No selector, inference, or submission."
+}

@@ -1,0 +1,254 @@
+experiment:
+  name: exp503_exp490_strength_weakness_prefix_policy_readout
+  description: >-
+    Truth-aware saved-OOF readout of where exp490 is strong or weak, plus an
+    outer-fold-safe audit of public-notebook-inspired prefix fade and alpha
+    policies. No candidate regeneration or submission is allowed.
+  route: ensemble
+  status: completed_diagnostic_no_inference
+  created_at: "2026-08-02"
+  updated_at: "2026-08-02"
+
+lineage:
+  parent: exp490_geometry_centered_mean_reverting_offset_hmm
+  fallback: exp357_exp226_huber_emission_independent_audit
+  feature_source: exp499_exp490_cross_fitted_well_application_selector
+  steering: ../../.steering/20260802-exp503-exp490-strength-weakness-prefix-policy-readout
+  diff_summary: >-
+    Reuses immutable exp490 and exp357 OOF predictions to characterize failure
+    modes and evaluate fade-in/blend policies. It changes neither upstream
+    candidate and generates no inference prediction.
+
+implementation:
+  enabled: true
+  scope: saved_full_oof_truth_aware_readout_and_outer_fold_policy_audit
+  train_notebook_state: compact_selfcontained_canonical_adopted
+  inference_notebook_state: guarded_disabled_canonical_adopted
+  canonical_notebook_adopted: true
+  compact_train_candidate: exp503_exp490_strength_weakness_prefix_policy_readout_compact_selfcontained_train.py
+  inference_enabled: false
+  submission_enabled: false
+  kaggle_run_completed: true
+  kaggle_kernel_id: kentookumura/exp503-exp490-strength-prefix-fade-readout-train
+  kaggle_kernel_id_no: 129477630
+  kaggle_kernel_version: 3
+  technical_passed: true
+  fixed_fade_supported_exploratory: true
+  adaptive_prefix_replay_supported: false
+  deployment_eligible: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+
+validation:
+  strategy: saved_oof_truth_aware_readout_with_outer5_held_well_policy_evaluation
+  metric: rmse_tvt
+  seed: 42
+  n_folds: 5
+  group_column: well
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  leakage_policy:
+    - Truth-aware associations and archetypes are descriptive only.
+    - Fade profile selection uses only the four outer-train folds.
+    - Alpha trees fit only outer-train wells and predict held-out wells once.
+    - Early-truth transfer policies are optimistic nondeployable audits.
+
+data:
+  exp490_merge_source:
+    kernel_id: kentookumura/exp490-mean-revert-full-merge
+    kernel_version: 1
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp490-mean-revert-full-merge/artifacts
+      - /kaggle/input/exp490-mean-revert-full-merge/artifacts
+      - /tmp/kaggle-output/exp490_geometry_centered_mean_reverting_offset_hmm/merge_v1/artifacts
+  exp499_feature_source:
+    kernel_id: kentookumura/exp499-exp490-cross-fitted-well-selector-train
+    kernel_version: 2
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp499-exp490-cross-fitted-well-selector-train/artifacts
+      - /kaggle/input/exp499-exp490-cross-fitted-well-selector-train/artifacts
+      - experiments/exp499_exp490_cross_fitted_well_application_selector/kaggle/output/train_v2/artifacts
+  inputs:
+    predictions:
+      filename: exp490_geometry_centered_mean_reverting_offset_hmm_stage1_full_oof_predictions.csv.gz
+      raw_gzip_sha256: 99030b33d493cc5f195f7d1a867f0d812a539143da9e1f59277e53779261b72c
+      decompressed_sha256: e020e82e748a7836085657c4058070ff7853ed285639f2c2555cab721f9e9a07
+      columns:
+        - well
+        - row_idx
+        - suffix_offset
+        - md_since
+        - fold
+        - true_tvt_readout_only
+        - geometry_mean_reverting_hmm
+        - geometry_mean_reverting_delta_mean
+        - geometry_mean_reverting_hmm_std
+        - exp357_parent_prediction
+        - exp226_pred
+        - tvt_geop
+    target_free_features:
+      filename: exp499_exp490_cross_fitted_well_application_selector_target_free_well_features.csv
+      sha256: 54c7e1dac064f929edd57dc03bf00d1a15b47340d5c40d7e6e8afc3e707bb0d4
+      expected_rows: 773
+      expected_feature_count: 32
+
+readout:
+  absolute_depth_edges: [0, 128, 256, 512, 1024, 2048, 4096, 1000000000]
+  relative_depth_edges: [0.0, 0.25, 0.5, 0.75, 1.0000001]
+  early_transfer_horizons: [128, 256, 512]
+  adverse_window_rows: 128
+  archetypes:
+    n_clusters: 5
+    n_init: 20
+    random_state: 42
+  representative_wells_each_side: 6
+
+policies:
+  public_reference:
+    notebook: fleongg/fle3n-rogii-v5
+    url: https://www.kaggle.com/code/fleongg/fle3n-rogii-v5
+    formula: parent_plus_alpha_times_one_minus_exp_minus_md_since_over_tau_times_exp490_delta
+    published_tau_ft: 85
+  fade_grid:
+    alphas: [0.25, 0.5, 0.75, 1.0]
+    taus_ft: [0, 50, 85, 125, 250, 500, 1000]
+    include_parent: true
+    expected_profiles: 29
+    outer_selection_metric: pooled_rmse_on_other_four_folds
+    reported_fixed_profiles:
+      - alpha1_tau85
+      - alpha1_tau500
+  alpha_tree:
+    fixed_tau_ft: 85
+    max_depth: 2
+    min_samples_leaf: 80
+    splitter: best
+    random_state: 42
+    sample_weight: rows
+    prefix_feature_columns:
+      - visible_prefix_rows
+      - prefix_gr_sigma
+      - prefix_gr_information_ratio
+    context_feature_columns:
+      - rows
+      - visible_prefix_rows
+      - suffix_horizon_md
+      - k16_median_segment_span_ft
+      - prefix_gr_sigma
+      - prefix_gr_information_ratio
+      - geometry_disagreement_median_ft
+      - early_abs_offset_ft
+      - state_uncertainty_median_ft
+      - parent_exp226_abs_mean
+      - parent_geometry_abs_mean
+      - candidate_parent_abs_mean
+      - delta_abs_mean
+      - posterior_std_mean
+
+gates:
+  technical_requires_all:
+    input_sha_match: true
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_folds: 5
+    profile_count: 29
+    policy_prediction_coverage: 1.0
+  useful_fade_requires_all:
+    cross_fitted_gain_vs_exp490_minimum_ft: 0.02
+    nonworse_folds_minimum: 4
+    fold_nonworse_tolerance_ft: 0.0
+    by_well_delta_vs_exp490_p95_max_ft: 0.25
+    by_well_delta_vs_exp490_worst_max_ft: 5.0
+  safe_fixed_fade_requires_all:
+    profile: alpha1_tau500
+    gain_vs_exp490_minimum_ft: 0.02
+    nonworse_folds_minimum: 5
+    by_well_delta_vs_exp490_p95_max_ft: 0.25
+    by_well_delta_vs_exp490_worst_max_ft: 5.0
+  prefix_tree_requires_all:
+    gain_vs_exp490_minimum_ft: 0.02
+    nonworse_folds_minimum: 4
+    predicted_alpha_std_minimum: 0.05
+  masked_prefix_replay_trigger_requires_all:
+    optimistic_early_truth_gain_minimum_ft: 0.05
+    early_late_benefit_spearman_minimum: 0.25
+  pass_action: permit_separate_masked_prefix_hmm_replay_design_after_user_approval
+  fail_action: close_prefix_adaptive_exp490_postprocess_branch
+
+execution_contract:
+  variants: 1
+  fixed_fade_profiles: 29
+  outer_folds: 5
+  alpha_tree_feature_sets: 2
+  maximum_cpu_tree_fits: 10
+  kmeans_fits: 1
+  lightgbm_configs: 0
+  lightgbm_boosters: 0
+  parent_control_retraining: 0
+  new_hmm_well_runs: 0
+  new_candidate_predictions: 0
+  pf_runs: 0
+  beam_runs: 0
+  gpu_runs: 0
+
+model:
+  name: saved_oof_fade_and_interpretable_alpha_policy_audit
+  params:
+    trained_prediction_models: 0
+    diagnostic_decision_trees: 10
+    descriptive_kmeans: 1
+
+artifacts:
+  directory: artifacts
+  files:
+    well_readout: exp503_exp490_strength_weakness_prefix_policy_readout_well_readout.csv
+    depth_metrics: exp503_exp490_strength_weakness_prefix_policy_readout_depth_metrics.csv
+    feature_associations: exp503_exp490_strength_weakness_prefix_policy_readout_feature_associations.csv
+    feature_quantiles: exp503_exp490_strength_weakness_prefix_policy_readout_feature_quantile_metrics.csv
+    archetype_metrics: exp503_exp490_strength_weakness_prefix_policy_readout_archetype_metrics.csv
+    fade_profile_metrics: exp503_exp490_strength_weakness_prefix_policy_readout_fade_profile_metrics.csv
+    fold_metrics: exp503_exp490_strength_weakness_prefix_policy_readout_fold_metrics.csv
+    policy_oof: exp503_exp490_strength_weakness_prefix_policy_readout_policy_oof.csv
+    early_transfer: exp503_exp490_strength_weakness_prefix_policy_readout_early_truth_transfer.csv
+    model_manifest: exp503_exp490_strength_weakness_prefix_policy_readout_model_manifest.json
+    summary: exp503_exp490_strength_weakness_prefix_policy_readout_summary.json
+    depth_plot: exp503_exp490_strength_weakness_prefix_policy_readout_depth_gain.png
+    feature_plot: exp503_exp490_strength_weakness_prefix_policy_readout_feature_lift.png
+    trajectory_plot: exp503_exp490_strength_weakness_prefix_policy_readout_representative_wells.png
+
+runtime:
+  accelerator: cpu
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_tpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp490-mean-revert-full-merge
+      - kentookumura/exp499-exp490-cross-fitted-well-selector-train
+    train_dataset_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_random_state_42_and_deterministic_group_aggregation
+  stochastic_components: [kmeans_archetype_labels]
+  parallel_rng_policy: single_process_no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip_and_file_sha_for_csv
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - KMeans labels are descriptive and not a deterministic route anchor.
+    - No inference or submission is generated.

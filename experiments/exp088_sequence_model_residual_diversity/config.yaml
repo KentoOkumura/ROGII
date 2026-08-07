@@ -1,0 +1,146 @@
+experiment:
+  name: "exp088_sequence_model_residual_diversity"
+  description: "Lightweight GRU/TCN residual sequence diversity audit on top of the deterministic exp073 OOF anchor."
+  route: ml_model
+  status: implemented_not_run
+  created_at: "2026-06-20"
+  updated_at: "2026-06-20"
+
+lineage:
+  parent: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  comparison_parent: exp077_full_replay_postprocess_guard
+  implementation_source: sequence_model_residual_diversity.py
+  diff_summary: >
+    Implements the old sequence_model_residual_diversity backlog against the current
+    deterministic exp073 full-replay OOF anchor instead of the obsolete exp063 direct
+    branch. It trains small fold-safe GRU and TCN residual correction models on
+    exp073 OOF residual errors, then reports standalone OOF RMSE, residual error
+    correlation with exp073, conservative alpha/ridge blends, and distance-bucket
+    behavior. It is a diversity diagnostic and does not create a submission.
+
+validation:
+  strategy: fold_out_well_sequence_residual_correction_on_exp073_oof
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: exp073_oof_rows
+  leakage_policy:
+    - The supervised target is the fold-out exp073 OOF residual error, target_tvt minus exp073 pred_tvt.
+    - The sequence model validation split is well-hash based; validation wells are never used for sequence model fitting in that fold.
+    - Input features are exp072 train-only deterministic full replay feature cache values joined by id.
+    - The exp073 prediction being corrected is already fold-out OOF.
+    - No raw test files, public submissions, saved hidden predictions, static overrides, or final public-notebook blend outputs are used.
+    - This experiment is diagnostic-only and does not produce submission.csv.
+
+model:
+  name: exp088_lightweight_sequence_residual_diversity
+  source_experiment: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  estimator: pytorch_gru_tcn
+  target: exp073_oof_tvt_correction
+  base_prediction: exp073_lgb_mean_oof_pred_tvt
+  context_window: 64
+  batch_size: 1024
+  epochs: 2
+  lr: 0.001
+  weight_decay: 0.0001
+  train_stride: 4
+  valid_stride: 1
+  max_train_windows_per_fold: 180000
+  max_valid_windows_per_fold: null
+  correction_clip: 50.0
+  ridge_blend_l2: 0.001
+  active_folds: [0, 1, 2, 3, 4]
+  sequence_features:
+    - MD
+    - md_since
+    - md_from_ps
+    - eval_len
+    - known_len
+    - X
+    - Y
+    - Z
+    - dz
+    - GR
+    - likpf_mean_d
+    - beam_std_d
+    - dense_dist
+    - dense_nb_std
+    - pf_vs_dense
+    - tvt_densew_d
+    - tvt_dense50_d
+    - tvt_dense_d
+    - pf_ancc_delta
+    - pf_z_delta
+  variants:
+    - name: gru32_ctx64
+      type: gru
+      hidden_size: 32
+      context_window: 64
+      epochs: 2
+      dropout: 0.05
+      train_stride: 4
+      correction_clip: 50.0
+      huber_beta: 5.0
+    - name: tcn32_ctx64
+      type: tcn
+      hidden_size: 32
+      layers: 3
+      context_window: 64
+      epochs: 2
+      dropout: 0.05
+      train_stride: 4
+      correction_clip: 50.0
+      huber_beta: 5.0
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+audit:
+  mode: sequence_model_residual_diversity
+  output_prefix: exp088_sequence_model_residual_diversity
+  selected_mode: gpu_repro_guard_dp_threads8
+  selected_model: lgb_mean
+  max_rows: null
+  max_feature_join_missing_fraction: 0.02
+  candidates:
+    exp073_oof_predictions:
+      - /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/train_v2/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp073-full-replay-repro-guard-train/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+    exp072_feature_cache:
+      - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v1/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  expected_train_artifacts:
+    - exp088_sequence_model_residual_diversity_oof_predictions.csv.gz
+    - exp088_sequence_model_residual_diversity_metrics.csv
+    - exp088_sequence_model_residual_diversity_bucket_metrics.csv
+    - exp088_sequence_model_residual_diversity_diversity_metrics.csv
+    - exp088_sequence_model_residual_diversity_train_history.csv
+    - exp088_sequence_model_residual_diversity_rmse.png
+    - exp088_sequence_model_residual_diversity_summary.json
+
+runtime:
+  use_amp: false
+  min_cuda_capability_major: 7
+  allow_cpu_fallback: false
+  num_workers: 0
+  kaggle:
+    enable_gpu: true
+    machine_shape: NvidiaTeslaT4
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp073-full-replay-repro-guard-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+notes:
+  - exp063 is treated as an obsolete comparison branch; exp073 is the raw deterministic ML anchor.
+  - Existing discussions/public notebooks suggest sequence/CNN methods are risky and not current top anchors, so this experiment only tests residual diversity and conservative blends.
+  - PyTorch runs float32 only. AMP and bfloat16 are disabled because discussion 703344 reported transformer/copy-task failures under bfloat16.

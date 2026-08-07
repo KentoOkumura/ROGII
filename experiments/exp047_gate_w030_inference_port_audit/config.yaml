@@ -1,0 +1,150 @@
+experiment:
+  name: "exp047_gate_w030_inference_port_audit"
+  description: Port the exp047 fixed exp026-to-public-PF gate w=0.30 into the public sel15 inference flow and audit output diffs before any submission.
+  route: pf_beam
+  status: implemented
+  created_at: "2026-06-09"
+  updated_at: "2026-06-09"
+
+lineage:
+  parent: exp047_public_pf_beam_gate_only_audit
+  implementation_parent: exp045_public_pf_meta_strict_parity_audit
+  diff_summary: Replace the exp045 hidden-test-well Ridge meta residual branch with the exp047-supported fixed gate, pred = exp026_anchor + 0.30 * (public_pf_pred - exp026_anchor), while keeping the public-visible physical branch and exp026-style anchor generation unchanged.
+
+source_notebook:
+  ref: needless090/lb8-781-rogii-sel15-spread3
+  title: "[LB8.781]rogii-sel15-spread3"
+  archived_path: docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_latest/needless090__lb8-781-rogii-sel15-spread3/lb8-781-rogii-sel15-spread3.ipynb
+  archived_metadata: docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_latest/needless090__lb8-781-rogii-sel15-spread3/kernel-metadata.json
+  known_public_lb_from_title: 8.781
+  replay_policy: preserve_public_visible_physical_branch_and_apply_fixed_exp026_to_pf_gate_to_hidden_wells
+
+validation:
+  leakage_policy:
+    - The exp026-style anchor model is fit from train wells only and used for unseen test-well anchors.
+    - Hidden/test gate input uses only exp026 anchor, selector/PF predictions, typewell data, and known TVT_input prefix.
+    - Hidden/test evaluation-zone TVT is never read.
+    - Visible public sample wells keep the original physical-model branch unchanged.
+    - The only ported candidate is the fixed exp047 gate w=0.30; learned gates and meta residual models are not used.
+
+model:
+  name: gate_w030_inference_port_audit
+  target: tvt
+  base_prediction: exp026_pred
+  primary_strategy: drift_model
+  drift_strategy: drift_model
+  feature_set: no_gr_signal
+  strategies:
+    - last_anchor
+    - recent_linear
+    - drift_model
+  params:
+    n_particles: 250
+    n_seeds: 16
+    selector_scales: [3.0, 5.0, 8.0, 12.0]
+    beam_configs: 14
+    candidate: exp026_to_pf_gate_w0p30
+    gate_weight: 0.30
+    apply_to: hidden_wells_only
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+    gr_slope_window: 200
+    max_abs_gr_slope: 2.0
+    gr_roll_short: 25
+    gr_roll_long: 100
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  drift_model:
+    estimator: LGBMRegressor
+    params:
+      n_estimators: 800
+      learning_rate: 0.03
+      num_leaves: 31
+      min_child_samples: 80
+      subsample: 0.9
+      colsample_bytree: 0.9
+      reg_lambda: 0.1
+      n_jobs: 2
+  training:
+    max_train_rows_final: 450000
+    max_train_rows_per_well: 800
+
+postprocess:
+  selected_method: distance_bucket_shrink
+  output_file: submission.csv
+  submit_check_required: true
+  audit_files:
+    - public_sel15_exp026_anchor_submission.csv
+    - public_sel15_gate_w030_diff.csv
+    - public_sel15_gate_w030_summary.json
+  methods:
+    distance_bucket_shrink:
+      name: exp014_bucket_shrink_params
+      buckets:
+        - {name: rows_0_49, max_step: 49, alpha: 0.20}
+        - {name: rows_50_249, max_step: 249, alpha: 0.5917180252647632}
+        - {name: rows_250_999, max_step: 999, alpha: 1.15}
+        - {name: rows_1000_2499, max_step: 2499, alpha: 1.15}
+        - {name: rows_2500_plus, max_step: 1000000000, alpha: 1.0490770312511664}
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  chunk_rows: 500000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp029-sel15-pf-oof-train
+    expected_sources:
+      dataset_sources: []
+      kernel_sources:
+        - kentookumura/exp029-sel15-pf-oof-train
+      model_sources: []
+
+audit:
+  parent_exp047_original_fold_cv: 14.527279
+  parent_exp047_well_hash_cv: 14.620835
+  parent_exp047_stratified_group_cv: 14.353489
+  parent_public_lb_anchor:
+    experiment: exp027_public_replay_needless090_sel15_spread3
+    public_lb: 8.781
+  fixed_gate:
+    source_experiment: exp047_public_pf_beam_gate_only_audit
+    name: exp026_to_pf_gate_w0p30
+    base_column: exp026_pred
+    candidate_column: pf_pred
+    weight: 0.30
+  hidden_pf:
+    source_experiment: exp029_public_sel15_pf_oof_feature_generation
+    n_particles: 250
+    n_seeds: 16
+    selector_scales: [3.0, 5.0, 8.0, 12.0]
+    beam_configs: 14
+  training_variants:
+    selected_variant: pseudo_tail_3_cutoffs_distance_balanced
+    variants:
+      - name: pseudo_tail_3_cutoffs_distance_balanced
+        cutoffs_per_well: 3
+        cutoff_quantiles: [0.45, 0.65, 0.82]
+        distance_balanced: true
+        max_rows_per_pseudo_tail: 260
+        balanced_rows_per_bucket: 60000
+  pseudo_tail:
+    min_prefix_rows: 200
+    min_pseudo_eval_rows: 250
+    cutoff_strategy: quantile
+  distance_buckets:
+    - {name: rows_0_49, max_step: 49}
+    - {name: rows_50_249, max_step: 249}
+    - {name: rows_250_999, max_step: 999}
+    - {name: rows_1000_2499, max_step: 2499}
+    - {name: rows_2500_plus, max_step: 1000000000}
+
+notes:
+  - CV is not recomputed in this inference port; supporting surrogate evidence comes from exp047.
+  - Public sample output can remain unchanged because the sample wells are visible train wells and use the preserved physical branch.
+  - Before code submit, save output diff, prediction range, hidden branch summary, and submit-check result. If submitted and Public LB worsens, stop public PF gate inference ports.

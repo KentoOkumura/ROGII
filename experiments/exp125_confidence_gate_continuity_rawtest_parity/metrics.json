@@ -1,0 +1,77 @@
+{
+  "experiment": "exp125_confidence_gate_continuity_rawtest_parity",
+  "status": "completed_train_side_audit_no_submit",
+  "route": "pf_beam",
+  "parent": "exp102_confidence_gated_likpf_fallback_on_exp101",
+  "cv": "fair_shared best exp102 gate RMSE 11.540333945; within10 0.782674; direct_submit=false",
+  "public_lb": null,
+  "private_lb": null,
+  "key_idea": "Posthoc continuity and raw-test parity audit for exp102/112 confidence gates; keep as diagnostic/ML-feature input, not direct gate.",
+  "kernel": {
+    "id": "kentookumura/exp125-cg-continuity-train",
+    "version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp125-cg-continuity-train",
+    "status": "COMPLETE",
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "metrics": {
+    "available_rows": 13625181,
+    "available_wells": 773,
+    "fair_shared_rows": 4546428,
+    "fair_shared_wells": 155,
+    "fair_shared_variant_count": 6,
+    "best_fair_shared_variant": "exp102:gate_error_margin_sr050_d020_std000020",
+    "best_fair_shared_rmse": 11.540333945230893,
+    "best_fair_shared_mae": 6.934089290097634,
+    "best_fair_shared_within10": 0.7826742224885118,
+    "best_delta_rmse_vs_likpf": -0.06407623625025138,
+    "best_delta_within10_vs_likpf": -0.0016377692553363188,
+    "exp112_gate_rmse": 11.573266305364578,
+    "exp112_gate_within10": 0.7850642306443653,
+    "exp112_gate_delta_rmse_vs_likpf": -0.031143876116566105,
+    "exp112_gate_delta_within10_vs_likpf": 0.0007522389005171215,
+    "required_parity_missing_count": 2,
+    "continuity_fail_variant_count": 3,
+    "well_regression_fail_rows": 14,
+    "max_well_regression_ft": 12.461016874025885,
+    "optional_dense_gate_available": false,
+    "runtime_seconds": 182.05096077919006
+  },
+  "decision": {
+    "direct_submission_candidate": false,
+    "recommendation": "keep_as_train_side_diagnostic_or_ml_feature_input",
+    "reason": "RMSE improves on the fair shared surface, but within10 regresses for the exp102 best gate, required raw-test parity checks are missing, continuity guards fail for multiple variants, and worst-well regression remains."
+  },
+  "artifacts": {
+    "output_dir": "experiments/exp125_confidence_gate_continuity_rawtest_parity/kaggle/output/train_v1",
+    "summary": "experiments/exp125_confidence_gate_continuity_rawtest_parity/kaggle/output/train_v1/artifacts/exp125_confidence_gate_continuity_rawtest_parity_summary.json",
+    "metrics": "experiments/exp125_confidence_gate_continuity_rawtest_parity/kaggle/output/train_v1/artifacts/exp125_confidence_gate_continuity_rawtest_parity_metrics.csv",
+    "by_well": "experiments/exp125_confidence_gate_continuity_rawtest_parity/kaggle/output/train_v1/artifacts/exp125_confidence_gate_continuity_rawtest_parity_by_well.csv",
+    "bucket_metrics": "experiments/exp125_confidence_gate_continuity_rawtest_parity/kaggle/output/train_v1/artifacts/exp125_confidence_gate_continuity_rawtest_parity_bucket_metrics.csv",
+    "continuity_summary": "experiments/exp125_confidence_gate_continuity_rawtest_parity/kaggle/output/train_v1/artifacts/exp125_confidence_gate_continuity_rawtest_parity_continuity_summary.csv",
+    "common_worst_metrics": "experiments/exp125_confidence_gate_continuity_rawtest_parity/kaggle/output/train_v1/artifacts/exp125_confidence_gate_continuity_rawtest_parity_common_worst_metrics.csv",
+    "rawtest_parity_checklist": "experiments/exp125_confidence_gate_continuity_rawtest_parity/kaggle/output/train_v1/artifacts/exp125_confidence_gate_continuity_rawtest_parity_rawtest_parity_checklist.csv",
+    "log": "experiments/exp125_confidence_gate_continuity_rawtest_parity/kaggle/output/train_v1/exp125-cg-continuity-train.log"
+  },
+  "sha256": {
+    "metrics": "8533448d6df1687e22c5d6c58531f3be78f644da7b0176aac36453588e33b1bb",
+    "by_well": "af14ec36c439bb90dc5e0b6ae079102564f2b8597d1211448f9a3036e14686cd",
+    "bucket_metrics": "5a2e8aa9fa4395e01a6bf248c9fd5b2d5b4180d4ef3034774be011f42276df25",
+    "continuity_summary": "b61bec151b831f1b53c2945375ecfe8574f9a7cdfbe5e061f3d2a0a2b3ef1534",
+    "common_worst_metrics": "f9c3ab4bac3c8857debb75c769514053e829a323150badb915c08570225f00cf",
+    "rawtest_parity_checklist": "30620def214b4d9d4891bf3faa48ae1a77e9afd46a64c9d44a8d1d2e777a7e7f",
+    "fair_prediction_content": "1af3ae4980362fa246a5a61ac139ab74790bab957c7f2b8a4034a903141147e0"
+  },
+  "local_validation": {
+    "py_compile": "passed",
+    "validate_exp": "passed",
+    "prepare_kaggle_train": "passed",
+    "prepare_kaggle_inference": "passed"
+  },
+  "notes": [
+    "No submission.csv was created.",
+    "Initial push with the default long kernel id/title failed Kaggle slug validation; v1 used kentookumura/exp125-cg-continuity-train.",
+    "Kaggle could not attach kentookumura/exp101-pf-candidate-ranker-train as a kernel source, so exp101 model manifest and feature schema are missing_required in the parity checklist."
+  ]
+}

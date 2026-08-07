@@ -1,0 +1,102 @@
+{
+  "experiment": "exp103_pf_z_xy_likpf_ensemble_parity",
+  "route": "pf_beam",
+  "status": "completed_train_side_audit",
+  "metric": "train_well_pseudotail_candidate_parity_audit",
+  "key_idea": "128-seed xy_likpf is not a direct replacement for likpf_mean, but xy_likpf_scale_12 plus quality/delta/path-smoothness columns are retained as guarded selector candidates and ML add-only feature candidates.",
+  "cv": "best exp072_likpf_mean RMSE 11.594898; best xy_likpf_scale_12 RMSE 13.916271; xy beats exp072_pf_z but not likpf_mean",
+  "notes": "Kaggle train v4 completed. 128-seed xy_likpf scale ensemble improves exp072_pf_z but remains worse than exp072_likpf_mean, so no direct inference port or submission candidate. Keep xy_likpf_scale_12 and quality/delta columns as guarded selector or ML add-only feature candidates.",
+  "updated_at": "2026-06-22",
+  "kernel": {
+    "id": "kentookumura/exp103-pf-z-xy-likpf-ensemble-train",
+    "version": 4,
+    "url": "https://www.kaggle.com/code/kentookumura/exp103-pf-z-xy-likpf-ensemble-train",
+    "status": "KernelWorkerStatus.COMPLETE",
+    "runtime_sec": 22252.169798374176
+  },
+  "rows": 3783989,
+  "wells": 773,
+  "best_candidate": {
+    "candidate": "exp072_likpf_mean",
+    "rmse": 11.594897672217703,
+    "mae": 7.067632584311985,
+    "bias": -1.0994231121947302,
+    "within_1ft": 0.2049339995438676,
+    "within_2ft": 0.33888206334637866,
+    "within_5ft": 0.5832305537886078,
+    "within_10ft": 0.772807479091509
+  },
+  "xy_best_candidate": {
+    "candidate": "xy_likpf_scale_12",
+    "rmse": 13.91627054554864,
+    "mae": 8.554011032105851,
+    "bias": -0.9709435084679322,
+    "within_1ft": 0.23822215128003807,
+    "within_2ft": 0.342491481872701,
+    "within_5ft": 0.5286244225339979,
+    "within_10ft": 0.7052597140213674
+  },
+  "exp072_pf_z": {
+    "candidate": "exp072_pf_z",
+    "rmse": 17.78817117151714,
+    "mae": 10.677486524833235,
+    "bias": -0.9345598923620186,
+    "within_10ft": 0.6476681089717755
+  },
+  "deltas": {
+    "xy_best_minus_exp072_likpf_mean_rmse": 2.3213728733309367,
+    "xy_best_minus_exp072_pf_z_rmse": -3.8719006259684985,
+    "xy_best_minus_exp072_likpf_mean_within_10ft": -0.06754776507014163,
+    "xy_best_minus_exp072_pf_z_within_10ft": 0.05759160504959185
+  },
+  "selector_oracle_headroom": {
+    "likpf_mean_plus_exp072_pf_z": {
+      "oracle_rmse": 9.11520071566236,
+      "oracle_mae": 4.873692396560547,
+      "oracle_within_10ft": 0.8612250194173398
+    },
+    "likpf_mean_plus_exp072_pf_z_plus_xy_likpf_scale_12": {
+      "oracle_rmse": 7.808424836684714,
+      "oracle_mae": 3.8968471188427283,
+      "oracle_within_10ft": 0.896735164927805,
+      "oracle_selection_rate": {
+        "exp072_likpf_mean": 0.3928552646426826,
+        "xy_likpf_scale_12": 0.3150138649980219,
+        "exp072_pf_z": 0.29213087035929547
+      }
+    }
+  },
+  "candidate_ranking": [
+    {"candidate": "exp072_likpf_mean", "rmse": 11.594897672217703, "within_10ft": 0.772807479091509},
+    {"candidate": "xy_likpf_scale_12", "rmse": 13.91627054554864, "within_10ft": 0.7052597140213674},
+    {"candidate": "xy_likpf_scale_8", "rmse": 13.961015173264387, "within_10ft": 0.701849291845193},
+    {"candidate": "xy_likpf_scale_5", "rmse": 14.030091561584465, "within_10ft": 0.7003128180340905},
+    {"candidate": "xy_likpf_scale_3", "rmse": 14.092583519763123, "within_10ft": 0.6984933095735744},
+    {"candidate": "xy_likpf_mean", "rmse": 14.58055395716079, "within_10ft": 0.6503531062061756},
+    {"candidate": "exp072_pf_z", "rmse": 17.78817117151714, "within_10ft": 0.6476681089717755}
+  ],
+  "artifacts": {
+    "root": "experiments/exp103_pf_z_xy_likpf_ensemble_parity/kaggle/output/train_v4/artifacts",
+    "summary_json": "exp103_pf_z_xy_likpf_ensemble_parity_summary.json",
+    "candidate_metrics": "exp103_pf_z_xy_likpf_ensemble_parity_candidate_metrics.csv",
+    "bucket_metrics": "exp103_pf_z_xy_likpf_ensemble_parity_bucket_metrics.csv",
+    "by_well": "exp103_pf_z_xy_likpf_ensemble_parity_by_well.csv",
+    "xy_likpf_quality": "exp103_pf_z_xy_likpf_ensemble_parity_xy_likpf_quality.csv",
+    "candidate_wide": "exp103_pf_z_xy_likpf_ensemble_parity_candidate_wide.csv.gz",
+    "candidate_long": "exp103_pf_z_xy_likpf_ensemble_parity_candidate_long.csv.gz"
+  },
+  "sha256": {
+    "candidate_metrics": "5570a058351aa460425bc3504159b225819ea163a6fd5a52669107470a140b9f",
+    "bucket_metrics": "193f51226515e4439ae3892562a4cba86700ede6f91c1840d7375019ccbb0017",
+    "by_well": "e3b71ba273082bc789c3b6b039807ae3dd476713c3066996798eb1c5641464f5",
+    "xy_likpf_quality": "ae7403638b1bdf9373e84eabd60da14d5ed1854e13b84e5d1b604fd93117c3a5",
+    "candidate_wide": "bd8ef95b6cdaf029c13bd843e50b552dc68921ed8a24d2775bb1f54a3bda8466",
+    "candidate_wide_decompressed": "68974d20eaca854c0458ecb234c9c569daf4d66764f1a788083b74cc9359a012",
+    "candidate_long": "a7b9bca2c67ce8d3c122f642b4f2a99855a57f631eb86d38a125b4f71f949ad7",
+    "candidate_long_decompressed": "b087071b619c3de820058920e2b985b22e7580205561677957c89485b03625a1"
+  },
+  "decision": {
+    "recommendation": "do_not_port_directly_keep_as_selector_or_ml_feature_candidate",
+    "reason": "The best xy_likpf candidate improves exp072_pf_z but is materially worse than exp072_likpf_mean as a standalone prediction. Oracle headroom increases when xy_likpf_scale_12 is added to likpf_mean and exp072_pf_z, so keep it for guarded selector and ML add-only feature ablations."
+  }
+}

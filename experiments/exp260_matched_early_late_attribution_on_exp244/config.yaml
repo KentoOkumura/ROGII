@@ -1,0 +1,231 @@
+experiment:
+  name: exp260_matched_early_late_attribution_on_exp244
+  description: Isolate early-only and late-only prediction-start augmentation under the exact exp244 v4 cache, sampling, weight, fold, and model contract.
+  route: ml_model
+  status: completed_train_side_attribution_rejected_no_inference_no_submit
+  created_at: '2026-07-16'
+  updated_at: '2026-07-16'
+
+lineage:
+  parent: exp244_bidirectional_prediction_start_pseudotail_augmentation
+  model_parent: exp218_gr_wavelet_rotation_confidence_features_on_exp148
+  diff_summary: >
+    Reuses the approved exp244 official and four offset caches but changes only
+    which pseudo direction enters training. early_only uses -1000/-250 and
+    late_only uses +250/+1000. The official cache, sampled rows, row weights,
+    feature schema, folds, three exp218 LightGBM configs, validation surfaces,
+    and guards remain fixed. Frozen exp218 and exp244 mixed OOF predictions are
+    references and are not retrained.
+
+validation:
+  strategy: exp218_official_tail_row_weighted_groupkfold
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: source_well
+  primary_score_surface: official_start_oof
+  expected_hidden_assignment_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  stress_surfaces:
+    - distance_buckets
+    - rows_1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+    - fold
+    - by_well
+    - worst_well
+  leakage_policy:
+    - Derived views inherit the fold of their source well.
+    - Outer-valid source-well pseudo rows are excluded from that fold's train rows.
+    - Positive-offset late views are train-only.
+    - Validation contains official-start rows only.
+
+data:
+  target_column: TVT
+  input_target_column: TVT_input
+
+frozen_anchor_parity:
+  experiment: exp218_gr_wavelet_rotation_confidence_features_on_exp148
+  variant: gr_wavelet_rotation_confidence_addonly
+  mode: gpu_repro_guard_dp_threads8
+  model: lgb_mean
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_rmse: 8.475793751656624
+  rmse_tolerance: 0.000001
+  expected_oof_decompressed_sha256: 5f3fc95182eea348f3545771e67778ce191e7ba468eee7b267f4993369422976
+
+model:
+  name: matched_prediction_start_direction_attribution
+  estimator: lightgbm
+  parent_model_family: exp218_lgb0_lgb1_lgb2
+  attribution:
+    run_approved: true
+    approval:
+      user_approved: true
+      approved_at: '2026-07-16'
+      approved_scope: two_variants_three_configs_five_folds_thirty_boosters
+      parent_control_retrained: false
+    active_variants:
+      - name: early_only
+        offsets_rows: [-1000, -250]
+        expected_pseudo_views: 1537
+        expected_pseudo_rows: 384250
+      - name: late_only
+        offsets_rows: [250, 1000]
+        expected_pseudo_views: 1544
+        expected_pseudo_rows: 385907
+    official_row_weight: 1.0
+    pseudo_row_weight: 0.5
+    validation_rows: official_start_only
+    training:
+      active_variants: 2
+      lightgbm_configs: 3
+      folds: 5
+      boosters_per_variant: 15
+      total_boosters: 30
+      parent_control_retrained: false
+      mode: gpu_repro_guard_dp_threads8
+    references:
+      raw_exp218_oof_rmse: 8.475793751656624
+      mixed_exp244_oof_rmse: 8.472379730655001
+      mixed_prediction_decompressed_sha256: 3c4600562f385b80be1de7279d4bd52fb3de6f2e6db0570ba339d7b0e422e98b
+      mixed_model_manifest_sha256: d93612c1c80d382f099892f08a34b4153b58554feb44cd17a69580256ccdb830
+    result:
+      completed_at: '2026-07-16'
+      kernel_version: 1
+      raw_exp218_oof_rmse: 8.475793751656624
+      mixed_exp244_oof_rmse: 8.472379730655001
+      early_only_oof_rmse: 8.513933814242783
+      early_only_delta_vs_raw: 0.03814006258615876
+      late_only_oof_rmse: 8.489116155426453
+      late_only_delta_vs_raw: 0.013322403769828739
+      late_minus_early_overall: -0.024817658816330024
+      late_independent_compensation_supported: false
+      adoption_supported: false
+      decision: close_prediction_start_augmentation_branch
+    adoption_guards:
+      require_overall_improvement: true
+      require_1000_plus_non_worse: true
+      require_hidden_like_spatial_non_worse: true
+      require_hidden_like_typewell_purged_non_worse: true
+      max_worst_well_regression: 2.0
+      min_improved_folds: 3
+    forbidden_operations:
+      - mixed_weight_grid
+      - offset_grid
+      - sampling_change
+      - guard_relaxation
+      - parent_control_retraining
+      - current_test_prediction
+      - submission
+  integrated_augmentation:
+    variant: bidirectional_balanced250_weight050
+    expected_official_rows: 3783989
+    expected_pseudo_rows: 770157
+    expected_pseudo_views: 3081
+    expected_feature_count: 380
+    official_row_weight: 1.0
+    pseudo_row_weight: 0.5
+    official_cache:
+      prefix: exp239_distribution_matched_multicut_pseudotail
+      expected_shards: 16
+      expected_manifest_sha256: a2c89e0ae432ac59e8f8ffee457f530398707549d9b87eded44d6cb5ac0b27ef
+      expected_schema_sha256: 197c7ee8c296b9ef151931ce9127b0abe2856a6d5961f27ec24be29b7a9209b5
+      expected_feature_columns_sha256: 1aff486413a6d86331d0f4537eea918dddc7db8d68cc8a0ea26a1a1297d777b9
+    cache_specs:
+      - label: m1000
+        offset_rows: -1000
+        expected_requests: 764
+        expected_rows: 191000
+        expected_shards: 31
+        expected_manifest_sha256: 1471fa08662b5af1e5870ac3ea74ee3f301acad5659645e07552f3e1c574f289
+        expected_schema_sha256: 197c7ee8c296b9ef151931ce9127b0abe2856a6d5961f27ec24be29b7a9209b5
+        expected_request_manifest_sha256: b16c057d015062a1a4fe2a4d888cf375fcac0d8421d08e08a836f13fd699e005
+        expected_feature_columns_sha256: 1aff486413a6d86331d0f4537eea918dddc7db8d68cc8a0ea26a1a1297d777b9
+      - label: m250
+        offset_rows: -250
+        expected_requests: 773
+        expected_rows: 193250
+        expected_shards: 31
+        expected_manifest_sha256: a30f23b78bb65b3fca59f7366cf464b6b5cb86ce3f90ffce98115acb221e7923
+        expected_schema_sha256: 197c7ee8c296b9ef151931ce9127b0abe2856a6d5961f27ec24be29b7a9209b5
+        expected_request_manifest_sha256: 6ac53c5aeaf7014a0fd06df40202bfa0386d16a1af493480f18a3d3a381690e2
+        expected_feature_columns_sha256: 1aff486413a6d86331d0f4537eea918dddc7db8d68cc8a0ea26a1a1297d777b9
+      - label: p250
+        offset_rows: 250
+        expected_requests: 773
+        expected_rows: 193157
+        expected_shards: 31
+        expected_manifest_sha256: 6c40ab4a3eef6e7b53c699764f8476db375faf9eba93ec4fbab3011a38a4f979
+        expected_schema_sha256: 197c7ee8c296b9ef151931ce9127b0abe2856a6d5961f27ec24be29b7a9209b5
+        expected_request_manifest_sha256: cabf50b89a3191189ac78084b1d4a445b400d713d32c0455a4b41723c85cd135
+        expected_feature_columns_sha256: 1aff486413a6d86331d0f4537eea918dddc7db8d68cc8a0ea26a1a1297d777b9
+      - label: p1000
+        offset_rows: 1000
+        expected_requests: 771
+        expected_rows: 192750
+        expected_shards: 31
+        expected_manifest_sha256: 4262c3b218ad4073a8813f88a7fc8d74d3cd95cc7ccf0832da03cf9c3e1611c1
+        expected_schema_sha256: 197c7ee8c296b9ef151931ce9127b0abe2856a6d5961f27ec24be29b7a9209b5
+        expected_request_manifest_sha256: 9d9c144830ba15353fc78f14f9abe30b78c24773665b37aaf3a328d3a973c2ac
+        expected_feature_columns_sha256: 1aff486413a6d86331d0f4537eea918dddc7db8d68cc8a0ea26a1a1297d777b9
+    training:
+      lightgbm_configs: 3
+      folds: 5
+      boosters: 15
+      reference_exp218_lgb_mean_rmse: 8.475793751656624
+    adoption_guards:
+      require_overall_improvement: true
+      require_1000_plus_non_worse: true
+      require_hidden_like_spatial_non_worse: true
+      require_hidden_like_typewell_purged_non_worse: true
+      max_worst_well_regression: 2.0
+      min_improved_folds: 3
+
+runtime:
+  use_gpu: true
+  internet: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp239-official-exp218-feature-cache-v1
+      - kentookumura/exp244-multiview-cache-m1000
+      - kentookumura/exp244-multiview-cache-m250
+      - kentookumura/exp244-multiview-cache-p250
+      - kentookumura/exp244-multiview-cache-p1000
+      - kentookumura/exp218-gr-wavelet-rotation-exp148-train
+      - kentookumura/exp244-bidirectional-multiview-train
+    bootstrap_dependency_files:
+      - source: experiments/exp244_bidirectional_prediction_start_pseudotail_augmentation/exp244_bidirectional_prediction_start_pseudotail_augmentation_integrated_train.py
+        destination: exp244_integrated_parent.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: inputs/exp218_config.yaml
+      - source: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_exp218_gpu_repro_guard_dp_threads8
+  stochastic_components: []
+  parallel_rng_policy: no_new_rng_fixed_lightgbm_seeds
+  feature_sha_policy: pinned_exp244_cache_manifest_schema_and_decompressed_prediction_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - GPU LightGBM is not assumed bitwise deterministic without a rerun.
+    - No raw-test feature generation, inference prediction, or submission is performed.
+
+notes:
+  - User approved 2 variants, 3 configs, 5 folds, 30 boosters, and no parent/control retraining on 2026-07-16.
+  - exp239 early-only is not a matched control because its cutoff distribution and sampled rows differ.

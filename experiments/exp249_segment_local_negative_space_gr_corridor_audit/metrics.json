@@ -1,0 +1,74 @@
+{
+  "experiment": "exp249_segment_local_negative_space_gr_corridor_audit",
+  "status": "segment_local_audit_guard_failed",
+  "route": "pf_beam",
+  "metric": "segment_local_negative_space_risk_audit",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "active_mode": "stage1_full_audit",
+  "kernel": {
+    "id": "kentookumura/exp249-segment-local-gr-corridor-audit-train",
+    "version": 2,
+    "status": "complete"
+  },
+  "stage0": {
+    "version": 1,
+    "runtime_seconds": 185.90041756629944,
+    "preview_count": 9,
+    "preview_wells": 3,
+    "manual_parity": "pass"
+  },
+  "stage1": {
+    "runtime_seconds": 3673.9757652282715,
+    "processed_wells": 773,
+    "processed_rows": 3783989,
+    "decision": "segment_local_audit_guard_failed",
+    "summary_sha256": "5f240979534ac428249867fce4a520b18e116cbc47162b5e5724cd977f8f466f"
+  },
+  "guards": {
+    "bad_candidate_precision_lift": {
+      "value": 0.9173493293882604,
+      "limit": 1.5,
+      "pass": false
+    },
+    "good_candidate_false_alert_rate": {
+      "value": 0.5406271046082025,
+      "limit": 0.02,
+      "pass": false
+    },
+    "truth_instantaneous_false_alert_rate": {
+      "value": 0.5369916949194796,
+      "limit": 0.001,
+      "pass": false
+    },
+    "overlap_view_disagreement_rate": {
+      "value": 0.13837814639034732,
+      "limit": 0.05,
+      "pass": false
+    },
+    "boundary_core_false_alert_delta": {
+      "value": -0.12946575729041626,
+      "limit": 0.01,
+      "pass": true
+    },
+    "hidden_like_truth_false_alert_rate": {
+      "value": 0.5233563299237778,
+      "limit": 0.002,
+      "pass": false
+    },
+    "worst_well_truth_false_alert_rate": {
+      "value": 0.8138804798744254,
+      "limit": 0.05,
+      "pass": false
+    }
+  },
+  "cost": {
+    "active_diagnostic_modes": 1,
+    "lightgbm_configs": 0,
+    "folds": 0,
+    "boosters": 0,
+    "parent_control_retraining": false
+  },
+  "notes": "Stage 0 parity passed, but Stage 1 failed six of seven guards. No candidate was changed and no downstream feature, inference, or submission is allowed."
+}

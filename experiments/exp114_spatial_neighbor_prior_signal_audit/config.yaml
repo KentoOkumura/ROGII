@@ -1,0 +1,196 @@
+experiment:
+  name: "exp114_spatial_neighbor_prior_signal_audit"
+  description: Fold-safe train-side audit of spatial and trajectory-shape neighbor priors as weak diagnostic signals for PF/Beam/likPF errors.
+  route: ensemble  # ml_model, pf_beam, or ensemble
+  status: completed_train_side_audit_supported_no_submit
+  created_at: "2026-06-23"
+  updated_at: "2026-06-24"
+
+lineage:
+  parent: exp099_pf_multi_observation_likelihood_probe
+  cache_parent: exp099_pf_multi_observation_likelihood_probe
+  diagnostic_parents:
+    - exp065_typewell_supertype_cluster_cv_audit
+    - exp099_pf_multi_observation_likelihood_probe
+    - exp109_typewell_neighbor_prior_features
+    - exp110_typewell_neighbor_prior_rawtest_parity_gate
+  implementation_source: spatial_neighbor_prior_signal_audit.py
+  diff_summary: Builds fold-safe neighbor drift priors from train wells selected by X/Y proximity plus trajectory direction and shape similarity. It audits prior-only and clipped posthoc corrections to exp099 PF/Beam/likPF candidates, but does not train a model, rerun PF, port inference, or submit.
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation:
+  strategy: groupkfold_well_oof_spatial_neighbor_prior_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - prior_coverage
+    - base_error_prior_delta_correlation
+    - sign_match_rate
+    - distance_bucket_rmse
+    - worst_well_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp099_rows
+  leakage_policy:
+    - GroupKFold is grouped by well.
+    - Each validation well may use only its visible prefix context, raw trajectory geometry, and target-free typewell/native group assignment as query features.
+    - Neighbor prior source wells are restricted to train-fold wells.
+    - Validation wells and same-fold validation true TVT are never used as neighbor prior sources.
+    - Evaluation true TVT is reconstructed from exp099 target only after prior and correction predictions are generated.
+    - This is a train-side diagnostic only; no inference port or submission is selected.
+
+# Common paths and submission columns come from project.yml.
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp065_cluster_assignments_local: experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/common_typewell_cluster_assignments.csv
+
+model:
+  name: spatial_neighbor_prior_signal_audit
+  target: true_tvt_for_scoring_only
+  estimator: none
+  neighbor_prior:
+    cluster_method:
+      name: native_overlap_0p999
+      method: native_overlap
+      threshold: "0.999"
+    min_neighbor_wells: 2
+    min_row_neighbor_values: 1
+    require_in_range: true
+    distance_epsilon: 1.0e-6
+    distance_power: 1.0
+    variants:
+      - name: xy_only_k8
+        top_k: 8
+        require_same_typewell_group: false
+        features:
+          - centroid_x
+          - centroid_y
+      - name: xy_plus_azimuth_k8
+        top_k: 8
+        require_same_typewell_group: false
+        features:
+          - centroid_x
+          - centroid_y
+          - azimuth_sin
+          - azimuth_cos
+      - name: xy_plus_trajectory_shape_k8
+        top_k: 8
+        require_same_typewell_group: false
+        features:
+          - centroid_x
+          - centroid_y
+          - start_x
+          - start_y
+          - end_x
+          - end_y
+          - bbox_dx
+          - bbox_dy
+          - bbox_dz
+          - azimuth_sin
+          - azimuth_cos
+          - local_azimuth_sin
+          - local_azimuth_cos
+          - md_span
+          - z_span
+          - dz_dmd
+          - tortuosity
+          - prefix_tvt_range
+      - name: xy_plus_direction_and_typewell_k8
+        top_k: 8
+        require_same_typewell_group: true
+        features:
+          - centroid_x
+          - centroid_y
+          - start_x
+          - start_y
+          - end_x
+          - end_y
+          - azimuth_sin
+          - azimuth_cos
+          - local_azimuth_sin
+          - local_azimuth_cos
+          - md_span
+          - z_span
+          - dz_dmd
+          - tortuosity
+          - prefix_tvt_range
+    base_candidates:
+      - likpf_mean
+      - pf_ancc
+      - beam_mean
+    correction_alphas: [0.05, 0.10, 0.20]
+    correction_clip_ft: [10.0, 20.0, 40.0]
+    score_baselines:
+      - last_anchor_tvt
+      - pf_ancc
+      - beam_mean
+      - likpf_mean
+      - sc_ens
+      - hyb
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 32
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: deterministic_groupkfold_fixed_neighbor_rules_no_model_rng
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp099
+    - upstream_exp065_typewell_cluster_discovery
+  parallel_rng_policy: no_parallel_rng_in_exp114
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    cluster_assignment_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a deterministic posthoc audit over upstream caches and raw train files, but not a submission anchor.
+    - Source gzip cache decompressed content SHA is recorded in the summary JSON.
+
+audit:
+  mode: spatial_neighbor_prior_signal_audit
+  output_prefix: exp114_spatial_neighbor_prior_signal_audit
+  max_rows: null
+  expected_train_artifacts:
+    - exp114_spatial_neighbor_prior_signal_audit_candidate_metrics.csv
+    - exp114_spatial_neighbor_prior_signal_audit_signal_metrics.csv
+    - exp114_spatial_neighbor_prior_signal_audit_bucket_metrics.csv
+    - exp114_spatial_neighbor_prior_signal_audit_by_well.csv
+    - exp114_spatial_neighbor_prior_signal_audit_neighbor_summary.csv
+    - exp114_spatial_neighbor_prior_signal_audit_oof_predictions.csv.gz
+    - exp114_spatial_neighbor_prior_signal_audit_feature_schema.csv
+    - exp114_spatial_neighbor_prior_signal_audit_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - Spatial prior improved global RMSE but left large worst-well regressions, so the follow-up branch is confidence / gate first. ML feature use is tracked as a separate backlog.
+
+notes:
+  - Implements the first diagnostic stage for the spatial_neighbor_prior_signal_audit backlog.
+  - X/Y-only is included as a control, not as the primary hypothesis.

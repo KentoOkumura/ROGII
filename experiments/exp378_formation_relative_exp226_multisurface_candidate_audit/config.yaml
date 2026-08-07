@@ -1,0 +1,109 @@
+experiment:
+  name: "exp378_formation_relative_exp226_multisurface_candidate_audit"
+  description: "formation-relative K16勾配をexp226の物理パスへ戻し、6単独面と固定medianの7候補を直接・候補集合の両面で監査する"
+  route: pf_beam
+  status: design_closed_by_exp377_stage1_scientific_fail
+  created_at: "2026-07-24"
+
+lineage:
+  parent: exp226_tvt_slope_kriging_hmm
+  prerequisite: exp377_formation_relative_k16_slope_identifiability_readout
+  comparison:
+    - exp226_tvt_slope_kriging_hmm
+    - exp333_exp226_segment_residual_emission_on_exp209
+  diff_summary: "exp226のK16 rate priorだけをformation-relativeへ置換し、それ以外のdownstream処理を固定する。6地層面と事前固定medianを別系列のまま評価する。"
+
+validation:
+  split: exp226_outer_5fold_well_split
+  primary_scope: all_3783989_rows
+  report_scopes:
+    - h512
+    - long401
+    - clean273
+  by_fold_required: true
+  by_well_required: true
+
+data:
+  candidate_order:
+    - frk16_ANCC
+    - frk16_ASTNU
+    - frk16_ASTNL
+    - frk16_EGFDU
+    - frk16_EGFDL
+    - frk16_BUDA
+    - frk16_robust_median6
+  target_formation_read_count: 0
+  reuse_exp377_artifacts_only_after_sha_validation: true
+
+method:
+  segment_count: 16
+  fixed_downstream: exp226_all_components_except_rate_prior
+  primary_direct_candidate: frk16_robust_median6
+  candidate_bank_audit: fixed_exp226_12_plus_all_7
+  posthoc_surface_selection: forbidden
+  output_type: seven_deterministic_physics_candidates
+
+model:
+  name: deterministic_exp226_physics_path_no_fitted_model
+
+gates:
+  stage0_integrity:
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_segments: 12368
+    candidate_count: 7
+    target_formation_reads: 0
+  stage1_direct_primary:
+    rmse_gain_vs_exp226_ft_min: 0.05
+    positive_fold_count_min: 4
+    scope_regression_tolerance_ft: 0.02
+    p95_well_regression_max_ft: 0.0
+    worst_well_regression_max_ft: 0.25
+  stage2_candidate_bank:
+    h512_oracle_gain_vs_exp226_bank_ft_min: 0.15
+    whole_oracle_gain_vs_exp226_bank_ft_min: 0.10
+    unique_best_row_fraction_min: 0.10
+    positive_fold_count_min: 5
+    max_abs_pairwise_corr_vs_exp226_candidates: 0.9995
+
+runtime:
+  use_amp: false
+  accelerator: cpu
+  deterministic_candidate_runs: 35
+  lightgbm_boosters: 0
+  hmm_runs: 0
+  pf_runs: 0
+  replay_parent_control: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: true
+  seed_policy: no_rng_deterministic_geometry
+  stochastic_components: []
+  parallel_rng_policy: no_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - "7候補の順序、列schema、各foldのcontent SHAを固定する。"
+    - "exp377と同一のfold manifestおよび地層面推定物だけを使用する。"
+
+dependencies:
+  requires_pass:
+    - exp377_stage0_integrity
+    - exp377_stage1_identifiability
+  blocks_on_novelty_failure:
+    - exp379
+    - exp380
+    - exp382
+
+notes:
+  - "設計確定のみ。コード、Notebook、Kaggle実行は未着手。"
+  - "7候補をCV後にbest-of-7選択することは禁止し、primaryはmedianで固定する。"
+  - "exp377 v2はStage 0をPASSしたが、median6 path RMSEがdirect 16.100131から38.776238 ftへ悪化し、個別6面も全悪化したため、現設計は未実装のまま終了する。"

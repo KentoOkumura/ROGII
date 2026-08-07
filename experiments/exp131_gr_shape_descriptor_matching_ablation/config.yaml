@@ -1,0 +1,189 @@
+experiment:
+  name: "exp131_gr_shape_descriptor_matching_ablation"
+  description: Compare raw GR, NCC, banded local shift, and shape descriptor matching costs as target-free candidate likelihood scores.
+  route: pf_beam
+  status: completed_train_side_audit
+  created_at: "2026-06-26"
+  updated_at: "2026-06-26"
+
+lineage:
+  parent: gr_shape_descriptor_matching_ablation backlog
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  diagnostic_parents:
+    - exp008_gr_ncc_matcher
+    - exp017_deterministic_dtw_addonly
+    - exp099_pf_multi_observation_likelihood_probe
+    - exp112_learned_pf_likelihood_weight_or_feature_followup
+    - exp128_trajectory_local_typewell_self_gr_switch_audit
+  implementation_source: gr_shape_descriptor_matching_ablation.py
+  diff_summary: Keeps the exp072 deterministic PF/Beam/likelihood-PF candidate surface fixed and compares target-free local GR matching costs. It evaluates raw point error, local NCC, banded local shift MAE, hand-crafted shape descriptor distance, shuffled-GR, and no-GR controls as candidate likelihood scores. It does not create direct TVT candidates, train LightGBM, port inference, or submit.
+
+validation:
+  strategy: train_well_pseudotail_candidate_likelihood_ablation
+  metric: rmse
+  secondary_metrics:
+    - within10_probability
+    - topk_coverage
+    - rank_score_top1_rmse
+    - score_margin
+    - shuffled_gr_negative_control
+    - no_gr_negative_control
+    - bucket_metrics
+    - worst_well_regression
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Existing PF/Beam/likelihood-PF candidates are read from exp072's raw-train-only deterministic feature cache.
+    - Local GR costs use raw horizontal GR, row index, finite prefix TVT_input, and candidate TVT values only.
+    - Evaluation-zone true TVT is materialized as last_known_tvt + target only for candidate labels, metrics, oracle topK, and stress summaries.
+    - Validation well true TVT is not used for descriptor normalization, candidate generation, or window centering.
+    - Shuffled-GR and no-GR controls are target-free negative controls and must be beaten before any follow-up.
+    - This experiment does not create an inference notebook candidate or submission.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+model:
+  name: none_gr_shape_descriptor_matching_ablation_only
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  target: true_tvt_for_scoring_only
+  base_prediction: last_known_tvt
+  estimator: none
+  descriptor_matching:
+    score_candidates:
+      - pf_ancc
+      - beam_mean
+      - likpf_mean
+      - sc_ens
+      - hyb
+    window_offsets: [-24, -18, -12, -6, 0, 6, 12, 18, 24]
+    derivative_offsets: [-18, -12, -6, 0, 6, 12, 18]
+    shift_offsets: [-6, 0, 6]
+    gr_rolling_window: 5
+    derivative_step: 3
+    gr_scale: 18.0
+    derivative_scale: 9.0
+    energy_scale: 18.0
+    shape_scale: 1.0
+    band_scale: 16.0
+    primary_threshold_ft: 10
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_descriptor_audit
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+  parallel_rng_policy: no_parallel_rng_in_exp131
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is a train-side likelihood ablation, not a deterministic submission anchor.
+    - Source gzip cache decompressed content SHA is recorded in the summary JSON.
+
+audit:
+  mode: gr_shape_descriptor_matching_ablation
+  output_prefix: exp131_gr_shape_descriptor_matching_ablation
+  max_rows: null
+  save_candidate_long: true
+  thresholds_ft: [1, 2, 5, 10]
+  topk_values: [1, 2, 3, 5]
+  extra_source_columns:
+    - md_since
+    - eval_len
+    - pf_ancc_std
+    - likpf_mean_d
+  candidates:
+    - name: last_anchor_tvt
+      role: anchor
+      source_column: last_known_tvt
+      transform: absolute
+      enabled: true
+    - name: pf_ancc
+      role: selected_pf
+      source_column: pf_ancc
+      transform: absolute
+      enabled: true
+    - name: beam_mean
+      role: selected_beam
+      source_column: beam_mean_d
+      transform: base_plus_delta
+      enabled: true
+    - name: likpf_mean
+      role: likelihood_pf
+      source_column: likpf_mean_d
+      transform: base_plus_delta
+      enabled: true
+    - name: sc_ens
+      role: ncc_scale_ensemble
+      source_column: sc_ens_d
+      transform: base_plus_delta
+      enabled: true
+    - name: hyb
+      role: public_hybrid
+      source_column: hyb_d
+      transform: base_plus_delta
+      enabled: true
+  score_variants:
+    - raw_point_real
+    - ncc_window_real
+    - banded_shift_real
+    - shape_descriptor_real
+    - combo_descriptor_real
+    - combo_descriptor_shuffled
+    - no_gr_constant
+  candidate_sets:
+    - name: baseline_primary
+      candidates: [pf_ancc, beam_mean, likpf_mean, sc_ens, hyb]
+  expected_train_artifacts:
+    - exp131_gr_shape_descriptor_matching_ablation_descriptor_scores_train_features.csv.gz
+    - exp131_gr_shape_descriptor_matching_ablation_descriptor_scores_feature_schema.csv
+    - exp131_gr_shape_descriptor_matching_ablation_candidate_metrics.csv
+    - exp131_gr_shape_descriptor_matching_ablation_score_variant_metrics.csv
+    - exp131_gr_shape_descriptor_matching_ablation_rank_metrics.csv
+    - exp131_gr_shape_descriptor_matching_ablation_bucket_metrics.csv
+    - exp131_gr_shape_descriptor_matching_ablation_by_well.csv
+    - exp131_gr_shape_descriptor_matching_ablation_descriptor_well_summary.csv
+    - exp131_gr_shape_descriptor_matching_ablation_row_context.csv.gz
+    - exp131_gr_shape_descriptor_matching_ablation_candidate_long.csv.gz
+    - exp131_gr_shape_descriptor_matching_ablation_feature_schema.csv
+    - exp131_gr_shape_descriptor_matching_ablation_summary.json
+
+inference:
+  mode: not_selected_candidate_audit_only
+  selected_variant: null
+  notes:
+    - This experiment is train-side diagnostic only.
+    - If real shape descriptor scores fail to beat shuffled/no-GR controls, close this backlog without ML add-only or direct candidate follow-up.
+    - If real shape descriptor scores beat controls and improve topK or low-switch verifier potential, use them as observation likelihood or confidence feature material.
+
+notes:
+  - Implements the backlog item gr_shape_descriptor_matching_ablation.
+  - Does not directly replace TVT predictions, train a hidden branch, rerun PF/Beam, or submit.
+  - A positive result supports downstream observation likelihood or verifier features, not direct path selection.

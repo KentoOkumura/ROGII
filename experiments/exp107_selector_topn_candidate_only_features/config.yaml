@@ -1,0 +1,252 @@
+experiment:
+  name: "exp107_selector_topn_candidate_only_features"
+  description: Build selector features only from candidates that enter the top-n rank slots, dropping full-candidate statistics and rarely selected source flags.
+  route: ml_model
+  status: completed_train_side_rejected
+  created_at: "2026-06-22"
+  updated_at: "2026-06-22"
+
+lineage:
+  parent: exp098_selector_rank_slot_features_on_exp073
+  base_surface_parent: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  comparison_parents:
+    - exp073_gpu_reproducibility_guard_for_exp063_full_replay
+    - exp077_full_replay_postprocess_guard
+    - exp092_u_projection_correction_disagreement_fullrun
+    - exp098_selector_rank_slot_features_on_exp073
+    - exp105_compact_rank_slot_features_on_exp098
+  implementation_source: selector_topn_candidate_only_features.py
+  diff_summary: Reuses the exp098 target-free rank ordering on the same exp073/exp072 196-feature surface, but creates features only from candidates that enter top1/top2/top3 rank slots. Candidate-set-wide entropy/range, all-pair features, and per-source one-hot flags are removed so unselected sc_ens/hyb rows do not contribute noise.
+
+validation:
+  strategy: groupkfold_by_well_selector_topn_candidate_only_feature_ablation
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Train features are read from exp072's raw-train-only deterministic feature cache.
+    - Candidate rank scores use only target-free PF/Beam/likelihood-PF diagnostics and candidate disagreements.
+    - Evaluation-zone true TVT is used only as the supervised LightGBM target and OOF metric, never to create rank slots or rank scores.
+    - Candidate TVT paths are not used as a direct selector, soft average, or postprocess replacement.
+    - GroupKFold is grouped by well; a well never appears in train and validation in the same fold.
+    - Inference is out of scope because the best top-n candidate-only model did not beat exp098 or exp092.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_summary_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_summary.json
+
+model:
+  name: exp107_selector_topn_candidate_only_lgbm
+  source_experiment: exp098_selector_rank_slot_features_on_exp073
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  feature_source: exp072_exp063_full_replay_train_feature_cache
+  expected_base_feature_count: 196
+  expected_topn_feature_counts:
+    top1_candidate_only: 6
+    top2_candidate_only: 15
+    top3_candidate_only: 21
+  target: target
+  base_prediction: last_known_tvt
+  estimator: lightgbm
+  lgb_config_family: exp063_public_pixiux_lgb0_lgb1_lgb2
+  rank_slot:
+    top_k: 3
+    degree: 3
+    robust_iters: 3
+    clip_sigma: 4.0
+    include_lgb_oof_features: false
+    candidate_only_policy:
+      keep_columns:
+        - rank*_candidate_minus_last_anchor
+        - rank*_score
+        - rank*_source_code
+        - rank*_u_slope
+        - rank*_u_curvature
+        - rank*_u_resid_mad
+        - topN_score_margin
+        - topN_candidate_delta_spread
+        - topN_u_spread
+      drop_columns:
+        - candidate-set-wide entropy/range
+        - all-pair candidate deltas
+        - per-source one-hot flags
+        - u_corr/u_resid/u_abs_resid/u_fit_degree
+        - unselected candidate statistics
+    candidates:
+      - name: pf_ancc
+        source_column: pf_ancc
+        transform: absolute
+        family: pf
+        enabled: true
+      - name: beam_mean
+        source_column: beam_mean_d
+        transform: base_plus_delta
+        family: beam
+        enabled: true
+      - name: likpf_mean
+        source_column: likpf_mean_d
+        transform: base_plus_delta
+        family: likelihood_pf
+        enabled: true
+      - name: sc_ens
+        source_column: sc_ens_d
+        transform: base_plus_delta
+        family: ncc_scale_ensemble
+        enabled: true
+      - name: hyb
+        source_column: hyb_d
+        transform: base_plus_delta
+        family: public_hybrid
+        enabled: true
+  feature_ablation:
+    selected_variant: top3_candidate_only
+    active_variants:
+      - name: top1_candidate_only
+        description: Adds only the top1 candidate delta, score, source code, and U-space shape columns.
+        feature_groups:
+          - top1_candidate_only
+        enabled: true
+      - name: top2_candidate_only
+        description: Adds top1/top2 slot columns plus top-2 score margin, candidate delta spread, and U-space spread.
+        feature_groups:
+          - top2_candidate_only
+        enabled: true
+      - name: top3_candidate_only
+        description: Adds top1/top2/top3 slot columns plus top-3 score margin, candidate delta spread, and U-space spread.
+        feature_groups:
+          - top3_candidate_only
+        enabled: true
+  training:
+    early_stopping_rounds: 250
+    max_train_rows: null
+    max_rows: null
+    save_models: true
+    save_predictions: true
+    top_n_importance: 50
+    active_modes:
+      - gpu_repro_guard_dp_threads8
+    modes:
+      gpu_repro_guard_dp_threads8:
+        description: GPU double precision plus fixed thread count and deterministic flags.
+        use_gpu: true
+        common_overrides:
+          gpu_use_dp: true
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+      cpu_deterministic_threads8:
+        description: CPU deterministic LightGBM control with fixed thread count.
+        use_gpu: false
+        common_overrides:
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_groupkfold_seed_no_new_pf_rng
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - gpu_lightgbm_training
+  parallel_rng_policy: LightGBM deterministic flags plus fixed n_jobs and num_threads; top-n feature generation itself has no RNG.
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a train-side feature audit, not a deterministic submission anchor.
+    - Source gzip cache decompressed content SHA is recorded by the train summary when available.
+
+audit:
+  mode: selector_topn_candidate_only_features
+  output_prefix: exp107_selector_topn_candidate_only_features
+  fast: false
+  reference_metrics:
+    exp073_raw_anchor_pooled_rmse: 9.526374749390682
+    exp077_policy_pooled_rmse: 9.470514801
+    exp092_best_lgb1_pooled_rmse: 9.322479895503927
+    exp098_lgb1_pooled_rmse: 9.35815105231876
+    exp098_lgb_mean_pooled_rmse: 9.427447987389971
+    exp105_best_pooled_rmse: 9.441103161090854
+  result_summary:
+    source: kaggle_train_v1
+    kernel: kentookumura/exp107-selector-topn-candidate-only-features-train
+    kernel_version: 1
+    output_dir: experiments/exp107_selector_topn_candidate_only_features/kaggle/output/train_v1
+    rows: 3783989
+    wells: 773
+    model_count: 45
+    best_variant: top2_candidate_only
+    best_model: lgb2
+    best_rmse_tvt: 9.437602822502426
+    top2_lgb1_rmse_tvt: 9.437894828490364
+    top2_lgb_mean_rmse_tvt: 9.47909268258092
+    top1_lgb_mean_rmse_tvt: 9.577677176573798
+    top3_lgb_mean_rmse_tvt: 9.527935588763015
+    delta_best_vs_exp073_raw_anchor: -0.088771926888256
+    delta_best_vs_exp077_policy: -0.032911978497574
+    delta_best_vs_exp092_lgb1: 0.115122926998499
+    delta_best_vs_exp098_lgb1: 0.079451770183666
+    delta_best_vs_exp098_lgb_mean: 0.010154835112455
+    delta_best_vs_exp105_best: -0.003500338588428
+    best_path_step_ge10: 1
+    best_path_step_ge25: 0
+    recommendation: rejected_keep_exp098_full_rank_slot_baseline
+  expected_train_artifacts:
+    - exp107_selector_topn_candidate_only_features_metrics.csv
+    - exp107_selector_topn_candidate_only_features_by_well.csv
+    - exp107_selector_topn_candidate_only_features_bucket_metrics.csv
+    - exp107_selector_topn_candidate_only_features_rank_slot_feature_summary.csv
+    - exp107_selector_topn_candidate_only_features_feature_importance.csv
+    - exp107_selector_topn_candidate_only_features_feature_importance_mean.csv
+    - exp107_selector_topn_candidate_only_features_feature_importance_mean_top.png
+    - exp107_selector_topn_candidate_only_features_predictions.csv.gz
+    - exp107_selector_topn_candidate_only_features_feature_schema.csv
+    - exp107_selector_topn_candidate_only_features_lgb_models/manifest.json
+    - exp107_selector_topn_candidate_only_features_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: top2_candidate_only
+  notes:
+    - Inference is intentionally out of scope because train-side OOF is weaker than exp098 lgb1 and exp092 lgb1.
+
+submission:
+  status: not_submitted
+  public_lb: null
+  private_lb: null
+  notes:
+    - Kaggle train v1 rejected the top-n candidate-only feature set; do not submit.
+
+notes:
+  - Implements backlog item selector_topn_candidate_only_features.
+  - PF/Beam candidates remain target-free structured features under route ml_model.
+  - Direct candidate selector and soft average are intentionally out of scope.

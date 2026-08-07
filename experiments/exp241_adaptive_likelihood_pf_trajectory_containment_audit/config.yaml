@@ -1,0 +1,211 @@
+experiment:
+  name: exp241_adaptive_likelihood_pf_trajectory_containment_audit
+  description: >
+    Paired exp072-compatible T=1 versus gated T=2 likelihood-PF replay that audits
+    whether a target-free gate event is contained or amplified by resampling and
+    seed aggregation.
+  route: pf_beam
+  status: completed_partial_train_side_rejected_no_shard1_no_inference_no_submit
+  created_at: "2026-07-13"
+  updated_at: "2026-07-13"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+
+lineage:
+  parent: exp232_adaptive_robust_likelihood_pf
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp233_adaptive_outlier_mixture_likelihood_pf
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md adaptive_likelihood_pf_trajectory_containment_audit
+  implementation_source: adaptive_robust_likelihood_pf.py
+  diff_summary: >
+    Replays an instrumented T=1 control and one gated T=2 treatment with an
+    identical per-well seed base. Persists row-level seed disagreement and
+    well-by-seed first-event horizon summaries. No likelihood, gate, transition,
+    particle, noise, or resampling parameter is tuned.
+
+validation:
+  strategy: full_train_exp072_pseudotail_first_gate_paired_containment_audit
+  metric: rmse
+  secondary_metrics:
+    - cumulative_rmse_delta_after_event
+    - mean_absolute_path_divergence
+    - terminal_path_divergence
+    - effective_sample_size_delta
+    - resampling_count_delta
+    - seed_prediction_std
+    - rmse_1000_plus
+    - hidden_like_rmse
+    - worst_well_regression
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Gate inputs use only raw evaluation GR, typewell GR, observed prefix, and pre-update particle state.
+    - True TVT and target error are used only after the target-free event index is fixed.
+    - No target, error, oracle candidate, Public LB, or submission signal selects an event or horizon.
+    - Raw-test regeneration, inference, and submission are disabled.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp209_enriched_likpf_control_local: experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+  exp209_enriched_likpf_control_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+  exp072_reference_candidates: [likpf_mean, pf_ancc, beam_mean, pf_z]
+
+model:
+  name: paired_likelihood_pf_trajectory_containment_audit
+  estimator: none_pfbeam_generation_audit
+  target: exp072_target_for_post_event_scoring_only
+  validation_surface:
+    selection_mode: all_eligible_wells
+    max_target_wells: null
+    well_include: []
+    min_known_prefix_rows: 160
+    min_eval_rows: 64
+  paired_replay:
+    control_name: paired_t1_control
+    control_temperature: 1.0
+    treatment_name: gated_t2
+    treatment_temperature: 2.0
+    shared_seed_namespace: paired_t1_vs_gated_t2
+    active_treatments: [gated_t2]
+    replay_count: 2
+  runtime:
+    particles: 500
+    seed_count: 128
+    seed_aggregation: mean
+    resample_threshold: 0.5
+    init_spread: 4.5
+    momentum: 0.998
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_pos_noise: 0.10
+    resample_velocity_noise: 0.001
+    grid_step: 0.2
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+  gate:
+    enabled: true
+    innovation_threshold: 2.5
+    change_point_window: 32
+    change_point_threshold: 3.0
+    novelty_short_window: 8
+    novelty_long_window: 64
+    novelty_threshold: 2.5
+    ess_ratio_threshold: 0.25
+    max_weight_threshold: 0.10
+    min_corroborating_signals: 1
+    history_scale_floor: 5.0
+
+comparison:
+  baseline_candidate: pf_paired_t1_control_mean
+  saved_exp072_reference: exp072_likpf_mean
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+
+audit:
+  mode: paired_first_gate_trajectory_containment
+  output_prefix: exp241_adaptive_likelihood_pf_trajectory_containment_audit
+  primary_baseline: pf_paired_t1_control_mean
+  path_jump_threshold_ft: 8.0
+  event_policy: first_treatment_gate_per_well_seed
+  horizons_rows: [8, 32, 64, 128, 256, 512, 1024]
+  include_end_horizon: true
+  containment_guards:
+    max_overall_delta_rmse: 0.0
+    max_1000_plus_delta_rmse: 0.0
+    max_worst_well_regression: 0.0
+    require_nonincreasing_late_divergence: true
+  expected_train_artifacts:
+    - exp241_adaptive_likelihood_pf_trajectory_containment_audit_candidate_metrics.csv
+    - exp241_adaptive_likelihood_pf_trajectory_containment_audit_distance_bucket_metrics.csv
+    - exp241_adaptive_likelihood_pf_trajectory_containment_audit_hidden_like_metrics.csv
+    - exp241_adaptive_likelihood_pf_trajectory_containment_audit_by_well.csv
+    - exp241_adaptive_likelihood_pf_trajectory_containment_audit_event_manifest.csv.gz
+    - exp241_adaptive_likelihood_pf_trajectory_containment_audit_event_horizon_metrics.csv.gz
+    - exp241_adaptive_likelihood_pf_trajectory_containment_audit_row_diagnostics.csv.gz
+    - exp241_adaptive_likelihood_pf_trajectory_containment_audit_summary.json
+
+execution:
+  active_variant_count: 1
+  pf_control_replay_count: 1
+  pf_treatment_replay_count: 1
+  lightgbm_config_count: 0
+  fold_count: 0
+  total_boosters: 0
+  well_shard_count: 4
+  active_well_shard_index: 0
+  shard_policy: stable_sha256_well_modulo
+  progress_every_wells: 8
+  kaggle_push_requires_user_decision: true
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp209-joint-exact-parity-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_well_shared_pair_namespace_plus_seed_index_numba_single_worker
+  stochastic_components:
+    - likelihood_pf_particle_initialization
+    - likelihood_pf_particle_propagation
+    - likelihood_pf_conditional_resampling
+  parallel_rng_policy: no_thread_parallel_rng_single_worker
+  conditional_rng_caveat: >
+    Control and treatment are exactly paired through the first state/resampling
+    divergence. Conditional resampling can then consume different random draws;
+    the first divergence row is part of the diagnostic rather than hidden.
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+
+inference:
+  mode: disabled_diagnostic_only
+  selected_candidate: null
+  notes:
+    - No raw-test regeneration, inference, or submission is generated.
+
+notes:
+  - One active treatment, one paired control replay, two total PF replays.
+  - No LightGBM, folds, boosters, GPU, Beam variant, temperature grid, or mixture variant.
+  - Kaggle CPU shards 0, 2, and 3 completed, covering 574/773 wells and 2,813,393 rows.
+  - The user closed the experiment without shard 1 on 2026-07-13; no strict four-shard merge is claimed.
+  - Containment, hidden-like, and worst-well guards failed, so inference and submission remain disabled.

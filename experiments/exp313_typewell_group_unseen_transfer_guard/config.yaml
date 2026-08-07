@@ -1,0 +1,57 @@
+experiment:
+  name: exp313_typewell_group_unseen_transfer_guard
+  description: 同一Type Well群priorが未知群・単独wellへ誤転送されないためのcoverageとfallback guardを凍結する0-booster監査
+  route: pf_beam
+  status: design_frozen_blocked_on_exp311_exp312
+  created_at: "2026-07-21"
+
+lineage:
+  parent: exp312_typewell_group_conditional_gr_emission_table
+  references: [exp065_typewell_supertype_cluster_cv_audit, exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit]
+  diff_summary: prior値そのものは変更せず、same-group holdout・group-purged・soft-neighbor fallbackの三面で利用可能性と誤転送riskを判定する共通promotion guardを追加する。
+
+implementation: {enabled: false, scope: design_only, inference_enabled: false, submission_enabled: false}
+
+validation:
+  strategy: nested_typewell_transfer_audit
+  outer_folds: 5
+  split_surfaces:
+    - well_holdout_with_group_peers
+    - leave_one_typewell_group_out
+    - spatial_and_typewell_group_purged
+  fit_scope: outer_train_wells_only
+  truth_join_policy: freeze_availability_fallback_and_prior_before_scoring
+
+guard_contract:
+  exact_group_min_peer_wells: 2
+  exact_group_min_effective_rows: 64
+  fallback_order: [exact_native_overlap_group, soft_similarity_if_exp319_passed, global_prior, identity_no_correction]
+  default_fallback: identity_no_correction
+  max_soft_neighbor_distance: null
+  allowed_test_inputs: [typewell_content, horizontal_known_prefix_gr, raw_geometry]
+  forbidden_test_inputs: [suffix_tvt, suffix_error, formation_train_only, well_id_rule]
+
+execution_contract: {audit_surfaces: 3, model_configs: 0, folds: 5, boosters: 0, decoder_runs: 0}
+
+model: {name: none, params: {}}
+
+promotion_gates:
+  fold_safe_coverage_min: 0.90
+  identity_fallback_parity_abs_max: 1.0e-10
+  unseen_group_negative_transfer_max_ft: 0.00
+  same_group_gain_min_ft: 0.05
+  folds_improved_min: 4
+  worst_well_delta_max_ft: 0.25
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_well_fold_surface
+  stochastic_components: []
+  parallel_rng_policy: no_global_rng; stable group and peer ordering
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: false, submission_sha: false}
+
+notes:
+  - This experiment defines a reusable safety contract; it does not tune calibration values.
+  - If unseen-group non-regression fails, all group-calibration downstream experiments remain blocked.

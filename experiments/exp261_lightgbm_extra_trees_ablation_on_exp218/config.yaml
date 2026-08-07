@@ -1,0 +1,237 @@
+experiment:
+  name: exp261_lightgbm_extra_trees_ablation_on_exp218
+  description: Add LightGBM extra_trees=True to the frozen exp218 regression surface as a single-variable ablation.
+  route: ml_model
+  status: train_completed_guard_failed
+  created_at: '2026-07-16'
+  updated_at: '2026-07-17'
+
+lineage:
+  parent: exp218_gr_wavelet_rotation_confidence_features_on_exp148
+  feature_cache_parent: exp072_exp063_full_replay_feature_cache
+  learned_likelihood_parent: exp145_learned_likelihood_rawtest_feature_generator_parity
+  diff_summary: >
+    Rebuilds the exact exp218 380-feature surface and changes only the selected
+    LightGBM configs by adding extra_trees=True. The exp218 feature schema,
+    GroupKFold, seeds, GPU deterministic mode, early stopping, target, and all
+    other model parameters remain fixed. Saved exp218 metrics and OOF are the
+    control; no parent/control booster is retrained.
+
+validation:
+  strategy: groupkfold_by_well_exp218_surface_extra_trees_single_variable_ablation
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: full_exp218_oof_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_hidden_assignment_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  stress_surfaces:
+    - distance_buckets
+    - rows_1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+    - fold
+    - by_well
+    - worst_well
+  leakage_policy:
+    - The exp218 raw-train-only feature and known-prefix contracts are unchanged.
+    - GroupKFold is grouped by well; no well appears in train and validation for the same fold.
+    - Hidden-tail true TVT is never used for feature generation or parameter selection.
+    - Saved exp218 OOF is used only as a frozen evaluation and blend-readout reference.
+    - exp115 roles are used only for fixed stress evaluation and never as model features.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp218_oof_predictions_local: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/kaggle/output/train_v1/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_predictions.csv.gz
+  exp218_feature_schema_local: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/kaggle/output/train_v1/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_feature_schema.csv
+  exp218_model_manifest_local: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/kaggle/output/train_v1/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_lgb_models/manifest.json
+  hidden_like_assignment_local: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+frozen_parent:
+  experiment: exp218_gr_wavelet_rotation_confidence_features_on_exp148
+  variant: gr_wavelet_rotation_confidence_addonly
+  mode: gpu_repro_guard_dp_threads8
+  expected_feature_count: 380
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_lgb_mean_rmse: 8.475793751656624
+  expected_oof_runtime_rmse: 8.475793978195085
+  oof_rmse_tolerance: 0.000001
+  expected_oof_decompressed_sha256: 5f3fc95182eea348f3545771e67778ce191e7ba468eee7b267f4993369422976
+  expected_feature_schema_sha256: aaf5f13f1e7c5236cd332dcebfdbf98e9c08247465833232e79ce3ff56362b49
+  expected_model_manifest_sha256: 904570def0d6ad0140f3df95c8bb38f31823295fd191206290e3833b5b2cc237
+  historical_pooled_rmse:
+    lgb0: 8.55716571185676
+    lgb1: 8.512227651282087
+    lgb2: 8.524447601269644
+    lgb_mean: 8.475793751656624
+
+model:
+  name: exp218_lightgbm_extra_trees_ablation
+  estimator: lightgbm
+  parent_model_family: exp218_lgb0_lgb1_lgb2
+  changed_parameter:
+    name: extra_trees
+    value: true
+  selected_plan: full_family
+  run_approved: true
+  approval:
+    status: approved
+    approved_at: '2026-07-16T18:46:43+09:00'
+    approved_scope: full_family_1_variant_3_configs_5_folds_15_boosters_no_control_retraining
+  plans:
+    lgb1_probe:
+      description: First probe on historical best individual exp218 config only.
+      config_indices: [1]
+      active_variants: 1
+      lightgbm_configs: 1
+      folds: 5
+      boosters: 5
+      approval_scope: lgb1_probe_1_variant_1_config_5_folds_5_boosters_no_control_retraining
+    full_family:
+      description: Apply extra_trees=True independently to all three exp218 configs.
+      config_indices: [0, 1, 2]
+      active_variants: 1
+      lightgbm_configs: 3
+      folds: 5
+      boosters: 15
+      approval_scope: full_family_1_variant_3_configs_5_folds_15_boosters_no_control_retraining
+  variant:
+    name: extra_trees_true
+    feature_count: 380
+    control_retraining: false
+    parent_retraining: false
+  training:
+    early_stopping_rounds: 250
+    max_train_rows: null
+    save_models: true
+    save_predictions: true
+    top_n_importance: 60
+    mode: gpu_repro_guard_dp_threads8
+    expected_mode_overrides:
+      gpu_use_dp: true
+      deterministic: true
+      force_col_wise: true
+      n_jobs: 8
+      num_threads: 8
+  blend_readout:
+    frozen_parent_model: lgb_mean
+    extra_model: selected_config_mean
+    extra_weights: [0.25, 0.50, 0.75]
+  adoption_guards:
+    require_primary_overall_improvement: true
+    require_1000_plus_non_worse: true
+    require_hidden_like_spatial_non_worse: true
+    require_hidden_like_typewell_purged_non_worse: true
+    max_worst_well_regression: 2.0
+    min_improved_folds: 3
+  forbidden_operations:
+    - exp218_control_retraining
+    - feature_change
+    - seed_grid
+    - extra_trees_parameter_grid
+    - num_leaves_change
+    - sampling_change
+    - objective_change
+    - selector_lightgbm_change
+    - inference_before_guard
+    - submission_before_guard
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp145-train
+      - kentookumura/exp218-gr-wavelet-rotation-exp148-train
+    bootstrap_dependency_files:
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/settings.py
+        destination: exp218_source/settings.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: exp218_source/config.yaml
+      - source: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_exp218_groupkfold_and_per_config_seed
+  stochastic_components:
+    - upstream_exp072_pf_beam_cache
+    - upstream_exp145_learned_likelihood_cache
+    - lightgbm_extra_trees_random_threshold_selection
+    - gpu_lightgbm_training
+  parallel_rng_policy: Fixed LightGBM seeds with deterministic=true, force_col_wise=true, gpu_use_dp=true, n_jobs=8, and num_threads=8; no new feature RNG.
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - GPU LightGBM is not assumed bitwise deterministic without a rerun.
+    - Parent exp218 OOF and metrics are frozen controls and are not retrained.
+    - Inference and submission are outside the initial implementation scope.
+
+audit:
+  mode: exp218_lightgbm_extra_trees_single_variable_ablation
+  output_prefix: exp261_lightgbm_extra_trees_ablation_on_exp218
+  fast: false
+  expected_train_artifacts:
+    - exp261_lightgbm_extra_trees_ablation_on_exp218_parameter_audit.csv
+    - exp261_lightgbm_extra_trees_ablation_on_exp218_metrics.csv
+    - exp261_lightgbm_extra_trees_ablation_on_exp218_fold_metrics.csv
+    - exp261_lightgbm_extra_trees_ablation_on_exp218_bucket_metrics.csv
+    - exp261_lightgbm_extra_trees_ablation_on_exp218_hidden_like_metrics.csv
+    - exp261_lightgbm_extra_trees_ablation_on_exp218_by_well.csv
+    - exp261_lightgbm_extra_trees_ablation_on_exp218_blend_readout.csv
+    - exp261_lightgbm_extra_trees_ablation_on_exp218_feature_importance_mean.csv
+    - exp261_lightgbm_extra_trees_ablation_on_exp218_feature_importance_mean_top.png
+    - exp261_lightgbm_extra_trees_ablation_on_exp218_oof_predictions.csv.gz
+    - exp261_lightgbm_extra_trees_ablation_on_exp218_feature_schema.csv
+    - exp261_lightgbm_extra_trees_ablation_on_exp218_model_manifest.json
+    - exp261_lightgbm_extra_trees_ablation_on_exp218_guard.json
+    - exp261_lightgbm_extra_trees_ablation_on_exp218_summary.json
+
+inference:
+  mode: blocked_train_guard_failed
+  submission: false
+
+results:
+  kaggle_kernel: kentookumura/exp261-lgb-extra-trees-exp218-train
+  kernel_version: 1
+  completed_at: '2026-07-17'
+  elapsed_seconds: 19931.364
+  parent_rmse: 8.475793751656624
+  extra_trees_rmse: 8.755217123821655
+  delta_rmse: 0.27942337216503077
+  improved_folds: 1
+  worst_well_regression: 11.324422836303711
+  adoption_supported: false
+  feature_content_sha256: f6ff78f6a95e47b0ed8e76a22c31d3403d0a9e78471b7d64f37eef7a2a398e29
+  oof_decompressed_sha256: 021fd47ac556b7ce98f7991b0c97aa6996b359f07c07a7e6a339c84d84100f00
+  model_manifest_sha256: d76ca02ad54184310eafb2758bd287a48cf20cbd95911db5eaef103c8e8de476
+  summary_sha256: 34cb4c1d62076f0f62f402a52975b159ae1c966ddfff12fcbdf24384f6705ad4
+
+notes:
+  - Implements the `lightgbm_extra_trees_ablation_on_exp218` backlog item as exp261.
+  - The user approved the full_family plan on 2026-07-16: one variant, three configs, five folds, fifteen boosters, and no parent/control retraining.
+  - All three configs run inside the single canonical train notebook.
+  - Parent/control retraining is not included.
+  - Train v1 completed with every adoption guard false; do not run inference or submit this regression variant.

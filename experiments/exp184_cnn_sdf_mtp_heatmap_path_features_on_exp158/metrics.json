@@ -1,0 +1,138 @@
+{
+  "experiment": "exp184_cnn_sdf_mtp_heatmap_path_features_on_exp158",
+  "status": "kaggle_train_v2_complete",
+  "route": "pf_beam",
+  "created_at": "2026-07-03",
+  "updated_at": "2026-07-04",
+  "kernel": {
+    "id": "kentookumura/exp184-hmpf-train",
+    "version": 2,
+    "url": "https://www.kaggle.com/code/kentookumura/exp184-hmpf-train",
+    "status": "KernelWorkerStatus.COMPLETE"
+  },
+  "planned": {
+    "active_selector_variants": 1,
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "boosters": 15,
+    "control_or_parent_retraining": false,
+    "runtime": "kaggle_cpu"
+  },
+  "run": {
+    "train_status": "completed_train_side_audit",
+    "runtime_seconds": 33550.90019130707,
+    "rows": 3783989,
+    "wells": 773,
+    "feature_count": 223,
+    "heatmap_path_features": 126
+  },
+  "baselines": {
+    "likpf_mean_rmse": 11.594897672217703,
+    "multiobs_score_top1_rmse": 11.594897672217703,
+    "exp157_rowwise_rmse": 10.79579983712686,
+    "exp158_continuity_rmse": 10.789163253,
+    "exp148_lgb_mean_rmse": 8.501281182
+  },
+  "models": {
+    "lgb_multiclass": {
+      "rmse_tvt": 11.490098,
+      "mae_tvt": 6.827812,
+      "within_10ft": 0.775349,
+      "oracle_label_accuracy": 0.305819
+    },
+    "lgb_candidate_binary": {
+      "rmse_tvt": 11.05752,
+      "mae_tvt": 6.686468,
+      "within_10ft": 0.778195,
+      "oracle_label_accuracy": 0.313763
+    },
+    "lgb_candidate_error_ranker": {
+      "rmse_tvt": 10.569847,
+      "mae_tvt": 6.349849,
+      "within_10ft": 0.796829,
+      "oracle_label_accuracy": 0.265474
+    }
+  },
+  "best_non_oracle": {
+    "variant": "viterbi_sw200_bias000_jw000_jf025_d0150_std999999_md0000_seg012",
+    "mode": "viterbi",
+    "rmse_tvt": 10.560650324533297,
+    "mae_tvt": 6.329187985951713,
+    "within_10ft": 0.7970564925003746,
+    "oracle_label_accuracy": 0.27156395010662027,
+    "default_candidate_rate": 0.4224713655351535,
+    "path_switch_count": 5713,
+    "path_switch_per_1000_rows": 1.5097824015873198,
+    "switch_penalty": 20.0,
+    "nondefault_bias": 0.0,
+    "jump_penalty_weight": 0.0,
+    "jump_free_ft": 25.0,
+    "max_abs_delta_vs_default": 150.0,
+    "min_segment_len": 12.0,
+    "delta_rmse_vs_likpf_mean": -1.0342473476844063,
+    "delta_rmse_vs_exp157_rowwise": -0.23514951259356387,
+    "delta_rmse_vs_exp158_continuity": -0.2285129284667029
+  },
+  "selection_distribution_best": {
+    "likpf_mean": 0.422471,
+    "pf_ancc": 0.382575,
+    "tvt_dense50": 0.07264,
+    "tvt_densew": 0.054642,
+    "beam_mean": 0.043337,
+    "tvt_dense": 0.023981,
+    "hyb": 0.000279,
+    "sc_ens": 0.000075
+  },
+  "diagnostics": {
+    "worst_well": {
+      "well": "86454a6f",
+      "rmse_tvt": 57.960134,
+      "mae_tvt": 54.554636,
+      "within_10ft": 0.046208
+    },
+    "heatmap_sparse_distance_bucket": {
+      "q1_rmse_tvt": 7.042431,
+      "q4_rmse_tvt": 14.058409
+    },
+    "subgroups": {
+      "exp115_spatial_valid_rmse_tvt": 12.69614,
+      "exp115_typewell_purged_valid_rmse_tvt": 12.629861,
+      "hmpf_far_from_sparse_sample_gt512_rmse_tvt": 13.029168
+    },
+    "top_heatmap_importance_features": [
+      "hmpf_real_top10_mean_minus_candidate_abs",
+      "hmpf_real_top10_mean_minus_candidate",
+      "hmpf_real_top1_minus_candidate_abs",
+      "hmpf_real_top5_mean_minus_candidate_abs",
+      "hmpf_real_top3_mean_minus_prior_center"
+    ]
+  },
+  "artifacts": {
+    "output_dir": "experiments/exp184_cnn_sdf_mtp_heatmap_path_features_on_exp158/kaggle/output/train_v2",
+    "metrics": "artifacts/exp184_cnn_sdf_mtp_heatmap_path_features_on_exp158_metrics.csv",
+    "summary": "artifacts/exp184_cnn_sdf_mtp_heatmap_path_features_on_exp158_summary.json",
+    "oof_predictions": "artifacts/exp184_cnn_sdf_mtp_heatmap_path_features_on_exp158_oof_predictions.csv.gz",
+    "model_manifest": "artifacts/exp184_cnn_sdf_mtp_heatmap_path_features_on_exp158_model_manifest.json",
+    "feature_importance_mean": "artifacts/exp184_cnn_sdf_mtp_heatmap_path_features_on_exp158_feature_importance_mean.csv"
+  },
+  "sha256": {
+    "metrics": "54d5e937ece5cd5c3980907416d75af5544f41e4ba2c87f11c716b378f3050bd",
+    "predictions_decompressed": "e09fbc48d8a6e2d97efdf214e0e0fa71e6bde97ac16a33062b76de07f46d0346",
+    "best_variant_prediction": "4e5d6e1dc69183d3d42edc503553ecbb7594300888cf9e876838c1b5571863cf",
+    "model_manifest": "a41d119bb2de30c12cf828e1fc93b0ed64d64867088a5b5fc9b8df4486e07f77",
+    "feature_schema": "50f00d7f3850025f1ee6d35550b536028af67e8be7f3a4fbf78ed2ff5633bd6a",
+    "heatmap_feature_schema": "e2098486a36a900d97fe2bee42807b44ba5e19389d1064a66f537e50a123666b"
+  },
+  "decision": {
+    "recommendation": "heatmap_path_addonly_selector_supported_for_review",
+    "train_side_supported": true,
+    "inference_port_ready": false,
+    "submit_ready": false,
+    "reason": "Best Viterbi improves exp158 continuity by 0.228513 RMSE train-side, but raw-test heatmap coverage/parity and hidden-like subgroup stress remain unresolved."
+  },
+  "notes": [
+    "Heatmap path centers are add-only selector features, not direct predictions or submission candidates.",
+    "Kaggle train v1 failed with DeadKernelError after fold0 multiclass. v2 completed after exp183-style bounded long-model eval and chunked OOF prediction.",
+    "Use the same exp184 for any inference port or submit follow-up; do not create a new experiment just to port this result."
+  ]
+}

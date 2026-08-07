@@ -1,0 +1,185 @@
+experiment:
+  name: "exp205_exact_hmm_smoother_exp072_compatible_cache_audit"
+  description: Train-only audit that wraps amerhu's exact HMM smoother as an exp072-compatible feature cache and compares it with the exp072 deterministic PF/Beam cache.
+  route: pf_beam
+  status: completed_train_feature_cache_direct_pfbeam_supported_no_submit
+  created_at: "2026-07-06"
+  updated_at: "2026-07-07"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.metric
+
+lineage:
+  parent: exact_hmm_smoother_exp072_compatible_cache_audit backlog
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - amerhu/rogii-wellbore-geology-exact-hmm-smoother
+    - KAGGLE_DIRECTION.md exact_hmm_smoother_exp072_compatible_cache_audit
+  implementation_source: exact_hmm_smoother.py
+  diff_summary: >
+    Ports the public exact second-order HMM smoother with minimal numerical changes
+    and wraps it as a train-only feature cache generated from raw train
+    horizontal/typewell files. The generated HMM cache is compared against the
+    fixed exp072 deterministic full replay cache by id, including HMM standalone,
+    exp072 likpf_mean, fixed likpf/HMM blends, distance buckets, by-well deltas,
+    step-delta rates, and HMM posterior-std calibration. No test features,
+    LightGBM training, inference, or submission are produced.
+
+validation:
+  strategy: train_side_feature_cache_direct_pfbeam_audit
+  metric: rmse_tvt
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  leakage_policy:
+    - HMM generation uses raw train horizontal/typewell files, observed TVT_input prefix, GR, MD, Z, and typewell GR/TVT only.
+    - Unknown-suffix train TVT is written only to target and used only for train-side metrics.
+    - exp072 cache is not a generation input; it is read only by the direct comparison helper after HMM cache generation.
+    - No raw test files, model training, inference, submission, oracle best, true-error rank, or OOF absolute error are used as features.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: amerhu_exact_hmm_smoother
+  estimator: none
+  target: target
+  base_prediction: last_known_tvt
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+  notes:
+    - HMM defaults match the public amerhu notebook default configuration.
+    - The HMM posterior mean is evaluated as a candidate path, not as a submission candidate.
+
+feature_cache:
+  variant: amerhu_exact_hmm_smoother_default
+  output_prefix: exp205_exact_hmm_smoother_exp072_compatible_cache_audit
+  expected_feature_count: 13
+  fast: false
+  max_wells: null
+  expected_artifacts:
+    - exp205_exact_hmm_smoother_exp072_compatible_cache_audit_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    - exp205_exact_hmm_smoother_exp072_compatible_cache_audit_feature_schema.csv
+    - exp205_exact_hmm_smoother_exp072_compatible_cache_audit_by_well_generation_summary.csv
+    - exp205_exact_hmm_smoother_exp072_compatible_cache_audit_summary.json
+
+comparison:
+  baseline_experiment: exp072_exp063_full_replay_feature_cache
+  output_prefix: exp205_vs_exp072
+  baseline_feature_cache:
+    - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v2_stream/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  hmm_feature_cache:
+    - experiments/exp205_exact_hmm_smoother_exp072_compatible_cache_audit/artifacts/exp205_exact_hmm_smoother_exp072_compatible_cache_audit_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    - /kaggle/working/artifacts/exp205_exact_hmm_smoother_exp072_compatible_cache_audit_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+  baseline_candidate_columns:
+    - likpf_mean
+    - pf_ancc
+    - pf_z
+    - beam_mean
+  blend_hmm_weights:
+    - 0.25
+    - 0.50
+    - 0.75
+  uncertainty_bins: 10
+  write_enriched_cache: true
+  step_delta_thresholds:
+    - 0.08
+    - 0.10
+    - 0.20
+  result_artifacts:
+    - exp205_vs_exp072_overall_metrics.csv
+    - exp205_vs_exp072_distance_bucket_metrics.csv
+    - exp205_vs_exp072_by_well_delta.csv
+    - exp205_vs_exp072_hmm_std_calibration.csv
+    - exp205_vs_exp072_step_delta_rates.csv
+    - exp205_vs_exp072_enriched_hmm_exp072_train_features.csv.gz
+    - exp205_vs_exp072_summary.json
+  success_guard:
+    baseline_candidate: exp072_likpf_mean
+    require_blend_beats_likpf_mean: true
+    reject_if_worst_well_or_1000_plus_breaks: true
+    reject_if_hmm_std_not_monotonic_with_error: true
+
+results:
+  source: kaggle_train_v2
+  kernel: kentookumura/exp205-exact-hmm-smoother-cache-audit-train
+  kernel_version: 2
+  status: completed
+  rows: 3783989
+  wells: 773
+  runtime_seconds: 15041.783
+  best_candidate: blend_likpf_hmm_w500
+  best_rmse_tvt: 10.269699957242537
+  baseline_candidate: exp072_likpf_mean
+  baseline_rmse_tvt: 11.594897668440991
+  delta_rmse_vs_baseline: -1.325197711198454
+  feature_content_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+  id_mismatches: 0
+  output_archive: /tmp/kaggle-output/exp205_exact_hmm_smoother_exp072_compatible_cache_audit/train_v2_small
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  numba_num_threads: 4
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_for_default_hmm_generation
+  stochastic_components: []
+  parallel_rng_policy: numba_parallel_no_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: false
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Default HMM generation consumes no random numbers.
+    - Numba parallel floating arithmetic may still vary at tiny precision, so this is not promoted to a deterministic submission anchor.
+    - Test features, model artifacts, predictions, and submissions are intentionally not generated.
+
+inference:
+  mode: not_applicable_train_feature_cache_only
+  selected_candidate: null
+  notes:
+    - This experiment intentionally does not create a test HMM feature generator or submission path.
+    - If train-side audit supports the HMM, raw-test-compatible regeneration must be designed in a later experiment.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog exact_hmm_smoother_exp072_compatible_cache_audit.
+  - HMM path is not treated as direct replacement or postprocess blend for submission in this experiment.
+  - Fixed blends are train-side diagnostics only and are written by direct_hmm_comparison.py after joining exp072.

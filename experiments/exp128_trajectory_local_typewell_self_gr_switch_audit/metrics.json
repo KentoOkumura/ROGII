@@ -1,0 +1,77 @@
+{
+  "experiment": "exp128_trajectory_local_typewell_self_gr_switch_audit",
+  "status": "completed_train_side_rejected_no_submit",
+  "cv": 11.594897672217703,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": null,
+  "route": "ensemble",
+  "parent": "exp099_pf_multi_observation_likelihood_probe",
+  "kaggle_train_kernel": "kentookumura/exp128-trajectory-local-switch-train",
+  "kaggle_train_version": 2,
+  "kaggle_train_url": "https://www.kaggle.com/code/kentookumura/exp128-trajectory-local-switch-train",
+  "notes": "Kaggle train v2 completed. Best candidate is baseline likpf_mean; local self-GR switch/blend did not activate and no submit/inference port is selected.",
+  "best_candidate": {
+    "candidate": "likpf_mean",
+    "source": "baseline",
+    "rows": 3783989,
+    "coverage": 1.0,
+    "rmse": 11.594897672217703,
+    "mae": 7.067632584311985,
+    "within10": 0.772807479091509,
+    "bias": -1.0994231121947302,
+    "mean_switch_or_gate": null
+  },
+  "likpf_baseline": {
+    "candidate": "likpf_mean",
+    "source": "baseline",
+    "rows": 3783989,
+    "coverage": 1.0,
+    "rmse": 11.594897672217703,
+    "mae": 7.067632584311985,
+    "within10": 0.772807479091509,
+    "bias": -1.0994231121947302,
+    "mean_switch_or_gate": null
+  },
+  "delta_best_minus_likpf_rmse": 0.0,
+  "rows": 3783989,
+  "wells": 773,
+  "switch_signal": {
+    "finite_self_prior_rate": 0.7563457504765474,
+    "mean_cost_gap_typewell_minus_self": -0.7429656386375427
+  },
+  "artifact_sha256": {
+    "bucket_metrics": "fcfc59cbbbd9b31229df05cf878a0fd7328ee87f59fb9644d75d6acecc667edf",
+    "by_well": "fbf946fcbe1441c98c7597ec8b978bb050bb9789242c18260abb8449fd309fee",
+    "candidate_metrics": "8bc8246cf2ac14a8b74e8e03c1a1c7572d67959d9164a6be8619c29c201d8b5e",
+    "feature_schema": "5bf2f71e22c75fb0690ce086687b6b37e2a35c30f18102b285854c899aef4379",
+    "oof_predictions_raw": "972ac359b8266399c2978822cded25677dd2516ffb584bd79913a1c334c29bc6",
+    "oof_predictions_decompressed": "fa274d49641bfbf033817f79971e20a9678499336b449d312601a6066bfa5731",
+    "signal_metrics": "050869e2cec75bda8d106db0a77093a590bf8863a45051e9b47575b0c36c487a",
+    "window_diagnostics": "6b095793f47c9e0607f9a099927cc8a4f5b1942e911aeac5beb06ce109ac85a8"
+  },
+  "invalid_runs": [
+    {
+      "kernel": "kentookumura/exp128-trajectory-local-switch-train",
+      "version": 1,
+      "reason": "soft blend used (1-gate)*base + gate*self_prior for all rows, causing gate=0 rows with NaN self_prior to become NaN and reducing coverage to 0.756345750",
+      "best_candidate": "likpf_mean_local_self_gr_blend_gap0p15_w0p25",
+      "best_rmse": 11.552085575047249,
+      "best_coverage": 0.7563457504765474,
+      "baseline_candidate": "likpf_mean",
+      "baseline_rmse": 11.594897672217703,
+      "baseline_coverage": 1.0,
+      "local_output": "experiments/exp128_trajectory_local_typewell_self_gr_switch_audit/kaggle/output/train_v1"
+    }
+  ],
+  "expected_artifacts": [
+    "exp128_trajectory_local_typewell_self_gr_switch_audit_candidate_metrics.csv",
+    "exp128_trajectory_local_typewell_self_gr_switch_audit_bucket_metrics.csv",
+    "exp128_trajectory_local_typewell_self_gr_switch_audit_by_well.csv",
+    "exp128_trajectory_local_typewell_self_gr_switch_audit_signal_metrics.csv",
+    "exp128_trajectory_local_typewell_self_gr_switch_audit_window_diagnostics.csv",
+    "exp128_trajectory_local_typewell_self_gr_switch_audit_oof_predictions.csv.gz",
+    "exp128_trajectory_local_typewell_self_gr_switch_audit_feature_schema.csv",
+    "exp128_trajectory_local_typewell_self_gr_switch_audit_summary.json"
+  ]
+}

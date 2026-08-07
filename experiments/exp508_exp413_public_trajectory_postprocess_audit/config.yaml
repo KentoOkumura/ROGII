@@ -1,0 +1,326 @@
+experiment:
+  name: exp508_exp413_public_trajectory_postprocess_audit
+  description: >-
+    Audit one fixed public-notebook trajectory postprocess on the saved exp413
+    Stage D OOF. The only selectable candidate is per-well Savitzky-Golay
+    smoothing with window 61 and polynomial order 3. Tau-85 warmup variants
+    are report-only, and well-level routing is deferred to a conditional,
+    separately approved experiment.
+  route: ml_model
+  status: stage_a_complete_fail_closed
+  created_at: "2026-08-04"
+  updated_at: "2026-08-04"
+  inference_enabled: false
+
+lineage:
+  parent: exp413_scale5_likpf_full_replacement_on_exp335
+  public_core_reference: exp497_strict_public_core_fold_safe_ensemble_on_exp413
+  public_source: docs/notebooks/rogii-wellbore-geology-prediction/date_run_recent_20260611/jaemin3404__rogii-sp45-fleongg-jy-dynamic-v1/rogii-sp45-fleongg-jy-dynamic-v1.py
+  steering: ../../.steering/20260804-exp508-exp413-public-trajectory-postprocess-audit
+  negative_references:
+    - exp300_raw_deployable_well_feature_readout
+    - exp499_exp490_cross_fitted_well_application_selector
+    - exp497_strict_public_core_fold_safe_ensemble_on_exp413
+  diff_summary: >-
+    Keep the saved exp413 prediction, folds, row order, and all upstream models
+    fixed. Apply exactly one per-well Savitzky-Golay 61/3 filter to final TVT.
+    Keep tau-85 warmup and warmup-plus-SG non-selectable and exclude the public
+    60/40 direct-LikPF blend, routing, refitting, grids, clipping, reanchoring,
+    projection, retraining, and same-OOF rescue.
+
+authorization:
+  design_approved: true
+  approval_source: user_message_create_backlog_experiment_directory_steering_freeze_design_2026_08_04
+  implementation_approved: true
+  implementation_approval_source: user_request_implement_exp508_2026_08_04
+  canonical_notebook_adoption_approved: true
+  canonical_notebook_adoption_approval_source: user_request_execute_exp508_2026_08_04
+  kaggle_package_approved: true
+  kaggle_package_approval_source: user_request_execute_exp508_2026_08_04
+  kaggle_run_approved: true
+  kaggle_run_approval_source: user_request_execute_exp508_2026_08_04
+  inference_implementation_approved: false
+  inference_run_approved: false
+  submission_approved: false
+
+implementation:
+  scaffold_created: true
+  code_created: true
+  jupytext_source_created: true
+  compact_selfcontained_candidate_created: true
+  dedicated_contract_tests_created: true
+  canonical_train_notebook_is_template_placeholder: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_is_template_placeholder: true
+  kaggle_package_created: true
+  inference_implemented: false
+
+validation:
+  strategy: saved_exp413_outer5_fixed_trajectory_postprocess_audit
+  metric: rmse
+  metric_weighting: unweighted_suffix_rows
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_isna
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  fold_source: exp413_saved_outer_fold
+  fold_manifest_sha256: fa41084c5fcb4adffb88d44211b4cc5d2d2f46b5bd4d65828b6af941184b2a6d
+  selection_fit: none
+  truth_used_for_prediction_generation: false
+  leakage_policy:
+    - Verify source file, logical key, global row order, per-well row order, score-row role, and fold SHA before prediction generation.
+    - Generate and freeze all candidate predictions before attaching suffix truth, error, scope, or by-well outcomes.
+    - Score the selectable SG primary and freeze its decision before scoring report-only warmup controls.
+    - Never use truth or error to choose window, polyorder, tau, well, row, clip, projection, or router.
+    - Never use Public LB, public test well identity, public row count, or submission values for selection.
+
+data:
+  raw_dir: data/raw
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  id_column: id
+  join_keys: [well, row_idx]
+  ordering_contract: preserve_source_global_and_per_well_row_order
+  exp413_oof:
+    source_experiment: exp413_scale5_likpf_full_replacement_on_exp335
+    source_kernel_id: kentookumura/exp413-scale5-likpf-downstream-train
+    source_kernel_version: 2
+    file: stage_d_oof_predictions.parquet
+    prediction_column: scale5_x1p0_full_replacement__lgb_mean__pred_tvt
+    expected_cv: 7.884802794404715
+    public_lb_reference: 7.201
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_oof_sha256: 9bd2d17778b3b27d771b12cbff72def8b87e6cdf14062e1c0ba192434cef4a9d
+    expected_fold_metrics_sha256: 82e70b6674f218f2892d6e5f70e327dfcbbdaf0fa5e431c4e07231009e9e2d8f
+    expected_scope_metrics_sha256: c89add97cd4cae628b79774615a717e4cfbffe7b65a4a68c58b2c2e2737948ed
+    expected_hidden_like_metrics_sha256: eafa3546e4ea5c0d180d380f7fe2c39b5cac970ea4c8097b68b077017da1f1b8
+    expected_by_well_sha256: e82c6908ed2caa9b3e5c1664bc66a3226b3bc6d9284f4863bd4fa941ae32d080
+    root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp413-scale5-likpf-downstream-train/artifacts
+      - /kaggle/input/exp413-scale5-likpf-downstream-train/artifacts
+      - experiments/exp413_scale5_likpf_full_replacement_on_exp335/kaggle/output/stage_d/artifacts
+    evidence_files:
+      oof: stage_d_oof_predictions.parquet
+      fold_metrics: stage_d_fold_metrics.csv
+      scope_metrics: stage_d_scope_metrics.csv
+      hidden_like_metrics: stage_d_hidden_like_metrics.csv
+      by_well: stage_d_by_well.csv
+  fold_manifest:
+    expected_sha256: fa41084c5fcb4adffb88d44211b4cc5d2d2f46b5bd4d65828b6af941184b2a6d
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp413-scale5-likpf-selector-train/artifacts/nested_fold_manifest.csv
+      - /kaggle/input/exp413-scale5-likpf-selector-train/artifacts/nested_fold_manifest.csv
+      - experiments/exp413_scale5_likpf_full_replacement_on_exp335/kaggle/output/stage_c/artifacts/nested_fold_manifest.csv
+  hidden_like_assignment:
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    patterns:
+      - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+postprocess:
+  contract_file: postprocess_contract.yaml
+  output_contract: output_contract.md
+  control:
+    id: raw_exp413_stage_d_oof
+    selectable: false
+  primary:
+    id: sg61_p3_final_tvt
+    selectable: true
+    transform: scipy_signal_savgol_filter_per_well
+    input_surface: final_tvt
+    window_length: 61
+    polyorder: 3
+    mode: scipy_default_interp
+    dtype: float64
+    well_order: source_first_appearance
+    row_order: preserve_source_order_within_well
+    short_well_rule: decrement_even_window_then_apply_only_if_window_ge_5
+    reanchor_after_filter: false
+    clip_after_filter: false
+    project_after_filter: false
+  report_only:
+    - id: tau85_warmup_final_delta
+      selectable: false
+      tau_ft: 85.0
+      formula: last_known_tvt_plus_one_minus_exp_minus_md_since_over_tau_times_exp413_delta
+      may_rescue_primary: false
+    - id: tau85_warmup_then_sg61_p3
+      selectable: false
+      tau_ft: 85.0
+      sg_window_length: 61
+      sg_polyorder: 3
+      may_rescue_primary: false
+  prohibited:
+    - public_model60_likpf40_blend
+    - direct_likpf_reblend
+    - sg_window_or_polyorder_grid
+    - tau_grid
+    - last_known_reanchor
+    - clipping_or_monotonic_projection
+    - u_space_projection
+    - row_or_well_gate
+    - public_fixed_well_shape_threshold_or_map
+    - same_oof_rescue
+
+public_source_contract:
+  expected_sha256: 39b477f3687fed5c1679fc30b82a2980906bf1910df189696065800eb2b1f3ad
+  required_function: make_prediction
+  required_parameters:
+    sg_window_length: 61
+    sg_polyorder: 3
+    tau_ft: 85.0
+  postprocess_contract_sha256: 58afa464063e998f2c4853eb7df2a68784a226ee625a00a8cf1e328280c7dd58
+
+promotion_gate:
+  all_and: true
+  technical_all_pass: true
+  pooled_gain_min_ft: 0.01
+  nonworse_folds_required: 4
+  fixed_scope_max_delta_ft: 0.02
+  fixed_scopes:
+    - md_0_250
+    - md_250_1000
+    - md_1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  by_well_p95_max_delta_ft: 0.25
+  by_well_worst_max_delta_ft: 0.25
+  first_score_row_abs_correction_p95_max_ft: 0.50
+  first_score_row_abs_correction_max_ft: 2.00
+  pass_action: qualify_same_exp_inference_implementation_for_separate_approval
+  fail_decision: FAIL_CLOSE_WITHOUT_SG_GRID_WARMUP_ROUTER_OR_GATE_RESCUE
+
+conditional_future_well_router:
+  included_in_exp508: false
+  priority: conditional_p4
+  prerequisites:
+    - exp508_primary_all_and_gate_pass
+    - independent_target_free_raw_vs_sg_complementarity_evidence
+    - separate_experiment_and_steering
+    - separate_implementation_and_run_approval
+  requirements:
+    - raw_test_generatable_well_features_only
+    - outer_train_fit_outer_valid_apply
+    - no_public_fixed_thresholds_or_variant_map
+    - no_well_id_or_public_cardinality_rule
+
+execution_contract:
+  scientific_primary_variants: 1
+  report_only_controls: 2
+  trained_models: 0
+  lightgbm_configs: 0
+  total_boosters: 0
+  hmm_runs: 0
+  pf_runs: 0
+  beam_runs: 0
+  parent_or_control_retraining: 0
+  gpu_runs: 0
+  kaggle_stage_a_runtime: private_cpu_internet_off_if_separately_approved
+
+execution:
+  stage_a:
+    run_approved: true
+    enabled: true
+    completed: true
+    passed: false
+    decision: FAIL_CLOSE_WITHOUT_SG_GRID_WARMUP_ROUTER_OR_GATE_RESCUE
+    import_only_env: EXP508_IMPORT_ONLY
+  allowed_runtime: kaggle_private_cpu_internet_off
+
+model:
+  name: deterministic_fixed_trajectory_postprocess
+  params:
+    learned_model: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 0
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    package_created: true
+    train:
+      planned_kernel_id: kentookumura/exp508-exp413-public-sg61p3-audit-train
+      planned_kernel_title: exp508 exp413 public sg61p3 audit train
+      original_rejected_kernel_id: kentookumura/exp508-exp413-public-trajectory-postprocess-audit-train
+      original_rejected_title: exp508 exp413 public trajectory postprocess audit train
+      original_rejection: Kaggle SaveKernel 400 title cannot exceed 50 characters
+      run_approved: true
+      enabled: true
+      kernel_id: kentookumura/exp508-exp413-public-sg61p3-audit-train
+      kernel_title: exp508 exp413 public sg61p3 audit train
+      status: complete
+      kernel_version: 1
+      kernel_id_no: 129625989
+      pushed_at: "2026-08-03 23:26:41 UTC"
+      metrics_created_at: "2026-08-03T23:27:45.379122+00:00"
+      status_confirmed_at: "2026-08-03 23:30:45 UTC"
+      url: https://www.kaggle.com/code/kentookumura/exp508-exp413-public-sg61p3-audit-train
+      pulled_metadata_verified: true
+      actual_enable_gpu: false
+      actual_enable_internet: false
+      actual_machine_shape: None
+    train_kernel_sources:
+      - kentookumura/exp413-scale5-likpf-selector-train
+      - kentookumura/exp413-scale5-likpf-downstream-train
+    train_dataset_sources: []
+    train_model_sources: []
+    bootstrap_dependency_files:
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_fixed_source_row_order_float64
+  stochastic_components: []
+  parallel_rng_policy: no_rng_no_parallel_reduce
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  environment_versions_required: [python, numpy, scipy, pandas, pyarrow]
+  record:
+    kernel_version: true
+    input_sha: true
+    logical_key_sha: true
+    global_row_order_sha: true
+    per_well_row_order_sha: true
+    fold_manifest_sha: true
+    contract_sha: true
+    prediction_sha: true
+    metrics_and_gate_sha: true
+    submission_sha: true
+  notes:
+    - Stage A must rerun with identical prediction content SHA before this experiment can be called a deterministic OOF anchor.
+    - Hidden inference, if later approved, must record dynamic test inventory and prediction content SHA.
+
+results:
+  stage_a:
+    status: complete_fail_closed
+    rows: 3783989
+    wells: 773
+    control_rmse: 7.884802794404715
+    primary_rmse: 7.878669066831366
+    gain_ft: 0.00613372757334929
+    nonworse_folds: 5
+    maximum_fixed_scope_delta_ft: -0.004167012127837655
+    by_well_delta_p95_ft: -0.0013444914686354893
+    worst_well_delta_ft: -0.0004179664964425456
+    first_score_row_abs_correction_p95_ft: 0.289606690868095
+    first_score_row_abs_correction_max_ft: 0.8106944039191148
+    failed_gate: pooled_gain_at_least_0p01_ft
+    decision: FAIL_CLOSE_WITHOUT_SG_GRID_WARMUP_ROUTER_OR_GATE_RESCUE
+    primary_prediction_content_sha256: 5caf53f17c52729198eec412cdf7ce46e25f199a24ca842e4efb117e91a67f56
+    reproducibility_manifest_sha256: 1e68714488b1d7dd938dfe140ab67b00e7f93deb68efb6c520273afbe970b81a
+    inference_implemented: false
+    submission_created: false
+
+notes:
+  - Stage A implementation completed on 2026-08-04; canonical notebook adoption, Kaggle package, and Kaggle CPU run were subsequently approved by the user.
+  - The 0.01 ft gain gate is specific to this fixed no-fit one-factor audit; strict fold, scope, tail, and start-continuity guards remain mandatory.
+  - Report-only warmup variants and any future well router cannot replace or rescue the SG primary.
+  - Kaggle Stage A version 1 completed with all technical and safety checks passing, but pooled gain was 0.00613372757334929 ft and missed the frozen 0.01 ft minimum; the branch is terminally closed without inference, submission, grid, warmup rescue, or router follow-up.

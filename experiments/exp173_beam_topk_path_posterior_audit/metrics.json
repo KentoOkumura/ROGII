@@ -1,0 +1,44 @@
+{
+  "experiment": "exp173_beam_topk_path_posterior_audit",
+  "status": "completed_train_side_negative_no_submit",
+  "cv": 15.972927962256001,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "route": "pf_beam",
+  "rows": 3783989,
+  "wells": 773,
+  "kernel": "kentookumura/exp173-beam-topk-path-posterior-audit-train",
+  "kernel_version": 2,
+  "primary_baseline": {
+    "candidate": "likpf_mean",
+    "rmse": 11.594897672217703
+  },
+  "best_beam_topk_posterior_candidate": {
+    "candidate": "beam_topk_sm11_bw64_posterior_mean_t16",
+    "rmse": 15.972927962256001,
+    "mae": 10.852413073441644,
+    "within10": 0.6021452493651541,
+    "delta_rmse_vs_likpf_mean": 4.378030290038298,
+    "max_well_regression_vs_likpf_mean": 57.49450567034518
+  },
+  "best_topk_oracle_headroom": {
+    "candidate": "beam_topk_sm11_bw64_topk_oracle",
+    "rmse": 15.549454380825697,
+    "mae": 10.305776697078961,
+    "within10": 0.6261112281246061,
+    "delta_rmse_vs_likpf_mean": 3.954556708607994,
+    "max_well_regression_vs_likpf_mean": 57.49374144204759
+  },
+  "artifact_sha256": {
+    "beam_quality": "d17324f867b826b774b2f73cbfa07047a1537a16e51403ff2b59f2dcf29b9a64",
+    "bucket_metrics": "1d12a13ed94b63a50c1e5fcaba18f5f54cb060e3f2769002dafc4b47329bbd59",
+    "by_well": "02bd2ff24cf26ee9becf8610c93832188404651fb5cdbf9264af9f659cce7334",
+    "candidate_metrics": "87126c3131a861616957732f9e3c3a57a32c526418bef072300e5453928d7e99",
+    "candidate_wide_decompressed": "f993aaed3f59a39f3e367e1c18b3a7a394a254db09c1a5277d90d605621613bd",
+    "group_metrics": "09fc984303a4a153d69e46740cf0ddda510f06c6eb16cc1fdecd0d17f64b2dab",
+    "topk_diagnostics_decompressed": "08b1ed91742e4352b732fb739fdd59a8b4c53f53582f8a1c295a7b123e070301",
+    "topk_paths_decompressed": "cf23b20a5b2ee9c8266f6272374463ec49cf8229c78570b73908cd346f4c73cc"
+  },
+  "notes": "Kaggle train v2 complete. Best posterior and even top-K oracle were much worse than likpf_mean; no inference port or submit."
+}

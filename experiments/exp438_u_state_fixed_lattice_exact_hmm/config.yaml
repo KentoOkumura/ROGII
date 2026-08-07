@@ -1,0 +1,313 @@
+experiment:
+  name: exp438_u_state_fixed_lattice_exact_hmm
+  description: >-
+    Replace exp209's persistent TVT position lattice with one last-known-Z
+    anchored fixed U=TVT+Z lattice while preserving the joint U-rate state,
+    arrival-rate transition, emission family, priors, and posterior readout.
+  route: pf_beam
+  status: stage0_fail_closed_v1
+  created_at: "2026-07-29"
+  updated_at: "2026-07-29"
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.score_rows
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  mechanism_evidence: exp408_hmm_message_rate_basin_audit
+  comparison_references:
+    - exp435_tvt_memoryless_u_rate_dzonly_hmm
+    - exp437_neighbor_geometry_tvt_only_transition_hmm
+    - exp436_sparse_global_stratigraphic_potential
+  steering: ../../.steering/20260729-exp438-u-state-fixed-lattice-exact-hmm
+  diff_summary: >-
+    Keep the exp209 two-dimensional position/rate HMM and every continuous
+    transition parameter fixed. Anchor a fixed absolute-U lattice by adding the
+    final known Z to the parent TVT lattice, use delta_U=r_current*delta_MD,
+    evaluate each row's emission at TVT=U-Z, and read out E[U]-Z. The only
+    scientific difference is which coordinate retains the fixed 0.35-ft lattice.
+
+design:
+  implementation_authorized: true
+  implementation_approval_source: user_message_implement_exp438_2026_07_29
+  canonical_notebook_adoption_authorized: true
+  canonical_notebook_adoption_source: user_message_execute_exp438_2026_07_29
+  kaggle_stage0_authorized: true
+  kaggle_stage0_approval_source: user_message_execute_exp438_2026_07_29
+  kaggle_stage1_authorized: false
+  inference_authorized: false
+  submission_authorized: false
+  stage0_role: mechanism_preflight_only_not_cv_or_promotion
+  rescue_grid_allowed: false
+
+implementation:
+  enabled: true
+  scope: compact_selfcontained_stage0_and_fail_closed_inference
+  code_created: true
+  tests_created: true
+  jupytext_source_created: true
+  compact_candidate_notebooks_created: true
+  canonical_notebooks_replaced: true
+  kaggle_package_created: true
+  kaggle_push_completed: true
+  stage0_completed: true
+  stage1_completed: false
+  inference_enabled: false
+  submission_enabled: false
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  fixed32_manifest:
+    filename: stage0_fixed32_manifest.csv
+    local: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+    expected_sha256: fbbc62b7cb79e16a7fb436f3a9d11f8975e935ad2475a17e2dec4fd7b142e4d6
+    persistent_wells: 16
+    matched_control_wells: 16
+    total_wells: 32
+  persistent_episodes:
+    filename: persistent_offset_episodes.csv
+    local: experiments/exp408_hmm_message_rate_basin_audit/assets/persistent_offset_episodes.csv
+    expected_sha256: 031067fa77c195b77920a0997401310fbdd16532a2d0e99a9c3b5044de28913c
+    join_policy: after_candidate_prediction_and_diagnostic_sha_freeze_only
+  exp408_episode_causes:
+    filename: exp408_hmm_message_rate_basin_audit_episode_summary.csv
+    local: experiments/exp408_hmm_message_rate_basin_audit/artifacts/kaggle_v3/exp408_hmm_message_rate_basin_audit_episode_summary.csv
+    expected_sha256: b230ffc759e6ee4891f22809b3f3c8a8796681fb461ec0b7215b94a352bf0ab0
+    forward_cause: forward_transition_prior_hysteresis
+    join_policy: after_candidate_prediction_and_diagnostic_sha_freeze_only
+  exp209_saved_control:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    prediction_column: hmm_mean_tvt
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    regenerate: false
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts
+    patterns:
+      - "**/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz"
+
+model:
+  name: fixed_u_lattice_joint_rate_exact_hmm
+  estimator: deterministic_exact_forward_backward
+  parent_state: [tvt_position, u_rate]
+  candidate_state: [u_position, u_rate]
+  coordinate:
+    formula: U=TVT+Z
+    continuous_parent_equivalence: exact
+    scientific_difference: fixed_discrete_lattice_coordinate_only
+  parent_position:
+    lattice: fixed_tvt
+    transition_mean_formula: r_current*delta_MD-delta_Z
+    emission_state_formula: TVT_state
+    readout_formula: E_TVT
+  candidate_position:
+    lattice: fixed_absolute_u
+    grid_formula: parent_tvt_grid+last_known_Z
+    grid_reanchoring_after_start: forbidden
+    row_adaptive_regridding: forbidden
+    transition_mean_formula: r_current*delta_MD
+    emission_state_formula: U_state-Z_current
+    readout_formula: E_U-Z_current
+  fixed_from_exp209:
+    position_grid_step_ft: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    effective_position_sigma_ft: 0.1225
+    position_kernel_cells: 5
+    momentum: 0.998
+    emission: gaussian_typewell_gr
+    emission_lambda: 1.0
+    start_sigma_ft: 0.75
+    initial_rate_sigma: 0.01
+    band_pad_ft: 100.0
+    rate_center: zero
+    rate_position_integration: arrival_rate
+    output: smoothed_posterior_mean_and_std
+  forbidden:
+    - row_adaptive_or_interpolated_grid
+    - trapezoidal_source_destination_rate_transition
+    - memoryless_rate
+    - curvature_or_additional_state
+    - position_or_rate_noise_change
+    - formation_or_xy_geometry_prior
+    - reset_or_reanchor
+    - emission_change
+    - parent_fallback
+    - selector_or_blend
+
+validation:
+  strategy: fixed32_u_lattice_mechanism_then_full_group_oof
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  parent_prediction: saved_exp209
+  parent_direct_rmse_ft: 11.938287234887435
+  parent_rerun: false
+  truth_join: after_candidate_prediction_diagnostic_and_sha_freeze
+  report_scopes:
+    - raw_observed
+    - raw_missing
+    - high_missing
+    - 1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+
+gates:
+  stage0_fixed32:
+    role: mechanism_preflight_only_not_cv_or_promotion
+    treatment_variants: 1
+    treatment_hmm_well_runs: 32
+    parent_hmm_well_runs: 0
+    technical:
+      expected_wells: 32
+      expected_persistent_wells: 16
+      expected_control_wells: 16
+      finite_coverage_min: 1.0
+      coordinate_tvt_equals_u_minus_z_max_abs_ft: 1.0e-12
+      transition_coordinate_identity_max_abs_ft: 1.0e-12
+      emission_coordinate_identity_max_abs: 1.0e-12
+      constant_z_parent_prediction_parity_max_abs_ft: 1.0e-6
+      brute_force_loglik_posterior_max_abs: 1.0e-6
+      transition_row_sum_max_error: 1.0e-10
+      posterior_normalization_max_error: 1.0e-8
+      nontrivial_lattice_phase_rows_min: 1
+      candidate_control_prediction_nonidentity_rows_min: 1
+      truth_fold_episode_reads_before_freeze: 0
+      projected_stage1_runtime_seconds_max: 30600
+      peak_rss_gb_max: 25
+    mechanism:
+      posterior_weighted_abs_quantization_bias_reduction_min_fraction: 0.10
+      forward_cause_episode_sse_reduction_min_fraction: 0.05
+      persistent_episode_sse_reduction_min_fraction: 0.03
+      persistent_improved_wells_min: 10
+      persistent_improving_folds_min: 4
+      matched_control_pooled_rmse_delta_max_ft: 0.02
+      matched_control_by_well_delta_p95_max_ft: 0.25
+    fail_action: close_without_grid_phase_anchor_step_band_noise_rate_emission_or_blend_rescue
+  stage1_full_oof:
+    prerequisite: stage0_all_technical_and_mechanism_gates_pass_and_separate_user_approval
+    treatment_variants: 1
+    treatment_hmm_well_runs: 773
+    parent_hmm_well_runs: 0
+    direct_rmse_gain_vs_exp209_min_ft: 0.05
+    positive_fold_count_min: 4
+    forward_cause_episode_sse_reduction_min_fraction: 0.05
+    persistent_episode_sse_reduction_min_fraction: 0.03
+    fixed_scope_rmse_delta_max_ft: 0.02
+    by_well_delta_p95_max_ft: 0.25
+    worst_well_delta_max_ft: 2.0
+    fail_action: close_without_grid_or_blend_rescue
+  secondary_report_only:
+    experiment: exp263_last_anchor_better_candidate_confidence_pair_cache
+    cv_rmse_ft: 8.238331667
+    blend_or_promotion_use: forbidden
+
+execution:
+  selected_stage: stage_0_fixed32
+  run_hmm: false
+  create_prediction: false
+  create_submission: false
+  scientific_variants: 1
+  reporting_folds: 5
+  stage0_hmm_well_runs: 32
+  stage1_max_hmm_well_runs: 773
+  parent_control_hmm_reruns: 0
+  fitted_ml_models: 0
+  lightgbm_configs: 0
+  trained_ml_folds: 0
+  boosters: 0
+  pf_runs: 0
+  beam_runs: 0
+  gpu_runs: 0
+
+runtime:
+  accelerator: cpu
+  internet: false
+  use_amp: false
+  num_workers: 1
+  numba_threads_per_worker: 1
+  hard_runtime_limit_seconds: 32400
+  peak_rss_limit_gb: 25
+  implementation_approved: true
+  run_approved: false
+  stage1_approved: false
+  inference_enabled: false
+  submission_enabled: false
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp438-u-state-fixed-lattice-exact-hmm-train
+    train_title: exp438 u state fixed lattice exact hmm train
+    bootstrap_dependency_files:
+      - source: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+        destination: assets/stage0_fixed32_manifest.csv
+      - source: experiments/exp408_hmm_message_rate_basin_audit/assets/persistent_offset_episodes.csv
+        destination: assets/persistent_offset_episodes.csv
+      - source: experiments/exp408_hmm_message_rate_basin_audit/artifacts/kaggle_v3/exp408_hmm_message_rate_basin_audit_episode_summary.csv
+        destination: assets/exp408_hmm_message_rate_basin_audit_episode_summary.csv
+    train_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_fixed_well_row_u_state_rate_edge_order
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  logical_sha_artifacts:
+    - fixed32_manifest
+    - role_read_ledger
+    - coordinate_contract
+    - transition_quantization_ledger
+    - prediction
+    - posterior_rate_readout
+    - gate_report
+  notes:
+    - Save NumPy, Numba, CPU, thread, state-order, and normalization metadata.
+    - Do not treat the first run as a deterministic anchor.
+    - Require identical rerun transition-ledger and prediction SHA before reconsidering anchor status.
+
+artifacts:
+  status: stage0_fail_closed_v1
+  output_prefix: exp438_u_state_fixed_lattice_exact_hmm
+  kaggle_kernel_id: kentookumura/exp438-u-state-fixed-lattice-exact-hmm-train
+  kaggle_kernel_id_no: 129056676
+  kaggle_kernel_version: 1
+  kaggle_status: complete
+  metrics_sha256: 7118b009a518aec5bf0bc2916bc38a273243202cc701ccf6912d61dc4f9f2322
+  gate_report_sha256: ed4a3745acafe29e97e031442054d92c67137441ac181def8809f39468233ff2
+  numerical_contract_sha256: 124a5c75cde6a22964ee217ad8323f97a7ecee0d934c9bd19194d734a02ae2f1
+  prediction_logical_sha256: 6a2096746b4b98bf192be5180b8f3763e528262b91bcedd8301ece927993753d
+  rate_readout_logical_sha256: 9e3359964c46fdf00560b293ef52eed2bd97cf2003bfaff88b194010db5f0d8b
+  transition_ledger_logical_sha256: 24ee57208298466bb215eb763f4073b2ab2f62e198d40be21a1105c2d3d68806
+
+notes:
+  - Continuous U and TVT formulations are coordinate-equivalent; only the fixed lattice differs.
+  - Compact self-contained Stage 0 train and fail-closed inference are implemented.
+  - Compact candidates were adopted as the canonical train and inference notebooks after user approval.
+  - Kaggle private CPU version 1 completed; every mechanism gate failed and the runtime projection gate failed.
+  - Stage 0 closed without rescue. Stage 1, inference execution, and submission remain disabled.

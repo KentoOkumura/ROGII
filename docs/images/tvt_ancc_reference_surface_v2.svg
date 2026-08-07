@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1050" viewBox="0 0 1800 1050">
+  <rect width="1800" height="1050" fill="#ffffff"/>
+  <style>
+    text { font-family: Arial, "Noto Sans CJK JP", "Yu Gothic", sans-serif; fill: #111827; }
+    .title { font-size: 42px; font-weight: 700; }
+    .subtitle { font-size: 24px; fill: #374151; }
+    .h2 { font-size: 30px; font-weight: 700; }
+    .h3 { font-size: 23px; font-weight: 700; }
+    .body { font-size: 20px; fill: #374151; }
+    .small { font-size: 17px; fill: #4b5563; }
+    .panel { fill: #f8fafc; stroke: #111827; stroke-width: 2; rx: 14; }
+    .dash { stroke-dasharray: 9 8; }
+    .formula { font-family: "Courier New", monospace; font-size: 25px; font-weight: 700; }
+  </style>
+
+  <text x="900" y="56" text-anchor="middle" class="title">TVT, Z, ANCC の関係</text>
+  <text x="900" y="94" text-anchor="middle" class="subtitle">
+    青い点は 1 つの horizontal-well row。縦のブラケットは「どの面からどれだけ離れているか」を表す。
+  </text>
+
+  <rect x="70" y="135" width="1190" height="760" class="panel"/>
+  <text x="665" y="178" text-anchor="middle" class="h2">Cross-section view</text>
+
+  <!-- Axes without arrowheads -->
+  <line x1="155" y1="820" x2="1165" y2="820" stroke="#111827" stroke-width="4"/>
+  <line x1="155" y1="235" x2="155" y2="825" stroke="#111827" stroke-width="4"/>
+  <text x="1186" y="829" class="body">X / Y location</text>
+  <text x="122" y="238" text-anchor="end" class="body">Z depth</text>
+  <text x="122" y="268" text-anchor="end" class="small">larger downward</text>
+  <text x="138" y="812" text-anchor="end" class="small">deeper</text>
+
+  <!-- Surfaces -->
+  <path d="M155,232 C350,240 520,245 700,250 C890,255 1030,262 1160,268"
+        fill="none" stroke="#9ca3af" stroke-width="4" class="dash"/>
+  <text x="820" y="232" class="body" fill="#6b7280">ground level?  not proven</text>
+
+  <path d="M155,305 C330,330 515,365 700,395 C875,424 1035,450 1160,466"
+        fill="none" stroke="#7c3aed" stroke-width="7"/>
+  <text x="735" y="360" class="h3" fill="#6d28d9">virtual TVT=0 reference surface</text>
+  <text x="735" y="389" class="small">a possible hidden geological datum, not directly observed</text>
+
+  <path d="M155,515 C330,540 515,575 700,605 C875,634 1035,660 1160,676"
+        fill="none" stroke="#16a34a" stroke-width="7"/>
+  <text x="735" y="570" class="h3" fill="#15803d">ANCC formation top surface</text>
+  <text x="735" y="599" class="small">known in train only; not available directly in hidden test</text>
+
+  <path d="M155,305 C330,330 515,365 700,395 C875,424 1035,450 1160,466 L1160,676 C1035,660 875,634 700,605 C515,575 330,540 155,515 Z"
+        fill="#dcfce7" opacity="0.35"/>
+
+  <!-- Well path -->
+  <path d="M270,645 C385,635 480,625 590,625 C710,627 820,650 945,690 C1020,715 1080,742 1135,775"
+        fill="none" stroke="#2563eb" stroke-width="9" stroke-linecap="round"/>
+  <text x="390" y="681" class="h3" fill="#1d4ed8">horizontal well path</text>
+
+  <!-- Sample row dot -->
+  <circle cx="790" cy="644" r="16" fill="#2563eb" stroke="#111827" stroke-width="3"/>
+  <line x1="810" y1="644" x2="935" y2="690" stroke="#2563eb" stroke-width="3"/>
+  <rect x="945" y="648" width="285" height="95" fill="#eff6ff" stroke="#2563eb" stroke-width="2" rx="10"/>
+  <text x="1088" y="681" text-anchor="middle" class="h3" fill="#1d4ed8">blue circle</text>
+  <text x="1088" y="710" text-anchor="middle" class="body">one horizontal-well row</text>
+  <text x="1088" y="736" text-anchor="middle" class="small">this row has X, Y, Z, MD, GR</text>
+
+  <!-- Bracket helper function manually drawn -->
+  <!-- ANCC - Z bracket -->
+  <line x1="735" y1="611" x2="735" y2="644" stroke="#f97316" stroke-width="5"/>
+  <line x1="715" y1="611" x2="755" y2="611" stroke="#f97316" stroke-width="5"/>
+  <line x1="715" y1="644" x2="755" y2="644" stroke="#f97316" stroke-width="5"/>
+  <text x="705" y="631" text-anchor="end" class="h3" fill="#c2410c">ANCC - Z</text>
+  <text x="705" y="658" text-anchor="end" class="small">distance from row up to ANCC surface</text>
+
+  <!-- TVT-like bracket -->
+  <line x1="665" y1="405" x2="665" y2="644" stroke="#7c3aed" stroke-width="5" class="dash"/>
+  <line x1="645" y1="405" x2="685" y2="405" stroke="#7c3aed" stroke-width="5"/>
+  <line x1="645" y1="644" x2="685" y2="644" stroke="#7c3aed" stroke-width="5"/>
+  <rect x="265" y="395" width="350" height="122" fill="#faf5ff" stroke="#7c3aed" stroke-width="2" rx="10"/>
+  <text x="440" y="428" text-anchor="middle" class="h3" fill="#6d28d9">TVT-like distance</text>
+  <text x="440" y="459" text-anchor="middle" class="body">distance from row to the</text>
+  <text x="440" y="486" text-anchor="middle" class="body">virtual TVT=0 datum</text>
+
+  <!-- Formula -->
+  <rect x="70" y="915" width="1190" height="105" fill="#f9fafb" stroke="#111827" stroke-width="2" rx="12"/>
+  <text x="120" y="955" class="formula">TVT ~= ANCC - Z + b_well</text>
+  <text x="120" y="990" class="body">
+    b_well は well ごとの定数 offset。投稿の主張は「TVT は ANCC 面に平行な基準で説明できそう」というもの。
+  </text>
+
+  <!-- Right legend / interpretation -->
+  <rect x="1300" y="135" width="430" height="885" class="panel"/>
+  <text x="1515" y="178" text-anchor="middle" class="h2">Legend</text>
+
+  <line x1="1340" y1="235" x2="1425" y2="235" stroke="#9ca3af" stroke-width="4" class="dash"/>
+  <text x="1450" y="242" class="body">ground level candidate</text>
+  <text x="1450" y="268" class="small">not used as a proven truth</text>
+
+  <line x1="1340" y1="330" x2="1425" y2="330" stroke="#7c3aed" stroke-width="7"/>
+  <text x="1450" y="337" class="body">virtual TVT=0 datum</text>
+  <text x="1450" y="363" class="small">hypothetical reference surface</text>
+
+  <line x1="1340" y1="425" x2="1425" y2="425" stroke="#16a34a" stroke-width="7"/>
+  <text x="1450" y="432" class="body">ANCC surface</text>
+  <text x="1450" y="458" class="small">formation top in Z/TVD space</text>
+
+  <line x1="1340" y1="520" x2="1425" y2="520" stroke="#2563eb" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="1382" cy="520" r="11" fill="#2563eb" stroke="#111827" stroke-width="2"/>
+  <text x="1450" y="527" class="body">horizontal well + row</text>
+  <text x="1450" y="553" class="small">blue circle is the row being predicted</text>
+
+  <line x1="1382" y1="610" x2="1382" y2="680" stroke="#f97316" stroke-width="5"/>
+  <line x1="1362" y1="610" x2="1402" y2="610" stroke="#f97316" stroke-width="5"/>
+  <line x1="1362" y1="680" x2="1402" y2="680" stroke="#f97316" stroke-width="5"/>
+  <text x="1450" y="638" class="body">orange bracket</text>
+  <text x="1450" y="664" class="small">ANCC - Z component</text>
+
+  <line x1="1382" y1="735" x2="1382" y2="820" stroke="#7c3aed" stroke-width="5" class="dash"/>
+  <line x1="1362" y1="735" x2="1402" y2="735" stroke="#7c3aed" stroke-width="5"/>
+  <line x1="1362" y1="820" x2="1402" y2="820" stroke="#7c3aed" stroke-width="5"/>
+  <text x="1450" y="768" class="body">purple bracket</text>
+  <text x="1450" y="794" class="small">TVT-like distance to datum</text>
+
+  <rect x="1330" y="875" width="370" height="95" fill="#fff7ed" stroke="#f97316" stroke-width="2" rx="10"/>
+  <text x="1515" y="907" text-anchor="middle" class="h3" fill="#c2410c">Important</text>
+  <text x="1515" y="936" text-anchor="middle" class="body">No triangles are geological symbols here.</text>
+  <text x="1515" y="962" text-anchor="middle" class="small">They were only arrowheads/icons in the earlier figure.</text>
+</svg>

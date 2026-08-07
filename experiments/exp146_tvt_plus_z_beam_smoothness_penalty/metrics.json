@@ -1,0 +1,43 @@
+{
+  "beam_baseline": {
+    "bias": -1.4994505687008637,
+    "candidate": "beam_mean",
+    "coverage": 1.0,
+    "mae": 10.898586485830082,
+    "rmse": 15.77432703246548,
+    "rows": 3783989,
+    "within10": 0.5916491829125297
+  },
+  "best_beam_smoothness_variant": {
+    "bias": -1.9897416730111068,
+    "candidate": "tvt_plus_z_uslope_c100_uabs005",
+    "coverage": 1.0,
+    "delta_rmse_vs_beam_mean": -0.207515852352615,
+    "delta_rmse_vs_likpf_mean": 3.9719135078951613,
+    "mae": 10.75821597323453,
+    "rmse": 15.566811180112865,
+    "rows": 3783989,
+    "within10": 0.597455753703301
+  },
+  "cv": null,
+  "decision": "beam_mean_improved_but_not_adopted_no_inference_port_no_submit",
+  "experiment": "exp146_tvt_plus_z_beam_smoothness_penalty",
+  "kaggle_kernel": "kentookumura/exp146-tvt-z-beam-smooth-train",
+  "kaggle_version": 1,
+  "metric": "rmse",
+  "notes": "Kaggle train v1 completed. The correct hypothesis comparison is against exp072 beam_mean: best generated TVT+Z Beam improved beam_mean by -0.207515852 RMSE overall, -0.212597 on longtail_1000_plus, and -1.095082 on beam_likpf_gap_top_quartile. It is still far worse than likpf_mean, so it is not adopted for inference/submission.",
+  "route_adoption_guard": {
+    "bias": -1.0994231121947302,
+    "candidate": "likpf_mean",
+    "coverage": 1.0,
+    "mae": 7.067632584311985,
+    "rmse": 11.594897672217703,
+    "rows": 3783989,
+    "within10": 0.772807479091509
+  },
+  "private_lb": null,
+  "public_lb": null,
+  "rows": 3783989,
+  "status": "completed_train_side_beam_improved_not_adopted_no_submit",
+  "wells": 773
+}

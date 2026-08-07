@@ -1,0 +1,83 @@
+{
+  "cv": null,
+  "experiment": "exp202_heatmap_mdn_candidate_generator_probe",
+  "kaggle": {
+    "kernel": "kentookumura/exp202-heatmap-mdn-candgen-train",
+    "kernel_version": 1,
+    "status": "KernelWorkerStatus.COMPLETE",
+    "url": "https://www.kaggle.com/code/kentookumura/exp202-heatmap-mdn-candgen-train"
+  },
+  "metric": "existing_plus_heatmap_top10_oracle_rmse_delta_vs_existing",
+  "notes": "Train-side GPU diagnostic only; no inference or submission. Positive as candidate-set headroom, not as direct TVT replacement evidence.",
+  "private_lb": null,
+  "public_lb": null,
+  "status": "completed_train_side_gpu_probe_supported_no_submit",
+  "summary": {
+    "artifact_path": "experiments/exp202_heatmap_mdn_candidate_generator_probe/kaggle/output/train_v1",
+    "candidate_union_status": "ok",
+    "rows": 10822,
+    "fold_mean_top1_within10_center_rate": 0.2295331857083009,
+    "fold_mean_top3_within10_center_rate": 0.4965162487282303,
+    "fold_mean_top5_within10_center_rate": 0.6409886887306243,
+    "fold_mean_top10_within10_center_rate": 0.808984978155485,
+    "fold_mean_top10_oracle_center_rmse": 13.293297980577028,
+    "existing_union": {
+      "candidate_count": 5,
+      "oracle_rmse": 5.068679052719509,
+      "within10_rate": 0.9496396229902051
+    },
+    "heatmap_only_top10": {
+      "candidate_count": 10,
+      "oracle_rmse": 13.352563024792458,
+      "oracle_rmse_delta_vs_existing": 8.28388397207295,
+      "within10_rate": 0.8089077804472371,
+      "within10_delta_vs_existing": -0.140731842542968
+    },
+    "existing_plus_heatmap_top10": {
+      "candidate_count": 15,
+      "new_best_candidate_rate": 0.2525411199408612,
+      "oracle_rmse": 2.745528139819464,
+      "oracle_rmse_delta_vs_existing": -2.323150912900045,
+      "within10_rate": 0.9869709850304934,
+      "within10_delta_vs_existing": 0.03733136204028831
+    },
+    "distance_bucket_top10_union_delta": {
+      "0_50": 0.0,
+      "50_100": 0.0,
+      "100_250": -0.30052300343750593,
+      "250_500": -0.9003442633484655,
+      "500_1000": -1.6139775458783898,
+      "1000_plus": -3.1176259462505254
+    },
+    "well_level_delta": {
+      "wells": 773,
+      "improved_wells": 668,
+      "same_wells": 105,
+      "worse_wells": 0,
+      "mean_oracle_rmse_delta": -1.28198962908329
+    },
+    "candidate_union_input": {
+      "available_candidates": [
+        "pf_ancc",
+        "beam_mean",
+        "likpf_mean",
+        "sc_ens",
+        "hyb"
+      ],
+      "missing_candidates": [
+        "tvt_dense",
+        "tvt_densew",
+        "tvt_dense50"
+      ],
+      "source_decompressed_sha256": "1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a",
+      "truth_abs_diff_max": 0.0
+    },
+    "artifact_sha": {
+      "candidate_union_metrics_csv_sha256": "5d9280a4137b049e601e56b6eaa06c6dae6978d2f0fc3f56fdea569d8af4202a",
+      "candidate_union_by_well_csv_sha256": "566371b580b94ae4a6d2a61150d4a8ce7831df30c4f57c8fa732738b4cac4a57",
+      "candidate_union_distance_bucket_metrics_csv_sha256": "57b0cabea96108c4d0cd79a23f473ffc30c57359823fbb2ffba2564976a23a3e",
+      "heatmap_candidates_csv_decompressed_sha256": "3da094b0530ce1be289617e0d00ec6c667e608a36cf04d44c6a353ab809a2dba",
+      "summary_json_sha256": "88f9762457203314ccdf6db7b8a46499caed93448e50de530c2267e721db956a"
+    }
+  }
+}

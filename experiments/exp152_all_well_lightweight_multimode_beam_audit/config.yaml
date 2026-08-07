@@ -1,0 +1,199 @@
+experiment:
+  name: "exp152_all_well_lightweight_multimode_beam_audit"
+  description: "All-well lightweight train-side audit to check whether the exp143 multimode PF/Beam candidate beats exp072 beam_mean beyond the six-well scoped diagnostic."
+  route: pf_beam
+  status: completed_all_well_tail_slice_rejected_no_submit
+  created_at: "2026-06-28"
+  updated_at: "2026-06-28"
+
+lineage:
+  parent: exp143_multimode_pfbeam_local_correlation_audit
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  secondary_parents:
+    - exp083_pf_beam_true_tvt_2d_well_eda
+    - exp106_strict_exp072_pf_z_multiseed_scale_cache
+  implementation_source: all_well_lightweight_multimode_beam_audit.py
+  diff_summary: >
+    Implements KAGGLE_DIRECTION backlog all_well_lightweight_multimode_beam_audit.
+    It reuses the exp143 multimode PF-Z transition candidate but removes heavy local
+    correlation diagnostics, limits each train well to the tail pseudo-test rows, and
+    saves only compact candidate/quality summaries. The primary comparison is exp072
+    beam_mean, not likpf_mean or pf_z.
+
+validation:
+  strategy: all_train_well_tail_slice_lightweight_pfbeam_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_1ft
+    - within_2ft
+    - within_5ft
+    - within_10ft
+    - bucket_rmse_by_md_since
+    - bucket_rmse_by_row_idx
+    - improved_wells_vs_beam_mean
+    - worsened_wells_vs_beam_mean
+    - max_well_regression_vs_beam_mean
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: tail_500_TVT_input_missing_equivalent_exp072_rows_per_train_well
+  leakage_policy:
+    - Existing exp072 pf_z, beam_mean, and likpf_mean candidates are read from the raw-train-only exp072 feature cache.
+    - Multimode PF candidates use raw horizontal/typewell files, finite prefix TVT_input rows, GR, MD, and Z only.
+    - Evaluation-zone true TVT is reconstructed only as last_known_tvt + target for scoring.
+    - This is a train-side audit only; true TVT is not used to choose an inference rule or submission candidate.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+model:
+  name: all_well_lightweight_multimode_beam_audit
+  estimator: none_particle_filter_candidate_audit
+  target: true_tvt_for_scoring_only
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  strict_pf_z:
+    n_particles: 64
+    n_seeds: 1
+    scales: [3.0]
+    gr_grid_step: 0.2
+    momentum: 0.993
+    velocity_noise: 0.005
+    position_noise: 0.01
+    gr_smooth_window: 5
+    gr_smooth_weight: 0.3
+    rough_position: 0.2
+    rough_velocity: 0.003
+    resample_threshold: 0.5
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+    parity_abs_max_tolerance: 1.0e-4
+    parity_rmse_tolerance: 1.0e-5
+    require_parity_for_full: false
+  multimode_pf_z:
+    n_particles: 300
+    n_seeds: 4
+    scales: []
+    prefix_tail_rows: 50
+    momentum: 0.993
+    velocity_noise: 0.005
+    position_noise: 0.01
+    gr_smooth_weight: 0.3
+    rough_position: 0.2
+    rough_velocity: 0.003
+    resample_threshold: 0.5
+    collapse_std_threshold: 0.25
+    mode_bin_width_ft: 5.0
+    topk_mode_paths: 4
+    local_corr_window_rows: 5
+    enable_local_correlation: false
+    save_mode_diagnostic_columns: false
+    transition_variants:
+      - name: zacc_s010_a020_noise050
+        transition_strength: 0.10
+        z_accel_gain: 0.20
+        prefix_slope_strength: 0.02
+        velocity_noise_gain: 0.50
+        position_noise_gain: 0.20
+        likelihood_sigma_gain: 0.20
+        curve_clip: 4.0
+
+runtime:
+  use_amp: false
+  num_workers: 4
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  parity_seed_policy: not_primary_in_this_lightweight_audit
+  seed_policy: stable_sha256_seed_from_experiment_all_well_lightweight_multimode_beam_well_variant_seed_index
+  stochastic_components:
+    - lightweight_strict_pf_z_fit_probe
+    - multimode_pf_z_particle_initialization
+    - multimode_pf_z_process_noise
+    - multimode_pf_z_resampling
+    - upstream_exp072_pf_beam_likpf_cache
+  parallel_rng_policy: well_level_thread_parallel_with_per_well_per_variant_seed_vector
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_file_sha: true
+    exp072_cache_sha: true
+    candidate_wide_sha: true
+    metrics_sha: true
+    multimode_quality_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it is a train-side lightweight audit.
+    - Source gzip cache decompressed content SHA is recorded in summary JSON.
+    - Each well and variant receives deterministic seed vectors before entering the Numba kernel.
+
+audit:
+  mode: all_well_lightweight_multimode_beam_audit
+  output_prefix: exp152_all_well_lightweight_multimode_beam_audit
+  max_rows: null
+  max_wells: null
+  focus_wells: null
+  scope: all_wells_tail500_lightweight
+  max_rows_per_well: 500
+  existing_candidate_names:
+    - exp072_pf_z
+    - exp072_beam_mean
+    - exp072_likpf_mean
+  include_strict_candidates: false
+  multimode_candidate_modes:
+    - best_lik_seed
+  minimal_candidate_wide: true
+  candidate_wide_columns:
+    - id
+    - well
+    - row_idx
+    - md_since
+    - target_tvt
+    - exp072_beam_mean
+    - exp072_likpf_mean
+    - exp072_pf_z
+    - multimode_pf_zacc_s010_a020_noise050_best_lik_seed
+  save_candidate_long: false
+  thresholds_ft: [1, 2, 5, 10]
+  bucket_edges_md_since: [0, 50, 100, 250, 500, 1000]
+  bucket_edges_row_idx: [0, 100, 250, 500, 1000]
+  bucket_edges_abs_dzdmd: [0, 0.1, 0.25, 0.5, 1.0]
+  bucket_edges_abs_d2zdmd2: [0, 0.001, 0.003, 0.01, 0.03]
+  expected_train_artifacts:
+    - exp152_all_well_lightweight_multimode_beam_audit_candidate_metrics.csv
+    - exp152_all_well_lightweight_multimode_beam_audit_bucket_metrics.csv
+    - exp152_all_well_lightweight_multimode_beam_audit_by_well.csv
+    - exp152_all_well_lightweight_multimode_beam_audit_strict_pf_z_quality.csv
+    - exp152_all_well_lightweight_multimode_beam_audit_multimode_pf_z_quality.csv
+    - exp152_all_well_lightweight_multimode_beam_audit_parity_diff.csv.gz
+    - exp152_all_well_lightweight_multimode_beam_audit_candidate_wide.csv.gz
+    - exp152_all_well_lightweight_multimode_beam_audit_summary.json
+
+inference:
+  mode: disabled_train_side_diagnostic_only
+  selected_candidate: null
+  notes:
+    - No inference notebook candidate is selected in this implementation.
+    - If all-well Beam comparison is positive, the next step is full-row minimal candidate cache generation or an exp092-side feature/replacement audit.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog all_well_lightweight_multimode_beam_audit.
+  - The primary pass condition is stable improvement over exp072_beam_mean across all train wells, not beating exp072_likpf_mean or exp072_pf_z.
+  - This experiment deliberately avoids exp143 local-correlation diagnostics and candidate_long output to stay within Kaggle notebook limits.

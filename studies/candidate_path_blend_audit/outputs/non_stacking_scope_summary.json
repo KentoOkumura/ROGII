@@ -1,0 +1,121 @@
+{
+  "scope": "candidate paths excluding HMM centered on or emitted from LGB predictions",
+  "excluded_paths": [
+    "hmm_exp218_residual_scale",
+    "hmm_exp218_shrink_a050",
+    "hmm_lgb_exp148"
+  ],
+  "eligible_candidate_paths": 78,
+  "best_single_path": {
+    "name": "exp226_k16",
+    "source": "exp226",
+    "layer": "candidate_path",
+    "family": "geometry",
+    "rawtest_status": "rawtest_inference_exists",
+    "note": "",
+    "rows_finite": 3783989,
+    "coverage": 1.0,
+    "rmse": 9.42710967407494
+  },
+  "best_fixed_equal_pair": {
+    "candidate_a": "selfgr_hmm_a070",
+    "candidate_b": "exp226_k16",
+    "layer_a": "candidate_path",
+    "layer_b": "candidate_path",
+    "family_a": "hmm_selfgr",
+    "family_b": "geometry",
+    "rmse_a": 11.349942882774709,
+    "rmse_b": 9.42710967407494,
+    "better_single_rmse": 9.42710967407494,
+    "residual_cosine": 0.3436414069429523,
+    "equal_50_rmse": 8.53271508582674,
+    "equal_50_delta_vs_better": -0.8943945882481987,
+    "full_oof_opt_weight_b": 0.6385696036170128,
+    "full_oof_opt_rmse_diagnostic": 8.368945155518986,
+    "grid05_weight_b_diagnostic": 0.65,
+    "grid05_rmse_diagnostic": 8.37007033098294,
+    "crossfit_weight_b_mean": 0.6385671583135035,
+    "crossfit_weight_b_std": 0.020674638901802718,
+    "crossfit_weight_b_min": 0.6109138808116157,
+    "crossfit_weight_b_max": 0.6733653293669218,
+    "crossfit_rmse": 8.401770080850183,
+    "crossfit_delta_vs_better": -1.025339593224757,
+    "crossfit_folds_beating_better_parent": 5,
+    "crossfit_fold_weights_b": "[0.6340150366528021, 0.6455624537020387, 0.6109138808116157, 0.6733653293669218, 0.6289790910341397]"
+  },
+  "best_crossfit_pair": {
+    "candidate_a": "selfgr_hmm_a070",
+    "candidate_b": "exp226_k16",
+    "layer_a": "candidate_path",
+    "layer_b": "candidate_path",
+    "family_a": "hmm_selfgr",
+    "family_b": "geometry",
+    "rmse_a": 11.349942882774709,
+    "rmse_b": 9.42710967407494,
+    "better_single_rmse": 9.42710967407494,
+    "residual_cosine": 0.3436414069429523,
+    "equal_50_rmse": 8.53271508582674,
+    "equal_50_delta_vs_better": -0.8943945882481987,
+    "full_oof_opt_weight_b": 0.6385696036170128,
+    "full_oof_opt_rmse_diagnostic": 8.368945155518986,
+    "grid05_weight_b_diagnostic": 0.65,
+    "grid05_rmse_diagnostic": 8.37007033098294,
+    "crossfit_weight_b_mean": 0.6385671583135035,
+    "crossfit_weight_b_std": 0.020674638901802718,
+    "crossfit_weight_b_min": 0.6109138808116157,
+    "crossfit_weight_b_max": 0.6733653293669218,
+    "crossfit_rmse": 8.401770080850183,
+    "crossfit_delta_vs_better": -1.025339593224757,
+    "crossfit_folds_beating_better_parent": 5,
+    "crossfit_fold_weights_b": "[0.6340150366528021, 0.6455624537020387, 0.6109138808116157, 0.6733653293669218, 0.6289790910341397]"
+  },
+  "best_equal_multiway": {
+    "size": 2,
+    "members": "exp226_k16|selfgr_hmm_a070",
+    "rmse": 8.53271508582674,
+    "delta_vs_best_member": -0.8943945882481987
+  },
+  "best_crossfit_triple": {
+    "members": "exp226_k16|exp192_likpf|exact_hmm",
+    "best_member_rmse": 9.42710967407494,
+    "full_oof_weights_diagnostic": "[0.5717926022083311, 0.19478960712701285, 0.23341779066465604]",
+    "full_oof_rmse_diagnostic": 8.16430855940819,
+    "crossfit_rmse": 8.209224972738143,
+    "crossfit_delta_vs_best_member": -1.2178847013367964,
+    "crossfit_folds_beating_best_parent": 5,
+    "crossfit_fold_weights": "[[0.5667581389558393, 0.20449180034350534, 0.2287500607006554], [0.591809726127703, 0.1942945994450357, 0.21389567442726135], [0.5480450971859819, 0.19894598671870867, 0.25300891609530946], [0.5922960430013566, 0.20390507096940994, 0.20379888602923352], [0.560094329520119, 0.16966551859848492, 0.27024015188139616]]"
+  },
+  "best_rawtest_compatible_crossfit_triple": {
+    "members": "exp226_k16|likpf_mean|exact_hmm",
+    "best_member_rmse": 9.42710967407494,
+    "full_oof_weights_diagnostic": "[0.5746819634109909, 0.1809442053282114, 0.24437383126079784]",
+    "full_oof_rmse_diagnostic": 8.194599912371892,
+    "crossfit_rmse": 8.231651288056893,
+    "crossfit_delta_vs_best_member": -1.1954583860180463,
+    "crossfit_folds_beating_best_parent": 5,
+    "crossfit_fold_weights": "[[0.569814629006273, 0.19004743757448547, 0.2401379334192416], [0.5964116717690943, 0.17220783636860496, 0.2313804918623007], [0.5537553918158566, 0.1785068495332592, 0.2677377586508842], [0.596248235092971, 0.18872719849732428, 0.2150245664097048], [0.5576266605276821, 0.17217345223582697, 0.27019988723649097]]"
+  },
+  "fixed_exp226_plus_w500": {
+    "members": [
+      "exp226_k16",
+      "likpf_mean",
+      "exact_hmm"
+    ],
+    "weights": [
+      0.5,
+      0.25,
+      0.25
+    ],
+    "interpretation": "50/50 average of exp226 and blend_likpf_hmm_w500",
+    "rmse": 8.238331467712172,
+    "fold_rmse": [
+      8.191666965703385,
+      8.486255340256877,
+      7.859005566324662,
+      8.357929870664018,
+      8.283040284723956
+    ],
+    "folds_beating_exp226": 5
+  },
+  "method_note": "fixed equal blends are target-free; full_oof_opt is diagnostic; crossfit weights are fit on other wells only"
+}

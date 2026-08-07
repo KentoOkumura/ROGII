@@ -1,0 +1,356 @@
+experiment:
+  name: exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm
+  description: >-
+    Design-frozen two-stage audit of a single per-well exact-HMM GR scale
+    change. Compute raw finite known-prefix Pearson agreement between the
+    horizontal GR and typewell GR at TVT_input, retain the exp209 scale for
+    rho >= 0.50 or insufficient support, and multiply the already-clipped
+    exp209 scale by 1.3 only for rho < 0.50.
+  route: pf_beam
+  status: stage_0_completed_guard_failed_closed
+  created_at: "2026-07-25"
+  updated_at: "2026-07-25"
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260725-exp397-prefix-gr-agreement-adaptive-sigma-exact-hmm
+  references:
+    - exp307_finite_only_robust_sigma_gr
+    - exp343_acf_effective_sample_likelihood_tempering_audit
+    - exp346_exp209_observed_only_finite_sigma_gr_hmm
+    - exp389_exp209_huber_exact_hmm_emission
+  external_references:
+    - https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction/discussion/728712
+    - https://www.kaggle.com/code/hjyact/ultimate-pf-config-strategy-a-reproducible-score
+  diff_summary: >-
+    Keeps the complete exp209 absolute-TVT Gaussian exact-HMM contract fixed
+    and changes only one well-level scalar: multiply the clipped exp209
+    sigma_gr by 1.3 when raw finite known-prefix GR Pearson correlation with
+    the typewell GR is below 0.50. All other wells are an exact saved-control
+    no-op.
+
+implementation:
+  enabled: true
+  scope: stage_0_compact_selfcontained_agreement_stability_audit
+  train_notebook_state: compact_selfcontained_canonical_adopted
+  inference_notebook_state: generated_template_only
+  helper_created: false
+  tests_created: true
+  stage_0_implemented: true
+  stage_1_implemented: false
+  canonical_notebook_replacement_authorized_by_request: true
+  canonical_notebook_adopted: true
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: prefix_gr_agreement_stage0_then_grouped_exact_hmm
+  metric: stage0_identifiability_then_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  expected_folds: [0, 1, 2, 3, 4]
+  score_rows: tvt_input_unknown_suffix_only_after_agreement_and_prediction_freeze
+  truth_attachment: after_agreement_coefficient_and_candidate_prediction_content_sha_freeze
+  leakage_policy:
+    - Agreement uses only raw finite known-prefix GR, TVT_input, and typewell GR.
+    - Unknown-suffix TVT, error, abs_error, Formation, hidden-like roles, and worst-well identity are forbidden before coefficient freeze.
+    - Hidden-like assignments and fold are late reporting strata and never coefficient inputs.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  raw_train_candidates:
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+    - data/raw/train
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  exp209_control:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    expected_hmm_cache_decompressed_sha256: 8e2f42367b7b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    direct_rmse: 11.938287234887435
+    fixed_likpf_50_50_rmse: 10.269696146642758
+    usage_stage_0: not_loaded_zero_hmm_agreement_audit
+    usage_stage_1: exact_prediction_reuse_for_multiplier_1_wells_no_parent_rerun
+  saved_controls:
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    hmm_cache_filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    exp072_cache_filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    expected_hmm_prediction_decompressed_sha256: 8e2f42367b7b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    expected_exp072_cache_decompressed_sha256: 0503de0512302b06309d26e09fc06ba5095db0ef4d610b1508afe8c8d07ca536
+    raw_hmm_prediction_column: hmm_mean_tvt
+    likpf_anchor_column: last_known_tvt
+    likpf_delta_column: likpf_mean_d
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    usage: reporting_strata_and_late_truth_only
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+model:
+  name: prefix_gr_agreement_adaptive_sigma_exact_hmm
+  estimator: deterministic_exact_forward_backward
+  active_variants: [prefix_rho_lt_0p50_sigma_x1p3]
+  promotion_candidate: prefix_rho_lt_0p50_sigma_x1p3
+  agreement:
+    pair_policy: raw_finite_horizontal_gr_tvt_input_and_typewell_interp_only
+    horizontal_value: raw_gr_without_missing_fill
+    reference_value: typewell_gr_interpolated_at_known_tvt_input
+    statistic: pearson_correlation_float64
+    primary_window: full_known_prefix
+    minimum_primary_pairs: 64
+    minimum_standard_deviation: 1.0e-6
+    threshold: 0.50
+    threshold_boundary: multiplier_1
+    good_or_equal_multiplier: 1.0
+    poor_multiplier: 1.3
+    insufficient_support_fallback_multiplier: 1.0
+    computation_order: stable_sorted_well_id_then_raw_row_order
+    forbidden_primary_inputs:
+      - residual_rmse
+      - residual_bias
+      - normalized_bias
+      - ncc
+      - dtw
+      - acf
+      - tail_correlation
+      - unknown_suffix_truth
+      - error
+      - formation
+  sigma:
+    alias_in_external_notebook: gs
+    parent_name: sigma_gr
+    parent_estimator: known_prefix_zero_filled_residual_population_std
+    parent_clip: [10.0, 60.0]
+    application_order: clip_parent_then_multiply_exactly_once
+    post_multiplier_clip: null
+    effective_range: [10.0, 78.0]
+  emission:
+    family: capped_gaussian
+    formula: "-0.5 * min(((gr_eval - expected_gr_state) / sigma_eff)^2, 600)"
+    normalization_constant: omitted_as_state_independent
+    emission_clip_z2: 600.0
+  stage_0:
+    audit: full_prefix_agreement_identifiability_and_tail_stability
+    truth_free: true
+    hmm_well_runs: 0
+    primary_window: full_known_prefix
+    tail_window_raw_rows: 512
+    minimum_tail_pairs: 32
+    pass_requires_all:
+      minimum_primary_evaluable_well_fraction: 0.90
+      maximum_fallback_well_fraction: 0.10
+      poor_multiplier_well_fraction_range: [0.10, 0.90]
+      minimum_each_fold_primary_evaluable_fraction: 0.80
+      minimum_tail_evaluable_well_fraction: 0.75
+      minimum_full_tail_multiplier_agreement: 0.80
+      minimum_full_tail_spearman_correlation: 0.70
+  stage_1:
+    enabled_condition: stage_0_all_gates_pass_and_separate_user_approval
+    active_variants: [prefix_rho_lt_0p50_sigma_x1p3]
+    rerun_policy: run_hmm_only_for_multiplier_1p3_wells
+    no_op_policy: reuse_saved_exp209_prediction_for_multiplier_1_and_fallback_wells
+    maximum_hmm_well_runs: 773
+    reporting_folds: 5
+  fixed_hmm:
+    coordinate: absolute_tvt
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    band_pad: 100.0
+    sig_r: 0.002
+    sig_p: 0.02
+    lam: 1.0
+    start_sig: 0.75
+    r0_sig: 0.01
+    momentum: 0.998
+    sigma_mode: known_prefix_zero_fill_population_std_then_fixed_well_multiplier
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+    output: posterior_mean
+    rate_center: zero
+  forbidden:
+    - continuous_or_quantile_multiplier_mapping
+    - threshold_support_window_or_multiplier_grid
+    - bias_rmse_ncc_dtw_acf_or_tail_primary_gate
+    - finite_only_or_mad_sigma
+    - affine_gr_calibration
+    - row_varying_sigma
+    - huber_student_t_or_mixture_emission
+    - likelihood_temperature_or_post_multiplier_clip
+    - transition_prior_or_state_grid_change
+    - blend_weight_search
+    - parent_control_rerun
+    - same_oof_rescue
+
+audit:
+  output_prefix: exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm
+  coefficient_population: all_773_wells
+  stability_population: full_and_tail_evaluable_wells_only
+  expected_artifacts:
+    - exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm_agreement_schedule.csv.gz
+    - exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm_coefficient_table.csv
+    - exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm_stability_readout.csv
+    - exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm_fold_metrics.csv
+    - exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm_gate.json
+    - exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm_well_manifest.csv
+    - exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm_input_manifest.json
+    - exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm_scientific_contract.json
+    - exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm_target_free_freeze.json
+    - exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm_summary.json
+
+execution_contract:
+  stage_0:
+    diagnostic_variants: 1
+    reporting_folds: 5
+    hmm_well_runs: 0
+    model_configs: 0
+    trained_folds: 0
+    pf_well_runs: 0
+    beam_well_runs: 0
+    boosters: 0
+  stage_1_if_pass:
+    scientific_variants: 1
+    reporting_folds: 5
+    maximum_hmm_well_runs: 773
+    actual_hmm_well_runs: number_of_multiplier_1p3_wells
+    model_configs: 0
+    trained_folds: 0
+    pf_well_runs: 0
+    beam_well_runs: 0
+    boosters: 0
+  parent_control_retraining: false
+
+promotion_gates:
+  minimum_rmse_gain_vs_exp209_raw_hmm_ft: 0.05
+  minimum_improved_folds: 4
+  poor_group_minimum_rmse_gain_ft: 0.05
+  poor_group_require_by_well_p95_delta_max: 0.0
+  poor_group_minimum_improved_or_equal_well_fraction: 0.50
+  maximum_worst_well_regression_ft: 0.25
+  required_non_regression_scopes:
+    - raw_observed
+    - raw_missing
+    - high_missing
+    - rows_1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  non_regression_tolerance_ft: 0.0
+  require_fixed_likpf_50_50_non_regression: true
+  baseline_metric_absolute_tolerance: 1.0e-5
+
+guards:
+  technical:
+    require_all_input_sha_matches: true
+    require_expected_rows: 3783989
+    require_expected_wells: 773
+    require_id_row_order_fold_identity: true
+    require_agreement_stage0_sha_parity: true
+    require_saved_control_reuse_parity_atol_ft: 1.0e-12
+    require_finite_candidate_coverage: 1.0
+    require_posterior_normalization: true
+    require_all_well_status_pass: true
+    maximum_truth_rows_accessed_before_coefficient_and_prediction_freeze: 0
+  forbidden:
+    - posthoc_threshold_multiplier_support_or_window_change
+    - bias_or_secondary_metric_rescue
+    - gaussian_parent_hmm_rerun
+    - emission_transition_prior_or_grid_rescue
+    - blend_weight_search
+    - inference_or_submission_without_separate_approval
+
+execution:
+  implementation_approved: true
+  implementation_approved_at: "2026-07-25"
+  kaggle_push_approved: false
+  kaggle_push_approved_at: "2026-07-25"
+  train_run_approved: false
+  train_run_approved_at: "2026-07-25"
+  active_stage: stage_0_completed_guard_failed_closed
+  run_stage_0: false
+  run_stage_1: false
+  run_hmm: false
+  run_inference: false
+  create_submission: false
+  stage_0_gate_passed: false
+  stage_1_eligible: false
+  stage_0_completed_at: "2026-07-25"
+  stage_0_runtime_seconds: 39.35975061899995
+  kaggle_kernel_id: kentookumura/exp397-prefix-gr-adaptive-sigma-hmm-train
+  kaggle_kernel_id_no: 128540665
+  kaggle_kernel_version: 1
+  kaggle_kernel_status: COMPLETE
+  kaggle_kernel_url: https://www.kaggle.com/code/kentookumura/exp397-prefix-gr-adaptive-sigma-hmm-train
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    train_run_on_push: false
+    kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_sorted_well_and_raw_row_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_numba_and_worker_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Agreement is calculated in float64 and frozen before any unknown-suffix truth is read.
+    - This is a deterministic train-side candidate audit, not a deterministic submission anchor.
+
+inference:
+  enabled: false
+  mode: disabled_until_stage_1_promotion_and_separate_approval
+  create_submission: false
+
+notes:
+  - Stage 0 implementation was approved and completed as a compact self-contained candidate on 2026-07-25.
+  - The user's execution request authorized canonical train notebook adoption and Kaggle private CPU Stage 0 package/push/run on 2026-07-25.
+  - Kaggle private CPU version 1 completed in 39.35975061899995 seconds and failed the frozen poor-group and full-tail stability gates.
+  - The branch is closed without rescue; Stage 1, inference, and submission remain disabled.
+  - The external discussion is weak evidence because its score, CV, and exact version are unspecified.

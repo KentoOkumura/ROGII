@@ -1,0 +1,176 @@
+experiment:
+  name: "exp145_learned_likelihood_rawtest_feature_generator_parity"
+  description: Target-free full-train/raw-test generator and schema parity audit for exp112 learned likelihood ML features.
+  route: ml_model
+  status: completed_generator_parity_pass_no_submit
+  created_at: "2026-06-27"
+  updated_at: "2026-06-27"
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+lineage:
+  parent: exp144_learned_likelihood_hidden_stress_and_rawtest_parity
+  model_parent: exp111_learned_pf_observation_likelihood_probe
+  feature_parent: exp112_learned_pf_likelihood_weight_or_feature_followup
+  downstream_parent: exp127_learned_likelihood_features_on_exp092
+  cache_parent: exp099_pf_multi_observation_likelihood_probe
+  replay_parent: exp072_exp063_full_replay_feature_cache
+  comparison_parents:
+    - exp111_learned_pf_observation_likelihood_probe
+    - exp112_learned_pf_likelihood_weight_or_feature_followup
+    - exp127_learned_likelihood_features_on_exp092
+    - exp144_learned_likelihood_hidden_stress_and_rawtest_parity
+  implementation_source: learned_likelihood_rawtest_feature_generator_parity.py
+  diff_summary: Adds a target-free generator that applies exp111 saved learned-likelihood models to exp099/full replay candidate features, then emits exp112-compatible ml_features for full train and raw test with schema parity artifacts.
+
+validation:
+  strategy: target_free_feature_generator_schema_coverage_parity
+  metric: schema_parity_and_coverage
+  seed: 42
+  group_column: well
+  score_rows: no_target_scoring_generator_only
+  leakage_policy:
+    - Generator inputs are target-free candidate values, multi-observation scores, row context, and raw-test replay features.
+    - True TVT, candidate absolute error, oracle candidate, and true-error rank are never read by the generator.
+    - exp111 saved fold0 classifier/regressor are reused only as learned likelihood transforms.
+    - exp112 train OOF feature schema is the parity reference; raw-test values are not scored.
+    - This experiment does not create submission.csv or select a hidden-test prediction policy.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_artifact_dir_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp111_artifact_dir_local: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts
+  exp111_feature_schema: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_feature_schema.csv
+  exp111_model_manifest: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_model_manifest.json
+  exp112_artifact_dir_local: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts
+  exp112_feature_schema: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+
+model:
+  name: exp111_saved_learned_likelihood_transform
+  target: target_free_ml_feature_generation
+  estimator:
+    - lightgbm_binary_within10_classifier_saved_fold0
+    - lightgbm_l1_expected_error_regressor_saved_fold0
+  retrain_model: false
+  output_feature_family: exp112_compatible_ml_features
+
+generator:
+  mode: learned_likelihood_rawtest_feature_generator_parity
+  max_rows: null
+  chunksize: 200000
+  include_candidate_values: false
+  default_candidate: likpf_mean
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+    - name: beam_mean
+      column: beam_mean
+    - name: likpf_mean
+      column: likpf_mean
+    - name: sc_ens
+      column: sc_ens
+    - name: hyb
+      column: hyb
+  row_context_columns:
+    - last_known_tvt
+    - pf_ancc_std
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+    - eval_len
+    - md_since
+    - likpf_mean_d
+  multiobs_global_columns:
+    - multiobs_score_max
+    - multiobs_score_mean
+    - multiobs_score_gap
+    - multiobs_top1_source_id
+    - multiobs_top1_mae
+    - multiobs_top1_ncc
+  feature_cache:
+    include_candidate_tvt: true
+    include_multiobs_scores: true
+    include_probability_features: true
+    include_expected_error_features: true
+  rawtest_replay:
+    variant: pixiux_likpf_public_replay
+    n_jobs: 8
+    pf_seeds: 128
+    pf_particles: 500
+    fast: false
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  replay_work_dir: /tmp/exp145_replay
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp112-learned-pf-likelihood-followup-train
+    inference_kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp112-learned-pf-likelihood-followup-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_reuse_saved_exp111_models_and_stable_exp072_raw_replay
+  stochastic_components:
+    - upstream_exp111_lightgbm_training
+    - upstream_exp072_pf_beam_likelihood_replay
+  parallel_rng_policy: exp145 itself uses no RNG; raw-test PF/Beam replay inherits exp072 stable per-well seeds.
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This experiment is a generator/parity audit, not a deterministic submission anchor.
+    - exp111 saved fold0 models did not persist imputation medians, so the generator records the batch-imputation limitation in summary.json.
+
+audit:
+  mode: learned_likelihood_rawtest_feature_generator_parity
+  output_prefix: exp145_learned_likelihood_rawtest_feature_generator_parity
+  expected_feature_columns: 51
+  expected_train_artifacts:
+    - exp145_learned_likelihood_rawtest_feature_generator_parity_full_train_ml_features.csv.gz
+    - exp145_learned_likelihood_rawtest_feature_generator_parity_feature_schema.csv
+    - exp145_learned_likelihood_rawtest_feature_generator_parity_schema_parity.csv
+    - exp145_learned_likelihood_rawtest_feature_generator_parity_summary.json
+  expected_inference_artifacts:
+    - exp145_learned_likelihood_rawtest_feature_generator_parity_rawtest_ml_features.csv.gz
+    - exp145_learned_likelihood_rawtest_feature_generator_parity_rawtest_likelihood_long.csv.gz
+    - exp145_learned_likelihood_rawtest_feature_generator_parity_feature_schema.csv
+    - exp145_learned_likelihood_rawtest_feature_generator_parity_schema_parity.csv
+    - exp145_learned_likelihood_rawtest_feature_generator_parity_summary.json
+
+inference:
+  mode: rawtest_feature_generation_only
+  selected_variant: null
+  notes:
+    - No submission.csv is generated.
+    - Passing schema/coverage parity only unlocks later exp127/exp092 inference-port work; it is not a submit decision.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog learned_likelihood_rawtest_feature_generator_parity.
+  - Main decision is whether exp112 learned likelihood features can be generated target-free for full train and raw test with the same schema.
+  - Kaggle train v2 generated full-train 3,783,989 rows / 773 wells with schema parity pass.
+  - Kaggle inference v3 generated raw-test 14,151 rows / 3 wells with schema parity pass.

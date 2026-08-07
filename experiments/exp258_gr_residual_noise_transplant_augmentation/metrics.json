@@ -1,0 +1,80 @@
+{
+  "experiment": "exp258_gr_residual_noise_transplant_augmentation",
+  "status": "selector_guard_failed_final_train_forbidden",
+  "route": "ml_model",
+  "parent": "exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218",
+  "selected_stage": "selector_train",
+  "selected_variant": "real_residual_block",
+  "selector_run": {
+    "kernel": "kentookumura/exp258-gr-residual-noise-transplant-selector-train",
+    "kernel_version": 1,
+    "kaggle_id_no": 127392032,
+    "status": "COMPLETE",
+    "runtime": "cpu",
+    "internet": false,
+    "runtime_seconds_from_log_max": 16612.295737773,
+    "rows": 3783989,
+    "wells": 773,
+    "candidates": 11,
+    "context_features": 184,
+    "selector_boosters": 20,
+    "model_manifest_rows": 20,
+    "best_iteration_min": 376,
+    "best_iteration_max": 1200,
+    "validation_augmented": false,
+    "parent_control_retraining": false
+  },
+  "residual_audit": {
+    "status": "COMPLETE",
+    "raw_rows": 5092255,
+    "wells": 773,
+    "fold_contracts": 20,
+    "max_donor_validation_overlap": 0
+  },
+  "selector_guard": {
+    "pass": false,
+    "checks_passed": 1,
+    "checks_total": 6,
+    "current": {
+      "global_delta_rmse_vs_likpf": -3.085356616973877,
+      "near_000_050_delta_rmse_vs_likpf": -0.6078883528709411,
+      "longtail_1000_plus_delta_rmse_vs_likpf": -3.3653541564941407,
+      "worst_well_delta_rmse_vs_likpf": 38.002960205078125,
+      "expected_error_mae": 4.523353862762451,
+      "candidate_auc_within10": 0.9191590338428404
+    },
+    "historical_exp238": {
+      "global_delta_rmse_vs_likpf": -3.0899109840393066,
+      "near_000_050_delta_rmse_vs_likpf": -0.60954048037529,
+      "longtail_1000_plus_delta_rmse_vs_likpf": -3.3722251892089843,
+      "worst_well_delta_rmse_vs_likpf": 37.6808967590332,
+      "expected_error_mae": 4.532978439331055,
+      "candidate_auc_within10": 0.9193335401808526
+    },
+    "delta_vs_historical": {
+      "global": 0.004554367065429776,
+      "near_000_050": 0.0016521275043488437,
+      "longtail_1000_plus": 0.006871032714843572,
+      "worst_well": 0.3220634460449219,
+      "expected_error_mae": -0.009624576568604049,
+      "candidate_auc_within10": -0.0001745063380121925
+    }
+  },
+  "executed": {
+    "selector_boosters": 20,
+    "final_gpu_boosters": 0,
+    "inference": false,
+    "submission": false
+  },
+  "sha256": {
+    "selector_summary": "9e6575577ace80054073d28281885c80a3ed6b266116b400df6ffcafcbcae2b7",
+    "selector_model_manifest": "8effd9232b895dd776ae29f85be1170224f98cf0b91f8d1786649dc9e7489fb4",
+    "residual_audit": "83668b9b0a4b18653eb8d11c6e21eba015a0411d518b6f114862e8426c71ae3d",
+    "augmentation_inventory_decompressed": "630dac60d16f87ce08bb75289730e1f7544f29610b3d1fcdcad381afa9455af1"
+  },
+  "decision": {
+    "promote_to_final_train": false,
+    "promote_to_inference": false,
+    "reason": "Only expected-error MAE improved; global, near, longtail, candidate AUC, and worst-well guards failed against historical exp238."
+  }
+}

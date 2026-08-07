@@ -1,0 +1,92 @@
+{
+  "experiment": "exp224_well_scaled_z_dz_features_on_exp218",
+  "status": "train_completed_rejected",
+  "route": "ml_model",
+  "parent": "exp218_gr_wavelet_rotation_confidence_features_on_exp148",
+  "active_variant": "well_scaled_z_dz_addonly",
+  "planned_train": {
+    "runtime": "cpu",
+    "split_notebooks": [
+      "train_lgb0",
+      "train_lgb1",
+      "train_lgb2"
+    ],
+    "active_variants": 1,
+    "active_modes": 1,
+    "lightgbm_configs": 3,
+    "lightgbm_config_splits": [
+      0,
+      1,
+      2
+    ],
+    "folds": 5,
+    "boosters_per_split": 5,
+    "planned_boosters": 15,
+    "control_retraining": false
+  },
+  "kaggle_train": {
+    "started_at": "2026-07-09",
+    "completed_at": "2026-07-09",
+    "status": "complete",
+    "kernels": [
+      {
+        "split": "train_lgb0",
+        "kernel": "kentookumura/exp224-wsz-exp218-lgb0",
+        "version": 1,
+        "status": "KernelWorkerStatus.COMPLETE",
+        "url": "https://www.kaggle.com/code/kentookumura/exp224-wsz-exp218-lgb0"
+      },
+      {
+        "split": "train_lgb1",
+        "kernel": "kentookumura/exp224-wsz-exp218-lgb1",
+        "version": 1,
+        "status": "KernelWorkerStatus.COMPLETE",
+        "url": "https://www.kaggle.com/code/kentookumura/exp224-wsz-exp218-lgb1"
+      },
+      {
+        "split": "train_lgb2",
+        "kernel": "kentookumura/exp224-wsz-exp218-lgb2",
+        "version": 1,
+        "status": "KernelWorkerStatus.COMPLETE",
+        "url": "https://www.kaggle.com/code/kentookumura/exp224-wsz-exp218-lgb2"
+      }
+    ]
+  },
+  "cv": {
+    "metric": "rmse_tvt",
+    "variant": "well_scaled_z_dz_addonly",
+    "mode": "cpu_deterministic_threads8",
+    "rows": 3783989,
+    "wells": 773,
+    "split_rmse_tvt": {
+      "lgb0": 8.683606336244106,
+      "lgb1": 8.573438104936795,
+      "lgb2": 8.534973570048614
+    },
+    "lgb_mean": {
+      "rmse_tvt": 8.538687041980328,
+      "rmse_target": 8.538683614279885,
+      "prediction_sha256": "83bec3ddef9e187c65ca17f1c8ee6daff6a5e0e0292ac1436b0c098768e498a2"
+    },
+    "references": {
+      "exp218_parent_lgb_mean_rmse_tvt": 8.475793751656624,
+      "exp148_feature_surface_lgb_mean_rmse_tvt": 8.50128118189582
+    },
+    "delta_vs_exp218_rmse_tvt": 0.06289329032370361,
+    "delta_vs_exp148_rmse_tvt": 0.03740586008450819,
+    "decision": "reject_no_inference_no_submit",
+    "artifacts": {
+      "aggregate_summary": "experiments/exp224_well_scaled_z_dz_features_on_exp218/kaggle/output/train_split_aggregate_v1/artifacts/exp224_well_scaled_z_dz_features_on_exp218_split_aggregate_summary.json",
+      "aggregate_metrics": "experiments/exp224_well_scaled_z_dz_features_on_exp218/kaggle/output/train_split_aggregate_v1/artifacts/exp224_well_scaled_z_dz_features_on_exp218_split_aggregate_metrics.csv",
+      "aggregate_predictions": "experiments/exp224_well_scaled_z_dz_features_on_exp218/kaggle/output/train_split_aggregate_v1/artifacts/exp224_well_scaled_z_dz_features_on_exp218_split_aggregate_predictions.csv.gz",
+      "aggregate_by_well": "experiments/exp224_well_scaled_z_dz_features_on_exp218/kaggle/output/train_split_aggregate_v1/artifacts/exp224_well_scaled_z_dz_features_on_exp218_split_aggregate_by_well.csv",
+      "aggregate_bucket_tail_rank": "experiments/exp224_well_scaled_z_dz_features_on_exp218/kaggle/output/train_split_aggregate_v1/artifacts/exp224_well_scaled_z_dz_features_on_exp218_split_aggregate_bucket_metrics.csv",
+      "split_individual_bucket_metrics": "experiments/exp224_well_scaled_z_dz_features_on_exp218/kaggle/output/train_split_aggregate_v1/artifacts/exp224_well_scaled_z_dz_features_on_exp218_split_individual_bucket_metrics.csv",
+      "feature_importance_mean": "experiments/exp224_well_scaled_z_dz_features_on_exp218/kaggle/output/train_split_aggregate_v1/artifacts/exp224_well_scaled_z_dz_features_on_exp218_split_aggregate_feature_importance_mean.csv"
+    },
+    "readout_note": "Aggregate distance_bucket metrics were not recomputed locally because the exp072 md_since cache is not present; per-split distance_bucket metrics are archived in split_individual_bucket_metrics."
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "updated_at": "2026-07-09"
+}

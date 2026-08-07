@@ -1,0 +1,169 @@
+experiment:
+  name: "exp173_beam_topk_path_posterior_audit"
+  description: "Train-side audit that reruns Beam search and saves retained top-K paths, path costs, posterior means, and oracle headroom diagnostics."
+  route: pf_beam
+  status: completed_train_side_negative_no_submit
+  created_at: "2026-07-03"
+  updated_at: "2026-07-03"
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  diagnostic_parents:
+    - exp143_multimode_pfbeam_local_correlation_audit
+    - exp152_all_well_lightweight_multimode_beam_audit
+    - exp171_bimodal_posterior_pfbeam_candidate_audit
+  implementation_source: beam_topk_path_posterior_audit.py
+  diff_summary: >
+    Implements the KAGGLE_DIRECTION backlog beam_topk_path_posterior_audit.
+    Unlike exp171, which used a GR shift-scan top2 proxy, this reruns the Beam
+    dynamic program itself and restores the final retained top-K paths and costs.
+    It compares top1/top2 commits, top-K weighted means, fixed-temperature
+    posterior means, cost gaps, entropy, path separation, and top-K oracle
+    headroom against exp072 fixed PF/Beam/likPF candidates on train pseudo-tail rows.
+
+validation:
+  strategy: train_well_pseudotail_beam_topk_path_cost_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within10
+    - bucket_rmse_by_md_since
+    - near_000_050_rmse
+    - longtail_1000_plus_rmse
+    - beam_likpf_gap_top_quartile_rmse
+    - mode_separation_bucket_rmse
+    - low_cost_gap_bucket_rmse
+    - topk_oracle_coverage
+    - path_switch_continuity
+    - max_well_regression_vs_likpf_mean
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp072_rows
+  leakage_policy:
+    - Existing PF/Beam/likPF candidates are read from exp072 raw-train deterministic feature cache.
+    - Beam top-K generation uses raw horizontal MD/GR, finite prefix TVT_input anchor, and typewell TVT/GR only.
+    - Evaluation-zone true TVT is materialized as last_known_tvt + target only for scoring and oracle-headroom readout.
+    - Posterior temperature is fixed in config; it is not tuned from validation true TVT.
+    - This experiment is train-side diagnostic only; inference port requires separate raw-test parity and guard review.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+model:
+  name: beam_topk_path_posterior_audit
+  estimator: none_beam_candidate_audit
+  target: true_tvt_for_scoring_only
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  beam_topk:
+    variants:
+      - name: beam_topk_raw_bw32
+        beam_size: 32
+        top_k: 8
+        move_cost: 15.0
+        error_scale: 100.0
+        smooth_radius: 0
+      - name: beam_topk_sm5_bw32
+        beam_size: 32
+        top_k: 8
+        move_cost: 15.0
+        error_scale: 100.0
+        smooth_radius: 5
+      - name: beam_topk_sm11_bw64
+        beam_size: 64
+        top_k: 8
+        move_cost: 15.0
+        error_scale: 100.0
+        smooth_radius: 11
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_beam_dynamic_programming
+  stochastic_components:
+    - upstream_exp072_pf_beam_likpf_cache
+  parallel_rng_policy: no_parallel_rng_in_exp173
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    topk_diagnostics_sha: true
+    candidate_wide_sha: true
+    metrics_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is not a submission anchor because it is a train-side Beam top-K diagnostic.
+    - Source gzip cache decompressed content SHA and output gzip decompressed SHA are recorded in summary JSON.
+
+audit:
+  mode: beam_topk_path_posterior_audit
+  output_prefix: exp173_beam_topk_path_posterior_audit
+  primary_baseline: likpf_mean
+  comparison_baselines:
+    - beam_mean
+    - pf_ancc
+  top_k: 8
+  posterior_temperatures: [1.0, 2.0, 4.0, 8.0, 16.0]
+  weighted_mean_temperature: 8.0
+  max_rows: null
+  max_wells: null
+  representative_wells:
+    - 91b301ce
+    - ba48188d
+    - fef8af96
+    - 1b1eba53
+    - 86454a6f
+  candidates:
+    - name: pf_ancc
+      role: selected_pf
+      source_columns: [pf_ancc]
+      transform: absolute
+    - name: beam_mean
+      role: exp072_beam_mean
+      source_columns: [beam_mean_d, beam_mean]
+      transform: base_plus_delta
+    - name: likpf_mean
+      role: likelihood_pf
+      source_columns: [likpf_mean_d, likpf_mean]
+      transform: base_plus_delta
+  expected_train_artifacts:
+    - exp173_beam_topk_path_posterior_audit_candidate_metrics.csv
+    - exp173_beam_topk_path_posterior_audit_bucket_metrics.csv
+    - exp173_beam_topk_path_posterior_audit_by_well.csv
+    - exp173_beam_topk_path_posterior_audit_group_metrics.csv
+    - exp173_beam_topk_path_posterior_audit_beam_quality.csv
+    - exp173_beam_topk_path_posterior_audit_topk_diagnostics.csv.gz
+    - exp173_beam_topk_path_posterior_audit_topk_paths.csv.gz
+    - exp173_beam_topk_path_posterior_audit_candidate_wide.csv.gz
+    - exp173_beam_topk_path_posterior_audit_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_candidate: null
+  notes:
+    - No inference candidate is selected at implementation time.
+    - Posterior mean is not a physically valid trajectory by construction; it needs clear likpf_mean improvement and guard pass before any inference port.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog beam_topk_path_posterior_audit.
+  - pf_seed_mode_posterior_audit, pfbeam_posterior_confidence_features_on_exp148, pfbeam_top2_viterbi_selector_audit, and broad pfbeam_topk_posterior_candidate_audit remain downstream ideas only if this audit is positive.

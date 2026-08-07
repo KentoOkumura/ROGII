@@ -1,0 +1,107 @@
+{
+  "experiment": "exp176_typewell_late_range_pfbeam_candidate_prior",
+  "status": "completed_train_side_supported_no_submit",
+  "cv": 10.64129809970173,
+  "metric": "rmse_tvt",
+  "public_lb": "",
+  "private_lb": "",
+  "updated_at": "2026-07-04",
+  "key_idea": "Add target-free typewell late-range candidate_pct prior features to the exp157 supervised PF/Beam candidate ranker without hard invalidation, clipping, or PF/Beam regeneration.",
+  "route": "ensemble",
+  "parent": "exp157_candidate_ranker_feature_enrichment",
+  "cache_parent": "exp099_pf_multi_observation_likelihood_probe",
+  "feature_cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "kaggle_kernel": "kentookumura/exp176-typewell-late-candidate-prior-train",
+  "kaggle_url": "https://www.kaggle.com/code/kentookumura/exp176-typewell-late-candidate-prior-train",
+  "kaggle_kernel_version": 3,
+  "output_dir": "/kaggle/working/artifacts",
+  "runtime": {
+    "kaggle_enable_gpu": false,
+    "active_selector_experiments": 1,
+    "lightgbm_model_families": 3,
+    "folds": 5,
+    "total_boosters": 15,
+    "control_retraining": false,
+    "pf_beam_regeneration": false,
+    "candidate_long_max_train_rows_per_fold": 300000,
+    "candidate_long_row_feature_exclude_prefixes": ["tlp_"],
+    "runtime_seconds": 9329.729704380035
+  },
+  "data": {
+    "rows": 3783989,
+    "wells": 773,
+    "candidate_count": 8,
+    "feature_count": 174,
+    "long_row_feature_count": 97,
+    "long_feature_count": 124,
+    "typewell_late_range_row_features": 77,
+    "typewell_late_range_candidate_long_features": 20,
+    "known_last_pct_min": [0.75, 0.8],
+    "candidate_pct_lower_bounds": [0.5, 0.6, 0.7],
+    "known_last_margins": [0.05, 0.1],
+    "typewell_context_rows": 773,
+    "valid_typewell_context_rows": 773
+  },
+  "best_oof": {
+    "variant": "lgb_candidate_error_ranker",
+    "rmse_tvt": 10.64129809970173,
+    "mae_tvt": 6.434563137170688,
+    "within_1ft": 0.24086169383684783,
+    "within_2ft": 0.3719947388853403,
+    "within_5ft": 0.6026917625817623,
+    "within_10ft": 0.7918154624656678,
+    "oracle_label_accuracy": 0.25743917331683575,
+    "pf_ancc_selection_rate": 0.3808161175944222,
+    "max_path_switch_per_1000_rows": 330.84185680566486
+  },
+  "reference_metrics": {
+    "exp157_best_oof_rmse_tvt": 10.79579983712686,
+    "exp157_best_oof_mae_tvt": 6.476996066363846,
+    "exp157_best_oof_within_10ft": 0.7925049464995803,
+    "exp157_best_oof_oracle_label_accuracy": 0.25868811986504187,
+    "exp157_best_oof_max_path_switch_per_1000_rows": 357.19905586152635,
+    "exp158_best_viterbi_rmse_tvt": 10.789163253,
+    "likpf_mean_rmse_tvt": 11.594897672217703
+  },
+  "deltas": {
+    "rmse_vs_likpf_mean": -0.9535995725159729,
+    "rmse_vs_multiobs_score_top1": -0.9535995725159729,
+    "rmse_vs_exp157_best_oof": -0.15450173742512932,
+    "rmse_vs_exp158_best_viterbi": -0.14786515329826972,
+    "mae_vs_exp157_best_oof": -0.04243292919315778,
+    "within_10ft_vs_exp157_best_oof": -0.0006894840339125042,
+    "oracle_label_accuracy_vs_exp157_best_oof": -0.0012489465482061223,
+    "max_path_switch_per_1000_rows_vs_exp157_best_oof": -26.35719905586149
+  },
+  "decision": {
+    "recommendation": "ranker_supported_for_followup_continuity_audit",
+    "submit_candidate": false,
+    "next_action": "Use the positive exp176 late-range prior signal only through an exp158-style continuity or downstream confidence-feature follow-up; do not directly submit the row-wise selector.",
+    "reason": "OOF RMSE improved over exp157, exp158, and likpf_mean, but row-wise max path switching remains high and raw-test parity has not been checked.",
+    "v1_failure": "No kernel name found in notebook and no override provided.",
+    "v2_fix": "Added python3 kernelspec metadata to train/inference notebooks and re-pushed.",
+    "v2_failure": "DeadKernelError after fold 0 multiclass training, likely memory pressure while constructing or imputing candidate-long frames.",
+    "v3_fix": "Exclude row-level tlp_ features from candidate-long frames, keep candidate_tlp_ features, reduce max_train_rows_per_fold to 300000, avoid DataFrame.replace copies in fit_impute, and free large fold objects."
+  },
+  "sha256": {
+    "metrics": "7d22a50027e003175dc789ca20c89ad48c521e83fa361aae105c8e1f3f98855c",
+    "feature_schema": "f4643a36903f0a84b4f2e1f205581fcd4d6dfe18474372848a188c921126b612",
+    "predictions": "be70489b8270f3981e8db2981c50227c302f677730ed499eecb6809c6600d02e",
+    "predictions_decompressed": "281785834923508b20258986d2d24953b754077200bc5d827f13ffd7a90e6cd8",
+    "best_oof_prediction": "ad9eeff7bcac5116ba77316255f162928a9117ded50f3a27b855739f068d0e66"
+  },
+  "evidence": {
+    "source": "kaggle kernels logs/status",
+    "status": "KernelWorkerStatus.COMPLETE",
+    "output_archive_downloaded": false
+  },
+  "validation": {
+    "py_compile": "PASS",
+    "ruff_check": "PASS",
+    "ruff_format_check": "PASS",
+    "jupytext_roundtrip": "PASS",
+    "notebook_json": "PASS",
+    "synthetic_smoke": "PASS",
+    "validate_experiment": "PASS"
+  }
+}

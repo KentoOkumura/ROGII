@@ -1,0 +1,69 @@
+{
+  "experiment": "exp177_beam_topk_bimodal_gate_posthoc_audit",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "pf_beam",
+  "parent": "exp173_beam_topk_path_posterior_audit",
+  "cv": 11.837783910923886,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "primary_baseline": {
+    "candidate": "likpf_mean",
+    "rows": 3783989,
+    "coverage": 1.0,
+    "rmse": 11.5948978837362,
+    "mae": 7.067632614946821,
+    "within10": 0.772807479091509,
+    "bias": -1.0994231796128362
+  },
+  "best_policy": {
+    "policy": "beam_topk_sm11_bw64__and_sep_ge_q90__cost_le_q10__replace_posterior_mean_t1",
+    "variant": "beam_topk_sm11_bw64",
+    "gate": "and_sep_ge_q90__cost_le_q10",
+    "replacement": "beam_topk_sm11_bw64_posterior_mean_t1",
+    "rows": 3783989,
+    "rmse": 11.837783910923886,
+    "mae": 7.299786631515044,
+    "within10": 0.7603399481340987,
+    "delta_rmse_vs_baseline": 0.24288602718768537,
+    "changed_rows": 384695,
+    "changed_rate": 0.10166387904404585,
+    "changed_wells": 71,
+    "changed_subset_baseline_rmse": 10.269740849175705,
+    "changed_subset_candidate_rmse": 12.706185739658224,
+    "changed_subset_delta_rmse": 2.4364448904825196,
+    "near_000_050_delta_rmse_vs_baseline": 0.027170813154562046,
+    "longtail_1000_plus_delta_rmse_vs_baseline": 0.2419606079942298,
+    "beam_likpf_gap_top_quartile_delta_rmse_vs_baseline": 0.5011659458514277,
+    "max_well_regression_vs_baseline": 22.51919286270996,
+    "improved_wells": 22,
+    "regressed_wells": 49
+  },
+  "decision": {
+    "recommendation": "diagnostic_only_not_submit_candidate",
+    "supported": false,
+    "max_regression_guard_rmse": 0.25,
+    "reason": "Best gated posterior worsened global RMSE, changed subset RMSE, within10, and worst-well regression versus likpf_mean."
+  },
+  "kaggle_kernel": "kentookumura/exp177-beam-topk-bimodal-gate-posthoc-audit-train",
+  "kaggle_url": "https://www.kaggle.com/code/kentookumura/exp177-beam-topk-bimodal-gate-posthoc-audit-train",
+  "kaggle_kernel_version": 1,
+  "output_dir": "experiments/exp177_beam_topk_bimodal_gate_posthoc_audit/kaggle/output/train_v1",
+  "runtime_seconds": 409.03050899505615,
+  "artifact_sha256": {
+    "policy_metrics": "8454de5c20e81fbb2946b4110213d3569e47e754f16d78f2a9b2611f9a03b177",
+    "gate_thresholds": "ea547bd0386b59ef673b801bfae48819911276f9fffbd164cad3779ebdad28a7",
+    "group_metrics": "34c7a540a1d62a0514b0e3bd0c2cc6540cb25deff5ec63bd2dafd78ddbe051b6",
+    "by_well": "4325525c2405ef9ae4d5347e1df87819c2909b0cc93807c407cc0a460b64e9e2",
+    "summary": "f640e36fcaeb6757b493c876c61458bc70e9bd4c9cdd2d834586b76577d9d8ac"
+  },
+  "input_sha256": {
+    "candidate_metrics": "87126c3131a861616957732f9e3c3a57a32c526418bef072300e5453928d7e99",
+    "candidate_wide_decompressed": "f993aaed3f59a39f3e367e1c18b3a7a394a254db09c1a5277d90d605621613bd",
+    "topk_diagnostics_decompressed": "08b1ed91742e4352b732fb739fdd59a8b4c53f53582f8a1c295a7b123e070301",
+    "topk_paths_decompressed": "cf23b20a5b2ee9c8266f6272374463ec49cf8229c78570b73908cd346f4c73cc"
+  },
+  "key_idea": "No-training posthoc gate over exp173 Beam top-K posterior outputs using target-free bimodal diagnostics.",
+  "notes": "Kaggle train v1 completed. Best gated posterior worsened likpf_mean by +0.242886 RMSE, changed subset by +2.436445 RMSE, and max well regression by +22.519193. No inference port or submit.",
+  "updated_at": "2026-07-03"
+}

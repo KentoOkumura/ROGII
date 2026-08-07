@@ -1,0 +1,162 @@
+experiment:
+  name: exp017_deterministic_dtw_addonly
+  description: Add deterministic DTW/DWT alignment features to the exp012/exp013 LightGBM no-GR residual anchor
+  route: ml_model
+  status: completed
+  created_at: "2026-06-05"
+  updated_at: "2026-06-05"
+
+lineage:
+  parent: exp013_model_diversity_or_postprocess
+  diff_summary: Keep the exp012/exp013 LightGBM no-GR residual anchor and add a small deterministic DTW/DWT alignment feature set
+
+validation:
+  leakage_policy:
+    - Same well is never split across train and validation folds.
+    - Target-derived features use only the known TVT_input prefix.
+    - Evaluation-zone TVT is used only as the residual target during training/CV.
+    - Train-only formation columns are not used.
+    - DTW/DWT features use only MD, GR, TVT_input prefix, and paired typewell GR available at inference.
+    - DTW/DWT path selection is deterministic and uses a bounded shift grid with no valid-target feedback.
+
+data: {}
+
+model:
+  name: lightgbm_last_anchor_residual_dtw_dwt_features
+  primary_strategy: drift_model
+  drift_strategy: drift_model
+  feature_set: no_gr_signal
+  strategies:
+    - last_anchor
+    - drift_model
+  params:
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+    gr_slope_window: 200
+    max_abs_gr_slope: 2.0
+    gr_roll_short: 25
+    gr_roll_long: 100
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  drift_model:
+    estimator: LGBMRegressor
+    params:
+      n_estimators: 800
+      learning_rate: 0.03
+      num_leaves: 31
+      min_child_samples: 80
+      subsample: 0.9
+      colsample_bytree: 0.9
+      reg_lambda: 0.1
+      n_jobs: 2
+  training:
+    max_train_rows_per_fold: 300000
+    max_train_rows_final: 450000
+    max_train_rows_per_well: 800
+  pf_beam:
+    enabled: false
+  dtw_dwt:
+    enabled: false
+    min_valid_fraction: 0.30
+    shift_radius: 180.0
+    shift_step: 15.0
+    dtw_max_points: 192
+    dtw_band_fraction: 0.10
+    dtw_cost_weight: 0.15
+    ncc_cost_weight: 0.10
+    long_eval_rows: 5700
+    scale_windows:
+      w16: 16
+      w32: 32
+      w64: 64
+      w128: 128
+  rationale:
+    - exp012/exp013 lightgbm_no_gr is the current raw model CV anchor at 13.549257.
+    - exp015 showed that PF/beam add-only features are noisy, so this experiment narrows the alignment signal to deterministic DTW/DWT quality features.
+    - The first snapshot avoids pywt and uses rolling multi-scale detail energy, best shift, cost margin, DTW cost, path slope, and row-level typewell mismatch.
+
+ablation:
+  baseline_experiment: exp002_drift_minimal
+  baseline_cv: 14.124569
+  baseline_public_lb: 12.533
+  cv_anchor_experiment: exp012_single_catboost_lightgbm_residual
+  cv_anchor_cv: 13.549257
+  cv_anchor_public_lb: 12.320
+  postprocess_anchor_experiment: exp014_postprocess_cv_audit
+  postprocess_anchor_cv: 13.535596
+  selected_variant: dtw_dwt_no_gr
+  variants:
+    - name: control_lightgbm_no_gr
+      variable: control
+      description: Re-run exp012/exp013 selected LightGBM no-GR residual model as the raw anchor.
+      overrides:
+        model:
+          feature_set: no_gr_signal
+          pf_beam:
+            enabled: false
+          dtw_dwt:
+            enabled: false
+    - name: dtw_dwt_no_gr
+      variable: dtw_dwt_features
+      description: Add deterministic DTW/DWT alignment quality and route features to the LightGBM no-GR anchor.
+      overrides:
+        model:
+          feature_set: no_gr_signal_plus_dtw_dwt
+          pf_beam:
+            enabled: false
+          dtw_dwt:
+            enabled: true
+
+postprocess:
+  selected_method: raw
+  selection_variant: dtw_dwt_no_gr
+  diversity_control_variant: control_lightgbm_no_gr
+  alpha_clip:
+    min: 0.20
+    max: 1.15
+  distance_buckets:
+    - name: rows_0_49
+      max_step: 49
+    - name: rows_50_249
+      max_step: 249
+    - name: rows_250_999
+      max_step: 999
+    - name: rows_1000_2499
+      max_step: 2499
+    - name: rows_2500_plus
+      max_step: 1000000000
+  candidates:
+    global_residual_shrink_alphas: []
+    near_anchor_damping: []
+    sg_smooth: []
+    blend_lightgbm_weights: []
+  methods:
+    raw: {}
+    distance_bucket_shrink:
+      buckets:
+        - max_step: 49
+          alpha: 0.20
+        - max_step: 249
+          alpha: 0.5917180252647632
+        - max_step: 999
+          alpha: 1.15
+        - max_step: 2499
+          alpha: 1.15
+        - max_step: 1000000000
+          alpha: 1.0490770312511664
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: 30
+  save_well_metrics: true
+  save_oof_predictions: true
+
+notes:
+  - Submission target column is lowercase tvt, while train target is uppercase TVT.
+  - Do not use train-only formation columns directly at inference.
+  - Train notebook writes ablation metrics, fold metrics, well metrics, model training rows, row OOF predictions, and postprocess diagnostics.
+  - The top-level CV tracks ablation.selected_variant, not the exp014 held-out postprocess audit score.

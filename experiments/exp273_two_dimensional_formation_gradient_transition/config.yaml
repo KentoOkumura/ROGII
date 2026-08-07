@@ -1,0 +1,278 @@
+experiment:
+  name: exp273_two_dimensional_formation_gradient_transition
+  description: >-
+    Fits a deterministic robust plane to S=TVT_input+Z over each well's known
+    prefix, turns the gradient center and four fixed covariance-axis prototypes
+    into exact-HMM transition candidates, and audits their complementarity to
+    the saved exp209 scalar-rate HMM without fitting a selector.
+  route: pf_beam
+  status: completed_negative_direct_gradient_candidates
+  created_at: "2026-07-17"
+  inference_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.metric
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  references:
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - exp205_exact_hmm_smoother_exp072_compatible_cache_audit
+    - exp206_discussion711308_dz_dtvt_bpeak_cluster_baseline
+    - exp224_well_scaled_z_dz_features_on_exp218
+    - exp227_z_scale_replacement_on_exp218
+    - exp268_multi_scale_initial_rate_candidates
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md two_dimensional_formation_gradient_transition
+  implementation_source:
+    - exp273_two_dimensional_formation_gradient_transition_train.py
+    - exp273_two_dimensional_formation_gradient_transition_train_variant0.py
+    - exp273_two_dimensional_formation_gradient_transition_train_variant1.py
+  diff_summary: >-
+    Keeps the exp209 exact-HMM TVT grid, residual-rate state grammar, Gaussian
+    GR emission, calibration, sigma, priors, and score rows fixed. The saved
+    exp209 scalar-rate HMM remains the control and is not regenerated. Five new
+    paths change only the surface increment in the position transition to
+    gx*dX+gy*dY+residual_rate*dMD-dZ, using one known-prefix Huber-plane center
+    and four predeclared covariance-axis prototypes. Invalid geometry falls back
+    to one scalar path copied across the five candidate columns. No candidate
+    mean, blend, selector, weight fitting, inference, or submission is included.
+
+validation:
+  strategy: full_train_exact_hmm_two_dimensional_gradient_candidate_bank_audit
+  metric: rmse_tvt_and_candidate_bank_oracle_headroom
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  success_criteria:
+    - Both target-free well shards cover the expected 773 wells and 3,783,989 rows exactly once.
+    - The saved exp209 scalar control and all five gradient candidates align by id with no mismatch.
+    - Plane-fit coverage, fallback reasons, geometry strata, gradient/path duplicates, unique-best rates, and row/block/whole-well oracle metrics are recorded.
+    - Candidate-bank headroom is reported separately from deployable direct metrics; no oracle prediction or candidate average is persisted.
+  leakage_policy:
+    - Plane fit, geometry guards, prototypes, and residual initial rates use only finite known-prefix TVT_input, X, Y, Z, and MD rows from the same well.
+    - HMM generation uses a horizontal frame with unknown-suffix true TVT removed before every candidate path is generated.
+    - Other-well targets, target-derived spatial neighbors, formation labels, outer-valid targets, and evaluation-tail true TVT are forbidden generation inputs.
+    - Well sharding uses only a stable hash of well id.
+    - Unknown-suffix true TVT is attached only after all candidate paths are frozen and is used only for train-side diagnostics.
+    - Plane thresholds, prototype multiplier, candidate names, block sizes, duplicate tolerances, and banks are fixed before target metrics are inspected.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  exp209_hmm_control:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    candidates:
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+  shard_outputs:
+    - shard_index: 0
+      filename: exp273_two_dimensional_formation_gradient_transition_shard0.csv.gz
+      expected_rows: 1910995
+      expected_wells: 396
+      expected_raw_sha256: acb943b7b91e723643dddb2259d492c8af9a81fb35bbd3187319633f473eb2c1
+      expected_decompressed_sha256: 347b87554261cb904bc7f98d6d1eb64ed5aaa46f15720011b94797d814aeac97
+      candidates:
+        - experiments/exp273_two_dimensional_formation_gradient_transition/artifacts/exp273_two_dimensional_formation_gradient_transition_shard0.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp273-2d-formation-gradient-shard0/artifacts/exp273_two_dimensional_formation_gradient_transition_shard0.csv.gz
+        - /kaggle/input/exp273-2d-formation-gradient-shard0/artifacts/exp273_two_dimensional_formation_gradient_transition_shard0.csv.gz
+    - shard_index: 1
+      filename: exp273_two_dimensional_formation_gradient_transition_shard1.csv.gz
+      expected_rows: 1872994
+      expected_wells: 377
+      expected_raw_sha256: ae78cfc15e8bb0a1191f0300261723a3b379c0f9d4fb68e0b17b81ddae7d9e48
+      expected_decompressed_sha256: 98939d080e4b5bfa3ab93631601d496946b0e9ddcc8aac4bb10a430eeda7d407
+      candidates:
+        - experiments/exp273_two_dimensional_formation_gradient_transition/artifacts/exp273_two_dimensional_formation_gradient_transition_shard1.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp273-2d-formation-gradient-shard1/artifacts/exp273_two_dimensional_formation_gradient_transition_shard1.csv.gz
+        - /kaggle/input/exp273-2d-formation-gradient-shard1/artifacts/exp273_two_dimensional_formation_gradient_transition_shard1.csv.gz
+
+model:
+  name: exact_hmm_two_dimensional_formation_gradient_candidate_bank
+  estimator: deterministic_huber_plane_plus_exact_hmm_audit
+  target: train_unknown_suffix_tvt_for_post_generation_scoring_only
+  control:
+    candidate: hmm_scalar_tail30
+    source: saved_exp209_exact_hmm
+    regenerate: false
+  formation_plane:
+    target_formula: surface_S_equals_TVT_input_plus_Z
+    fit_formula: S_equals_gx_X_plus_gy_Y_plus_c
+    estimator: deterministic_huber_irls
+    huber_delta: 1.345
+    max_iterations: 25
+    convergence_tolerance: 0.0000000001
+    min_points: 64
+    min_xy_step: 0.000001
+    min_rank_ratio: 0.05
+    max_condition_number: 20.0
+    min_azimuth_coverage: 0.02
+    covariance_rcond: 0.000000000001
+    prototype_sigma_multiplier: 1.0
+    canonical_eigenvector_sign: largest_absolute_component_positive
+    candidate_names:
+      - center
+      - axis1_minus
+      - axis1_plus
+      - axis2_minus
+      - axis2_plus
+    candidate_columns:
+      - hmm_grad_center
+      - hmm_grad_axis1_minus
+      - hmm_grad_axis1_plus
+      - hmm_grad_axis2_minus
+      - hmm_grad_axis2_plus
+  residual_initial_rate:
+    estimator: median_residual_surface_increment_per_md
+    formula: median((delta_TVT_input+delta_Z-gx_delta_X-gy_delta_Y)/delta_MD)
+    window_rows: 30
+    min_valid_steps: 3
+    fallback_rate: 0.0
+  hmm:
+    position_transition_formula: gx_delta_X_plus_gy_delta_Y_plus_residual_rate_delta_MD_minus_delta_Z
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+
+candidate_bank:
+  direct_candidates:
+    - hmm_scalar_tail30
+    - hmm_grad_center
+    - hmm_grad_axis1_minus
+    - hmm_grad_axis1_plus
+    - hmm_grad_axis2_minus
+    - hmm_grad_axis2_plus
+  gradient_candidates:
+    - hmm_grad_center
+    - hmm_grad_axis1_minus
+    - hmm_grad_axis1_plus
+    - hmm_grad_axis2_minus
+    - hmm_grad_axis2_plus
+  oracle_banks:
+    scalar_control: [hmm_scalar_tail30]
+    scalar_plus_gradient_5: [hmm_scalar_tail30, hmm_grad_center, hmm_grad_axis1_minus, hmm_grad_axis1_plus, hmm_grad_axis2_minus, hmm_grad_axis2_plus]
+
+audit:
+  output_prefix: exp273_two_dimensional_formation_gradient_transition
+  oracle_block_rows: [128, 256, 512]
+  path_duplicate_atol_ft: 0.000001
+  gradient_duplicate_atol: 0.000000000001
+  fallback_control_parity_atol_ft: 0.00001
+  turning_azimuth_coverage: 0.10
+  distance_buckets_ft: [50, 100, 250, 500, 1000]
+  condition_buckets: [2, 5, 10, 20]
+  rank_ratio_buckets: [0.05, 0.10, 0.20, 0.40]
+  azimuth_coverage_buckets: [0.02, 0.05, 0.10, 0.25]
+  persist_oracle_predictions: false
+  persist_candidate_mean: false
+  persist_selector: false
+  expected_aggregate_artifacts:
+    - exp273_two_dimensional_formation_gradient_transition_candidate_metrics.csv
+    - exp273_two_dimensional_formation_gradient_transition_distance_bucket_metrics.csv
+    - exp273_two_dimensional_formation_gradient_transition_geometry_bucket_metrics.csv
+    - exp273_two_dimensional_formation_gradient_transition_hidden_like_metrics.csv
+    - exp273_two_dimensional_formation_gradient_transition_by_well.csv
+    - exp273_two_dimensional_formation_gradient_transition_plane_diagnostics.csv
+    - exp273_two_dimensional_formation_gradient_transition_duplicate_diagnostics.csv
+    - exp273_two_dimensional_formation_gradient_transition_unique_best.csv
+    - exp273_two_dimensional_formation_gradient_transition_oracle_scope_metrics.csv
+    - exp273_two_dimensional_formation_gradient_transition_input_manifest.csv
+    - exp273_two_dimensional_formation_gradient_transition_summary.json
+
+execution:
+  canonical_train_mode: aggregate
+  shard_count: 2
+  shard_policy: sha256_exp273_well_shard_modulo_2
+  active_hmm_variants: 5
+  expected_target_wells: 773
+  max_hmm_well_runs: 3865
+  invalid_geometry_hmm_well_runs: 1
+  outer_workers: 2
+  numba_num_threads: 2
+  progress_every_wells: 4
+  max_wells_per_shard: null
+  lightgbm_config_count: 0
+  fold_count: 0
+  total_boosters: 0
+  control_or_parent_retraining: false
+  gpu: false
+  inference: false
+  submission: false
+  kaggle_push_approved: true
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp273-2d-formation-gradient-shard0
+      - kentookumura/exp273-2d-formation-gradient-shard1
+    train_variant0_kernel_sources: []
+    train_variant1_kernel_sources: []
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_exact_hmm_huber_svd_stable_sha256_well_shard_only
+  stochastic_components: []
+  parallel_rng_policy: no_rng_joblib_threads2_numba_threads2
+  eigenvector_sign_policy: largest_absolute_component_positive
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Exact HMM, Huber IRLS, SVD, and prototype generation consume no random numbers.
+    - Stable SHA256 determines only the operational well shard and never a candidate value.
+    - Eigenvector signs are canonicalized before prototype construction.
+    - Numba parallel floating arithmetic and LAPACK may vary at tiny precision, so this train-side audit is not promoted to a deterministic submission anchor.
+    - Raw and decompressed gzip SHA are both recorded; decompressed content SHA is primary.
+
+inference:
+  enabled: false
+  mode: disabled_train_side_candidate_bank_audit_only
+  create_submission: false
+  selected_candidate: null
+
+notes:
+  - No candidate average, blend, target-aware selector, emission/scale change, inference, or submission is implemented.
+  - Oracle paths exist only transiently while aggregate diagnostic metrics are computed and are never persisted as deployable candidates.

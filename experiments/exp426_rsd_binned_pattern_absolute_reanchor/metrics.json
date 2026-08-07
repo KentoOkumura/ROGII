@@ -1,0 +1,123 @@
+{
+  "experiment": "exp426_rsd_binned_pattern_absolute_reanchor",
+  "status": "completed_stage_a_technical_failed_closed",
+  "route": "pf_beam",
+  "priority": "P3",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "absolute_offset_identifiability_and_blockwise_replay_rmse",
+  "active_stage": "completed_stage_a_technical_failed_closed",
+  "kaggle": {
+    "kernel_id": "kentookumura/exp426-rsd-binned-pattern-absolute-reanchor-train",
+    "kernel_version": 1,
+    "kernel_id_no": 128930757,
+    "machine": "cpu",
+    "internet": false
+  },
+  "execution_counts": {
+    "primary_scores": 1,
+    "descriptive_scores": 2,
+    "matched_controls": 3,
+    "reporting_folds": 5,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "hmm_runs": 0,
+    "pf_runs": 0,
+    "beam_runs": 0,
+    "gpu_runs": 0,
+    "parent_control_retraining": false
+  },
+  "stage_a": {
+    "status": "technical_failed_closed",
+    "technical_passed": false,
+    "scientific_evaluation_skipped": true,
+    "decision": "close_stage_a_on_technical_gate_without_truth_read_or_rescue",
+    "rows": 3783989,
+    "wells": 773,
+    "folds": 5,
+    "blocks": 7787,
+    "score_rows": 101231,
+    "supported_block_fraction": 0.25593938615641454,
+    "minimum_supported_block_fraction": 0.95,
+    "supported_well_fraction": 0.8926261319534282,
+    "minimum_supported_well_fraction": 0.98,
+    "runtime_seconds_before_truth": 160.78915553600007,
+    "elapsed_seconds": 164.71911338200005,
+    "peak_rss_gb_before_truth": 0.8032646179199219,
+    "fixed_probe_well": "000d7d20",
+    "fixed_probe_match": true,
+    "technical_checks_failed": [
+      "supported_block_fraction",
+      "supported_well_fraction"
+    ],
+    "technical_checks_passed": [
+      "canonical_order",
+      "duplicate_identity_zero",
+      "expected_folds",
+      "expected_rows",
+      "expected_wells",
+      "finite_score_storage",
+      "fixed_offset_order",
+      "hidden_role_reads_before_freeze_zero",
+      "peak_memory",
+      "probe_logical_sha_match",
+      "rank_permutations",
+      "required_columns",
+      "runtime",
+      "thirteen_offsets_per_block",
+      "top3_masks_consistent",
+      "truth_reads_before_freeze_zero"
+    ]
+  },
+  "truth_access_ledger": {
+    "truth_rows_before_freeze": 0,
+    "truth_rows_after_freeze": 0,
+    "hidden_role_rows_before_freeze": 0,
+    "hidden_role_rows_after_freeze": 0
+  },
+  "reproducibility": {
+    "deterministic_anchor": false,
+    "scientific_contract_sha256": "2fc2b35c9ea88aa3b9c35546e4979dbb335d9944a225c601b4810711d6c164ca",
+    "config_content_sha256": "2d3bf3a7955342c5f067fd83e93188c0a5e9cf12f0931de636de7aded5f861fa",
+    "input_manifest_content_sha256": "7933f0f2babaa382ee23ae64db096db0dcc775035fc399254e64e7b30fe7656b",
+    "score_content_sha256": "463aa32bef9a1045469466e2cf5fd68e038258e75f11fc88153fd9ca7f8dd2fd",
+    "score_schema_sha256": "6e86f76bf7df038e5b3b8077db80888c737bfa3880377ac24fe74d236706e9bd",
+    "well_manifest_content_sha256": "6af41b07945527af423405a860bd04ef356656266cfb264b80c471a72e7d0266",
+    "fixed_probe_logical_sha256": "b4fd1730c8c2c53a07a0e326bc762b52f1c4249b226e2546f30544b215069c59"
+  },
+  "artifacts": {
+    "target_free_score_bank": {
+      "rows": 101231,
+      "content_sha256": "463aa32bef9a1045469466e2cf5fd68e038258e75f11fc88153fd9ca7f8dd2fd",
+      "decompressed_sha256": "6adb009b83c884681fa64e29c03bc05c6dac15d3bb6826df1a000961c8bbe575"
+    },
+    "well_manifest": {
+      "rows": 773,
+      "content_sha256": "6af41b07945527af423405a860bd04ef356656266cfb264b80c471a72e7d0266",
+      "decompressed_sha256": "e36e3b7dae4625fa44bb39370daa0112612ab27f16fd4440807e4e19b9fe69fc"
+    },
+    "input_manifest": {
+      "rows": 773,
+      "content_sha256": "7933f0f2babaa382ee23ae64db096db0dcc775035fc399254e64e7b30fe7656b",
+      "decompressed_sha256": "899beb7b1fcc4dfcd6777398abfbc6fb15fa75d74dc250950b7e2a705b30e435"
+    },
+    "summary_raw_sha256": "edcb6897564f5b086be0f87db19288f13c161d088074b73eb1324337a3190dad"
+  },
+  "stage_b": {
+    "status": "not_implemented_blocked_by_stage_a_technical_fail"
+  },
+  "stage_c_sentinel": {
+    "status": "not_implemented_blocked_by_stage_a_technical_fail"
+  },
+  "stage_c_full": {
+    "status": "not_implemented_blocked_by_stage_a_technical_fail"
+  },
+  "inference": {
+    "status": "disabled"
+  },
+  "submission": {
+    "status": "disabled"
+  }
+}

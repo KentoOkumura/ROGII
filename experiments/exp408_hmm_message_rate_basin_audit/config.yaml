@@ -1,0 +1,195 @@
+experiment:
+  name: exp408_hmm_message_rate_basin_audit
+  description: >-
+    Replays the unchanged exp209 exact HMM on the preregistered persistent-offset
+    450 wells and records predictive, filtered, and smoothed position-rate message
+    summaries to identify where long offsets form.
+  route: pf_beam
+  status: complete_message_audit
+  created_at: "2026-07-26"
+  inference_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260726-exp408-hmm-message-rate-basin-audit
+  references:
+    - exp270_exact_hmm_posterior_mode_candidate_audit
+    - exp391_prefix_anchored_mode_persistence_hmm_readout
+    - docs/analysis/hmm_exp209_offset_cause_audit_20260725.md
+    - docs/06_reproducibility.md
+  diff_summary: >-
+    The exp209 HMM state space, preprocessing, transition and emission are unchanged.
+    This experiment adds read-only sufficient-statistic capture for the predictive,
+    filtered and smoothed messages and late truth-centered diagnostic masks. It does
+    not add a decoder candidate or any scientific treatment.
+
+validation:
+  strategy: preregistered_persistent_offset_internal_message_audit
+  metric: mechanism_attribution_not_candidate_cv
+  seed: 42
+  reporting_folds: 5
+  expected_target_wells: 450
+  expected_suffix_rows: 2264135
+  expected_episodes: 638
+  expected_episode_rows: 807710
+  parity_atol_ft: 0.00001
+  normalization_atol: 0.00001
+  leakage_policy:
+    - Only the fixed target-well ID list may be read before decoding for scope selection.
+    - Raw horizontal suffix TVT is excluded by usecols before HMM preparation.
+    - Episode boundaries and suffix truth are read only after each well prediction and message SHA freeze.
+    - Decoder and message functions have no truth, error, episode, fold, or hidden-role argument.
+    - No threshold is tuned after truth attachment.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  id_column: id
+  target_column: TVT
+  target_wells:
+    filename: target_wells.csv
+    local: experiments/exp408_hmm_message_rate_basin_audit/assets/target_wells.csv
+    expected_sha256: ce245abce24dae98d37b6e0a2adf73fa57a29e0e53864bee983aa916238ea51e
+  persistent_episodes:
+    filename: persistent_offset_episodes.csv
+    local: experiments/exp408_hmm_message_rate_basin_audit/assets/persistent_offset_episodes.csv
+    expected_sha256: 031067fa77c195b77920a0997401310fbdd16532a2d0e99a9c3b5044de28913c
+  exp270_mode_bank:
+    aggregate_filename: exp270_exact_hmm_posterior_mode_candidate_audit_candidates.csv.gz
+    expected_aggregate_decompressed_sha256: 986276e2495b23d5de2425542efd0433c59f1a398c073b3053218ba9007a5ecf
+    aggregate_candidates:
+      - experiments/exp270_exact_hmm_posterior_mode_candidate_audit/kaggle/output/aggregate_v4/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp270-exact-hmm-posterior-mode-audit-train/artifacts
+      - /kaggle/input/exp270-exact-hmm-posterior-mode-audit-train/artifacts
+    aggregate_patterns:
+      - "**/exp270_exact_hmm_posterior_mode_candidate_audit_candidates.csv.gz"
+    columns:
+      - id
+      - well
+      - row_idx
+      - posterior_mean
+      - marginal_map
+      - topk_path_1
+      - md_since
+  exp226_fold_source:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+    patterns:
+      - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+
+model:
+  name: exp209_exact_hmm_internal_message_audit
+  estimator: none_diagnostic_redecode
+  fitted_model: false
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+
+audit:
+  basin_radius_ft: 5.0
+  rate_neighborhood_cells: 1
+  position_edge_cells: 2
+  rate_edge_cells: 1
+  probability_floor: 1.0e-12
+  cause_thresholds:
+    state_support_fraction: 0.10
+    log_odds_effect: 1.0986122886681098
+    dominant_row_fraction: 0.50
+    viterbi_rmse_gain_ft: 2.0
+    mean_viterbi_gap_ft: 6.0
+    logsum_max_gap: 2.0
+  expected_artifacts:
+    - exp408_hmm_message_rate_basin_audit_row_ledger.csv.gz
+    - exp408_hmm_message_rate_basin_audit_episode_summary.csv
+    - exp408_hmm_message_rate_basin_audit_cause_summary.csv
+    - exp408_hmm_message_rate_basin_audit_well_manifest.csv
+    - exp408_hmm_message_rate_basin_audit_input_manifest.json
+    - exp408_hmm_message_rate_basin_audit_summary.json
+
+execution:
+  run_stage: none
+  completed_run_stage: full_persistent_450
+  kaggle_execution_approved: false
+  rerun_enabled: false
+  approval_source: user_message_2026_07_26_execute_heavy_on_kaggle
+  active_hmm_variants: 1
+  total_hmm_well_runs: 450
+  parent_control_regeneration: true
+  parent_control_regeneration_reason: existing_exp209_exp270_do_not_persist_internal_messages
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  models: 0
+  pf_well_runs: 0
+  beam_well_runs: 0
+  gpu_runs: 0
+  outer_workers: 1
+  numba_num_threads: 4
+  progress_every_wells: 1
+  estimated_base_seconds: 6752.9
+  conservative_expected_seconds: 10800
+  hard_runtime_seconds: 32400
+  hard_peak_rss_gb: 25
+  inference: false
+  submission: false
+  kaggle_kernel_version: 3
+  kaggle_kernel_numeric_id: 128636642
+  kaggle_kernel_status: complete
+  actual_elapsed_seconds: 15930.997034225002
+  actual_peak_rss_gb: 3.5878067016601562
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp408-hmm-message-rate-basin-audit-train
+    train_title: exp408 hmm message rate basin audit train
+    bootstrap_files:
+      - assets/target_wells.csv
+      - assets/persistent_offset_episodes.csv
+    train_kernel_sources:
+      - kentookumura/exp270-exact-hmm-posterior-mode-audit-train
+      - kentookumura/exp226-k16-kappa-repro-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_sorted_well_row_state_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_outer_worker_one_numba_threads_four
+  feature_sha_policy: logical_and_decompressed_content_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    message_sha: true
+    prediction_sha: true
+    row_ledger_sha: true
+    model_sha: false
+    submission_sha: false
+
+inference:
+  enabled: false
+  mode: disabled_internal_train_side_diagnostic_only
+  create_submission: false

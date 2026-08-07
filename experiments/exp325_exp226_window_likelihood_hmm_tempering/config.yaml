@@ -1,0 +1,149 @@
+experiment:
+  name: exp325_exp226_window_likelihood_hmm_tempering
+  description: >-
+    Design-frozen two-stage audit that converts the exp226 500-row GR window
+    correlation/MSE/level score into a sparse confidence-tempered observation
+    factor inside exact HMM, not a TVT correction or prediction blend.
+  route: pf_beam
+  status: closed_without_run_upstream_exp307_chain_failed
+  created_at: "2026-07-21"
+  updated_at: "2026-07-22"
+
+lineage:
+  parent: exp323_time_varying_exp226_dip_rate_prior
+  steering: ../../.steering/20260721-exp325-exp226-window-likelihood-hmm-tempering
+  dependencies:
+    - exp305_tempered_raw_smoothed_exact_hmm_emission
+  references:
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission
+    - exp280_exp226_shift_likelihood_separability_readout
+    - exp321_z_only_residual_gr_correction_ladder
+  diff_summary: >-
+    Keeps the parent transition mean/variance, row Gaussian emission, grid,
+    momentum, and posterior output fixed, and adds one sparse normalized
+    exp226 window potential at fixed stride centers with a deterministic
+    posterior-SD confidence lambda. It never emits an exp226 correction path.
+
+closure:
+  closed_at: "2026-07-22"
+  reason: fixed_exp323_parent_closed_without_run
+  terminal: true
+  reopen_allowed: false
+  successor_policy: >-
+    Create a new-number equivalent only after exp338 passes and its separately
+    created new exp323-equivalent also passes all promotion gates.
+
+implementation: {enabled: false, scope: closed_design_history, inference_enabled: false, submission_enabled: false}
+
+validation:
+  strategy: conditional_grouped_two_stage_window_emission_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  score_rows: unknown_suffix_truth_only_after_window_score_freeze
+  dependency_policy:
+    required_parent: exp323_time_varying_exp226_dip_rate_prior
+    required_parent_status: all_promotion_gates_passed
+    required_completed_evidence: exp305_result_reviewed_before_implementation
+    fail_closed_on_dependency_mismatch: true
+  leakage_policy:
+    - Window identities, relative paths, observed GR profiles, state score surfaces, valid fractions, lambda schedules, and shuffled controls are frozen before suffix truth is read.
+    - The relative path comes from the frozen parent transition mean and never from true suffix TVT or exp226 final TVT.
+    - True-state rank and TVT error are diagnostic-only post-freeze values.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+
+model:
+  name: exp226_sparse_window_likelihood_exact_hmm
+  estimator: none
+  window_factor:
+    source_algorithm: exp226_gr_correction_score_only
+    window_rows: 500
+    stride_rows: 125
+    state_grid_step_ft: 0.5
+    minimum_finite_gr_fraction: 0.50
+    minimum_profile_bins: 7
+    correlation_weight: 2.0
+    mse_weight: 0.5
+    level_weight: 0.1
+    score_normalization: subtract_state_mean_then_divide_state_std_floor_1e_minus_6
+    overlap_normalization: stride_div_window
+    lambda_formula: stride_div_window_times_clip_1p1_minus_0p12_times_window_posterior_sd_0p3_1p0
+    ineligible_lambda: 0.0
+    application: add_sparse_factor_at_window_center_only
+    row_gaussian_emission: unchanged
+    fallback: parent_row_emission_only
+  stage_0_separability_readout:
+    enabled_after_implementation: false
+    fixed_shift_bank_ft: [-80.0, -40.0, -20.0, -10.0, -5.0, -2.0, 0.0, 2.0, 5.0, 10.0, 20.0, 40.0, 80.0]
+    shuffled_control: stable_sha256_per_well_window_score_permutation
+    compare_against: parent_row_gaussian_window_aggregated_score
+    pass_requires_all:
+      minimum_mrr_gain: 0.01
+      minimum_top3_rate_gain: 0.01
+      minimum_folds_improving_parent: 4
+      minimum_folds_real_above_shuffled: 5
+      require_1000_plus_positive_gain: true
+      require_hidden_like_spatial_positive_gain: true
+      require_hidden_like_typewell_purged_positive_gain: true
+      minimum_eligible_window_fraction: 0.25
+  stage_1_exact_hmm:
+    enabled_after_implementation: false
+    enable_condition: stage_0_all_gates_pass_and_separate_user_approval
+    active_variants: [sparse_window_tempered_emission]
+  fixed_parent:
+    transition_mean: exact_exp323
+    transition_variance: exact_exp323
+    sigma_gr: exact_exp323
+    missing_gr_weight: exact_exp323
+    sig_p: exact_exp323
+    momentum: 0.998
+    state_grid: exact_exp323
+    output: posterior_mean
+  forbidden:
+    - exp226_delta_correction
+    - exp226_final_prediction
+    - same_typewell_peer_atlas
+    - window_or_lambda_grid
+    - replacing_row_emission
+    - blending_predictions
+
+execution_contract:
+  stage_0: {diagnostic_variants: 1, hmm_well_runs: 0, model_configs: 0, trained_folds: 0, boosters: 0}
+  stage_1_if_pass: {scientific_variants: 1, hmm_well_runs: 773, model_configs: 0, trained_folds: 0, boosters: 0}
+  parent_control_retraining: false
+
+promotion_gates:
+  minimum_rmse_gain_vs_parent_ft: 0.05
+  minimum_improved_folds: 4
+  require_1000_plus_non_regression: true
+  require_hidden_like_spatial_non_regression: true
+  require_hidden_like_typewell_purged_non_regression: true
+  require_by_well_p95_delta_max: 0.0
+  maximum_worst_well_regression_ft: 0.25
+
+execution: {implementation_approved: false, kaggle_push_approved: false, active_stage: closed_without_run, run_stage_0: false, run_stage_1: false, run_inference: false, create_submission: false}
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle: {enable_gpu: false, enable_internet: false, runtime_limit_seconds: 30600}
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_real_scores_stable_sha256_shuffled_control
+  stochastic_components: [matched_window_score_shuffle_control]
+  parallel_rng_policy: local_stable_rng_per_well_window_for_control_only
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: true, submission_sha: false}
+inference: {enabled: false, create_submission: false}
+notes:
+  - Design frozen on 2026-07-21; no implementation or execution approval.
+  - This differs from exp321 Stage C because it adds a sparse HMM factor and never generates a bounded post-hoc correction.
+  - Closed permanently on 2026-07-22; a future equivalent must use a new experiment number under the exp338 successor chain.

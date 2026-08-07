@@ -1,0 +1,345 @@
+experiment:
+  name: exp338_exp209_well_adaptive_transition_noise
+  description: >-
+    Exact-HMM audit that changed only exp209 well-level rate diffusion sig_r.
+    Version 3 completed 773 HMM runs, but every well mapped to the upper sig_r
+    clip and direct RMSE regressed by 2.124061 ft with 0/5 folds improved, so
+    the branch closed without rescue, inference, submission, or successors.
+  route: pf_beam
+  status: train_side_adaptive_sig_r_gate_failed_closed
+  created_at: "2026-07-22"
+  updated_at: "2026-07-23"
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260722-exp338-exp209-well-adaptive-transition-noise
+  formula_reference: exp309_well_adaptive_transition_noise
+  evidence:
+    - exp307_finite_only_robust_sigma_gr
+    - exp268_multi_scale_initial_rate_candidates
+    - exp273_two_dimensional_formation_gradient_transition
+  diff_summary: >-
+    Changes only exp209 fixed sig_r=0.002 to one deterministic well-specific
+    value estimated from robust known-prefix U-rate innovations. Exp209
+    zero-fill standard-deviation sigma_GR, GR preprocessing, Gaussian
+    emission, state grid, sig_p, momentum, priors, and posterior mean remain
+    fixed. No exp307 finite-only scale or exp308 missing-GR confidence is used.
+
+implementation:
+  enabled: true
+  scope: train_side_single_candidate_audit_only
+  train_notebook_state: canonical_compact_selfcontained_adopted
+  canonical_notebook_adopted: true
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.score_rows
+
+validation:
+  strategy: grouped_train_side_exp209_exact_hmm_single_transition_scale_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  group_column: well_id
+  score_rows: tvt_input_unknown_suffix_only_after_transition_and_prediction_freeze
+  expected_wells: 773
+  expected_rows: 3783989
+  truth_attachment: after_transition_audit_and_candidate_prediction_content_sha_are_frozen
+  dependency_policy:
+    required_parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    required_parent_status: completed_hmm_exact_parity_pass
+    required_hmm_prediction_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    required_likpf_cache_decompressed_sha256: 0503de0512302b06309d26e09fc06ba5095db0ef4d610b1508afe8c8d07ca536
+    fail_closed_on_dependency_mismatch: true
+  leakage_policy:
+    - Transition statistics use only known TVT_input, Z, MD, and fixed raw row order.
+    - Unknown-suffix TVT, error, abs_error, formation, oracle labels, fold scores, and hidden-like roles are forbidden before transition and prediction freeze.
+    - Saved exp209 HMM and LikPF predictions are controls/readouts only and are never fit inputs.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  saved_exp209:
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    metrics_filename: metrics.json
+    hmm_cache_filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    likpf_cache_filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    hmm_prediction_column: hmm_mean_tvt
+    likpf_anchor_column: last_known_tvt
+    likpf_delta_column: likpf_mean_d
+    expected_hmm_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    expected_likpf_decompressed_sha256: 0503de0512302b06309d26e09fc06ba5095db0ef4d610b1508afe8c8d07ca536
+    expected_metrics_sha256: ebf7e24624d8b98f41cdda9c90a5df488031673f44d59a7485c9b2b62e6d67ae
+    accepted_metric_parity:
+      expected_best_candidate: blend_likpf_hmm_w500
+      maximum_best_rmse_abs_difference: 1.0e-5
+      acceptance_source: exp209_user_confirmed_approximate_rmse_parity
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v3/artifacts
+    metrics_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train
+      - /kaggle/input/exp209-joint-exact-parity-train
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v3
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    safe_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    truth_columns: [well_id, row_idx, tvt_true]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    usage: scoring_strata_and_late_truth_only_not_scientific_parent
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    allowed_roles:
+      hidden_like_spatial: [train, valid]
+      hidden_like_typewell_purged: [train, valid, purged_train_excluded]
+    expected_role_counts:
+      hidden_like_spatial:
+        train: 573
+        valid: 200
+      hidden_like_typewell_purged:
+        train: 557
+        valid: 200
+        purged_train_excluded: 16
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+model:
+  name: exp209_well_adaptive_sig_r_exact_hmm
+  estimator: none
+  target: TVT
+  active_variants: [robust_prefix_rate_diffusion_on_exp209]
+  transition_scale:
+    state_coordinate: U_equals_TVT_input_plus_Z
+    rate: delta_U_div_delta_MD
+    innovation: adjacent_rate_difference_div_sqrt_mean_delta_MD
+    raw_scale: 1.4826_times_mad_about_median
+    minimum_innovations: 20
+    fallback_sig_r: 0.002
+    shrinkage_pseudocount: 100.0
+    shrinkage_alpha: n_div_n_plus_100
+    shrinkage_space: log
+    raw_scale_floor: 1.0e-6
+    clip: [0.001, 0.004]
+  fixed_exp209_hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_p: 0.02
+    lam: 1.0
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    momentum: 0.998
+    emission: gaussian
+    emission_clip_z2: 600.0
+    sigma_mode: std
+    sigma_known_gr_policy: fill_missing_with_zero_before_population_std
+    sigma_clip: [10.0, 60.0]
+    affine_a: 1.0
+    affine_b: 0.0
+    missing_gr_weight: none_exact_weight_1
+    rate_center: zero
+    evaluation_gr_policy: interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp
+    effective_position_sigma_floor: 0.1225
+    output: posterior_mean
+  forbidden:
+    - finite_only_sigma_gr
+    - robust_or_mad_sigma_gr
+    - missing_gr_downweight
+    - gr_affine_calibration
+    - row_or_segment_varying_sig_r
+    - time_varying_rate_prior_mean
+    - changing_sig_p_momentum_grid_or_blend
+    - posthoc_sig_r_grid_or_threshold_rescue
+
+references:
+  exp209_raw_hmm_rmse: 11.9382872349
+  exp209_likpf_rmse: 11.5948976722
+  exp209_hmm_likpf_50_50_rmse: 10.2696961466
+  exp209_hmm_runtime_seconds: 11285.868
+  exp309_status: closed_without_run_upstream_exp307_chain_failed
+
+execution_contract:
+  scientific_variants: 1
+  hmm_well_runs: 773
+  lightgbm_configs: 0
+  trained_folds: 0
+  pf_well_runs: 0
+  beam_well_runs: 0
+  boosters: 0
+  parent_control_retraining: false
+
+promotion_gates:
+  minimum_rmse_gain_vs_exp209_raw_hmm_ft: 0.05
+  minimum_improved_folds: 4
+  maximum_fallback_fraction: 0.50
+  maximum_total_clip_fraction: 0.50
+  require_1000_plus_non_regression: true
+  require_hidden_like_spatial_non_regression: true
+  require_hidden_like_typewell_purged_non_regression: true
+  require_by_well_p95_delta_max: 0.0
+  maximum_worst_well_regression_ft: 0.25
+  require_fixed_likpf_50_50_non_regression: true
+  baseline_metric_absolute_tolerance: 1.0e-5
+
+successor_policy:
+  automatic_creation: false
+  on_exp338_fail:
+    action: close_without_successor
+    result: satisfied_version_3_gate_failed
+    decision: adaptive_sig_r_failed_close_without_rescue
+  on_exp338_pass:
+    action: create_new_experiment_number_after_separate_design_approval
+    role: time_varying_exp226_dip_rate_prior_on_exp338
+    replaces_role_of_closed_experiment: exp323_time_varying_exp226_dip_rate_prior
+    required_parent: exp338_exp209_well_adaptive_transition_noise
+  on_new_exp323_equivalent_pass:
+    action: branch_into_separate_new_experiment_numbers_after_separate_approvals
+    successors:
+      - role: exp226_donor_covariance_segment_sig_r
+        replaces_role_of_closed_experiment: exp324_exp226_donor_covariance_segment_sig_r
+      - role: exp226_window_likelihood_hmm_tempering
+        replaces_role_of_closed_experiment: exp325_exp226_window_likelihood_hmm_tempering
+      - role: residual_rate_time_varying_momentum
+        replaces_role_of_closed_experiment: exp326_residual_rate_time_varying_momentum
+      - role: time_varying_position_sigma_floor_audit
+        replaces_role_of_closed_experiment: exp327_time_varying_position_sigma_floor_audit
+  closed_history_policy:
+    never_reparent_or_reopen: [exp323, exp324, exp325, exp326, exp327, exp328]
+    exp328_revisit_policy: explicit_independent_experiment_exp345_directly_parented_to_exp209
+    exp328_revisit_experiment: exp345_exp209_time_varying_gr_affine_calibration_hmm
+
+execution:
+  implementation_approved: true
+  implementation_approval_scope: user_message_implement_exp338
+  kaggle_push_approved: true
+  kaggle_run_approval_scope: user_message_execute_exp338
+  active_stage: train_side_adaptive_sig_r_gate_failed_closed
+  run_transition_audit: true
+  run_hmm: true
+  run_inference: false
+  create_submission: false
+  kaggle_kernel_id: kentookumura/exp338-exp209-well-adaptive-transition-noise-train
+  kaggle_kernel_title: exp338 exp209 well adaptive transition noise train
+  kaggle_kernel_version: 3
+  kaggle_kernel_id_no: 128226900
+  kaggle_kernel_url: https://www.kaggle.com/code/kentookumura/exp338-exp209-well-adaptive-transition-noise-train
+  kaggle_kernel_status: complete
+  kaggle_retry_reason: version_2_rejected_exp115_purged_train_excluded_role_after_hmm
+  kaggle_retry_history:
+    version_1: expected_local_flat_metrics_keys_in_raw_kaggle_metrics
+    version_2: rejected_exp115_purged_train_excluded_role_after_773_hmm_runs
+
+results:
+  generated_at_utc: "2026-07-23T00:40:27.171017+00:00"
+  runtime_seconds: 11376.512313604355
+  prediction_frozen_at_seconds: 11276.093342065811
+  rows: 3783989
+  wells: 773
+  hmm_well_runs: 773
+  promotion_gate_passed: false
+  decision: adaptive_sig_r_failed_close_without_rescue
+  direct:
+    candidate_rmse: 14.062348052437676
+    control_rmse: 11.938287234887435
+    delta_rmse_candidate_minus_control: 2.124060817550241
+    folds_improved: 0
+    fold_deltas: [3.7389005586326736, 1.4294822943913381, 2.866298472404079, 0.14895168803790604, 2.4543919004648433]
+    md_since_1000_plus_delta: 2.3773986647535725
+    hidden_like_spatial_delta: 3.278598240816672
+    hidden_like_typewell_purged_delta: 3.362722713313005
+    by_well_rmse_p95_delta: 4.790246935844831
+    worst_well_rmse_delta: 54.81883754730505
+    worst_well_id: a645da9a
+  fixed_likpf_50_50:
+    candidate_rmse: 11.184021746721717
+    control_rmse: 10.269692505026358
+    delta_rmse_candidate_minus_control: 0.9143292416953592
+  technical:
+    finite_coverage: 1.0
+    posterior_normalization_max_abs_error: 3.774758283725532e-15
+    sig_r_fallback_fraction: 0.0
+    sig_r_total_clip_fraction: 1.0
+    sig_r_final_value_all_wells: 0.004
+    baseline_metric_parity_passed: true
+  sha256:
+    scientific_contract: 4d21c3f89a190833b1c201bfc9f3867c638943e4f1ec99f6a2a9d101ec7c6760
+    input_control_manifest_raw: 99e12e4f0c2099e687fad5eba63f1fe43e04cc624effa37d877304e3ebdfc131
+    prediction_content: bf426bcf5b0452004ca0a3d6626c1f7e476f005740a8a283b1f035e782286838
+    prediction_raw_gzip: 0177e2a738309b97cdc170c2851b36422b7752108b4adedb37240a85f6225e08
+    transition_audit_content: eaa3956f62b7ca592e97ac9175f4a2ad2c18c4772068a8cd4713318686d19aca
+    transition_audit_raw_gzip: 51e67534e70f5d8d2eb80d755c786452466b7e72ba8caf72ff114fac9e1bd53c
+    promotion_gate_raw: 5e99d8298be9bc3643a1f03864de29c639b3791d497e1f34c451c3b0c482d2cd
+    overall_fold_scope_metrics_raw: c7c92a13dea24f307b058c258a97951f98c91d7e56547b20f1424c5fcca0d51d
+    diagnostic_scope_metrics_raw: 1735510892bede583def664f97cbd98f27651f6bc430e8280a21a0f577cc1123
+    by_well_metrics_raw: 24dc1632bbfdfa8441f7b8c42a059600f7340d83bed5a6b2e494742007db82f5
+    runtime_raw: 5461fb0d94faca9ffbf1f59cca0b17377f9242f9240da7a379bea89ac0369b28
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_deterministic_prefix_rate_scale
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_outer_workers_and_numba_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a deterministic train-side candidate audit, not a deterministic submission anchor.
+    - Transition audit and candidate prediction are frozen before unknown-suffix truth or scoring strata are attached.
+
+inference:
+  enabled: false
+  mode: disabled_until_train_side_promotion_and_separate_approval
+  create_submission: false
+
+notes:
+  - Design frozen on 2026-07-22; scientific implementation was approved separately by the user and completed before execution approval.
+  - Kaggle CPU train package/push/run was approved by the user on 2026-07-22; inference and submission remain disabled.
+  - Existing exp323 through exp328 remain closed historical experiments and must not be reparented.
+  - The closed exp328 hypothesis now has the explicit independent exp209 child exp345 and is not part of this successor chain.
+  - Version 3 completed all 773 candidate HMM well-runs but failed the scientific and clip-fraction gates.
+  - The known-prefix transition-noise proxy mapped every well to the upper sig_r clip, so this branch is terminally closed without rescue.
+  - No inference, submission, or successor experiment was created.

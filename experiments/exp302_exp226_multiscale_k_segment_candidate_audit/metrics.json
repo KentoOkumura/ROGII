@@ -1,0 +1,134 @@
+{
+  "experiment": "exp302_exp226_multiscale_k_segment_candidate_audit",
+  "status": "kaggle_cpu_v2_completed_direct_fail_candidate_novelty_pass",
+  "route": "pf_beam",
+  "cv": 9.413244315159885,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "technical_passed": true,
+  "direct_passed": false,
+  "candidate_novelty_passed": true,
+  "exp303_dependency_satisfied": true,
+  "decision": "consider_exp303_only_after_dependency_review",
+  "kernel": {
+    "id": "kentookumura/exp302-ksegment-candidate-audit-train",
+    "id_no": 128010921,
+    "version": 2,
+    "completed_at": "2026-07-20T14:19:59.617307+00:00",
+    "audit_completed_at_seconds": 1281.068195241,
+    "log_last_timestamp_seconds": 1291.656253355,
+    "config_sha256": "a7838b30f8c76c05e00f4d7fc1b09f0fd8b3e00c52c382f760742229e88012ba"
+  },
+  "execution": {
+    "scientific_variants": 2,
+    "outer_folds": 5,
+    "variant_fold_runs": 10,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "parent_control_regeneration": 0,
+    "gpu": false,
+    "inference": false,
+    "submission": false
+  },
+  "control": {
+    "candidate": "exp226_k16",
+    "rmse": 9.427109596582216,
+    "decompressed_sha256": "709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609",
+    "parity_max_abs_ft_vs_exp293_bank": 0.0004882811608695192,
+    "regenerated": false
+  },
+  "variants": {
+    "exp226_k12": {
+      "pooled_rmse": 9.551938065503593,
+      "pooled_delta_ft": 0.12482846892137722,
+      "improved_folds": 0,
+      "fold_deltas_ft": [
+        0.17174147534263895,
+        0.1328749771797355,
+        0.19644745427305565,
+        0.015116371578869803,
+        0.0985701150389815
+      ],
+      "scope_deltas_ft": {
+        "1000_plus": 0.13850944986351443,
+        "hidden_like_spatial": 0.04843933537603995,
+        "hidden_like_typewell_purged": 0.049125734655621756
+      },
+      "by_well_p95_delta_ft": -0.39487257453997415,
+      "worst_well_delta_ft": 1.7317775882725357,
+      "direct_passed": false,
+      "candidate_novelty": {
+        "h512_base_oracle_rmse": 3.683762664246268,
+        "h512_add_one_oracle_rmse": 3.6176675577426036,
+        "h512_oracle_improvement_ft": 0.06609510650366435,
+        "whole_well_oracle_improvement_ft": 0.06846556717413765,
+        "h512_strict_unique_best_fraction": 0.10697316039553101,
+        "improved_folds": 5,
+        "passed": true
+      }
+    },
+    "exp226_k24": {
+      "pooled_rmse": 9.413244315159885,
+      "pooled_delta_ft": -0.013865281422331677,
+      "improved_folds": 3,
+      "fold_deltas_ft": [
+        0.4492218618247854,
+        0.16809224308341975,
+        -0.05329665741407297,
+        -0.13998770218043255,
+        -0.5201398984892052
+      ],
+      "scope_deltas_ft": {
+        "1000_plus": -0.01901243946897324,
+        "hidden_like_spatial": -0.2166504642095326,
+        "hidden_like_typewell_purged": -0.2103920588756285
+      },
+      "by_well_p95_delta_ft": 0.009875616285992095,
+      "worst_well_delta_ft": -0.6025604579884245,
+      "direct_passed": false,
+      "candidate_novelty": {
+        "h512_base_oracle_rmse": 3.683762664246268,
+        "h512_add_one_oracle_rmse": 3.5998613313828605,
+        "h512_oracle_improvement_ft": 0.08390133286340751,
+        "whole_well_oracle_improvement_ft": 0.06623076485233348,
+        "h512_strict_unique_best_fraction": 0.1088994477976114,
+        "improved_folds": 5,
+        "passed": true
+      }
+    }
+  },
+  "reproducibility": {
+    "rows": 3783989,
+    "wells": 773,
+    "evaluation_truth_access_before_freeze": 0,
+    "candidate_bank_content_sha256": "29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474",
+    "block_assignment_decompressed_sha256": "b0755c22aa8d791012d3f605e2f1b66063ce9bb6ba46ddd4b48dca77cce032d7",
+    "truth_content_sha256": "e9067327058431278a0fd994e8e6005b76ab99acbd3942118974599afb69a8d0",
+    "prediction_content_sha256": {
+      "exp226_k12": "c3d7dfe20ad3b8c7d6d5220023bbb4526fb90d10cc73f01e612db847af70da63",
+      "exp226_k24": "dca92e8f21d3b8b33d1543fe3df0bf586be3a2604b76ee1bf19fa84a327f06ef"
+    },
+    "prediction_decompressed_sha256": {
+      "exp226_k12": "63b381299ee46fa172680af57959d675c68b6b24af05664c8689dd291961f22d",
+      "exp226_k24": "ca36d168b45acb15cc814ac3c1c3437894cd1050f6c51ba03f5b302efd0a31aa"
+    },
+    "sha_manifest_file_sha256": "ebd31a81be14637171ae991a41e3ff05307cde32f1efa8a2aae6fe33fdd244d4",
+    "downloaded_manifest_entries_checked": 16,
+    "downloaded_manifest_entries_passed": 16
+  },
+  "implementation": {
+    "compact_selfcontained_train": true,
+    "fail_closed_inference": true,
+    "canonical_train_notebook_adopted": true,
+    "canonical_inference_notebook_adopted": false,
+    "dedicated_tests": 13,
+    "common_notebook_tests": 4,
+    "local_notebook_run": false,
+    "kaggle_package_created": true,
+    "kaggle_run": true,
+    "kaggle_output_verified": true
+  },
+  "notes": "Kaggle private CPU version 2 completed. No direct candidate was promoted; both K12 and K24 passed the preregistered add-one candidate-novelty guard. This satisfies only the exp302-side dependency for exp303; exp276 must still finish with promotion-guard failure before exp303 may start."
+}

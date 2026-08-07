@@ -1,0 +1,163 @@
+{
+  "experiment": "exp270_exact_hmm_posterior_mode_candidate_audit",
+  "status": "completed_train_side_direct_negative_oracle_diagnostic_only_no_inference_no_submit",
+  "cv": 11.938287234887435,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse_tvt",
+  "rows": 3783989,
+  "wells": 773,
+  "selected_direct_candidate": "posterior_mean",
+  "decision": "reject_mode_candidates_no_selector_no_inference_no_submission",
+  "candidate_metrics": [
+    {
+      "candidate": "posterior_mean",
+      "coverage": 1.0,
+      "rmse": 11.938287234887435,
+      "mae": 6.7695548877124185,
+      "within_10ft": 0.7843870582076217,
+      "delta_rmse_vs_posterior_mean": 0.0,
+      "available_wells": 773,
+      "improved_wells": 0,
+      "max_well_regression_vs_posterior_mean": 0.0
+    },
+    {
+      "candidate": "marginal_map",
+      "coverage": 1.0,
+      "rmse": 12.592479232308477,
+      "mae": 7.0322563041294375,
+      "within_10ft": 0.7722644014028582,
+      "delta_rmse_vs_posterior_mean": 0.6541919974210426,
+      "available_wells": 773,
+      "improved_wells": 206,
+      "median_well_delta_rmse": 0.210160,
+      "max_well_regression_vs_posterior_mean": 13.196776632120464
+    },
+    {
+      "candidate": "topk_path_1",
+      "alias": "global_viterbi",
+      "coverage": 1.0,
+      "rmse": 15.55166469700839,
+      "mae": 10.923850896494583,
+      "within_10ft": 0.593397073828703,
+      "delta_rmse_vs_posterior_mean": 3.6133774621209547,
+      "available_wells": 773,
+      "improved_wells": 205,
+      "median_well_delta_rmse": 3.467042,
+      "max_well_regression_vs_posterior_mean": 55.17904292077988
+    },
+    {
+      "candidate": "topk_path_2",
+      "coverage": 0.8406002237321515,
+      "rmse": 15.302588596980966,
+      "delta_rmse_vs_posterior_mean": 3.3643013620935314,
+      "available_wells": 655,
+      "improved_wells": 175,
+      "max_well_regression_vs_posterior_mean": 55.17909727123338
+    },
+    {
+      "candidate": "topk_path_3",
+      "coverage": 0.7827718315248803,
+      "rmse": 15.15769776407169,
+      "delta_rmse_vs_posterior_mean": 3.2194105291842554,
+      "available_wells": 613,
+      "improved_wells": 164,
+      "max_well_regression_vs_posterior_mean": 55.179042764024196
+    },
+    {
+      "candidate": "topk_path_4",
+      "coverage": 0.7596982972202087,
+      "rmse": 15.140188274674433,
+      "delta_rmse_vs_posterior_mean": 3.201901039786998,
+      "available_wells": 594,
+      "improved_wells": 159,
+      "max_well_regression_vs_posterior_mean": 55.179097114477834
+    },
+    {
+      "candidate": "topk_path_5",
+      "coverage": 0.7435621509470561,
+      "rmse": 14.674070805188062,
+      "delta_rmse_vs_posterior_mean": 2.7357835703006277,
+      "available_wells": 581,
+      "improved_wells": 159,
+      "max_well_regression_vs_posterior_mean": 55.17904311399038
+    }
+  ],
+  "hidden_like_rmse": {
+    "verification_like_spatial": {
+      "posterior_mean": 12.564491400950983,
+      "marginal_map": 13.406237050253734,
+      "global_viterbi": 16.989852117301794
+    },
+    "verification_like_typewell_purged": {
+      "posterior_mean": 12.367243829463906,
+      "marginal_map": 13.217184208957063,
+      "global_viterbi": 16.699333685672922
+    }
+  },
+  "oracle_diagnostic_only": {
+    "all_modes_rmse": {
+      "row": 7.516849616036286,
+      "block_128": 7.5675295097885265,
+      "block_256": 7.608995748276302,
+      "block_512": 7.685922345002297,
+      "well": 8.536362233251527
+    },
+    "mean_map_viterbi_rmse": {
+      "row": 7.51718932634232,
+      "block_128": 7.567871305761479,
+      "block_256": 7.60932777494613,
+      "block_512": 7.686241938170578,
+      "well": 8.53660505831294
+    },
+    "paths_only_rmse": {
+      "row": 15.549160076367803,
+      "block_128": 15.549169376539039,
+      "block_256": 15.5491835236971,
+      "block_512": 15.549193549546333,
+      "well": 15.549394973384693
+    },
+    "prediction_persisted": false,
+    "selector_persisted": false
+  },
+  "posterior_mean_parity": {
+    "rows": 3783989,
+    "atol_ft": 0.00001,
+    "max_abs_diff_ft": 0.0,
+    "mean_abs_diff_ft": 0.0,
+    "passed": true
+  },
+  "unique_path_count": {
+    "mean": 4.160413971539457,
+    "minimum": 1,
+    "wells_below_five": 192,
+    "backfill": false
+  },
+  "aggregate_runtime": {
+    "kernel": "kentookumura/exp270-exact-hmm-posterior-mode-audit-train",
+    "kernel_version": 4,
+    "kernel_id_no": 127594551,
+    "status": "COMPLETE",
+    "elapsed_seconds": 156.24147415161133,
+    "peak_rss_mb": 3097.27734375
+  },
+  "integrity": {
+    "id_contract_ok": true,
+    "strict_well_row_order_ok": true,
+    "full_coverage_candidates_finite": true,
+    "forbidden_deployable_columns": [],
+    "all_artifact_sha_match": true,
+    "candidate_gzip_bytes": 134101285,
+    "candidate_gzip_raw_sha256": "bef798c79e902faf93bf8ef5e75c6f868722fc8c4bca61c6dfd10778cfb4d520",
+    "candidate_gzip_decompressed_sha256": "986276e2495b23d5de2425542efd0433c59f1a398c073b3053218ba9007a5ecf",
+    "prediction_content_sha256": "d42a492bc4065ac88b481d9dba1e24b4c3b4ab331c93fce73a433d592aa16f19",
+    "decoder_manifest_sha256": "863ccb7ec073e2b624fb59d43ed91a1604cf6a7d17e7a345ab9ccec23a9b9e52",
+    "candidate_schema_sha256": "8c75d1fd4e71e81496f6384ea49787dba1dff16329bf0048dc8c65019798006d",
+    "input_manifest_sha256": "6ee0a89c40bd505631ce431d7f4f8452576da00fca266af31565a3a333de3a41",
+    "downloaded_metrics_sha256": "1332971e26c5967dc19f57a908d0a888939426fda0f72492604f30b17272bdc5",
+    "aggregate_summary_sha256": "5a467f283204809e67851df291c8c1b979d8a767b60b6588cd35ea7a54cb06fa"
+  },
+  "inference_enabled": false,
+  "submission_created": false,
+  "notes": "Technical contract passed. Posterior mean remains the best direct candidate. Marginal MAP and every exact joint top-K path regress overall and hidden-like RMSE. Oracle values are target-side diagnostics only and do not justify a selector, inference, or submission."
+}

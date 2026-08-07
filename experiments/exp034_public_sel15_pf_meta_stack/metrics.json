@@ -1,0 +1,302 @@
+{
+  "experiment": "exp034_public_sel15_pf_meta_stack",
+  "status": "completed",
+  "cv": 14.313668,
+  "public_lb": null,
+  "private_lb": null,
+  "key_idea": "Stack exp026-style pseudo-tail anchor with public sel15 PF/Beam train well の途中以降を隠した疑似 test features; selected ridge_meta_residual_shrink0p75_clip60p0 improved both original-fold and well-hash holdout.",
+  "updated_at": "2026-06-07T13:18:46.118181+00:00",
+  "source_experiment": "exp029_public_sel15_pf_oof_feature_generation",
+  "feature_file": "/kaggle/input/notebooks/kentookumura/exp029-sel15-pf-oof-train/features/public_sel15_pf_oof_features.csv.gz",
+  "loaded_columns": [
+    "GR",
+    "MD",
+    "X",
+    "Y",
+    "Z",
+    "abs_pf_beam_diff",
+    "beam_max",
+    "beam_min",
+    "beam_pred",
+    "beam_spread",
+    "cutoff_row",
+    "eval_fraction",
+    "eval_step",
+    "fold",
+    "gr_eval_availability",
+    "gr_isna",
+    "gr_prefix_availability",
+    "id",
+    "last_anchor_tvt",
+    "pf_beam_diff",
+    "pf_effective_seeds",
+    "pf_gr_sigma_mean",
+    "pf_initial_rate_mean",
+    "pf_lik_best",
+    "pf_lik_gap_best_second",
+    "pf_lik_mean",
+    "pf_lik_std",
+    "pf_mean_effective_particles",
+    "pf_min_effective_particles",
+    "pf_pred",
+    "pf_pred_minus_last_anchor",
+    "pf_resample_count_mean",
+    "pf_scale_12",
+    "pf_scale_3",
+    "pf_scale_5",
+    "pf_scale_8",
+    "pf_seed_mean",
+    "pf_seed_std",
+    "pf_selected_scale_pred",
+    "pf_weight_best_second_gap",
+    "pf_weight_entropy",
+    "pf_weight_top",
+    "prefix_length",
+    "pseudo_cutoff_fraction",
+    "row_idx",
+    "selector_beam_weight",
+    "selector_code",
+    "selector_hold_weight",
+    "selector_n_eval",
+    "selector_scale",
+    "selector_z_span",
+    "target_tvt",
+    "well_id"
+  ],
+  "feature_columns": [
+    "exp026_pred",
+    "pf_pred",
+    "beam_pred",
+    "last_anchor_tvt",
+    "pf090_hold010",
+    "exp026_minus_pf",
+    "abs_exp026_minus_pf",
+    "exp026_minus_last_anchor",
+    "pf_pred_minus_last_anchor",
+    "pf_beam_diff",
+    "abs_pf_beam_diff",
+    "beam_spread",
+    "beam_min",
+    "beam_max",
+    "pf_selected_scale_pred",
+    "pf_scale_3",
+    "pf_scale_5",
+    "pf_scale_8",
+    "pf_scale_12",
+    "pf_seed_mean",
+    "pf_seed_std",
+    "pf_lik_best",
+    "pf_lik_mean",
+    "pf_lik_std",
+    "pf_lik_gap_best_second",
+    "pf_weight_entropy",
+    "pf_weight_top",
+    "pf_weight_best_second_gap",
+    "pf_effective_seeds",
+    "selector_code",
+    "selector_scale",
+    "selector_beam_weight",
+    "selector_hold_weight",
+    "selector_n_eval",
+    "selector_z_span",
+    "pseudo_cutoff_fraction",
+    "cutoff_row",
+    "row_idx",
+    "prefix_length",
+    "eval_step",
+    "eval_fraction",
+    "MD",
+    "X",
+    "Y",
+    "Z",
+    "GR",
+    "gr_isna",
+    "gr_prefix_availability",
+    "gr_eval_availability",
+    "pf_gr_sigma_mean",
+    "pf_initial_rate_mean",
+    "pf_mean_effective_particles",
+    "pf_min_effective_particles",
+    "pf_resample_count_mean"
+  ],
+  "rows": 1782279,
+  "wells": 773,
+  "max_wells": null,
+  "metric": "rmse",
+  "target": "target_tvt_minus_exp026_anchor",
+  "parent_exp026_clean_cv": 12.87078,
+  "reference_control": "exp026_pseudo_tail_bucket_shrink",
+  "required_controls": [
+    "exp026_pseudo_tail_bucket_shrink",
+    "public_pf_selector",
+    "pf090_hold010"
+  ],
+  "required_control_by_audit": {
+    "leave_one_original_fold_out": 15.089532,
+    "well_hash_holdout": 15.089532
+  },
+  "best_original_fold_candidate": "ridge_meta_residual_shrink0p75_clip60p0",
+  "best_original_fold_cv": 14.313668,
+  "best_well_hash_candidate": "ridge_meta_residual_shrink0p75_clip60p0",
+  "best_well_hash_cv": 14.17201,
+  "supported_candidates": [
+    {
+      "candidate": "ridge_meta_residual_shrink0p75_clip60p0",
+      "original_fold_rmse": 14.313668,
+      "well_hash_rmse": 14.17201,
+      "worst_holdout_rmse": 14.313668
+    },
+    {
+      "candidate": "ridge_meta_residual_shrink0p75_clip30p0",
+      "original_fold_rmse": 14.320894,
+      "well_hash_rmse": 14.204292,
+      "worst_holdout_rmse": 14.320894
+    },
+    {
+      "candidate": "ridge_meta_residual_shrink0p75_clip15p0",
+      "original_fold_rmse": 14.330753,
+      "well_hash_rmse": 14.306221,
+      "worst_holdout_rmse": 14.330753
+    },
+    {
+      "candidate": "ridge_meta_residual_shrink1p0_clip15p0",
+      "original_fold_rmse": 14.33854,
+      "well_hash_rmse": 14.241756,
+      "worst_holdout_rmse": 14.33854
+    },
+    {
+      "candidate": "ridge_meta_residual_shrink1p0_clip60p0",
+      "original_fold_rmse": 14.419737,
+      "well_hash_rmse": 14.184925,
+      "worst_holdout_rmse": 14.419737
+    },
+    {
+      "candidate": "ridge_meta_residual_shrink1p0_clip30p0",
+      "original_fold_rmse": 14.421586,
+      "well_hash_rmse": 14.21551,
+      "worst_holdout_rmse": 14.421586
+    },
+    {
+      "candidate": "ridge_meta_residual_shrink0p5_clip60p0",
+      "original_fold_rmse": 14.491311,
+      "well_hash_rmse": 14.454505,
+      "worst_holdout_rmse": 14.491311
+    },
+    {
+      "candidate": "ridge_meta_residual_shrink0p5_clip30p0",
+      "original_fold_rmse": 14.499908,
+      "well_hash_rmse": 14.481705,
+      "worst_holdout_rmse": 14.499908
+    },
+    {
+      "candidate": "ridge_meta_residual_shrink0p5_clip15p0",
+      "original_fold_rmse": 14.553974,
+      "well_hash_rmse": 14.602091,
+      "worst_holdout_rmse": 14.602091
+    },
+    {
+      "candidate": "exp026070_pf030",
+      "original_fold_rmse": 14.527279,
+      "well_hash_rmse": 14.620835,
+      "worst_holdout_rmse": 14.620835
+    },
+    {
+      "candidate": "hgb_meta_residual_small_shrink0p75_clip15p0",
+      "original_fold_rmse": 14.874008,
+      "well_hash_rmse": 14.924209,
+      "worst_holdout_rmse": 14.924209
+    },
+    {
+      "candidate": "exp026080_pf020",
+      "original_fold_rmse": 14.814748,
+      "well_hash_rmse": 14.936026,
+      "worst_holdout_rmse": 14.936026
+    },
+    {
+      "candidate": "ridge_meta_residual_shrink0p25_clip60p0",
+      "original_fold_rmse": 14.942552,
+      "well_hash_rmse": 15.015745,
+      "worst_holdout_rmse": 15.015745
+    },
+    {
+      "candidate": "hgb_meta_residual_small_shrink0p5_clip30p0",
+      "original_fold_rmse": 15.027206,
+      "well_hash_rmse": 14.949378,
+      "worst_holdout_rmse": 15.027206
+    },
+    {
+      "candidate": "ridge_meta_residual_shrink0p25_clip30p0",
+      "original_fold_rmse": 14.948582,
+      "well_hash_rmse": 15.031777,
+      "worst_holdout_rmse": 15.031777
+    },
+    {
+      "candidate": "hgb_meta_residual_small_shrink0p5_clip15p0",
+      "original_fold_rmse": 14.943524,
+      "well_hash_rmse": 15.043599,
+      "worst_holdout_rmse": 15.043599
+    },
+    {
+      "candidate": "hgb_meta_residual_small_shrink0p75_clip30p0",
+      "original_fold_rmse": 15.053727,
+      "well_hash_rmse": 14.865407,
+      "worst_holdout_rmse": 15.053727
+    }
+  ],
+  "selected_candidate": "ridge_meta_residual_shrink0p75_clip60p0",
+  "selected_clean_cv": 14.313668,
+  "meta_stack_supported": true,
+  "model_specs": [
+    {
+      "name": "ridge_meta_residual",
+      "estimator": "ridge",
+      "params": {
+        "alpha": 30.0
+      },
+      "residual_shrink_values": [
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "residual_clip_values": [
+        15.0,
+        30.0,
+        60.0
+      ],
+      "target_clip": 80.0,
+      "max_train_rows": 550000,
+      "max_train_rows_per_bucket": 130000,
+      "seed": 42
+    },
+    {
+      "name": "hgb_meta_residual_small",
+      "estimator": "hist_gradient_boosting",
+      "params": {
+        "learning_rate": 0.04,
+        "max_iter": 100,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 160,
+        "l2_regularization": 3.0,
+        "max_bins": 255,
+        "early_stopping": true,
+        "validation_fraction": 0.12,
+        "n_iter_no_change": 10
+      },
+      "residual_shrink_values": [
+        0.25,
+        0.5,
+        0.75
+      ],
+      "residual_clip_values": [
+        15.0,
+        30.0
+      ],
+      "target_clip": 80.0,
+      "max_train_rows": 350000,
+      "max_train_rows_per_bucket": 90000,
+      "seed": 42
+    }
+  ],
+  "notes": "A meta-stack candidate beat required controls in both holdout audits."
+}

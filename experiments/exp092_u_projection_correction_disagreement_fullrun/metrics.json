@@ -1,0 +1,163 @@
+{
+  "experiment": "exp092_u_projection_correction_disagreement_fullrun",
+  "status": "submitted_complete_public_lb_8_350_guard_warning",
+  "route": "ml_model",
+  "parent": "exp085_u_projection_feature_ablation",
+  "base_surface_parent": "exp073_gpu_reproducibility_guard_for_exp063_full_replay",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "selected_variant": "u_projection_correction_plus_disagreement",
+  "cv": {
+    "source": "kaggle_train_v1",
+    "official_pooled": {
+      "lgb1": 9.322479895503927,
+      "lgb2": 9.338192404645179,
+      "lgb_mean": 9.343064065995073,
+      "lgb0": 9.533126437670761
+    },
+    "best_model": "lgb1",
+    "best_rmse": 9.322479895503927,
+    "delta_vs_exp077_policy_oof": -0.14803490549607327,
+    "delta_vs_exp073_raw_anchor": -0.20389485388675504,
+    "reference_exp085_log_lgb1_control_mean_fold_rmse": 9.534549,
+    "reference_exp085_log_lgb1_selected_mean_fold_rmse": 9.291006,
+    "reference_exp085_log_lgb1_delta_vs_control": -0.243542,
+    "reference_exp077_policy_oof_rmse": 9.470514801,
+    "note": "Reference exp085 values are simple means of fold RMSE recovered from logs, not formal pooled OOF."
+  },
+  "oof_delta_guard": {
+    "source": "local_oof_delta_guard",
+    "status": "warning",
+    "context_mode": "tail_rank_fallback_feature_cache_missing_or_empty",
+    "rows": 3783989,
+    "wells": 773,
+    "overall": {
+      "exp073_lgb_mean_rmse": 9.52637482601992,
+      "exp077_policy_rmse": 9.47051480056479,
+      "exp092_lgb1_rmse": 9.322480157439797,
+      "exp092_lgb_mean_rmse": 9.343064069571042,
+      "exp092_lgb1_delta_vs_exp073": -0.20389466858012284,
+      "exp092_lgb1_delta_vs_exp077": -0.14803464312499237,
+      "exp092_lgb_mean_delta_vs_exp073": -0.1833107564488774,
+      "exp092_lgb_mean_delta_vs_exp077": -0.12745073099374693
+    },
+    "well_delta": {
+      "lgb1_improved_vs_exp077_wells": 459,
+      "lgb1_worsened_vs_exp077_wells": 314,
+      "lgb1_max_regression_vs_exp077": 4.164459617469932,
+      "lgb1_max_improvement_vs_exp077": -5.348767590067119,
+      "lgb1_improved_vs_exp073_wells": 464,
+      "lgb1_worsened_vs_exp073_wells": 309,
+      "lgb1_max_regression_vs_exp073": 5.141955759738149,
+      "lgb1_max_improvement_vs_exp073": -7.740440138529678
+    },
+    "long_tail_guard": {
+      "bucket": "1000_plus",
+      "rows": 3783839,
+      "exp092_lgb1_delta_vs_exp077": -0.1480378155776556,
+      "exp092_lgb1_delta_vs_exp073": -0.20389888440858606
+    },
+    "near_row_guard": {
+      "status": "inconclusive_no_rows_0_250",
+      "tail_rank_500_999_rows": 149,
+      "tail_rank_500_999_lgb1_delta_vs_exp077": 0.100102
+    },
+    "path_continuity": {
+      "lgb1_step_abs_p95_mean_by_well": 0.32749175038405554,
+      "lgb1_step_abs_p95_p95_by_well": 0.5260937499999992,
+      "lgb1_step_abs_p95_max_by_well": 0.9033203125,
+      "lgb1_step_abs_max_p95_by_well": 4.1166015625,
+      "lgb1_step_abs_max_max_by_well": 10.4609375,
+      "lgb1_step_abs_ge10_total": 1,
+      "lgb1_step_abs_ge25_total": 0,
+      "lgb1_minus_exp077_correction_step_abs_p95_p95_by_well": 0.4566406249999999,
+      "lgb1_minus_exp077_correction_step_abs_max_max_by_well": 8.8447265625,
+      "lgb1_minus_exp077_correction_step_abs_ge5_total": 23
+    },
+    "decision": "Overall and long-tail improve, but max by-well regression exceeds warning threshold and near-row 0-250 is not covered. Inference was submitted per user request; worst-well gating/regression guard and raw-test feature parity remain required follow-up checks.",
+    "artifacts": [
+      "artifacts/oof_delta_guard/exp092_oof_delta_guard_overall.csv",
+      "artifacts/oof_delta_guard/exp092_oof_delta_guard_by_well.csv",
+      "artifacts/oof_delta_guard/exp092_oof_delta_guard_bucket.csv",
+      "artifacts/oof_delta_guard/exp092_oof_delta_guard_path_continuity.csv",
+      "artifacts/oof_delta_guard/exp092_oof_delta_guard_summary.json"
+    ]
+  },
+  "inference": {
+    "source": "kaggle_inference_v1",
+    "kernel": "kentookumura/exp092-uproj-corr-disagree-infer",
+    "kernel_version": 1,
+    "selected_variant": "u_projection_correction_plus_disagreement",
+    "selected_mode": "gpu_repro_guard_dp_threads8",
+    "selected_model": "lgb1",
+    "model_count": 5,
+    "feature_count": 240,
+    "test_rows": 14151,
+    "submission_rows": 14151,
+    "predicted_rows": 14151,
+    "fallback_rows": 0,
+    "prediction_min": 11591.2509765625,
+    "prediction_max": 12240.0703125,
+    "prediction_mean": 11905.651226820873,
+    "prediction_std": 278.9331175018898,
+    "prediction_sha256": "988b148fe7e6bbd5ffd1292613d53bc5242c80773787dea3d246b0eb02edc3dc",
+    "submission_sha256": "55a69b615f766ee4045c61c7d1c78bd418fc82152b1f7554368b1286834e5aad",
+    "submit_check": "pass",
+    "submitted": true,
+    "submission_refs": [
+      {
+        "ref": 53927479,
+        "public_lb": 8.35,
+        "private_lb": null,
+        "date_utc": "2026-06-22 00:01:47.597000",
+        "note": "user-corrected exp092 submission; nearby ref=53927490 / Public LB 8.441 belongs to exp098"
+      }
+    ],
+    "artifacts": {
+      "output_dir": "experiments/exp092_u_projection_correction_disagreement_fullrun/kaggle/output/inference",
+      "submission": "submission.csv",
+      "summary": "artifacts/exp092_u_projection_correction_disagreement_fullrun_inference_summary.json",
+      "metrics": "artifacts/exp092_u_projection_correction_disagreement_fullrun_inference_metrics.csv",
+      "predictions": "artifacts/exp092_u_projection_correction_disagreement_fullrun_inference_test_predictions.csv.gz",
+      "feature_schema": "artifacts/exp092_u_projection_correction_disagreement_fullrun_inference_feature_schema.csv"
+    }
+  },
+  "public_lb": 8.35,
+  "private_lb": null,
+  "key_idea": "Full pooled OOF run of the exp085 best add-only U-space projection correction plus PF/Beam/likelihood-PF disagreement features while keeping the exp073 residual target.",
+  "artifacts": [
+    "kaggle/output/train/artifacts/exp092_u_projection_correction_disagreement_fullrun_metrics.csv",
+    "kaggle/output/train/artifacts/exp092_u_projection_correction_disagreement_fullrun_by_well.csv",
+    "kaggle/output/train/artifacts/exp092_u_projection_correction_disagreement_fullrun_bucket_metrics.csv",
+    "kaggle/output/train/artifacts/exp092_u_projection_correction_disagreement_fullrun_feature_importance_mean.csv",
+    "kaggle/output/train/artifacts/exp092_u_projection_correction_disagreement_fullrun_feature_importance_mean_top.png",
+    "kaggle/output/train/artifacts/exp092_u_projection_correction_disagreement_fullrun_predictions.csv.gz",
+    "kaggle/output/train/artifacts/exp092_u_projection_correction_disagreement_fullrun_lgb_models/manifest.json",
+    "kaggle/output/train/artifacts/exp092_u_projection_correction_disagreement_fullrun_summary.json",
+    "kaggle/output/inference/submission.csv",
+    "kaggle/output/inference/artifacts/exp092_u_projection_correction_disagreement_fullrun_inference_summary.json",
+    "kaggle/output/inference/artifacts/exp092_u_projection_correction_disagreement_fullrun_inference_metrics.csv",
+    "kaggle/output/inference/artifacts/exp092_u_projection_correction_disagreement_fullrun_inference_test_predictions.csv.gz",
+    "kaggle/output/inference/artifacts/exp092_u_projection_correction_disagreement_fullrun_inference_feature_schema.csv",
+    "artifacts/oof_delta_guard/exp092_oof_delta_guard_overall.csv",
+    "artifacts/oof_delta_guard/exp092_oof_delta_guard_by_well.csv",
+    "artifacts/oof_delta_guard/exp092_oof_delta_guard_bucket.csv",
+    "artifacts/oof_delta_guard/exp092_oof_delta_guard_path_continuity.csv",
+    "artifacts/oof_delta_guard/exp092_oof_delta_guard_summary.json"
+  ],
+  "prediction_sha256": {
+    "lgb1": "dd631f28f3cfc6da3cab1ec3e939bb7185c5546e5b77c33e4425ec8080ef42e0",
+    "lgb2": "85d0c7fd1a7482299fdf3a91527b3bea2656ac64529f2e5d778b961e6d271c56",
+    "lgb_mean": "adbadb268707032f0ce3cd493a7a0ee81d43269574069c2c36826dd387c56a3b",
+    "lgb0": "b98e93ae49283204cec06b12256b05326c2f7dff10a388c30e1944f0d45fc89b",
+    "predictions_csv_gz": "67617007921e762868063c27e1bfa6156622c4357b3c922b6b37eda3c21235b9",
+    "predictions_csv_decompressed": "6dc3d53d6cb5621b86360929d638f2a5d853c58ea3e7a53d3da86e614e5f2f69"
+  },
+  "notes": [
+    "Kaggle train v1 completed on GPU mode gpu_repro_guard_dp_threads8.",
+    "Best pooled OOF is lgb1 RMSE 9.322479895503927.",
+    "OOF delta guard confirms overall and long-tail gains but raises a by-well max-regression warning.",
+    "Inference was enabled per user request before worst-well gating/regression guard.",
+    "User correction attributes ref=53927479 / Public LB 8.350 to exp092, making it the ML route submitted anchor.",
+    "Worst-well gating/regression guard and raw-test feature parity remain follow-up work."
+  ]
+}

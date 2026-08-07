@@ -1,0 +1,98 @@
+{
+  "experiment": "exp418_exp226_signed_segment_rate_residual",
+  "status": "stage0_v1_technical_fail_closed",
+  "route": "ensemble",
+  "parent": "exp333_exp226_k16_segment_residual_offset_target",
+  "base_prediction_parent": "exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction",
+  "hypothesis": "A zero-intercept K16 signed-rate correction can reduce cumulative exp226 drift without segment-level offset steps.",
+  "next_action": "Terminal close without Stage 1; consider a separate preregistered numerical-contract audit.",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "prediction_candidate": false,
+  "implementation_started": true,
+  "implementation_complete": true,
+  "compact_train_candidate_created": true,
+  "canonical_train_notebook_adopted": true,
+  "tests": {
+    "dedicated_pytest_passed": 14,
+    "py_compile_pass": true,
+    "ruff_f821_pass": true,
+    "jupytext_roundtrip_pass": true,
+    "strict_experiment_validation_pass": true,
+    "template_validation_pass": true,
+    "repository_full_test_status": "blocked_by_6_preexisting_collection_errors"
+  },
+  "kaggle_run_started": true,
+  "kaggle_run": {
+    "kernel": "kentookumura/exp418-exp226-signed-segment-rate-train",
+    "version": 1,
+    "id_no": 128832515,
+    "status": "complete"
+  },
+  "stage0_result": {
+    "status": "technical_fail",
+    "decision": "FAIL_CLOSE_BRANCH",
+    "rows": 3783989,
+    "wells": 773,
+    "segments": 12368,
+    "models": 0,
+    "boosters": 0,
+    "exp226_fits": 0,
+    "exp226_rmse": 9.42710959658222,
+    "rate_oracle_rmse": 0.6469514161595739,
+    "gain_vs_exp226_ft": 8.780158180422646,
+    "scientific_threshold_checks": {
+      "pooled_gain": true,
+      "all_fold_gains": true
+    },
+    "technical_checks": {
+      "passed": 8,
+      "total": 9,
+      "failed": "integration_parity",
+      "observed_max_abs_ft": 6.295408638834488e-12,
+      "required_max_abs_ft": 1e-12
+    },
+    "summary_file_sha256": "07c719e0f174b1712650563620f6331504dbd1333969c8777f41ce46419dc412",
+    "rate_target_content_sha256": "5c936b03e86e7250afdfef551e796e0beead22d50715d025b84acb9b13a9e2ff",
+    "rate_target_file_sha256": "a705f37ba3529f92fcd7d5da441550d0e0742a462bb6d1131fab562cb0b3695e"
+  },
+  "stage0_execution_approval": {
+    "approved": true,
+    "consumed": true,
+    "source": "user_message_2026_07_28_execute",
+    "readouts": 1,
+    "active_variants": 0,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "exp226_fits": 0,
+    "gpu": false
+  },
+  "target": {
+    "name": "zero_intercept_k16_cumulative_residual_rate",
+    "sign": "true_tvt_minus_nested_exp226_prediction",
+    "unit": "ft_per_row",
+    "segments_per_well": 16,
+    "first_row_correction_ft": 0.0,
+    "solver": "numpy_linalg_lstsq_float64_rcond_none"
+  },
+  "planned_execution": {
+    "stage_0_readouts": 1,
+    "stage_0_boosters": 0,
+    "stage_1_variants": 1,
+    "stage_1_model_configs": 1,
+    "stage_1_outer_folds": 5,
+    "stage_1_boosters": 5,
+    "exp226_fits": 0,
+    "control_retraining": 0,
+    "gpu_runs": 0,
+    "pf_hmm_beam_regeneration": 0
+  },
+  "references": {
+    "exp226_rmse": 9.427109596582213,
+    "exp228_rmse": 8.94408550082682,
+    "exp333_rmse": 9.076676660936826
+  },
+  "notes": "The Stage 0 authorization was consumed by Kaggle version 1. The fixed technical gate failed, so Stage 1, inference, and submission were not run."
+}

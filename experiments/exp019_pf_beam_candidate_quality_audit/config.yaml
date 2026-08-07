@@ -1,0 +1,70 @@
+experiment:
+  name: exp019_pf_beam_candidate_quality_audit
+  description: Diagnose why exp015 PF/beam candidates and add-only features hurt the raw LightGBM anchor
+  route: pf_beam
+  status: completed
+  created_at: "2026-06-05"
+  updated_at: "2026-06-06"
+
+lineage:
+  parent: exp015_public_pf_beam_scale_selector_features
+  diff_summary: Recompute deterministic PF/beam candidate paths without training and audit candidate quality by row distance, scale, confidence, GR gap, and well condition
+
+validation:
+  leakage_policy:
+    - This experiment trains no model and creates no inference submission.
+    - PF/beam candidate paths are recomputed from MD, Z, GR, TVT_input prefix, and paired typewell GR only.
+    - Raw model comparison uses existing GroupKFold-by-well OOF predictions from exp013.
+    - Direct PF candidate scores and group splits are diagnostic; they are not selected for submission.
+    - Train-only formation columns are not used.
+
+data: {}
+
+model:
+  name: pf_beam_candidate_quality_audit
+  source_experiment: exp015_public_pf_beam_scale_selector_features
+  raw_anchor_experiment: exp013_model_diversity_or_postprocess
+  raw_anchor_variant: lightgbm_no_gr
+  raw_clean_cv: 13.549257
+  exp015_pf_beam_cv: 14.442743
+
+audit:
+  train_dir: data/raw/train
+  exp015_baseline_py: pf_beam_baseline.py
+  exp015_config_path: exp015_source_config.yaml
+  exp015_well_metrics_path: experiments/exp015_public_pf_beam_scale_selector_features/artifacts/well_metrics.csv
+  raw_oof_path: data/external/kaggle-output/exp013_model_diversity_or_postprocess/train/artifacts/row_oof_predictions.csv
+  raw_oof_variant: lightgbm_no_gr
+  chunk_rows: 250000
+  high_gr_missing_rate: 0.50
+  long_eval_rows: 5700
+  high_z_span: 120.0
+  steep_trajectory_abs_dz_dmd: 0.035
+  low_confidence: 0.02
+  high_confidence: 0.08
+  distance_buckets:
+    - name: rows_0_49
+      max_step: 49
+    - name: rows_50_249
+      max_step: 249
+    - name: rows_250_999
+      max_step: 999
+    - name: rows_1000_2499
+      max_step: 2499
+    - name: rows_2500_plus
+      max_step: 1000000000
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  kaggle:
+    kernel_sources:
+      - kentookumura/exp013-model-diversity-or-postprocess-train
+      - kentookumura/exp015-pf-beam-train
+
+notes:
+  - This audit intentionally does not regenerate exp015 row OOF predictions or fit LightGBM.
+  - Candidate paths are evaluated directly against exp013 raw LightGBM OOF and last-anchor baselines.
+  - If no PF direct candidate beats raw in stable subgroups, PF/beam should remain a diagnostic signal only.
+  - Kaggle execution requires exp013 train and exp015 train outputs as kernel_sources.

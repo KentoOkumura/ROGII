@@ -1,0 +1,157 @@
+{
+  "experiment": "exp200_pf_step_delta_soft_prior_full_replay_replacement",
+  "route": "pf_beam",
+  "status": "completed_train_feature_cache_direct_pfbeam_rejected_no_submit",
+  "decision": "rejected_no_submit",
+  "mode": "pf_step_delta_soft_prior_full_public_replay_train_feature_cache",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "feature_cache": {
+    "variant": "pixiux_likpf_step_delta_prior_public_replay",
+    "rows": 3783989,
+    "wells": 773,
+    "feature_count": 196,
+    "selected_step_delta_prior": {
+      "name": "delta_free010_cost0025_scale003",
+      "delta_free": 0.1,
+      "delta_cost": 0.025,
+      "delta_scale": 0.03
+    },
+    "elapsed_seconds": 14719.448,
+    "elapsed_feature_seconds": 13059.303,
+    "sha256": {
+      "train_features_raw_gzip": "f2bc3026bcb1491716fcf8845a158badff8f229a7b4a124659cbbc7bde032233",
+      "train_features_decompressed": null,
+      "note": "Full gzip output exists on Kaggle and was used by the comparison notebook, but local full-output download repeatedly reset before decompressed SHA could be computed."
+    },
+    "likpf_diagnostics": {
+      "rows": 773,
+      "wells": 773,
+      "pf_ess_mean_mean": 372.6444300040633,
+      "pf_ess_mean_min": 357.860829815961,
+      "pf_ess_mean_max": 383.8991823760406,
+      "pf_resampling_rate_mean": 0.021144307205656018,
+      "pf_resampling_rate_min": 0.004900976496449104,
+      "pf_resampling_rate_max": 0.0839535529657174,
+      "pf_ll_spread_mean": 20.46068370312951,
+      "pf_ll_spread_min": 0.31664277679937075,
+      "pf_ll_spread_max": 692.1439229791355
+    }
+  },
+  "kaggle_train": {
+    "kernel_id": "kentookumura/exp200-pf-step-delta-prior-train",
+    "kernel_version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp200-pf-step-delta-prior-train",
+    "status": "COMPLETE",
+    "started_at": "2026-07-05",
+    "notes": "Initial long slug exp200-pf-step-delta-soft-prior-full-replay-replacement-train failed with SaveKernel 400. The same experiment was re-prepared with shorter id/title exp200-pf-step-delta-prior-train and version 1 completed."
+  },
+  "direct_comparison_vs_exp072": {
+    "status": "completed",
+    "comparison_kernel_id": "kentookumura/exp200-pf-step-delta-prior-comparison",
+    "comparison_kernel_version": 5,
+    "rows_checked": 3783989,
+    "unique_wells": 773,
+    "id_mismatches": 0,
+    "baseline": "/kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz",
+    "candidate": "/kaggle/input/notebooks/kentookumura/exp200-pf-step-delta-prior-train/artifacts/exp200_pf_step_delta_soft_prior_full_replay_replacement_full_replay_cache_pixiux_likpf_step_delta_prior_public_replay_train_features.csv.gz",
+    "guard": {
+      "selected_candidate": "likpf_mean",
+      "baseline_rmse": 11.594897668440991,
+      "candidate_rmse": 11.618341353158959,
+      "delta_rmse": 0.023443684717967983,
+      "max_allowed_delta_rmse": 0.02,
+      "margin_vs_allowed": 0.0034436847179679823,
+      "pass": false
+    },
+    "overall_metrics": {
+      "pf_ancc": {
+        "exp072_rmse": 14.493061258820504,
+        "exp200_rmse": 14.736794374551867,
+        "delta_rmse": 0.24373311573136291,
+        "delta_mae": 0.28485008325614913,
+        "delta_within10": -0.009948760421872316
+      },
+      "pf_z": {
+        "exp072_rmse": 17.78817425508793,
+        "exp200_rmse": 17.662427120566132,
+        "delta_rmse": -0.12574713452179864,
+        "delta_mae": 0.031350632956158364,
+        "delta_within10": -0.0007655941917378284
+      },
+      "beam_mean": {
+        "exp072_rmse": 15.774327571684344,
+        "exp200_rmse": 15.774327571684344,
+        "delta_rmse": 0.0
+      },
+      "likpf_mean": {
+        "exp072_rmse": 11.594897668440991,
+        "exp200_rmse": 11.618341353158959,
+        "delta_rmse": 0.023443684717967983,
+        "exp072_mae": 7.067632583108197,
+        "exp200_mae": 6.984202145253928,
+        "delta_mae": -0.08343043785426918,
+        "exp072_within10": 0.7728021936638823,
+        "exp200_within10": 0.7752874017339902,
+        "delta_within10": 0.0024852080701079915
+      }
+    },
+    "likpf_mean_distance_bucket_delta_rmse": {
+      "000_050": -0.8486205277763768,
+      "050_100": -0.9828010745542936,
+      "100_250": -0.6947948996054536,
+      "250_500": -0.6433439053451515,
+      "500_1000": -0.3788027514386263,
+      "1000_plus": 0.07312905896711541
+    },
+    "by_well_delta_summary": {
+      "likpf_mean": {
+        "improved_wells": 426,
+        "worsened_wells": 347,
+        "same_wells": 0,
+        "max_regression_well": "70925e23",
+        "max_regression_rmse": 24.605218783468274
+      }
+    },
+    "step_delta_rates": {
+      "pf_ancc": {
+        "abs_step_delta_mean": 0.040354871935410354,
+        "abs_step_delta_p95": 0.14400000000023283,
+        "abs_step_delta_p99": 0.40500000000065484,
+        "rate_abs_step_delta_gt_0p08": 0.1065568636695297,
+        "rate_abs_step_delta_gt_0p1": 0.08117994000511101,
+        "rate_abs_step_delta_gt_0p2": 0.03149956302727096
+      },
+      "pf_z": {
+        "abs_step_delta_mean": 0.03497521940470785,
+        "abs_step_delta_p95": 0.12100000000100408,
+        "abs_step_delta_p99": 0.3099999999994907,
+        "rate_abs_step_delta_gt_0p08": 0.0916139026831209,
+        "rate_abs_step_delta_gt_0p1": 0.06713444462972805,
+        "rate_abs_step_delta_gt_0p2": 0.022165762109773574
+      },
+      "likpf_mean": {
+        "abs_step_delta_mean": 0.02843994975117351,
+        "abs_step_delta_p95": 0.09375,
+        "abs_step_delta_p99": 0.19433599999865692,
+        "rate_abs_step_delta_gt_0p08": 0.06799755496117986,
+        "rate_abs_step_delta_gt_0p1": 0.04350831886667746,
+        "rate_abs_step_delta_gt_0p2": 0.009324022876387854
+      }
+    },
+    "artifact_sha256": {
+      "overall_metrics": "16d7b64622cbeec362bac655919f3374b0dcd961f2067fbaff7ad93e7be36174",
+      "distance_bucket_metrics": "4f419e7cc164c2ecc123c2c5f4d6ae1409f07c56a1d8234000cecd9294dee129",
+      "by_well_delta": "f21f21352cc2f54143fefee1e915452dd42f531d54298e681310d8e27ed43b4e",
+      "step_delta_rates": "789242d063116cce647fbf6e0bc5ad3feff560aa25fe772957f2ae804ad9b173",
+      "summary": "e61125a700a0e2de7bc11d537cdc0061344c82fd6a4bf3a0eab5f2067d6d4e31"
+    }
+  },
+  "notes": [
+    "Beam columns are unchanged as intended.",
+    "The prior materially improves likpf_mean near and mid distance buckets but worsens the dominant 1000_plus bucket enough to miss the replacement guard.",
+    "pf_ancc regresses overall and in 1000_plus; pf_z improves RMSE overall but worsens several near/mid buckets and within10.",
+    "No LightGBM, inference, submission, or Public LB was produced."
+  ]
+}

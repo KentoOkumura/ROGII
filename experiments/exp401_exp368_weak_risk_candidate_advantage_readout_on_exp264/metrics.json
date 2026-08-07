@@ -1,0 +1,111 @@
+{
+  "experiment": "exp401_exp368_weak_risk_candidate_advantage_readout_on_exp264",
+  "status": "stage_0_failed_closed",
+  "stage": "stage_0_zero_booster_candidate_advantage_readout",
+  "decision": "stage_0_failed_close_without_rescue",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "nominated_recovery10_auc",
+  "kaggle": {
+    "kernel_id": "kentookumura/exp401-weak-risk-readout-on-exp264-train",
+    "kernel_id_no": 128626512,
+    "kernel_version": 4,
+    "status": "COMPLETE",
+    "stage_0_log_seconds": 129.300203457,
+    "kernel_log_seconds": 139.263892941,
+    "private": true,
+    "internet": false,
+    "gpu": false
+  },
+  "execution_counts": {
+    "diagnostic_variants": 1,
+    "reporting_folds": 5,
+    "model_configs": 0,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "pf_runs": 0,
+    "parent_control_retraining": 0,
+    "prediction_rows": 0,
+    "submission_rows": 0
+  },
+  "primary_overall": {
+    "domain": "primitive_pair_bank",
+    "cohort_rows": 859755,
+    "wells": 595,
+    "positive_rows": 421384,
+    "negative_rows": 438371,
+    "real_nominated_recovery10_auc": 0.520213768800642,
+    "circular_nominated_recovery10_auc": 0.5234666485238413,
+    "real_minus_circular_auc": -0.00325287972319932,
+    "margin_conditional_auc": 0.45884637956232405,
+    "q4_minus_q1_mean_realized_advantage_ft": 3.8793716741387714
+  },
+  "secondary_overall": {
+    "domain": "primitive_fixed_bank",
+    "cohort_rows": 859755,
+    "wells": 595,
+    "positive_rows": 426411,
+    "negative_rows": 433344,
+    "real_nominated_recovery10_auc": 0.5042334541167218,
+    "circular_nominated_recovery10_auc": 0.5082210061079064,
+    "real_minus_circular_auc": -0.0039875519911846125,
+    "margin_conditional_auc": 0.4612685051854748,
+    "q4_minus_q1_mean_realized_advantage_ft": 3.676855783837728
+  },
+  "hidden_like_primary_auc": {
+    "spatial": 0.5274684667891922,
+    "typewell_purged": 0.5136256280292928
+  },
+  "gates": {
+    "technical_passed": true,
+    "technical_checks_passed": 15,
+    "technical_checks_total": 15,
+    "scientific_passed": false,
+    "scientific_checks_passed": 4,
+    "scientific_checks_total": 12,
+    "stage_0_passed": false,
+    "passed_scientific_checks": [
+      "primary_fold_auc_count",
+      "primary_fold_positive_q4_minus_q1_count",
+      "primary_q4_minus_q1_advantage",
+      "secondary_q4_minus_q1_advantage"
+    ]
+  },
+  "selector_audit": {
+    "candidate_long_rows": 45407868,
+    "base_rows": 3783989,
+    "candidates_per_row": 12,
+    "covered_rows": 3783989,
+    "selector_generation_vs_reporting_fold_mismatch_rows": 3074825,
+    "selector_generation_vs_reporting_fold_mismatch_wells": 631
+  },
+  "truth_access": {
+    "truth_columns_read_before_freeze": 0,
+    "late_truth_columns_read": [
+      "well_id",
+      "row_idx",
+      "tvt_true"
+    ]
+  },
+  "sha256": {
+    "scientific_contract": "5df195ebdf62ea6dac64fad927604df0ffa42e70b9b0414046dd2b2553da757d",
+    "feature_schema": "7ab673952bed595bb1191a823f97f2a95272cb20b0b5612fc7f799668294d947",
+    "feature_decompressed_content": "b71b7d5728cf2d61fa709a46ecd87ad69ded269a235a8c16cc3b5ad359955ff7",
+    "feature_raw": "199dbf853bfd5cee8c5eff7ad42962be1bb7bf3c7fd7fa44fabf6ea79c349973",
+    "selector_surface_content": "986a02c8c2daa20579faefe4107521b4739cc3fb3ac297ca82450ea612a2db83",
+    "scope_metrics": "a8d7713ec0132856fcc8e8018c296d63c28e957df595d7e7adf471ae23ec0be3",
+    "candidate_nomination_distribution": "8faa7a4788f2c20fab59ed68f590b1318b6012f88bc6e9e60179183d67455d79",
+    "stage_0_summary": "2b46291b6258450f047a4aff89d01781360acf72d040aab66b3ab7690b145909"
+  },
+  "artifact_verification": {
+    "downloaded_output_dir": "kaggle/output/train_v4",
+    "feature_rows": 3783989,
+    "feature_bytes": 19663428,
+    "scope_metric_rows": 16,
+    "nomination_distribution_rows": 16,
+    "all_recorded_output_sha_match_downloaded_files": true
+  },
+  "notes": "Technical gate passed, but pooled, circular-control, margin-conditional, and hidden-like AUC gates failed. Stage 1, inference, and submission were not run."
+}

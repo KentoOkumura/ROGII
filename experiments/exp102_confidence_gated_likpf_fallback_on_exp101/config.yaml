@@ -1,0 +1,191 @@
+experiment:
+  name: "exp102_confidence_gated_likpf_fallback_on_exp101"
+  description: Conservative high-confidence gate over exp101 ranker output with likPF as the default fallback.
+  route: pf_beam
+  status: completed_train_side_audit
+  created_at: "2026-06-21"
+  updated_at: "2026-06-21"
+
+lineage:
+  parent: exp101_pf_candidate_ranker_or_nway_classifier
+  cache_parent: exp099_pf_multi_observation_likelihood_probe
+  diagnostic_parents:
+    - exp093_pf_candidate_coverage_then_ranker_audit
+    - exp099_pf_multi_observation_likelihood_probe
+    - exp101_pf_candidate_ranker_or_nway_classifier
+  implementation_source: confidence_gated_likpf_fallback_on_exp101.py
+  diff_summary: Loads exp101 saved boosters and exp099 v2 wide cache, reconstructs OOF candidate score margins without retraining, and evaluates low-switch-rate high-confidence fallback policies where likPF remains the default prediction.
+
+validation:
+  strategy: exp101_oof_posthoc_confidence_gate
+  metric: rmse
+  secondary_metrics:
+    - within_10ft
+    - switch_rate
+    - selection_distribution
+    - path_switch_count
+    - bucket_rmse
+    - worst_well_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Candidate values and target-free likelihood features are read from exp099 v2 train-side pseudo-tail cache.
+    - exp101 true TVT labels are reconstructed only for final evaluation and oracle controls.
+    - Gate predicates use only exp101 OOF model scores and target-free feature columns.
+    - The GroupKFold split is grouped by well and matches exp101.
+    - This is a train-side posthoc audit; no submission candidate is selected.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp101_artifact_dir_local: experiments/exp101_pf_candidate_ranker_or_nway_classifier/kaggle/output/train_v1/artifacts
+  exp101_model_manifest: exp101_pf_candidate_ranker_or_nway_classifier_model_manifest.json
+  exp101_feature_schema: exp101_pf_candidate_ranker_or_nway_classifier_feature_schema.csv
+
+model:
+  name: confidence_gated_likpf_fallback_on_exp101
+  target: posthoc_candidate_selection
+  base_prediction: likpf_mean
+  estimator: exp101_saved_lightgbm_booster_inference_only
+
+gate:
+  mode: confidence_gated_likpf_fallback
+  default_candidate: likpf_mean
+  ranker_variant: lgb_candidate_error_ranker
+  allowed_switch_candidates:
+    - pf_ancc
+    - beam_mean
+  max_rows: null
+  log_period: 1
+  max_train_rows_per_fold: 650000
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+    - name: beam_mean
+      column: beam_mean
+    - name: likpf_mean
+      column: likpf_mean
+    - name: sc_ens
+      column: sc_ens
+    - name: hyb
+      column: hyb
+  context_columns:
+    - last_known_tvt
+    - pf_ancc_std
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+    - eval_len
+    - md_since
+    - likpf_mean_d
+  multiobs_feature_columns:
+    - multiobs_score_max
+    - multiobs_score_mean
+    - multiobs_score_gap
+    - multiobs_top1_source_id
+    - multiobs_top1_mae
+    - multiobs_top1_ncc
+    - multiobs_score_pf_ancc
+    - multiobs_mae_pf_ancc
+    - multiobs_ncc_pf_ancc
+    - multiobs_score_beam_mean
+    - multiobs_mae_beam_mean
+    - multiobs_ncc_beam_mean
+    - multiobs_score_likpf_mean
+    - multiobs_mae_likpf_mean
+    - multiobs_ncc_likpf_mean
+    - multiobs_score_sc_ens
+    - multiobs_mae_sc_ens
+    - multiobs_ncc_sc_ens
+    - multiobs_score_hyb
+    - multiobs_mae_hyb
+    - multiobs_ncc_hyb
+  optional_columns:
+    - multiobs_top1
+    - multiobs_softmax_t0p15
+    - multiobs_softmax_t0p3
+    - likpf_multiobs_blend_w0p25
+    - likpf_multiobs_blend_w0p5
+  switch_rate_caps:
+    - 0.005
+    - 0.01
+    - 0.02
+    - 0.05
+  max_abs_delta_vs_likpf:
+    - 20.0
+    - 35.0
+    - 60.0
+  max_pf_ancc_std:
+    - 10.0
+    - 20.0
+    - 999999.0
+  confidence_scores:
+    - error_margin
+    - joint_margin
+    - conservative_margin
+  baselines:
+    - likpf_mean_single
+    - exp101_error_ranker_rowwise
+    - oracle
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp101-pf-cand-ranker-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_exp101_groupkfold_and_sampled_long_frame_seed
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - upstream_exp101_lightgbm_training
+  parallel_rng_policy: no_new_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    exp101_model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - No new model is trained in exp102.
+    - The only RNG use reproduces exp101 sampled long-frame rows for imputation medians.
+    - This is a train-side audit, not a deterministic submission anchor.
+
+audit:
+  mode: confidence_gated_likpf_fallback_on_exp101
+  output_prefix: exp102_confidence_gated_likpf_fallback_on_exp101
+  expected_train_artifacts:
+    - exp102_confidence_gated_likpf_fallback_on_exp101_metrics.csv
+    - exp102_confidence_gated_likpf_fallback_on_exp101_oof_predictions.csv.gz
+    - exp102_confidence_gated_likpf_fallback_on_exp101_selection_distribution.csv
+    - exp102_confidence_gated_likpf_fallback_on_exp101_by_well.csv
+    - exp102_confidence_gated_likpf_fallback_on_exp101_bucket_metrics.csv
+    - exp102_confidence_gated_likpf_fallback_on_exp101_score_summary.csv
+    - exp102_confidence_gated_likpf_fallback_on_exp101_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - No inference notebook candidate is selected by this implementation.
+    - If a low-switch-rate gate beats likPF globally and does not worsen worst wells, create a separate continuity/raw-test parity audit before any submission work.
+
+notes:
+  - Implements the KAGGLE_DIRECTION backlog item confidence_gated_likpf_fallback_on_exp101.
+  - Does not train new rankers, use soft-average candidate blending, replace hidden branch output, or submit.

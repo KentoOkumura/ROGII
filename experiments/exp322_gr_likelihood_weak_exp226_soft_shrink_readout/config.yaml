@@ -1,0 +1,278 @@
+experiment:
+  name: exp322_gr_likelihood_weak_exp226_soft_shrink_readout
+  description: >-
+    Detect H512 blocks where fixed raw-GR/typewell shift likelihood is ambiguous
+    but does not reject exp226, then audit one bounded soft shrink from the saved
+    exp263 fixed blend toward saved exp226 K16.
+  route: pf_beam
+  status: kaggle_cpu_train_v2_completed_inconclusive_coverage_branch_closed
+  created_at: "2026-07-21"
+  updated_at: "2026-07-21"
+
+lineage:
+  parent: exp263_last_anchor_better_candidate_confidence_pair_cache
+  anchor: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  likelihood_parity_parent: exp280_exp226_shift_likelihood_separability_readout
+  failure_references:
+    - exp133_gr_bimodal_match_ambiguity_detector
+    - exp177_beam_topk_bimodal_gate_posthoc_audit
+    - exp279_exp226_geop_centered_exact_hmm_redecode
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe
+  design_source: .steering/20260721-exp322-gr-likelihood-weak-exp226-soft-shrink-readout
+  diff_summary: >-
+    Keeps the submitted exp263 fixed formula and saved exp226 K16 prediction
+    unchanged. Adds only an exp280-parity 13-shift raw-GR likelihood landscape
+    centered on final exp226 K16, defines GR weakness from outer-train low margin
+    AND high entropy, requires shift-zero admissibility, and applies one fixed
+    alpha-0.25 shrink capped at 10 ft outside the first 250 ft. No parent
+    regeneration, HMM/PF/Beam decode, model, inference, or submission.
+
+implementation:
+  enabled: true
+  scope: train_side_readout
+  train_notebook_state: canonical_adopted_from_compact_selfcontained
+  inference_notebook_state: untouched_template_scaffold_do_not_run
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.group_column
+    - validation.score_rows
+
+validation:
+  strategy: fixed_exp263_oof_target_free_gr_weak_exp226_soft_shrink_readout
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  fold_policy: use_saved_exp263_outer_fold_for_readout_audit_saved_exp226_oof_source_fold_separately
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  scopes:
+    near:
+      minimum_md_since_ft: 0.0
+      maximum_md_since_ft: 250.0
+    long_tail:
+      minimum_md_since_ft: 1000.0
+      maximum_md_since_ft: null
+    hidden_like:
+      - verification_like_spatial
+      - verification_like_typewell_purged
+  leakage_policy:
+    - Saved exp263 base and exp226 anchor are loaded without suffix true TVT or error columns.
+    - Shift scores, block features, outer-train thresholds, real/control gates, and candidate predictions are frozen and content-hashed before suffix truth is attached.
+    - Each evaluation fold uses feature quantiles from the other four folds only, even though the features are target-free.
+    - The exp263 cache outer fold is the readout stratum. The original exp226 OOF fold is audited as a separate per-well source-fold identity and is not required to equal the exp263 fold.
+    - Truth-nearest shift, error, activated-subset improvement, scope metrics, and oracle quantities are late-readout diagnostics only.
+    - Shift bank, block size, quantiles, admissibility, GR coverage, near veto, alpha, clip, control, and guards are fixed before execution and receive no same-OOF rescue.
+  technical_guards:
+    required_row_identity_coverage: 1.0
+    required_well_identity_coverage: 1.0
+    required_finite_score_coverage: 1.0
+    required_finite_prediction_coverage: 1.0
+    required_fold_set: [0, 1, 2, 3, 4]
+    maximum_exp263_formula_parity_abs_ft: 0.00001
+    minimum_changed_row_fraction: 0.01
+    maximum_changed_row_fraction: 0.25
+    minimum_changed_wells: 50
+    minimum_folds_with_changed_rows: 4
+    coverage_fail_status: inconclusive_coverage_no_rescue
+  scientific_pass_requires_all:
+    minimum_overall_rmse_gain_ft: 0.02
+    minimum_improved_folds: 4
+    minimum_activated_subset_rmse_gain_ft: 0.10
+    require_near_prediction_bitwise_parity: true
+    maximum_long_tail_rmse_delta_ft: 0.0
+    maximum_hidden_like_spatial_rmse_delta_ft: 0.0
+    maximum_hidden_like_typewell_purged_rmse_delta_ft: 0.0
+    maximum_by_well_delta_p95_ft: 0.0
+    maximum_worst_well_delta_ft: 0.0
+    minimum_real_gain_minus_circular_control_gain_ft: 0.02
+  fail_action: close_branch_no_quantile_alpha_block_clip_emission_or_selector_rescue
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  input_target_column: TVT_input
+  gr_column: GR
+  id_column: id
+  exp263_cache:
+    candidate_id: exp226_w500_50_50
+    expected_formula:
+      exp226_k16: 0.50
+      likpf_mean: 0.25
+      exact_hmm: 0.25
+    expected_oof_rmse: 8.238331
+    manifest_pattern: "**/cache_manifest.json"
+    expected_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+    manifest_candidates:
+      - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1_small/artifacts/cache_manifest.json
+      - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+      - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+    kaggle_sources:
+      - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train
+      - /kaggle/input/exp263-last-anchor-pair-cache-train
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    target_free_columns: [well_id, fold, row_idx, suffix_offset, tvt_pred]
+    anchor_value_column: tvt_pred
+    forbidden_pre_freeze_columns: [tvt_true, error, abs_error]
+  hidden_like:
+    enabled: true
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+model:
+  name: none_deterministic_gr_likelihood_gate_readout
+  estimator: none
+  params: {}
+
+likelihood:
+  parity_parent: exp280_exp226_shift_likelihood_separability_readout
+  center_path: exp226_k16_final_prediction
+  shift_bank_ft: [-80.0, -40.0, -20.0, -10.0, -5.0, -2.0, 0.0, 2.0, 5.0, 10.0, 20.0, 40.0, 80.0]
+  block_rows: 512
+  block_policy: non_overlapping_from_suffix_start_keep_short_tail
+  score_aggregation: mean_row_log_likelihood
+  tie_policy: config_shift_bank_order
+  typewell_extension_ft: 40.0
+  emission:
+    kind: exp209_gaussian_raw_gr
+    sigma_mode: known_prefix_residual_std
+    sigma_clip: [10.0, 60.0]
+    row_log_likelihood_clip: [-600.0, 0.0]
+    missing_gr_policy: interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+  block_features:
+    - top1_top2_margin
+    - normalized_entropy_softmax_mean_log_likelihood
+    - zero_rank
+    - best_minus_zero_gap
+    - raw_observed_gr_share
+  softmax_temperature: 1.0
+
+gate:
+  threshold_fit: outer_train_four_folds_target_free_blocks
+  weak_gr_requires_all:
+    maximum_margin_quantile: 0.20
+    minimum_normalized_entropy_quantile: 0.80
+  exp226_admissible_requires_any:
+    maximum_zero_rank: 3
+    maximum_zero_gap_quantile: 0.20
+  minimum_raw_observed_gr_share: 0.80
+  minimum_md_since_last_known_ft: 250.0
+  absolute_log_likelihood_gate_enabled: false
+
+shrink:
+  base_candidate: exp226_w500_50_50
+  destination_candidate: exp226_k16
+  alpha: 0.25
+  maximum_absolute_move_ft: 10.0
+  hard_replacement: false
+  top1_shift_correction: false
+  boundary_taper: false
+
+negative_control:
+  enabled: true
+  kind: within_well_nonzero_circular_shift_of_block_gate
+  key_prefix: exp322
+  offset_formula: one_plus_sha256_well_prefix_mod_block_count_minus_one
+  preserve_activation_count_for_multi_block_wells: true
+  single_block_well_policy: keep_real_gate_and_report_separately
+  seed: 42
+
+execution_contract:
+  stage: kaggle_cpu_train_v2_completed_inconclusive_coverage_branch_closed
+  active_candidates: 1
+  diagnostic_controls: 1
+  fold_strata: 5
+  lightgbm_configs: 0
+  trained_folds: 0
+  total_boosters: 0
+  hmm_well_runs: 0
+  pf_well_runs: 0
+  beam_well_runs: 0
+  k16_well_runs: 0
+  parent_control_retraining: false
+  parent_prediction_regeneration: false
+  kaggle_push_approved: false
+  inference: false
+  submission: false
+  expected_artifacts:
+    - exp322_input_manifest.csv
+    - exp322_target_free_shift_scores.csv.gz
+    - exp322_target_free_block_gate.csv.gz
+    - exp322_target_free_predictions.csv.gz
+    - exp322_score_contract.json
+    - exp322_fold_metrics.csv
+    - exp322_scope_metrics.csv
+    - exp322_by_well_metrics.csv
+    - exp322_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_real_path_stable_sha256_per_well_circular_control
+  stochastic_components:
+    - matched_circular_gate_negative_control_only
+  parallel_rng_policy: no_global_rng_canonical_sort_before_hash
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Target-free score, gate, and candidate prediction content SHA are frozen before truth attachment.
+    - Gzip raw and decompressed SHA are recorded separately; decompressed content is primary.
+    - This train-side readout is not a deterministic submission anchor.
+
+inference:
+  enabled: false
+  mode: disabled_until_all_train_side_guards_pass_and_separate_design_approval
+  selected_candidate: null
+  create_submission: false
+
+notes:
+  - Design frozen and compact self-contained train-side implementation completed on 2026-07-21.
+  - The user approved Kaggle CPU execution on 2026-07-21; the compact candidate was adopted as the canonical train notebook.
+  - Kaggle CPU train version 1 was pushed; local push approval was closed immediately to prevent accidental reruns.
+  - Version 1 stopped before scoring on a saved-fold relationship guard; version 2 is an approved technical retry with no scientific-contract or compute-count change.
+  - Version 2 completed with INCONCLUSIVE_COVERAGE and multiple negative science guards; the branch is closed without rescue, inference, or submission.
+  - A PASS only permits an inference design update in this same experiment; it does not authorize inference or submission.
+  - A FAIL or inconclusive coverage closes this branch without a same-OOF rescue grid or ML selector.

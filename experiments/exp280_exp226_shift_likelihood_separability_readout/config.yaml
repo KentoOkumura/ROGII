@@ -1,0 +1,194 @@
+experiment:
+  name: exp280_exp226_shift_likelihood_separability_readout
+  description: >-
+    Audit whether fixed raw-GR/typewell likelihood ranks the truth-nearest
+    vertical shift of group-safe exp226 geometry in non-overlapping 512-row blocks.
+  route: pf_beam
+  status: train_side_readout_completed_guard_passed
+  created_at: "2026-07-19"
+  updated_at: "2026-07-19"
+
+lineage:
+  parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  failure_reference: exp279_exp226_geop_centered_exact_hmm_redecode
+  references:
+    - exp248_candidate_perturbation_augmentation_for_likelihood_ranker
+    - exp252_pf_seed_medoid_selectability_audit
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  conditional_followup: exp226_residual_offset_exact_hmm_transition_probe
+  diff_summary: >-
+    Keeps the saved group-safe exp226 geometry-only tvt_geop path and adds only
+    a fixed 13-value symmetric vertical-shift bank. Scores every shift with the
+    frozen exp209 Gaussian raw-GR/typewell emission, aggregates non-overlapping
+    512-row blocks, freezes and hashes all target-free scores, and only then
+    joins true TVT for rank/top1/top3/MRR/sign and coverage readouts. No HMM,
+    model training, direct correction, inference, or submission is performed.
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.group_column
+    - validation.score_rows
+
+validation:
+  strategy: fixed_exp226_oof_target_free_shift_likelihood_separability_readout
+  metric: diagnostic_top1_top3_mrr_sign_vs_stable_shuffled
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows_aggregated_to_fixed_512_row_blocks
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  leakage_policy:
+    - The exp226 score-stage reader loads only well_id, row_idx, suffix_offset, fold, and tvt_geop.
+    - exp226 tvt_pred, gr_delta, tvt_true, error, and abs_error are rejected by target-free scoring APIs.
+    - Raw horizontal TVT is not read until all target-free block scores are frozen and content-hashed.
+    - Shift values, block size, likelihood calibration, score aggregation, tie order, shuffled control, and guards are fixed before execution.
+    - Truth-nearest shift, coverage, regret, persistent-offset labels, and all performance metrics are post-freeze readouts only.
+  guards:
+    required_score_finite_coverage: 1.0
+    required_row_identity_coverage: 1.0
+    required_folds: [0, 1, 2, 3, 4]
+    minimum_folds_real_top1_above_shuffled: 5
+    minimum_folds_real_top3_above_shuffled: 5
+    minimum_folds_real_mrr_above_shuffled: 5
+    minimum_folds_real_sign_above_shuffled: 5
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    safe_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    forbidden_score_columns: [tvt_pred, gr_delta, tvt_true, error, abs_error]
+    truth_columns: [well_id, row_idx, tvt_true]
+  hidden_like:
+    enabled: true
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+model:
+  name: none_fixed_exp226_shift_likelihood_separability_readout
+  estimator: none_deterministic_diagnostic
+  active_audit_variants: [fixed_shift_bank_raw_gr_gaussian]
+  active_variant_count: 1
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  booster_count: 0
+  hmm_decode_count: 0
+  parent_control_retraining: false
+
+audit:
+  output_prefix: exp280_exp226_shift_likelihood_separability_readout
+  shift_bank_ft: [-80.0, -40.0, -20.0, -10.0, -5.0, -2.0, 0.0, 2.0, 5.0, 10.0, 20.0, 40.0, 80.0]
+  block_rows: 512
+  block_policy: non_overlapping_from_suffix_start_keep_short_tail
+  score_aggregation: mean_row_log_likelihood
+  tie_policy: config_shift_bank_order
+  typewell_extension_ft: 40.0
+  emission:
+    kind: exp209_gaussian_raw_gr
+    sigma_mode: known_prefix_residual_std
+    sigma_clip: [10.0, 60.0]
+    log_likelihood_clip: 600.0
+    missing_gr_policy: interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+  shuffled_control:
+    enabled: true
+    seed: 42
+    policy: stable_sha256_per_well_block_permutation_of_candidate_scores
+  scopes:
+    near_max_md_since_ft: 250.0
+    long_tail_min_md_since_ft: 1000.0
+  coverage:
+    maximum_quantization_error_ft: 20.0
+  persistent_offset:
+    base_path: tvt_geop
+    error_threshold_ft: 10.0
+    minimum_consecutive_rows: 128
+  expected_artifacts:
+    - exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+    - exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+    - exp280_exp226_shift_likelihood_separability_readout_block_readout.csv.gz
+    - exp280_exp226_shift_likelihood_separability_readout_scope_metrics.csv
+    - exp280_exp226_shift_likelihood_separability_readout_fold_metrics.csv
+    - exp280_exp226_shift_likelihood_separability_readout_shift_metrics.csv
+    - exp280_exp226_shift_likelihood_separability_readout_by_well_metrics.csv
+    - exp280_exp226_shift_likelihood_separability_readout_persistent_offset_episodes.csv
+    - exp280_exp226_shift_likelihood_separability_readout_well_manifest.csv
+    - exp280_exp226_shift_likelihood_separability_readout_input_manifest.csv
+    - exp280_exp226_shift_likelihood_separability_readout_summary.json
+
+execution:
+  stage: train_side_readout_only
+  active_audit_variants: 1
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  hmm_well_runs: 0
+  parent_control_retraining: false
+  gpu: false
+  inference: false
+  submission: false
+  kaggle_push_approved: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_real_score_stable_sha256_local_rng_shuffled_control
+  stochastic_components:
+    - stable_shuffled_score_negative_control_only
+  parallel_rng_policy: single_process_local_rng_per_well_block_no_global_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Fixed-input diagnostic determinism is recorded, but this is not a prediction or submission anchor.
+    - The target-free score table content SHA is frozen before truth attachment.
+    - Gzip raw and decompressed SHA are recorded separately; decompressed content is primary.
+
+inference:
+  enabled: false
+  mode: disabled_train_side_separability_readout_only
+  selected_candidate: null
+  create_submission: false
+
+notes:
+  - The five fold labels are readout strata; no fold model is trained.
+  - A guard pass only permits considering a separate residual-offset HMM experiment.
+  - A guard failure lowers that follow-up priority and cannot be rescued by grid or calibration tuning here.

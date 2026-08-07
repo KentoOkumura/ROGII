@@ -1,0 +1,458 @@
+{
+  "rows": 3783989,
+  "wells": 773,
+  "candidates": 94,
+  "candidate_paths": 81,
+  "model_outputs": 13,
+  "fold_rows": [
+    757738,
+    756650,
+    756255,
+    757101,
+    756245
+  ],
+  "best_candidate_overall": {
+    "name": "exp255_assertive",
+    "source": "exp255",
+    "layer": "model_output",
+    "family": "selector_correction_output",
+    "rawtest_status": "guard_failed_no_inference",
+    "note": "",
+    "rows_finite": 3783989,
+    "coverage": 1.0,
+    "rmse": 7.8779902277703
+  },
+  "best_candidate_path": {
+    "name": "hmm_lgb_exp148",
+    "source": "exp221",
+    "layer": "candidate_path",
+    "family": "hmm_ml",
+    "rawtest_status": "rawtest_inference_exists",
+    "note": "",
+    "rows_finite": 3783989,
+    "coverage": 1.0,
+    "rmse": 8.3277284922205
+  },
+  "best_model_output": {
+    "name": "exp255_assertive",
+    "source": "exp255",
+    "layer": "model_output",
+    "family": "selector_correction_output",
+    "rawtest_status": "guard_failed_no_inference",
+    "note": "",
+    "rows_finite": 3783989,
+    "coverage": 1.0,
+    "rmse": 7.8779902277703
+  },
+  "best_useful_equal_path_pair": {
+    "candidate_a": "exp226_k16",
+    "candidate_b": "hmm_lgb_exp148",
+    "layer_a": "candidate_path",
+    "layer_b": "candidate_path",
+    "family_a": "geometry",
+    "family_b": "hmm_ml",
+    "rmse_a": 9.42710967407494,
+    "rmse_b": 8.3277284922205,
+    "better_single_rmse": 8.3277284922205,
+    "residual_cosine": 0.6255578418036619,
+    "equal_50_rmse": 8.006904196563731,
+    "equal_50_delta_vs_better": -0.3208242956567684,
+    "full_oof_opt_weight_b": 0.6626587985879435,
+    "full_oof_opt_rmse_diagnostic": 7.907149867396875,
+    "grid05_weight_b_diagnostic": 0.65,
+    "grid05_rmse_diagnostic": 7.9077578284791326,
+    "crossfit_weight_b_mean": 0.6634348497669637,
+    "crossfit_weight_b_std": 0.034386329775227445,
+    "crossfit_weight_b_min": 0.6278429358073467,
+    "crossfit_weight_b_max": 0.7077891084965976,
+    "crossfit_rmse": 7.9471589999982815,
+    "crossfit_delta_vs_better": -0.38056949222221803,
+    "crossfit_folds_beating_better_parent": 4,
+    "crossfit_fold_weights_b": "[0.6999222619336882, 0.6281034321897748, 0.6535165104074108, 0.6278429358073467, 0.7077891084965976]"
+  },
+  "best_useful_equal_model_output_pair": {
+    "candidate_a": "exp193_lgb_mean",
+    "candidate_b": "exp237_row_selector",
+    "layer_a": "model_output",
+    "layer_b": "model_output",
+    "family_a": "ml_output",
+    "family_b": "selector_output",
+    "rmse_a": 8.456665438542778,
+    "rmse_b": 8.545227678368821,
+    "better_single_rmse": 8.456665438542778,
+    "residual_cosine": 0.7200225504931628,
+    "equal_50_rmse": 7.883522611467812,
+    "equal_50_delta_vs_better": -0.5731428270749666,
+    "full_oof_opt_weight_b": 0.48139816148263237,
+    "full_oof_opt_rmse_diagnostic": 7.8826343396120215,
+    "grid05_weight_b_diagnostic": 0.5,
+    "grid05_rmse_diagnostic": 7.883522611467812,
+    "crossfit_weight_b_mean": 0.48017244949465115,
+    "crossfit_weight_b_std": 0.03770159072815807,
+    "crossfit_weight_b_min": 0.4345184774920337,
+    "crossfit_weight_b_max": 0.5250408180278247,
+    "crossfit_rmse": 7.915260410469762,
+    "crossfit_delta_vs_better": -0.541405028073016,
+    "crossfit_folds_beating_better_parent": 5,
+    "crossfit_fold_weights_b": "[0.43670318762356686, 0.5250408180278247, 0.5106894823327472, 0.4939102819970833, 0.4345184774920337]"
+  },
+  "best_equal_multiway": {
+    "size": 4,
+    "members": "hmm_lgb_exp148|hmm_exp218_shrink_a050|exp226_k16|exact_hmm",
+    "rmse": 7.68930280524387,
+    "delta_vs_best_member": -0.6384256869766292
+  },
+  "best_crossfit_triple": {
+    "members": "hmm_lgb_exp148|exp226_k16|exact_hmm",
+    "best_member_rmse": 8.3277284922205,
+    "full_oof_weights_diagnostic": "[0.5114303111831354, 0.3067424865559377, 0.18182720226092683]",
+    "full_oof_rmse_diagnostic": 7.645636309054729,
+    "crossfit_rmse": 7.6951358409470565,
+    "crossfit_delta_vs_best_member": -0.632592651273443,
+    "crossfit_folds_beating_best_parent": 5,
+    "crossfit_fold_weights": "[[0.5511114798177242, 0.2676359462370811, 0.18125257394519478], [0.4965356193611441, 0.34454386011370963, 0.15892052052514624], [0.48594064754602945, 0.3055353395620067, 0.20852401289196387], [0.4927538447629882, 0.3358158233197755, 0.17143033191723633], [0.5347033765898106, 0.2775705502382057, 0.18772607317198375]]"
+  },
+  "best_crossfit_portfolio": {
+    "size": 6,
+    "members": "hmm_lgb_exp148|hmm_exp218_shrink_a050|hmm_exp218_residual_scale|exp226_k16|selfgr_hmm_a070|exp192_likpf",
+    "full_oof_weights_diagnostic": "[0.38508799639749053, 0.10839355155824772, 0.019904531520277102, 0.30217631066649864, 0.18443760985748606, 3.562930692869084e-18]",
+    "full_oof_rmse_diagnostic": 7.678929568668954,
+    "crossfit_rmse": 7.728609592389132,
+    "crossfit_fold_weights": "[[0.3464549318883052, 0.1761278215610064, 0.025468777630438286, 0.2629086166873707, 0.18903985223287934, 9.740038135317258e-19], [0.38692013554591975, 0.09525051232014325, 0.0, 0.33665224553075085, 0.1811771066031863, 0.0], [0.3122850692895509, 0.14023382453565733, 0.035003817188591316, 0.2982479293377203, 0.21422935964848006, 0.0], [0.4203779881602179, 0.07511604084028982, 0.0045189314502568755, 0.33454033758191165, 0.16544670196732375, 0.0], [0.4770628812855744, 0.027305701925178078, 0.05099459842850735, 0.2743688624846832, 0.1702679558760568, 0.0]]"
+  },
+  "source_manifest": [
+    {
+      "source": "exp209",
+      "paths": [
+        "/tmp/exp209_blend_audit/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz"
+      ],
+      "sizes": [
+        162695748
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "exact_hmm": 3783989
+      }
+    },
+    {
+      "source": "exp223",
+      "paths": [
+        "/tmp/kaggle-output/exp223-selfgr-hmm-train-v1/artifacts/exp223_joint_typewell_self_gr_hmm_likelihood_probe_joint_typewell_self_gr_hmm_likelihood_probe_train_features.csv.gz"
+      ],
+      "sizes": [
+        171647480
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "selfgr_hmm_a070": 3783989,
+        "selfgr_hmm_a150": 3783989
+      }
+    },
+    {
+      "source": "exp226",
+      "paths": [
+        "/tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+      ],
+      "sizes": [
+        151945687
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "exp226_k16": 3783989
+      }
+    },
+    {
+      "source": "exp221",
+      "paths": [
+        "/tmp/kaggle-output/exp221_train_v3/artifacts/exp221_lgb_oof_gaussian_emission_hmm_on_exp148_lgb_oof_gaussian_emission_hmm_train_features.csv.gz"
+      ],
+      "sizes": [
+        74222243
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "hmm_lgb_exp148": 3783989
+      }
+    },
+    {
+      "source": "exp225",
+      "paths": [
+        "/tmp/kaggle-output/exp225-state-known-tvt-self-gr-hmm-emission-train-v1/artifacts/exp225_state_known_tvt_self_gr_hmm_emission_state_known_tvt_self_gr_hmm_emission_train_features.csv.gz"
+      ],
+      "sizes": [
+        115072951
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "hmm_state_selfgr": 3783989
+      }
+    },
+    {
+      "source": "exp231",
+      "paths": [
+        "/tmp/exp231_v3_output/artifacts/exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission_same_typewell_horizontal_gr_atlas_gated_hmm_emission_train_features.csv.gz"
+      ],
+      "sizes": [
+        207073494
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "hmm_peer_atlas": 3783989
+      }
+    },
+    {
+      "source": "exp234",
+      "paths": [
+        "/tmp/kaggle-output/exp234_crossfitted_residual_scale_emission_hmm_on_exp218/train_v1/artifacts/exp234_crossfitted_residual_scale_emission_hmm_on_exp218_crossfitted_residual_scale_emission_hmm_train_features.csv.gz"
+      ],
+      "sizes": [
+        74942780
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "hmm_exp218_residual_scale": 3783989
+      }
+    },
+    {
+      "source": "exp192",
+      "paths": [
+        "/tmp/kaggle-output/exp192_typewell_late_range_hard_window_pct50_full_cache_replacement/train_v1_stream/artifacts/exp192_typewell_late_range_hard_window_pct50_full_cache_replacement_full_replay_cache_pixiux_likpf_hard_window_pct50_public_replay_train_features.csv.gz"
+      ],
+      "sizes": [
+        2066723848
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "exp192_pf_ancc": 3783989,
+        "exp192_pf_z": 3783989,
+        "exp192_beam_mean": 3783989,
+        "exp192_beam_sm5": 3783989,
+        "exp192_likpf": 3783989
+      }
+    },
+    {
+      "source": "exp103",
+      "paths": [
+        "/tmp/candidate_blend_source/exp103/artifacts/exp103_pf_z_xy_likpf_ensemble_parity_candidate_wide.csv.gz"
+      ],
+      "sizes": [
+        138435612
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "exp103_xy_likpf_mean": 3783989,
+        "exp103_xy_likpf_scale_3": 3783989,
+        "exp103_xy_likpf_scale_5": 3783989,
+        "exp103_xy_likpf_scale_8": 3783989,
+        "exp103_xy_likpf_scale_12": 3783989
+      }
+    },
+    {
+      "source": "exp106",
+      "paths": [
+        "/tmp/candidate_blend_source/exp106/artifacts/exp106_strict_exp072_pf_z_multiseed_scale_cache_candidate_wide.csv.gz"
+      ],
+      "sizes": [
+        204538208
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "exp106_pf_z_ms_mean": 3783989,
+        "exp106_pf_z_ms_best_lik_seed": 3783989,
+        "exp106_pf_z_ms_scale_3": 3783989,
+        "exp106_pf_z_ms_scale_5": 3783989,
+        "exp106_pf_z_ms_scale_8": 3783989,
+        "exp106_pf_z_ms_scale_12": 3783989
+      }
+    },
+    {
+      "source": "exp232_t2",
+      "paths": [
+        "/tmp/kaggle-output/exp232-temp-t2-v2/artifacts/runs/temp_t2/exp232_adaptive_robust_likelihood_pf_row_candidates.csv.gz"
+      ],
+      "sizes": [
+        215499350
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "pf_temp_t2": 3783989
+      }
+    },
+    {
+      "source": "exp232_t4",
+      "paths": [
+        "/tmp/kaggle-output/exp232-temp-t4-v2/artifacts/runs/temp_t4/exp232_adaptive_robust_likelihood_pf_row_candidates.csv.gz"
+      ],
+      "sizes": [
+        215504527
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "pf_temp_t4": 3783989
+      }
+    },
+    {
+      "source": "exp233_e02",
+      "paths": [
+        "/tmp/kaggle-output/exp233-mix-e02-v3/artifacts/exp233_adaptive_outlier_mixture_likelihood_pf_row_candidates.csv.gz"
+      ],
+      "sizes": [
+        216694919
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "pf_mix_e02": 3783989
+      }
+    },
+    {
+      "source": "exp233_e05",
+      "paths": [
+        "/tmp/kaggle-output/exp233-mix-e05-v4/artifacts/exp233_adaptive_outlier_mixture_likelihood_pf_row_candidates.csv.gz"
+      ],
+      "sizes": [
+        216693018
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "pf_mix_e05": 3783989
+      }
+    },
+    {
+      "source": "exp243",
+      "paths": [
+        "/tmp/exp243_outputs/shard0/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz",
+        "/tmp/exp243_outputs/shard1/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz",
+        "/tmp/exp243_outputs/shard2/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz",
+        "/tmp/exp243_outputs/shard3/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz"
+      ],
+      "sizes": [
+        107857023,
+        116460806,
+        113783691,
+        109165165
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "pf_medoid_k8_m0": 3783989,
+        "pf_medoid_k8_m1": 3783989,
+        "pf_medoid_k8_m2": 3783989,
+        "pf_medoid_k8_m3": 3783989,
+        "pf_medoid_k8_m4": 3783989,
+        "pf_medoid_k8_m5": 3783989,
+        "pf_medoid_k8_m6": 3783989,
+        "pf_medoid_k8_m7": 3783989
+      }
+    },
+    {
+      "source": "exp148_output",
+      "paths": [
+        "/tmp/kaggle-output/exp148_train_v1/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz"
+      ],
+      "sizes": [
+        236939681
+      ],
+      "rows_read": 15135956,
+      "coverage": {
+        "exp148_lgb_mean": 3783989
+      }
+    },
+    {
+      "source": "exp193_output",
+      "paths": [
+        "/home/kento/work/kaggle/ROGII/experiments/exp193_typewell_late_interval_context_features_addonly_on_exp148/kaggle/output/train_v1/artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_predictions.csv.gz"
+      ],
+      "sizes": [
+        59540825
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "exp193_lgb_mean": 3783989
+      }
+    },
+    {
+      "source": "exp218_output",
+      "paths": [
+        "/tmp/kaggle-output/exp218_gr_wavelet_rotation_confidence_features_on_exp148/train_v1/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_predictions.csv.gz"
+      ],
+      "sizes": [
+        59527029
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "exp218_lgb_mean": 3783989
+      }
+    },
+    {
+      "source": "exp237_output",
+      "paths": [
+        "/tmp/kaggle-output/exp237_hmm_exp226_candidate_selector_on_exp183/train_v1/artifacts/exp237_hmm_exp226_candidate_selector_on_exp183_oof_predictions.csv.gz"
+      ],
+      "sizes": [
+        231451444
+      ],
+      "rows_read": 18919945,
+      "coverage": {
+        "exp237_row_selector": 3783989,
+        "exp237_viterbi": 3783989
+      }
+    },
+    {
+      "source": "exp251_output",
+      "paths": [
+        "/tmp/exp251_v4_output/artifacts/exp251_raw_test_safe_dual_objective_candidate_ranker_oof_predictions.csv.gz"
+      ],
+      "sizes": [
+        75130964
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "exp251_probability_row": 3783989,
+        "exp251_error_row": 3783989,
+        "exp251_error_viterbi": 3783989
+      }
+    },
+    {
+      "source": "exp255_output",
+      "paths": [
+        "/tmp/kaggle-output/exp255_nested_selector_gated_bounded_direct_readout_on_exp238/train_v1/artifacts/exp255_nested_selector_gated_bounded_direct_readout_on_exp238_selected_oof.csv.gz"
+      ],
+      "sizes": [
+        131613087
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "exp238_addonly": 3783989,
+        "exp255_assertive": 3783989
+      }
+    },
+    {
+      "source": "exp259_output",
+      "paths": [
+        "/tmp/exp259_v1_output/artifacts/exp259_coordinate_equivariance_path_warp_augmentation_training_oof_predictions.csv.gz"
+      ],
+      "sizes": [
+        75048579
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "exp259_probability_row": 3783989,
+        "exp259_error_row": 3783989,
+        "exp259_error_viterbi": 3783989
+      }
+    },
+    {
+      "source": "exp240",
+      "paths": [
+        "/tmp/candidate_blend_source/exp240/artifacts/exp240_shrinkage_residual_scale_emission_hmm_on_exp218_shrinkage_residual_scale_emission_hmm_train_features.csv.gz"
+      ],
+      "sizes": [
+        74354286
+      ],
+      "rows_read": 3783989,
+      "coverage": {
+        "hmm_exp218_shrink_a050": 3783989
+      }
+    }
+  ],
+  "method_note": "fixed equal blends are target-free; full_oof_opt is diagnostic; crossfit weights are fit on other wells only"
+}

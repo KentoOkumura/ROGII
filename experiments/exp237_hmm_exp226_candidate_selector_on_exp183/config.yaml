@@ -1,0 +1,511 @@
+experiment:
+  name: "exp237_hmm_exp226_candidate_selector_on_exp183"
+  description: Add fixed exp209 HMM blend, exp223 self-GR HMM, and exp226 K16 geometry OOF paths to the exp183 candidate-error selector and apply one pre-fixed well-local Viterbi continuity rule.
+  route: ensemble
+  status: completed_rawtest_inference_not_submitted_after_guard_failure
+  created_at: "2026-07-12"
+  updated_at: "2026-07-12"
+
+lineage:
+  parent: exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector
+  ranker_parent: exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector
+  continuity_parent: exp158_segment_continuity_selector_on_exp157
+  prior_parent: exp181_cluster_outlier_pfbeam_prior_gate
+  typewell_prior_parent: exp109_typewell_neighbor_prior_features
+  spatial_prior_parent: exp114_spatial_neighbor_prior_signal_audit
+  cluster_parent: exp065_typewell_supertype_cluster_cv_audit
+  stress_parent: exp115_hidden_like_spatial_holdout_from_ppt
+  feature_cache_parent: exp072_exp063_full_replay_feature_cache
+  hmm_parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  self_gr_hmm_parent: exp223_joint_typewell_self_gr_hmm_likelihood_probe
+  geometry_parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  implementation_source: hmm_exp226_candidate_selector_on_exp183.py
+  diff_summary: >
+    Keeps exp183's eight PF/Beam/dense candidates and its add-only cluster/prior
+    confidence surface, adds three independently generated OOF paths (exp209
+    exact-HMM/likPF blend, exp223 self-GR HMM, and exp226 K16 geometry), and trains
+    only the previously best candidate absolute-error regressor. The fixed exp183
+    Viterbi continuity rule consumes OOF predicted errors; no LightGBM prediction
+    is fed into an HMM emission or transition.
+
+validation:
+  strategy: train_well_pseudotail_candidate_selector_oof_plus_viterbi
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - oracle_label_accuracy
+    - selection_distribution
+    - path_switch_count
+    - bucket_rmse
+    - subgroup_rmse
+    - worst_well_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Candidate values and target-free likelihood features are read from exp099 v2 and exp072 train-side pseudo-tail caches.
+    - Dense candidates are reconstructed as last_known_tvt plus tvt_dense*_d columns, matching exp157.
+    - Cluster-outlier features use exp065 native-overlap cluster assignments and exp114 geometry summaries only.
+    - Typewell/spatial priors are fixed fold-safe upstream outputs from exp109/114 and are used only as features.
+    - exp209, exp223, and exp226 candidate paths are precomputed group-safe OOF inputs; their source IDs, wells, rows, targets, and last-known TVT contracts are checked before use.
+    - Candidate-long labels use absolute candidate error only as a training label, not as a feature column.
+    - Viterbi local costs use OOF predicted-error scores from the newly trained add-only ranker. Transition penalties use candidate path geometry and target-free guard features only.
+    - exp115 hidden-like roles are used only for result subgroup metrics, never for training features.
+    - No validation/test true TVT, oracle candidate, or true error is used in selector features.
+    - This is a train-side audit; no raw-test inference port or submission candidate is selected.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp065_cluster_assignments_local: experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/common_typewell_cluster_assignments.csv
+  exp109_oof_predictions_local: experiments/exp109_typewell_neighbor_prior_features/kaggle/output/train_v2/artifacts/exp109_typewell_neighbor_prior_features_oof_predictions.csv.gz
+  exp114_oof_predictions_local: experiments/exp114_spatial_neighbor_prior_signal_audit/kaggle/output/train_v1/artifacts/exp114_spatial_neighbor_prior_signal_audit_oof_predictions.csv.gz
+  exp114_well_geometry_local: experiments/exp114_spatial_neighbor_prior_signal_audit/kaggle/output/train_v1/artifacts/exp114_spatial_neighbor_prior_signal_audit_well_geometry_summary.csv
+  exp115_fold_assignments_local: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  exp209_hmm_train_features_local: /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+  exp223_train_features_local: /tmp/kaggle-output/exp223-selfgr-hmm-train-v1/artifacts/exp223_joint_typewell_self_gr_hmm_likelihood_probe_joint_typewell_self_gr_hmm_likelihood_probe_train_features.csv.gz
+  exp226_train_oof_local: /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+  exp073_test_feature_cache_local: /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/inference_v2/artifacts/exp063_full_replay_repro_guard_test_features.csv.gz
+  exp226_test_summary_local: /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/inference_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_test_prediction_summary.csv
+  exp237_model_manifest_local: /tmp/kaggle-output/exp237_hmm_exp226_candidate_selector_on_exp183/train_v1/artifacts/exp237_hmm_exp226_candidate_selector_on_exp183_model_manifest.json
+
+model:
+  name: hmm_exp226_candidate_error_ranker_with_fixed_continuity
+  target: candidate_absolute_error
+  base_prediction: candidate_selected_tvt
+  estimator:
+    - lightgbm_candidate_error_ranker
+  trains_new_boosters: true
+  planned_lightgbm_configs: 1
+  planned_folds: 5
+  planned_boosters: 5
+  control_or_parent_retraining: false
+
+ranker:
+  mode: hmm_exp226_candidate_error_ranker_on_exp183
+  max_rows: null
+  include_candidate_values: false
+  log_period: 100
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+    - name: beam_mean
+      column: beam_mean
+    - name: likpf_mean
+      column: likpf_mean
+    - name: sc_ens
+      column: sc_ens
+    - name: hyb
+      column: hyb
+    - name: tvt_dense
+      column: tvt_dense
+    - name: tvt_densew
+      column: tvt_densew
+    - name: tvt_dense50
+      column: tvt_dense50
+    - name: blend_likpf_hmm_w500
+      column: blend_likpf_hmm_w500
+      source: exp209
+    - name: hmm_selfgr_boost_only_a070_c100
+      column: hmm_selfgr_boost_only_a070_c100_mean_tvt
+      source: exp223
+    - name: v6_k16_geometry_gr_u_projection
+      column: exp226_v6_k16_geometry_gr_u_projection
+      source: exp226
+  context_columns:
+    - last_known_tvt
+    - pf_ancc_std
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+    - eval_len
+    - md_since
+    - likpf_mean_d
+    - hmm_exact_std
+    - hmm_exact_loglik
+    - hmm_exact_minus_likpf_mean
+    - self_gr_quality
+    - self_gr_peak_gap
+    - self_gr_typewell_agreement
+    - self_gr_valid
+    - hmm_selfgr_std
+    - hmm_selfgr_loglik
+    - exp226_gr_delta
+    - exp226_geop_minus_pred
+    - exp226_geop_minus_pred_abs
+  multiobs_feature_columns:
+    - multiobs_score_max
+    - multiobs_score_mean
+    - multiobs_score_gap
+    - multiobs_top1_source_id
+    - multiobs_top1_mae
+    - multiobs_top1_ncc
+    - multiobs_score_pf_ancc
+    - multiobs_mae_pf_ancc
+    - multiobs_ncc_pf_ancc
+    - multiobs_score_beam_mean
+    - multiobs_mae_beam_mean
+    - multiobs_ncc_beam_mean
+    - multiobs_score_likpf_mean
+    - multiobs_mae_likpf_mean
+    - multiobs_ncc_likpf_mean
+    - multiobs_score_sc_ens
+    - multiobs_mae_sc_ens
+    - multiobs_ncc_sc_ens
+    - multiobs_score_hyb
+    - multiobs_mae_hyb
+    - multiobs_ncc_hyb
+  optional_columns:
+    - multiobs_top1
+    - multiobs_softmax_t0p15
+    - multiobs_softmax_t0p3
+    - likpf_multiobs_blend_w0p25
+    - likpf_multiobs_blend_w0p5
+  feature_enrichment:
+    enabled: true
+    prefix: crfe_
+    max_missing_rate: 0.0
+    min_md_scale: 25.0
+    min_dense_scale: 10.0
+    near_md_threshold: 50.0
+    primary_dense_candidate: tvt_densew
+    auxiliary_candidate_columns:
+      - tvt_dense
+      - tvt_densew
+      - tvt_dense50
+    auxiliary_columns:
+      - tvt_dense_d
+      - tvt_densew_d
+      - tvt_dense50_d
+      - dense_std
+      - dense_dist
+      - pf_vs_dense
+    dense_delta_columns:
+      tvt_dense: tvt_dense_d
+      tvt_densew: tvt_densew_d
+      tvt_dense50: tvt_dense50_d
+    reference_candidates:
+      - likpf_mean
+      - beam_mean
+      - pf_ancc
+    base_feature_columns:
+      - tvt_dense_d
+      - tvt_densew_d
+      - tvt_dense50_d
+      - dense_std
+      - dense_dist
+      - pf_vs_dense
+  cluster_prior_features:
+    enabled: true
+    max_missing_rate: 1.0
+    primary_typewell_prior: typewell_native_overlap_0p999
+    primary_spatial_prior: spatial_xy_plus_trajectory_shape_k8
+    feature_quality_max_prior_std: 20.0
+    feature_correction_alpha: 0.20
+    feature_correction_clips: [20.0, 40.0]
+    min_prior_scale_ft: 10.0
+    base_feature_columns:
+      - copcf_cluster_feature_valid
+      - copcf_own_cluster_dist
+      - copcf_own_cluster_dist_z
+      - copcf_nearest_other_cluster_dist
+      - copcf_nearest_other_closer
+      - copcf_nearby_majority_count_k8
+      - copcf_nearby_majority_share_k8
+      - copcf_nearby_majority_diff_k8
+      - copcf_gate_own_z_gt2p0
+      - copcf_gate_nearest_other_closer
+      - copcf_gate_nearby_majority_diff_k8
+      - copcf_gate_any_outlier_signal_k8
+      - copcf_well_gate_ratio_any_outlier_signal_k8
+      - copcf_any_configured_gate
+      - copcf_typewell_spatial_prior_abs_delta
+      - copcf_typewell_native_overlap_0p999_valid_prior
+      - copcf_typewell_native_overlap_0p999_prior_std
+      - copcf_typewell_native_overlap_0p999_neighbor_wells
+      - copcf_spatial_xy_plus_trajectory_shape_k8_valid_prior
+      - copcf_spatial_xy_plus_trajectory_shape_k8_prior_std
+      - copcf_spatial_xy_plus_trajectory_shape_k8_neighbor_wells
+    prior_variants:
+      - name: typewell_native_overlap_1
+        family: typewell
+        prior_tvt: native_overlap_1_prior_tvt
+        prior_std: native_overlap_1_prior_std
+        prior_count: native_overlap_1_prior_count
+        neighbor_wells: native_overlap_1_neighbor_wells
+      - name: typewell_native_overlap_0p999
+        family: typewell
+        prior_tvt: native_overlap_0p999_prior_tvt
+        prior_std: native_overlap_0p999_prior_std
+        prior_count: native_overlap_0p999_prior_count
+        neighbor_wells: native_overlap_0p999_neighbor_wells
+      - name: spatial_xy_plus_trajectory_shape_k8
+        family: spatial
+        prior_tvt: xy_plus_trajectory_shape_k8_prior_tvt
+        prior_std: xy_plus_trajectory_shape_k8_prior_std
+        prior_count: xy_plus_trajectory_shape_k8_prior_count
+        neighbor_wells: xy_plus_trajectory_shape_k8_neighbor_wells
+        distance_mean: xy_plus_trajectory_shape_k8_distance_mean
+        azimuth_mismatch: xy_plus_trajectory_shape_k8_azimuth_mismatch
+      - name: spatial_xy_only_k8
+        family: spatial
+        prior_tvt: xy_only_k8_prior_tvt
+        prior_std: xy_only_k8_prior_std
+        prior_count: xy_only_k8_prior_count
+        neighbor_wells: xy_only_k8_neighbor_wells
+        distance_mean: xy_only_k8_distance_mean
+        azimuth_mismatch: xy_only_k8_azimuth_mismatch
+    cluster_gates:
+      - name: own_z_gt2p0
+        own_cluster_dist_z_gt: 2.0
+      - name: nearest_other_closer
+        nearest_other_closer: true
+      - name: nearby_majority_diff_k8
+        nearby_majority_diff: true
+        nearby_k: 8
+      - name: any_outlier_signal_k8
+        any_of:
+          - own_cluster_dist_z_gt: 1.5
+          - nearest_other_closer: true
+          - nearby_majority_diff: true
+            nearby_k: 8
+  multiclass_lgbm:
+    params:
+      n_estimators: 600
+      learning_rate: 0.045
+      num_leaves: 63
+      min_child_samples: 120
+      subsample: 0.85
+      subsample_freq: 1
+      colsample_bytree: 0.85
+      reg_alpha: 0.1
+      reg_lambda: 1.0
+      n_jobs: -1
+      verbose: -1
+  long_models:
+    max_train_rows_per_fold: 120000
+    max_valid_rows_per_fold: 120000
+    predict_chunk_rows: 50000
+    binary_lgbm:
+      params:
+        n_estimators: 550
+        learning_rate: 0.045
+        num_leaves: 63
+        min_child_samples: 160
+        subsample: 0.85
+        subsample_freq: 1
+        colsample_bytree: 0.85
+        reg_alpha: 0.1
+        reg_lambda: 1.0
+        n_jobs: -1
+        verbose: -1
+    error_lgbm:
+      params:
+        n_estimators: 550
+        learning_rate: 0.04
+        num_leaves: 63
+        min_child_samples: 160
+        subsample: 0.85
+        subsample_freq: 1
+        colsample_bytree: 0.85
+        reg_alpha: 0.1
+        reg_lambda: 1.0
+        n_jobs: -1
+        verbose: -1
+
+selector:
+  mode: fixed_continuity_hmm_exp226_candidate_selector_on_exp183
+  default_candidate: likpf_mean
+  ranker_variant: lgb_candidate_error_ranker
+  allowed_switch_candidates:
+    - pf_ancc
+    - beam_mean
+    - sc_ens
+    - hyb
+    - tvt_dense
+    - tvt_densew
+    - tvt_dense50
+    - blend_likpf_hmm_w500
+    - hmm_selfgr_boost_only_a070_c100
+    - v6_k16_geometry_gr_u_projection
+  log_period: 10
+  viterbi_grid:
+    switch_penalty: [20.0]
+    nondefault_bias: [0.0]
+    jump_penalty_weight: [1.0]
+    jump_free_ft: [25.0]
+    jump_scale_ft: 25.0
+    max_abs_delta_vs_default: [75.0]
+    max_pf_ancc_std: [999999.0]
+    min_md_since: [0.0]
+    min_segment_len: [1]
+  historical_baselines:
+    likpf_mean_rmse: 11.594897672217703
+    exp157_rowwise_rmse: 10.79579983712686
+  exp158_continuity_rmse: 10.789163253
+  exp183_continuity_rmse: 10.60148177371247
+  exp226_single_rmse: 9.427109596582213
+
+cluster:
+  assignment_method: native_overlap
+  assignment_threshold: "1"
+  min_cluster_size: 2
+  robust_scale_floor_ft: 250.0
+  outlier_z_thresholds: [1.5, 2.0]
+  nearby_k_values: [5, 8, 12]
+  nearby_majority_min_share: 0.5
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    bootstrap_files:
+      - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp109-typewell-neighbor-prior-train
+      - kentookumura/exp114-spatial-neighbor-prior-signal-audit-train
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp226-k16-kappa-repro-train
+    inference_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp073-full-replay-repro-guard-infer-cpu
+      - kentookumura/exp226-k16-kappa-repro-inference
+      - kentookumura/exp237-hmm-exp226-candidate-selector-exp183-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_groupkfold_and_candidate_error_lightgbm_seed_with_fixed_candidate_long_subsample
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - upstream_exp099_likelihood_pf_oof_candidates
+    - upstream_exp109_typewell_neighbor_prior_oof
+    - upstream_exp114_spatial_neighbor_prior_oof
+    - upstream_exp065_typewell_cluster_discovery
+    - upstream_exp209_exact_hmm_oof
+    - upstream_exp223_self_gr_hmm_oof
+    - upstream_exp226_k16_geometry_oof
+    - lightgbm_histogram_training
+    - candidate_long_training_row_subsample
+  parallel_rng_policy: no_parallel_rng_in_feature_generation
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a train-side selector audit, not a deterministic submission anchor.
+    - Candidate-long model training samples row indices with a fixed local RNG seed per fold to cap memory.
+    - Kaggle train is CPU runtime; GPU is disabled.
+    - Viterbi selection is deterministic given OOF score surface, candidate values, config, and row order.
+
+audit:
+  mode: hmm_exp226_candidate_selector_on_exp183
+  output_prefix: exp237_hmm_exp226_candidate_selector_on_exp183
+  expected_train_artifacts:
+    - exp237_hmm_exp226_candidate_selector_on_exp183_candidate_readout.csv
+    - exp237_hmm_exp226_candidate_selector_on_exp183_residual_correlation.csv
+    - exp237_hmm_exp226_candidate_selector_on_exp183_metrics.csv
+    - exp237_hmm_exp226_candidate_selector_on_exp183_oof_predictions.csv.gz
+    - exp237_hmm_exp226_candidate_selector_on_exp183_selection_distribution.csv
+    - exp237_hmm_exp226_candidate_selector_on_exp183_by_well.csv
+    - exp237_hmm_exp226_candidate_selector_on_exp183_bucket_metrics.csv
+    - exp237_hmm_exp226_candidate_selector_on_exp183_subgroup_metrics.csv
+    - exp237_hmm_exp226_candidate_selector_on_exp183_viterbi_params.csv
+    - exp237_hmm_exp226_candidate_selector_on_exp183_score_summary.csv
+    - exp237_hmm_exp226_candidate_selector_on_exp183_feature_importance.csv
+    - exp237_hmm_exp226_candidate_selector_on_exp183_feature_importance_mean.csv
+    - exp237_hmm_exp226_candidate_selector_on_exp183_feature_schema.csv
+    - exp237_hmm_exp226_candidate_selector_on_exp183_model_manifest.json
+    - exp237_hmm_exp226_candidate_selector_on_exp183_summary.json
+
+inference:
+  mode: user_authorized_rawtest_fixed_viterbi_with_reported_prior_median_fallback
+  selected_variant: viterbi_sw200_bias000_jw100_jf025_d0075_std999999_md0000_seg001
+  use_test_base_as_dense_auxiliary: true
+  source_contract:
+    exp073_test_cache: exp063_full_replay_repro_guard_test_features.csv.gz
+    exp226_test_prediction_summary: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_test_prediction_summary.csv
+    exp237_model_manifest: exp237_hmm_exp226_candidate_selector_on_exp183_model_manifest.json
+  multi_observation_likelihood:
+    observation_offsets: [-24, -12, 0, 12, 24]
+    gr_rolling_window: 5
+    gr_scale: 18.0
+    out_of_range_scale: 80.0
+    softmax_temperatures: [0.15, 0.30]
+    likpf_blend_weights: [0.25, 0.50]
+  hmm:
+    exact:
+      step: 0.35
+      n_rates: 41
+      rate_span: 0.10
+      sig_r: 0.002
+      sig_p: 0.02
+      df: 4.0
+      emission: gauss
+      lam: 1.0
+      sigma_mode: std
+      start_sig: 0.75
+      r0_sig: 0.01
+      band_pad: 100.0
+      mom: 0.998
+      rate_center: zero
+    self_gr:
+      alpha: 0.07
+      clip: 1.0
+      mode: boost_only
+      surface:
+        enabled: true
+        alpha_grid: [0.07]
+        clip_grid: [1.0]
+        modes: [boost_only]
+        max_variants: 1
+        window_radius_rows: 12
+        descriptor_offsets: [-12, -8, -4, 0, 4, 8, 12]
+        top_k: 5
+        prefix_anchor_stride: 3
+        max_prefix_anchors: 128
+        keep_last_prefix_anchors: 32
+        min_prefix_anchors: 12
+        max_window_missing_rate: 0.35
+        gaussian_sigma_tvt: 12.0
+        descriptor_distance_temperature: 1.5
+        typewell_agreement_sigma_tvt: 18.0
+        surface_quadratic_clip: 60.0
+        surface_chunk_size: 256
+  rawtest_feature_policy:
+    - Regenerate exp209 exact-HMM and exp223 self-GR-HMM from raw test horizontal/typewell files using their fixed train-side parameters.
+    - Read exp073 deterministic raw-test base cache and exp226 raw-test K16 prediction under ID/sample-submission contracts.
+    - Regenerate exp099 multi-observation scores from raw test GR for the five base PF/Beam candidates.
+    - Saved ranker boosters are read without retraining. Their input median state was not persisted by train v1, so raw-test feature medians are recomputed from each model schema; all-missing columns use zero.
+    - exp109/exp114 OOF-only cluster/prior confidence columns are unavailable for raw test; record their exact names and count in the inference summary.
+  notes:
+    - User explicitly authorized raw-test inference after reviewing exp237 near and worst-well guard failures.
+    - No Kaggle competition submission is authorized or performed by the inference notebook.
+    - This inference is a guarded artifact-generation step, not a train-side safety approval or submitted anchor.
+
+notes:
+  - Implements the `hmm_exp226_candidate_selector_on_exp183` backlog item.
+  - Planned Kaggle train cost before push is 1 candidate-error ranker config, 5 folds, 5 boosters, and 1 pre-fixed Viterbi rule.
+  - Parent/control retraining is not included; exp183, exp209, exp223, and exp226 are read as fixed OOF sources.
+  - pf_z is not selectable. HMM/PF/exp226 fixed blends beyond exp209 w500, candidate hard replacement, and submit are out of scope.

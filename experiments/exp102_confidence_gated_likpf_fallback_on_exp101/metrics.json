@@ -1,0 +1,80 @@
+{
+  "experiment": "exp102_confidence_gated_likpf_fallback_on_exp101",
+  "status": "completed_train_side_audit",
+  "updated_at": "2026-06-21",
+  "route": "pf_beam",
+  "parent": "exp101_pf_candidate_ranker_or_nway_classifier",
+  "key_idea": "Use likPF as the default and switch to exp101 pf_ancc/beam_mean selections only on high-confidence low-switch-rate rows.",
+  "kaggle_kernel": "kentookumura/exp102-likpf-fallback-train",
+  "kaggle_url": "https://www.kaggle.com/code/kentookumura/exp102-likpf-fallback-train",
+  "kaggle_version": 2,
+  "cv": {
+    "best_gate_variant": "gate_error_margin_sr050_d020_std000020",
+    "best_gate_rmse_tvt": 11.561205807581649,
+    "best_gate_mae_tvt": 7.053292514867,
+    "best_gate_within_10ft": 0.7719655104705643,
+    "best_gate_oracle_label_accuracy": 0.38549821365759784,
+    "best_gate_switch_rows": 189199,
+    "best_gate_switch_rate": 0.049999881077878394,
+    "delta_rmse_vs_likpf_mean": -0.03369186463605445,
+    "delta_mae_vs_likpf_mean": -0.014340069444985016,
+    "delta_within10_vs_likpf_mean": -0.0008419686209446895,
+    "recommendation": "confidence_gate_supported_for_continuity_audit"
+  },
+  "baselines": {
+    "oracle_rmse_tvt": 7.434029841171774,
+    "oracle_within_10ft": 0.9065253625208741,
+    "likpf_mean_rmse_tvt": 11.594897672217703,
+    "likpf_mean_within_10ft": 0.772807479091509,
+    "exp101_error_ranker_rmse_tvt": 11.600096614747736,
+    "exp101_error_ranker_within_10ft": 0.7714520311766234
+  },
+  "selection": {
+    "best_gate_likpf_mean_rows": 3594790,
+    "best_gate_likpf_mean_rate": 0.9500001189221216,
+    "best_gate_pf_ancc_rows": 149880,
+    "best_gate_pf_ancc_rate": 0.039609000991551825,
+    "best_gate_beam_mean_rows": 39319,
+    "best_gate_beam_mean_rate": 0.01039088008632651
+  },
+  "source": {
+    "rows": 3783989,
+    "wells": 773,
+    "train_feature_sha256": "4bd9df60f5c09f7a3029dac399afef73aa45b0158a7fd06a62a56f85fd0fde38",
+    "train_feature_decompressed_sha256": "1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a",
+    "schema_sha256": "203e4f9a280fe901f5f21d39b85c3e0e2a7fe10c466081c15015c7fb014a0413",
+    "exp101_feature_schema_sha256": "ea2819375dd025448c3e294b56fd92179b8b261e22f5a7fb37fbf3e8ddfac9c6",
+    "exp101_model_manifest_sha256": "4f453761f1cc09042767baa934f8a1c5a89036bfb1c244a5f3fc5ab0cc843cc5"
+  },
+  "sha256": {
+    "metrics": "e0d540e4e28c3ef43b62a29aeee7e9aca83f6fd49a6e083d7f3f2299a61904a0",
+    "predictions": "5517f938f14117ee802e85271ae3be66f771e8ea0cb766009c69278bd0bd9d47",
+    "predictions_decompressed": "469e9fa137ffa7f3924711dbe1bb8f67f99d97678442c3d209426031a5f48330",
+    "best_gate_prediction": "5181ebf6118fde1f78a5be8ea591fc8d9b05b8c15fa247d7e7bb711b12de8c79",
+    "selection_distribution": "493975cc83f74da0923386c7304b620083bf3089e6925a02d5de7a4abc126852",
+    "by_well": "0783fa286a63d01400c665bc8f779ed403ea00d7dd52acd8206df7dc7e283eae",
+    "bucket_metrics": "53a1d58caa7ec4ed0f9a42c19dcc9427a45d71b9f4407221550b9a2458500d3e"
+  },
+  "local_validation": {
+    "py_compile": "passed",
+    "ruff_check": "passed",
+    "validate_exp": "passed",
+    "prepare_kaggle_train": "passed",
+    "kaggle_train_v1": "failed_attribute_error_series_codes",
+    "kaggle_train_v2": "complete"
+  },
+  "artifacts": {
+    "output_dir": "experiments/exp102_confidence_gated_likpf_fallback_on_exp101/kaggle/output/train_v2",
+    "summary": "experiments/exp102_confidence_gated_likpf_fallback_on_exp101/kaggle/output/train_v2/artifacts/exp102_confidence_gated_likpf_fallback_on_exp101_summary.json",
+    "metrics": "experiments/exp102_confidence_gated_likpf_fallback_on_exp101/kaggle/output/train_v2/artifacts/exp102_confidence_gated_likpf_fallback_on_exp101_metrics.csv",
+    "selection_distribution": "experiments/exp102_confidence_gated_likpf_fallback_on_exp101/kaggle/output/train_v2/artifacts/exp102_confidence_gated_likpf_fallback_on_exp101_selection_distribution.csv",
+    "by_well": "experiments/exp102_confidence_gated_likpf_fallback_on_exp101/kaggle/output/train_v2/artifacts/exp102_confidence_gated_likpf_fallback_on_exp101_by_well.csv",
+    "bucket_metrics": "experiments/exp102_confidence_gated_likpf_fallback_on_exp101/kaggle/output/train_v2/artifacts/exp102_confidence_gated_likpf_fallback_on_exp101_bucket_metrics.csv",
+    "oof_predictions": "experiments/exp102_confidence_gated_likpf_fallback_on_exp101/kaggle/output/train_v2/artifacts/exp102_confidence_gated_likpf_fallback_on_exp101_oof_predictions.csv.gz"
+  },
+  "notes": [
+    "Train-side posthoc audit only.",
+    "The best gate improves RMSE but slightly worsens within10, so no inference candidate or submission.csv is selected.",
+    "Next step should be continuity/raw-test parity and worst-well guard before any inference port."
+  ]
+}

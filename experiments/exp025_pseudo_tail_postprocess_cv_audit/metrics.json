@@ -1,0 +1,135 @@
+{
+  "artifact_rows": {
+    "pseudo_tail_feature_importance": 125,
+    "pseudo_tail_postprocess_alphas": 55,
+    "pseudo_tail_postprocess_bucket_summary": 35,
+    "pseudo_tail_postprocess_fold_metrics": 5,
+    "pseudo_tail_postprocess_metrics": 11,
+    "pseudo_tail_postprocess_selection": 10,
+    "pseudo_tail_source_summary": 3615
+  },
+  "clean_postprocess_supported": true,
+  "cv": 12.87078,
+  "experiment": "exp025_pseudo_tail_postprocess_cv_audit",
+  "leave_one_original_fold_out_bucket_alpha_fit_cv": 12.88783,
+  "leave_one_original_fold_out_fixed_selection_cv": 12.87078,
+  "metric": "rmse",
+  "metrics": [
+    {
+      "candidate": "exp014_bucket_shrink_params",
+      "delta_vs_raw": -0.072158,
+      "method": "distance_bucket_shrink",
+      "params_json": "{\"buckets\":[{\"alpha\":0.2,\"max_step\":49,\"name\":\"rows_0_49\"},{\"alpha\":0.5917180252647632,\"max_step\":249,\"name\":\"rows_50_249\"},{\"alpha\":1.15,\"max_step\":999,\"name\":\"rows_250_999\"},{\"alpha\":1.15,\"max_step\":2499,\"name\":\"rows_1000_2499\"},{\"alpha\":1.0490770312511664,\"max_step\":1000000000,\"name\":\"rows_2500_plus\"}],\"selectable\":true}",
+      "rmse": 12.87078,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "far_alpha_110",
+      "delta_vs_raw": -0.061674,
+      "method": "distance_bucket_shrink",
+      "params_json": "{\"buckets\":[{\"alpha\":1.0,\"max_step\":49,\"name\":\"rows_0_49\"},{\"alpha\":1.0,\"max_step\":249,\"name\":\"rows_50_249\"},{\"alpha\":1.1,\"max_step\":999,\"name\":\"rows_250_999\"},{\"alpha\":1.1,\"max_step\":2499,\"name\":\"rows_1000_2499\"},{\"alpha\":1.1,\"max_step\":1000000000,\"name\":\"rows_2500_plus\"}],\"selectable\":true}",
+      "rmse": 12.881263,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "far_alpha_105",
+      "delta_vs_raw": -0.036896,
+      "method": "distance_bucket_shrink",
+      "params_json": "{\"buckets\":[{\"alpha\":1.0,\"max_step\":49,\"name\":\"rows_0_49\"},{\"alpha\":1.0,\"max_step\":249,\"name\":\"rows_50_249\"},{\"alpha\":1.05,\"max_step\":999,\"name\":\"rows_250_999\"},{\"alpha\":1.05,\"max_step\":2499,\"name\":\"rows_1000_2499\"},{\"alpha\":1.05,\"max_step\":1000000000,\"name\":\"rows_2500_plus\"}],\"selectable\":true}",
+      "rmse": 12.906041,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "near_shrink_far_105",
+      "delta_vs_raw": -0.03426,
+      "method": "distance_bucket_shrink",
+      "params_json": "{\"buckets\":[{\"alpha\":0.2,\"max_step\":49,\"name\":\"rows_0_49\"},{\"alpha\":0.6,\"max_step\":249,\"name\":\"rows_50_249\"},{\"alpha\":1.05,\"max_step\":999,\"name\":\"rows_250_999\"},{\"alpha\":1.05,\"max_step\":2499,\"name\":\"rows_1000_2499\"},{\"alpha\":1.05,\"max_step\":1000000000,\"name\":\"rows_2500_plus\"}],\"selectable\":true}",
+      "rmse": 12.908677,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "raw_pseudo_tail",
+      "delta_vs_raw": 0.0,
+      "method": "raw",
+      "params_json": "{\"selectable\":true}",
+      "rmse": 12.942938,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "near_only_shrink",
+      "delta_vs_raw": 0.002629,
+      "method": "distance_bucket_shrink",
+      "params_json": "{\"buckets\":[{\"alpha\":0.2,\"max_step\":49,\"name\":\"rows_0_49\"},{\"alpha\":0.6,\"max_step\":249,\"name\":\"rows_50_249\"},{\"alpha\":1.0,\"max_step\":999,\"name\":\"rows_250_999\"},{\"alpha\":1.0,\"max_step\":2499,\"name\":\"rows_1000_2499\"},{\"alpha\":1.0,\"max_step\":1000000000,\"name\":\"rows_2500_plus\"}],\"selectable\":true}",
+      "rmse": 12.945566,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "same_oof_bucket_alpha_fit",
+      "delta_vs_raw": -0.079368,
+      "method": "bucket_alpha_fit",
+      "params_json": "{}",
+      "rmse": 12.86357,
+      "rows": 3783989,
+      "selectable": false
+    },
+    {
+      "candidate": "leave_one_original_fold_out_bucket_alpha_fit",
+      "delta_vs_raw": -0.055107,
+      "rmse": 12.88783,
+      "rows": 3783989
+    },
+    {
+      "candidate": "well_hash_holdout_bucket_alpha_fit",
+      "delta_vs_raw": -0.063537,
+      "rmse": 12.879401,
+      "rows": 3783989
+    },
+    {
+      "candidate": "leave_one_original_fold_out_fixed_candidate_selection",
+      "delta_vs_raw": -0.072158,
+      "raw_holdout_rmse": 12.942938,
+      "rmse": 12.87078,
+      "rows": 3783989
+    },
+    {
+      "candidate": "well_hash_holdout_fixed_candidate_selection",
+      "delta_vs_raw": -0.072158,
+      "raw_holdout_rmse": 12.942938,
+      "rmse": 12.87078,
+      "rows": 3783989
+    }
+  ],
+  "parent_best_cv": 12.942938,
+  "parent_public_lb": 12.166,
+  "public_lb": null,
+  "raw_pseudo_tail_cv": 12.942938,
+  "same_oof_bucket_alpha_fit_cv": 12.86357,
+  "selected_clean_cv": 12.87078,
+  "selected_method": "exp014_bucket_shrink_params",
+  "supported_methods": [
+    {
+      "method": "leave_one_original_fold_out_bucket_alpha_fit",
+      "original_fold_cv": 12.88783,
+      "well_hash_cv": 12.879401
+    },
+    {
+      "method": "exp014_bucket_shrink_params",
+      "original_fold_cv": 12.87078,
+      "well_hash_cv": 12.87078
+    }
+  ],
+  "source_experiment": "exp024_pseudo_tail_inference_postprocess",
+  "source_variant": "pseudo_tail_3_cutoffs_distance_balanced",
+  "status": "completed",
+  "updated_at": "2026-06-06T05:10:59.393685+00:00",
+  "well_hash_holdout_bucket_alpha_fit_cv": 12.879401,
+  "well_hash_holdout_fixed_selection_cv": 12.87078,
+  "key_idea": "Held-out postprocess audit for exp024 pseudo-tail anchor",
+  "notes": "Kaggle train v1: raw pseudo-tail 12.942938; fixed exp014_bucket_shrink_params 12.870780 selected by original-fold and well-hash holdout; no submission."
+}

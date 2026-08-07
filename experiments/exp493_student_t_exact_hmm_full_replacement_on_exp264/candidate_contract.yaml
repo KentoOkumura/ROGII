@@ -1,0 +1,119 @@
+schema_version: 1.0.0
+source_of_truth: exp264_fixed12_ids_with_exp374_student_t_semantic_exact_hmm_replacement
+expected_rows: 3783989
+expected_wells: 773
+
+replacement:
+  semantic_slot_id: exact_hmm
+  old_value_source: exp209_gaussian_exact_hmm
+  new_value_source: exp374_student_t_df4_exact_hmm
+  candidate_id_changes: 0
+  candidate_order_changes: 0
+  added_candidates: 0
+  removed_candidates: 0
+  changed_value_candidates: 4
+  unchanged_value_candidates: 8
+
+score_candidates:
+  - {id: exp226_k16, kind: primitive, family: geometry, value_status: unchanged}
+  - {id: selfgr_hmm_a070, kind: primitive, family: self_gr_hmm, value_status: unchanged}
+  - {id: likpf_mean, kind: primitive, family: likelihood_pf, value_status: unchanged}
+  - id: exact_hmm
+    kind: primitive
+    family: exact_hmm
+    value_status: changed
+    semantic_value_source: exp374_student_t_df4_exact_hmm
+  - {id: pf_ancc, kind: primitive, family: particle_filter, value_status: unchanged}
+  - {id: beam_mean, kind: primitive, family: beam, value_status: unchanged}
+  - id: exp226_k16__selfgr_hmm_a070
+    kind: pair_mean_50
+    family: geometry_self_gr_hmm_pair
+    parents: [exp226_k16, selfgr_hmm_a070]
+    weights: [0.5, 0.5]
+    value_status: unchanged
+  - id: exp226_k16__exact_hmm
+    kind: pair_mean_50
+    family: geometry_exact_hmm_pair
+    parents: [exp226_k16, exact_hmm]
+    weights: [0.5, 0.5]
+    value_status: changed
+  - id: exp226_k16__likpf_mean
+    kind: pair_mean_50
+    family: geometry_likelihood_pf_pair
+    parents: [exp226_k16, likpf_mean]
+    weights: [0.5, 0.5]
+    value_status: unchanged
+  - id: selfgr_hmm_a070__likpf_mean
+    kind: pair_mean_50
+    family: self_gr_hmm_likelihood_pf_pair
+    parents: [selfgr_hmm_a070, likpf_mean]
+    weights: [0.5, 0.5]
+    value_status: unchanged
+  - id: likpf_mean__exact_hmm
+    kind: pair_mean_50
+    family: likelihood_pf_exact_hmm_pair
+    parents: [likpf_mean, exact_hmm]
+    weights: [0.5, 0.5]
+    value_status: changed
+    aliases_not_registered_as_candidates: [blend_likpf_hmm_w500]
+  - id: exp226_w500_50_50
+    kind: named_fixed
+    family: geometry_likelihood_pf_exact_hmm_fixed
+    parents: [exp226_k16, likpf_mean, exact_hmm]
+    weights: [0.5, 0.25, 0.25]
+    value_status: changed
+
+legal_domains:
+  primitive_pair_bank:
+    role: primary_meta_and_hard_readout_domain
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_k16__selfgr_hmm_a070
+      - exp226_k16__exact_hmm
+      - exp226_k16__likpf_mean
+      - selfgr_hmm_a070__likpf_mean
+      - likpf_mean__exact_hmm
+  primitive_fixed_bank:
+    role: secondary_fixed_fallback_comparison_domain
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_w500_50_50
+
+candidate_id_model_encoding:
+  type: one_hot
+  order_source: score_candidates_declared_order
+  width: 12
+  keep_string_id_in_artifacts: true
+  ordinal_index_as_model_feature: false
+
+confidence_contract:
+  exact_hmm:
+    confidence_valid: candidate_and_native_fields_are_finite
+    sigma_tvt: student_t_df4_on_exp209_absolute_tvt_hmm_std
+    source_loglik: student_t_df4_on_exp209_absolute_tvt_hmm_loglik
+    loglik_per_row: source_loglik_divided_by_evaluation_rows_in_well
+    output_namespace: confidence__exact_hmm
+  preserve_parent_feature_names: true
+  universal_proxy_required_for_every_candidate: true
+
+forbidden_behaviors:
+  - register_student_t_exact_hmm_as_a_thirteenth_candidate
+  - retain_gaussian_exact_hmm_as_a_parallel_candidate
+  - change_candidate_ids_order_or_legal_domains
+  - leave_any_exact_hmm_dependent_formula_on_gaussian_values
+  - refreeze_or_select_feature_columns_on_replacement_oof
+  - use_truth_error_or_oracle_as_feature
+  - use_source_fold_as_feature
+  - tune_candidate_weight_usage_threshold_or_domain_on_same_oof
+  - train_downstream_tvt
+  - inference_or_submission

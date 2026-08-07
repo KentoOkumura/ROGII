@@ -1,0 +1,182 @@
+experiment:
+  name: "exp187_cluster_outlier_alt_typewell_pfbeam_audit"
+  description: Train-side audit for regenerating PF/Beam candidates on cluster-outlier wells with alternative cluster-composite typewells.
+  route: pf_beam
+  status: completed_train_side_rejected_no_submit
+  created_at: "2026-07-04"
+  updated_at: "2026-07-04"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+
+lineage:
+  parent: cluster_outlier_alt_typewell_pfbeam_audit backlog
+  references:
+    - exp065_typewell_supertype_cluster_cv_audit
+    - exp114_spatial_neighbor_prior_signal_audit
+    - exp186_typewell_late_range_pfbeam_generation_soft_prior
+  implementation_source: cluster_outlier_alt_typewell_pfbeam_audit.py
+  diff_summary: >
+    Regenerates PF/Beam candidates on a scoped set of target-free cluster-outlier train wells
+    while changing only the reference typewell source. It compares each query well's own
+    typewell against TVT-binned composite typewells built from all available members of the
+    nearest other cluster and the inverse-distance weighted nearby-majority cluster. It scores
+    the same TVT_input-missing-equivalent train rows used by the exp072/099 PF/Beam audits.
+    This is a train-side diagnostic only:
+    no LightGBM model is trained, no hard switch or direct replacement is selected, no
+    inference port is created, and no submission candidate is produced.
+
+validation:
+  strategy: train_well_pseudotail_cluster_outlier_alt_typewell_pfbeam_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within10
+    - own_vs_alt_delta_rmse
+    - cluster_outlier_subset_rmse
+    - distance_bucket_rmse
+    - path_jump_rate
+    - pf_effective_sample_size
+    - pf_resampling_rate
+    - worst_well_regression_vs_own_typewell
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Cluster features use exp065 typewell cluster assignment and exp114 target-free well geometry.
+    - Alternative typewell strategy selection does not use evaluation-zone true TVT, oracle candidates, or true-error rank.
+    - Evaluation-zone true TVT is materialized as last_known_tvt + target from the exp072 cache only for scoring.
+    - Alternative cluster typewells are TVT-binned composites of all available member typewells in the source cluster, not single representative wells.
+    - Positive train-side results are diagnostic only and must become alt candidates or confidence features before any inference port.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp065_cluster_assignments_local: experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/common_typewell_cluster_assignments.csv
+  exp114_well_geometry_local: experiments/exp114_spatial_neighbor_prior_signal_audit/kaggle/output/train_v1/artifacts/exp114_spatial_neighbor_prior_signal_audit_well_geometry_summary.csv
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+cluster:
+  assignment_method: native_overlap
+  assignment_threshold: "1"
+  min_cluster_size: 2
+  robust_scale_floor_ft: 250.0
+  nearby_k_values: [8]
+  nearby_weight_epsilon_ft: 250.0
+  nearby_weighted_majority_min_share: 0.42
+  target_gate:
+    own_cluster_dist_z_gt: 1.5
+    nearest_other_closer: true
+    nearby_weighted_majority_diff: true
+    nearby_k: 8
+    mode: any
+
+model:
+  name: cluster_outlier_alt_typewell_pfbeam_audit
+  estimator: none_pfbeam_generation_audit
+  target: exp072_target_for_scoring_only
+  typewell_strategies:
+    - own_typewell
+    - nearest_other_cluster_composite
+    - nearby_majority_cluster_composite_k8
+  validation_surface:
+    max_target_wells: 64
+    well_include: []
+    min_known_prefix_rows: 160
+    min_eval_rows: 64
+  composite_typewell:
+    tvt_bin_ft: 1.0
+    aggregation: median_gr_by_tvt_bin
+    min_rows: 3
+  runtime:
+    particles: 260
+    seed_count: 8
+    likelihood_temperature: 6.0
+    topk_oracle: 3
+    resample_threshold: 0.5
+    init_spread: 4.5
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_pos_noise: 0.10
+    resample_velocity_noise: 0.001
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+  beam:
+    beam_size: 14
+    move_radius: 2
+    move_cost: 16.0
+    error_scale: 120.0
+    smooth_window: 5
+
+audit:
+  mode: cluster_outlier_alt_typewell_pfbeam_audit
+  output_prefix: exp187_cluster_outlier_alt_typewell_pfbeam_audit
+  primary_baseline: pf_own_typewell_lik_mean
+  path_jump_threshold_ft: 8.0
+  top_n_target_wells: 64
+  expected_train_artifacts:
+    - exp187_cluster_outlier_alt_typewell_pfbeam_audit_candidate_metrics.csv
+    - exp187_cluster_outlier_alt_typewell_pfbeam_audit_strategy_delta_metrics.csv
+    - exp187_cluster_outlier_alt_typewell_pfbeam_audit_bucket_metrics.csv
+    - exp187_cluster_outlier_alt_typewell_pfbeam_audit_by_well.csv
+    - exp187_cluster_outlier_alt_typewell_pfbeam_audit_group_metrics.csv
+    - exp187_cluster_outlier_alt_typewell_pfbeam_audit_pf_diagnostics.csv
+    - exp187_cluster_outlier_alt_typewell_pfbeam_audit_target_well_features.csv
+    - exp187_cluster_outlier_alt_typewell_pfbeam_audit_well_status.csv
+    - exp187_cluster_outlier_alt_typewell_pfbeam_audit_row_candidates.csv.gz
+    - exp187_cluster_outlier_alt_typewell_pfbeam_audit_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+      - kentookumura/exp114-spatial-neighbor-prior-signal-audit-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_query_well_seed_index_shared_across_typewell_strategies
+  stochastic_components:
+    - exp072_eval_zone_pf_particle_propagation
+    - exp072_eval_zone_pf_resampling
+  parallel_rng_policy: sequential_initial_audit_with_per_well_stable_seeds_no_global_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it is train-side diagnostic only.
+    - PF seeds are shared across typewell strategies for the same query well and seed index.
+    - Beam variants are deterministic for fixed input and config.
+    - V2 uses exp072's TVT_input-missing-equivalent train rows instead of the v1 artificial 192-row prefix holdout.
+    - No inference or submission output is generated by this experiment.
+
+inference:
+  mode: not_applicable_train_side_audit_only
+  selected_candidate: null
+  notes:
+    - Positive train-side alt typewell results must be converted to alt candidates, disagreement diagnostics, or selector confidence features before any inference port.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog cluster_outlier_alt_typewell_pfbeam_audit as a train-side PF/Beam audit.
+  - V1 used an artificial 192-row prefix holdout and single representative alt typewells; V2 corrects this to exp072-style eval rows and cluster-composite alt typewells.
+  - Direct PF/Beam candidate replacement, hard typewell switch, inference port, and submit are explicitly out of scope.

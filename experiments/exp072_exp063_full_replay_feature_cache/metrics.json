@@ -1,0 +1,28 @@
+{
+  "experiment": "exp072_exp063_full_replay_feature_cache",
+  "status": "completed",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": null,
+  "feature_cache": {
+    "variant": "pixiux_likpf_public_replay",
+    "expected_feature_count": 196,
+    "feature_count": 196,
+    "rows": 3783989,
+    "wells": 773,
+    "train_features": "exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz",
+    "feature_schema": "exp063_full_replay_feature_cache_feature_schema.csv",
+    "summary": "exp063_full_replay_feature_cache_summary.json",
+    "sha256": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18",
+    "previous_v1_sha256": "86d4777ddf44134cc8e1c7ce4eebf56cc1537ce6baf2e39f75c5c65cf26335ae",
+    "elapsed_seconds": 17728.972,
+    "elapsed_feature_seconds": 15380.262,
+    "kaggle_package": "experiments/exp072_exp063_full_replay_feature_cache/kaggle/train",
+    "kernel_id": "kentookumura/exp072-exp063-full-replay-feature-cache-train",
+    "kernel_version": 2,
+    "enable_gpu": false,
+    "kaggle_status": "COMPLETE"
+  },
+  "notes": "CPU-only deterministic train feature cache completed on Kaggle v2. The generated cache has 3,783,989 rows, 773 wells, and 196 features. v2 seeds ANCC PF, Z PF, and likelihood-PF from stable SHA256 keys using well id and split. It does not generate test features; downstream inference notebooks must regenerate current raw test PF/Beam/likelihood-PF features with the same deterministic policy."
+}

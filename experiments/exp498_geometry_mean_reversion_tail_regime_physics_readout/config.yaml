@@ -1,0 +1,340 @@
+experiment:
+  name: exp498_geometry_mean_reversion_tail_regime_physics_readout
+  description: >-
+    Explain the exp490 pooled-versus-well-tail split with one pre-registered,
+    target-free physical regime built from visible-prefix GR observability,
+    geometry disagreement, and early suffix offset evidence. This is a saved
+    full-OOF diagnostic only and does not generate or select predictions.
+  route: pf_beam
+  status: completed_terminal_fail
+  created_at: "2026-08-01"
+  updated_at: "2026-08-01"
+
+lineage:
+  parent: exp490_geometry_centered_mean_reverting_offset_hmm
+  comparison: saved_exp357_parent_prediction_inside_exp490_full_oof
+  steering: ../../.steering/20260801-exp498-geometry-mean-reversion-tail-regime-physics-readout
+  diff_summary: >-
+    Adds one truth-late physics-regime readout over SHA-pinned exp490 full OOF.
+    It does not change exp490, regenerate predictions, run an HMM/PF/Beam,
+    train a model, blend candidates, or create a selector.
+
+implementation:
+  enabled: true
+  scope: saved_full_oof_truth_late_physics_regime_diagnostic
+  implementation_approved: true
+  train_notebook_state: compact_selfcontained_executed
+  inference_notebook_state: template_placeholder_disabled_out_of_scope
+  kaggle_package_approved: true
+  kaggle_run_approved: true
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+validation:
+  strategy: saved_full_oof_truth_late_physics_regime_diagnostic
+  metric: descriptive_candidate_minus_parent_by_well_rmse_not_cv
+  seed: 42
+  n_folds: 5
+  group_column: well
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  role: mechanism_attribution_not_candidate_promotion
+  parent_terminal_close_must_remain: true
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  horizontal_target_read_allowed: false
+  visible_prefix_columns: [TVT_input, MD, Z, GR]
+  typewell_columns: [TVT, GR]
+  exp490_merge_source:
+    kernel_id: kentookumura/exp490-mean-revert-full-merge
+    kernel_version: 1
+    kernel_id_no: 129321382
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp490-mean-revert-full-merge/artifacts
+      - /kaggle/input/exp490-mean-revert-full-merge/artifacts
+      - /tmp/kaggle-output/exp490_geometry_centered_mean_reverting_offset_hmm/merge_v1/artifacts
+  inputs:
+    predictions:
+      filename: exp490_geometry_centered_mean_reverting_offset_hmm_stage1_full_oof_predictions.csv.gz
+      expected_rows: 3783989
+      raw_gzip_sha256: 99030b33d493cc5f195f7d1a867f0d812a539143da9e1f59277e53779261b72c
+      decompressed_sha256: e020e82e748a7836085657c4058070ff7853ed285639f2c2555cab721f9e9a07
+      phase_a_safe_columns:
+        - well
+        - row_idx
+        - suffix_offset
+        - tvt_geop
+        - geometry_mean_reverting_delta_mean
+        - geometry_mean_reverting_hmm_std
+        - dmd
+        - k16_segment_id
+        - k16_segment_span
+        - rho
+        - exp226_pred
+        - md_since
+      post_freeze_columns: [fold]
+      forbidden_before_freeze:
+        - true_tvt_readout_only
+        - candidate_error
+        - parent_error
+        - exp226_error
+        - exp357_parent_prediction
+    by_well_metrics:
+      filename: exp490_geometry_centered_mean_reverting_offset_hmm_stage1_full_oof_by_well_metrics.csv
+      expected_rows: 773
+      sha256: 65abf0131d06473980d71410ae931aa21e4c5b4a90d7975024c32713ecdba076
+      phase: post_freeze_outcome_only
+    episode_metrics:
+      filename: exp490_geometry_centered_mean_reverting_offset_hmm_stage1_full_oof_episode_metrics.csv
+      expected_rows: 638
+      sha256: c34bb3d088a2dfea381ec72bb790eab61eb51f731d8d7863f72bad43d07e6d7b
+      phase: post_freeze_outcome_only
+    segment_contract:
+      filename: exp490_geometry_centered_mean_reverting_offset_hmm_stage1_full_oof_k16_segment_contract.csv
+      expected_rows: 12368
+      sha256: 53f6412c7a5489b33d2ca22bd47ca60b3f1e844b2e289228825659e6c1a50a30
+    well_manifest:
+      filename: exp490_geometry_centered_mean_reverting_offset_hmm_stage1_full_oof_well_manifest.csv
+      expected_rows: 773
+      sha256: cac549f53ef4a98fce8e3fbf7381c0313f0f28f65409639a0e7d36cd89be7f5f
+    raw_sha_manifests:
+      expected_combined_wells: 773
+      source: exp490_stage1_shard_decoder_manifests
+      shards:
+        - shard_index: 0
+          filename: exp490_geometry_centered_mean_reverting_offset_hmm_stage1_shard0_decoder_manifest.json
+          sha256: d599b0750d4c7b49c7159f988f668e67943fb37836e2137631bfcb8e95ed985c
+          kernel_id: kentookumura/exp490-mean-revert-full-shard0
+          candidates:
+            - /kaggle/input/notebooks/kentookumura/exp490-mean-revert-full-shard0/artifacts
+            - /kaggle/input/exp490-mean-revert-full-shard0/artifacts
+            - /tmp/kaggle-output/exp490_geometry_centered_mean_reverting_offset_hmm/shard0_v1/artifacts
+        - shard_index: 1
+          filename: exp490_geometry_centered_mean_reverting_offset_hmm_stage1_shard1_decoder_manifest.json
+          sha256: c378c542e0d4d8eee6ca11bfe388363928b27f8e9cc43ea3f19e8e11142716e7
+          kernel_id: kentookumura/exp490-mean-revert-full-shard1
+          candidates:
+            - /kaggle/input/notebooks/kentookumura/exp490-mean-revert-full-shard1/artifacts
+            - /kaggle/input/exp490-mean-revert-full-shard1/artifacts
+            - /tmp/kaggle-output/exp490_geometry_centered_mean_reverting_offset_hmm/shard1_v1/artifacts
+        - shard_index: 2
+          filename: exp490_geometry_centered_mean_reverting_offset_hmm_stage1_shard2_decoder_manifest.json
+          sha256: e5b48be4b720a748cf11752c7e6e6bb5f0e04db59add583f2008be57c4a153ee
+          kernel_id: kentookumura/exp490-mean-revert-full-shard2
+          candidates:
+            - /kaggle/input/notebooks/kentookumura/exp490-mean-revert-full-shard2/artifacts
+            - /kaggle/input/exp490-mean-revert-full-shard2/artifacts
+            - /tmp/kaggle-output/exp490_geometry_centered_mean_reverting_offset_hmm/shard2_v1/artifacts
+        - shard_index: 3
+          filename: exp490_geometry_centered_mean_reverting_offset_hmm_stage1_shard3_decoder_manifest.json
+          sha256: b9dea32cc5756f2c69f2bc8c5aac08557e01ad12976dd79ac4e8bedc7113d245
+          kernel_id: kentookumura/exp490-mean-revert-full-shard3
+          candidates:
+            - /kaggle/input/notebooks/kentookumura/exp490-mean-revert-full-shard3/artifacts
+            - /kaggle/input/exp490-mean-revert-full-shard3/artifacts
+            - /tmp/kaggle-output/exp490_geometry_centered_mean_reverting_offset_hmm/shard3_v1/artifacts
+    scientific_contract:
+      sha256: 6398bbac380d3eca3a6255681b22c44c26de268ce6d4fad9dd242c066f2b9a35
+  raw_sha_policy: require_each_horizontal_and_typewell_sha_from_exp490_shard_input_manifests
+
+readout:
+  phase_order:
+    - validate_input_sha_and_identity
+    - compute_target_free_well_physics
+    - freeze_feature_contract_and_content_sha
+    - attach_fold_and_saved_outcomes
+    - evaluate_single_primary_regime
+  features:
+    suffix_horizon_md:
+      definition: sum_k16_segment_dmd_span
+      bins: [0.0, 4000.0, 6000.0, .inf]
+      labels: [short_0_to_4000, medium_over4000_to_6000, long_over6000]
+      closed: right
+    k16_median_segment_span_ft:
+      definition: median_k16_segment_dmd_span
+      bins: [0.0, 240.0, 360.0, .inf]
+      labels: [short_0_to_240, medium_over240_to_360, long_over360]
+      closed: right
+    prefix_gr_sigma:
+      definition: exact_exp490_prefix_residual_std_clipped_10_60
+      bins: [10.0, 20.0, 40.0, 60.0]
+      labels: [low_10_to_under20, mid_20_to_under40, high_40_to_60]
+    prefix_gr_information_ratio:
+      definition: typewell_gr_p95_minus_p05_over_prefix_gr_sigma_on_visible_prefix_tvt
+      bins: [0.0, 1.0, 2.0, .inf]
+      labels: [weak_under1, medium_1_to_under2, strong_2_plus]
+      closed: left
+    geometry_disagreement_median_ft:
+      definition: median_abs_exp226_pred_minus_tvt_geop_over_suffix
+      bins: [0.0, 2.0, 10.0, .inf]
+      labels: [close_under2, moderate_2_to_under10, conflict_10_plus]
+      closed: left
+      interpretation: geometry_vs_gr_corrected_exp226_disagreement_proxy_not_ground_truth_uncertainty
+    early_abs_offset_ft:
+      definition: abs_median_geometry_mean_reverting_delta_mean_suffix_offsets_0_through_31
+      bins: [0.0, 1.0, 5.0, .inf]
+      labels: [small_under1, moderate_1_to_under5, material_5_plus]
+      closed: left
+    state_uncertainty_median_ft:
+      definition: median_geometry_mean_reverting_hmm_std_over_suffix
+      bins: [0.0, 2.0, 5.0, .inf]
+      labels: [low_under2, medium_2_to_under5, high_5_plus]
+      closed: left
+      use: secondary_descriptive_only
+  primary_regime:
+    name: weak_gr_geometry_conflict
+    weak_observation: prefix_gr_sigma_ge_40_or_prefix_gr_information_ratio_lt_1
+    geometry_conflict: geometry_disagreement_median_ft_ge_10
+    material_early_offset: early_abs_offset_ft_ge_5
+    formula: weak_observation_and_geometry_conflict_and_material_early_offset
+    prefix_gr_sigma_minimum: 40.0
+    prefix_gr_information_ratio_maximum_exclusive: 1.0
+    geometry_disagreement_minimum_ft: 10.0
+    early_abs_offset_minimum_ft: 5.0
+    allow_post_freeze_redefinition: false
+  outcomes:
+    harmful_well: candidate_minus_parent_rmse_ft_gt_0_25
+    catastrophic_tail_well: candidate_minus_parent_rmse_ft_gt_5
+    episode: candidate_sse_minus_parent_sse
+    harmful_well_delta_rmse_threshold_ft: 0.25
+    catastrophic_tail_delta_rmse_threshold_ft: 5.0
+  physics_regime_requires_all:
+    minimum_total_regime_wells: 20
+    minimum_regime_wells_per_supported_fold: 3
+    minimum_supported_folds: 4
+    pooled_harmful_rate_ratio_minimum: 1.5
+    minimum_folds_regime_harm_rate_higher: 4
+    pooled_mean_delta_rmse_regime_minus_complement_minimum_ft: 1.0
+    minimum_folds_mean_delta_rmse_difference_positive: 4
+    catastrophic_tail_capture_minimum_fraction: 0.30
+    regime_coverage_maximum_fraction: 0.30
+  secondary_buckets_may_select_or_rescue_primary: false
+  pass_action: permit_separate_design_of_one_uncertainty_weakened_restoring_force_formula
+  fail_action: terminate_mean_reversion_tail_regime_cause_tracking
+
+execution_contract:
+  executed_actual:
+    readouts: 1
+    target_free_well_aggregations: 773
+    truth_late_folds: 5
+    new_hmm_well_runs: 0
+    new_predictions: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+    pf_runs: 0
+    beam_runs: 0
+    gpu_runs: 0
+  if_separately_implemented_and_run:
+    readouts: 1
+    target_free_well_aggregations: 773
+    truth_late_folds: 5
+    new_hmm_well_runs: 0
+    new_predictions: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+    pf_runs: 0
+    beam_runs: 0
+    gpu_runs: 0
+
+execution:
+  implementation_approved: true
+  run_readout: false
+  kaggle_push_approved: false
+  inference: false
+  create_submission: false
+  competition_submission: false
+
+model:
+  name: none_saved_oof_physics_diagnostic
+  estimator: none
+  prediction_generation: false
+  selector: false
+  blend: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  chunk_rows: 250000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    run_on_push: false
+    kernel_id: kentookumura/exp498-geometry-mean-reversion-tail-regime-train
+    kernel_title: exp498 geometry mean reversion tail regime train
+    kernel_id_no: 129328553
+    completed_version: 2
+    kernel_sources:
+      - kentookumura/exp490-mean-revert-full-merge
+      - kentookumura/exp490-mean-revert-full-shard0
+      - kentookumura/exp490-mean-revert-full-shard1
+      - kentookumura/exp490-mean-revert-full-shard2
+      - kentookumura/exp490-mean-revert-full-shard3
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_well_row_segment_bucket_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_outer_worker_1
+  feature_sha_policy: decompressed_content_sha_for_gzip_and_logical_sorted_csv_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This can become a deterministic diagnostic, not a prediction anchor, only after a byte/logical-identical rerun.
+    - Model, prediction, and submission counts remain zero by contract.
+
+planned_artifacts:
+  - exp498_geometry_mean_reversion_tail_regime_physics_readout_input_manifest.json
+  - exp498_geometry_mean_reversion_tail_regime_physics_readout_feature_contract.json
+  - exp498_geometry_mean_reversion_tail_regime_physics_readout_target_free_well_features.csv
+  - exp498_geometry_mean_reversion_tail_regime_physics_readout_by_fold.csv
+  - exp498_geometry_mean_reversion_tail_regime_physics_readout_bucket_summary.csv
+  - exp498_geometry_mean_reversion_tail_regime_physics_readout_summary.json
+
+result:
+  status: completed_terminal_fail
+  technical_passed: true
+  physics_regime_passed: false
+  primary_regime_wells: 0
+  regime_coverage_fraction: 0.0
+  supported_folds: 0
+  weak_observation_wells: 359
+  geometry_conflict_wells: 0
+  material_early_offset_wells: 1
+  geometry_disagreement_max_ft: 5.337990905240076
+  early_abs_offset_max_ft: 5.037075796366853
+  catastrophic_tail_wells_total: 51
+  catastrophic_tail_capture_fraction: 0.0
+  decision: terminate_mean_reversion_tail_regime_cause_tracking
+  parent_terminal_close_preserved: true
+  inference: false
+  submission: false
+  runtime_seconds: 76.68530434299998
+  peak_rss_gib: 0.36054229736328125
+  artifact_dir: kaggle/output/train_v2/artifacts
+
+notes:
+  - Design frozen on 2026-08-01; compact self-contained implementation was approved separately on 2026-08-01.
+  - Kaggle private CPU package and the single scientific readout were approved on 2026-08-01.
+  - Canonical Kaggle slug is shortened to 48 characters to satisfy the Kaggle 50-character limit.
+  - exp490 remains terminal fail-closed regardless of this readout.
+  - No best-bucket search, same-OOF rescue, prediction, inference, or submission is allowed.
+  - Version 2 completed on 2026-08-01; the pre-registered regime had zero wells and all six physics checks failed.
+  - Post-completion run and push guards are disabled to prevent an unapproved rerun.

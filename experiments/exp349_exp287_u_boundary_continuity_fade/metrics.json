@@ -1,0 +1,140 @@
+{
+  "experiment": "exp349_exp287_u_boundary_continuity_fade",
+  "status": "kaggle_cpu_v2_complete_fail_close_no_rescue",
+  "route": "ml_model",
+  "metric": "saved_exp287_outer5_group_oof_rmse",
+  "cv": 8.135096925090597,
+  "public_lb": null,
+  "private_lb": null,
+  "parent": {
+    "experiment": "exp287_fold_safe_formation_74_addonly_on_exp264",
+    "cv": 8.136708220359452,
+    "rows": 3783989,
+    "wells": 773,
+    "oof_sha256": "8f026c5c5f6508fb142981832994c6ba9cded4940168c648a9df9f3e698c3913",
+    "model_manifest_sha256": "419dbdf83dd6bc343f0265aca56dd690ba1f231ee419e7cf0ff456ffdb797590"
+  },
+  "planned": {
+    "postprocess_variants": 1,
+    "reporting_folds": 5,
+    "trained_folds": 0,
+    "model_configs": 0,
+    "trained_models": 0,
+    "lightgbm_boosters": 0,
+    "pf_well_runs": 0,
+    "beam_well_runs": 0,
+    "hmm_well_runs": 0,
+    "parent_control_retraining": false,
+    "gpu": false,
+    "inference": false,
+    "submission": false
+  },
+  "method": {
+    "coordinate": "U=TVT+Z",
+    "cap_ft": 8.0,
+    "tau_md_ft": 240.0,
+    "application": "always_on",
+    "parameter_search": false
+  },
+  "implementation": {
+    "enabled": true,
+    "template_scaffold_created": true,
+    "scientific_code_created": true,
+    "compact_source_created": true,
+    "compact_notebook_candidate_created": true,
+    "fail_closed_inference_candidate_created": true,
+    "dedicated_tests_created": true,
+    "dedicated_tests_passed": 10,
+    "source_sha256": {
+      "compact_train_py": "e9182e0b121a6414c6b17a8fe2cb1d31e59320011f3b2a2da731f1b8a5951250",
+      "compact_train_ipynb": "e564b836d6fc2fcf70c8348bb0cd66857ef54133f6dd9c45b6a412df335846f3",
+      "compact_inference_py": "44c99d1f33b49436e30b9318659c75cabe35948cce17ec5ebe68fc8c87b3b475",
+      "compact_inference_ipynb": "5733413526fca1f647063eed448a5a72d384fefed0499fc4100222929cc3d7c7",
+      "tests": "42f7505aedc51fd3c29e2d006f3c1f29dc5c0f0da2dff9487d0f8fc90056f5ee"
+    },
+    "canonical_notebook_scientific_logic_created": true,
+    "kaggle_package_created": true,
+    "kaggle_run": true
+  },
+  "approvals": {
+    "design_and_scaffold": true,
+    "implementation": true,
+    "canonical_notebook_adoption": true,
+    "kaggle_stage0_run": true,
+    "inference": false,
+    "submission": false
+  },
+  "result": {
+    "variant": "u_cap8_tau240_always_on",
+    "rows": 3783989,
+    "wells": 773,
+    "parent_cv": 8.136708220359452,
+    "candidate_cv": 8.135096925090597,
+    "pooled_gain_parent_minus_candidate": 0.001611295268855173,
+    "improving_folds": 5,
+    "fold_gain_parent_minus_candidate": {
+      "0": 0.001007898583234,
+      "1": 0.0016609556204105,
+      "2": 0.0018351650762244,
+      "3": 0.0014884944416362,
+      "4": 0.002055753804802
+    },
+    "distance_gain_parent_minus_candidate": {
+      "0--64": 0.3056820604882287,
+      "64--128": 0.1358879776761581,
+      "128--240": 0.0683168570631469,
+      "240--480": 0.0272688671724039,
+      "480--1000": 0.0029012686674123,
+      "1000+": 0.0000023425414550359847,
+      "0--240_primary": 0.1100037776943949
+    },
+    "hidden_like_gain_parent_minus_candidate": {
+      "verification_like_spatial_role": 0.0020987459012804,
+      "verification_like_typewell_purged_role": 0.0022397025519893
+    },
+    "by_well_delta_median": -0.00036339573855004303,
+    "by_well_delta_p95": 0.010450855628319287,
+    "worst_well_delta": 0.06365134120902072,
+    "maximum_abs_move_tvt": 6.28279052968721,
+    "technical_pass": true,
+    "scientific_pass": false,
+    "scientific_checks_passed": 11,
+    "scientific_checks_total": 12,
+    "failed_scientific_checks": [
+      "minimum_pooled_rmse_gain_ft"
+    ],
+    "all_gates_passed": false
+  },
+  "kaggle": {
+    "kernel": "kentookumura/exp349-exp287-u-boundary-continuity-fade-train",
+    "kernel_id_no": 128239658,
+    "completed_version": 2,
+    "core_result_seconds": 156.134,
+    "notebook_total_seconds": 165.895,
+    "version_1_status": "technical_error_before_target_free_freeze",
+    "version_1_failure": "pandas_categorical_astype_return_type_compatibility"
+  },
+  "reproducibility": {
+    "executed_config_sha256": "711b12f7ca7ffc88a6746477329480ce96247316f91cb73550412890ebc37927",
+    "canonical_train_notebook_sha256": "e564b836d6fc2fcf70c8348bb0cd66857ef54133f6dd9c45b6a412df335846f3",
+    "kaggle_bootstrap_notebook_sha256": "d6f540bbec35b703db4a5e3abe3ed258b9b34caf5f742f11bffb38342cdfbba7",
+    "kernel_metadata_sha256": "faab16e86be3d2506fadcf3411383a0cf421a99ecf67af15644ba56c91eb509b",
+    "stage_a_freeze_manifest_sha256": "a1070b4a7f9bcaaa1d973bd10719ee2fe9daf29dce74899e0c67e5f0f2a64d99",
+    "target_free_candidate_sha256": "adf51375d0d9b676dd9b7610528da43a862801632eed3afd61f340b3639fcbce",
+    "target_free_diagnostic_sha256": "b6be5278cafed4cfa5ed51ca754bd58321ac1ffbe0007e5aa847977468e19ef0",
+    "kaggle_output_metrics_sha256": "9217bac22f5cb053a1e343402dffe8af1cb6e1eb20e4ba2891737f65e3a920b8",
+    "decision_sha256": "cbd821a4ae57bcd8cd0d5516d9661e306164f38ad48746ef8a83f8b88431362a",
+    "small_downloaded_artifacts_sha_verified": true,
+    "deterministic_anchor": false
+  },
+  "external_reference": {
+    "kaggle_notebook": "phuongncn/kdrill-f594-ucont8",
+    "kaggle_id_no": 128179543,
+    "fetched_notebook_sha256": "a98e718dc8cc3b8e94b74bf76b9d91d3e5af50b59b917d0fef31eb636f46f8ab",
+    "evidence_status": "unverified_external_context_not_promotion_evidence"
+  },
+  "key_idea": "Apply one fixed cap8/tau240 target-free U-boundary fade to the frozen exp287 OOF and evaluate it with late-truth-join safety gates.",
+  "next_action": "Close the direct fixed U-boundary fade without rescue; revisit continuity only under a separately preregistered independent target-free feature or selector hypothesis.",
+  "decision": "FAIL_CLOSE_NO_RESCUE",
+  "notes": "All technical gates and 11/12 scientific gates passed, but pooled gain was 0.001611295 ft versus the preregistered 0.020 ft minimum. No hidden-test inference or submission was generated."
+}

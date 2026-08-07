@@ -1,0 +1,285 @@
+{
+  "experiment": "exp372_exp287_exp335_feature_union_on_exp264",
+  "status": "submission_complete_public_lb_7p587_train_guard_failed",
+  "updated_at": "2026-07-26",
+  "route": "ml_model",
+  "parent": "exp264_exp263_candidate_confidence_dual_selector",
+  "cv": 8.071563864946972,
+  "public_lb": 7.587,
+  "private_lb": null,
+  "metric": "rmse",
+  "design": {
+    "active_variants": 1,
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "planned_gpu_boosters": 15,
+    "completed_gpu_boosters": 15,
+    "control_retraining_boosters": 0,
+    "selector_retraining_boosters": 0,
+    "feature_generation_runs": 0,
+    "feature_counts": {
+      "clean_base": 273,
+      "saved_nested_compact": 74,
+      "fold_safe_formation": 74,
+      "signed_residual": 23,
+      "final": 444
+    }
+  },
+  "saved_controls": {
+    "exp264": {
+      "cv": 8.460811237612477,
+      "public_lb": 7.562
+    },
+    "exp287": {
+      "cv": 8.136708220359452,
+      "public_lb": 7.53
+    },
+    "exp335": {
+      "cv": 8.146107755881022,
+      "public_lb": 7.517
+    }
+  },
+  "implementation": true,
+  "implementation_validation": {
+    "jupytext_source": true,
+    "compact_notebook_candidate": true,
+    "shared_union_pipeline": true,
+    "contract_tests": true,
+    "contract_test_count": 9,
+    "contract_tests_passed": 9,
+    "related_regression_tests_passed": 44,
+    "inference_contract_test_count": 12,
+    "inference_contract_tests_passed": 12,
+    "inference_related_regression_tests_passed": 30,
+    "full_suite": {
+      "passed": 817,
+      "skipped": 6,
+      "failed": 2,
+      "failure_scope": "pre_existing_exp296_status_and_run_flag_expectations_outside_exp372"
+    },
+    "strict_validation_passed": true,
+    "jupytext_test_passed": true,
+    "py_compile_passed": true,
+    "ruff_passed": true,
+    "canonical_train_notebook_adopted": true,
+    "planned_model_slots": 15,
+    "control_retraining_boosters": 0
+  },
+  "kaggle_train_v1": {
+    "kernel_id": "kentookumura/exp372-exp287-exp335-feature-union-train",
+    "kernel_id_no": 128530478,
+    "kernel_version": 1,
+    "status": "technical_error",
+    "log_last_time_seconds": 619.970949342,
+    "gpu_boosters_started": 0,
+    "error_type": "KeyError",
+    "error_key": "compact_features",
+    "failed_stage": "prefit_parent_compact_fold_load",
+    "logs_sha256": "89d00097a675bb0373f3e1d4b464aeaa6a4d1d403f89043e369d3458607da8d8",
+    "local_fix": "adapt_verified_features_to_compact_features_loader_contract",
+    "local_fix_validated": true
+  },
+  "kaggle_train_v2": {
+    "kernel_id": "kentookumura/exp372-exp287-exp335-feature-union-train",
+    "kernel_id_no": 128530478,
+    "kernel_version": 2,
+    "status": "complete",
+    "result_status": "train_complete_guard_failed_closed",
+    "runtime": "NvidiaTeslaT4",
+    "internet": false,
+    "log_last_time_seconds": 18425.058989808,
+    "model_count": 15,
+    "technical_gate": {
+      "passed": true,
+      "checks_passed": 11,
+      "checks_total": 11
+    },
+    "incremental_utility_gate": {
+      "passed": false,
+      "pooled_union_rmse": 8.071563864946972,
+      "best_standalone_rmse": 8.136708220359452,
+      "improvement_vs_best_standalone_ft": 0.06514435541248,
+      "maximum_allowed_rmse": 8.116708220359452,
+      "qualifying_folds": 4,
+      "required_qualifying_folds": 4,
+      "all_fixed_scopes_nonworse": false,
+      "maximum_scope_delta_ft": 0.04839954514187905,
+      "maximum_scope_delta_scope": "mid_250_1000",
+      "maximum_allowed_scope_delta_ft": 0.02,
+      "formation_total_gain_positive": true,
+      "formation_positive_gain_folds": 5,
+      "signed_total_gain_positive": true,
+      "signed_positive_gain_folds": 5
+    },
+    "tail_promotion_gate": {
+      "passed": false,
+      "by_well_delta_p95_vs_exp264_ft": 2.19802617730974,
+      "maximum_allowed_by_well_delta_p95_ft": 0.0,
+      "worst_well_delta_vs_exp264_ft": 13.023263265570503,
+      "maximum_allowed_worst_well_delta_ft": 0.25,
+      "worst_well": "fb03ae90",
+      "worsened_well_counts_vs_clean273": {
+        "plus_1_ft": 157,
+        "plus_3_ft": 53,
+        "plus_5_ft": 23
+      },
+      "maximum_worsened_well_counts_vs_clean273": {
+        "plus_1_ft": 135,
+        "plus_3_ft": 39,
+        "plus_5_ft": 14
+      }
+    },
+    "promotion_gate": {
+      "technical_passed": true,
+      "incremental_utility_passed": false,
+      "tail_promotion_passed": false,
+      "passed": false
+    },
+    "decision": "close_without_same_oof_rescue",
+    "package_notebook_sha256": "f8dab2b5044ec22691d9c99b20f4c7d8a419867da7ec55200ece63f2d2315ecf",
+    "embedded_config_sha256": "7290a1c8848cd3d5f6b7a8a4ef93ec3d5699c9c0f6e25c3d42042d82f8d45e47",
+    "embedded_pipeline_sha256": "7fa27865dbcf12d9987547452742ad1352d0c4ecfaaf2f5f9bfc5cc427caa4f7",
+    "pullback_notebook_sha256": "4226b6db045106dc639c3c983ef780493b48e636d1e954e3a7e6f38910edba19",
+    "pullback_metadata_sha256": "ce342e24158bf1d93076ccc886862620900667224b598df995e3c1370fe243d1",
+    "logs_sha256": "0f8134297af145f7d4cb2da9bed6fef7c795bac9201e38adb151b16251a5704f",
+    "feature_schema_sha256": "049800d626b04f16fbf08eb33e8a980ecbe62008402ff7b24f3e77e04e6ef4e9",
+    "model_manifest_sha256": "e0d7f85c34d5c64410fe1b2e641669ee1887346a4cbd754579d0dd7e15875b5a",
+    "oof_prediction_sha256": "635dea78b9bf7ad07a1bef267d37e4e2d1707f648799c1590715d4255c02e6f8",
+    "reproducibility_manifest_sha256": "90eeede79b13d39ec3fcf6cb08268e6b396db42cb0e1f9e62fd9dca712ccdb5d"
+  },
+  "inference": {
+    "status": "v1_v2_v3_technical_error_v4_complete_submit_check_pass",
+    "explicit_user_override_after_guard_failure": true,
+    "runtime": "kaggle_cpu",
+    "candidate_count": 12,
+    "parent_selector_model_count": 40,
+    "signed_selector_model_count": 20,
+    "union_tvt_model_count": 15,
+    "booster_training_count": 0,
+    "expected_final_feature_count": 444,
+    "generate_submission_file": true,
+    "competition_submit_authorized": false,
+    "kaggle_v1": {
+      "kernel_id": "kentookumura/exp372-exp287-exp335-feature-union-inference",
+      "kernel_id_no": 128563759,
+      "kernel_version": 1,
+      "status": "technical_error",
+      "log_last_time_seconds": 25.54908745,
+      "model_fits_started": 0,
+      "failed_stage": "union_model_manifest_status_validation",
+      "error_type": "ValueError",
+      "logs_sha256": "b1b73c4f946a266d7bb5365f9cded29dfc2920017e2337c8c616a15b9f0e6970",
+      "root_cause": "model_artifact_status_was_compared_to_scientific_result_status",
+      "local_fix": "validate_completed_15_gpu_boosters_and_retain_guard_failure_separately"
+    },
+    "kaggle_v2": {
+      "kernel_id": "kentookumura/exp372-exp287-exp335-feature-union-inference",
+      "kernel_id_no": 128563759,
+      "kernel_version": 2,
+      "status": "technical_error",
+      "log_last_time_seconds": 434.628234989,
+      "candidate_generation_completed": true,
+      "candidate_rows": 14151,
+      "candidate_wells": 3,
+      "model_fits_started": 0,
+      "failed_stage": "selector_chunk_size_config_lookup",
+      "error_type": "KeyError",
+      "error_key": "selector",
+      "logs_sha256": "1caaa1d541bee7a1d86afcf3331f644671decb337ccba0e5540c1b66bdaf8f3e",
+      "root_cause": "exp335_nested_selector_config_path_is_absent_from_exp372",
+      "local_fix": "use_explicit_exp372_inference_chunk_size_and_top1_tolerance"
+    },
+    "kaggle_v3": {
+      "kernel_id": "kentookumura/exp372-exp287-exp335-feature-union-inference",
+      "kernel_id_no": 128563759,
+      "kernel_version": 3,
+      "status": "technical_error",
+      "log_last_time_seconds": 412.991783575,
+      "candidate_generation_completed": true,
+      "candidate_rows": 14151,
+      "candidate_wells": 3,
+      "model_fits_started": 0,
+      "failed_stage": "selector_current_test_missingness_guard",
+      "error_type": "ValueError",
+      "error_feature_count": 7,
+      "logs_sha256": "dfc98eaf752dd8a693e04477927af80215e77a9b9fee8183967aaeccc6e5236b",
+      "root_cause": "exp372_omitted_corrected_exp264_raw_context_allowlist",
+      "local_fix": "inherit_md_x_y_z_gr_raw_context_contract"
+    },
+    "kaggle_v4": {
+      "kernel_id": "kentookumura/exp372-exp287-exp335-feature-union-inference",
+      "kernel_id_no": 128563759,
+      "kernel_version": 4,
+      "status": "complete_submit_check_pass_no_external_submit",
+      "runtime_seconds": 459.376,
+      "log_last_time_seconds": 490.494217252,
+      "rows": 14151,
+      "wells": 3,
+      "candidate_count": 12,
+      "selector_feature_count": 88,
+      "feature_counts": {
+        "clean_base": 273,
+        "saved_parent_compact": 74,
+        "fold_safe_formation": 74,
+        "signed_compact": 23,
+        "final": 444
+      },
+      "model_counts": {
+        "parent_selector": 40,
+        "signed_selector": 20,
+        "union_tvt": 15,
+        "trained": 0
+      },
+      "max_abs_formula_parity": 0.0,
+      "signed_top1_value_parity_max_abs_error": 0.0,
+      "prediction_stats": {
+        "min": 11591.6962890625,
+        "max": 12239.3095703125,
+        "mean": 11905.2734375,
+        "std": 278.5018310546875
+      },
+      "submit_check": {
+        "status": "PASS",
+        "fail_count": 0,
+        "warn_count": 0,
+        "sample_rows": 14151,
+        "header_match": true,
+        "id_content_and_order_match": true,
+        "duplicate_ids": 0,
+        "nan_or_inf": 0
+      },
+      "scientific_gate_retained": {
+        "incremental_utility_passed": false,
+        "tail_promotion_passed": false,
+        "promotion_passed": false
+      },
+      "logs_sha256": "5e405b2015a80a16c8262c54cfadd749d9bcba675e22fab21955359009fbf811",
+      "inference_metrics_sha256": "f5436406513d306fef8e75c63f10b9446fb8cc5ca0204e975eb9f27daa72cd8d",
+      "reproducibility_manifest_sha256": "f5436406513d306fef8e75c63f10b9446fb8cc5ca0204e975eb9f27daa72cd8d",
+      "prediction_decompressed_sha256": "5f18bcaf8cdd6952652155c6029c8045272b0b052a69ac8157bbf170aad4bc54",
+      "feature_schema_sha256": "bac4d7c539ea6b647c9393c75f00c99349c83887bf644a4a093c3fa89a0116f2",
+      "formation_parquet_sha256": "d5363041a9a8d48fcca29e6529f3a636e3e2cd0ba2a7d98bbcccc3d53365ab80",
+      "formation_logical_content_sha256": "cc974f8cc4bd3976b42767fc690a8085389d39d249d73ff3f8e6bdf0c44c9d8c",
+      "submission_sha256": "3688de824db2ae0ff1002fb9c2c9ed8543ed09d4e5bbfdd45d7bbf3c9c7eacdd",
+      "competition_submit_authorized": false,
+      "competition_submit_performed": false
+    }
+  },
+  "submission": {
+    "ref": 54975325,
+    "file_name": "submission.csv",
+    "status": "complete",
+    "submitted_at_utc": "2026-07-25 12:28:12.460000 UTC",
+    "observed_at_utc": "2026-07-25 23:09:34 UTC",
+    "public_lb": 7.587,
+    "private_lb": null,
+    "source": "kaggle_competitions_submissions_and_submission_monitor",
+    "attribution": "user_confirmed_latest_scored_code_submission_after_inference_v4",
+    "performed_by_codex": false,
+    "inference_notebook_external_submit": false,
+    "train_scientific_gate_reclassified": false,
+    "ml_public_lb_anchor_updated": false,
+    "monitor_log": "logs/submission_exp372_exp287_exp335_feature_union_on_exp264.log"
+  },
+  "notes": "Kaggle T4 version 2 completed all 15 boosters. The frozen mid-range and tail gates remain failed. A later explicit override authorized saved-model CPU inference only. CPU inference version 4 completed 14,151 rows with 40/20/15 saved models, 444 features, zero fits, and submit-check PASS. The user later confirmed scoring completion; Kaggle ref 54975325 completed with Public LB 7.587. Codex did not perform the external submission. The result is worse than exp335 7.517, so the ML Public-LB anchor and train-side guard decision remain unchanged."
+}

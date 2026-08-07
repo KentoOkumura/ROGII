@@ -1,0 +1,294 @@
+experiment:
+  name: exp511_exp413_transductive_k16_neighbor_rate_postprocess
+  description: >-
+    Apply one fixed, target-free, transductive K16 neighbor-rate postprocess to
+    the saved exp413 Stage D OOF prediction. Each outer-valid fold is treated as
+    one pseudo-test batch; only other outer-valid wells' predicted TVT and raw
+    X/Y/Z geometry may form the donor field.
+  route: ensemble
+  status: stage_a_complete_fail_closed
+  created_at: "2026-08-04"
+  updated_at: "2026-08-04"
+  inference_enabled: false
+
+lineage:
+  parent: exp413_scale5_likpf_full_replacement_on_exp335
+  method_reference: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  steering: ../../.steering/20260804-exp511-exp413-transductive-k16-neighbor-rate-postprocess
+  evidence_references:
+    - exp114_spatial_neighbor_prior_signal_audit
+    - exp118_spatial_neighbor_prior_confidence_gate_on_exp092
+    - exp201_typewell_spatial_tvt_error_readout
+    - exp263_last_anchor_better_candidate_confidence_pair_cache
+    - exp418_exp226_signed_segment_rate_residual
+  diff_summary: >-
+    Keep exp413 OOF values, folds, score rows, models, and row order fixed. For
+    every outer-valid pseudo-test batch, fit smoothed K16 coefficients to each
+    well's predicted TVT+Z path, form an exp226-style XY local-linear field from
+    other predicted wells only, and add one zero-intercept, alpha-0.05,
+    +/-0.25-ft capped low-frequency correction. Do not use true donor TVT,
+    exp226 absolute predictions, ANCC, typewell GR, kappa fitting, candidate
+    grids, routing, refitting, retraining, inference, or submission.
+
+authorization:
+  design_approved: true
+  approval_source: user_request_execute_exp511_2026_08_04
+  implementation_approved: true
+  canonical_notebook_adoption_approved: true
+  kaggle_package_approved: true
+  kaggle_run_approved: true
+  inference_implementation_approved: false
+  inference_run_approved: false
+  submission_approved: false
+
+implementation:
+  scaffold_created: true
+  code_created: true
+  jupytext_source_created: true
+  compact_selfcontained_candidate_created: true
+  dedicated_contract_tests_created: true
+  canonical_train_notebook_is_template_placeholder: false
+  canonical_inference_notebook_is_template_placeholder: true
+  kaggle_package_created: true
+  inference_implemented: false
+
+validation:
+  strategy: saved_exp413_outer5_transductive_predicted_k16_neighbor_rate_postprocess
+  metric: rmse
+  metric_weighting: unweighted_suffix_rows
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_isna
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  fold_source: exp413_saved_outer_fold
+  fold_manifest_sha256: fa41084c5fcb4adffb88d44211b4cc5d2d2f46b5bd4d65828b6af941184b2a6d
+  selection_fit: none
+  truth_used_for_prediction_generation: false
+  transductive_batch: outer_valid_wells_with_same_fold
+  leakage_policy:
+    - Verify exp413 OOF, fold, well-row identity, score-row role, raw geometry, and row order before prediction generation.
+    - Prediction-phase allowlist is well, row_idx, fold, pred_tvt, X, Y, and Z only.
+    - A target well is always excluded from its own donor field.
+    - Donors are other outer-valid wells' exp413 predictions from the same fold; outer-train and outer-valid true suffix TVT are forbidden as donors.
+    - ANCC, train-only formation surfaces, typewell GR, truth, error, hidden-like role, and by-well outcomes are forbidden before prediction freeze.
+    - Freeze and read back candidate predictions and content SHA before attaching truth or reporting scopes.
+    - Never use Public LB, public test identity, public three-well cardinality, or same-OOF outcome to tune parameters or support.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  id_column: id
+  join_keys: [well, row_idx]
+  ordering_contract: preserve_exp413_global_and_per_well_score_row_order
+  exp413_oof:
+    source_experiment: exp413_scale5_likpf_full_replacement_on_exp335
+    source_kernel_id: kentookumura/exp413-scale5-likpf-downstream-train
+    source_kernel_version: 2
+    file: stage_d_oof_predictions.parquet
+    prediction_column: scale5_x1p0_full_replacement__lgb_mean__pred_tvt
+    expected_cv: 7.884802794404715
+    public_lb_reference: 7.201
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_oof_sha256: 9bd2d17778b3b27d771b12cbff72def8b87e6cdf14062e1c0ba192434cef4a9d
+    expected_fold_metrics_sha256: 82e70b6674f218f2892d6e5f70e327dfcbbdaf0fa5e431c4e07231009e9e2d8f
+    expected_scope_metrics_sha256: c89add97cd4cae628b79774615a717e4cfbffe7b65a4a68c58b2c2e2737948ed
+    expected_hidden_like_metrics_sha256: eafa3546e4ea5c0d180d380f7fe2c39b5cac970ea4c8097b68b077017da1f1b8
+    expected_by_well_sha256: e82c6908ed2caa9b3e5c1664bc66a3226b3bc6d9284f4863bd4fa941ae32d080
+    evidence_files:
+      oof: stage_d_oof_predictions.parquet
+      fold_metrics: stage_d_fold_metrics.csv
+      scope_metrics: stage_d_scope_metrics.csv
+      hidden_like_metrics: stage_d_hidden_like_metrics.csv
+      by_well: stage_d_by_well.csv
+    root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp413-scale5-likpf-downstream-train/artifacts
+      - /kaggle/input/exp413-scale5-likpf-downstream-train/artifacts
+      - experiments/exp413_scale5_likpf_full_replacement_on_exp335/kaggle/output/stage_d/artifacts
+  raw_geometry:
+    allowed_columns: [X, Y, Z]
+    horizontal_glob: "*__horizontal_well.csv"
+    root_patterns:
+      - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+      - /kaggle/input/rogii-wellbore-geology-prediction/train
+      - data/raw/train
+  fold_manifest:
+    expected_sha256: fa41084c5fcb4adffb88d44211b4cc5d2d2f46b5bd4d65828b6af941184b2a6d
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp413-scale5-likpf-selector-train/artifacts/nested_fold_manifest.csv
+      - /kaggle/input/exp413-scale5-likpf-selector-train/artifacts/nested_fold_manifest.csv
+      - experiments/exp413_scale5_likpf_full_replacement_on_exp335/kaggle/output/stage_c/artifacts/nested_fold_manifest.csv
+  hidden_like_assignment:
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    patterns:
+      - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+postprocess:
+  control:
+    id: raw_exp413_stage_d_oof
+    selectable: false
+  primary:
+    id: transductive_k16_neighbor_rate_a005_cap025
+    selectable: true
+    input_surface: exp413_final_tvt_oof
+    donor_surface: same_outer_valid_fold_other_wells_predicted_tvt_plus_z
+    target_surface: target_well_predicted_tvt_plus_z
+    score_anchor: first_score_row_prediction
+    k_segments: 16
+    coefficient_smoothing_rho: 10.0
+    theta0_deg: 118.4
+    field_min_abs_projection: 0.3
+    local_linear_k_segments: 50
+    local_linear_bandwidth_ft: 500.0
+    local_linear_ridge: 1.0
+    min_unique_donor_wells: 8
+    exclude_self_well: true
+    alpha: 0.05
+    final_correction_cap_ft: 0.25
+    first_score_row_correction_ft: 0.0
+    explicit_fade: false
+    reanchor_after_correction: false
+    clip_base_prediction: false
+    u_projection_after_correction: false
+    dtype: float64
+    stable_tie_break: [distance, donor_well, donor_segment, source_row]
+  report_only_candidates: []
+  prohibited:
+    - exp226_absolute_prediction_blend
+    - true_tvt_donor_field
+    - outer_train_true_tvt_donors
+    - same_fold_true_tvt_donors
+    - ancc_or_train_only_formation_surface
+    - typewell_gr_or_gr_correction
+    - exp226_kappa_fit
+    - alpha_or_clip_grid
+    - k_or_bandwidth_or_rho_or_theta_grid
+    - support_or_fade_grid
+    - row_or_well_router
+    - target_derived_confidence_or_gate
+    - public_test_cardinality_rule
+    - parent_or_control_retraining
+    - same_oof_rescue
+
+promotion_gate:
+  all_and: true
+  technical_all_pass: true
+  pooled_gain_min_ft: 0.01
+  nonworse_folds_required: 4
+  fixed_scope_max_delta_ft: 0.02
+  fixed_scopes:
+    - md_0_250
+    - md_250_1000
+    - md_1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  by_well_p95_max_delta_ft: 0.25
+  by_well_worst_max_delta_ft: 0.25
+  first_score_row_abs_correction_max_ft: 1.0e-12
+  all_row_abs_correction_max_ft: 0.250000001
+  pass_action: qualify_same_exp_inference_implementation_for_separate_approval
+  fail_decision: FAIL_CLOSE_WITHOUT_ALPHA_CLIP_K_BANDWIDTH_RHO_THETA_SUPPORT_FADE_SCOPE_OR_GATE_RESCUE
+
+execution_contract:
+  scientific_primary_variants: 1
+  report_only_variants: 0
+  trained_models: 0
+  lightgbm_configs: 0
+  trained_folds: 0
+  total_boosters: 0
+  hmm_runs: 0
+  pf_runs: 0
+  beam_runs: 0
+  parent_or_control_retraining: 0
+  gpu_runs: 0
+  allowed_runtime_if_separately_approved: kaggle_private_cpu_internet_off
+
+execution:
+  stage_a:
+    implementation_approved: true
+    run_approved: true
+    enabled: true
+    completed: true
+    kernel_version: 4
+    decision: FAIL_CLOSE_WITHOUT_ALPHA_CLIP_K_BANDWIDTH_RHO_THETA_SUPPORT_FADE_SCOPE_OR_GATE_RESCUE
+  inference:
+    implementation_approved: false
+    run_approved: false
+    enabled: false
+
+model:
+  name: none_deterministic_postprocess_only
+  estimator: none
+  params:
+    learned_model: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 0
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    package_created: true
+    train:
+      planned_kernel_id: kentookumura/exp511-exp413-k16-neighbor-rate-postprocess-train
+      planned_kernel_title: exp511 exp413 k16 neighbor rate postprocess train
+      run_approved: true
+      enabled: true
+      completed_kernel_version: 4
+      completed_status: stage_a_complete_fail_closed
+    train_kernel_sources:
+      - kentookumura/exp413-scale5-likpf-selector-train
+      - kentookumura/exp413-scale5-likpf-downstream-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_fold_well_row_segment_distance_source_order
+  stochastic_components:
+    - upstream_exp413_saved_oof_only
+  parallel_rng_policy: no_rng_single_process_stable_reduce_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    k16_field_content_sha: true
+    support_ledger_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - No RNG, model training, PF, HMM, Beam, or parent regeneration is part of this experiment.
+    - Stable ordering and float64 prediction boundaries are required for local-linear solves and correction reconstruction.
+    - The first successful train-side audit is not a deterministic anchor; an independent rerun with matching prediction content SHA is required.
+    - A future inference port, if separately approved after promotion PASS, must record dynamic hidden batch support and cannot tune from the public three-well identity output.
+
+artifacts:
+  expected_train:
+    - exp511_input_manifest.json
+    - exp511_k16_coefficient_field.parquet
+    - exp511_neighbor_support_ledger.parquet
+    - exp511_frozen_predictions.parquet
+    - exp511_prediction_freeze.json
+    - exp511_pooled_fold_scope_metrics.csv
+    - exp511_by_well_metrics.csv
+    - exp511_continuity_metrics.csv
+    - exp511_summary.json
+    - exp511_sha_manifest.json
+
+notes:
+  - Compact self-contained train candidate is adopted as the canonical train Notebook for the separately approved Kaggle private CPU run.
+  - OOF evaluation is the complete train-side experiment, not a preflight for another OOF stage.
+  - PASS only qualifies a separately approved inference port in this same experiment directory.

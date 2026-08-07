@@ -1,0 +1,124 @@
+{
+  "best_same_oof_cv": 13.537122,
+  "best_same_oof_router": "disagreement_damped_raw",
+  "cv": 13.549257,
+  "experiment": "exp018_candidate_distribution_router",
+  "leave_one_original_fold_out_selection_cv": 13.64447,
+  "loaded_candidates": [
+    "raw_lightgbm_no_gr",
+    "control_hgb_no_gr",
+    "dtw_dwt_no_gr"
+  ],
+  "metric": "rmse",
+  "metrics": [
+    {
+      "delta_vs_raw": -0.012135,
+      "method": "disagreement_damped",
+      "notes": "damped_rows=62757",
+      "params_json": "{\"min_step\":250,\"primary\":\"raw_lightgbm_no_gr\",\"references\":[\"control_hgb_no_gr\",\"dtw_dwt_no_gr\"],\"shrink\":0.7,\"threshold\":12.0}",
+      "rmse": 13.537122,
+      "router": "disagreement_damped_raw",
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "delta_vs_raw": -0.004184,
+      "method": "bucket_oracle",
+      "notes": "rows_0_49=last_anchor;rows_50_249=dtw_dwt_no_gr;rows_250_999=raw_lightgbm_no_gr;rows_1000_2499=raw_lightgbm_no_gr;rows_2500_plus=raw_lightgbm_no_gr",
+      "params_json": "{\"candidates\":[\"last_anchor\",\"raw_lightgbm_no_gr\",\"control_hgb_no_gr\",\"dtw_dwt_no_gr\"]}",
+      "rmse": 13.545073,
+      "router": "confidence_oracle_bucket",
+      "rows": 3783989,
+      "selectable": false
+    },
+    {
+      "delta_vs_raw": 0.0,
+      "method": "fixed",
+      "notes": "",
+      "params_json": "{\"candidate\":\"raw_lightgbm_no_gr\"}",
+      "rmse": 13.549257,
+      "router": "raw_lightgbm_no_gr",
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "delta_vs_raw": 0.036023,
+      "method": "distance_router",
+      "notes": "",
+      "params_json": "{\"default\":\"raw_lightgbm_no_gr\",\"rules\":[{\"candidate\":\"last_anchor\",\"max_step\":49},{\"candidate\":\"raw_lightgbm_no_gr\",\"max_step\":999},{\"blend\":{\"control_hgb_no_gr\":0.3,\"raw_lightgbm_no_gr\":0.7},\"max_step\":1000000000}]}",
+      "rmse": 13.585281,
+      "router": "near_anchor_mid_raw_far_hgb_blend",
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "delta_vs_raw": 0.055757,
+      "method": "weighted_blend",
+      "notes": "",
+      "params_json": "{\"weights\":{\"dtw_dwt_no_gr\":0.5,\"raw_lightgbm_no_gr\":0.5}}",
+      "rmse": 13.605015,
+      "router": "dtw_lightgbm_equal_blend",
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "delta_vs_raw": 0.101035,
+      "method": "weighted_blend",
+      "notes": "",
+      "params_json": "{\"weights\":{\"control_hgb_no_gr\":0.5,\"raw_lightgbm_no_gr\":0.5}}",
+      "rmse": 13.650292,
+      "router": "hgb_lightgbm_equal_blend",
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "delta_vs_raw": 0.398277,
+      "method": "distance_router",
+      "notes": "",
+      "params_json": "{\"default\":\"raw_lightgbm_no_gr\",\"rules\":[{\"candidate\":\"last_anchor\",\"max_step\":49},{\"candidate\":\"raw_lightgbm_no_gr\",\"max_step\":249},{\"candidate\":\"dtw_dwt_no_gr\",\"max_step\":1000000000}]}",
+      "rmse": 13.947534,
+      "router": "near_anchor_mid_raw_far_dtw",
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "delta_vs_raw": 2.360595,
+      "method": "fixed",
+      "notes": "",
+      "params_json": "{\"candidate\":\"last_anchor\"}",
+      "rmse": 15.909853,
+      "router": "last_anchor",
+      "rows": 3783989,
+      "selectable": false
+    }
+  ],
+  "notes": "Keep raw LightGBM no-GR as clean CV; routers are diagnostics only.",
+  "raw_clean_cv": 13.549257,
+  "router_supported": false,
+  "rows": 3783989,
+  "selected_clean_cv": 13.549257,
+  "selection_metrics": [
+    {
+      "candidate": "leave_one_original_fold_out_router_selection",
+      "delta_vs_raw": 0.095213,
+      "raw_holdout_rmse": 13.549257,
+      "rmse": 13.64447,
+      "rows": 3783989
+    },
+    {
+      "candidate": "well_hash_holdout_router_selection",
+      "delta_vs_raw": 0.097246,
+      "raw_holdout_rmse": 13.549257,
+      "rmse": 13.646503,
+      "rows": 3783989
+    }
+  ],
+  "skipped_candidates": [
+    "pf_beam_no_gr: missing data/external/kaggle-output/exp015_public_pf_beam_scale_selector_features/train/artifacts/row_oof_predictions.csv"
+  ],
+  "skipped_routers": [],
+  "source_experiment": "exp013_model_diversity_or_postprocess",
+  "status": "completed",
+  "updated_at": "2026-06-05T13:24:34.127624+00:00",
+  "well_hash_holdout_selection_cv": 13.646503
+}

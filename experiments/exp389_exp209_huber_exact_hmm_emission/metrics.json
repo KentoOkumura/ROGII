@@ -1,0 +1,105 @@
+{
+  "experiment": "exp389_exp209_huber_exact_hmm_emission",
+  "status": "terminal_closed_tail_gate_failed_no_rescue",
+  "updated_at": "2026-07-25",
+  "route": "pf_beam",
+  "cv": 11.852741129500146,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "parent": "exp209_exp072_exp205_joint_exact_parity_fast_cache_generation",
+  "saved_gaussian_control_rmse": 11.938287234887435,
+  "planned_candidate": "huber_delta1p345_on_exp209_absolute_tvt",
+  "execution_contract": {
+    "scientific_variants": 1,
+    "hmm_well_runs": 773,
+    "reporting_folds": 5,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "parent_control_retraining": false
+  },
+  "implementation": true,
+  "implementation_validation": {
+    "compact_selfcontained_train": true,
+    "fail_closed_inference": true,
+    "dedicated_tests_passed": 9,
+    "dedicated_plus_common_notebook_tests_passed": 13,
+    "strict_experiment_validation": true,
+    "strict_project_validation": true,
+    "jupytext_roundtrip": true,
+    "canonical_notebook_adopted": true,
+    "kaggle_package_created": true
+  },
+  "repository_test_suite": {
+    "passed": 895,
+    "failed": 4,
+    "skipped": 6,
+    "exp389_tests_failed": 0,
+    "note": "Four pre-existing execution-state expectation failures are in exp296, exp384, and exp388; they are outside exp389 scope."
+  },
+  "kaggle_run": true,
+  "kaggle_kernel": {
+    "id": "kentookumura/exp389-exp209-huber-exact-hmm-emission-train",
+    "version": 1,
+    "id_no": 128466838,
+    "status": "KernelWorkerStatus.COMPLETE",
+    "completed_at_utc": "2026-07-24 16:46:59 UTC",
+    "last_checked_at_utc": "2026-07-24 23:38:19 UTC",
+    "runtime_seconds": 19417.245940208435
+  },
+  "technical_gate_passed": true,
+  "scientific_gate_passed": false,
+  "direct": {
+    "candidate_rmse": 11.852741129500146,
+    "control_rmse": 11.938287234887435,
+    "improvement_ft": 0.08554610538728902,
+    "folds_improved": 5,
+    "folds": [
+      {"fold": 0, "candidate_rmse": 10.918953701974013, "control_rmse": 10.9237759753371, "improvement_ft": 0.004822273363087604},
+      {"fold": 1, "candidate_rmse": 12.251975498660888, "control_rmse": 12.302481043900219, "improvement_ft": 0.050505545239330374},
+      {"fold": 2, "candidate_rmse": 11.452442516440936, "control_rmse": 11.570050070150725, "improvement_ft": 0.1176075537097887},
+      {"fold": 3, "candidate_rmse": 12.48358325358185, "control_rmse": 12.72386120441385, "improvement_ft": 0.24027795083200054},
+      {"fold": 4, "candidate_rmse": 12.060888683340268, "control_rmse": 12.067702147866969, "improvement_ft": 0.006813464526700841}
+    ],
+    "scope_improvement_ft": {
+      "raw_gr_observed": 0.11128627870632002,
+      "raw_gr_missing": 0.030430755156285016,
+      "missing_fraction_high": 0.02316632347161196,
+      "md_since_1000_plus": 0.08303069379263661,
+      "hidden_like_spatial": 0.07903724111741006,
+      "hidden_like_typewell_purged": 0.014019905435725732
+    }
+  },
+  "fixed_likpf_50_50": {
+    "candidate_rmse": 10.227661781263581,
+    "control_rmse": 10.269692505026358,
+    "improvement_ft": 0.04203072376277639,
+    "passed": true
+  },
+  "by_well": {
+    "improved_wells": 411,
+    "regressed_wells": 362,
+    "delta_median_ft": -1.1801423838164735e-06,
+    "delta_p95_ft": 0.0022343508818599006,
+    "worst_well_id": "00bbac68",
+    "worst_well_candidate_rmse": 5.975243645074806,
+    "worst_well_control_rmse": 4.224995442776048,
+    "worst_well_delta_ft": 1.7502482022987582
+  },
+  "reproducibility": {
+    "scientific_contract_sha256": "d685276820e999818aed316b6a67dc9c290f0c5b54b7f0bdbbc67fd9b430b165",
+    "prediction_raw_sha256": "95302d547e8c49cdf67dabe6200e08e5c83f01ea158cf2fbd4f25b2fd1f74d75",
+    "prediction_content_sha256": "f5d44d9d9ee380bb7ea408006030363efbe8fcdb3573cfa18031b2d31c617f90",
+    "raw_gr_emission_contract_content_sha256": "660d72c9f67e04af6641ea7bde43057379169be9608a5149847e0f0c9befca63",
+    "observation_audit_content_sha256": "d0a9fffcb8e16aacf4b03ee01bbc4fb1fd07bef4fb59df2135e2158ed5193c75",
+    "input_control_manifest_sha256": "89747fc5004a3b28d0d947981a0c54925518a16f221fc2bf8197bd73f15b7728",
+    "promotion_gate_sha256": "fe9dc5467120747847508eb60fe6e5bf45c3fb98b0070072d2c3e39a7e83271a",
+    "overall_fold_scope_metrics_sha256": "16831c2b5cf0c6dd74c7eb1619aaeb6b72445eeeb0db8138b86b346800c6c7f2",
+    "by_well_metrics_sha256": "b40199bd0b09a5c2a27a2b828f46b7fd7962a7ba2b79cbf152e39e4e6bab7bab"
+  },
+  "inference": false,
+  "submission": false,
+  "decision": "huber_exp209_failed_close_without_rescue",
+  "notes": "Kaggle private CPU version 1 completed and passed all technical checks. Overall, all folds, required scopes, and fixed 50:50 blend improved, but preregistered by-well p95 and worst-well safety gates failed. The branch is terminally closed without rescue, inference, or submission."
+}

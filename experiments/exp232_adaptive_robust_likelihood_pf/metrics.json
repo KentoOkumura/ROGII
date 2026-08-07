@@ -1,0 +1,126 @@
+{
+  "experiment": "exp232_adaptive_robust_likelihood_pf",
+  "status": "completed_train_side_rejected_no_inference_no_submit",
+  "route": "pf_beam",
+  "metric": "train_side_rmse",
+  "cv": 13.52988710902271,
+  "public_lb": null,
+  "private_lb": null,
+  "parent": "exp072_exp063_full_replay_feature_cache",
+  "updated_at": "2026-07-13",
+  "rows": 3783989,
+  "wells": 773,
+  "elapsed_seconds": 39327.23625588417,
+  "lightgbm_config_count": 0,
+  "fold_count": 0,
+  "total_boosters": 0,
+  "control": {
+    "candidate": "exp072_likpf_mean",
+    "temperature": 1.0,
+    "regenerated": false,
+    "source": "exp209_enriched_reconstructed",
+    "source_experiment": "exp209_exp072_exp205_joint_exact_parity_fast_cache_generation",
+    "reconstruction": "likpf_mean = hmm_mean_tvt - hmm_minus_likpf_mean",
+    "alignment": "one_to_one_id_with_well_target_last_known_tvt_md_since_checks",
+    "caveat": "The exp209 enriched cache's full artifact exact parity with exp072 v2 is not proven; it is comparison-only."
+  },
+  "temperature_variants": [
+    {"name": "temp_t2", "temperature": 2.0},
+    {"name": "temp_t4", "temperature": 4.0}
+  ],
+  "pf_runtime": {
+    "particles": 500,
+    "seed_count": 128,
+    "seed_aggregation": "mean",
+    "resample_threshold": 0.5
+  },
+  "train_execution": {
+    "lightgbm_configs": 0,
+    "folds": 0,
+    "boosters": 0,
+    "gpu": false,
+    "inference": false,
+    "submission": false
+  },
+  "split_execution": {
+    "strategy": "one_temperature_variant_per_independent_kaggle_kernel_parallel",
+    "runs": [
+      {
+        "notebook_kind": "train_variant0",
+        "variant": {"name": "temp_t2", "temperature": 2.0},
+        "kernel": "kentookumura/exp232-adaptive-robust-pf-t2",
+        "title": "exp232 adaptive robust pf t2"
+      },
+      {
+        "notebook_kind": "train_variant1",
+        "variant": {"name": "temp_t4", "temperature": 4.0},
+        "kernel": "kentookumura/exp232-adaptive-robust-pf-t4",
+        "title": "exp232 adaptive robust pf t4"
+      }
+    ],
+    "progress_every_wells": 16,
+    "checkpointing": false,
+    "input_cache_read_count_per_kernel": 1
+  },
+  "latest_run": {
+    "status": "split_kernels_complete_with_temp_t2_v2_artifact_recovery",
+    "diagnosis": "Both independent one-temperature CPU kernels completed. The checkpoint-free temp_t2 v2 recovery run also completed and provides the row-level artifact used for the ID-aligned exp233 comparison; the original canonical v3 cancellation remains historical only.",
+    "pf_metrics_available": true
+  },
+  "previous_failure": {
+    "stage": "input/control contract check",
+    "message": "The saved exp072 likpf_mean control is required for this experiment.",
+    "cause": "The exp072 ML feature cache schema excludes likpf_mean; it is not a row-level likelihood-PF comparison cache.",
+    "pf_generation_started": false
+  },
+  "active_kernels": {
+    "temp_t2": {"kernel": "kentookumura/exp232-adaptive-robust-pf-t2", "version": 2, "status": "KernelWorkerStatus.COMPLETE", "purpose": "checkpoint_free_row_artifact_recovery"},
+    "temp_t4": {"kernel": "kentookumura/exp232-adaptive-robust-pf-t4", "version": 2, "status": "KernelWorkerStatus.COMPLETE"}
+  },
+  "results": {
+    "decision": "rejected_train_side",
+    "rows": 3783989,
+    "wells": 773,
+    "baseline": {
+      "candidate": "exp072_likpf_mean",
+      "rmse": 11.594897672217703,
+      "mae": 7.067632584311985,
+      "within10": 0.772807479091509,
+      "rmse_1000_plus": 12.704015215339874
+    },
+    "temp_t2": {
+      "kernel": "kentookumura/exp232-adaptive-robust-pf-t2",
+      "version": 2,
+      "runtime_seconds": 39327.23625588417,
+      "rmse": 13.52988710902271,
+      "delta_rmse_vs_primary_baseline": 1.9349894368050062,
+      "mae": 9.104082607635174,
+      "within10": 0.6712432303582277,
+      "rmse_1000_plus": 14.775088742565213,
+      "max_well_regression_vs_primary": 45.905685192661714,
+      "gate_all_seed_rows": 685,
+      "gate_any_seed_rows": 4673,
+      "gate_seed_fraction_mean": 0.0005063317082230634,
+      "interval_all_sampled_coverage": 0.21965423111919927,
+      "interval_1000_plus_coverage": 0.15743243243243243
+    },
+    "temp_t4": {
+      "kernel": "kentookumura/exp232-adaptive-robust-pf-t4",
+      "version": 2,
+      "runtime_seconds": 34207.47654128075,
+      "rmse": 13.532730350229121,
+      "delta_rmse_vs_primary_baseline": 1.937832678011418,
+      "mae": 9.10079381223302,
+      "within10": 0.6710923313994834,
+      "rmse_1000_plus": 14.778863970192129,
+      "max_well_regression_vs_primary": 45.70617098525676,
+      "gate_all_seed_rows": 715,
+      "gate_any_seed_rows": 4764,
+      "gate_seed_fraction_mean": 0.0005115246595479299,
+      "interval_all_sampled_coverage": 0.21993064427815295,
+      "interval_1000_plus_coverage": 0.15664556962025317
+    },
+    "provenance_caveat": "The original temp_t2 v1 and temp_t4 v2 split outputs resolved the exp072 feature cache from different Kaggle dataset copies, so their fine-grained subgroup comparison is not exact parity evidence. The checkpoint-free temp_t2 v2 recovery output shares the exp072 input, exp209 control, and schema content SHA with exp233 mix_eps_0p05 v4, enabling an ID-aligned temperature-versus-mixture comparison."
+  },
+  "notes": "Temperature-only adaptive likelihood-PF audit completed. Both variants fail the overall RMSE, 1000_plus, and worst-well guards. No inference or submission was generated."
+}

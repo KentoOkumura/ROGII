@@ -1,0 +1,100 @@
+{
+  "experiment": "exp373_exp355_fixed13_dual_selector_on_exp264",
+  "status": "completed_fixed13_selector_scientific_gate_failed_closed",
+  "route": "ensemble",
+  "cv": 8.695437630439221,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "candidate_count": 13,
+  "primary_domain_count": 12,
+  "fixed_fallback_domain_count": 7,
+  "compact_feature_count": 77,
+  "execution": {
+    "active_variants": 1,
+    "objectives": 2,
+    "outer_folds": 5,
+    "inner_folds": 4,
+    "planned_cpu_boosters": 40,
+    "trained_cpu_boosters": 40,
+    "parent_control_retraining": 0,
+    "gpu_boosters": 0,
+    "downstream_tvt_training": false,
+    "inference": false,
+    "submission": false,
+    "elapsed_seconds": 6350.504163695,
+    "kernel": "kentookumura/exp373-exp355-fixed13-selector-train",
+    "kernel_version": 1,
+    "kernel_id_no": 128435229
+  },
+  "input_contract": {
+    "allowlist_columns": [
+      "well_id",
+      "row_idx",
+      "fold",
+      "candidate_tvt"
+    ],
+    "exp355_oof_file_sha256": "28da6ffb17300f7757d51496f2dc56402d477fc5a79e24dec7514e855c960a41",
+    "exp355_oof_decompressed_sha256": "3c49f25e138f94c9e09fb551f199fa4f92b0d776899485e67e61e2fcdb83ede3",
+    "exp355_upstream_prediction_logical_sha256": "634303f022bced6685367094304da6182fee42815302344469b5919a36cd5e21",
+    "selector_join_policy": "global_well_id_row_idx_then_exp263_fold_repartition",
+    "source_fold_used_as_model_feature": false
+  },
+  "tests": {
+    "dedicated": "9 passed",
+    "exp371_exp373_exp264_exp355_regression_bundle": "51 passed",
+    "strict_experiment_validation": "passed"
+  },
+  "stage_a": {
+    "rows_audited": 650000,
+    "feature_count_before_audit": 153,
+    "selected_feature_count": 90,
+    "compact_feature_count": 77,
+    "feature_schema_sha256": "908043637ab6af5033d6ae95be0c4505f9e68a7de9f07d857a94e2665a477b8d"
+  },
+  "stage_c": {
+    "model_count": 40,
+    "compact_partition_count": 25,
+    "compact_rows": 18919945,
+    "outer_valid_score_long_rows": 49191857,
+    "expected_error_mae": 3.8298319332035327,
+    "expected_error_prior_mae": 5.817279243971659,
+    "within10_logloss": 0.35959102683072974,
+    "within10_prior_logloss": 0.5100004570753557,
+    "within10_brier": 0.11206325013425421,
+    "within10_prior_brier": 0.1649629101377988,
+    "score_guard_passed": true,
+    "leakage_audit_passed": true,
+    "hard_primary_oof_rmse": 8.695437630439221,
+    "parent_fixed12_hard_oof_rmse": 8.652531955610227,
+    "fixed_fallback_oof_rmse": 8.238331546485645,
+    "delta_rmse_vs_parent": 0.04290567482899377
+  },
+  "integration_gate": {
+    "passed": false,
+    "decision": "FAIL_CLOSE_FIXED13_SELECTOR_BRANCH",
+    "fold_improvements_vs_parent": 2,
+    "positive_exp355_usage_folds": 5,
+    "exp355_usage_pooled": 0.12319221858203076,
+    "near_0_250_delta_rmse": 0.021578925223943557,
+    "distance_1000_plus_delta_rmse": 0.04334074320789405,
+    "hidden_like_spatial_delta_rmse": -0.13752472960431916,
+    "hidden_like_typewell_purged_delta_rmse": -0.12512694887793963,
+    "by_well_p95_delta_rmse": 1.0082613946415124,
+    "worst_well": "b19b0395",
+    "worst_well_delta_rmse": 29.062586652438384,
+    "fixed_fallback_error_parity_max_abs_ft": 0.0
+  },
+  "artifact_sha256": {
+    "nested_selector_model_manifest.json": "45876171d9d8de5697146abde3120c184466cb36fc8b9bcaa15b22e1f8bf8dce",
+    "nested_compact_manifest.json": "877a731456f2b93ce59c15b39baf32c850a10f565634754eb8d2b3ebf5710a65",
+    "nested_outer_valid_candidate_score.parquet": "694a1800238b80333ea36ae9d8d098e5de28c0a5e0c63b08547ba44c57e8aeb6",
+    "exp373_fixed13_vs_fixed12_scope_metrics.csv": "dc0a7542b1226871ae9e4c29ef29dd139e41f91be70260e67a86394bf8de4acb",
+    "exp373_fixed13_candidate_usage.csv": "af557341c6d55081580b58da7631f145d9b01db8d9b5401ed7a33d68edc179a3",
+    "exp373_fixed13_vs_fixed12_by_well.csv": "2d97270be5cfe88222101c0f4ff3e5d3da63127c32686ff0951780b43bd14752",
+    "exp373_scientific_gate.json": "ebfa2a17f159254c83e35edc90850d782005b3ffd5309f6737dcbc7abeb10c29"
+  },
+  "inference_enabled": false,
+  "submission_enabled": false,
+  "notes": "Version 1 completed all 40 CPU boosters. The selector score/leakage guards passed, but the fixed scientific integration gate failed; downstream TVT, inference, and submission remain disabled."
+}

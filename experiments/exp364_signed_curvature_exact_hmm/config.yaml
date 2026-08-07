@@ -1,0 +1,282 @@
+experiment:
+  name: exp364_signed_curvature_exact_hmm
+  description: >-
+    Add one persistent signed-curvature state to exp209 exact HMM, conditional
+    on a fixed three-path GR-emission separability and resource preflight.
+  route: pf_beam
+  status: completed_stage0_gate_failed_closed
+  created_at: "2026-07-23"
+  updated_at: "2026-07-25"
+
+implementation:
+  enabled: true
+  scope: stage0_signed_path_and_16_well_resource_projection
+  stage_0_implemented: true
+  stage_1_implemented: false
+  compact_selfcontained_source_created: true
+  canonical_notebook_adopted: true
+  canonical_notebook_replacement_authorized_by_request: true
+  inference_enabled: false
+  submission_enabled: false
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260723-exp364-signed-curvature-exact-hmm
+  references:
+    - exp242_two_regime_rate_noise_pf
+    - exp273_2d_gradient_transition_pf
+    - exp338_adaptive_sig_r_exact_hmm
+    - exp355_exp226_dip_rate_prior_on_exp209
+    - exp367_stratified_signed_curvature_pf
+  diff_summary: >-
+    Keep exp209 fixed except for c in {-1,0,+1}. c changes the expected rate by
+    one exp209 rate-grid cell over 512 rows before momentum attenuation and
+    follows one fixed sticky Markov chain. Stage 0 asks whether the unchanged
+    exp209 GR likelihood separates three frozen signed trajectories and whether
+    a threefold exact state space fits the fixed runtime/RSS budget. It does not
+    use geometry or a learned prefix-rate regressor.
+
+validation:
+  strategy: two_stage_signed_path_emission_separability_then_exact_hmm
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  expected_wells: 773
+  group_column: well_id
+  score_rows: unknown_suffix_only
+  truth_attachment: after_candidate_path_block_score_and_resource_sha_freeze
+  stage_0:
+    name: frozen_three_signed_curvature_path_readout
+    hmm_well_runs: 0
+    resource_projection_wells: 16
+    block_rows: 512
+    stride_rows: 256
+    incomplete_tail_policy: exclude
+    candidate_signs: [-1, 0, 1]
+    stable_score_tie_break: [0, -1, 1]
+    zero_first_reference_rank: [0, -1, 1]
+    truth_label_after_freeze: nearest_path_by_block_tvt_rmse
+    negative_control: within_well_circular_shift_of_gr_blocks
+    negative_control_shift_blocks: 1
+    single_block_negative_control_shift_rows: 256
+    fold_assignment: sklearn_group_kfold_on_well_stable_block_order
+    fold_pass_definition:
+      require_positive_top1_gain_vs_zero_first: true
+      require_positive_mrr_gain_vs_zero_first: true
+      require_positive_real_minus_circular_top1: true
+    distance_scope:
+      name: 1000_plus
+      rule: block_mid_md_since_ge_1000
+    positive_scope_direction_metric: selected_path_rmse_gain_vs_zero_path_ft
+    resource_projection:
+      selection: stable_state_cell_quantiles_including_min_and_max
+      method: exp209_selected_wall_time_scaled_by_exact_state_count
+      parent_reference_hmm_runtime_seconds: 11285.868
+      parent_reference_wells: 773
+      parent_reference_outer_workers: 2
+      parent_reference_numba_threads_per_worker: 2
+      curvature_state_count: 3
+      runtime_state_count_multiplier: 3.0
+      alpha_dtype_bytes: 4
+      posterior_dtype_bytes: 8
+      emission_dtype_bytes: 4
+      workspace_state_planes: 5
+      fixed_process_overhead_gb: 1.0
+      peak_rss_safety_factor: 1.25
+    all_required:
+      minimum_top1_accuracy: 0.40
+      minimum_mrr_gain_vs_zero_first_rank: 0.01
+      minimum_real_minus_circular_top1: 0.03
+      minimum_passing_folds: 4
+      require_positive_1000_plus_direction: true
+      require_positive_both_hidden_like_directions: true
+      maximum_projected_runtime_seconds: 30600
+      maximum_projected_peak_rss_gb: 25
+  stage_1:
+    enabled_only_after_stage_0_pass_and_separate_user_approval: true
+    exact_hmm_well_runs: 773
+    all_required:
+      minimum_rmse_gain_vs_exp209_ft: 0.05
+      minimum_improved_folds: 4
+      maximum_1000_plus_regression_ft: 0.02
+      maximum_hidden_like_spatial_regression_ft: 0.02
+      maximum_hidden_like_typewell_purged_regression_ft: 0.02
+      maximum_by_well_p95_regression_ft: 0.02
+      maximum_worst_well_regression_ft: 0.25
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  horizontal_required_prefreeze_columns: [MD, Z, GR, TVT_input]
+  horizontal_truth_columns: [TVT]
+  typewell_required_columns: [TVT, GR]
+  hidden_like:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    late_join_only: true
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    patterns:
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+    role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+  parent_control:
+    candidate: hmm_mean_tvt
+    direct_rmse_ft: 11.938287417
+    usage: saved_prediction_only_no_control_rerun
+
+model:
+  name: signed_curvature_exact_hmm
+  estimator: deterministic_exact_hmm
+  state: [position, rate, signed_curvature]
+  signed_curvature:
+    states: [-1, 0, 1]
+    exp209_rate_grid_cell: 0.005
+    expected_rate_change_rows: 512
+    rate_drift_per_row: 0.000009765625
+    initial_probability: [0.25, 0.50, 0.25]
+    transition_matrix:
+      - [0.998046875, 0.001953125, 0.0]
+      - [0.00048828125, 0.9990234375, 0.00048828125]
+      - [0.0, 0.001953125, 0.998046875]
+  fixed_from_exp209:
+    position_grid_step_ft: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    emission: gauss
+    emission_squared_z_clip: 600.0
+    lambda: 1.0
+    sigma_mode: std
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+    initial_rate_window_rows: 30
+    initial_rate_min_valid_steps: 3
+    initial_rate_fallback: 0.0
+    start_sigma_ft: 0.75
+    initial_rate_sigma: 0.01
+    band_pad_ft: 100.0
+    typewell_outer_pad_ft: 40.0
+    momentum: 0.998
+    rate_center: zero
+    output: posterior_mean
+  forbidden:
+    - prefix_or_geometry_rate_regressor
+    - curvature_magnitude_or_transition_grid
+    - continuous_acceleration
+    - emission_or_sigma_change
+    - adaptive_rate_noise
+    - blend_or_selector
+    - parent_control_rerun
+
+audit:
+  output_prefix: exp364_signed_curvature_exact_hmm_stage0
+  expected_artifacts:
+    - exp364_signed_curvature_exact_hmm_stage0_candidate_paths.csv.gz
+    - exp364_signed_curvature_exact_hmm_stage0_block_gr_scores.csv.gz
+    - exp364_signed_curvature_exact_hmm_stage0_input_manifest.csv
+    - exp364_signed_curvature_exact_hmm_stage0_resource_projection.csv
+    - exp364_signed_curvature_exact_hmm_stage0_freeze_manifest.json
+    - exp364_signed_curvature_exact_hmm_stage0_postfreeze_block_readout.csv.gz
+    - exp364_signed_curvature_exact_hmm_stage0_scope_metrics.csv
+    - exp364_signed_curvature_exact_hmm_stage0_fold_metrics.csv
+    - exp364_signed_curvature_exact_hmm_stage0_gate_report.json
+    - exp364_signed_curvature_exact_hmm_stage0_summary.json
+
+runtime:
+  device: cpu
+  use_gpu: false
+  use_amp: false
+  num_workers: 1
+  maximum_seconds: 30600
+  maximum_peak_rss_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_run_on_push: true
+    train_kernel_id: kentookumura/exp364-signed-curvature-exact-hmm-train
+    train_title: exp364 signed curvature exact hmm train
+    train_kernel_version: 1
+    train_kernel_id_no: 128529795
+    stage_0_runtime_seconds: 224.73707962036133
+    stage_0_completed_at_utc: "2026-07-25T01:04:12.988272+00:00"
+    kernel_sources:
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: true
+  seed_policy: no_rng_stable_well_row_state_order
+  stochastic_components: []
+  parallel_rng_policy: single_worker_no_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Candidate trajectories, GR scores, resource projection, and input identity
+      are frozen and SHA-read back before suffix truth or hidden-like roles.
+    - The 16-well resource projection includes the minimum and maximum projected
+      exact-state workloads and uses the selected exp209 v5 HMM wall time.
+    - Future gzip prediction artifacts use decompressed content SHA as evidence.
+
+execution:
+  implementation_approved: true
+  implementation_approval_source: user_message_implement_exp364
+  implementation_scope: stage0_only
+  kaggle_package_approved: true
+  kaggle_push_approved: true
+  kaggle_execution_approved: true
+  kaggle_execution_approved_at: "2026-07-25 09:57:27 JST"
+  kaggle_execution_approval_source: user_message_execute_exp364
+  active_stage: stage_0_completed_gate_failed_closed
+  run_stage_0: true
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+  stage_0_counts:
+    diagnostic_variants: 1
+    fixed_signed_paths: 3
+    reporting_folds: 5
+    resource_projection_wells: 16
+    exact_hmm_well_runs: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    parent_control_reruns: 0
+  stage_1_counts:
+    scientific_variants: 1
+    reporting_folds: 5
+    exact_hmm_well_runs: 773
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    parent_control_reruns: 0
+
+inference:
+  enabled: false
+  mode: disabled_stage0_failed_closed
+  create_submission: false
+
+notes:
+  - Design frozen on 2026-07-23.
+  - Stage 0 implementation was approved on 2026-07-25.
+  - The user approved canonical train adoption and private Kaggle CPU Stage 0
+    package/push/run on 2026-07-25; Stage 1 remains outside this approval.
+  - Kaggle version 1 completed Stage 0 and passed every technical gate, but
+    failed the circular-control, fold-count, and runtime scientific gates.
+  - Stage 1 exact HMM, inference, blend, and submission remain unimplemented
+    and this branch is closed without rescue.

@@ -1,0 +1,529 @@
+experiment:
+  name: exp335_signed_residual_meta_on_exp264
+  description: >-
+    Keep the corrected exp264 Stage C v6 nested compact 74 features unchanged
+    and add exactly 23 strict-nested signed-residual meta features. The new
+    selector target is true_tvt minus candidate_tvt for the same 12 candidates
+    and raw-test-safe 88-feature schema. The downstream TVT model remains the
+    exp264 clean-273 three-config LightGBM surface. Stage S and the zero-booster
+    preflight path are implemented, and the zero-booster Kaggle CPU preflight
+    passed on kernel version 2. The one-objective strict-nested selector training
+    run completed on Kaggle kernel version 3. All 20 models, the technical gate,
+    and the pooled plus 5-of-5 fold score gate passed. Downstream training,
+    Stage D implementation and the fixed 15-booster T4 run are approved after
+    the Stage S gate passed. Stage D version 1 stopped before the first booster
+    because the retained base-column request duplicated last_known_tvt; the
+    order-preserving de-duplication fix and regression test are validated for a
+    same-contract version 2 retry. Version 2 completed all 15 boosters and
+    improved pooled RMSE from 8.460811 to 8.146108, but the frozen by-well and
+    clean-control tail guards failed. The branch remains non-promotable, but a
+    2026-07-23 explicit user override authorizes saved-model CPU inference and
+    submission-file generation only. CPU inference version 3 completed on
+    Kaggle CPU and its 14,151-row output passed submit-check. The user later
+    submitted that code notebook and received Public LB 7.517. Agent-initiated
+    submission remains disabled, and same-family rescue remains unauthorized.
+  route: ml_model
+  status: submission_scored_public_lb_7p517_train_guard_failed
+  created_at: "2026-07-21"
+
+lineage:
+  parent: exp264_exp263_candidate_confidence_dual_selector
+  source_selector: corrected_stage_c_v6
+  source_downstream: corrected_stage_d_v3
+  diff_summary: >-
+    Reuse the saved corrected exp264 nested compact 74 features and clean 273
+    downstream features without retraining. The single strict-nested
+    signed-residual selector objective produced a fixed 23-feature compact to add to
+    the downstream TVT model. Do not use exp287 formation features, replace the
+    existing compact, or perform hard candidate selection.
+
+validation:
+  strategy: exp264_outer5_inner4_strict_nested_well_groupfold
+  metric: rmse
+  seed: 42
+  n_outer_folds: 5
+  n_inner_folds: 4
+  group_column: well
+  score_rows: TVT_input_isna
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_compact_partitions: 25
+  saved_control:
+    experiment: exp264_exp263_candidate_confidence_dual_selector
+    stage: corrected_stage_d_v3
+    feature_count: 347
+    clean_feature_count: 273
+    compact_feature_count: 74
+    rmse: 8.460811237612477
+    oof_sha256: b11c5005ca566f76588f4e1735386c15b8f016b874701a82e1c0741c8b839ae2
+    metrics_sha256: 29cecbf758196ee8d9d877545f7f959ce44a138568edabde86526bbf70940acb
+  leakage_policy:
+    - Use inner OOF signed-selector predictions for every downstream outer-train row.
+    - Use the four inner models fitted only on outer-train wells for each downstream outer-valid row.
+    - Never expose true_tvt, target, actual error, actual rank, oracle_label, or is_oracle to the downstream feature matrix.
+    - Reuse the saved corrected exp264 compact and control without retraining.
+
+data:
+  candidate_contract_patterns:
+    - inputs/exp264_candidate_contract.yaml
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/candidate_contract.yaml
+    - "**/exp264_candidate_contract.yaml"
+  candidate_contract_file_sha256: 4f4d3f77db01d7477f9e73066ac311cfdc2c14b15eba84fab9830f4cf5486c20
+  exp263_stage0_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts
+    - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1/artifacts
+    - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1_sample_partitions/artifacts
+  exp263_stage0_manifest_patterns:
+    - "**/cache_manifest.json"
+  exp263_expected_stage0_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+  exp263_expected_catalog_sha256: 7cd748661b719bfcfb1ed21b9fe314366b1c089cc0dd224a9e4cbd4ba7e9e6e0
+  exp264_stage_a_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-train/artifacts
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_a_v4/artifacts
+  exp264_stage_c_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-train/artifacts
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_c_v6/artifacts
+  exp264_stage_d_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-tvt-train/artifacts
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_d_v3_corrected/artifacts
+  stage_s_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp335-signed-residual-meta-on-exp264-train/artifacts
+    - experiments/exp335_signed_residual_meta_on_exp264/kaggle/output/stage_s_v3/artifacts
+  stage_s_signed_selector_metrics_sha256: 7b3b51c2614528fc0448e6ecc4751db7e348b990023be00fba7c798c44bdafde
+  stage_s_model_manifest_sha256: 2b626a0964d48da27b452e113afe8e05ee4342017fdd96bab80bea269e7390f5
+  stage_s_compact_manifest_sha256: 237486930a0e6f7479d40d2b2d2ccb8e033e3787eb273c406d1eb5a3fc8a6b64
+  stage_s_compact_schema_file_sha256: e57c6d5fde307eb26193a1c5efdb31accde94a6836df75de03100189d232021a
+  stage_s_compact_schema_logical_sha256: 74abf31f057dfe29177221895e3e26c5a261e5b51defc04f081d6b140f2be44c
+  stage_s_reproducibility_manifest_sha256: f4e37ce4bb8f38c2e9abc462b4625965612ac36815068cf9360766fff5d70ccb
+  saved_exp264_stage_d_oof_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-tvt-train/artifacts/stage_d_oof_predictions.parquet
+    - "**/stage_d_oof_predictions.parquet"
+  saved_exp264_stage_d_metrics_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-tvt-train/artifacts/stage_d_metrics.json
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_d_v3_corrected/artifacts/stage_d_metrics.json
+  saved_exp264_stage_d_oof_sha256: b11c5005ca566f76588f4e1735386c15b8f016b874701a82e1c0741c8b839ae2
+  saved_exp264_stage_d_metrics_sha256: 29cecbf758196ee8d9d877545f7f959ce44a138568edabde86526bbf70940acb
+  exp218_source_patterns:
+    - inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+    - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+  exp218_config_patterns:
+    - inputs/exp218_source/config.yaml
+    - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+  clean_273_allowlist_patterns:
+    - inputs/exp218_clean_273_allowlist.csv
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+  hidden_like_assignment_patterns:
+    - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  hidden_like_assignment_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  corrected_stage_a_feature_catalog_file_sha256: 3a443a1a5a71874499affdfe68ff07c8f40d0abbb86530f8808b45dee9781235
+  corrected_stage_a_feature_schema_file_sha256: b91ec1517a82641fe4d96f41c97872151f273a8bbfcb537284f91d47aacf1035
+  corrected_stage_a_feature_schema_logical_sha256: aaef4ffdd90667893b099b76a52f1957b22197aea9cee5e5b57bc81048ddd3a4
+  corrected_stage_a_selector_feature_count: 88
+  corrected_stage_a_feature_schema_patterns:
+    - inputs/exp264_stage_a_feature_schema.json
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_a_v4/artifacts/feature_schema.json
+    - "**/exp264_stage_a_feature_schema.json"
+  corrected_stage_a_feature_catalog_patterns:
+    - inputs/exp264_stage_a_feature_catalog.csv
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_a_v4/artifacts/feature_catalog.csv
+    - "**/exp264_stage_a_feature_catalog.csv"
+  stage_c_nested_selector_metrics_sha256: 421376abe55378ac3e0d9c37d2a882a97d6fd4ebf866ec4395e7346c1d4f478b
+  stage_c_nested_selector_model_manifest_sha256: 3f28b04a017f0edadb815be44bf6f6f039dbd115bb72b3401e2681d3002422d2
+  stage_c_nested_compact_manifest_sha256: f4855726de446b8308a8acf80d6ff6cd6a789f18ef90e165b98fa05d12aecf1c
+  stage_c_compact_meta_schema_file_sha256: e3a677610899cb33bf58262f4cf02f650300c8c2207c46b53588d3418162ea74
+  stage_c_compact_meta_schema_logical_sha256: 23614916c99edbbd513bcefee958d26cdfae5b83fb05c232c19736f2708dd725
+  clean_273_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
+
+features:
+  schema_source: corrected_exp264_stage_a_v4_fixed_88
+  shape_windows: [32, 128, 512]
+  raw_context:
+    horizontal_numeric_allowlist: [MD, X, Y, Z, GR]
+    add_delta_from_last_known_row: true
+    add_typewell_summary: true
+    forbidden_columns: [TVT, TVT_input, target, true_tvt]
+
+model:
+  name: signed_residual_meta_addonly_on_exp264
+  selector:
+    name: signed_residual_candidate_long_lightgbm
+    target: true_tvt_minus_candidate_tvt
+    target_formula: true_tvt-candidate_tvt
+    objective: regression_l2
+    input_feature_count: 88
+    candidate_count: 12
+    candidate_order_source: exp264_candidate_contract
+    candidate_order:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_k16__selfgr_hmm_a070
+      - exp226_k16__exact_hmm
+      - exp226_k16__likpf_mean
+      - selfgr_hmm_a070__likpf_mean
+      - likpf_mean__exact_hmm
+      - exp226_w500_50_50
+    legal_domains: [primitive_pair_bank, primitive_fixed_bank]
+    active_variants: [signed_residual_l2]
+    objectives: [signed_residual]
+    execution_count:
+      outer_folds: 5
+      inner_folds: 4
+      planned_cpu_boosters: 20
+      actual_cpu_boosters: 20
+      existing_selector_retraining_boosters: 0
+    sampling:
+      namespace: exp264_stage_c
+      use_parent_stage_c_sample_keys: true
+    training:
+      max_train_base_rows_per_outer_fold: 60000
+      max_valid_base_rows_for_early_stopping: 30000
+      predict_base_row_chunk_size: 20000
+      num_boost_round: 1200
+      early_stopping_rounds: 80
+      log_evaluation_period: 100
+    lightgbm_common:
+      learning_rate: 0.035
+      num_leaves: 63
+      min_child_samples: 80
+      subsample: 0.85
+      subsample_freq: 1
+      colsample_bytree: 0.85
+      reg_alpha: 0.1
+      reg_lambda: 1.0
+      n_jobs: 8
+      deterministic: true
+      force_col_wise: true
+      verbosity: -1
+    forbidden:
+      - label_clipping
+      - huber_or_quantile_objective
+      - target_transform_grid
+      - candidate_specific_model_config
+      - sample_weight_change
+      - nonnested_stage_b_train
+      - oracle_or_actual_error_feature
+  signed_compact:
+    feature_count: 23
+    candidate_specific_pred_signed_residual: 12
+    existing_top1_annotation: 8
+    distribution_summary: 3
+    existing_top1_domains: [primitive_pair_bank, primitive_fixed_bank]
+    existing_top1_objectives: [pred_abs_error, p_within10]
+    distribution_features:
+      - selector__pred_signed_residual_mean
+      - selector__pred_signed_residual_std
+      - selector__pred_signed_residual_range
+    forbidden:
+      - all_candidate_corrected_tvt_columns
+      - signed_residual_hard_top1
+      - softmax_candidate_average
+      - viterbi_or_hard_switch
+      - rolling_segment_or_well_aggregate
+      - schema_grid
+  downstream_tvt:
+    name: exp264_clean273_saved74_plus_signed23_lightgbm
+    base_feature_count: 273
+    saved_compact_feature_count: 74
+    signed_compact_feature_count: 23
+    final_feature_count: 370
+    expected_source_base_feature_count: 380
+    expected_base_feature_count: 273
+    base_feature_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
+    model_family: exp218_exp063_public_pixiux_lgb0_lgb1_lgb2
+    lightgbm_config_indices: [0, 1, 2]
+    active_variants: [signed_residual_meta_addonly]
+    execution_count:
+      variants: 1
+      lightgbm_configs: 3
+      folds: 5
+      planned_gpu_boosters: 15
+      actual_gpu_boosters: 15
+      control_retraining_boosters: 0
+    mode: gpu_repro_guard_dp_threads8
+    early_stopping_rounds: 250
+    log_evaluation_period: 100
+    matrix_copy_chunk_columns: 32
+
+guards:
+  stage_s:
+    require_model_count: 20
+    require_complete_row_candidate_coverage: true
+    require_outer_inner_well_disjoint: true
+    require_formula_parity: true
+    formula_parity_atol: 1.0e-3
+    saved_top1_value_parity_atol: 1.0e-5
+    prior: candidate_specific_outer_train_mean_signed_residual
+    require_pooled_rmse_better_than_prior: true
+    minimum_improved_outer_folds_vs_prior: 4
+  downstream_scientific_support:
+    minimum_pooled_rmse_improvement_vs_exp264: 0.03
+    minimum_nonworse_folds_vs_exp264: 4
+    maximum_scope_delta_rmse_vs_exp264: 0.0
+    maximum_by_well_delta_p95_vs_exp264: 0.0
+    maximum_worst_well_delta_rmse_vs_exp264: 0.25
+    require_all_checks: true
+  promotion:
+    require_scientific_support: true
+    require_existing_clean273_tail_guards: true
+    require_no_guard_relaxation: true
+  forbidden:
+    - replace_or_remove_saved_compact_74
+    - retrain_saved_exp264_control
+    - add_exp287_formation_features
+    - change_fold_seed_target_or_lightgbm_configs
+    - hard_selector_or_direct_candidate_prediction
+    - inference_or_submit_without_separate_approval
+
+execution:
+  stage: cpu_inference
+  allowed_stages: [signed_selector_preflight, signed_selector_train, downstream_tvt_train, cpu_inference]
+  implementation_approved: true
+  implementation_complete: true
+  kaggle_package_approved: true
+  kaggle_push_approved: true
+  preflight_run_approved: true
+  preflight_completed: true
+  selector_train_approved: true
+  selector_train_completed: true
+  downstream_train_approved: true
+  downstream_train_approval_received_at: "2026-07-22"
+  downstream_train_approval_scope: one_variant_three_configs_five_folds_15_gpu_boosters_saved_control_retraining_zero
+  inference_approved: true
+  inference_approval_received_at: "2026-07-23"
+  inference_approval_scope: saved_model_cpu_inference_generate_submission_file_no_external_submit
+  submission_approved: false
+  submission_recorded_from_user_action: true
+  run_selector_train: false
+  run_downstream_train: false
+  downstream_train_kernel_id: kentookumura/exp335-signed-residual-meta-on-exp264-tvt-train
+  downstream_train_kernel_id_no: 128232946
+  downstream_train_kernel_version: 2
+  downstream_train_status: version2_complete_guard_failed_closed
+  run_inference: false
+  create_submission: false
+  submit_to_kaggle: false
+  control_retraining: false
+
+inference:
+  status: user_authorized_2026_07_23_cpu
+  authorization_scope: saved_model_cpu_inference_generate_submission_file_no_external_submit
+  authorization_received_at: "2026-07-23"
+  stage_d_scientific_support_passed: false
+  stage_d_promotion_passed: false
+  retained_guard_failure: by_well_p95_plus_1p728657_worst_plus_10p238752
+  explicit_user_override_after_guard_failure: true
+  stage_d_saved_exp264_rmse: 8.460811237612477
+  stage_d_variant_rmse: 8.146107755881022
+  stage_d_by_well_delta_p95: 1.7286570188927526
+  stage_d_worst_well_delta_rmse: 10.23875229975538
+  runtime: kaggle_cpu
+  booster_training_count: 0
+  candidate_count: 12
+  parent_selector_model_bundle: inputs/stage_c_inference_models.tar.xz
+  parent_selector_model_bundle_sha256: 0e1ae1a59047ddbba8037b63e06bddbd8b903b378f944e37ecb75f52440b5adf
+  parent_selector_model_manifest_sha256: 3f28b04a017f0edadb815be44bf6f6f039dbd115bb72b3401e2681d3002422d2
+  parent_selector_model_count: 40
+  parent_selector_models_per_outer_objective: 4
+  selector_feature_schema_file_sha256: b91ec1517a82641fe4d96f41c97872151f273a8bbfcb537284f91d47aacf1035
+  selector_feature_catalog: inputs/exp264_stage_a_feature_catalog.csv
+  selector_feature_catalog_sha256: 3a443a1a5a71874499affdfe68ff07c8f40d0abbb86530f8808b45dee9781235
+  selector_training_sparse_feature_count: 25
+  expected_selector_feature_count: 88
+  parent_compact_schema_file_sha256: e3a677610899cb33bf58262f4cf02f650300c8c2207c46b53588d3418162ea74
+  parent_compact_schema_logical_sha256: 23614916c99edbbd513bcefee958d26cdfae5b83fb05c232c19736f2708dd725
+  expected_parent_compact_feature_count: 74
+  signed_selector_model_manifest_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp335-signed-residual-meta-on-exp264-train/artifacts/signed_selector_model_manifest.json
+    - "**/signed_selector_model_manifest.json"
+  signed_selector_model_manifest_sha256: 2b626a0964d48da27b452e113afe8e05ee4342017fdd96bab80bea269e7390f5
+  signed_selector_model_count: 20
+  signed_selector_models_per_outer: 4
+  signed_compact_schema_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp335-signed-residual-meta-on-exp264-train/artifacts/signed_compact_schema.json
+    - "**/signed_compact_schema.json"
+  signed_compact_schema_file_sha256: e57c6d5fde307eb26193a1c5efdb31accde94a6836df75de03100189d232021a
+  signed_compact_schema_logical_sha256: 74abf31f057dfe29177221895e3e26c5a261e5b51defc04f081d6b140f2be44c
+  expected_signed_compact_feature_count: 23
+  tvt_model_manifest_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp335-signed-residual-meta-on-exp264-tvt-train/artifacts/stage_d_model_manifest.json
+    - "**/stage_d_model_manifest.json"
+  tvt_model_manifest_sha256: bfe917ba446096026c6e8bc6f0ac0a0a33c69b5d5602e140152caccc5d2d3bcd
+  tvt_model_variant: signed_residual_meta_addonly
+  tvt_model_count: 15
+  expected_source_base_feature_count: 380
+  expected_base_feature_count: 273
+  source_base_feature_catalog: inputs/exp218_feature_availability.csv
+  source_base_feature_catalog_sha256: 6f93a502c9b58301e49da6effbf47b36d4635d4045157681749a762f08c89c67
+  base_feature_allowlist: inputs/exp218_clean_273_allowlist.csv
+  base_feature_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
+  expected_final_feature_count: 370
+  score_sample_rows: 10000
+  required_namespaced_confidence_column_count: 21
+  generate_submission_file: true
+  submit_to_kaggle: false
+  competition_submit_authorized: false
+  kaggle_kernel_id: kentookumura/exp335-signed-residual-meta-on-exp264-inference
+  kaggle_kernel_id_no: 128358534
+  kaggle_kernel_version: 3
+  kaggle_previous_failed_version: 1
+  kaggle_previous_failure: model_training_config_path_key_error_before_any_model_prediction
+  kaggle_second_failed_version: 2
+  kaggle_second_failure: mutable_inference_status_collided_with_fixed_authorization_guard_before_feature_generation
+  kaggle_status_at_push: KernelWorkerStatus.RUNNING
+  kaggle_final_status: KernelWorkerStatus.COMPLETE
+  runtime_seconds: 387.808
+  output_rows: 14151
+  output_wells: 3
+  submit_check_status: PASS
+  submission_sha256: 9d163b11fbea5c6a1e807f9681aaf39916bb5682e35ea874d3acd981f922a14f
+  prediction_decompressed_sha256: 67af935f64020555fdf611975b1ffff874f233d64e43c0095a8caa8aef292da0
+  inference_metrics_sha256: 4fe5402aa0c4737a3edda8de39a045ee60faf6ecb71d968a428c04c8426f0c81
+  downloaded_log_sha256: 0e35fdff77d3145a7b06dfac3ec15b1b437d2a4d8735a0fbebcb0aab4e888153
+  external_submission_performed: true
+  external_submission_performed_by: user
+  submission_ref: 54928806
+  submission_status: SubmissionStatus.COMPLETE
+  submission_submitted_at_utc: "2026-07-23 13:23:43.643000"
+  public_lb: 7.517
+  private_lb: null
+  scoring_runtime_measured: false
+  submission_monitor_log: logs/submission_exp335_signed_residual_meta_on_exp264.log
+  submission_monitor_log_sha256: c63c05581c8b1bf53383ce1c8e3f5507bb6f607a48feefc70d048692016790be
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  batch_size: 50000
+  kaggle:
+    enable_internet: false
+    enable_gpu: false
+    machine_shape: ""
+    selector_machine_shape: CPU
+    downstream_machine_shape: NvidiaTeslaT4
+    gpu_use_dp: true
+    deterministic: true
+    force_col_wise: true
+    num_threads: 8
+    bootstrap_dependency_files:
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/candidate_contract.yaml
+        destination: inputs/exp264_candidate_contract.yaml
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_a_v4/artifacts/feature_catalog.csv
+        destination: inputs/exp264_stage_a_feature_catalog.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_a_v4/artifacts/feature_schema.json
+        destination: inputs/exp264_stage_a_feature_schema.json
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+        destination: inputs/exp218_clean_273_allowlist.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_feature_availability.csv
+        destination: inputs/exp218_feature_availability.csv
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: inputs/exp218_source/config.yaml
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/settings.py
+        destination: inputs/exp218_source/settings.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/learned_likelihood_rawtest_feature_generator_parity.py
+        destination: inputs/exp145_source/learned_likelihood_rawtest_feature_generator_parity.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/pf_multi_observation_likelihood_probe.py
+        destination: inputs/exp145_source/pf_multi_observation_likelihood_probe.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/settings.py
+        destination: inputs/exp145_source/settings.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/config.yaml
+        destination: inputs/exp145_source/config.yaml
+      - source: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+        destination: exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_builder.py
+        destination: inputs/exp263_source/candidate_cache_builder.py
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_contract.py
+        destination: inputs/exp263_source/candidate_cache_contract.py
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_loader.py
+        destination: inputs/exp263_source/candidate_cache_loader.py
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/config.yaml
+        destination: inputs/exp263_source/config.yaml
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-train
+    train_kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-train
+    tvt_train_kernel_sources:
+      - kentookumura/exp335-signed-residual-meta-on-exp264-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-tvt-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp145-train
+    tvt_train:
+      enable_gpu: true
+      machine_shape: NvidiaTeslaT4
+    inference_kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp073-full-replay-repro-guard-infer
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp226-k16-kappa-repro-inference
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp335-signed-residual-meta-on-exp264-train
+      - kentookumura/exp335-signed-residual-meta-on-exp264-tvt-train
+    inference_dataset_sources:
+      - kentookumura/exp264-stage-c-selector-models
+    inference:
+      enable_gpu: false
+      machine_shape: ""
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_exp264_fold_objective_seed_no_new_rng
+  stochastic_components:
+    - cpu_lightgbm_selector_training
+    - gpu_lightgbm_downstream_training
+  parallel_rng_policy: no_global_rng_or_thread_schedule_dependent_random_draws
+  feature_sha_policy: logical_parquet_and_decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Saved exp264 inputs and controls must be SHA-verified before any fit.
+    - GPU LightGBM output is not assumed to be bitwise deterministic.
+    - Test regeneration and submission remain outside the current Stage S implementation scope.
+
+next_action: keep_train_guard_failure_but_update_public_lb_reference_anchor
+
+notes:
+  - Design finalized on 2026-07-21; no implementation or training was authorized.
+  - Stage S implementation was explicitly authorized on 2026-07-21 and completed without running Kaggle or training any booster.
+  - Kaggle package/push and the zero-booster preflight were explicitly authorized and completed before the separately approved selector training run.
+  - Kaggle kernel version 2 completed the zero-booster preflight with passed=true; version 1 failed before preflight because the competition mount resolver omitted /kaggle/input/competitions/<slug>.
+  - The one-objective outer5-inner4 Stage S selector run (20 CPU boosters) was explicitly authorized on 2026-07-21; existing selector/control and downstream retraining remain zero.
+  - Kaggle kernel version 3 was pushed successfully and entered RUNNING; active polling was stopped at the user's request pending their completion notice.
+  - Kaggle kernel version 3 completed 20 models in about 46 minutes; technical gate and signed-residual score gate passed with pooled RMSE 8.430777428355306 versus prior 10.974122864313635 and 5/5 improved outer folds.
+  - The canonical future Kaggle train slug is exp335-signed-residual-meta-on-exp264-train.
+  - Stage D implementation and 15 GPU boosters were explicitly authorized on 2026-07-22; saved exp264 control retraining remains zero, and inference/submission remain outside scope.
+  - Stage D version 1 was pushed to the separate canonical T4 kernel and entered RUNNING; the local run flag was disabled immediately to prevent duplicate execution.
+  - Stage D version 1 stopped before LightGBM fit at about 519.7 seconds with 0/15 boosters because last_known_tvt appeared both in the required columns and the clean273 feature allowlist, producing a duplicated retained column. The retained-column request now de-duplicates names while preserving order, has a regression test, and does not change the 370-feature model contract.
+  - The same-contract Stage D version 2 was pushed to the canonical T4 kernel, entered RUNNING, and matched the local 19-cell package on post-push pull. Active polling remains stopped at the user's request.
+  - Stage D version 2 completed all 15 GPU boosters in about 20,017 seconds. Pooled RMSE improved from saved exp264 8.460811237612477 to 8.146107755881022, with 4/5 nonworse folds and all five fixed scopes improved.
+  - The frozen scientific-support gate failed because by-well delta p95 was +1.7286570188927526 ft and worst-well delta was +10.23875229975538 ft. The clean-control promotion guard also failed: worst delta rose from +14.482873080528407 to +17.77490971486976 ft, and +1/+3/+5 ft well counts rose from 135/39/14 to 150/53/21.
+  - The completed branch is closed without gate relaxation, signed-residual rescue, inference, submission, or saved-control retraining.
+  - On 2026-07-23 the user explicitly overrode only the inference prohibition after the frozen tail guards failed. Saved-model CPU inference and submission-file generation are authorized; model training, guard reclassification, and external competition submission remain unauthorized.
+  - The compact self-contained CPU inference implementation and canonical private CPU package passed static validation. The package uses nine kernel sources, one private Stage C model dataset, internet off, GPU off, zero training boosters, and run-on-push.
+  - Canonical CPU inference kernel version 1 was pushed on 2026-07-23 and entered RUNNING. The root run/create flags were disabled immediately after push to prevent duplicate execution.
+  - CPU inference version 1 regenerated the raw-test-safe feature surface successfully, then failed before any model prediction because the inherited chunk-size lookup used model.training instead of model.selector.training. Version 2 changes only that configuration path.
+  - Canonical CPU inference kernel version 2 was pushed on 2026-07-23. The root run/create flags were disabled immediately after push to prevent duplicate execution.
+  - CPU inference version 2 failed before feature generation because the mutable progress label had overwritten the fixed inference authorization token. The authorization token was restored; progress is tracked only in experiment.status.
+  - Canonical CPU inference kernel version 3 was pushed on 2026-07-23. The root run/create flags were disabled immediately after push to prevent duplicate execution.
+  - Active polling for CPU inference version 3 was stopped at the user's request while the kernel remained RUNNING.
+  - CPU inference version 3 completed on Kaggle CPU in 387.808 seconds. The 14,151-row submission passed sample/header/ID-order/finite checks; no external competition submission was performed.
+  - The user later submitted the version 3 code notebook. Submission ref 54928806 completed with Public LB 7.517; the agent began monitoring only after completion, so scoring duration is not measured.

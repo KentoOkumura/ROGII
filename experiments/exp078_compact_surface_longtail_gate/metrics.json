@@ -1,0 +1,41 @@
+{
+  "experiment": "exp078_compact_surface_longtail_gate",
+  "status": "local_oof_completed_no_submit_candidate",
+  "route": "ml_model",
+  "parent": "exp073_gpu_reproducibility_guard_for_exp063_full_replay",
+  "compact_parent": "exp075_compact_tracker_pfbeam_feature_repro_guard",
+  "cv": 9.526374749390682,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "selected_mode": "gpu_repro_guard_dp_threads8",
+  "selected_model": "lgb_mean",
+  "planned_artifacts": [
+    "exp078_compact_surface_longtail_gate_metrics.csv",
+    "exp078_compact_surface_longtail_gate_bucket_metrics.csv",
+    "exp078_compact_surface_longtail_gate_well_metrics.csv",
+    "exp078_compact_surface_longtail_gate_best_predictions.csv.gz",
+    "exp078_compact_surface_longtail_gate_summary.json"
+  ],
+  "metric_context": [
+    "docs/discussions/rogii-wellbore-geology-prediction-698860-rmse-vs-ssr-error.md",
+    "docs/discussions/rogii-wellbore-geology-prediction-700340-oof-vs-lb-should-we-track-worst-well-improvements-instead-of-only-global-rmse.md",
+    "artifacts/metric_weighted_tail_error_map_anchor_exp073/README.md"
+  ],
+  "local_oof_audit": {
+    "status": "completed",
+    "rows": 3783989,
+    "wells": 773,
+    "selected_policy": "baseline_exp073",
+    "selected_policy_rmse_tvt": 9.526374749390682,
+    "selected_policy_prediction_sha256": "2fd6936fc7cf2ed2e053cc68f5fbacea626b0dcd4bdb0772f1927536b4e0e97a",
+    "best_compact_diagnostic_policy": "tail_or_len_long_w020",
+    "best_compact_diagnostic_rmse_tvt": 9.362945426943881,
+    "best_compact_diagnostic_delta_rmse_vs_base": -0.16342932244680064,
+    "best_compact_diagnostic_delta_sse_vs_base": -11681440.0,
+    "best_compact_diagnostic_max_well_rmse_regression": 2.908365249633789,
+    "decision": "do_not_port_to_inference",
+    "summary": "artifacts/exp078_compact_surface_longtail_gate_summary.json"
+  },
+  "notes": "Local OOF audit completed. Compact gated policies improved global RMSE/SSE but violated the well-level regression guard, so no submission candidate was selected."
+}

@@ -1,0 +1,134 @@
+experiment:
+  name: "exp091_self_gr_likelihood_pf_beam_probe"
+  description: Audit horizontal self-GR similarity candidates beside existing PF/Beam/likelihood-PF candidates before attempting a learned ranker or selector.
+  route: pf_beam
+  status: completed_train_side_audit
+  created_at: "2026-06-20"
+  updated_at: "2026-06-20"
+
+lineage:
+  parent: exp090_lateral_self_gr_match_pseudotail_probe
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  diagnostic_parents:
+    - exp083_pf_beam_true_tvt_2d_well_eda
+    - exp087_prefix_backtest_tvt_confidence
+  implementation_source: self_gr_likelihood_pf_beam_probe.py
+  public_replay_source: public_notebook_replay_audit.py
+  diff_summary: Keeps the exp072 deterministic PF/Beam/likelihood-PF train cache fixed, adds same-horizontal-well self-GR candidate paths, and audits candidate coverage/ranking without changing PF sampling, beam pruning, LightGBM features, or submission policy.
+
+validation:
+  strategy: train_well_pseudotail_candidate_coverage_audit
+  metric: rmse
+  secondary_metrics:
+    - topk_within_1ft
+    - topk_within_2ft
+    - topk_within_5ft
+    - topk_within_10ft
+    - bucket_miss_rate
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Existing PF/Beam/likelihood-PF candidates are read from exp072's raw-train-only deterministic feature cache.
+    - Same-horizontal-well self-GR candidates use raw horizontal GR, row index, and finite prefix TVT_input only.
+    - Evaluation-zone true TVT is materialized as last_known_tvt + target only for scoring coverage, oracle headroom, and miss-rate diagnostics.
+    - The first variant is an audit only; it does not train a supervised selector, alter PF likelihood, prune beam candidates, or produce a submission.
+    - Candidate ranking scores use target-free diagnostics only: PF/Beam disagreement, PF std, likelihood-PF delta, and self-GR NCC/gap.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+model:
+  name: none_candidate_audit_only
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  target: true_tvt_for_scoring_only
+  base_prediction: last_known_tvt
+  estimator: none
+  self_gr_candidate:
+    half_windows: [8, 15, 25]
+    stride: 3
+    prefix_tail_rows: 2048
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+audit:
+  mode: all_horizontal_self_similarity_candidate_rank_audit
+  output_prefix: exp091_self_gr_likelihood_pf_beam_probe
+  max_rows: null
+  save_candidate_long: true
+  thresholds_ft: [1, 2, 5, 10]
+  topk_values: [1, 2, 3, 5, 10]
+  extra_source_columns:
+    - md_since
+    - eval_len
+    - pf_ancc_std
+    - likpf_mean_d
+  candidates:
+    - name: last_anchor_tvt
+      role: anchor
+      source_column: last_known_tvt
+      transform: absolute
+      enabled: true
+    - name: pf_ancc
+      role: selected_pf
+      source_column: pf_ancc
+      transform: absolute
+      enabled: true
+    - name: beam_mean
+      role: selected_beam
+      source_column: beam_mean_d
+      transform: base_plus_delta
+      enabled: true
+    - name: likpf_mean
+      role: likelihood_pf
+      source_column: likpf_mean_d
+      transform: base_plus_delta
+      enabled: true
+    - name: sc_ens
+      role: ncc_scale_ensemble
+      source_column: sc_ens_d
+      transform: base_plus_delta
+      enabled: true
+    - name: hyb
+      role: public_hybrid
+      source_column: hyb_d
+      transform: base_plus_delta
+      enabled: true
+  expected_train_artifacts:
+    - exp091_self_gr_likelihood_pf_beam_probe_candidate_metrics.csv
+    - exp091_self_gr_likelihood_pf_beam_probe_rank_metrics.csv
+    - exp091_self_gr_likelihood_pf_beam_probe_bucket_metrics.csv
+    - exp091_self_gr_likelihood_pf_beam_probe_by_well.csv
+    - exp091_self_gr_likelihood_pf_beam_probe_self_gr_well_summary.csv
+    - exp091_self_gr_likelihood_pf_beam_probe_candidate_long.csv.gz
+    - exp091_self_gr_likelihood_pf_beam_probe_feature_schema.csv
+    - exp091_self_gr_likelihood_pf_beam_probe_summary.json
+
+inference:
+  mode: not_selected_candidate_audit_only
+  selected_variant: null
+  notes:
+    - This experiment is train-side diagnostic only.
+    - If candidate coverage is strong in targeted buckets, create a follow-up supervised ranker or scale-selector variant before any inference port.
+
+notes:
+  - This implements the backlog item `self_gr_likelihood_pf_beam_probe`.
+  - First variant is `all_horizontal_self_similarity_candidate_rank_audit`.
+  - GR self-match is not used as direct TVT replacement for submission.
+  - Coverage failure should close this branch as candidate-generation failure, not trigger learned scorer tuning.

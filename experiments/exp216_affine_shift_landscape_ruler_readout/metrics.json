@@ -1,0 +1,26 @@
+{
+  "best_all": {
+    "mae_tvt": 69.57697304778698,
+    "rmse_tvt": 108.53431252948947,
+    "surface": "savgol_31_p2__raw",
+    "within10": 0.16512117965717982
+  },
+  "best_calibrated_all": {
+    "mae_tvt": 71.89464632505587,
+    "rmse_tvt": 110.17602661196614,
+    "surface": "rolling_median_11__heel_calibrated",
+    "within10": 0.15346054333764553
+  },
+  "cv": "diagnostic_only",
+  "experiment": "exp216_affine_shift_landscape_ruler_readout",
+  "kernel": "kentookumura/exp216-affine-ruler-readout-train",
+  "kernel_version": 1,
+  "key_idea": "Affine shift-ruler readout completed; affine/heel calibration worsened train-side localization while raw smoothing only mildly improved diagnostic surface sharpness.",
+  "metric": "rmse",
+  "notes": "Kaggle train v1 completed. rows=3561984, wells=773, runtime_sec=1264.923. Best all surface savgol_31_p2__raw RMSE 108.534313. Hidden_tail best rolling_median_11__raw RMSE 125.707127. Heel calibration worsened hidden_tail mean abs-error by about 2.06 ft vs raw and did not improve likpf_mean observation rank. No inference port or submission.",
+  "private_lb": null,
+  "public_lb": null,
+  "runtime_sec": 1264.9225771427155,
+  "status": "completed_train_side_rejected_no_submit",
+  "updated_at": "2026-07-07"
+}

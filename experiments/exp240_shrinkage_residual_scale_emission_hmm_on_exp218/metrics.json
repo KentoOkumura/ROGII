@@ -1,0 +1,165 @@
+{
+  "experiment": "exp240_shrinkage_residual_scale_emission_hmm_on_exp218",
+  "status": "closed_train_side_alpha050_best_rmse_mixed_guards_no_inference_no_submit",
+  "route": "ensemble",
+  "selected_stage": "shrinkage_alpha050",
+  "kaggle": {
+    "kernel": "kentookumura/exp240-shrinkage-residual-scale-hmm-exp218-train",
+    "version": 2,
+    "url": "https://www.kaggle.com/code/kentookumura/exp240-shrinkage-residual-scale-hmm-exp218-train",
+    "status": "complete",
+    "elapsed_seconds": 30618.584
+  },
+  "alpha025_kaggle": {
+    "kernel": "kentookumura/exp240-shrinkage-residual-scale-hmm-exp218-train",
+    "version": 3,
+    "url": "https://www.kaggle.com/code/kentookumura/exp240-shrinkage-residual-scale-hmm-exp218-train",
+    "status": "complete",
+    "elapsed_seconds": 29341.119
+  },
+  "alpha050_kaggle": {
+    "kernel": "kentookumura/exp240-shrinkage-residual-scale-hmm-exp218-train",
+    "version": 4,
+    "url": "https://www.kaggle.com/code/kentookumura/exp240-shrinkage-residual-scale-hmm-exp218-train",
+    "status": "complete",
+    "elapsed_seconds": 28718.496
+  },
+  "scalar_cv": {
+    "candidate": "hmm_lgb_exp218_scalar_s2000_l0500",
+    "rows": 3783989,
+    "wells": 773,
+    "rmse": 8.361307776219315,
+    "mae": 4.8056706135871154,
+    "within10": 0.861589713923587,
+    "bias": -0.04532115940423084,
+    "delta_rmse_vs_exp218": -0.11449698171296241,
+    "delta_rmse_vs_exp234_rowwise_sigma": -0.065923625492895,
+    "delta_rmse_vs_exp221_exp148_center_fixed_sigma": 0.033570825258535,
+    "distance_bucket_delta_vs_exp218": {
+      "000_050": -0.161217,
+      "050_100": -0.124387,
+      "100_250": -0.055832,
+      "250_500": -0.018129,
+      "500_1000": 0.022970,
+      "1000_plus": -0.131428
+    },
+    "hidden_like": {
+      "verification_like_spatial": {"rmse": 9.550417, "delta_rmse_vs_exp218": -0.111178, "delta_within10_vs_exp218": -0.004834},
+      "verification_like_typewell_purged": {"rmse": 9.519053, "delta_rmse_vs_exp218": -0.116946, "delta_within10_vs_exp218": -0.003853}
+    },
+    "by_well_vs_exp218": {
+      "improved_wells": 501,
+      "worsened_wells": 272,
+      "median_delta_rmse": -0.3522076368646929,
+      "mean_delta_rmse": -0.3189015600193628,
+      "max_regression_well": "2e63d9de",
+      "max_regression_delta_rmse": 4.940864
+    },
+    "step_delta": {
+      "mean": 0.011025,
+      "p99": 0.065,
+      "rate_gt_5": 0.0,
+      "rate_gt_10": 0.0,
+      "rate_gt_25": 0.0
+    }
+  },
+  "alpha025_cv": {
+    "candidate": "hmm_lgb_exp218_selected_shrinkage_band_sf0250_sc4000_l0500",
+    "rows": 3783989,
+    "wells": 773,
+    "rmse": 8.35112227306535,
+    "mae": 4.832954463346115,
+    "within10": 0.8600463690565696,
+    "bias": -0.04390045693918693,
+    "delta_vs_scalar": {"rmse": -0.010185503153965, "mae": 0.027283849759, "within10": -0.001543344867},
+    "delta_rmse_vs_exp218": -0.12468248486692701,
+    "delta_rmse_vs_exp234_rowwise_sigma": -0.07610912864686,
+    "distance_bucket_delta_rmse_vs_scalar": {
+      "000_050": -0.000827,
+      "050_100": -0.011700,
+      "100_250": -0.017685,
+      "250_500": -0.016615,
+      "500_1000": -0.015967,
+      "1000_plus": -0.010047
+    },
+    "hidden_like_delta_vs_scalar": {
+      "verification_like_spatial": {"rmse": 0.005420, "mae": 0.025860, "within10": -0.002014},
+      "verification_like_typewell_purged": {"rmse": 0.004342, "mae": 0.024747, "within10": -0.001894}
+    },
+    "by_well_vs_scalar": {
+      "improved_wells": 352,
+      "worsened_wells": 421,
+      "median_delta_rmse": 0.005307475207148915,
+      "mean_delta_rmse": 0.009298057307952138,
+      "max_regression_well": "b3388334",
+      "max_regression_delta_rmse": 1.216115,
+      "max_improvement_well": "2e63d9de",
+      "max_improvement_delta_rmse": -4.456674
+    },
+    "scale_guard": {
+      "passed": true,
+      "well_overlap_count_all_folds": 0,
+      "spearman_sigma_vs_abs_error": 0.32648562587745916,
+      "top_to_bottom_rmse_ratio": 3.5785342762177517,
+      "sigma_floor_rate": 0.1806900072912474,
+      "sigma_cap_rate": 0.0
+    },
+    "step_delta": {"mean": 0.01115378559504261, "p99": 0.066, "rate_gt_5": 0.0, "rate_gt_10": 0.0, "rate_gt_25": 0.0}
+  },
+  "cv": {
+    "candidate": "hmm_lgb_exp218_selected_shrinkage_band_sf0250_sc4000_l0500",
+    "rows": 3783989,
+    "wells": 773,
+    "rmse": 8.336863896691353,
+    "mae": 4.874378048076729,
+    "within10": 0.8589528140805907,
+    "bias": -0.0565123395318693,
+    "delta_vs_alpha025": {"rmse": -0.014258376373997, "mae": 0.041423584731, "within10": -0.001093554976},
+    "delta_vs_scalar": {"rmse": -0.024443879527962, "mae": 0.068707434490, "within10": -0.002636899843},
+    "delta_rmse_vs_exp218": -0.1389408612409237,
+    "delta_rmse_vs_exp234_rowwise_sigma": -0.090367505308647,
+    "distance_bucket_delta_rmse_vs_alpha025": {
+      "000_050": -0.011477,
+      "050_100": -0.026673,
+      "100_250": -0.027856,
+      "250_500": 0.009600,
+      "500_1000": 0.001890,
+      "1000_plus": -0.016400
+    },
+    "hidden_like_delta_vs_alpha025": {
+      "verification_like_spatial": {"rmse": 0.005456},
+      "verification_like_typewell_purged": {"rmse": 0.003032}
+    },
+    "by_well_vs_alpha025": {
+      "improved_wells": 352,
+      "worsened_wells": 421,
+      "median_delta_rmse": 0.008680927058384302,
+      "mean_delta_rmse": 0.032399257265361726,
+      "max_regression_well": "6a8fa194",
+      "max_regression_delta_rmse": 2.8984338946575097,
+      "max_improvement_well": "efe96181",
+      "max_improvement_delta_rmse": -6.760599929394399
+    },
+    "scale_guard": {"passed": true, "well_overlap_count_all_folds": 0, "spearman_sigma_vs_abs_error": 0.32648562587745916},
+    "step_delta": {"mean": 0.011332864736128769, "p99": 0.0665, "rate_gt_5": 0.0, "rate_gt_10": 0.0, "rate_gt_25": 0.0}
+  },
+  "sha256": {
+    "hmm_features_decompressed": "7967be9425b4d81e38b96fd6ee7943282edc0f7e74c3a1ad81b28af6f5f88a9f",
+    "overall_metrics": "53b4c7773755ef4bf6f9478ff3016c5cacce25460c1705999c5e62a4e6619916",
+    "distance_bucket_metrics": "20dba3b7ca1041755944673c115e3bfc9bee03af70f0a885b859414862f8d27d",
+    "hidden_like_metrics": "6b06657d76082c40870b308817f3b4e094ca225e1fd41b0f28dcc93a955d0d71",
+    "by_well_delta": "ee0a81cd2e32210c85b8f6a7d1835288f1782468ab07a5ce973c3d9f8b7556a9",
+    "step_delta_rates": "29567ec55f9ff1674b1d37037fecf32ca632a7aa2374a503f58806713565da12",
+    "audit_summary": "76ae9c8cdd02b0feab33b71462244e7beb3a49bea842353c903400582a90124e",
+    "alpha025_sidecar_decompressed": "de45fa58dbfe48a97595706b887fe351fdd22ecbd54bd330a7db07942b643ebe",
+    "alpha025_hmm_features_decompressed": "99ddbc681187c68c09f6f90889060a54a9822258b14609ce15cbb87eff196261",
+    "alpha025_overall_metrics": "26d061bc3e9b781169c6dad6c28cbb28f5846422ff64377560355ed6a32b7663",
+    "alpha025_audit_summary": "dc6ffed1939d171482b82cc0ac86570cbe81a165d179e333091b71626703decb",
+    "alpha050_sidecar_decompressed": "1057fa12fc9c4595c67ecbdd4f03307d01eae347c238ad9e4906ffdf0b967b67",
+    "alpha050_hmm_features_decompressed": "8e2fcdcf3edf24f456ffb7aaba49dd5de85a9748291d2dcbb4e5a93b7bc0d4ff",
+    "alpha050_overall_metrics": "08b891abd368b2c76064e274c5fb63f5a60ec7191f69b3527909c2a2c0074e42",
+    "alpha050_audit_summary": "268d978ad63693f74460e4c44ea466c739e58fb43e228a0961d590caaae5da69"
+  },
+  "public_lb": null,
+  "decision": "closed by user decision: alpha=0.50 is the best finite-grid RMSE but secondary guards worsen; no inference, submission, rerun, or alpha grid expansion"
+}

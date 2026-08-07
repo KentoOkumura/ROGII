@@ -1,0 +1,95 @@
+{
+  "experiment": "exp153_full_rank_slot_addonly_on_exp092",
+  "status": "train_completed",
+  "route": "ml_model",
+  "parent": "exp092_u_projection_correction_disagreement_fullrun",
+  "rank_slot_source_parent": "exp098_selector_rank_slot_features_on_exp073",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "selected_variant": "u_projection_full_rank_slot_addonly",
+  "expected_rank_slot_features": {
+    "rank_slot_delta": 9,
+    "rank_slot_identity_score": 26,
+    "rank_slot_u_projection": 21,
+    "rank_slot_u_disagreement": 8,
+    "total": 64
+  },
+  "runtime": {
+    "primary": "colab_high_memory",
+    "colab_notebook": "exp153_full_rank_slot_addonly_on_exp092_colab_train.ipynb",
+    "copy_large_cache_to_content": true
+  },
+  "gpu_cost_guard": {
+    "active_variants": 1,
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "total_boosters": 15,
+    "control_retraining": false
+  },
+  "reference_metrics": {
+    "exp092_lgb1_rmse_tvt": 9.322479895503927,
+    "exp092_lgb_mean_rmse_tvt": 9.343064065995073,
+    "exp092_public_lb": 8.35,
+    "exp098_lgb1_rmse_tvt": 9.35815105231876,
+    "exp098_public_lb": 8.441,
+    "exp139_lgb1_rmse_tvt": 9.324907640659603,
+    "exp147_best_lgb2_rmse_tvt": 9.397013392978039
+  },
+  "cv": {
+    "run_id": "run_20260628_133009_l4_highmem_local_cache",
+    "runtime": "colab_l4_highmem",
+    "rows": 3783989,
+    "features": 304,
+    "active_modes": [
+      "gpu_repro_guard_dp_threads8"
+    ],
+    "active_variants": [
+      "u_projection_full_rank_slot_addonly"
+    ],
+    "elapsed_seconds": 10000.986,
+    "colab_elapsed_seconds_outer": 10001.721,
+    "best_lgb_mean_by_rmse_tvt": {
+      "variant": "u_projection_full_rank_slot_addonly",
+      "mode": "gpu_repro_guard_dp_threads8",
+      "model": "lgb_mean",
+      "fold": "pooled",
+      "rmse_tvt": 9.423385453890534,
+      "rmse_target": 9.423385293935171,
+      "prediction_sha256": "083f4b185718a9b8f08f4b06b030e8568d52f2e1a8bccd94ca516ccfbad0ad31"
+    },
+    "pooled_metrics": [
+      {
+        "model": "lgb0",
+        "rmse_tvt": 9.630078943598752,
+        "rmse_target": 9.63007894509001,
+        "prediction_sha256": "1f392f3ab19673b3f5e056f9e41336c5c24bb9d274a56a60f219da9df8096ef6"
+      },
+      {
+        "model": "lgb1",
+        "rmse_tvt": 9.388317392953782,
+        "rmse_target": 9.388317805558623,
+        "prediction_sha256": "12959578c5add951de72a2fc485e34113c02c8dc2d3a5e130777957a3df55e57"
+      },
+      {
+        "model": "lgb2",
+        "rmse_tvt": 9.413605687155531,
+        "rmse_target": 9.413605616653536,
+        "prediction_sha256": "2f1d7e7740f503942f73ce67657c83c61249d2087e41f7d1d00677ec53c648e7"
+      },
+      {
+        "model": "lgb_mean",
+        "rmse_tvt": 9.423385453890534,
+        "rmse_target": 9.423385293935171,
+        "prediction_sha256": "083f4b185718a9b8f08f4b06b030e8568d52f2e1a8bccd94ca516ccfbad0ad31"
+      }
+    ],
+    "drive_artifacts": {
+      "latest_done_summary": "/content/drive/MyDrive/Kaggle/ROGII/experiments/exp153_full_rank_slot_addonly_on_exp092/colab_runs/latest_done_summary.json",
+      "log": "/content/drive/MyDrive/Kaggle/ROGII/experiments/exp153_full_rank_slot_addonly_on_exp092/colab_runs/run_20260628_133009_l4_highmem_local_cache_exp153_full_rank_slot_addonly_on_exp092_full_train.log",
+      "summary": "experiments/exp153_full_rank_slot_addonly_on_exp092/artifacts/exp153_full_rank_slot_addonly_on_exp092_summary.json",
+      "metrics": "experiments/exp153_full_rank_slot_addonly_on_exp092/artifacts/exp153_full_rank_slot_addonly_on_exp092_metrics.csv",
+      "model_manifest": "experiments/exp153_full_rank_slot_addonly_on_exp092/artifacts/exp153_full_rank_slot_addonly_on_exp092_lgb_models/manifest.json"
+    }
+  },
+  "public_lb": null,
+  "private_lb": null
+}

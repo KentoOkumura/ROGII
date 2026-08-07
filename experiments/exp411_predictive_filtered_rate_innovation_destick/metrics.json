@@ -1,0 +1,210 @@
+{
+  "experiment": "exp411_predictive_filtered_rate_innovation_destick",
+  "route": "pf_beam",
+  "status": "stage0_fail_closed",
+  "validation": {
+    "stage": "stage_0_fixed32",
+    "strategy": "stage_0_fixed32_then_stage_1_full_773",
+    "cv": null,
+    "lb": null,
+    "rmse_is_diagnostic_not_promotion_gate": true
+  },
+  "execution_contract": {
+    "active_treatment_variants": 1,
+    "stage_0_hmm_well_runs": 32,
+    "parent_control_hmm_reruns": 0,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "models": 0,
+    "pf_well_runs": 0,
+    "beam_well_runs": 0,
+    "gpu_runs": 0,
+    "stage_0_execution_approved": true,
+    "stage_1_execution_approved": false
+  },
+  "fixed_treatment": {
+    "rate_step": 0.005,
+    "cusum_drift_allowance": 0.01,
+    "trigger_threshold_rate_cells": 1.0,
+    "activation_transitions": 32,
+    "stay_mass_transfer_fraction": 0.1,
+    "refractory_rows": 128,
+    "first_affected_transition": "row_after_trigger",
+    "cusum_updates_during_active_and_refractory": true
+  },
+  "fixed32_manifest": {
+    "rows": 32,
+    "persistent_wells": 16,
+    "control_wells": 16,
+    "fold_counts": {
+      "0": 8,
+      "1": 6,
+      "2": 6,
+      "3": 6,
+      "4": 6
+    },
+    "sha256": "fbbc62b7cb79e16a7fb436f3a9d11f8975e935ad2475a17e2dec4fd7b142e4d6"
+  },
+  "implementation_validation": {
+    "contract_tests_passed": 18,
+    "jupytext_train_test": true,
+    "jupytext_inference_test": true,
+    "py_compile": true,
+    "ruff_f821": true,
+    "strict_experiment_validation": true,
+    "exp408_regression_combined_tests_passed": 26,
+    "independent_exp209_small_trellis_parity": true,
+    "canonical_notebooks_adopted": true
+  },
+  "kaggle_execution": {
+    "kernel_id": "kentookumura/exp411-pred-filtered-rate-innovation-destick-train",
+    "kernel_id_no": 128773391,
+    "latest_created_version": 5,
+    "latest_created_version_status": "COMPLETE",
+    "cpu_only": true,
+    "numba_threads": 4,
+    "elapsed_seconds": 1133.132777009,
+    "peak_rss_gb": 1.0205612182617188,
+    "completed_hmm_well_runs": 32,
+    "cumulative_retry_hmm_well_runs": 64,
+    "scientific_result_generated": true,
+    "output_files_verified": true,
+    "versions": {
+      "python": "3.12.13",
+      "numpy": "2.0.2",
+      "pandas": "2.3.3",
+      "numba": "0.60.0"
+    }
+  },
+  "result": {
+    "active_row_fraction": 0.1296448157449644,
+    "active_rows": 20236,
+    "control_active_row_fraction": 0.13611877374694217,
+    "control_active_well_fraction": 1.0,
+    "control_active_wells": 16,
+    "eligible_future_direction_triggers": 630,
+    "eligible_lead_time_episodes": 25,
+    "finite_coverage": 1.0,
+    "fixed32_parent_rmse_ft": 9.968802828123929,
+    "fixed32_treatment_rmse_ft": 9.972554479758912,
+    "fixed32_rmse_delta_ft": 0.0037516516349835882,
+    "future_rate_direction_agreement": 0.2253968253968254,
+    "maximum_normalization_error": 2.7977620220553945e-14,
+    "passing_direction_folds": 0,
+    "peak_rss_gb": 1.0205612182617188,
+    "persistent_active_well_fraction": 1.0,
+    "persistent_active_wells": 16,
+    "persistent_minus_control_active_well_fraction": 0.0,
+    "pre_onset_trigger_coverage": 1.0,
+    "rmse_is_diagnostic_not_promotion_gate": true,
+    "runtime_projection_seconds": 27372.238644623656,
+    "total_rows": 156088,
+    "zero_active_saved_parent_max_abs_diff_ft": 0.0,
+    "zero_active_wells": 0,
+    "direction_agreement_by_fold": [
+      {
+        "fold": 0,
+        "eligible_triggers": 149,
+        "direction_agreement": 0.28187919463087246,
+        "strict_pass": false
+      },
+      {
+        "fold": 1,
+        "eligible_triggers": 119,
+        "direction_agreement": 0.20168067226890757,
+        "strict_pass": false
+      },
+      {
+        "fold": 2,
+        "eligible_triggers": 96,
+        "direction_agreement": 0.2604166666666667,
+        "strict_pass": false
+      },
+      {
+        "fold": 3,
+        "eligible_triggers": 148,
+        "direction_agreement": 0.23648648648648649,
+        "strict_pass": false
+      },
+      {
+        "fold": 4,
+        "eligible_triggers": 118,
+        "direction_agreement": 0.13559322033898305,
+        "strict_pass": false
+      }
+    ]
+  },
+  "technical_gates": {
+    "activation_schedule_readback_sha": true,
+    "active_row_fraction": true,
+    "episode_reads_before_all_freeze": true,
+    "finite_prediction_coverage": true,
+    "fixed32_fold_counts": true,
+    "fixed32_roles_and_unique_wells": true,
+    "no_trigger_parent_parity": true,
+    "peak_rss": true,
+    "persistent_active_wells": true,
+    "posterior_normalization": true,
+    "runtime_projection": true,
+    "truth_reads_before_all_freeze": true,
+    "zero_active_saved_parent_parity": true
+  },
+  "mechanism_gates": {
+    "control_active_row_fraction": false,
+    "future_rate_direction_agreement": false,
+    "lead_time_eligible_episodes": true,
+    "passing_folds": false,
+    "persistent_minus_control_active_well_fraction": false,
+    "pre_onset_trigger_coverage": true
+  },
+  "promotion_eligible": false,
+  "scientific_contract_sha256": "0b4d321c33edde84118b75656c9c6e90595e58f9cd9b698a9b3ce9232e71308b",
+  "schedule_manifest_sha256": "7fe9f8341d3521831296f984a6284a5a312360f7fa9fbfcb24e64876b1ed9029",
+  "prediction_manifest_sha256": "6011dbeff02f7013171431b2557fead799d82286ff96809344b495daea1b797c",
+  "artifacts": {
+    "activation_schedule": {
+      "rows": 156088,
+      "raw_sha256": "853a092078cc3802a820681a03daf2b01a97c3ba8f250d16d17932f9c434804a",
+      "decompressed_sha256": "fd27809c4b07183ec63d8d57f6154032884314e6a7bca9996fc021a7c14a34a7",
+      "logical_sha256": "fd27809c4b07183ec63d8d57f6154032884314e6a7bca9996fc021a7c14a34a7",
+      "readback_logical_sha256": "fd27809c4b07183ec63d8d57f6154032884314e6a7bca9996fc021a7c14a34a7"
+    },
+    "predictions": {
+      "rows": 156088,
+      "raw_sha256": "c95746eae4fa17c8753b6014fc6da1c63d51650694a8b125aca7f580339042a1",
+      "decompressed_sha256": "5f6e469c07a9f9048513a225d36f377da6192032041f1a98fd94c52399258c0d",
+      "logical_sha256": "5f6e469c07a9f9048513a225d36f377da6192032041f1a98fd94c52399258c0d",
+      "readback_logical_sha256": "5f6e469c07a9f9048513a225d36f377da6192032041f1a98fd94c52399258c0d"
+    },
+    "well_metrics": {
+      "rows": 32,
+      "sha256": "4a8e9842b234a75122ac1cf8ef0e833486f33d1220a22dd57a913189dde55e91"
+    },
+    "trigger_truth_late_readout": {
+      "rows": 633,
+      "sha256": "a0981988ad0c4f79c55c85049a01bbefc350739fd59f4270d23c0f89466e0d48"
+    },
+    "episode_lead_readout": {
+      "rows": 25,
+      "sha256": "3d2a6b8bbe7c2ec37e03287f8d0fa703833b6ba05d009e66e723b6c01c83c963"
+    },
+    "input_manifest": {
+      "bytes": 1387,
+      "sha256": "12d6bc0e9a4040ef7f892250026af302c66e556301a4a01ac1c38b48ec70a1de"
+    },
+    "summary": {
+      "bytes": 6805,
+      "sha256": "5c952e7e50545c91a78d2a1c53dac11f2e22af59c3cca779c5516ff5a43942b3"
+    }
+  },
+  "stage_1": {
+    "implemented": false,
+    "execution_approved": false,
+    "executed": false,
+    "requires_separate_user_approval": true
+  },
+  "inference": false,
+  "submission": false,
+  "notes": "Version 5 completed on Kaggle CPU. Technical gates passed 13/13, but mechanism gates passed only 2/6, so the experiment failed closed. Stage 1, inference, and submission were not executed."
+}

@@ -1,0 +1,170 @@
+experiment:
+  name: "exp214_public_raw_gr_residual_scale_control"
+  description: Fixed public-like raw GR residual-scale likelihood-PF control on the exp072-compatible pseudo-tail surface.
+  route: pf_beam
+  status: completed_train_side_audit
+  created_at: "2026-07-07"
+  updated_at: "2026-07-07"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+
+lineage:
+  parent: public_raw_gr_residual_scale_control backlog
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - exp211_affine_calibrated_gr_observation_pfbeam
+    - exp213_prefix_structural_prior_pfbeam
+    - hujile/rogii-maybe-you-like
+    - lightningv08/rogii-lb-7-168
+    - mattiaangeli/rogii-reproducible
+    - yusuketogashi/rogii-lb7156-baseline
+  implementation_source: public_raw_gr_residual_scale_control.py
+  diff_summary: >
+    Uses the same scoped pseudo-tail evaluation surface as exp211/exp213, but
+    fixes the control to public-like raw horizontal GR versus raw typewell GR
+    likelihood-PF. The observation scale is the known-prefix residual sigma
+    gs = clip(std(GR - typewell_GR(TVT_input)), 10, 60). PF state follows the
+    public replay surface convention TVT + Z, and scale-weighted outputs are
+    saved for scales 3, 5, 8, and 12. This is a diagnostic control, not a new
+    generation improvement or submission candidate.
+
+validation:
+  strategy: train_well_pseudotail_public_raw_gr_residual_scale_control
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within10
+    - public_scale_delta_vs_primary
+    - pf_effective_sample_size
+    - pf_resampling_rate
+    - path_jump_rate
+    - oracle_topk_coverage
+    - worst_well_regression_vs_primary
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Target wells are selected by target-free availability, eval row count, and md_since coverage, not by true error.
+    - Evaluation-zone true TVT is materialized as last_known_tvt + target from the exp072 cache only for scoring.
+    - GR residual scale uses known prefix rows only; valid/test true TVT and evaluation-tail target are never used in the PF likelihood.
+    - Raw PF generation uses raw horizontal GR, raw typewell GR, known prefix TVT_input/Z/MD, and evaluation-row GR/Z/MD.
+    - Positive train-side diagnostics are not sufficient for inference or submission. Raw-test regeneration must be designed separately.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_reference_candidates:
+    - pf_ancc
+    - beam_mean
+    - likpf_mean
+    - pf_z
+
+model:
+  name: public_raw_gr_residual_scale_control
+  estimator: none_pfbeam_generation_audit
+  target: exp072_target_for_scoring_only
+  observation_variants:
+    - name: raw
+      kind: raw
+      transition: classic
+  validation_surface:
+    selection_mode: long_md_since
+    max_target_wells: 64
+    well_include: []
+    min_known_prefix_rows: 160
+    min_eval_rows: 64
+  runtime:
+    particles: 500
+    seed_count: 128
+    likelihood_scales: [3.0, 5.0, 8.0, 12.0]
+    primary_scale: 5.0
+    topk_oracle: 3
+    resample_threshold: 0.5
+    init_spread: 4.5
+    momentum: 0.998
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_pos_noise: 0.10
+    resample_velocity_noise: 0.001
+    grid_step: 0.2
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+  beam:
+    enabled: true
+    beam_size: 14
+    move_radius: 2
+    move_cost: 16.0
+    error_scale: 120.0
+    post_smooth_window: 1
+
+audit:
+  mode: public_raw_gr_residual_scale_control
+  output_prefix: exp214_public_raw_gr_residual_scale_control
+  primary_baseline: pf_raw_scale_5
+  path_jump_threshold_ft: 8.0
+  expected_train_artifacts:
+    - exp214_public_raw_gr_residual_scale_control_candidate_metrics.csv
+    - exp214_public_raw_gr_residual_scale_control_filter_delta_metrics.csv
+    - exp214_public_raw_gr_residual_scale_control_bucket_metrics.csv
+    - exp214_public_raw_gr_residual_scale_control_by_well.csv
+    - exp214_public_raw_gr_residual_scale_control_group_metrics.csv
+    - exp214_public_raw_gr_residual_scale_control_pf_diagnostics.csv
+    - exp214_public_raw_gr_residual_scale_control_target_wells.csv
+    - exp214_public_raw_gr_residual_scale_control_well_status.csv
+    - exp214_public_raw_gr_residual_scale_control_row_candidates.csv.gz
+    - exp214_public_raw_gr_residual_scale_control_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_query_well_public_likpf_seed_base_plus_seed_index
+  stochastic_components:
+    - public_like_likelihood_pf_particle_propagation
+    - public_like_likelihood_pf_resampling
+  parallel_rng_policy: numba_kernel_uses_per_well_stable_seed_base_no_thread_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it is train-side diagnostic only.
+    - No LightGBM model, fold training, inference output, or submission is generated.
+    - gzip outputs use decompressed content SHA as the main evidence.
+
+inference:
+  mode: not_applicable_train_side_audit_only
+  selected_candidate: null
+  notes:
+    - Direct inference and submit are out of scope for exp214.
+    - This control exists to compare GRCAL-PFBEAM variants against public-like raw GR residual-scale PF.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog public_raw_gr_residual_scale_control.
+  - The purpose is a fixed comparison control, not direct improvement.
+  - Public notebook title LB values are not treated as deterministic evidence.
+  - Public-visible micro-tunes are intentionally excluded.

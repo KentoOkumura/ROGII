@@ -1,0 +1,79 @@
+{
+  "by_well_primary_minus_zero_abs_error_p90_ft": 0.10000000000002274,
+  "cv": null,
+  "decision": "invalid_or_insufficient_registration_support",
+  "experiment": "exp428_similar_well_gr_registration_map_transfer_readout",
+  "execution_contract": {
+    "audit_variants": 1,
+    "beam_well_runs": 0,
+    "boosters": 0,
+    "gpu_runs": 0,
+    "hmm_well_runs": 0,
+    "lightgbm_configs": 0,
+    "parent_control_reruns": 0,
+    "pf_well_runs": 0,
+    "reporting_folds": 5,
+    "trained_folds": 0
+  },
+  "implementation_approved": true,
+  "implementation_validation": {
+    "dedicated_tests": 15,
+    "dedicated_tests_passed": true,
+    "jupytext_roundtrip_passed": true,
+    "py_compile_passed": true,
+    "ruff_f821_e501_passed": true,
+    "strict_experiment_validation_passed": true
+  },
+  "kaggle": {
+    "kernel": "kentookumura/exp428-gr-registration-map-transfer-readout-train",
+    "kernel_id_no": 128932184,
+    "runtime_seconds_approx": 225.6,
+    "terminal_version": 2
+  },
+  "kaggle_run_approved": true,
+  "key_idea": "Kaggle CPU v2でsupported 306/773=39.586%が固定70% gateをFAIL。評価可能290 wellsでもrank-1 shift MAE 2.529310はzero 1.105172より1.424138 ft悪化し、top-5 oracleもzero比-0.013793 ft。cross-well registration-offset転写をno-rescueで閉鎖。",
+  "local_shape_gate": {
+    "local_vs_global_block_mae_gain_ft": -5.050144351430008,
+    "passed": false
+  },
+  "metric": "global_registration_shift_mae_ft",
+  "notes": "Version 1 was an implementation-only DTW missingness failure. Version 2 restored parent-compatible deterministic interpolation, but fixed 70% support coverage failed at 39.586%. Scientific supported-only diagnostics were also negative; no independent rerun, rescue, inference, or submission.",
+  "private_lb": null,
+  "public_lb": null,
+  "reproducibility": {
+    "deterministic_anchor": false,
+    "query_truth_rows_after_freeze": 3783989,
+    "query_truth_rows_before_freeze": 0,
+    "scientific_contract_sha256": "f3f084e9769da5b24c7c18497c2de101e025e8b340bbec797a554d1bb8f2cdf9",
+    "target_free_logical_content_sha256": "54127363c066b75180af274e8bb4e076536d97c94554ccec2846f4986ff849d7"
+  },
+  "route": "pf_beam",
+  "scientific_gate": {
+    "evaluated_wells": 290,
+    "group_median_mae_ft": 1.3982758620689655,
+    "mean_zncc_gain_vs_zero": -0.057438456015349595,
+    "oracle_vs_zero_mae_gain_ft": -0.01379310344827589,
+    "passed": false,
+    "pooled_dtw_cost_error_spearman": 0.07521076601312618,
+    "primary_mae_ft": 2.529310344827586,
+    "primary_vs_zero_mae_gain_ft": -1.4241379310344828,
+    "primary_vs_zero_nonworse_folds": 0,
+    "random_mae_ft": 1.8086206896551724,
+    "top5_oracle_mae_ft": 1.1189655172413793,
+    "zero_mae_ft": 1.1051724137931034
+  },
+  "stage": 0,
+  "status": "completed_stage0_technical_failed_closed_no_rescue",
+  "submission_in_scope": false,
+  "technical_gate": {
+    "determinism_status": "pending_independent_rerun_reference",
+    "evaluated_wells": 290,
+    "identifiable_query_block_fraction": 0.5826377295492488,
+    "passed": false,
+    "supported_prediction_finite_fraction": 1.0,
+    "supported_query_well_fraction": 0.3958602846054334,
+    "supported_query_well_fraction_min": 0.7,
+    "supported_query_wells": 306,
+    "total_query_wells": 773
+  }
+}

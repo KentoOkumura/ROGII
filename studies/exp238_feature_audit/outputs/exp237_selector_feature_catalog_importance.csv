@@ -1,0 +1,321 @@
+rank,feature,family,mean_split_importance,std_split_importance,importance_share_pct,folds,description
+1,candidate_minus_last,candidate_identity_or_context,1903.2,53.74662780119326,5.5975153525799435,5,この候補TVT − last_known_tvt。候補の外挿量。
+2,candidate_index,candidate_identity_or_context,1155.4,50.13282357896869,3.398155337521473,5,固定11候補bank内の候補index。候補identityを木に伝える数値code。
+3,v6_k16_geometry_gr_u_projection_minus_last,candidate_path_value,979.6,68.7589994109862,2.881108679795772,5,exp226 K16 geometry/GR/U-projection TVT − last_known_tvt。
+4,candidate_tvt,candidate_identity_or_context,838.8,47.30433383951198,2.4670007764523207,5,このcandidate-long行が表す候補パスの絶対TVT。
+5,hmm_selfgr_boost_only_a070_c100_minus_last,hmm_confidence,774.6,63.66160538346484,2.2781816898425937,5,Self-GR likelihood HMM TVT − last_known_tvt。
+6,copcf_spatial_xy_plus_trajectory_shape_k8_minus_candidate,cluster_prior_confidence,704.2,69.73306245963963,2.071127738170868,5,XY距離とtrajectory shapeを使うK=8 spatial prior TVT − 対象候補TVT。
+7,tvt_densew_vs_tvt_dense50_abs,candidate_disagreement,703.8,25.547994050414214,2.0699512952636425,5,|dense spatial ANCC（prefix加重bias） TVT − dense spatial ANCC（prefix末尾50 bias） TVT|。
+8,copcf_nearest_other_cluster_dist,cluster_prior_confidence,691.4,62.52839355045034,2.0334815651396454,5,最も近い別cluster中心までの距離。
+9,hmm_exact_std,hmm_confidence,648.2,77.58350340117413,1.9064257311592685,5,exact HMM posteriorのTVT標準偏差。
+10,eval_len,distance_or_anchor_context,566.4,35.3100552251055,1.6658431566316099,5,そのwellの予測tail行数。
+11,copcf_own_cluster_dist,cluster_prior_confidence,562.2,34.636685753691864,1.65349050610574,5,test wellと割当先cluster中心の距離。
+12,hmm_selfgr_boost_only_a070_c100_vs_v6_k16_geometry_gr_u_projection_abs,hmm_confidence,558.8,46.17033679755868,1.6434907413943212,5,|Self-GR likelihood HMM TVT − exp226 K16 geometry/GR/U-projection TVT|。
+13,copcf_spatial_xy_only_k8_minus_candidate,cluster_prior_confidence,538.6,33.701632007960676,1.584080374579423,5,XY距離だけを使うK=8 spatial prior TVT − 対象候補TVT。
+14,hmm_selfgr_std,hmm_confidence,536.4,39.189284249651706,1.5776099385896813,5,Self-GR likelihood HMM posteriorのTVT標準偏差。
+15,blend_likpf_hmm_w500_minus_last,candidate_path_value,536.0,33.904277016329374,1.5764334956824557,5,likPF / exact-HMM 50:50 blend TVT − last_known_tvt。
+16,copcf_own_cluster_dist_z,cluster_prior_confidence,522.6,44.303498733170045,1.5370226582903943,5,割当先cluster距離のcluster内z-score。
+17,hmm_exact_loglik,hmm_confidence,487.2,24.386471659508267,1.4329074610009187,5,exact HMMの行別観測log-likelihood。
+18,copcf_typewell_native_overlap_1_minus_candidate,cluster_prior_confidence,470.6,15.208550226763887,1.3840850803510516,5,native-overlap閾値1.0のtypewell cluster prior TVT − 対象候補TVT。
+19,dense_dist,pf_dense_confidence,469.6,38.5914498302409,1.3811439730829873,5,dense spatial KNNで使う最短正規化XY距離。
+20,beam_mean_d,candidate_path_value,458.2,19.070920271449932,1.3476153502270545,5,複数Beam path平均候補 − last_known_tvt。
+21,copcf_spatial_xy_plus_trajectory_shape_k8_minus_candidate_abs,cluster_prior_confidence,431.6,33.28362960976462,1.2693818968965447,5,|XY距離とtrajectory shapeを使うK=8 spatial prior TVT − 対象候補TVT|。
+22,beam_mean_vs_hmm_selfgr_boost_only_a070_c100_abs,candidate_disagreement,415.2,36.5814160469493,1.2211477377002904,5,|複数Beam path平均 TVT − Self-GR likelihood HMM TVT|。
+23,tvt_dense_vs_tvt_densew_abs,candidate_disagreement,407.0,26.15339366124404,1.1970306581021632,5,|dense spatial ANCC（full-prefix bias） TVT − dense spatial ANCC（prefix加重bias） TVT|。
+24,pf_ancc_minus_last,candidate_path_value,399.4,37.46731909277737,1.1746782428648748,5,ANCC PF TVT − last_known_tvt。
+25,copcf_spatial_xy_plus_trajectory_shape_k8_minus_candidate_abs_norm,cluster_prior_confidence,395.8,38.76467464070865,1.1640902566998432,5,|XY距離とtrajectory shapeを使うK=8 spatial prior TVT − 対象候補TVT|をprior標準偏差で正規化。
+26,beam_mean_vs_v6_k16_geometry_gr_u_projection_abs,candidate_disagreement,371.0,10.319883720275147,1.091150796451849,5,|複数Beam path平均 TVT − exp226 K16 geometry/GR/U-projection TVT|。
+27,hmm_selfgr_loglik,hmm_confidence,370.2,15.482247898803323,1.0887979106373975,5,Self-GR likelihood HMMの行別観測log-likelihood。
+28,likpf_mean_d,candidate_path_value,369.2,33.131555955010626,1.0858568033693332,5,likelihood-weighted PF平均候補 − last_known_tvt。
+29,md_since,distance_or_anchor_context,349.4,25.274493071078602,1.0276228794616604,5,既知prefix末尾から予測行までのMD距離。
+30,pf_ancc_vs_v6_k16_geometry_gr_u_projection_abs,candidate_disagreement,326.8,8.700574693662483,0.9611538552034077,5,|ANCC PF TVT − exp226 K16 geometry/GR/U-projection TVT|。
+31,pf_ancc_vs_hmm_selfgr_boost_only_a070_c100_abs,candidate_disagreement,320.8,28.82186669874108,0.943507211595022,5,|ANCC PF TVT − Self-GR likelihood HMM TVT|。
+32,copcf_typewell_native_overlap_0p999_neighbor_wells,cluster_prior_confidence,312.2,26.090228055729987,0.9182136890896692,5,native-overlap閾値0.999のtypewell cluster priorを作る近傍well数。
+33,tvt_dense_vs_tvt_dense50_abs,candidate_disagreement,311.4,15.565988564816571,0.9158608032752177,5,|dense spatial ANCC（full-prefix bias） TVT − dense spatial ANCC（prefix末尾50 bias） TVT|。
+34,likpf_mean_vs_v6_k16_geometry_gr_u_projection_abs,candidate_disagreement,309.2,22.960836221705865,0.9093903672854763,5,|likelihood-weighted PF平均 TVT − exp226 K16 geometry/GR/U-projection TVT|。
+35,crfe_dense_dist_norm,disagreement_enrichment,294.4,5.59464029227975,0.8658619797181248,5,dense_distを上限付きで正規化した近傍距離proxy。
+36,hmm_exact_minus_likpf_mean,hmm_confidence,290.4,35.95552808679078,0.8540975506458677,5,exact HMM候補 − likelihood-weighted PF平均候補。
+37,copcf_spatial_xy_only_k8_minus_candidate_abs_norm,cluster_prior_confidence,279.8,75.64852939747078,0.8229218136043864,5,|XY距離だけを使うK=8 spatial prior TVT − 対象候補TVT|をprior標準偏差で正規化。
+38,dense_std,pf_dense_confidence,278.2,19.149412523625887,0.8182160419754836,5,dense spatial KNN近傍ANCCの重み付き標準偏差。
+39,last_known_tvt,distance_or_anchor_context,276.6,40.15345564207395,0.8135102703465809,5,既知prefix末尾のTVT。全候補deltaのanchor。
+40,copcf_typewell_spatial_prior_delta,cluster_prior_confidence,269.6,22.17656420638688,0.7929225194701308,5,typewell prior − spatial prior。2種類の補正方向の差。
+41,blend_likpf_hmm_w500_vs_v6_k16_geometry_gr_u_projection_abs,candidate_disagreement,266.8,22.50999777876488,0.7846874191195508,5,|likPF / exact-HMM 50:50 blend TVT − exp226 K16 geometry/GR/U-projection TVT|。
+42,copcf_spatial_xy_only_k8_minus_candidate_abs,cluster_prior_confidence,261.2,26.527344382730817,0.7682172184183907,5,|XY距離だけを使うK=8 spatial prior TVT − 対象候補TVT|。
+43,beam_mean_vs_blend_likpf_hmm_w500_abs,candidate_disagreement,257.2,36.5403886131497,0.7564527893461336,5,|複数Beam path平均 TVT − likPF / exact-HMM 50:50 blend TVT|。
+44,exp226_gr_delta,exp226_geometry,245.2,25.849564793241683,0.7211595021293622,5,exp226候補位置でのGR整合差。exp251 v4ではraw-test契約外として除外。
+45,copcf_typewell_native_overlap_1_minus_candidate_abs,cluster_prior_confidence,244.6,16.92040188648012,0.7193948377685236,5,|native-overlap閾値1.0のtypewell cluster prior TVT − 対象候補TVT|。
+46,tvt_dense_vs_hmm_selfgr_boost_only_a070_c100_abs,candidate_disagreement,241.6,14.501724035437991,0.7105715159643308,5,|dense spatial ANCC（full-prefix bias） TVT − Self-GR likelihood HMM TVT|。
+47,copcf_typewell_native_overlap_1_minus_candidate_abs_norm,cluster_prior_confidence,241.0,24.66779276708802,0.7088068516034922,5,|native-overlap閾値1.0のtypewell cluster prior TVT − 対象候補TVT|をprior標準偏差で正規化。
+48,exp226_geop_minus_pred,exp226_geometry,235.8,44.48258086037725,0.693513093809558,5,exp226 geometry projection TVT − exp226最終候補TVT。
+49,likpf_mean_vs_blend_likpf_hmm_w500_abs,candidate_disagreement,234.6,21.419617176784463,0.6899837650878808,5,|likelihood-weighted PF平均 TVT − likPF / exact-HMM 50:50 blend TVT|。
+50,pf_ancc_vs_likpf_mean_abs,candidate_disagreement,232.0,20.530465167647808,0.6823368861909137,5,|ANCC PF TVT − likelihood-weighted PF平均 TVT|。
+51,pf_ancc_vs_beam_mean_abs,candidate_disagreement,230.6,29.92991814222017,0.6782193360156237,5,|ANCC PF TVT − 複数Beam path平均 TVT|。
+52,blend_likpf_hmm_w500_vs_hmm_selfgr_boost_only_a070_c100_abs,candidate_disagreement,230.2,8.983317872590286,0.6770428931083979,5,|likPF / exact-HMM 50:50 blend TVT − Self-GR likelihood HMM TVT|。
+53,crfe_tvt_dense_drift_per_md,disagreement_enrichment,227.0,18.721645226849052,0.6676313498505922,5,"(dense full-prefix候補 − anchor) / max(md_since, 1)。"
+54,pf_ancc_vs_blend_likpf_hmm_w500_abs,candidate_disagreement,227.0,17.902513789968157,0.6676313498505922,5,|ANCC PF TVT − likPF / exact-HMM 50:50 blend TVT|。
+55,copcf_spatial_xy_plus_trajectory_shape_k8_prior_std,cluster_prior_confidence,222.8,23.700210969525152,0.6552786993247223,5,XY距離とtrajectory shapeを使うK=8 spatial priorを作るsource TVTの標準偏差。
+56,copcf_typewell_native_overlap_0p999_prior_std,cluster_prior_confidence,220.0,28.78367592924851,0.6470435989741423,5,native-overlap閾値0.999のtypewell cluster priorを作るsource TVTの標準偏差。
+57,copcf_typewell_native_overlap_1_prior_count,cluster_prior_confidence,214.8,37.26526532845298,0.631749841180208,5,native-overlap閾値1.0のtypewell cluster priorを作る有効source数。
+58,tvt_dense_vs_v6_k16_geometry_gr_u_projection_abs,candidate_disagreement,211.4,18.46076921474292,0.6217500764687894,5,|dense spatial ANCC（full-prefix bias） TVT − exp226 K16 geometry/GR/U-projection TVT|。
+59,copcf_spatial_xy_only_k8_prior_std,cluster_prior_confidence,207.2,19.954949260772377,0.6093974259429195,5,XY距離だけを使うK=8 spatial priorを作るsource TVTの標準偏差。
+60,crfe_tvt_dense50_drift_per_md,disagreement_enrichment,203.4,24.684002916869055,0.5982212183242752,5,"(dense末尾50候補 − anchor) / max(md_since, 1)。"
+61,crfe_dense_candidate_mean,disagreement_enrichment,200.8,16.05303709582707,0.5905743394273081,5,dense 3候補TVTの平均。
+62,tvt_densew_vs_hmm_selfgr_boost_only_a070_c100_abs,candidate_disagreement,199.8,19.331321734428816,0.5876332321592438,5,|dense spatial ANCC（prefix加重bias） TVT − Self-GR likelihood HMM TVT|。
+63,tvt_dense50_vs_hmm_selfgr_boost_only_a070_c100_abs,candidate_disagreement,199.0,18.64135188230725,0.5852803463447923,5,|dense spatial ANCC（prefix末尾50 bias） TVT − Self-GR likelihood HMM TVT|。
+64,likpf_mean_vs_hmm_selfgr_boost_only_a070_c100_abs,candidate_disagreement,189.2,31.74429082528069,0.5564574951177623,5,|likelihood-weighted PF平均 TVT − Self-GR likelihood HMM TVT|。
+65,crfe_dense_candidate_std,disagreement_enrichment,177.4,11.545561917897285,0.5217524293546039,5,dense 3候補TVTの標準偏差。
+66,beam_mean_vs_likpf_mean_abs,candidate_disagreement,176.6,27.546324618721826,0.5193995435401524,5,|複数Beam path平均 TVT − likelihood-weighted PF平均 TVT|。
+67,hmm_selfgr_boost_only_a070_c100_mean_tvt,hmm_confidence,176.6,16.592166826548002,0.5193995435401524,5,Self-GR likelihood HMMの絶対TVT候補。
+68,candidate_name_code,candidate_identity_or_context,175.6,50.894989930247554,0.5164584362720881,5,candidate_indexと同じ候補identity codeを別契約名で保持した列。
+69,blend_likpf_hmm_w500,candidate_path_value,170.4,5.98331012066064,0.5011646784781538,5,likPF / exact-HMM 50:50 blendの絶対TVT候補。
+70,tvt_dense_d,candidate_path_value,166.6,8.203657720797473,0.4899884708595096,5,dense full-prefix候補 − last_known_tvt。
+71,crfe_tvt_densew_drift_per_md,disagreement_enrichment,164.0,29.0,0.48234159196254245,5,"(dense加重候補 − anchor) / max(md_since, 1)。"
+72,candidate_is_dense_family,candidate_identity_or_context,159.6,16.516658257650064,0.4694007199830596,5,対象候補がdense 3候補なら1。
+73,crfe_tail_rank_norm,disagreement_enrichment,155.2,17.19592975096142,0.4564598480035767,5,"min(予測tail内row index / 1000, 5)。"
+74,pf_vs_dense,candidate_disagreement,147.8,13.274034804836099,0.4346956542199011,5,ANCC PF候補 − dense ANCC候補。
+75,candidate_is_hmm_family,candidate_identity_or_context,147.4,10.597169433391164,0.43351921131267535,5,対象候補がHMMまたはHMM blendなら1。
+76,exp226_geop_tvt,exp226_geometry,144.2,11.584472366059664,0.42410766805486955,5,exp226 geometry projectionが返す絶対TVT。exp251 v4ではraw-test契約外として除外。
+77,copcf_nearby_majority_count_k12,cluster_prior_confidence,142.2,18.17140610959978,0.418225453518741,5,近傍12 well中、多数派clusterに属するwell数。
+78,candidate_is_default_likpf,candidate_identity_or_context,137.6,15.693947878083447,0.40469636008564536,5,対象候補が既定fallbackのlikpf_meanなら1。
+79,crfe_dense_candidate_range,disagreement_enrichment,137.0,16.077935190813527,0.4029316957248068,5,dense 3候補TVTの最大−最小。
+80,crfe_pf_ancc_minus_tvt_densew,disagreement_enrichment,135.2,13.103434664239751,0.39763770264229104,5,ANCC PF候補 − dense prefix加重候補。
+81,exp226_v6_k16_geometry_gr_u_projection,exp226_geometry,134.8,12.597618822618823,0.3964612597350654,5,exp226 K16 geometry/GR/U-projectionの絶対TVT候補。
+82,crfe_likpf_mean_minus_tvt_densew,disagreement_enrichment,132.2,18.99210362229524,0.38881438083809816,5,likPF平均候補 − dense prefix加重候補。
+83,tvt_densew_vs_v6_k16_geometry_gr_u_projection_abs,candidate_disagreement,128.4,11.260550608207398,0.377638173219454,5,|dense spatial ANCC（prefix加重bias） TVT − exp226 K16 geometry/GR/U-projection TVT|。
+84,beam_mean_minus_last,candidate_path_value,126.0,19.209372712298546,0.37057951577609965,5,複数Beam path平均 TVT − last_known_tvt。
+85,candidate_multiobs_mae,multi_observation,124.2,12.61744823647,0.36528552269358394,5,対象候補自身のmulti-observation GR照合MAE。
+86,crfe_beam_mean_minus_tvt_densew_abs_norm,disagreement_enrichment,117.0,16.46207763315433,0.34410955036352114,5,"|Beam平均 − dense加重| / max(dense_std, 10)。"
+87,crfe_high_disagreement_proxy,disagreement_enrichment,116.2,2.863564212655271,0.3417566645490697,5,PF-vs-dense差、dense std、dense距離を0.45/0.35/0.20で合成したdisagreement。
+88,tvt_dense50_vs_v6_k16_geometry_gr_u_projection_abs,candidate_disagreement,109.4,5.504543577809154,0.32175713512623255,5,|dense spatial ANCC（prefix末尾50 bias） TVT − exp226 K16 geometry/GR/U-projection TVT|。
+89,tvt_dense_vs_blend_likpf_hmm_w500_abs,candidate_disagreement,106.4,21.87007087322764,0.31293381332203973,5,|dense spatial ANCC（full-prefix bias） TVT − likPF / exact-HMM 50:50 blend TVT|。
+90,beam_mean_vs_tvt_dense_abs,candidate_disagreement,103.8,11.43241006962224,0.3052869344250726,5,|複数Beam path平均 TVT − dense spatial ANCC（full-prefix bias） TVT|。
+91,likpf_mean_vs_tvt_dense_abs,candidate_disagreement,103.6,11.193748255164577,0.30469871297145973,5,|likelihood-weighted PF平均 TVT − dense spatial ANCC（full-prefix bias） TVT|。
+92,crfe_tvt_dense_abs_delta_from_last,disagreement_enrichment,101.2,10.59245014149229,0.29764005552810546,5,|dense full-prefix候補 − anchor|。
+93,pf_ancc_vs_tvt_dense_abs,candidate_disagreement,99.8,10.825894882179487,0.29352250535281543,5,|ANCC PF TVT − dense spatial ANCC（full-prefix bias） TVT|。
+94,copcf_nearby_majority_count_k8,cluster_prior_confidence,96.6,8.792041856133308,0.28411096209500974,5,近傍8 well中、多数派clusterに属するwell数。
+95,tvt_dense50_d,candidate_path_value,96.4,12.660963628413123,0.2835227406413969,5,dense prefix末尾50候補 − last_known_tvt。
+96,crfe_beam_mean_minus_tvt_densew,disagreement_enrichment,93.4,16.97939928266015,0.27469941883720406,5,Beam平均候補 − dense prefix加重候補。
+97,copcf_spatial_xy_only_k8_prior_count,cluster_prior_confidence,92.8,9.54986910905066,0.27293475447636545,5,XY距離だけを使うK=8 spatial priorを作る有効source数。
+98,crfe_pf_vs_dense_abs_norm,disagreement_enrichment,91.0,13.057564857200592,0.26764076139384974,5,"|ANCC PF − dense ANCC| / max(dense_std, 10)。"
+99,pf_ancc_std,pf_dense_confidence,91.0,15.7797338380595,0.26764076139384974,5,ANCC PF粒子の行別TVT標準偏差。粒子分布の幅。
+100,crfe_likpf_mean_minus_tvt_densew_abs_norm,disagreement_enrichment,85.4,12.280065146406999,0.2511705606926898,5,"|likPF − dense加重| / max(dense_std, 10)。"
+101,crfe_pf_ancc_minus_tvt_densew_abs_norm,disagreement_enrichment,83.8,15.270887335056859,0.24646478906378694,5,"|ANCC PF − dense加重| / max(dense_std, 10)。"
+102,copcf_typewell_native_overlap_0p999_minus_candidate,cluster_prior_confidence,81.4,9.423375191511797,0.23940613162043267,5,native-overlap閾値0.999のtypewell cluster prior TVT − 対象候補TVT。
+103,copcf_typewell_spatial_prior_abs_delta,cluster_prior_confidence,81.0,9.486832980505138,0.23822968871320693,5,|typewell prior − spatial prior|。
+104,pf_ancc_vs_tvt_densew_abs,candidate_disagreement,80.6,9.864076236526154,0.2370532458059812,5,|ANCC PF TVT − dense spatial ANCC（prefix加重bias） TVT|。
+105,pf_ancc_vs_tvt_dense50_abs,candidate_disagreement,79.0,14.017845768876185,0.23234747417707838,5,|ANCC PF TVT − dense spatial ANCC（prefix末尾50 bias） TVT|。
+106,tvt_densew_d,candidate_path_value,76.8,10.70980858839223,0.22587703818733695,5,dense prefix加重候補 − last_known_tvt。
+107,exp226_geop_minus_pred_abs,exp226_geometry,71.6,12.95376393176902,0.21058328039340266,5,|exp226 geometry projection TVT − exp226最終候補TVT|。
+108,candidate_multiobs_score,multi_observation,70.4,15.388307249337075,0.20705395167172555,5,対象候補自身のmulti-observation GR一致score。
+109,likpf_mean_vs_tvt_dense50_abs,candidate_disagreement,68.8,11.43241006962224,0.20234818004282268,5,|likelihood-weighted PF平均 TVT − dense spatial ANCC（prefix末尾50 bias） TVT|。
+110,tvt_densew_vs_blend_likpf_hmm_w500_abs,candidate_disagreement,68.6,8.677557259966656,0.20175995858920978,5,|dense spatial ANCC（prefix加重bias） TVT − likPF / exact-HMM 50:50 blend TVT|。
+111,crfe_tvt_densew_abs_delta_from_last,disagreement_enrichment,62.4,7.602631123499285,0.18352509352721127,5,|dense prefix加重候補 − anchor|。
+112,crfe_tvt_dense50_abs_delta_from_last,disagreement_enrichment,62.0,8.544003745317532,0.18234865061998556,5,|dense末尾50候補 − anchor|。
+113,tvt_dense50_vs_blend_likpf_hmm_w500_abs,candidate_disagreement,60.6,8.96102672688794,0.17823110044469556,5,|dense spatial ANCC（prefix末尾50 bias） TVT − likPF / exact-HMM 50:50 blend TVT|。
+114,likpf_mean_vs_tvt_densew_abs,candidate_disagreement,56.6,2.701851217221259,0.16646667137243842,5,|likelihood-weighted PF平均 TVT − dense spatial ANCC（prefix加重bias） TVT|。
+115,copcf_nearby_majority_count_k5,cluster_prior_confidence,53.8,10.353743284435827,0.15823157102185842,5,近傍5 well中、多数派clusterに属するwell数。
+116,likpf_mean_minus_last,candidate_path_value,53.6,10.876580344942981,0.15764334956824558,5,likelihood-weighted PF平均 TVT − last_known_tvt。
+117,sc_ens_vs_v6_k16_geometry_gr_u_projection_abs,candidate_disagreement,52.8,9.20326029187483,0.15529046375379416,5,|multi-scale NCC ensemble TVT − exp226 K16 geometry/GR/U-projection TVT|。
+118,hyb_vs_v6_k16_geometry_gr_u_projection_abs,candidate_disagreement,46.6,10.014988766843427,0.1370555986917956,5,|Beam/NCC hybrid TVT − exp226 K16 geometry/GR/U-projection TVT|。
+119,beam_mean_vs_tvt_densew_abs,candidate_disagreement,45.0,6.892024376045111,0.13234982706289275,5,|複数Beam path平均 TVT − dense spatial ANCC（prefix加重bias） TVT|。
+120,sc_ens_vs_hmm_selfgr_boost_only_a070_c100_abs,candidate_disagreement,42.8,11.278297743897348,0.12587939107315133,5,|multi-scale NCC ensemble TVT − Self-GR likelihood HMM TVT|。
+121,copcf_typewell_native_overlap_1_neighbor_wells,cluster_prior_confidence,42.0,7.968688725254614,0.12352650525869989,5,native-overlap閾値1.0のtypewell cluster priorを作る近傍well数。
+122,beam_mean_vs_tvt_dense50_abs,candidate_disagreement,41.8,6.906518659932803,0.12293828380508703,5,|複数Beam path平均 TVT − dense spatial ANCC（prefix末尾50 bias） TVT|。
+123,sc_ens_vs_blend_likpf_hmm_w500_abs,candidate_disagreement,40.0,10.700467279516348,0.11764429072257132,5,|multi-scale NCC ensemble TVT − likPF / exact-HMM 50:50 blend TVT|。
+124,copcf_typewell_native_overlap_0p999_minus_candidate_abs_norm,cluster_prior_confidence,36.2,5.118593556827892,0.10646808310392707,5,|native-overlap閾値0.999のtypewell cluster prior TVT − 対象候補TVT|をprior標準偏差で正規化。
+125,hyb_vs_blend_likpf_hmm_w500_abs,candidate_disagreement,36.2,5.718391382198318,0.10646808310392707,5,|Beam/NCC hybrid TVT − likPF / exact-HMM 50:50 blend TVT|。
+126,copcf_spatial_xy_only_k8_nearby_majority_diff_k8_corr_abs_c20,cluster_prior_confidence,36.0,4.898979485566356,0.1058798616503142,5,K=8近傍の多数派cluster不一致時にXY距離だけを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+127,hyb_vs_hmm_selfgr_boost_only_a070_c100_abs,candidate_disagreement,35.4,6.107372593840989,0.10411519728947562,5,|Beam/NCC hybrid TVT − Self-GR likelihood HMM TVT|。
+128,copcf_spatial_xy_only_k8_any_outlier_signal_k8_corr_abs_c40,cluster_prior_confidence,34.8,8.408329203831162,0.10235053292863704,5,K=8近傍のいずれかのoutlier signal時にXY距離だけを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+129,copcf_spatial_xy_plus_trajectory_shape_k8_std_x_candidate,cluster_prior_confidence,33.8,4.8166378315169185,0.09940942566057276,5,XY距離とtrajectory shapeを使うK=8 spatial priorの標準偏差をcandidate-long各行へ複製した列。積ではない。
+130,crfe_dense_std_norm,disagreement_enrichment,33.8,6.140032573203501,0.09940942566057276,5,dense_std / 10を上限付きで正規化した不確実性proxy。
+131,copcf_typewell_native_overlap_0p999_minus_candidate_abs,cluster_prior_confidence,33.6,7.021395872616783,0.09882120420695992,5,|native-overlap閾値0.999のtypewell cluster prior TVT − 対象候補TVT|。
+132,sc_ens_d,candidate_path_value,33.4,5.89915248150105,0.09823298275334706,5,multi-scale NCC ensemble候補 − last_known_tvt。
+133,copcf_spatial_xy_only_k8_nearby_majority_diff_k8_corr_abs_c40,cluster_prior_confidence,33.2,7.661592523751183,0.0976447612997342,5,K=8近傍の多数派cluster不一致時にXY距離だけを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+134,copcf_spatial_xy_only_k8_nearest_other_closer_corr_abs_c40,cluster_prior_confidence,32.0,10.319883720275147,0.09411543257805706,5,別clusterの方が近い時にXY距離だけを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+135,copcf_spatial_xy_only_k8_nearest_other_closer_corr_abs_c20,cluster_prior_confidence,31.8,10.449880382090505,0.0935272111244442,5,別clusterの方が近い時にXY距離だけを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+136,copcf_spatial_xy_only_k8_std_x_candidate,cluster_prior_confidence,31.0,6.745368781616021,0.09117432530999278,5,XY距離だけを使うK=8 spatial priorの標準偏差をcandidate-long各行へ複製した列。積ではない。
+137,copcf_spatial_xy_plus_trajectory_shape_k8_nearest_other_closer_corr_abs_c20,cluster_prior_confidence,30.8,4.207136793592526,0.09058610385637993,5,別clusterの方が近い時にXY距離とtrajectory shapeを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+138,copcf_typewell_native_overlap_0p999_prior_count,cluster_prior_confidence,29.8,10.545141061171254,0.08764499658831564,5,native-overlap閾値0.999のtypewell cluster priorを作る有効source数。
+139,copcf_spatial_xy_plus_trajectory_shape_k8_nearby_majority_diff_k8_corr_abs_c40,cluster_prior_confidence,28.4,9.262828941527529,0.08352744641302565,5,K=8近傍の多数派cluster不一致時にXY距離とtrajectory shapeを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+140,copcf_spatial_xy_plus_trajectory_shape_k8_nearest_other_closer_corr_abs_c40,cluster_prior_confidence,28.0,7.778174593052023,0.08235100350579992,5,別clusterの方が近い時にXY距離とtrajectory shapeを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+141,copcf_spatial_xy_only_k8_any_outlier_signal_k8_corr_abs_c20,cluster_prior_confidence,27.4,4.03732584763727,0.08058633914496136,5,K=8近傍のいずれかのoutlier signal時にXY距離だけを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+142,copcf_spatial_xy_plus_trajectory_shape_k8_nearby_majority_diff_k8_corr_abs_c20,cluster_prior_confidence,27.4,4.393176527297759,0.08058633914496136,5,K=8近傍の多数派cluster不一致時にXY距離とtrajectory shapeを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+143,copcf_typewell_native_overlap_1_prior_std,cluster_prior_confidence,27.4,6.06630035524124,0.08058633914496136,5,native-overlap閾値1.0のtypewell cluster priorを作るsource TVTの標準偏差。
+144,candidate_std,candidate_identity_or_context,26.4,7.021395872616783,0.07764523187689708,5,同じbase rowにある候補TVT群の標準偏差。候補間disagreement。
+145,copcf_typewell_native_overlap_1_nearest_other_closer_corr_abs_c20,cluster_prior_confidence,26.4,7.503332592921628,0.07764523187689708,5,別clusterの方が近い時にnative-overlap閾値1.0のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+146,copcf_spatial_xy_plus_trajectory_shape_k8_any_outlier_signal_k8_corr_abs_c40,cluster_prior_confidence,26.2,6.610597552415364,0.07705701042328422,5,K=8近傍のいずれかのoutlier signal時にXY距離とtrajectory shapeを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+147,copcf_spatial_xy_plus_trajectory_shape_k8_prior_count,cluster_prior_confidence,26.2,4.919349550499538,0.07705701042328422,5,XY距離とtrajectory shapeを使うK=8 spatial priorを作る有効source数。
+148,copcf_typewell_native_overlap_1_nearby_majority_diff_k8_corr_abs_c40,cluster_prior_confidence,25.6,6.107372593840989,0.07529234606244564,5,K=8近傍の多数派cluster不一致時にnative-overlap閾値1.0のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+149,copcf_nearby_majority_share_k12,cluster_prior_confidence,25.0,5.477225575051661,0.07352768170160708,5,近傍12 wellの多数派cluster比率。
+150,tvt_dense_minus_last,candidate_path_value,23.2,2.387467277262664,0.06823368861909136,5,dense spatial ANCC（full-prefix bias） TVT − last_known_tvt。
+151,likpf_mean_vs_sc_ens_abs,candidate_disagreement,23.0,6.041522986797286,0.0676454671654785,5,|likelihood-weighted PF平均 TVT − multi-scale NCC ensemble TVT|。
+152,copcf_typewell_native_overlap_1_nearest_other_closer_corr_abs_c40,cluster_prior_confidence,22.4,8.018728078691781,0.06588080280463994,5,別clusterの方が近い時にnative-overlap閾値1.0のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+153,crfe_high_disagreement_x_longtail,disagreement_enrichment,22.2,4.147288270665544,0.06529258135102708,5,high_disagreement_proxy × longtail_1000_flag。
+154,copcf_spatial_xy_only_k8_own_z_gt2p0_corr_abs_c20,cluster_prior_confidence,22.0,9.669539802906858,0.06470435989741423,5,所属cluster距離z-score>2時にXY距離だけを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+155,copcf_typewell_native_overlap_1_any_outlier_signal_k8_corr_abs_c40,cluster_prior_confidence,21.6,4.33589667773576,0.06352791699018852,5,K=8近傍のいずれかのoutlier signal時にnative-overlap閾値1.0のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+156,copcf_typewell_native_overlap_1_nearby_majority_diff_k8_corr_abs_c20,cluster_prior_confidence,21.6,4.560701700396552,0.06352791699018852,5,K=8近傍の多数派cluster不一致時にnative-overlap閾値1.0のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+157,self_gr_peak_gap,self_gr_confidence,21.6,9.555103348473002,0.06352791699018852,5,Self-GR照合のbest peakとsecond peakのscore差。
+158,copcf_nearby_majority_diff_k5,cluster_prior_confidence,21.4,3.361547262794322,0.06293969553657566,5,近傍5 wellの多数派clusterが自身の割当clusterと異なれば1。
+159,copcf_spatial_xy_plus_trajectory_shape_k8_any_outlier_signal_k8_corr_abs_c20,cluster_prior_confidence,19.6,3.0495901363953815,0.057645702454059956,5,K=8近傍のいずれかのoutlier signal時にXY距離とtrajectory shapeを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+160,candidate_mean,candidate_identity_or_context,18.8,5.06951674225463,0.05529281663960852,5,同じbase rowにある候補TVT群の平均。
+161,copcf_nearby_majority_share_k8,cluster_prior_confidence,17.6,3.7815340802378072,0.05176348791793139,5,近傍8 wellの多数派cluster比率。
+162,hyb_d,candidate_path_value,17.6,9.762171889492624,0.05176348791793139,5,Beam/NCC hybrid候補 − last_known_tvt。
+163,copcf_typewell_native_overlap_1_any_outlier_signal_k8_corr_abs_c20,cluster_prior_confidence,17.4,3.286335345030997,0.05117526646431852,5,K=8近傍のいずれかのoutlier signal時にnative-overlap閾値1.0のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+164,likpf_mean_vs_hyb_abs,candidate_disagreement,17.4,6.767569726275452,0.05117526646431852,5,|likelihood-weighted PF平均 TVT − Beam/NCC hybrid TVT|。
+165,copcf_spatial_xy_only_k8_own_z_gt2p0_corr_abs_c40,cluster_prior_confidence,17.2,4.969909455915671,0.05058704501070567,5,所属cluster距離z-score>2時にXY距離だけを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+166,copcf_spatial_xy_plus_trajectory_shape_k8_own_z_gt2p0_corr_abs_c40,cluster_prior_confidence,16.6,8.203657720797473,0.0488223806498671,5,所属cluster距離z-score>2時にXY距離とtrajectory shapeを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+167,multiobs_mae_beam_mean,multi_observation,15.4,4.722287581247038,0.04529305192818996,5,複数Beam path平均のmulti-observation GR照合MAE。
+168,tvt_dense50_minus_last,candidate_path_value,14.6,4.722287581247038,0.042940166113738534,5,dense spatial ANCC（prefix末尾50 bias） TVT − last_known_tvt。
+169,copcf_spatial_xy_plus_trajectory_shape_k8_nearest_other_closer_gate_x_dense_family,cluster_prior_confidence,14.0,6.59545297913646,0.04117550175289996,5,XY距離とtrajectory shapeを使うK=8 spatial priorが有効、別clusterの方が近い、かつ対象候補がdense familyなら1。
+170,copcf_spatial_xy_plus_trajectory_shape_k8_own_z_gt2p0_corr_abs_c20,cluster_prior_confidence,13.8,5.890670590009256,0.040587280299287105,5,所属cluster距離z-score>2時にXY距離とtrajectory shapeを使うK=8 spatial priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+171,copcf_spatial_xy_only_k8_count_x_candidate,cluster_prior_confidence,13.6,4.505552130427524,0.03999905884567425,5,XY距離だけを使うK=8 spatial priorのsource数をcandidate-long各行へ複製した列。積ではない。
+172,copcf_typewell_native_overlap_1_nearest_other_closer_gate_x_dense_family,cluster_prior_confidence,13.4,2.4083189157584592,0.039410837392061394,5,native-overlap閾値1.0のtypewell cluster priorが有効、別clusterの方が近い、かつ対象候補がdense familyなら1。
+173,copcf_spatial_xy_plus_trajectory_shape_k8_nearby_majority_diff_k8_gate_x_dense_family,cluster_prior_confidence,13.2,6.760177512462229,0.03882261593844854,5,XY距離とtrajectory shapeを使うK=8 spatial priorが有効、K=8近傍の多数派cluster不一致、かつ対象候補がdense familyなら1。
+174,copcf_spatial_xy_only_k8_nearby_majority_diff_k8_gate_x_dense_family,cluster_prior_confidence,12.8,6.1400325732035,0.03764617303122282,5,XY距離だけを使うK=8 spatial priorが有効、K=8近傍の多数派cluster不一致、かつ対象候補がdense familyなら1。
+175,copcf_nearby_majority_diff_k12,cluster_prior_confidence,12.6,3.9115214431215892,0.037057951577609965,5,近傍12 wellの多数派clusterが自身の割当clusterと異なれば1。
+176,pf_ancc_vs_sc_ens_abs,candidate_disagreement,12.2,3.7682887362833544,0.035881508670384255,5,|ANCC PF TVT − multi-scale NCC ensemble TVT|。
+177,sc_ens_vs_hyb_abs,candidate_disagreement,11.6,1.816590212458495,0.03411684430954568,5,|multi-scale NCC ensemble TVT − Beam/NCC hybrid TVT|。
+178,copcf_typewell_native_overlap_1_own_z_gt2p0_corr_abs_c40,cluster_prior_confidence,11.2,7.563068160475615,0.03294040140231997,5,所属cluster距離z-score>2時にnative-overlap閾値1.0のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+179,copcf_typewell_native_overlap_1_any_outlier_signal_k8_gate_x_dense_family,cluster_prior_confidence,10.8,6.906518659932803,0.03176395849509426,5,native-overlap閾値1.0のtypewell cluster priorが有効、K=8近傍のいずれかのoutlier signal、かつ対象候補がdense familyなら1。
+180,tvt_densew_minus_last,candidate_path_value,10.8,4.919349550499537,0.03176395849509426,5,dense spatial ANCC（prefix加重bias） TVT − last_known_tvt。
+181,candidate_range,candidate_identity_or_context,10.6,4.722287581247038,0.0311757370414814,5,同じbase rowにある候補TVT群の最大−最小。候補間disagreement。
+182,copcf_spatial_xy_plus_trajectory_shape_k8_valid_prior,cluster_prior_confidence,10.6,7.127411872482185,0.0311757370414814,5,XY距離とtrajectory shapeを使うK=8 spatial priorが計算可能なら1。
+183,copcf_typewell_native_overlap_1_own_z_gt2p0_corr_abs_c20,cluster_prior_confidence,9.0,5.52268050859363,0.02646996541257855,5,所属cluster距離z-score>2時にnative-overlap閾値1.0のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+184,multiobs_mae_pf_ancc,multi_observation,8.4,4.449719092257398,0.02470530105173998,5,ANCC PFのmulti-observation GR照合MAE。
+185,copcf_spatial_xy_only_k8_nearest_other_closer_gate_x_dense_family,cluster_prior_confidence,7.6,5.319774431308154,0.02235241523728855,5,XY距離だけを使うK=8 spatial priorが有効、別clusterの方が近い、かつ対象候補がdense familyなら1。
+186,copcf_typewell_native_overlap_1_neighbor_wells_x_candidate,cluster_prior_confidence,7.6,4.929503017546495,0.02235241523728855,5,native-overlap閾値1.0のtypewell cluster priorの近傍well数をcandidate-long各行へ複製した列。積ではない。
+187,copcf_nearby_majority_diff_k8,cluster_prior_confidence,7.4,3.2093613071762426,0.021764193783675695,5,近傍8 wellの多数派clusterが自身の割当clusterと異なれば1。
+188,multiobs_mae_likpf_mean,multi_observation,7.2,1.7888543819998317,0.02117597233006284,5,likelihood-weighted PF平均のmulti-observation GR照合MAE。
+189,copcf_spatial_xy_plus_trajectory_shape_k8_any_outlier_signal_k8_gate_x_dense_family,cluster_prior_confidence,7.0,2.5495097567963922,0.02058775087644998,5,XY距離とtrajectory shapeを使うK=8 spatial priorが有効、K=8近傍のいずれかのoutlier signal、かつ対象候補がdense familyなら1。
+190,copcf_nearby_majority_share_k5,cluster_prior_confidence,6.8,3.1144823004794873,0.019999529422837125,5,近傍5 wellの多数派cluster比率。
+191,copcf_spatial_xy_plus_trajectory_shape_k8_own_z_gt2p0_gate_x_dense_family,cluster_prior_confidence,6.8,9.148770409186143,0.019999529422837125,5,XY距離とtrajectory shapeを使うK=8 spatial priorが有効、所属cluster距離z-score>2、かつ対象候補がdense familyなら1。
+192,pf_ancc_vs_hyb_abs,candidate_disagreement,6.4,1.3416407864998738,0.01882308651561141,5,|ANCC PF TVT − Beam/NCC hybrid TVT|。
+193,beam_mean_vs_sc_ens_abs,candidate_disagreement,5.8,2.16794833886788,0.01705842215477284,5,|複数Beam path平均 TVT − multi-scale NCC ensemble TVT|。
+194,copcf_typewell_native_overlap_1_count_x_candidate,cluster_prior_confidence,5.8,1.7888543819998317,0.01705842215477284,5,native-overlap閾値1.0のtypewell cluster priorのsource数をcandidate-long各行へ複製した列。積ではない。
+195,sc_ens_minus_last,candidate_path_value,5.8,7.758865896508329,0.01705842215477284,5,multi-scale NCC ensemble TVT − last_known_tvt。
+196,copcf_typewell_native_overlap_1_nearby_majority_diff_k8_gate_x_dense_family,cluster_prior_confidence,5.4,3.7815340802378077,0.01588197924754713,5,native-overlap閾値1.0のtypewell cluster priorが有効、K=8近傍の多数派cluster不一致、かつ対象候補がdense familyなら1。
+197,self_gr_quality,self_gr_confidence,5.4,2.1908902300206647,0.01588197924754713,5,同一horizontal内Self-GR motif照合の品質score。
+198,beam_mean_vs_hyb_abs,candidate_disagreement,5.0,2.121320343559643,0.014705536340321415,5,|複数Beam path平均 TVT − Beam/NCC hybrid TVT|。
+199,hyb_vs_tvt_dense50_abs,candidate_disagreement,5.0,2.0,0.014705536340321415,5,|Beam/NCC hybrid TVT − dense spatial ANCC（prefix末尾50 bias） TVT|。
+200,hyb_vs_tvt_dense_abs,candidate_disagreement,4.8,4.266145801540309,0.01411731488670856,5,|Beam/NCC hybrid TVT − dense spatial ANCC（full-prefix bias） TVT|。
+201,copcf_gate_nearby_majority_diff_k8,cluster_prior_confidence,4.6,2.5099800796022267,0.0135290934330957,5,K=8近傍多数派不一致のgate flag。
+202,copcf_typewell_native_overlap_1_own_z_gt2p0_gate_x_dense_family,cluster_prior_confidence,4.4,1.51657508881031,0.012940871979482847,5,native-overlap閾値1.0のtypewell cluster priorが有効、所属cluster距離z-score>2、かつ対象候補がdense familyなら1。
+203,sc_ens_vs_tvt_dense50_abs,candidate_disagreement,4.4,1.6733200530681511,0.012940871979482847,5,|multi-scale NCC ensemble TVT − dense spatial ANCC（prefix末尾50 bias） TVT|。
+204,copcf_spatial_xy_only_k8_valid_prior,cluster_prior_confidence,4.2,3.03315017762062,0.01235265052586999,5,XY距離だけを使うK=8 spatial priorが計算可能なら1。
+205,copcf_spatial_xy_plus_trajectory_shape_k8_count_x_candidate,cluster_prior_confidence,4.2,1.6431676725154984,0.01235265052586999,5,XY距離とtrajectory shapeを使うK=8 spatial priorのsource数をcandidate-long各行へ複製した列。積ではない。
+206,copcf_typewell_native_overlap_1_any_outlier_signal_k8_gate_x_candidate,cluster_prior_confidence,4.2,1.9235384061671343,0.01235265052586999,5,native-overlap閾値1.0のtypewell cluster priorが有効かつK=8近傍のいずれかのoutlier signalなら1。candidate-long行へ複製するgate。
+207,copcf_spatial_xy_only_k8_nearest_other_closer_clip_hit_c40,cluster_prior_confidence,4.0,3.5355339059327378,0.011764429072257132,5,別clusterの方が近い時のprior−候補差がclip 40 ftを超えれば1。
+208,copcf_spatial_xy_only_k8_own_z_gt2p0_gate_x_dense_family,cluster_prior_confidence,4.0,3.24037034920393,0.011764429072257132,5,XY距離だけを使うK=8 spatial priorが有効、所属cluster距離z-score>2、かつ対象候補がdense familyなら1。
+209,copcf_typewell_native_overlap_1_std_x_candidate,cluster_prior_confidence,4.0,2.5495097567963922,0.011764429072257132,5,native-overlap閾値1.0のtypewell cluster priorの標準偏差をcandidate-long各行へ複製した列。積ではない。
+210,copcf_spatial_xy_plus_trajectory_shape_k8_nearby_majority_diff_k8_gate_x_candidate,cluster_prior_confidence,3.8,1.9235384061671343,0.011176207618644275,5,XY距離とtrajectory shapeを使うK=8 spatial priorが有効かつK=8近傍の多数派cluster不一致なら1。candidate-long行へ複製するgate。
+211,copcf_typewell_native_overlap_1_nearby_majority_diff_k8_gate_x_candidate,cluster_prior_confidence,3.8,2.3874672772626644,0.011176207618644275,5,native-overlap閾値1.0のtypewell cluster priorが有効かつK=8近傍の多数派cluster不一致なら1。candidate-long行へ複製するgate。
+212,copcf_gate_any_outlier_signal_k8,cluster_prior_confidence,3.6,2.5099800796022267,0.01058798616503142,5,K=8 outlier signalの総合gate flag。
+213,copcf_spatial_xy_only_k8_any_outlier_signal_k8_gate_x_dense_family,cluster_prior_confidence,3.6,1.140175425099138,0.01058798616503142,5,XY距離だけを使うK=8 spatial priorが有効、K=8近傍のいずれかのoutlier signal、かつ対象候補がdense familyなら1。
+214,copcf_spatial_xy_only_k8_nearby_majority_diff_k8_gate_x_candidate,cluster_prior_confidence,3.6,2.6076809620810595,0.01058798616503142,5,XY距離だけを使うK=8 spatial priorが有効かつK=8近傍の多数派cluster不一致なら1。candidate-long行へ複製するgate。
+215,copcf_typewell_native_overlap_0p999_nearest_other_closer_corr_abs_c40,cluster_prior_confidence,3.6,1.6733200530681511,0.01058798616503142,5,別clusterの方が近い時にnative-overlap閾値0.999のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+216,copcf_nearest_other_closer,cluster_prior_confidence,3.4,2.302172886644268,0.009999764711418562,5,最も近い別clusterが割当先clusterより近ければ1。
+217,hyb_vs_tvt_densew_abs,candidate_disagreement,3.2,1.0954451150103324,0.009411543257805705,5,|Beam/NCC hybrid TVT − dense spatial ANCC（prefix加重bias） TVT|。
+218,copcf_typewell_native_overlap_0p999_any_outlier_signal_k8_corr_abs_c40,cluster_prior_confidence,3.0,2.345207879911715,0.00882332180419285,5,K=8近傍のいずれかのoutlier signal時にnative-overlap閾値0.999のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+219,copcf_spatial_xy_only_k8_nearest_other_closer_gate_x_candidate,cluster_prior_confidence,2.8,1.6431676725154982,0.008235100350579993,5,XY距離だけを使うK=8 spatial priorが有効かつ別clusterの方が近いなら1。candidate-long行へ複製するgate。
+220,copcf_typewell_native_overlap_1_nearest_other_closer_gate_x_candidate,cluster_prior_confidence,2.8,1.3038404810405297,0.008235100350579993,5,native-overlap閾値1.0のtypewell cluster priorが有効かつ別clusterの方が近いなら1。candidate-long行へ複製するgate。
+221,multiobs_mae_sc_ens,multi_observation,2.6,2.6076809620810595,0.007646878896967136,5,multi-scale NCC ensembleのmulti-observation GR照合MAE。
+222,copcf_typewell_native_overlap_0p999_nearby_majority_diff_k8_corr_abs_c40,cluster_prior_confidence,2.4,1.51657508881031,0.00705865744335428,5,K=8近傍の多数派cluster不一致時にnative-overlap閾値0.999のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+223,crfe_near_md_50_flag,disagreement_enrichment,2.4,3.5777087639996634,0.00705865744335428,5,anchorからMD 50以内なら1。
+224,sc_ens_vs_tvt_dense_abs,candidate_disagreement,2.4,1.3416407864998738,0.00705865744335428,5,|multi-scale NCC ensemble TVT − dense spatial ANCC（full-prefix bias） TVT|。
+225,copcf_spatial_xy_plus_trajectory_shape_k8_nearest_other_closer_gate_x_candidate,cluster_prior_confidence,2.2,1.7888543819998317,0.0064704359897414234,5,XY距離とtrajectory shapeを使うK=8 spatial priorが有効かつ別clusterの方が近いなら1。candidate-long行へ複製するgate。
+226,hyb_minus_last,candidate_path_value,2.2,0.8366600265340756,0.0064704359897414234,5,Beam/NCC hybrid TVT − last_known_tvt。
+227,copcf_typewell_native_overlap_0p999_any_outlier_signal_k8_corr_abs_c20,cluster_prior_confidence,2.0,1.5811388300841898,0.005882214536128566,5,K=8近傍のいずれかのoutlier signal時にnative-overlap閾値0.999のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+228,copcf_typewell_native_overlap_0p999_nearby_majority_diff_k8_corr_abs_c20,cluster_prior_confidence,2.0,1.224744871391589,0.005882214536128566,5,K=8近傍の多数派cluster不一致時にnative-overlap閾値0.999のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+229,copcf_typewell_native_overlap_0p999_valid_prior,cluster_prior_confidence,2.0,1.224744871391589,0.005882214536128566,5,native-overlap閾値0.999のtypewell cluster priorが計算可能なら1。
+230,multiobs_mae_hyb,multi_observation,2.0,2.5495097567963922,0.005882214536128566,5,Beam/NCC hybridのmulti-observation GR照合MAE。
+231,sc_ens_vs_tvt_densew_abs,candidate_disagreement,2.0,2.345207879911715,0.005882214536128566,5,|multi-scale NCC ensemble TVT − dense spatial ANCC（prefix加重bias） TVT|。
+232,copcf_spatial_xy_only_k8_any_outlier_signal_k8_gate_x_candidate,cluster_prior_confidence,1.8,1.3038404810405297,0.00529399308251571,5,XY距離だけを使うK=8 spatial priorが有効かつK=8近傍のいずれかのoutlier signalなら1。candidate-long行へ複製するgate。
+233,copcf_typewell_native_overlap_0p999_nearest_other_closer_corr_abs_c20,cluster_prior_confidence,1.8,0.8366600265340756,0.00529399308251571,5,別clusterの方が近い時にnative-overlap閾値0.999のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+234,candidate_is_geometry_family,candidate_identity_or_context,1.6,1.3416407864998738,0.004705771628902853,5,対象候補がexp226 geometry候補なら1。
+235,copcf_cluster_feature_valid,cluster_prior_confidence,1.6,1.140175425099138,0.004705771628902853,5,cluster/outlier診断が計算可能なら1。
+236,copcf_spatial_xy_plus_trajectory_shape_k8_own_z_gt2p0_gate_x_candidate,cluster_prior_confidence,1.6,1.3416407864998738,0.004705771628902853,5,XY距離とtrajectory shapeを使うK=8 spatial priorが有効かつ所属cluster距離z-score>2なら1。candidate-long行へ複製するgate。
+237,copcf_spatial_xy_plus_trajectory_shape_k8_any_outlier_signal_k8_gate_x_candidate,cluster_prior_confidence,1.4,1.140175425099138,0.004117550175289996,5,XY距離とtrajectory shapeを使うK=8 spatial priorが有効かつK=8近傍のいずれかのoutlier signalなら1。candidate-long行へ複製するgate。
+238,candidate_is_pfbeam_family,candidate_identity_or_context,1.2,2.16794833886788,0.00352932872167714,5,対象候補がPF/Beam系なら1。
+239,copcf_typewell_native_overlap_0p999_any_outlier_signal_k8_gate_x_dense_family,cluster_prior_confidence,1.2,1.3038404810405297,0.00352932872167714,5,native-overlap閾値0.999のtypewell cluster priorが有効、K=8近傍のいずれかのoutlier signal、かつ対象候補がdense familyなら1。
+240,copcf_typewell_native_overlap_0p999_own_z_gt2p0_corr_abs_c20,cluster_prior_confidence,1.2,0.8366600265340756,0.00352932872167714,5,所属cluster距離z-score>2時にnative-overlap閾値0.999のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 20 ft）。
+241,copcf_typewell_native_overlap_0p999_std_x_candidate,cluster_prior_confidence,1.2,1.7888543819998317,0.00352932872167714,5,native-overlap閾値0.999のtypewell cluster priorの標準偏差をcandidate-long各行へ複製した列。積ではない。
+242,copcf_typewell_native_overlap_1_own_z_gt2p0_gate_x_candidate,cluster_prior_confidence,1.2,0.8366600265340756,0.00352932872167714,5,native-overlap閾値1.0のtypewell cluster priorが有効かつ所属cluster距離z-score>2なら1。candidate-long行へ複製するgate。
+243,copcf_gate_nearest_other_closer,cluster_prior_confidence,1.0,0.7071067811865476,0.002941107268064283,5,別clusterの方が近いgate flag。
+244,copcf_spatial_xy_only_k8_own_z_gt2p0_gate_x_candidate,cluster_prior_confidence,1.0,0.7071067811865476,0.002941107268064283,5,XY距離だけを使うK=8 spatial priorが有効かつ所属cluster距離z-score>2なら1。candidate-long行へ複製するgate。
+245,copcf_typewell_native_overlap_0p999_neighbor_wells_x_candidate,cluster_prior_confidence,1.0,1.0,0.002941107268064283,5,native-overlap閾値0.999のtypewell cluster priorの近傍well数をcandidate-long各行へ複製した列。積ではない。
+246,copcf_well_gate_ratio_nearby_majority_diff_k8,cluster_prior_confidence,1.0,1.224744871391589,0.002941107268064283,5,well内で近傍多数派不一致gateが有効な行の比率。
+247,multiobs_score_beam_mean,multi_observation,1.0,1.224744871391589,0.002941107268064283,5,複数Beam path平均のmulti-observation GR一致score。
+248,multiobs_score_sc_ens,multi_observation,1.0,1.4142135623730951,0.002941107268064283,5,multi-scale NCC ensembleのmulti-observation GR一致score。
+249,candidate_multiobs_ncc,multi_observation,0.8,1.3038404810405297,0.0023528858144514263,5,対象候補自身のmulti-observation GR照合NCC。
+250,copcf_spatial_xy_plus_trajectory_shape_k8_any_outlier_signal_k8_clip_hit_c40,cluster_prior_confidence,0.8,0.4472135954999579,0.0023528858144514263,5,K=8近傍のいずれかのoutlier signal時のprior−候補差がclip 40 ftを超えれば1。
+251,copcf_spatial_xy_plus_trajectory_shape_k8_nearest_other_closer_clip_hit_c40,cluster_prior_confidence,0.8,1.3038404810405297,0.0023528858144514263,5,別clusterの方が近い時のprior−候補差がclip 40 ftを超えれば1。
+252,multiobs_score_likpf_mean,multi_observation,0.8,0.8366600265340756,0.0023528858144514263,5,likelihood-weighted PF平均のmulti-observation GR一致score。
+253,copcf_typewell_native_overlap_0p999_nearby_majority_diff_k8_gate_x_dense_family,cluster_prior_confidence,0.6,0.5477225575051662,0.00176466436083857,5,native-overlap閾値0.999のtypewell cluster priorが有効、K=8近傍の多数派cluster不一致、かつ対象候補がdense familyなら1。
+254,copcf_typewell_native_overlap_0p999_nearest_other_closer_gate_x_dense_family,cluster_prior_confidence,0.6,0.8944271909999159,0.00176466436083857,5,native-overlap閾値0.999のtypewell cluster priorが有効、別clusterの方が近い、かつ対象候補がdense familyなら1。
+255,copcf_typewell_native_overlap_0p999_own_z_gt2p0_corr_abs_c40,cluster_prior_confidence,0.6,0.8944271909999159,0.00176466436083857,5,所属cluster距離z-score>2時にnative-overlap閾値0.999のtypewell cluster priorへ寄せる仮想補正量の絶対値（clip 40 ft）。
+256,copcf_typewell_native_overlap_0p999_own_z_gt2p0_gate_x_dense_family,cluster_prior_confidence,0.6,0.5477225575051661,0.00176466436083857,5,native-overlap閾値0.999のtypewell cluster priorが有効、所属cluster距離z-score>2、かつ対象候補がdense familyなら1。
+257,copcf_typewell_native_overlap_1_nearest_other_closer_clip_hit_c40,cluster_prior_confidence,0.6,0.8944271909999159,0.00176466436083857,5,別clusterの方が近い時のprior−候補差がclip 40 ftを超えれば1。
+258,copcf_gate_own_z_gt2p0,cluster_prior_confidence,0.4,0.5477225575051661,0.0011764429072257132,5,所属cluster距離z-score>2のgate flag。
+259,copcf_typewell_native_overlap_0p999_any_outlier_signal_k8_gate_x_candidate,cluster_prior_confidence,0.4,0.5477225575051661,0.0011764429072257132,5,native-overlap閾値0.999のtypewell cluster priorが有効かつK=8近傍のいずれかのoutlier signalなら1。candidate-long行へ複製するgate。
+260,copcf_typewell_native_overlap_0p999_count_x_candidate,cluster_prior_confidence,0.4,0.8944271909999159,0.0011764429072257132,5,native-overlap閾値0.999のtypewell cluster priorのsource数をcandidate-long各行へ複製した列。積ではない。
+261,copcf_typewell_native_overlap_1_any_outlier_signal_k8_clip_hit_c40,cluster_prior_confidence,0.4,0.5477225575051661,0.0011764429072257132,5,K=8近傍のいずれかのoutlier signal時のprior−候補差がclip 40 ftを超えれば1。
+262,multiobs_score_mean,multi_observation,0.4,0.5477225575051662,0.0011764429072257132,5,候補bankのmulti-observation GR一致score平均。
+263,multiobs_score_pf_ancc,multi_observation,0.4,0.5477225575051661,0.0011764429072257132,5,ANCC PFのmulti-observation GR一致score。
+264,multiobs_top1_mae,multi_observation,0.4,0.8944271909999159,0.0011764429072257132,5,multi-observation score最上位候補のGR照合MAE。
+265,copcf_any_configured_gate,cluster_prior_confidence,0.2,0.447213595499958,0.0005882214536128566,5,設定済みcluster/outlier gateのいずれかが有効なら1。
+266,copcf_spatial_xy_only_k8_nearby_majority_diff_k8_clip_hit_c40,cluster_prior_confidence,0.2,0.447213595499958,0.0005882214536128566,5,K=8近傍の多数派cluster不一致時のprior−候補差がclip 40 ftを超えれば1。
+267,copcf_spatial_xy_only_k8_nearest_other_closer_clip_hit_c20,cluster_prior_confidence,0.2,0.447213595499958,0.0005882214536128566,5,別clusterの方が近い時のprior−候補差がclip 20 ftを超えれば1。
+268,copcf_spatial_xy_only_k8_own_z_gt2p0_clip_hit_c40,cluster_prior_confidence,0.2,0.4472135954999579,0.0005882214536128566,5,所属cluster距離z-score>2時のprior−候補差がclip 40 ftを超えれば1。
+269,copcf_spatial_xy_plus_trajectory_shape_k8_any_outlier_signal_k8_clip_hit_c20,cluster_prior_confidence,0.2,0.4472135954999579,0.0005882214536128566,5,K=8近傍のいずれかのoutlier signal時のprior−候補差がclip 20 ftを超えれば1。
+270,copcf_spatial_xy_plus_trajectory_shape_k8_nearby_majority_diff_k8_clip_hit_c20,cluster_prior_confidence,0.2,0.447213595499958,0.0005882214536128566,5,K=8近傍の多数派cluster不一致時のprior−候補差がclip 20 ftを超えれば1。
+271,copcf_typewell_native_overlap_1_nearby_majority_diff_k8_clip_hit_c20,cluster_prior_confidence,0.2,0.4472135954999579,0.0005882214536128566,5,K=8近傍の多数派cluster不一致時のprior−候補差がclip 20 ftを超えれば1。
+272,copcf_typewell_native_overlap_1_valid_prior,cluster_prior_confidence,0.2,0.447213595499958,0.0005882214536128566,5,native-overlap閾値1.0のtypewell cluster priorが計算可能なら1。
+273,copcf_well_gate_ratio_any_outlier_signal_k8,cluster_prior_confidence,0.2,0.447213595499958,0.0005882214536128566,5,well内でany-outlier gateが有効な行の比率。
+274,multiobs_ncc_beam_mean,multi_observation,0.2,0.447213595499958,0.0005882214536128566,5,複数Beam path平均のmulti-observation GR照合NCC。
+275,multiobs_score_hyb,multi_observation,0.2,0.4472135954999579,0.0005882214536128566,5,Beam/NCC hybridのmulti-observation GR一致score。
+276,multiobs_top1_source_id,multi_observation,0.2,0.447213595499958,0.0005882214536128566,5,multi-observation score最上位候補のsource code。
+277,self_gr_valid,self_gr_confidence,0.2,0.447213595499958,0.0005882214536128566,5,Self-GR照合が入力条件を満たして有効なら1。
+278,copcf_spatial_xy_only_k8_any_outlier_signal_k8_clip_hit_c20,cluster_prior_confidence,0.0,0.0,0.0,5,K=8近傍のいずれかのoutlier signal時のprior−候補差がclip 20 ftを超えれば1。
+279,copcf_spatial_xy_only_k8_any_outlier_signal_k8_clip_hit_c40,cluster_prior_confidence,0.0,0.0,0.0,5,K=8近傍のいずれかのoutlier signal時のprior−候補差がclip 40 ftを超えれば1。
+280,copcf_spatial_xy_only_k8_nearby_majority_diff_k8_clip_hit_c20,cluster_prior_confidence,0.0,0.0,0.0,5,K=8近傍の多数派cluster不一致時のprior−候補差がclip 20 ftを超えれば1。
+281,copcf_spatial_xy_only_k8_neighbor_wells,cluster_prior_confidence,0.0,0.0,0.0,5,XY距離だけを使うK=8 spatial priorを作る近傍well数。
+282,copcf_spatial_xy_only_k8_neighbor_wells_x_candidate,cluster_prior_confidence,0.0,0.0,0.0,5,XY距離だけを使うK=8 spatial priorの近傍well数をcandidate-long各行へ複製した列。積ではない。
+283,copcf_spatial_xy_only_k8_own_z_gt2p0_clip_hit_c20,cluster_prior_confidence,0.0,0.0,0.0,5,所属cluster距離z-score>2時のprior−候補差がclip 20 ftを超えれば1。
+284,copcf_spatial_xy_only_k8_valid_x_candidate,cluster_prior_confidence,0.0,0.0,0.0,5,XY距離だけを使うK=8 spatial priorのvalid flagをcandidate-long各行へ複製した列。積ではない。
+285,copcf_spatial_xy_plus_trajectory_shape_k8_nearby_majority_diff_k8_clip_hit_c40,cluster_prior_confidence,0.0,0.0,0.0,5,K=8近傍の多数派cluster不一致時のprior−候補差がclip 40 ftを超えれば1。
+286,copcf_spatial_xy_plus_trajectory_shape_k8_nearest_other_closer_clip_hit_c20,cluster_prior_confidence,0.0,0.0,0.0,5,別clusterの方が近い時のprior−候補差がclip 20 ftを超えれば1。
+287,copcf_spatial_xy_plus_trajectory_shape_k8_neighbor_wells,cluster_prior_confidence,0.0,0.0,0.0,5,XY距離とtrajectory shapeを使うK=8 spatial priorを作る近傍well数。
+288,copcf_spatial_xy_plus_trajectory_shape_k8_neighbor_wells_x_candidate,cluster_prior_confidence,0.0,0.0,0.0,5,XY距離とtrajectory shapeを使うK=8 spatial priorの近傍well数をcandidate-long各行へ複製した列。積ではない。
+289,copcf_spatial_xy_plus_trajectory_shape_k8_own_z_gt2p0_clip_hit_c20,cluster_prior_confidence,0.0,0.0,0.0,5,所属cluster距離z-score>2時のprior−候補差がclip 20 ftを超えれば1。
+290,copcf_spatial_xy_plus_trajectory_shape_k8_own_z_gt2p0_clip_hit_c40,cluster_prior_confidence,0.0,0.0,0.0,5,所属cluster距離z-score>2時のprior−候補差がclip 40 ftを超えれば1。
+291,copcf_spatial_xy_plus_trajectory_shape_k8_valid_x_candidate,cluster_prior_confidence,0.0,0.0,0.0,5,XY距離とtrajectory shapeを使うK=8 spatial priorのvalid flagをcandidate-long各行へ複製した列。積ではない。
+292,copcf_typewell_native_overlap_0p999_any_outlier_signal_k8_clip_hit_c20,cluster_prior_confidence,0.0,0.0,0.0,5,K=8近傍のいずれかのoutlier signal時のprior−候補差がclip 20 ftを超えれば1。
+293,copcf_typewell_native_overlap_0p999_any_outlier_signal_k8_clip_hit_c40,cluster_prior_confidence,0.0,0.0,0.0,5,K=8近傍のいずれかのoutlier signal時のprior−候補差がclip 40 ftを超えれば1。
+294,copcf_typewell_native_overlap_0p999_nearby_majority_diff_k8_clip_hit_c20,cluster_prior_confidence,0.0,0.0,0.0,5,K=8近傍の多数派cluster不一致時のprior−候補差がclip 20 ftを超えれば1。
+295,copcf_typewell_native_overlap_0p999_nearby_majority_diff_k8_clip_hit_c40,cluster_prior_confidence,0.0,0.0,0.0,5,K=8近傍の多数派cluster不一致時のprior−候補差がclip 40 ftを超えれば1。
+296,copcf_typewell_native_overlap_0p999_nearby_majority_diff_k8_gate_x_candidate,cluster_prior_confidence,0.0,0.0,0.0,5,native-overlap閾値0.999のtypewell cluster priorが有効かつK=8近傍の多数派cluster不一致なら1。candidate-long行へ複製するgate。
+297,copcf_typewell_native_overlap_0p999_nearest_other_closer_clip_hit_c20,cluster_prior_confidence,0.0,0.0,0.0,5,別clusterの方が近い時のprior−候補差がclip 20 ftを超えれば1。
+298,copcf_typewell_native_overlap_0p999_nearest_other_closer_clip_hit_c40,cluster_prior_confidence,0.0,0.0,0.0,5,別clusterの方が近い時のprior−候補差がclip 40 ftを超えれば1。
+299,copcf_typewell_native_overlap_0p999_nearest_other_closer_gate_x_candidate,cluster_prior_confidence,0.0,0.0,0.0,5,native-overlap閾値0.999のtypewell cluster priorが有効かつ別clusterの方が近いなら1。candidate-long行へ複製するgate。
+300,copcf_typewell_native_overlap_0p999_own_z_gt2p0_clip_hit_c20,cluster_prior_confidence,0.0,0.0,0.0,5,所属cluster距離z-score>2時のprior−候補差がclip 20 ftを超えれば1。
+301,copcf_typewell_native_overlap_0p999_own_z_gt2p0_clip_hit_c40,cluster_prior_confidence,0.0,0.0,0.0,5,所属cluster距離z-score>2時のprior−候補差がclip 40 ftを超えれば1。
+302,copcf_typewell_native_overlap_0p999_own_z_gt2p0_gate_x_candidate,cluster_prior_confidence,0.0,0.0,0.0,5,native-overlap閾値0.999のtypewell cluster priorが有効かつ所属cluster距離z-score>2なら1。candidate-long行へ複製するgate。
+303,copcf_typewell_native_overlap_0p999_valid_x_candidate,cluster_prior_confidence,0.0,0.0,0.0,5,native-overlap閾値0.999のtypewell cluster priorのvalid flagをcandidate-long各行へ複製した列。積ではない。
+304,copcf_typewell_native_overlap_1_any_outlier_signal_k8_clip_hit_c20,cluster_prior_confidence,0.0,0.0,0.0,5,K=8近傍のいずれかのoutlier signal時のprior−候補差がclip 20 ftを超えれば1。
+305,copcf_typewell_native_overlap_1_nearby_majority_diff_k8_clip_hit_c40,cluster_prior_confidence,0.0,0.0,0.0,5,K=8近傍の多数派cluster不一致時のprior−候補差がclip 40 ftを超えれば1。
+306,copcf_typewell_native_overlap_1_nearest_other_closer_clip_hit_c20,cluster_prior_confidence,0.0,0.0,0.0,5,別clusterの方が近い時のprior−候補差がclip 20 ftを超えれば1。
+307,copcf_typewell_native_overlap_1_own_z_gt2p0_clip_hit_c20,cluster_prior_confidence,0.0,0.0,0.0,5,所属cluster距離z-score>2時のprior−候補差がclip 20 ftを超えれば1。
+308,copcf_typewell_native_overlap_1_own_z_gt2p0_clip_hit_c40,cluster_prior_confidence,0.0,0.0,0.0,5,所属cluster距離z-score>2時のprior−候補差がclip 40 ftを超えれば1。
+309,copcf_typewell_native_overlap_1_valid_x_candidate,cluster_prior_confidence,0.0,0.0,0.0,5,native-overlap閾値1.0のtypewell cluster priorのvalid flagをcandidate-long各行へ複製した列。積ではない。
+310,copcf_well_gate_ratio_nearest_other_closer,cluster_prior_confidence,0.0,0.0,0.0,5,well内で別cluster近接gateが有効な行の比率。
+311,copcf_well_gate_ratio_own_z_gt2p0,cluster_prior_confidence,0.0,0.0,0.0,5,well内で所属cluster距離z>2 gateが有効な行の比率。
+312,crfe_longtail_1000_flag,disagreement_enrichment,0.0,0.0,0.0,5,anchorから1000行以上のlong-tailなら1。
+313,multiobs_ncc_hyb,multi_observation,0.0,0.0,0.0,5,Beam/NCC hybridのmulti-observation GR照合NCC。
+314,multiobs_ncc_likpf_mean,multi_observation,0.0,0.0,0.0,5,likelihood-weighted PF平均のmulti-observation GR照合NCC。
+315,multiobs_ncc_pf_ancc,multi_observation,0.0,0.0,0.0,5,ANCC PFのmulti-observation GR照合NCC。
+316,multiobs_ncc_sc_ens,multi_observation,0.0,0.0,0.0,5,multi-scale NCC ensembleのmulti-observation GR照合NCC。
+317,multiobs_score_gap,multi_observation,0.0,0.0,0.0,5,multi-observation GR一致scoreの1位−2位差。
+318,multiobs_score_max,multi_observation,0.0,0.0,0.0,5,候補bankのmulti-observation GR一致score最大値。
+319,multiobs_top1_ncc,multi_observation,0.0,0.0,0.0,5,multi-observation score最上位候補のGR照合NCC。
+320,self_gr_typewell_agreement,self_gr_confidence,0.0,0.0,0.0,5,Self-GR観測とtypewell観測の整合度。

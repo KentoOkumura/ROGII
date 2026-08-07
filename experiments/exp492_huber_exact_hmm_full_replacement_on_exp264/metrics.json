@@ -1,0 +1,66 @@
+{
+  "experiment": "exp492_huber_exact_hmm_full_replacement_on_exp264",
+  "status": "stage_c_completed_scientific_gate_failed_postreadout_error_closed",
+  "cv": 8.63936854552658,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "route": "ensemble",
+  "candidate_count": 12,
+  "changed_candidate_count": 4,
+  "planned_cpu_selector_boosters": 40,
+  "trained_cpu_selector_boosters": 40,
+  "saved_parent_cv": 8.652531955610227,
+  "delta_vs_saved_parent_ft": -0.01316341008364752,
+  "fold_rmse": [
+    8.889139045932788,
+    8.418792014696812,
+    8.953215831960046,
+    8.46444182561844,
+    8.455201265309134
+  ],
+  "fold_improvements_vs_parent": 3,
+  "scientific_gate_passed": false,
+  "decision": "FAIL_CLOSE_FIXED12_HUBER_REPLACEMENT_SELECTOR",
+  "tail": {
+    "near_0_250_delta_rmse_ft": -0.012444018070030038,
+    "distance_1000_plus_delta_rmse_ft": -0.014342933648324063,
+    "hidden_like_max_delta_rmse_ft": -0.09636493968458204,
+    "by_well_p95_delta_rmse_ft": 0.38147035723433326,
+    "worst_well": "d2f3b1ab",
+    "worst_well_delta_rmse_ft": 4.254514134283848
+  },
+  "changed_family_usage": {
+    "top1_rows": 937102,
+    "top1_fraction": 0.24764923999514799
+  },
+  "fixed_fallback": {
+    "parent_rmse": 8.238331546485645,
+    "replacement_rmse": 8.222215556738206,
+    "delta_ft": -0.016115989747438775
+  },
+  "kaggle_run": {
+    "kernel": "kentookumura/exp492-huber-exact-hmm-full-replace-exp264-train",
+    "id_no": 129217774,
+    "version": 1,
+    "status": "error_after_stage_c_and_scientific_gate",
+    "notebook_elapsed_seconds_at_error": 6112.213,
+    "postreadout_error": "KeyError: Column not found: gain",
+    "canonical_fix_applied": true,
+    "rerun_approved": false
+  },
+  "implementation_validation": {
+    "dedicated_tests_passed": 9,
+    "related_tests_passed": 36,
+    "py_compile_passed": true,
+    "ruff_f821_passed": true,
+    "jupytext_roundtrip_passed": true,
+    "strict_experiment_validation_passed": true,
+    "canonical_notebook_adopted": true,
+    "kaggle_package_created": true,
+    "kaggle_run_executed": true,
+    "technical_gate_passed": true,
+    "selector_score_guard_passed": true
+  },
+  "notes": "Stage C and scientific readout completed on Kaggle v1. Pooled RMSE improved, but 3/5 folds and severe by-well tail failed the frozen gate. Notebook then errored in post-readout feature-importance aggregation; canonical code is fixed, but no 40-booster rerun is approved or scientifically warranted."
+}

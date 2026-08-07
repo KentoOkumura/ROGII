@@ -1,0 +1,142 @@
+experiment:
+  name: "exp104_pf_z_seedbag_scale_cache"
+  description: Train-side cache audit that reruns pf_z_xy_slope as a 128-seed likelihood-weighted PF seedbag with scale outputs, then compares it with exp072 pf_z / likpf candidates on the same rows and metrics.
+  route: pf_beam
+  status: completed_train_side_audit_rejected
+  created_at: "2026-06-22"
+  updated_at: "2026-06-22"
+
+lineage:
+  parent: exp100_pf_z_unified_velocity_observation_prior
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  comparison_parents:
+    - exp072_exp063_full_replay_feature_cache
+    - exp100_pf_z_unified_velocity_observation_prior
+    - exp103_pf_z_xy_likpf_ensemble_parity
+    - exp099_pf_multi_observation_likelihood_probe
+  implementation_source: pf_z_seedbag_scale_cache.py
+  diff_summary: Converts exp100's best pf_z_xy_slope idea from a single-seed standalone candidate into a reusable lik_pf-style 128-seed pf_z seedbag cache with likelihood-weighted scale outputs. It reads exp072's fixed train feature cache and compares available exp072 pf_z / likpf candidates against pf_z_seedbag_mean / pf_z_seedbag_scale_* using identical candidate metrics.
+
+validation:
+  strategy: train_well_pseudotail_candidate_parity_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_1ft
+    - within_2ft
+    - within_5ft
+    - within_10ft
+    - bucket_rmse_by_md_since
+    - bucket_rmse_by_row_idx
+    - worst_well_rmse
+    - path_switch_count
+    - mean_abs_step
+    - p95_abs_acceleration
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp072_rows
+  leakage_policy:
+    - Existing exp072 pf_z and likpf candidates are read from the raw-train-only feature cache.
+    - pf_z_seedbag uses raw horizontal/typewell files, finite prefix TVT_input rows, GR, MD, Z, X, and Y only.
+    - pf_z seedbag rate-prior coefficients are fitted only from prefix rows as d(TVT_input + Z)/dMD against dZ/dMD and dXY/dMD.
+    - Evaluation-zone true TVT is materialized only as last_known_tvt + target for scoring.
+    - This is train-side diagnostic only; no inference candidate or submission is produced.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+model:
+  name: pf_z_seedbag_scale_cache
+  estimator: none_particle_filter_candidate_audit
+  target: true_tvt_for_scoring_only
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  pf_z_seedbag:
+    n_particles: 500
+    n_seeds: 128
+    scales: [3.0, 5.0, 8.0, 12.0]
+    init_spread: 4.5
+    gr_grid_step: 0.1
+    momentum: 0.998
+    velocity_noise: 0.002
+    position_noise: 0.005
+    rough_position: 0.1
+    rough_rate: 0.001
+    resample_threshold: 0.5
+    min_fit_rows: 10
+    initial_rate_tail_rows: 30
+    rate_sigma_default: 0.10
+    rate_sigma_multiplier: 2.5
+    rate_likelihood_power: 1.0
+    gr_sigma_default: 30.0
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_seed_from_experiment_pf_z_seedbag_well
+  stochastic_components:
+    - pf_z_seedbag_particle_initialization
+    - pf_z_seedbag_process_noise
+    - pf_z_seedbag_resampling
+    - upstream_exp072_pf_beam_likpf_cache
+  parallel_rng_policy: num_workers_1_no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_file_sha: true
+    exp072_cache_sha: true
+    candidate_wide_sha: true
+    candidate_long_sha: true
+    metrics_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it is a train-side parity audit.
+    - Source gzip cache decompressed content SHA is recorded in summary JSON.
+
+audit:
+  mode: pf_z_seedbag_scale_cache
+  output_prefix: exp104_pf_z_seedbag_scale_cache
+  max_rows: null
+  max_wells: null
+  save_candidate_long: true
+  thresholds_ft: [1, 2, 5, 10]
+  bucket_edges_md_since: [0, 50, 100, 250, 500, 1000]
+  bucket_edges_row_idx: [0, 100, 250, 500, 1000]
+  expected_train_artifacts:
+    - exp104_pf_z_seedbag_scale_cache_candidate_metrics.csv
+    - exp104_pf_z_seedbag_scale_cache_bucket_metrics.csv
+    - exp104_pf_z_seedbag_scale_cache_by_well.csv
+    - exp104_pf_z_seedbag_scale_cache_pf_z_seedbag_quality.csv
+    - exp104_pf_z_seedbag_scale_cache_candidate_wide.csv.gz
+    - exp104_pf_z_seedbag_scale_cache_candidate_long.csv.gz
+    - exp104_pf_z_seedbag_scale_cache_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_candidate: null
+  notes:
+    - No inference notebook candidate is selected in this experiment.
+    - Best pf_z_seedbag candidate improved over exp072 pf_z but remained weaker than exp072 likpf_mean, so no inference port or submission is supported.
+
+notes:
+  - Implements the requested pf_z seedbag scale cache follow-up with exp104 prefix rather than reusing the occupied exp072 prefix.
+  - Produces candidate cache outputs plus direct comparison against existing exp072 pf_z / likpf candidates.

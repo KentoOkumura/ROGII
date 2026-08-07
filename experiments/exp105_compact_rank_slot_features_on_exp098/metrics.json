@@ -1,0 +1,65 @@
+{
+  "experiment": "exp105_compact_rank_slot_features_on_exp098",
+  "status": "completed_train_side_rejected",
+  "route": "ml_model",
+  "parent": "exp098_selector_rank_slot_features_on_exp073",
+  "base_surface_parent": "exp073_gpu_reproducibility_guard_for_exp063_full_replay",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "selected_variant": "compact_rank_slot_features",
+  "cv": {
+    "source": "kaggle_train_v1",
+    "best_model": "lgb2",
+    "best_rmse_tvt": 9.441103161090854,
+    "lgb0_rmse_tvt": 9.774440353569338,
+    "lgb1_rmse_tvt": 9.477699412158646,
+    "lgb2_rmse_tvt": 9.441103161090854,
+    "lgb_mean_rmse_tvt": 9.506397523082963,
+    "features": 218,
+    "rank_slot_features": 22,
+    "rows": 3783989,
+    "wells": 773,
+    "runtime_seconds": 11443.651,
+    "delta_best_vs_exp098_lgb1": 0.082952108772094,
+    "delta_best_vs_exp098_lgb_mean": 0.01365517370088242,
+    "delta_best_vs_exp092_lgb1": 0.11862326558692749,
+    "delta_best_vs_exp077_policy": -0.02941163990914529,
+    "recommendation": "rejected_keep_exp098_full_rank_slot_baseline"
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "key_idea": "Compact 22-column rank-slot feature set on exp098 worsened OOF versus exp098 full rank-slot features; keep exp098 as the rank-slot comparison baseline and do not submit exp105.",
+  "updated_at": "2026-06-22",
+  "reference_metrics": {
+    "exp098_lgb1_rmse_tvt": 9.35815105231876,
+    "exp098_lgb_mean_rmse_tvt": 9.427447987389971,
+    "exp092_lgb1_rmse_tvt": 9.322479895503927,
+    "exp077_policy_rmse_tvt": 9.470514801,
+    "exp073_raw_anchor_rmse_tvt": 9.526374749390682
+  },
+  "sha256": {
+    "input_cache": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18",
+    "model_manifest": "ae6370fbbe8d1bc37ffdfb7f3c9ad6683bc2b38e3e7f1af72b7c57c840c1a2ca",
+    "predictions_gzip": "397e24aeb15d550ad6fb5c58f8eb4bd462d3c4047d16042ed6cc3b882f9daa0c",
+    "predictions_decompressed": "610154188ad092b8fed9dc60699aa797bd7397e92448d7b5068b6b273fcb374d",
+    "summary_json": "2a796f8ec645fc39f47d1626ee4739290db0a95939b96467b66858657616dd14"
+  },
+  "prediction_sha256": {
+    "lgb0": "38081975545c1703e344d2d9f2dc7edff93961e460d67cdb6a1f8317783d1e43",
+    "lgb1": "0c3f122fc3a6b630cbc57b42478a82e542ffcc3befc49c4b38415e3ee9d705a2",
+    "lgb2": "fbe28f97011ce933aa619e500292d4a403d9f457e5100ab77765b8f9028dbe2f",
+    "lgb_mean": "5251fbe218e3fb1441e617b2109c59a97ba3d95a3ee6155b93f03a3d2c20191d"
+  },
+  "artifacts": {
+    "output_dir": "experiments/exp105_compact_rank_slot_features_on_exp098/kaggle/output/train_v1",
+    "summary": "artifacts/exp105_compact_rank_slot_features_on_exp098_summary.json",
+    "metrics": "artifacts/exp105_compact_rank_slot_features_on_exp098_metrics.csv",
+    "by_well": "artifacts/exp105_compact_rank_slot_features_on_exp098_by_well.csv",
+    "bucket_metrics": "artifacts/exp105_compact_rank_slot_features_on_exp098_bucket_metrics.csv",
+    "rank_slot_feature_summary": "artifacts/exp105_compact_rank_slot_features_on_exp098_rank_slot_feature_summary.csv",
+    "feature_importance_mean": "artifacts/exp105_compact_rank_slot_features_on_exp098_feature_importance_mean.csv",
+    "feature_importance_plot": "artifacts/exp105_compact_rank_slot_features_on_exp098_feature_importance_mean_top.png",
+    "feature_schema": "artifacts/exp105_compact_rank_slot_features_on_exp098_feature_schema.csv",
+    "model_manifest": "artifacts/exp105_compact_rank_slot_features_on_exp098_lgb_models/manifest.json",
+    "predictions": "artifacts/exp105_compact_rank_slot_features_on_exp098_predictions.csv.gz"
+  }
+}

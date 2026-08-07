@@ -1,0 +1,75 @@
+{
+  "experiment": "exp265_target_free_pairwise_candidate_divergence_soft_experts_on_exp264",
+  "status": "invalidated_train_only_raw_context_and_exp264_score_leakage",
+  "result_valid": false,
+  "structure_readout_valid_for_hidden": false,
+  "parent_score_readout_valid": false,
+  "parent_invalidation_reason": "exp265 regime features directly include training-only ANCC/ASTNU/ASTNL/EGFDU/EGFDL/BUDA, and exp264 Stage B scores are also invalid",
+  "route": "ensemble",
+  "parent": "exp264_exp263_candidate_confidence_dual_selector",
+  "candidate_source": "exp263_last_anchor_better_candidate_confidence_pair_cache",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "regime_occupancy_stability_and_candidate_family_separation",
+  "implementation": {
+    "stage0": true,
+    "inference": false,
+    "primitive_candidates": 6,
+    "primitive_pairs": 15,
+    "block_size": 512,
+    "regimes": 3,
+    "unit_tests": "6_targeted_and_79_repository_passed"
+  },
+  "planned_boosters": {
+    "stage0": 0,
+    "conditional_stage1_disabled": 30
+  },
+  "kaggle_stage0": {
+    "kernel": "kentookumura/exp265-pairwise-regime-audit-train",
+    "version": 2,
+    "status": "COMPLETE",
+    "runtime_seconds_to_artifacts": 331.158,
+    "rows": 3783989,
+    "wells": 773,
+    "blocks": 7787,
+    "features": 295,
+    "primitive_candidates": 6,
+    "candidate_pairs": 15,
+    "guards": {
+      "stage0": false,
+      "occupancy": false,
+      "stability": true,
+      "separability": true
+    },
+    "block_occupancy": {
+      "regime_0": 0.0219596764,
+      "regime_1": 0.0527802748,
+      "regime_2": 0.9252600488
+    },
+    "row_occupancy": {
+      "regime_0": 0.0133850812,
+      "regime_1": 0.0178465107,
+      "regime_2": 0.9687684082
+    },
+    "assignment_stability": 1.0,
+    "soft_membership": {
+      "mean_max_probability": 0.997257,
+      "mean_probability_regime_0": 0.021999,
+      "mean_probability_regime_1": 0.052997,
+      "mean_probability_regime_2": 0.925004
+    },
+    "separability": {
+      "distinct_pooled_best_candidate_families": 2,
+      "global_calibration_bias_range_ft": 1.0139639727,
+      "caveat": "Pooled regime labels mix a terminal partial-block cluster and rare path-gap outliers across folds, so the passed separability readout is not sufficient evidence for experts."
+    },
+    "feature_schema_sha256": "f703ce4ecd7e3d0bf9d2ac73a6f9b59e2ef8984d201c7adc167ac9847cfbde4c",
+    "block_fingerprint_logical_sha256": "be391fec482017becab171d3b980b96339ee586e6617649a079528764d34f6cf"
+  },
+  "control_retraining": false,
+  "run_approved": true,
+  "key_idea": "Candidate absolute TVTを使わず、6 primitive間15 pairの時間的な差分形状と非TVT contextでouter-fold target-free regimeを作り、exp264 scoreをassignment後にだけ監査する。",
+  "decision": "reject_conditional_expert_training_structure_occupancy_failed_exp264_score_invalidated",
+  "notes": "Version 2 completed normally, but the intended hidden-safe Stage 0 result is invalid. Its raw context includes training-only ANCC/ASTNU/ASTNL/EGFDU/EGFDL/BUDA, and score-based readouts also use invalid exp264 scores. Occupancy, stability, separability, calibration, and selector fallback claims are retained only to reproduce the failed run. Conditional expert training, inference, and submission were not executed."
+}

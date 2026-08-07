@@ -1,0 +1,236 @@
+experiment:
+  name: "exp210_heatmap_mdn_full_well_path_generation_probe"
+  description: >
+    Train-side diagnostic that turns exp208 dense heatmap MDN local paths into
+    an explicit row-complete full-well candidate path artifact for downstream
+    selector experiments.
+  route: pf_beam
+  status: kaggle_train_v1_complete_diagnostic_only
+  created_at: "2026-07-07"
+  updated_at: "2026-07-07"
+
+lineage:
+  parent: exp202_heatmap_mdn_candidate_generator_probe
+  dense_parent: exp208_heatmap_mdn_dense_stride_window_path_regeneration_probe
+  stitch_parent: exp207_heatmap_mdn_overlapping_window_path_stitch_probe
+  backlog: heatmap_mdn_full_well_path_generation_probe
+  comparison_parent: exp099_pf_multi_observation_likelihood_probe
+  downstream_candidate: exp212_heatmap_mdn_full_grid_path_generation_probe
+  discussion_source: docs/discussions/rogii-wellbore-geology-prediction-699853-multi-trajectory-prediction-mtp-with-deep-cnn-for-welllog-inversion-fullcsv.md
+  implementation_source: heatmap_mdn_full_well_path_generation_probe.py
+  diff_summary: >
+    Reuses exp208 dense stride heatmap MDN local path artifacts and the exp207
+    target-free stitch score, then saves a selector-facing full-well path table
+    on the exp099 candidate-cache row intersection with row id, md distance,
+    path rank, TVT prediction, source-window support, rank-mix, local path
+    smoothness, curvature, gap flags, and target-free candidate score. It
+    evaluates top1/top3/top5 full-well candidates against the exp099 PF/Beam
+    candidate union only after paths are fixed. It does not
+    retrain exp202, regenerate dense CNN windows, train a selector, perform
+    direct TVT replacement, average heatmap paths into a prediction, replace PF
+    weights, run inference, or submit.
+
+validation:
+  strategy: exp208_cached_dense_path_full_well_contract_train_side_probe
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  active_fold_indices: [0, 1, 2, 3, 4]
+  group_column: well
+  score_rows: exp099_pseudo_tail_rows_intersecting_full_well_path_coverage
+  secondary_metrics:
+    - full_path_contract_required_columns_present
+    - duplicate_key_rows
+    - null_required_value_count
+    - row_coverage_rate_vs_exp099_cache
+    - source_overlap_pair_count
+    - path_step_abs_mean
+    - curvature_abs_mean
+    - assignment_gap_flag_rate
+    - stitched_only_top5_oracle_rmse
+    - existing_plus_full_path_top5_oracle_rmse
+    - distance_bucket_1000_plus_oracle_delta
+    - by_well_improved_same_worse
+  leakage_policy:
+    - Full-well path generation uses only exp208 dense local path predictions, exp202 predicted center scores, candidate rank, predicted local path smoothness, adjacent-window overlap disagreement, and gap boundary continuity.
+    - "`true_tvt_path`, `true_center_tvt`, `center_abs_error`, oracle rank, within10, and absolute-error columns are not used by the stitch score or full-path table generation."
+    - exp099 target is used only after full-well paths are fixed, for train-side oracle readout.
+    - "`md_from_ps` is copied from the exp099 candidate cache as a row alignment and distance-bucket diagnostic, not as a path selection target."
+    - No direct TVT replacement, softmax weighted average, PF weight replacement, postprocess blend, inference, or submission is in scope.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp208_artifact_dir_local: experiments/exp208_heatmap_mdn_dense_stride_window_path_regeneration_probe/kaggle/output/train_v1/artifacts
+  exp208_dense_path_npz_local: experiments/exp208_heatmap_mdn_dense_stride_window_path_regeneration_probe/kaggle/output/train_v1/artifacts/exp208_heatmap_mdn_dense_stride_window_path_regeneration_probe_dense_candidate_paths_top10.npz
+  exp208_dense_path_samples_local: experiments/exp208_heatmap_mdn_dense_stride_window_path_regeneration_probe/kaggle/output/train_v1/artifacts/exp208_heatmap_mdn_dense_stride_window_path_regeneration_probe_dense_path_samples.csv.gz
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+
+model:
+  name: heatmap_mdn_full_well_path_generation_probe
+  estimator: deterministic_cached_path_stitch_beam_plus_contract_formatter
+  training:
+    planned_cnn_training_models: 0
+    planned_lightgbm_configs: 0
+    planned_boosters: 0
+    control_or_parent_retraining: false
+
+path_generation:
+  enabled: false
+  source_mode: cached_exp208_dense_artifacts
+  source_parent: exp208_heatmap_mdn_dense_stride_window_path_regeneration_probe
+  run_spec: candidate_real_w128_b64_fullfold
+  split: valid
+  row_center_stride: 64
+  source_dense_topk: 10
+  planned_cnn_training_models: 0
+  notes:
+    - exp210 does not rerun exp202 saved model inference by default.
+    - The stitch input contract is exp208 dense path npz plus dense path samples.
+
+stitching:
+  inputs:
+    path_npz: data.exp208_dense_path_npz_local
+    path_samples: data.exp208_dense_path_samples_local
+  local_topk_values: [5, 10]
+  primary_local_topk: 10
+  beam_width: 6
+  output_topn: 5
+  max_windows_per_well: null
+  debug_max_wells: 3
+  score_weights:
+    score: 1.0
+    rank: 0.05
+    smoothness: 0.01
+    overlap: 0.04
+    boundary: 0.02
+    rank_switch: 0.02
+    score_eps: 0.000001
+  output:
+    save_row_level_paths: true
+    save_window_assignments: true
+    save_source_coverage: true
+    save_candidate_union_readouts: true
+    save_full_well_candidate_paths: true
+    save_full_well_contract_metrics: true
+
+full_path_contract:
+  enabled: true
+  output_ranks: [1, 3, 5]
+  required_columns:
+    - id
+    - well
+    - row_id
+    - row_index
+    - md_from_ps
+    - path_rank
+    - tvt_pred
+    - source_window_count
+    - overlap_weight
+    - assignment_gap_flag
+    - local_rank_mix
+    - path_step_abs
+    - curvature_abs
+    - candidate_score
+  schema_version: 1
+  selector_contract_notes:
+    - "`row_id` is the competition row id and `row_index` is the numeric row suffix."
+    - "Rows are filtered to the exp099 candidate-cache intersection so `md_from_ps` and downstream candidate joins are defined."
+    - "`candidate_score` is a target-free monotone transform of total stitch cost; higher is better."
+    - "`assignment_gap_flag`, `path_step_abs`, and `curvature_abs` are physicality diagnostics, not target-derived columns."
+
+candidate_union:
+  enabled: true
+  source_cache: data.exp099_train_feature_cache_local
+  id_column: id
+  target_delta_column: target
+  last_known_tvt_column: last_known_tvt
+  distance_column: md_since
+  topk_values: [1, 3, 5]
+  within_ft: 10.0
+  existing_candidates:
+    - pf_ancc
+    - beam_mean
+    - likpf_mean
+    - sc_ens
+    - hyb
+    - tvt_dense
+    - tvt_densew
+    - tvt_dense50
+  required_existing_candidates:
+    - pf_ancc
+    - beam_mean
+    - likpf_mean
+    - sc_ens
+    - hyb
+  optional_existing_candidates:
+    - tvt_dense
+    - tvt_densew
+    - tvt_dense50
+  distance_buckets:
+    - [0, 50]
+    - [50, 100]
+    - [100, 250]
+    - [250, 500]
+    - [500, 1000]
+    - [1000, 1000000000]
+
+runtime:
+  use_amp: false
+  num_workers: 0
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp208-hmdn-dense-stride-train
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_random_sampling_cached_exp208_artifact_order_only
+  stochastic_components:
+    - upstream_exp202_pytorch_gpu_training
+    - upstream_exp208_saved_model_dense_path_generation
+    - upstream_exp099_pfbeam_candidate_cache
+  parallel_rng_policy: no_parallel_rng_in_exp210_stitching_or_contract_formatting
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - exp210 does not retrain models or create a submission.
+    - exp210 stitching and contract formatting are deterministic given exp208 dense path artifacts and exp099 candidate cache.
+    - It is not a deterministic submission anchor because it depends on upstream GPU-trained exp202 weights and creates no submission.
+    - gzip outputs record decompressed CSV content SHA.
+    - exp210 is a covered-row contract diagnostic, not a full-grid trajectory generator; full-grid selector candidates are deferred to exp212.
+
+audit:
+  mode: heatmap_mdn_full_well_path_generation_probe
+  output_prefix: exp210_heatmap_mdn_full_well_path_generation_probe
+  expected_train_artifacts:
+    - exp210_heatmap_mdn_full_well_path_generation_probe_localtopk10_full_well_candidate_paths.csv.gz
+    - exp210_heatmap_mdn_full_well_path_generation_probe_localtopk10_full_well_contract_metrics.csv
+    - exp210_heatmap_mdn_full_well_path_generation_probe_localtopk10_full_well_path_schema.csv
+    - exp210_heatmap_mdn_full_well_path_generation_probe_localtopk10_candidate_union_metrics.csv
+    - exp210_heatmap_mdn_full_well_path_generation_probe_localtopk10_candidate_union_distance_bucket_metrics.csv
+    - exp210_heatmap_mdn_full_well_path_generation_probe_localtopk10_candidate_union_by_well.csv
+    - exp210_heatmap_mdn_full_well_path_generation_probe_summary.json
+  planned_cost_before_push:
+    active_artifact_sources: 2
+    cnn_models: 0
+    lightgbm_configs: 0
+    folds: 0
+    boosters: 0
+    parent_or_control_retraining: false

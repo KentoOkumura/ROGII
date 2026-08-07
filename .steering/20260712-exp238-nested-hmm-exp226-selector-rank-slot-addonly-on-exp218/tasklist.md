@@ -1,0 +1,28 @@
+# タスクリスト
+
+- [x] steering作成
+- [x] configと実験記録作成
+- [x] nested selector feature builder実装
+- [x] safety guard通過後のexp218 add-only outer CVセル実装
+- [x] Jupytext notebook生成・静的検証
+- [x] selector CPU notebookとfinal GPU notebookへ分割
+- [x] bounded candidate-long samplingとchunk predictionを実装
+- [x] Kaggle package準備
+- [x] selector CPU train push・完了
+- [x] safety guard判定（不通過）
+- [x] guard不通過でfinal GPU trainを一度停止
+- [x] ユーザー明示承認後にfinal GPU train v5を完了
+- [x] fold非一致の比較caveatと生成物SHAを記録
+- [x] 結果記録とbacklog更新
+- [x] 推論時4 selector再学習がfold-specific nested契約に不一致と特定
+- [x] selector trainで20モデル本体・schema・SHAを保存する実装へ修正
+- [x] CPU selector inferenceを保存済み20モデルのfold別適用だけに修正
+- [x] final inferenceをouter fold対応selector score面の利用へ修正
+- [x] 修正版selector CPU train（20 boosters）完了・model SHA記録
+- [x] Kaggle CPU selector inference完了・score SHA記録
+- [x] Kaggle GPU final inference完了・submit-check
+- [x] code submission ref 54647064のhidden-test未処理例外を特定
+- [x] public-test row artifact依存を除去したhidden-safe統合inferenceを実装
+- [x] Jupytext・py_compile・F821・strict experiment validation
+- [x] Kaggle public-test rerunで旧v2との差と生成物契約を確認
+- [x] code submissionを再実行してhidden-test完走・Public LB 7.775を確認

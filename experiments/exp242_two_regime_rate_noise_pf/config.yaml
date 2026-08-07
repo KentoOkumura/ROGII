@@ -1,0 +1,197 @@
+experiment:
+  name: exp242_two_regime_rate_noise_pf
+  description: >
+    Train-side exp072-compatible likelihood-PF audit with a fixed sticky
+    smooth/turn regime and four-times rate process noise only in turn.
+  route: pf_beam
+  status: completed_train_side_rejected_no_inference_no_submit
+  created_at: "2026-07-13"
+  updated_at: "2026-07-13"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  references:
+    - exp232_adaptive_robust_likelihood_pf
+    - exp235_fixed_lag_particle_smoother_pf
+    - exp236_exact_hmm_posterior_bimodality_audit
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md two_regime_rate_noise_pf
+  implementation_source: two_regime_rate_noise_pf.py
+  diff_summary: >
+    Extends each particle from (position, rate) to (position, rate, regime).
+    A fixed sticky 2x2 Markov transition controls smooth/turn. Smooth preserves
+    exp072 velocity_noise=0.002 and turn alone uses 0.008. Gaussian likelihood,
+    momentum, position noise, resampling threshold/jitter, 500 particles,
+    128 seeds, and mean seed aggregation remain fixed. The saved exp072
+    likpf_mean is reconstructed from exp209 and is not regenerated.
+
+validation:
+  strategy: full_train_exp072_pseudotail_fixed_two_regime_rate_noise_pf
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within10
+    - rmse_1000_plus
+    - hidden_like_rmse
+    - worst_well_regression_vs_exp072
+    - effective_sample_size
+    - resampling_rate
+    - turn_particle_fraction
+    - turn_posterior_mass
+    - regime_switch_fraction
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  success_criteria:
+    - two_regime_k4 improves exp072 likpf_mean overall RMSE.
+    - 1000_plus and hidden-like RMSE do not regress versus exp072 likpf_mean.
+    - No well has a material RMSE regression versus exp072 likpf_mean.
+  leakage_policy:
+    - True TVT is used only for train-side scoring after PF prediction is generated.
+    - Regime initialization and transition use fixed config and local RNG only.
+    - No target, error, oracle candidate, Public LB, or GR gate selects the regime.
+    - The exp209 reconstructed likpf_mean is comparison-only and is not regenerated.
+    - Raw-test regeneration, inference, and submission are disabled.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp209_enriched_likpf_control_local: experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+  exp209_enriched_likpf_control_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+  exp072_reference_candidates: [likpf_mean, pf_ancc, beam_mean, pf_z]
+
+model:
+  name: fixed_two_regime_rate_noise_pf
+  estimator: none_pfbeam_generation_audit
+  target: exp072_target_for_scoring_only
+  validation_surface:
+    selection_mode: all_eligible_wells
+    max_target_wells: null
+    well_include: []
+    min_known_prefix_rows: 160
+    min_eval_rows: 64
+  two_regime_variants:
+    - name: two_regime_k4
+  regime:
+    states: [smooth, turn]
+    transition_matrix:
+      - [0.9998, 0.0002]
+      - [0.0200, 0.9800]
+    initial_counts:
+      smooth: 495
+      turn: 5
+    turn_rate_noise_multiplier: 4.0
+    transition_unit: row
+  runtime:
+    particles: 500
+    seed_count: 128
+    seed_aggregation: mean
+    resample_threshold: 0.5
+    init_spread: 4.5
+    momentum: 0.998
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_pos_noise: 0.10
+    resample_velocity_noise: 0.001
+    grid_step: 0.2
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+
+comparison:
+  baseline_candidate: exp072_likpf_mean
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+
+audit:
+  mode: fixed_two_regime_rate_noise_pf_full_train_audit
+  output_prefix: exp242_two_regime_rate_noise_pf
+  primary_baseline: exp072_likpf_mean
+  path_jump_threshold_ft: 8.0
+  expected_train_artifacts:
+    - runs/two_regime_k4/exp242_two_regime_rate_noise_pf_candidate_metrics.csv
+    - runs/two_regime_k4/exp242_two_regime_rate_noise_pf_distance_bucket_metrics.csv
+    - runs/two_regime_k4/exp242_two_regime_rate_noise_pf_hidden_like_metrics.csv
+    - runs/two_regime_k4/exp242_two_regime_rate_noise_pf_by_well.csv
+    - runs/two_regime_k4/exp242_two_regime_rate_noise_pf_pf_diagnostics.csv
+    - runs/two_regime_k4/exp242_two_regime_rate_noise_pf_regime_diagnostics.csv
+    - runs/two_regime_k4/exp242_two_regime_rate_noise_pf_target_wells.csv
+    - runs/two_regime_k4/exp242_two_regime_rate_noise_pf_well_status.csv
+    - runs/two_regime_k4/exp242_two_regime_rate_noise_pf_row_candidates.csv.gz
+    - runs/two_regime_k4/exp242_two_regime_rate_noise_pf_summary.json
+
+execution:
+  active_variant_count: 1
+  pf_control_replay_count: 0
+  pf_treatment_replay_count: 1
+  lightgbm_config_count: 0
+  fold_count: 0
+  total_boosters: 0
+  progress_every_wells: 16
+  kaggle_push_requires_user_decision: true
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp209-joint-exact-parity-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_well_variant_seed_index_numba_single_worker
+  stochastic_components:
+    - likelihood_pf_particle_initialization
+    - particle_regime_transition
+    - likelihood_pf_particle_propagation
+    - likelihood_pf_conditional_resampling
+  parallel_rng_policy: no_thread_parallel_rng_single_worker
+  control_caveat: >
+    The saved exp072 comparison is not regenerated with a paired seed stream;
+    results test candidate utility but are not a seed-paired causal estimate.
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_content_sha: true
+    prediction_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+
+inference:
+  mode: disabled_train_side_diagnostic_only
+  selected_candidate: null
+  notes:
+    - No raw-test regeneration, inference, or submission is generated.
+
+notes:
+  - Exactly one new PF variant, zero LightGBM configs, zero folds, zero boosters.
+  - Parent/control PF is not retrained or regenerated.
+  - Implementation does not authorize a Kaggle train push.

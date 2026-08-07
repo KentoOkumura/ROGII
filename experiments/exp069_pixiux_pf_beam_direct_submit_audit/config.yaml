@@ -1,0 +1,61 @@
+experiment:
+  name: "exp069_pixiux_pf_beam_direct_submit_audit"
+  description: Submit Pixiux likelihood-PF / PF-Beam direct predictions without LightGBM booster inference.
+  route: pf_beam
+  status: completed
+  created_at: "2026-06-13"
+
+lineage:
+  parent: exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit
+  backlog: pixiux_pf_beam_direct_submit_audit
+  diff_summary: Reuses the exp063 strict Pixiux public replay feature generation, but bypasses LightGBM saved boosters and writes the raw likelihood-PF direct prediction column to submission.csv. No hidden branch, static visible override, final public blend, projection, CatBoost, Ridge stack, or model training is included.
+
+validation:
+  leakage_policy:
+    - Test-side direct PF/Beam predictions use only competition test inputs, visible TVT_input prefix, and typewell curves.
+    - No train target, OOF prediction, saved booster prediction, static visible override, or hidden-specific branch is used for submission values.
+    - This is a direct submission audit, so no train-side CV is claimed.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+
+model:
+  name: pixiux_pf_beam_direct_prediction
+  selected_candidate: likpf_mean
+  candidate_meaning: Raw Pixiux likelihood-PF mean TVT prediction, not a LightGBM residual prediction.
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp063-ravaghi-pixiux-strict-replay-infer
+      - kentookumura/exp027-public-replay-needless090-sel15-spread3
+
+audit:
+  mode: pixiux_pf_beam_direct_submit_audit
+  max_wells: null
+  fast: false
+  deterministic: true
+  use_gpu: auto
+  pf_seeds: 128
+  pf_particles: 500
+  reference_submission_paths:
+    - /tmp/kaggle-output/exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit/infer_v2/submission.csv
+    - experiments/exp027_public_replay_needless090_sel15_spread3/artifacts/submission.csv
+
+inference:
+  mode: pixiux_pf_beam_direct_submit_audit
+  candidate: likpf_mean
+  notes:
+    - Writes raw likelihood-PF direct TVT prediction to submission.csv.
+    - Saves alternative direct candidates for diagnostics only.
+    - Does not load or use exp063 LightGBM boosters.
+
+notes:
+  - This experiment is route-separated from exp063 ML replay. It tests whether the public Pixiux PF/Beam direct prediction is stronger than the LightGBM replay submission.

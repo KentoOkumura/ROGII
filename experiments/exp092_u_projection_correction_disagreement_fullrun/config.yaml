@@ -1,0 +1,251 @@
+experiment:
+  name: "exp092_u_projection_correction_disagreement_fullrun"
+  description: Full pooled OOF run for the exp085 U-space projection correction plus disagreement variant on the fixed exp073 full replay LightGBM surface.
+  route: ml_model
+  status: submitted_complete_public_lb_8_350_hidden_assert_probe_discontinued
+  created_at: "2026-06-20"
+  updated_at: "2026-06-22"
+
+lineage:
+  parent: exp085_u_projection_feature_ablation
+  base_surface_parent: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  comparison_parents:
+    - exp073_gpu_reproducibility_guard_for_exp063_full_replay
+    - exp077_full_replay_postprocess_guard
+  implementation_source: u_projection_correction_disagreement_fullrun.py
+  public_replay_source: public_notebook_replay_audit.py
+  rawtest_guard_source: worst_well_rawtest_guard.py
+  diff_summary: Narrows exp085 to the single log-derived best variant, u_projection_correction_plus_disagreement, while keeping the exp073/exp072 deterministic 196-feature full replay surface, original TVT-minus-last-anchor target, and all three LightGBM family members.
+
+validation:
+  strategy: groupkfold_by_exp063_well_single_u_projection_correction_disagreement_fullrun
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Train features are read from exp072's raw-train-only deterministic feature cache.
+    - The expected train feature surface is exp063 Pixiux full public replay with 196 base features.
+    - The supervised target remains exp073's TVT minus last_known_tvt residual.
+    - GroupKFold is grouped by well; a well never appears in train and validation in the same fold.
+    - U-projection features use only target-free PF/Beam/likelihood-PF candidate paths, row Z, MD distance, and known-prefix anchors.
+    - LGB OOF U-projection features remain disabled because nested fold generation is required to avoid leakage.
+    - This is a train-side fullrun and not a submission candidate until pooled OOF, worst-well, bucket, importance, and test-side parity checks are reviewed.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_summary_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_summary.json
+
+model:
+  name: exp092_u_projection_correction_disagreement_fullrun_lgbm
+  source_experiment: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  feature_source: exp072_exp063_full_replay_train_feature_cache
+  expected_base_feature_count: 196
+  target: target
+  base_prediction: last_known_tvt
+  estimator: lightgbm
+  lgb_config_family: exp063_public_pixiux_lgb0_lgb1_lgb2
+  u_projection:
+    anchor_definition: local_prefix_u0_equals_T0_plus_Z0
+    degree: 3
+    robust_iters: 3
+    clip_sigma: 4.0
+    include_lgb_oof_features: false
+    sources:
+      pf_ancc:
+        value_column: pf_ancc
+        enabled: true
+      pf_z:
+        value_column: pf_z
+        enabled: true
+      beam_mean:
+        delta_column: beam_mean_d
+        enabled: true
+      beam_med:
+        delta_column: beam_med_d
+        enabled: true
+      likpf_mean:
+        delta_column: likpf_mean_d
+        enabled: true
+  feature_ablation:
+    selected_variant: u_projection_correction_plus_disagreement
+    active_variants:
+      - name: u_projection_correction_plus_disagreement
+        description: Fullrun of the exp085 best log-derived variant. Adds robust U-space projection correction/residual features and PF/Beam/likelihood-PF U-space disagreement features.
+        feature_groups:
+          - projection_correction
+          - u_disagreement
+        enabled: true
+  training:
+    early_stopping_rounds: 250
+    max_train_rows: null
+    max_rows: null
+    save_models: true
+    save_predictions: true
+    top_n_importance: 40
+    active_modes:
+      - gpu_repro_guard_dp_threads8
+    modes:
+      exp063_gpu_float32_reference:
+        description: Exp063-like GPU LightGBM setting; included for optional rerun comparison.
+        use_gpu: true
+        common_overrides:
+          gpu_use_dp: false
+          n_jobs: -1
+      gpu_repro_guard_dp_threads8:
+        description: GPU double precision plus fixed thread count and deterministic flags.
+        use_gpu: true
+        common_overrides:
+          gpu_use_dp: true
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+      cpu_deterministic_threads8:
+        description: CPU deterministic LightGBM control with fixed thread count.
+        use_gpu: false
+        common_overrides:
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+    inference_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp092-uproj-corr-disagree-train
+    guard_kernel_sources:
+      - kentookumura/exp092-uproj-corr-disagree-train
+      - kentookumura/exp092-uproj-corr-disagree-infer
+    bootstrap_files:
+      - artifacts/oof_delta_guard/exp092_oof_delta_guard_by_well.csv
+      - artifacts/oof_delta_guard/exp092_oof_delta_guard_path_continuity.csv
+      - artifacts/oof_delta_guard/exp092_oof_delta_guard_summary.json
+
+audit:
+  mode: u_projection_correction_disagreement_fullrun_from_exp072_cache
+  output_prefix: exp092_u_projection_correction_disagreement_fullrun
+  fast: false
+  reference_metrics:
+    exp073_control_note: Use exp085 log-derived control metrics only as provisional comparison until exp092 pooled OOF is available.
+    exp085_log_lgb1_control_mean_fold_rmse: 9.534549
+    exp085_log_lgb1_selected_mean_fold_rmse: 9.291006
+    exp085_log_lgb1_delta_vs_control: -0.243542
+    exp077_policy_pooled_rmse: 9.470514801
+  bucket_columns:
+    distance: md_since
+    tail_rank: id
+  expected_train_artifacts:
+    - exp092_u_projection_correction_disagreement_fullrun_metrics.csv
+    - exp092_u_projection_correction_disagreement_fullrun_by_well.csv
+    - exp092_u_projection_correction_disagreement_fullrun_bucket_metrics.csv
+    - exp092_u_projection_correction_disagreement_fullrun_projection_feature_summary.csv
+    - exp092_u_projection_correction_disagreement_fullrun_feature_importance.csv
+    - exp092_u_projection_correction_disagreement_fullrun_feature_importance_mean.csv
+    - exp092_u_projection_correction_disagreement_fullrun_feature_importance_mean_top.png
+    - exp092_u_projection_correction_disagreement_fullrun_predictions.csv.gz
+    - exp092_u_projection_correction_disagreement_fullrun_feature_schema.csv
+    - exp092_u_projection_correction_disagreement_fullrun_lgb_models/manifest.json
+    - exp092_u_projection_correction_disagreement_fullrun_summary.json
+  worst_well_rawtest_guard:
+    script: worst_well_rawtest_guard.py
+    mode: visible_test_only_target_free_probe
+    status: kaggle_v2_visible_test_completed_not_hidden_evidence
+    kernel: kentookumura/exp092-worst-well-rawtest-guard
+    kernel_version: 2
+    output_dir: artifacts/worst_well_rawtest_guard
+    local_output_dir: kaggle/output/guard_v2/artifacts/worst_well_rawtest_guard
+    code_competition_caveat:
+      visible_test_only: true
+      hidden_lb_test_observed: false
+      note: This guard kernel ran as a normal Kaggle notebook and therefore evaluated only the exposed sample/visible test files. In this code competition, the LB hidden test is injected only during code submission rerun; hidden-test conditions can only be probed indirectly by assertions inside the submitted inference notebook and observing pass/fail.
+    regression_threshold_vs_exp077_rmse: 0.25
+    top_n_worst_wells: 30
+    result_summary:
+      status: visible_test_completed_pass
+      hidden_lb_test_status: not_observed
+      warning_wells: 0
+      schema_parity: pass
+      raw_test_rows: 14151
+      raw_test_wells: 3
+      anchor_t0_vs_last_known_abs_max: 0.0
+      projection_summary_max_abs_ratio: 1.4706396688327277
+      prediction_sha256: 9882797f249273e6f1911e58b6a8ad8b385b91cea3d4dfebf9e03f47b9d07332
+      exp092_prediction_decompressed_sha256: c863d55011690f4cc7f96e1a814619c5cf68ba4b9b83ed038756ccb25e302c5e
+      note: exp077 submission is intentionally not auto-detected from generic submission.csv; v2 uses exp092-only continuity and schema/projection parity on the visible sample test, not on the hidden LB test.
+    required_inputs:
+      - exp092_oof_delta_guard_by_well.csv
+      - exp092_u_projection_correction_disagreement_fullrun_inference_test_predictions.csv.gz
+    optional_inputs:
+      - exp092_oof_delta_guard_path_continuity.csv
+      - exp092_u_projection_correction_disagreement_fullrun_feature_schema.csv
+      - exp092_u_projection_correction_disagreement_fullrun_inference_feature_schema.csv
+      - exp092_u_projection_correction_disagreement_fullrun_projection_feature_summary.csv
+      - exp092_u_projection_correction_disagreement_fullrun_inference_projection_feature_summary.csv
+      - exp063_full_replay_repro_guard_inference_test_predictions.csv.gz
+      - exp077 inference submission.csv
+    warning_thresholds:
+      anchor_t0_abs_max: 0.05
+      correction_abs_p95: 15.0
+      correction_step_abs_p95: 5.0
+      exp092_step_abs_p95: derived_from_oof_profile_with_min_2_0
+      exp092_step_abs_max: derived_from_oof_profile_with_min_10_0
+    expected_artifacts:
+      - exp092_worst_well_rawtest_guard_test_well_metrics.csv
+      - exp092_worst_well_rawtest_guard_test_bucket_metrics.csv
+      - exp092_worst_well_rawtest_guard_oof_worst_wells.csv
+      - exp092_worst_well_rawtest_guard_schema_parity.csv
+      - exp092_worst_well_rawtest_guard_projection_summary_parity.csv
+      - exp092_worst_well_rawtest_guard_summary.json
+
+inference:
+  mode: saved_lgb_booster_inference_with_raw_test_feature_replay
+  deterministic_pf: true
+  seed_policy: stable_sha256_per_well
+  selected_variant: u_projection_correction_plus_disagreement
+  selected_mode: gpu_repro_guard_dp_threads8
+  selected_model: lgb1
+  notes:
+    - Inference is enabled per user request before worst-well gating/regression guard.
+    - The inference notebook regenerates raw-test full replay features and computes the same target-free U-projection features from test PF/Beam/likelihood-PF paths.
+    - Selected model is lgb1 because it is the best pooled OOF model.
+    - Worst-well visible-test guard is implemented in `worst_well_rawtest_guard.py`; it is not hidden LB evidence unless converted into submission-rerun assertions.
+    - Hidden assert probing was discontinued after v3 sample_id_coverage passed and the remaining proxy checks were judged too weak for the exp092 worst-well concern.
+
+submission:
+  status: submitted_complete
+  submitted_at: "2026-06-22 00:01:47 UTC"
+  primary_ref: 53927479
+  public_lb: 8.350
+  private_lb: null
+  attribution: user correction that ref 53927479 / Public LB 8.350 belongs to exp092.
+  selected_variant: u_projection_correction_plus_disagreement
+  selected_mode: gpu_repro_guard_dp_threads8
+  selected_model: lgb1
+  notes:
+    - Public LB 8.350 improves exp077 8.611 and exp098 8.441, and becomes the ML route submitted anchor.
+    - Local submission output SHA is not recorded in this repo; Kaggle descriptions were blank.
+
+notes:
+  - This implements the backlog item `u_projection_correction_disagreement_fullrun`.
+  - This is the formal fullrun follow-up to exp085's timeout/log-derived finding.
+  - Target ablation is not mixed into this experiment; the target remains TVT - last_known_tvt.
+  - LGB OOF U-space features are deferred until a nested fold implementation is added.

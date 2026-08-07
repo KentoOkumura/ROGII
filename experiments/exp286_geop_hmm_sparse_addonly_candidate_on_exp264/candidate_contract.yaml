@@ -1,0 +1,161 @@
+schema_version: 1.0.0
+source_of_truth: exp263_core12_plus_exp279_geop_hmm_oof
+expected_rows: 3783989
+expected_wells: 773
+inventory_counts:
+  parent_exp264_score_candidates: 12
+  current_stage_b_score_candidates: 13
+
+score_candidates:
+  - id: exp226_k16
+    kind: primitive
+    family: geometry
+  - id: selfgr_hmm_a070
+    kind: primitive
+    family: self_gr_hmm
+  - id: likpf_mean
+    kind: primitive
+    family: likelihood_pf
+  - id: exact_hmm
+    kind: primitive
+    family: exact_hmm
+  - id: pf_ancc
+    kind: primitive
+    family: particle_filter
+  - id: beam_mean
+    kind: primitive
+    family: beam
+  - id: exp226_k16__selfgr_hmm_a070
+    kind: pair_mean_50
+    family: geometry_self_gr_hmm_pair
+    parents: [exp226_k16, selfgr_hmm_a070]
+    weights: [0.5, 0.5]
+  - id: exp226_k16__exact_hmm
+    kind: pair_mean_50
+    family: geometry_exact_hmm_pair
+    parents: [exp226_k16, exact_hmm]
+    weights: [0.5, 0.5]
+  - id: exp226_k16__likpf_mean
+    kind: pair_mean_50
+    family: geometry_likelihood_pf_pair
+    parents: [exp226_k16, likpf_mean]
+    weights: [0.5, 0.5]
+  - id: selfgr_hmm_a070__likpf_mean
+    kind: pair_mean_50
+    family: self_gr_hmm_likelihood_pf_pair
+    parents: [selfgr_hmm_a070, likpf_mean]
+    weights: [0.5, 0.5]
+  - id: likpf_mean__exact_hmm
+    kind: pair_mean_50
+    family: likelihood_pf_exact_hmm_pair
+    parents: [likpf_mean, exact_hmm]
+    weights: [0.5, 0.5]
+  - id: exp226_w500_50_50
+    kind: named_fixed
+    family: geometry_likelihood_pf_exact_hmm_fixed
+    parents: [exp226_k16, likpf_mean, exact_hmm]
+    weights: [0.5, 0.25, 0.25]
+  - id: geop_hmm
+    kind: primitive
+    family: geop_centered_exact_hmm
+    source_experiment: exp279_exp226_geop_centered_exact_hmm_redecode
+    source_prediction_column: geop_hmm
+    availability_policy: full_saved_oof_key_match
+
+legal_domains:
+  primitive_pair_bank:
+    role: primary_meta_domain
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_k16__selfgr_hmm_a070
+      - exp226_k16__exact_hmm
+      - exp226_k16__likpf_mean
+      - selfgr_hmm_a070__likpf_mean
+      - likpf_mean__exact_hmm
+      - geop_hmm
+  primitive_fixed_bank:
+    role: fixed_fallback_comparison_domain
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_w500_50_50
+      - geop_hmm
+
+candidate_id_model_encoding:
+  type: one_hot
+  order_source: score_candidates_declared_order
+  width: 13
+  keep_string_id_in_artifacts: true
+  ordinal_index_as_model_feature: false
+
+confidence_contract:
+  native_confidence_required_for_every_candidate: false
+  universal_proxy_required_for_every_candidate: true
+  universal_proxy_groups:
+    - candidate_availability_and_coverage
+    - candidate_anchor_distance
+    - candidate_local_shape
+    - candidate_bank_disagreement
+    - formula_parent_disagreement_and_validity
+  formula_confidence:
+    - keep_parent_confidence_namespaced
+    - add_parent_valid_count
+    - add_component_range_and_std
+    - do_not_average_cross_family_sigma
+  common_learned_scale:
+    - pred_abs_error
+    - p_within10
+  current_test_native_encoding: confidence__<candidate_id>__<field>
+  current_test_required_fields_by_primitive:
+    exp226_k16: [confidence_valid, geometry_gr_delta]
+    selfgr_hmm_a070:
+      - confidence_valid
+      - sigma_tvt
+      - source_loglik
+      - loglik_per_row
+      - candidate_finite_source
+      - selfgr_quality
+      - selfgr_peak_tvt
+      - score_margin
+      - selfgr_typewell_agreement
+      - selfgr_valid
+    likpf_mean: [confidence_valid]
+    exact_hmm: [confidence_valid, sigma_tvt, source_loglik, loglik_per_row]
+    pf_ancc: [confidence_valid, sigma_tvt]
+    beam_mean: [confidence_valid, beam_family_std]
+    geop_hmm:
+      - confidence_valid
+      - sigma_tvt
+      - source_loglik
+      - loglik_per_row
+      - candidate_finite_source
+  geop_hmm_source_mapping:
+    confidence_source: exp279_geop_centered_exact_hmm_posterior
+    candidate_available: true_on_all_key_matched_oof_rows
+    confidence_valid: finite_geop_hmm_and_std_and_loglik
+    sigma_tvt: geop_hmm_std
+    source_loglik: geop_hmm_loglik
+    loglik_per_row: geop_hmm_loglik_divided_by_evaluation_rows_in_well
+    candidate_finite_source: finite_geop_hmm
+  current_test_policy: >-
+    採用feature schemaがsource-native confidenceを含む場合はsource parityを必須とし、
+    未出力列を暗黙の0または全NaNへ置換しない。universal proxyは全候補で同じ実装から生成する。
+
+forbidden_behaviors:
+  - use_catalog_rmse_as_row_feature
+  - use_pair_readout_as_row_feature
+  - use_outer_fold_eligibility_as_row_feature
+  - use_true_error_or_oracle_as_feature
+  - use_true_tvt_readout_only_as_feature
+  - use_geop_gate_as_feature_or_availability
+  - softmax_average_candidate_tvt
+  - ordinal_candidate_index_feature

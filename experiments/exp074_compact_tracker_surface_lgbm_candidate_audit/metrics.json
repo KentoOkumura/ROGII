@@ -1,0 +1,63 @@
+{
+  "experiment": "exp074_compact_tracker_surface_lgbm_candidate_audit",
+  "status": "kaggle_train_inference_completed_pending_optional_lb",
+  "cv": 9.73150619943287,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "route": "ml_model",
+  "parent": "exp070_gpu_reproducibility_guard_for_exp063",
+  "feature_parent": "exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit",
+  "kaggle": {
+    "train": {
+      "kernel": "kentookumura/exp074-compact-tracker-lgbm-audit-train",
+      "version": 1,
+      "status": "complete",
+      "output_dir": "/tmp/kaggle-output/exp074_compact_tracker_surface_lgbm_candidate_audit/train_v1"
+    },
+    "inference": {
+      "kernel": "kentookumura/exp074-compact-tracker-lgbm-audit-infer",
+      "version": 1,
+      "status": "complete",
+      "output_dir": "/tmp/kaggle-output/exp074_compact_tracker_surface_lgbm_candidate_audit/infer_v1"
+    }
+  },
+  "train": {
+    "mode": "gpu_repro_guard_dp_threads8",
+    "model": "lgb_mean",
+    "cv": 9.73150619943287,
+    "rows": 3783989,
+    "wells": 773,
+    "features": 65,
+    "elapsed_seconds": 6925.739,
+    "model_count": 15,
+    "feature_source_sha256": "4ebf8f4fec0be09fba5c9c585d3699a78fbc6511b16b066098a7ca65362c5f90",
+    "prediction_sha256": "09ccb9edd59cd50057da0ee7738229749996219708f36e6c45f870d0efd026a5",
+    "model_manifest_sha256": "e379b078b4fdfaceb39c25fcc8246cab221ab16038e3dac4f8c2b74360197ece",
+    "summary_sha256": "ba0968e70163285ed738c4a9b8ea402b244f5c4fc6e9c54157c24829f57fc40e"
+  },
+  "inference": {
+    "mode": "gpu_repro_guard_dp_threads8",
+    "model": "lgb_mean",
+    "model_count": 15,
+    "test_rows": 14151,
+    "submission_rows": 14151,
+    "predicted_rows": 14151,
+    "fallback_rows": 0,
+    "elapsed_seconds": 122.933,
+    "feature_generation_seconds": 93.103,
+    "test_feature_source_kind": "raw_test_regenerated_exp063_public_replay",
+    "test_feature_sha256": "723d2d29bd4701f05fc7ee7337a6911368dcc4dec651237679b739260a74e5d7",
+    "prediction_sha256": "0a4a5c4010217624f8eb73f191ecbbedeaefba369db40542c171c078d5c84a9f",
+    "prediction_file_sha256": "9f897ec796eabeca32917da266843d7a7a7e21850470973b743f2bf1e4df3b6f",
+    "submission_sha256": "22f9eb3710ccec7741ce8006bee02ed69ed25829439114411cdba0038dcde0bc",
+    "summary_sha256": "e0a9cecff6f563b73b6aa6edc4445e9a56da33e18732f5cfef34dad32353cebe"
+  },
+  "submit_check": {
+    "status": "pass",
+    "submission": "/tmp/kaggle-output/exp074_compact_tracker_surface_lgbm_candidate_audit/infer_v1/submission.csv",
+    "rows": 14151,
+    "columns": 2
+  },
+  "notes": "Kaggle train v1 and inference v1 completed. This confirms the exp070 compact 65-feature surface under an explicit exp074 candidate audit, but Public LB is still unsubmitted/unattributed."
+}

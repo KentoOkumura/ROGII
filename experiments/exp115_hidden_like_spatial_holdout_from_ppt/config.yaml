@@ -1,0 +1,132 @@
+experiment:
+  name: "exp115_hidden_like_spatial_holdout_from_ppt"
+  description: Build a deterministic hidden-like spatial holdout by matching train wells to the official PPT verification map distribution.
+  route: ml_model  # ml_model, pf_beam, or ensemble
+  status: debug_completed
+  created_at: "2026-06-23"
+  updated_at: "2026-06-23"
+
+lineage:
+  parent: exp092_u_projection_correction_disagreement_fullrun
+  diagnostic_parents:
+    - exp044_stratified_groupkfold_cv_audit
+    - exp065_typewell_supertype_cluster_cv_audit
+    - exp073_gpu_reproducibility_guard_for_exp063_full_replay
+    - exp098_selector_rank_slot_features_on_exp073
+  implementation_source: hidden_like_spatial_holdout_from_ppt.py
+  diff_summary: Creates fixed train-well holdout definitions that approximate the official PPT slide 10 Verification map distribution. It does not train a model or submit; it emits spatial and typewell-purged valid well lists for later anchor readouts.
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation:
+  strategy: hidden_like_spatial_holdout_from_official_ppt_slide10
+  metric: rmse
+  secondary_metrics:
+    - holdout_well_count
+    - ppt_red_distance
+    - distribution_balance_by_spatial_azimuth_eval_length_gr
+    - typewell_group_purge_count
+  seed: 42
+  n_folds: 1
+  group_column: well_id
+  score_rows: TVT_input_isna
+  leakage_policy:
+    - Holdout assignment is by well_id; rows from the same well are never split.
+    - PPT pixels are used only to approximate spatial distribution, not as labels or exact split truth.
+    - Typewell-purged variant marks same exact typewell hash groups as purged_train_excluded when a group mate is selected as validation.
+    - Future scoring on this holdout must not use validation true TVT to build features, priors, or neighbor pools.
+
+# Common paths and submission columns come from project.yml.
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  official_pptx: AI_wellbore_geology_prediction_task_en.pptx
+
+model:
+  name: hidden_like_spatial_holdout_builder
+  params:
+    target_holdout_wells: 200
+    variants:
+      - verification_like_spatial
+      - verification_like_typewell_purged
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 32
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources: []
+    dataset_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_deterministic_sorting_by_well_id_and_ppt_distance
+  stochastic_components:
+    - none
+  parallel_rng_policy: single_process_no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: true
+  notes:
+    - This is a deterministic audit split builder, not a deterministic submission anchor.
+    - Official PPT/PNG materials are treated as explanatory spatial references, not as source-of-truth labels.
+    - The summary JSON records PPTX SHA256, slide image SHA256, red component count, and output artifact paths.
+
+ppt:
+  slide_number: 10
+  allow_fallback: true
+  red_detection:
+    alpha_min: 10
+    red_min: 130
+    red_green_margin: 45
+    red_blue_margin: 45
+    green_max: 170
+    blue_max: 170
+    min_component_area: 4
+    max_component_area: 5000
+    max_component_width: 320
+    max_component_height: 320
+
+audit:
+  mode: hidden_like_spatial_holdout_from_ppt
+  output_prefix: exp115_hidden_like_spatial_holdout_from_ppt
+  target_holdout_wells: 200
+  fallback_grid_size: 5
+  max_wells: null
+  binning:
+    spatial_x_bins: 4
+    spatial_y_bins: 4
+    azimuth_bins: 4
+    tvt_bins: 4
+    eval_length_bins: 4
+    prefix_length_bins: 4
+    gr_bins: 4
+  expected_train_artifacts:
+    - exp115_hidden_like_spatial_holdout_from_ppt_ppt_red_points.csv
+    - exp115_hidden_like_spatial_holdout_from_ppt_well_metadata.csv
+    - exp115_hidden_like_spatial_holdout_from_ppt_holdout_wells.csv
+    - exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - exp115_hidden_like_spatial_holdout_from_ppt_distribution_report.csv
+    - exp115_hidden_like_spatial_holdout_from_ppt_summary.json
+
+inference:
+  mode: not_applicable_holdout_audit_only
+  notes:
+    - Future follow-up should score exp092, exp073, and exp098 predictions on these holdout definitions.
+
+notes:
+  - Implements the hidden_like_spatial_holdout_from_ppt backlog item as a reusable split/readout generator.
+
+overrides:
+  project_defaults:
+    - validation.n_folds

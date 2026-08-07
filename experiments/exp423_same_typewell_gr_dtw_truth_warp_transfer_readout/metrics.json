@@ -1,0 +1,101 @@
+{
+  "experiment": "exp423_same_typewell_gr_dtw_truth_warp_transfer_readout",
+  "status": "completed_closed",
+  "route": "pf_beam",
+  "stage": "zero_model_train_side_oof_readout",
+  "parent": "exp109_typewell_neighbor_prior_features",
+  "cv": 14.10381271360359,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "score_row_rmse_ft",
+  "key_idea": "same-typewell GR-DTW donor truth-warpはsupport 286/773 wellsに留まり、primaryはexp109比2.960446 ft悪化、top-5 oracleも1.141720 ft悪化。独立rerun SHA一致後、no-rescueでbranchを閉鎖",
+  "primary_candidate": "analog_top5_median",
+  "final_decision": "close_truth_warp_transfer_hypothesis_without_rescue",
+  "kaggle": {
+    "kernel": "kentookumura/exp423-gr-dtw-truth-warp-readout-train",
+    "first_valid_version": 2,
+    "independent_rerun_version": 3,
+    "first_valid_runtime_seconds": 772.0052990913391,
+    "independent_rerun_runtime_seconds": 786.5651869773865,
+    "version_1_status": "failed_before_scientific_run_due_to_invalid_exp099_kernel_source",
+    "version_2_status": "complete",
+    "version_3_status": "complete"
+  },
+  "execution_counts": {
+    "audit_variants": 1,
+    "reporting_folds": 5,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "pf_well_runs": 0,
+    "hmm_well_runs": 0,
+    "beam_well_runs": 0,
+    "gpu_runs": 0,
+    "parent_control_reruns": 0
+  },
+  "overall_rmse": {
+    "analog_top1": 16.023753291722134,
+    "analog_top5_median": 14.10381271360359,
+    "stable_random_same_group": 17.256757094401447,
+    "analog_top5_oracle_well": 12.285086481847303,
+    "exp109_best_fixed": 11.143366768991305,
+    "exp099_likpf_mean": 11.594901163654782
+  },
+  "technical_gate": {
+    "passed": false,
+    "all_input_sha_matches": true,
+    "deterministic_content_sha_match": true,
+    "donor_query_intersection_zero": true,
+    "query_truth_reads_before_freeze_zero": true,
+    "row_identity_unique": true,
+    "supported_path_finite_fraction": 1.0,
+    "supported_score_row_fraction": 0.36851692750692455,
+    "supported_well_fraction": 0.36998706338939197,
+    "supported_rows": 1394464,
+    "supported_wells": 286,
+    "total_rows": 3783989,
+    "total_wells": 773
+  },
+  "scientific_gate": {
+    "passed": false,
+    "primary_gain_vs_exp109_ft": -2.960445944612287,
+    "primary_nonworse_folds": 0,
+    "oracle_gain_vs_exp109_ft": -1.1417197128560002,
+    "oracle_nonworse_folds": 0,
+    "top1_gain_vs_random_ft": 1.2330038026793133,
+    "top1_nonworse_folds": 5,
+    "dtw_cost_error_spearman": 0.10222649271525282,
+    "positive_spearman_folds": 5,
+    "bucket_1000_plus_primary_minus_exp109_rmse_ft": 3.1684169471940358,
+    "hidden_like_spatial_primary_minus_exp109_rmse_ft": 2.5121806063499292,
+    "hidden_like_typewell_purged_primary_minus_exp109_rmse_ft": 2.62589718820886,
+    "by_well_primary_minus_exp109_p95_ft": 14.895650100565328,
+    "by_well_primary_minus_exp109_worst_ft": 52.735848591373255
+  },
+  "reproducibility": {
+    "deterministic_anchor": true,
+    "determinism_status": "matched_independent_reference",
+    "scientific_contract_sha256": "0429bae5f1cb16cc209a4a9e50fdccef1a62ce505591a265115e65bd33c148ca",
+    "target_free_schema_sha256": "15d9401450f6f8ec4b21971fb7ede0e2874c90e9528a537660fe87ded493f8c5",
+    "target_free_logical_content_sha256": "6b5b54521ba6612665436f95d4ab3d42c711e8eb18a29bb2ad1916862849d3b3",
+    "version_2_version_3_content_match": true
+  },
+  "validation": {
+    "jupytext_roundtrip": "pass",
+    "py_compile": "pass",
+    "ruff_f821": "pass",
+    "dedicated_tests": "11 passed",
+    "experiment_validation": "pass"
+  },
+  "artifacts": {
+    "jupytext_source": "exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_compact_selfcontained_train.py",
+    "canonical_train_notebook": "exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_train.ipynb",
+    "selected_version_2_output": "kaggle/output/train_v2/artifacts",
+    "selected_version_3_output": "kaggle/output/train_v3/artifacts"
+  },
+  "run_completed": true,
+  "inference_completed": false,
+  "submission_in_scope": false,
+  "updated_at": "2026-07-28",
+  "notes": "Kaggle CPU versions 2 and 3 completed. Deterministic content matched, but support coverage, oracle headroom, primary, scope, and tail gates failed. The branch is closed without post-hoc rescue."
+}

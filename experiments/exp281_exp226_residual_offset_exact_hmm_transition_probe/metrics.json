@@ -1,0 +1,101 @@
+{
+  "experiment": "exp281_exp226_residual_offset_exact_hmm_transition_probe",
+  "status": "completed_train_side_guard_failed",
+  "metric": "rmse_tvt",
+  "cv": 9.827419940583813,
+  "public_lb": null,
+  "private_lb": null,
+  "rows": 3783989,
+  "wells": 773,
+  "active_hmm_variants": 1,
+  "hmm_well_runs": 773,
+  "lightgbm_configs": 0,
+  "trained_folds": 0,
+  "boosters": 0,
+  "parent_control_retraining": false,
+  "gpu": false,
+  "inference": false,
+  "submission": false,
+  "elapsed_seconds": 15042.787162780762,
+  "kaggle_kernel": "kentookumura/exp281-exp226-residual-offset-exact-hmm-train",
+  "kaggle_kernel_version": 1,
+  "kaggle_kernel_id_no": 127831519,
+  "candidate_metrics": {
+    "exp226_pred": {"rmse": 9.427109596582222, "mae": 6.1485277973937595},
+    "exact_hmm": {"rmse": 11.938287234887435, "mae": 6.7695548877124185},
+    "exp263_fixed": {"rmse": 8.2383317454837, "mae": 5.3984852745157825},
+    "residual_offset_hmm": {
+      "rmse": 9.827419940583813,
+      "mae": 5.290694173726774,
+      "bias": 0.16950769066466148,
+      "within5": 0.6898598278166242,
+      "within10": 0.83706797244918
+    }
+  },
+  "promotion_guard": {
+    "passed": false,
+    "baseline_parity_abs_diff_ft": 7.454836996600989e-07,
+    "gain_ft": -1.5890881951001123,
+    "improved_folds": 0,
+    "checks": {
+      "exp263_fixed_parity": true,
+      "overall_gain": false,
+      "improved_folds": false,
+      "scope_regression": false,
+      "worst_well": false,
+      "persistent_episode_count": true,
+      "persistent_recovery_rates": true,
+      "delta_grid_coverage": true,
+      "finite_coverage": true
+    }
+  },
+  "fold_delta_rmse_vs_exp263_fixed": {
+    "0": 0.7547900110219743,
+    "1": 1.4020643190564073,
+    "2": 1.4643290964758737,
+    "3": 3.0416022496782933,
+    "4": 1.0813765918491551
+  },
+  "scope_delta_rmse_vs_exp263_fixed": {
+    "near_0_250": 0.28091555522940004,
+    "long_tail_1000_plus": 1.7924186196501424,
+    "hidden_like_spatial": 1.8084992705687633,
+    "hidden_like_typewell_purged": 1.6100075073228162
+  },
+  "by_well": {
+    "improved": 408,
+    "worsened": 365,
+    "median_delta_rmse": -0.2218476174072359,
+    "p95_delta_rmse": 10.982960387885742,
+    "worst_well": "8a3da6d1",
+    "worst_delta_rmse": 30.961674696137404
+  },
+  "persistent_recovery": {
+    "exp263_fixed": {
+      "episodes": 551,
+      "recovered_within_256_rate": 0.021778584392014518,
+      "recovered_within_512_rate": 0.09074410163339383
+    },
+    "residual_offset_hmm": {
+      "episodes": 530,
+      "recovered_within_256_rate": 0.022641509433962263,
+      "recovered_within_512_rate": 0.12264150943396226
+    }
+  },
+  "coverage": {
+    "full_run": true,
+    "well_status_ok": 773,
+    "delta_grid": 1.0,
+    "finite": 1.0
+  },
+  "sha256": {
+    "prediction_content": "d7f902b856a78bb040a2fa0cfe3ed94daad5caf26449459b40d0b150eb65e440",
+    "predictions_raw_gzip": "57d18866ce285aca98e62f536cc8f6bada00f6f869e43c7fde74c6b8413872f1",
+    "predictions_decompressed": "3a99b1d9604da27952ef029f56a9eec42c477f3d78d1fdf3763301df03867386",
+    "decoder_manifest_mapping": "876a6d57715fd046eaafe60d870e245ecb8704ff18aae1efe09ae79c53b48069",
+    "decoder_manifest_file": "a5fa3c157badd8d9a2c3ba89118d06a2643de54b68c11c72653dc92b041fede8",
+    "input_manifest": "d6faac0b545efd6fb530d40cf1c8f7059a4b3e206cecd69007b8152a0c132125",
+    "well_manifest": "18cbfc505c51a59cd0c029b74dc7829b3a893e89a552f964a191732ee32eb4d0"
+  },
+  "notes": "Negative result. Overall, fold, scope, and worst-well guards failed; recovery and technical guards passed. No inference or submission."
+}

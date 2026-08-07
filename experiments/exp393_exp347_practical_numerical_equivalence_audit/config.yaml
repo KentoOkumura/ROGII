@@ -1,0 +1,546 @@
+experiment:
+  name: exp393_exp347_practical_numerical_equivalence_audit
+  description: >-
+    Audit whether the exp347 scalar-versus-batched float32 posterior difference
+    is practically negligible at the posterior-mean TVT and marginal-MAP
+    readouts, without reopening or reclassifying exp347.
+  route: ensemble
+  status: stage_a_failed_branch_closed
+  created_at: "2026-07-25"
+  updated_at: "2026-07-25"
+
+overrides:
+  project_defaults:
+    - validation.metric
+    - validation.strategy
+    - validation.score_rows
+
+lineage:
+  parent: exp347_prefix_gr_unary_batched_window_exact_ssm
+  steering: ../../.steering/20260725-exp393-exp347-practical-numerical-equivalence-audit
+  references:
+    - exp332_prefix_gr_unary_fixed_window_structured_ssm
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md
+  diff_summary: >-
+    Keeps the terminal exp347 implementation and decision immutable. Changes
+    only the promotion surface from a posterior-cell maximum error to a new,
+    preregistered practical-equivalence audit centered on posterior-mean TVT,
+    marginal MAP, and the existing loss/gradient/padding contracts. After the
+    Stage 0 practical gate failed, the user explicitly accepted those numerical
+    differences and authorized the unchanged exp347 fold-0 Stage A as an
+    exception; neither exp347 nor the exp393 Stage 0 result is reclassified.
+
+implementation:
+  approved: true
+  approval_source: user_message_implement_exp393_2026_07_25
+  scope: stage0_audit_plus_user_override_stage_a_fold0
+  train_notebook_state: canonical_stage_a_completed_failed_closed
+  inference_notebook_state: canonical_fail_closed_compact_adopted
+  compact_selfcontained_source_created: true
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: fixed16_exp347_window_practical_numerical_equivalence_audit
+  metric: scalar_vs_batched_posterior_mean_tvt_difference
+  seed: 42
+  fold: 0
+  n_folds: 5
+  sample_unit: complete_well
+  score_rows: fixed16_window_valid_rows_only
+  reference_mode: scalar_fp32_reference
+  candidate_mode: batched_fp32_batch4_production
+  diagnostic_modes:
+    - batched_fp32_batch1
+    - scalar_fp64_first4_diagnostic
+  stage0:
+    fixed_window_count: 16
+    fp64_diagnostic_window_count: 4
+    selection_source: exp347_fixed16_window_and_boundary_contract
+    temporary_neural_model_count: 1
+    unary_generation_count: 1
+    freeze_unary_before_mode_comparison: true
+    required_checks:
+      posterior_mean_tvt_rmse_ft_max: 0.001
+      posterior_mean_tvt_p99_abs_ft_max: 0.005
+      posterior_mean_tvt_max_abs_ft_max: 0.02
+      marginal_map_state_agreement_min: 0.9999
+      loss_or_partition_max_abs_error_max: 0.000001
+      gradient_or_adamw_update_max_abs_error_max: 0.00001
+      posterior_row_sum_max_abs_error_max: 0.00001
+      invalid_posterior_or_gradient_max_abs: 0.0
+      finite_rate_min: 1.0
+      outer_valid_truth_access_count_max: 0
+      stage_a_model_count_max: 0
+      peak_gpu_memory_gb_max: 14.0
+      audit_runtime_hours_max: 1.0
+    diagnostic_only:
+      - posterior_cell_abs_error_summary
+      - rowwise_total_variation_summary
+      - batch1_vs_scalar_summary
+      - scalar_fp32_vs_fp64_summary
+      - batch4_fp32_vs_fp64_summary
+      - map_disagreement_top2_margin_and_state_distance
+    posterior_cell_1e6_gate_policy: diagnostic_only_do_not_reclassify_exp347
+    failure_action: close_without_threshold_dtype_batch_padding_or_kernel_rescue
+  stage_a:
+    prerequisite: explicit_user_override_acknowledging_stage0_fail
+    fold_indices: [0]
+    active_architectures: 1
+    seeds: [42]
+    neural_model_count: 1
+    persisted_model_count: 1
+    lightgbm_config_count: 0
+    total_boosters: 0
+    pf_beam_well_runs: 0
+    parent_or_control_retraining: 0
+    science_gate_source: exp347_stage_a_contract
+    override_changes_science_gate: false
+  stage_a_pass:
+    minimum_target_in_grid_rate: 0.995
+    maximum_prefix_clamp_abs_error_ft: 0.000001
+    minimum_real_nll_gain_vs_circular_shuffle_nats_per_token: 0.05
+    minimum_real_within10_mass_gain_vs_circular_shuffle: 0.03
+    minimum_real_rmse_gain_vs_geometry_only_ft: 0.25
+    minimum_real_rmse_gain_vs_exp209_ft: 0.25
+    require_well_rmse_p95_non_regression_vs_exp209: true
+    maximum_worst_well_regression_vs_exp209_ft: 10.0
+    maximum_fold_runtime_hours: 8.5
+    maximum_peak_gpu_memory_gb: 14.0
+
+data:
+  source_contract: exp347_prefix_gr_unary_batched_window_exact_ssm
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  horizontal_glob: "*__horizontal_well.csv"
+  typewell_glob: "*__typewell.csv"
+  id_column: id
+  visible_target_column: TVT_input
+  target_column: TVT
+  horizontal_file_input_columns: [MD, X, Y, Z, GR, TVT_input]
+  typewell_input_columns: [TVT, GR]
+  forbidden_horizontal_input_columns: [TVT, formation, target, error, abs_error, oracle, candidate]
+  exp209_baseline_cache_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+  exp209_baseline_cache:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    prediction_column: hmm_mean_tvt
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5_small/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+  hidden_like_assignment:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+  parent_source:
+    filename: exp347_prefix_gr_unary_batched_window_exact_ssm_compact_selfcontained_train.py
+    sha256: 0a068b47737bb9b9897b3ddfad99baed482812d31fd53da94009f98c3959acfb
+    candidates:
+      - experiments/exp347_prefix_gr_unary_batched_window_exact_ssm/exp347_prefix_gr_unary_batched_window_exact_ssm_compact_selfcontained_train.py
+      - /kaggle/input/notebooks/kentookumura/exp347-prefix-gr-batched-window-ssm-stage0/exp347_prefix_gr_unary_batched_window_exact_ssm_compact_selfcontained_train.py
+      - /kaggle/input/exp347-prefix-gr-batched-window-ssm-stage0/exp347_prefix_gr_unary_batched_window_exact_ssm_compact_selfcontained_train.py
+  parent_config:
+    filename: config.yaml
+    sha256: 376c03da9b6e122cd9fe32c95f3edf079fca5e7126e13aa72700307809bbb51f
+    candidates:
+      - experiments/exp347_prefix_gr_unary_batched_window_exact_ssm/kaggle/output/stage0_v1/config.yaml
+      - experiments/exp347_prefix_gr_unary_batched_window_exact_ssm/config.yaml
+      - /kaggle/input/notebooks/kentookumura/exp347-prefix-gr-batched-window-ssm-stage0/config.yaml
+      - /kaggle/input/exp347-prefix-gr-batched-window-ssm-stage0/config.yaml
+  parent_stage0_report:
+    filename: exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_benchmark_report.json
+    sha256: e8a706ba9a75dff54b30b97f289255b002333cb76d2b2dfcac000cfdf56fe454
+    candidates:
+      - experiments/exp347_prefix_gr_unary_batched_window_exact_ssm/kaggle/output/stage0_v1/artifacts/exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_benchmark_report.json
+      - /kaggle/input/notebooks/kentookumura/exp347-prefix-gr-batched-window-ssm-stage0/artifacts/exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_benchmark_report.json
+      - /kaggle/input/exp347-prefix-gr-batched-window-ssm-stage0/artifacts/exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_benchmark_report.json
+  parent_window_manifest:
+    filename: exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_fixed16_window_manifest.csv
+    sha256: b78ed92dc24ee2db4aad985a5ae14ecd3cfc8d6e620bb89072666b8296511e89
+    candidates:
+      - experiments/exp347_prefix_gr_unary_batched_window_exact_ssm/kaggle/output/stage0_v1/artifacts/exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_fixed16_window_manifest.csv
+      - /kaggle/input/notebooks/kentookumura/exp347-prefix-gr-batched-window-ssm-stage0/artifacts/exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_fixed16_window_manifest.csv
+      - /kaggle/input/exp347-prefix-gr-batched-window-ssm-stage0/artifacts/exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_fixed16_window_manifest.csv
+  parent_boundary_manifest:
+    filename: exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_fixed16_boundary_manifest.csv
+    sha256: 664b3fc724ede4272120bc8ca1c260463bf5fca12aa8cbc20f16d7c5314cd1d1
+    candidates:
+      - experiments/exp347_prefix_gr_unary_batched_window_exact_ssm/kaggle/output/stage0_v1/artifacts/exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_fixed16_boundary_manifest.csv
+      - /kaggle/input/notebooks/kentookumura/exp347-prefix-gr-batched-window-ssm-stage0/artifacts/exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_fixed16_boundary_manifest.csv
+      - /kaggle/input/exp347-prefix-gr-batched-window-ssm-stage0/artifacts/exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_fixed16_boundary_manifest.csv
+
+model:
+  name: exp347_practical_numerical_equivalence_audit
+  task: stage0_audit_plus_stage_a_fold0_structured_neural_unary
+  architecture_source: exp347_prefix_gr_unary_batched_window_exact_ssm
+  sample_unit: well_window
+  output: tvt_posterior_mean
+  inference_neighbor_well_data: false
+  candidate_bank: none
+  test_time_gradient_updates: false
+  unary_model:
+    temporary_models: 1
+    persisted_models: 0
+    stage_a_trained_models: 1
+    stage_a_persisted_models: 1
+    seed: 42
+    eval_mode: true
+    dropout_enabled_during_comparison: false
+    generated_once_then_frozen: true
+  state_space_source: exp347_prefix_gr_unary_batched_window_exact_ssm
+  preprocessing:
+    robust_center: finite_median
+    robust_scale: 1p4826_mad_with_floor_1
+    missing_fill_value_after_normalization: 0.0
+    include_missing_mask: true
+    typewell_extrapolation: false
+    prefix_huber_summary:
+      minimum_pairs: 32
+      fallback: neutral_context
+  inputs:
+    horizontal_emission_channels: [gr_robust_z, gr_missing_mask, dgr_dmd]
+    typewell_emission_channels: [gr_robust_z, gr_missing_mask, dgr_dtvt]
+    transition_only_channels: [MD, X, Y, Z, TVT_input]
+    prefix_context_sources: [horizontal_gr, typewell_gr_at_visible_tvt_input, visible_tvt_input_mask]
+  architecture:
+    horizontal_encoder: multiscale_1d_residual
+    typewell_encoder: multiscale_1d_residual
+    embedding_dim: 64
+    dilations: [1, 2, 4, 8, 16]
+    normalization: group_norm
+    dropout: 0.10
+    prefix_context_aggregator: masked_attention_pool
+    prefix_context_dim: 32
+    conditioning: prefix_context_film_scale_and_bias
+    similarity: normalized_bilinear_cosine
+    temperature: positive_prefix_conditioned_clamped
+    temperature_min: 0.05
+    temperature_max: 2.0
+    temperature_initial: 0.25
+    convolution_kernel_size: 3
+    group_norm_groups: 8
+    prefix_pair_embedding_dim: 64
+    derivative_clip_abs: 8.0
+    unary_row_chunk_size: 256
+    streamed_row_tvt_unary: true
+  training:
+    objective:
+      name: gaussian_soft_label_structured_nll_plus_local_ce
+      structured_label_nll_weight: 1.0
+      label_observation_distribution: gaussian
+      label_observation_sigma_ft: 0.35
+      local_true_state_ce_weight: 0.25
+      exact_dp_sweeps_per_window: 4
+    windows:
+      length_rows: 256
+      scheduled_slots_per_well_per_epoch: 3
+      maximum_active_windows_per_well_per_epoch: 3
+      manifest_epochs: 8
+      schedule_source: exp332_truth_free_stable_sha256_schedule
+      interior_teacher_boundary: gaussian_tvt_observation_plus_quantized_rate_prior_loss_only
+      official_prefix_only_in_encoder_context: true
+      first_window: official_hidden_suffix_start
+      remaining_windows: stable_sha256_nonoverlapping_eligible_suffix_starts
+      interior_window_requires_full_length: true
+      unavailable_slot_policy: inactive_zero_loss_no_duplicate_window
+      maximum_fit_wells_fold0: 556
+      maximum_windows_per_epoch: 1668
+      maximum_scored_positions_per_epoch: 427008
+      selection_uses_truth_or_error: false
+      teacher_boundary_position_sigma_source: model.state_space.start_sig
+    batching:
+      windows_per_batch: 4
+      gradient_accumulation_steps: 1
+      exp332_effective_batch_windows: 4
+      batch_formation: consecutive_frozen_schedule_chunks
+      final_incomplete_batch: inactive_masked_dummy_windows
+      loss_reduction: mean_of_four_per_window_valid_row_normalized_losses
+      padding: negative_infinity_potential_plus_explicit_row_position_rate_masks
+      batch_size_grid_allowed: false
+    optimizer: adamw
+    learning_rate: 0.0003
+    weight_decay: 0.0001
+    max_epochs: 8
+    early_stopping_source: stable_outer_train_holdout_window_objective_only
+    early_stopping_holdout_fraction: 0.10
+    early_stopping_minimum_wells: 16
+    early_stopping_patience_epochs: 2
+    early_stopping_min_delta_nll_per_token: 0.001
+    gradient_clip_norm: 1.0
+    batch_size_well_windows: 4
+    gradient_accumulation_windows: 1
+    amp: true
+    dataloader_shuffle: true
+    dataloader_workers: 0
+    require_cuda: true
+    minimum_cuda_capability_major: 7
+  state_space:
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    training_use: batched_exact_log_space_forward_backward_inside_fixed_windows
+    evaluation_use: batched_exact_log_space_forward_backward_full_official_suffix
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+    known_prefix_policy: hard_clamp_finite_tvt_input
+    solver: batched_exact_log_space_forward_backward
+    primary_readout: posterior_mean_tvt
+    diagnostic_readouts: [marginal_map, posterior_std, entropy, grid_edge_mass]
+    learn_transition: false
+  controls:
+    - real_gr
+    - stable_within_well_circular_shuffled_typewell_gr_same_trained_model
+    - zero_gr_unary_geometry_only_same_trained_model
+  fixed_contract:
+    window_rows: 256
+    n_rates: 41
+    label_observation_sigma_ft: 0.35
+    structured_label_nll_weight: 1.0
+    local_true_state_ce_weight: 0.25
+    production_windows_per_batch: 4
+    production_gradient_accumulation_steps: 1
+  comparison_modes:
+    scalar_fp32_reference:
+      dtype: float32
+      batch_size: 1
+      implementation: exp347_scalar_exact_forward_backward
+    batched_fp32_batch1:
+      dtype: float32
+      batch_size: 1
+      implementation: exp347_batched_exact_forward_backward
+    batched_fp32_batch4_production:
+      dtype: float32
+      batch_size: 4
+      implementation: exp347_batched_exact_forward_backward
+    scalar_fp64_first4_diagnostic:
+      dtype: float64
+      batch_size: 1
+      window_count: 4
+      implementation: dtype_generalized_scalar_forward_posterior_only
+  forbidden:
+    - reopen_or_reclassify_exp347
+    - use_posterior_cell_1e6_as_exp393_promotion_gate
+    - tune_practical_gate_after_output
+    - threshold_or_metric_grid
+    - change_batch_size4_production_path
+    - change_padding_transition_grid_objective_boundary_architecture_or_optimizer
+    - compile_or_fused_kernel_rescue
+    - parent_or_control_retraining
+    - stage_a_without_explicit_user_override_after_stage0_fail
+    - inference_or_submission_before_later_promotion_and_approval
+
+execution_contract:
+  stage0_active_audits: 1
+  stage0_fixed_windows: 16
+  stage0_temporary_neural_models: 1
+  stage0_persisted_models: 0
+  stage0_trained_folds: 0
+  stage0_lightgbm_configs: 0
+  stage0_boosters: 0
+  stage0_pf_beam_runs: 0
+  stage0_parent_or_control_retraining: 0
+  stage_a_active_variants: 1
+  stage_a_neural_models: 1
+  stage_a_persisted_models: 1
+  stage_a_trained_folds: 1
+  stage_a_lightgbm_configs: 0
+  stage_a_boosters: 0
+  stage_a_pf_beam_runs: 0
+  stage_a_parent_or_control_retraining: 0
+
+execution:
+  implementation_approved: true
+  implementation_approval_scope: user_message_implement_exp393_2026_07_25
+  kaggle_push_approved: false
+  kaggle_push_approved_at: "2026-07-25"
+  kaggle_push_approval_scope: user_message_adopt_and_proceed_stage_a_2026_07_25
+  kaggle_push_approval_consumed: true
+  stage_a_gpu_approved: false
+  stage_a_gpu_approval_scope: user_message_adopt_and_proceed_stage_a_2026_07_25
+  stage_a_gpu_approval_consumed: true
+  inference_approved: false
+  submission_approved: false
+  selected_stage: implementation_only
+  active_stage: stage_a_failed_branch_closed
+  run_stage0: false
+  run_stage_a: false
+  run_stage_b: false
+  run_inference: false
+  create_submission: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: true
+  current_trained_fold_count: 1
+  current_total_boosters: 0
+  current_pf_beam_well_runs: 0
+  control_or_parent_retraining: false
+  stage0_run_completed: true
+  stage0_gate:
+    passed: false
+    report_sha256: 14f646a9d835bf0d724dc1efcd59c9dbaa7fdaa28a56417819a45b85877794db
+    note: >-
+      Kaggle T4 version 2 completed. Ten of thirteen preregistered checks
+      passed; posterior-mean TVT RMSE, posterior-mean TVT maximum absolute
+      error, and posterior row-sum error failed. The branch is closed without
+      threshold, dtype, batch, padding, or kernel rescue.
+  stage_a_user_override:
+    approved: true
+    approval_source: user_message_adopt_and_proceed_stage_a_2026_07_25
+    preserve_stage0_failure: true
+    preserve_exp347_failure: true
+    acknowledged_failed_checks:
+      - posterior_mean_tvt_rmse
+      - posterior_mean_tvt_max_abs
+      - posterior_row_sum
+    rationale: user_accepts_numerical_difference_and_wants_to_test_scientific_value
+  stage_a_plan:
+    prerequisite: explicit_user_override_acknowledging_stage0_fail
+    active_variants: 1
+    fold_indices: [0]
+    active_architectures: 1
+    seeds: [42]
+    neural_model_count: 1
+    persisted_model_count: 1
+    lightgbm_config_count: 0
+    total_boosters: 0
+    control_model_training: 0
+    pf_beam_well_runs: 0
+    parent_or_control_retraining: 0
+    projected_fold_runtime_hours_p50: 4.7419820491402715
+    projected_fold_runtime_hours_conservative: 5.10873732226012
+    requires_separate_gpu_push_approval: true
+  stage_a_result:
+    completed: true
+    kernel_id: kentookumura/exp393-exp347-practical-eq-audit-train
+    kernel_id_no: 128543320
+    kernel_version: 4
+    kernel_status: COMPLETE
+    passed: false
+    checks_passed: 8
+    checks_total: 11
+    failed_checks:
+      - real_rmse_vs_exp209
+      - well_p95_non_regression
+      - worst_well_regression
+    decision: close_stage_b_without_exp347_rescue_grid
+    outer_valid_wells: 155
+    outer_valid_rows: 780457
+    real_rmse_ft: 22.866144492684903
+    exp209_rmse_ft: 12.671086935210896
+    real_minus_exp209_rmse_ft: 10.195057557474007
+    real_well_rmse_p95_ft: 43.017462700577866
+    exp209_well_rmse_p95_ft: 26.301518475831738
+    maximum_well_regression_vs_exp209_ft: 75.2278713522322
+    runtime_hours: 3.830431233247121
+    peak_gpu_memory_gb: 7.495397090911865
+    model_sha256: 3c71deec787ea236a562d3e0aa9add68e792a062b5428c6b3921592cbd3ce598
+    frozen_prediction_decompressed_sha256: 6c38315da08e0b0c2c14f62e6f824b95465aa13ce064e29ff10e36f880d01c1d
+    summary_sha256: f55f24931de94ba994e0d2c1ad09e66b4ade39db54a133019240e25aa3ae23e3
+
+runtime:
+  accelerator: NvidiaTeslaT4
+  use_amp: true
+  num_workers: 0
+  batch_size_well_windows: 4
+  maximum_audit_runtime_hours: 1.0
+  maximum_fold_runtime_hours: 8.5
+  maximum_peak_gpu_memory_gb: 14.0
+  kaggle:
+    enable_gpu: true
+    machine_shape: NvidiaTeslaT4
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp347-prefix-gr-batched-window-ssm-stage0
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+  environment_decision: kaggle_t4_stage_a_complete_failed_closed
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_global_seed_plus_stable_sha256_window_batch_boundary_and_decode_order
+  stochastic_components:
+    - temporary_neural_model_initialization
+    - cuda_convolution
+    - cuda_reduction_order
+    - amp
+    - adamw
+    - dropout
+    - dataloader_order
+  parallel_rng_policy: worker_zero_no_global_rng_shared_with_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    parent_source_config_report_sha: true
+    window_boundary_padding_manifest_sha: true
+    frozen_unary_sha: true
+    comparison_mode_posterior_and_readout_sha: true
+    comparison_report_sha: true
+    package_notebook_config_metadata_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - GPU bitwise equivalence is not assumed.
+    - Stage 0 creates no persistent model, prediction, or submission.
+    - Stage A is stochastic GPU training and is not a deterministic anchor.
+    - Stage A records model, frozen prediction, input, schedule, boundary, and readout SHA.
+    - If gzip output is later introduced, decompressed content SHA is primary.
+
+artifacts:
+  output_prefix: exp393_exp347_practical_numerical_equivalence_audit
+  expected_stage0_outputs:
+    - exp393_exp347_practical_numerical_equivalence_audit_input_manifest.json
+    - exp393_exp347_practical_numerical_equivalence_audit_fixed16_manifest.csv
+    - exp393_exp347_practical_numerical_equivalence_audit_frozen_unary_manifest.json
+    - exp393_exp347_practical_numerical_equivalence_audit_row_comparison.csv
+    - exp393_exp347_practical_numerical_equivalence_audit_map_disagreement.csv
+    - exp393_exp347_practical_numerical_equivalence_audit_runtime_measurements.csv
+    - exp393_exp347_practical_numerical_equivalence_audit_padding_manifest.csv
+    - exp393_exp347_practical_numerical_equivalence_audit_stage0_report.json
+  expected_stage_a_outputs:
+    - exp393_exp347_practical_numerical_equivalence_audit_fold_map.csv
+    - exp393_exp347_practical_numerical_equivalence_audit_window_schedule_manifest.csv
+    - exp393_exp347_practical_numerical_equivalence_audit_teacher_boundary_manifest.csv
+    - exp393_exp347_practical_numerical_equivalence_audit_training_history.csv
+    - exp393_exp347_practical_numerical_equivalence_audit_fold0_model.pt
+    - exp393_exp347_practical_numerical_equivalence_audit_model_manifest.json
+    - exp393_exp347_practical_numerical_equivalence_audit_frozen_predictions.csv.gz
+    - exp393_exp347_practical_numerical_equivalence_audit_freeze_manifest.json
+    - exp393_exp347_practical_numerical_equivalence_audit_validation_readout.csv.gz
+    - exp393_exp347_practical_numerical_equivalence_audit_by_well_metrics.csv
+    - exp393_exp347_practical_numerical_equivalence_audit_subgroup_metrics.csv
+    - exp393_exp347_practical_numerical_equivalence_audit_stage_a_metrics.json
+    - exp393_exp347_practical_numerical_equivalence_audit_summary.json
+
+inference:
+  enabled: false
+  create_submission: false
+  prerequisite: stage_a_then_stage_b_promotion_and_separate_approval
+  reason: Stage A is the only authorized stage; inference remains disabled.
+
+notes:
+  - User approved design-only creation on 2026-07-25.
+  - User approved Stage 0 implementation and canonical fail-closed notebooks on 2026-07-25.
+  - User explicitly accepted the Stage 0 numerical differences and authorized Stage A fold 0 on 2026-07-25.
+  - Stage B, inference, and submission remain unapproved.
+  - exp347 remains terminally closed and is used only as immutable evidence and code reference.

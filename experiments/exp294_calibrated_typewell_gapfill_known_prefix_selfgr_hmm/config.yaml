@@ -1,0 +1,249 @@
+experiment:
+  name: exp294_calibrated_typewell_gapfill_known_prefix_selfgr_hmm
+  description: "Fill only raw-missing cells of the exp223 known-prefix self-GR donor signal with per-well robust-affine calibrated Type Well GR, while keeping observed GR, the raw eligibility mask, the target receiver, and the base exact-HMM emission unchanged."
+  route: ensemble
+  status: stage0_completed_fail_branch_closed
+  created_at: "2026-07-19"
+
+lineage:
+  parent: exp223_joint_typewell_self_gr_hmm_likelihood_probe
+  references:
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp225_state_known_tvt_self_gr_hmm_emission
+    - exp072_exp063_full_replay_feature_cache
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - exp288_typewell_reconstructed_horizontal_gr_eda
+  diff_summary: >
+    Changes only the value used at raw-missing cells inside eligible known-prefix
+    self-GR donor windows. It does not replace observed GR, expand anchors,
+    modify target-side GR, modify the base Type Well HMM emission, or tune the
+    exp223 HMM/self-GR parameters.
+
+validation:
+  strategy: two_stage_train_side_no_training_signal_then_hmm_ablation
+  metric: rmse
+  group_column: well
+  seed: 42
+  n_training_folds: 0
+  reporting_folds: 5
+  reporting_fold_policy: stable_sha256_well_mod_5
+  score_rows: full_train_unknown_suffix_rows_after_prediction_freeze
+  truth_join_policy: after_mask_feature_prediction_and_sha_freeze_only
+  leakage_policy:
+    - Use only finite known-prefix TVT_input for Type Well reconstruction and per-well affine fitting.
+    - Exclude pseudo-masked rows from Stage 0 affine fitting and both compared interpolation inputs.
+    - Never use unknown-suffix true TVT for reconstruction, fitting, masking, gating, or parameter selection.
+    - Keep target-side Type Well gap-fill count at zero.
+    - Preserve the original raw missing mask and exp223 anchor/window eligibility exactly.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  known_target_column: TVT_input
+  gr_column: GR
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: exp223_fixed_self_gr_hmm_with_known_prefix_typewell_gapfill
+  estimator: none
+  active_variants: 1
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  hmm_well_runs: 773
+  base_prediction: last_known_tvt
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+  self_gr_emission:
+    alpha: 0.07
+    clip: 1.0
+    mode: boost_only
+    window_radius_rows: 12
+    descriptor_offsets: [-12, -8, -4, 0, 4, 8, 12]
+    top_k: 5
+    prefix_anchor_stride: 3
+    max_prefix_anchors: 128
+    keep_last_prefix_anchors: 32
+    min_prefix_anchors: 12
+    max_window_missing_rate: 0.35
+    gaussian_sigma_tvt: 12.0
+    descriptor_distance_temperature: 1.5
+    typewell_agreement_sigma_tvt: 18.0
+    surface_quadratic_clip: 60.0
+    surface_chunk_size: 256
+
+gapfill:
+  scope: known_prefix_self_gr_donor_missing_cells_only
+  preserve_observed_gr_exactly: true
+  preserve_raw_missing_mask: true
+  preserve_anchor_eligibility: true
+  target_side_typewell_fill_enabled: false
+  typewell_interpolation:
+    duplicate_tvt_aggregation: median_gr
+    method: linear
+    extrapolation: forbidden
+    minimum_finite_points: 2
+  affine:
+    model: per_well_huber_irls
+    formula: horizontal_gr_equals_a_times_typewell_gr_plus_b
+    minimum_pairs: 32
+    minimum_typewell_gr_iqr: 5.0
+    initializer: ordinary_least_squares
+    huber_k: 1.345
+    max_iterations: 20
+    coefficient_relative_tolerance: 1.0e-8
+    residual_scale: 1.4826_times_mad
+    residual_scale_floor: 1.0
+    coefficient_clipping: none
+    invalid_fit_action: use_exp223_linear_interpolation
+  row_priority:
+    - finite_raw_gr
+    - affine_calibrated_typewell_gr_when_raw_missing_and_in_range
+    - exp223_linear_interpolation
+
+stage0:
+  name: pseudo_missing_signal_audit
+  implementation_status: completed_kaggle_v1_guard_fail
+  audit_variants: 1
+  control: exp223_linear_interpolation
+  variant: calibrated_typewell_gapfill
+  missing_run_lengths:
+    source: outer_reporting_folds_natural_known_prefix_raw_gr_missing_runs
+    quantiles: [0.25, 0.50, 0.90]
+    clip_rows: [1, 64]
+    no_run_fallback_rows: [1, 4, 16]
+  pseudo_mask:
+    blocks_per_quantile_per_well: 1
+    selection: stable_sha256_experiment_fold_well_quantile_label
+    minimum_distance_from_known_prefix_edge_rows: 12
+    require_finite_raw_gr_for_full_block: true
+    require_typewell_range_coverage: true
+    require_nonoverlap: true
+    require_finite_linear_control_anchors_on_both_sides: true
+  metrics:
+    primary: heldout_gr_pooled_rmse
+    secondary: heldout_block_length_weighted_zncc
+    diagnostics:
+      - heldout_gr_mae
+      - derivative_ncc
+      - by_well_rmse
+      - run_length_bucket_metrics
+      - affine_slope_intercept_fit_rmse
+      - fallback_reason_and_coverage
+  hard_gates:
+    pooled_rmse_relative_improvement_min: 0.05
+    pooled_zncc_delta_min: 0.02
+    rmse_improving_reporting_folds_min: 4
+    zncc_positive_reporting_folds_min: 4
+    by_well_rmse_p95_delta_max: 0.0
+    observed_known_gr_exact_parity: true
+    raw_missing_mask_exact_parity: true
+    pseudo_mask_excluded_from_fit: true
+    target_side_typewell_fill_count_max: 0
+    finite_output_coverage_min: 1.0
+  fail_action: close_without_stage1_or_rescue_grid
+
+stage1:
+  name: fixed_exp223_self_gr_hmm_ablation
+  implementation_status: closed_stage0_guard_fail
+  saved_control_experiment: exp223_joint_typewell_self_gr_hmm_likelihood_probe
+  saved_control_candidate: hmm_selfgr_boost_only_a070_c100
+  saved_control_rmse: 11.349950650
+  exp072_reference_rmse: 11.594897668
+  raw_test_promotion_reference: exp209_hmm_likpf_blend
+  raw_test_promotion_reference_rmse: 10.269696
+  active_variants: 1
+  hard_gates:
+    overall_rmse_max: 11.249950650
+    delta_vs_exp223_max: -0.10
+    reporting_folds_with_delta_le_minus_0_10_min: 4
+    distance_1000_plus_delta_max: 0.02
+    hidden_like_spatial_delta_max: 0.02
+    hidden_like_typewell_purged_delta_max: 0.02
+    worst_well_delta_max: 0.25
+    zero_missing_well_prediction_max_abs_delta: 1.0e-6
+    low_missing_rate_threshold: 0.01
+    low_missing_scope_rmse_delta_max: 0.02
+    observed_known_gr_exact_parity: true
+    raw_mask_and_anchor_eligibility_exact_parity: true
+    target_side_typewell_fill_count_max: 0
+    row_identity_and_finite_prediction_coverage: true
+  fail_action: close_without_parameter_rescue
+  pass_action: scientific_support_only_no_automatic_inference
+
+execution:
+  run_stage0: false
+  run_stage1: false
+  regenerate_parent_control: false
+  run_inference: false
+  write_submission: false
+  stage0_approved_at: "2026-07-19"
+  canonical_train_notebook_adopted: true
+  canonical_train_kernel_id: kentookumura/exp294-typewell-gapfill-selfgr-stage0-train
+  canonical_train_kernel_title: exp294 typewell gapfill selfgr stage0 train
+  kaggle_kernel_version: 1
+  kaggle_kernel_id_no: 127890033
+  kaggle_kernel_status: COMPLETE
+  stage0_result: FAIL
+  stage1_authorized: false
+  completed_at: "2026-07-19"
+  notes:
+    - The user explicitly approved canonical adoption and one Kaggle CPU Stage 0 audit on 2026-07-19.
+    - The approved run is exactly 1 Stage 0 audit variant, 0 LightGBM configs, 0 trained folds, 0 boosters, and 0 HMM/PF well-runs.
+    - The parent control is not retrained; Stage 1, inference, and submission remain disabled.
+    - Kaggle CPU version 1 completed Stage 0 in 160.32 seconds and failed the preregistered performance gates.
+    - Stage 0 rerun, Stage 1, rescue grids, inference, and submission are closed for this branch.
+
+runtime:
+  device: cpu
+  use_amp: false
+  outer_workers: 2
+  numba_num_threads: 2
+  expected_stage1_elapsed_hours: 5_to_6_based_on_exp223_two_variant_runtime
+  gpu_enabled: false
+  internet_enabled: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_well_fold_runlength_no_global_rng
+  stochastic_components: []
+  parallel_rng_policy: No RNG is consumed; outer well scheduling must not affect mask identity.
+  feature_sha_policy: decompressed_content_sha_for_gzip_plus_raw_gzip_sha_as_secondary
+  record:
+    kernel_version: true
+    input_sha: true
+    saved_control_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    pseudo_mask_sha: true
+    prediction_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - Train-side no-training audit; not a deterministic submission anchor.
+    - Record no-trained-model and no-submission explicitly in the artifact manifest.
+    - Read docs/06_reproducibility.md before implementation or Kaggle push.
+
+inference:
+  mode: disabled_stage0_signal_audit_only
+  selected_candidate: null
+  notes:
+    - Stage 1 PASS alone does not authorize raw-test regeneration.
+    - Raw-test promotion additionally requires RMSE at or below 10.269696, all safety gates, a new design, and user approval.

@@ -1,0 +1,230 @@
+{
+  "experiment": "exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit",
+  "status": "completed",
+  "mode": "strict_public_notebook_raw_replay",
+  "kaggle_kernel": "kentookumura/exp063-ravaghi-pixiux-strict-replay-train",
+  "kaggle_version": 4,
+  "kaggle_train_status": "complete_saved_booster_rerun",
+  "rows": 3783989,
+  "wells": 773,
+  "feature_counts": {
+    "pixiux_likpf_public_replay": 196,
+    "ravaghi_public_lgbm_replay": 195
+  },
+  "feature_generation_seconds": 13034.108,
+  "elapsed_seconds": 27742.572,
+  "selected_candidate": {
+    "variant": "pixiux_likpf_public_replay",
+    "model": "lgb2",
+    "fold": "pooled",
+    "rows": 3783989,
+    "features": 196,
+    "best_iteration": null,
+    "rmse_tvt": 9.628965463901501,
+    "rmse_residual": 9.628965548567429
+  },
+  "inference_candidate": {
+    "variant": "pixiux_likpf_public_replay",
+    "model": "lgb_mean",
+    "fold": "pooled",
+    "rows": 3783989,
+    "features": 196,
+    "best_iteration": null,
+    "rmse_tvt": 9.630105123038494,
+    "rmse_residual": 9.63010501259273,
+    "note": "Mean of 3 LightGBM configs x 5 folds; used by inference for stable ensemble prediction."
+  },
+  "pooled_metrics": [
+    {
+      "variant": "ravaghi_public_lgbm_replay",
+      "model": "lgb0",
+      "fold": "pooled",
+      "rows": 3783989,
+      "features": 195,
+      "best_iteration": null,
+      "rmse_tvt": 10.768624740847795,
+      "rmse_residual": 10.768624821866146
+    },
+    {
+      "variant": "ravaghi_public_lgbm_replay",
+      "model": "lgb1",
+      "fold": "pooled",
+      "rows": 3783989,
+      "features": 195,
+      "best_iteration": null,
+      "rmse_tvt": 10.572303636614924,
+      "rmse_residual": 10.572303551360875
+    },
+    {
+      "variant": "ravaghi_public_lgbm_replay",
+      "model": "lgb2",
+      "fold": "pooled",
+      "rows": 3783989,
+      "features": 195,
+      "best_iteration": null,
+      "rmse_tvt": 10.538332854962949,
+      "rmse_residual": 10.538332915035747
+    },
+    {
+      "variant": "ravaghi_public_lgbm_replay",
+      "model": "lgb_mean",
+      "fold": "pooled",
+      "rows": 3783989,
+      "features": 195,
+      "best_iteration": null,
+      "rmse_tvt": 10.560537436800407,
+      "rmse_residual": 10.560537426464954
+    },
+    {
+      "variant": "pixiux_likpf_public_replay",
+      "model": "lgb0",
+      "fold": "pooled",
+      "rows": 3783989,
+      "features": 196,
+      "best_iteration": null,
+      "rmse_tvt": 9.846803604421291,
+      "rmse_residual": 9.846803945343042
+    },
+    {
+      "variant": "pixiux_likpf_public_replay",
+      "model": "lgb1",
+      "fold": "pooled",
+      "rows": 3783989,
+      "features": 196,
+      "best_iteration": null,
+      "rmse_tvt": 9.66975706615232,
+      "rmse_residual": 9.669756898228009
+    },
+    {
+      "variant": "pixiux_likpf_public_replay",
+      "model": "lgb2",
+      "fold": "pooled",
+      "rows": 3783989,
+      "features": 196,
+      "best_iteration": null,
+      "rmse_tvt": 9.628965463901501,
+      "rmse_residual": 9.628965548567429
+    },
+    {
+      "variant": "pixiux_likpf_public_replay",
+      "model": "lgb_mean",
+      "fold": "pooled",
+      "rows": 3783989,
+      "features": 196,
+      "best_iteration": null,
+      "rmse_tvt": 9.630105123038494,
+      "rmse_residual": 9.63010501259273
+    }
+  ],
+  "delta_pixiux_mean_vs_ravaghi_mean": -0.930432313761913,
+  "delta_pixiux_best_vs_ravaghi_best": -0.9093673910614482,
+  "artifacts": {
+    "metrics": "ravaghi_vs_pixiux_public_replay_metrics.csv",
+    "feature_importance": "ravaghi_vs_pixiux_public_replay_feature_importance.csv",
+    "mean_feature_importance": "ravaghi_vs_pixiux_public_replay_feature_importance_mean.csv",
+    "mean_feature_importance_plot": "ravaghi_vs_pixiux_public_replay_feature_importance_mean_top.png",
+    "oof_predictions": "ravaghi_vs_pixiux_public_replay_oof_predictions.csv.gz",
+    "feature_schema": "ravaghi_vs_pixiux_public_replay_feature_schema.csv",
+    "summary": "ravaghi_vs_pixiux_public_replay_summary.json",
+    "saved_lgb_models": "ravaghi_vs_pixiux_public_replay_lgb_models",
+    "saved_lgb_manifest": "ravaghi_vs_pixiux_public_replay_lgb_models/manifest.json",
+    "tracker_features_train": "ravaghi_vs_pixiux_public_replay_tracker_features_train.csv.gz",
+    "log": "exp063-ravaghi-pixiux-strict-replay-train.log"
+  },
+  "reusable_feature_frames": {
+    "tracker_features_train": {
+      "path": "ravaghi_vs_pixiux_public_replay_tracker_features_train.csv.gz",
+      "rows": 3783989,
+      "columns": 68
+    }
+  },
+  "saved_lgb_models": {
+    "path": "ravaghi_vs_pixiux_public_replay_lgb_models",
+    "models": 15,
+    "variant": "pixiux_likpf_public_replay",
+    "configs": [
+      "lgb0",
+      "lgb1",
+      "lgb2"
+    ],
+    "folds": 5
+  },
+  "inference": {
+    "status": "complete",
+    "mode": "strict_public_replay_saved_model_inference_no_override",
+    "variant": "pixiux_likpf_public_replay",
+    "model": "lgb_mean",
+    "kaggle_kernel": "kentookumura/exp063-ravaghi-pixiux-strict-replay-infer",
+    "kaggle_version": 2,
+    "kaggle_url": "https://www.kaggle.com/code/kentookumura/exp063-ravaghi-pixiux-strict-replay-infer",
+    "requires_train_rerun_for_saved_boosters": false,
+    "train_rerun_kernel": "kentookumura/exp063-ravaghi-pixiux-strict-replay-train",
+    "train_rerun_version": 4,
+    "train_rerun_status": "complete",
+    "public_lb": 8.811,
+    "updates_ml_route_public_lb_anchor": true,
+    "previous_ml_route_anchor": {
+      "experiment": "exp039_ravaghi_single_lgbm_inference_submit",
+      "public_lb": 11.74,
+      "ref": 53464736,
+      "delta": -2.929
+    },
+    "overall_pf_route_anchor_comparison": {
+      "experiment": "exp027_public_replay_needless090_sel15_spread3",
+      "public_lb": 8.781,
+      "ref": 53420592,
+      "delta": 0.030000000000001137,
+      "updates_anchor": false
+    },
+    "submission_ref": 53632725,
+    "submission_status": "complete",
+    "submitted_at": "2026-06-13 09:34:30.147000",
+    "elapsed_seconds": 127.648,
+    "feature_generation_seconds": 98.101,
+    "test_wells": 3,
+    "test_rows": 14151,
+    "saved_model_count": 15,
+    "feature_count": 196,
+    "submission": {
+      "path": "/tmp/kaggle-output/exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit/infer_v2/submission.csv",
+      "rows": 14151,
+      "predicted_rows": 14151,
+      "fallback_rows": 0,
+      "target_column": "tvt",
+      "prediction_mean": 11905.529255054855,
+      "prediction_std": 279.33255195281725,
+      "prediction_min": 11593.6748046875,
+      "prediction_max": 12240.0986328125,
+      "sha256": "36486e2e5a049ae02b51daa2a06e317bc6c7b841d5fe25841427b792a24f2499"
+    },
+    "submit_check": {
+      "status": "pass",
+      "row_count_matches_sample": true,
+      "header_matches_sample": true,
+      "duplicate_ids": 0,
+      "missing_values": 0
+    },
+    "artifacts": {
+      "submission": "submission.csv",
+      "metrics": "ravaghi_vs_pixiux_public_replay_inference_metrics.csv",
+      "test_predictions": "ravaghi_vs_pixiux_public_replay_inference_test_predictions.csv.gz",
+      "feature_schema": "ravaghi_vs_pixiux_public_replay_inference_feature_schema.csv",
+      "summary": "ravaghi_vs_pixiux_public_replay_inference_summary.json",
+      "tracker_features_test": "ravaghi_vs_pixiux_public_replay_tracker_features_test.csv.gz",
+      "log": "exp063-ravaghi-pixiux-strict-replay-infer.log"
+    },
+    "excluded": [
+      "train feature regeneration",
+      "inference-time LightGBM training",
+      "hidden-specific branch",
+      "guarded overlap override",
+      "static visible override",
+      "pretrained boosters",
+      "CatBoost",
+      "Ridge stack",
+      "final public notebook blend",
+      "projection postprocess"
+    ]
+  },
+  "notes": "Strict raw public replay v4 completed. Pixiux likelihood-PF replay features improve pooled LGBM mean RMSE versus Ravaghi public base features. Train v4 saved 15 LightGBM boosters and reusable PF/Beam tracker train features. Corrected inference v2 completed with saved boosters and test-side feature generation only; submit-check passed. Submission ref 53632725 completed with Public LB 8.811, updating the ML route Public LB anchor from exp039 11.740. Overall/PF route anchor remains exp027 8.781."
+}

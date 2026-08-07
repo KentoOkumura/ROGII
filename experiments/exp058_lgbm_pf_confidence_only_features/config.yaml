@@ -1,0 +1,193 @@
+experiment:
+  name: "exp058_lgbm_pf_confidence_only_features"
+  description: Add public PF/Beam confidence-only diagnostics to the exp051 LightGBM capacity residual model on the exp029 pseudo-test feature surface.
+  route: ml_model
+  status: submitted_complete
+  created_at: "2026-06-10"
+  updated_at: "2026-06-10"
+
+lineage:
+  parent: exp051_pseudo_tail_lgbm_param_micro_tune
+  inference_parent: exp052_lgbm_capacity_pseudotail_inference_submit
+  implementation_parent: exp057_xgb_catboost_pf_confidence_only_features
+  supporting_artifact: exp029_public_sel15_pf_oof_feature_generation
+  diff_summary: Keep the exp051 selected LightGBM capacity parameters, exp029 train-well pseudo-test feature artifact, last-anchor residual target, exp051-style cutoff filtering, row caps, and fixed bucket-shrink postprocess. Compare the LightGBM geometry control against a variant that adds only PF/Beam confidence and disagreement diagnostics, without using PF or Beam predictions as direct replacement features.
+
+validation:
+  leakage_policy:
+    - Input rows come from exp029 pseudo-test artifacts where each train well was masked after the cutoff before public sel15 PF/Beam features were generated.
+    - Splits are well-level only; the same well is never in train and validation for a candidate model.
+    - target_tvt is used only as the supervised label and scoring label.
+    - Error diagnostic columns pf_error, last_anchor_error, and beam_error are excluded from features.
+    - Raw PF prediction, raw Beam prediction, and exp026_oof prediction columns are not used as model features.
+    - PF/Beam predictions may be used only to derive disagreement/confidence diagnostics such as absolute PF-anchor, PF-Beam, and PF-exp026 differences.
+    - Train-only formation columns are not read.
+    - The pseudo-tail training policy only selects rows from training-fold wells; validation-fold wells keep their original exp029 hidden-tail rows for scoring.
+    - If a multi-cutoff exp029 feature artifact is supplied, cutoff filtering uses only the configured cutoff fractions and never validation targets.
+
+data:
+  feature_path: experiments/exp029_public_sel15_pf_oof_feature_generation/features/public_sel15_pf_oof_features.csv.gz
+  source_well_summary_path: experiments/exp029_public_sel15_pf_oof_feature_generation/artifacts/public_sel15_pf_oof_well_summary.csv
+  desired_pf_model_diff: pf_pred_minus_exp052_oof
+  available_pf_model_diff: pf_pred_minus_exp026_oof
+
+model:
+  name: lgbm_pf_confidence_only_features
+  target: target_tvt_minus_last_anchor_tvt
+  base_prediction: last_anchor_tvt
+  estimator: LGBMRegressor
+  params:
+    n_estimators: 800
+    learning_rate: 0.03
+    num_leaves: 47
+    min_child_samples: 60
+    subsample: 0.9
+    colsample_bytree: 0.9
+    reg_lambda: 0.1
+    n_jobs: 2
+  prediction:
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  training:
+    max_train_rows_per_split: 300000
+    max_train_rows_per_bucket: 60000
+    seed: 42
+  feature_sets:
+    geometry_anchor_context:
+      - pseudo_cutoff_fraction
+      - cutoff_row
+      - row_idx
+      - prefix_length
+      - eval_step
+      - eval_fraction
+      - MD
+      - X
+      - Y
+      - Z
+      - gr_isna
+      - gr_prefix_availability
+      - gr_eval_availability
+      - last_anchor_tvt
+    pf_beam_confidence_only:
+      - pf_seed_std
+      - pf_likelihood_margin
+      - pf_lik_best
+      - pf_lik_mean
+      - pf_lik_std
+      - pf_weight_entropy
+      - pf_weight_top
+      - pf_weight_best_second_gap
+      - pf_effective_seeds
+      - pf_mean_effective_particles
+      - pf_min_effective_particles
+      - pf_resample_count_mean
+      - pf_gr_sigma_mean
+      - pf_initial_rate_mean
+      - pf_scale_std
+      - pf_scale_range
+      - pf_scale_range_to_seed_std
+      - pf_selected_vs_scale_mean
+      - abs_pf_vs_last_anchor
+      - pf_ancc_delta_per_eval_step
+      - abs_pf_beam_diff
+      - beam_spread
+      - beam_final_cost_mean
+      - beam_final_cost_min
+      - abs_pf_pred_minus_exp026_oof
+  variants:
+    - name: lgbm_capacity_geometry_control
+      estimator: LGBMRegressor
+      params: {}
+      feature_families: [geometry_anchor_context]
+      training_policy: &exp051_training_policy
+        name: exp051_cutoffs_distance_balanced
+        cutoff_quantiles: [0.45, 0.65, 0.82]
+        strict_cutoff_coverage: false
+        max_rows_per_pseudo_tail: 260
+        distance_balanced: true
+        balanced_rows_per_bucket: 60000
+        max_train_rows_per_split: 300000
+        seed: 42
+    - name: lgbm_capacity_pf_confidence_only
+      estimator: LGBMRegressor
+      params: {}
+      feature_families: [geometry_anchor_context, pf_beam_confidence_only]
+      training_policy: *exp051_training_policy
+
+postprocess:
+  selected_method: audit_selected_by_holdout
+  candidate_methods:
+    - raw
+    - distance_bucket_shrink
+  methods:
+    distance_bucket_shrink:
+      name: exp014_bucket_shrink_params
+      buckets:
+        - {name: rows_0_49, max_step: 49, alpha: 0.20}
+        - {name: rows_50_249, max_step: 249, alpha: 0.5917180252647632}
+        - {name: rows_250_999, max_step: 999, alpha: 1.15}
+        - {name: rows_1000_2499, max_step: 2499, alpha: 1.15}
+        - {name: rows_2500_plus, max_step: 1000000000, alpha: 1.0490770312511664}
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  chunk_rows: 500000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp029-sel15-pf-oof-train
+
+audit:
+  parent_exp049_cv: 12.779452
+  parent_exp050_public_lb: 12.083
+  parent_exp051_cv: 12.634392
+  parent_exp052_public_lb: 12.076
+  parent_exp054_public_lb: 11.856
+  parent_exp057_selected_original_fold_cv: 15.609958
+  parent_exp057_selected_well_hash_cv: 15.440706
+  reference_control: lgbm_capacity_geometry_control_bucket_shrink
+  require_beat_reference_control: false
+  paired_success_controls:
+    - candidate_prefix: lgbm_capacity_pf_confidence_only
+      control_prefix: lgbm_capacity_geometry_control
+  required_controls:
+    - lgbm_capacity_geometry_control_raw
+    - lgbm_capacity_geometry_control_bucket_shrink
+    - public_pf_selector
+    - pf090_hold010
+  success_controls: []
+  require_beat_success_controls: true
+  supported_candidate_markers:
+    - _raw
+    - _bucket_shrink
+  report_controls:
+    - last_anchor
+    - public_pf_selector
+    - pf090_hold010
+    - beam
+  well_holdout_folds: 5
+  include_exp026_regenerated_control: false
+  source_feature_generation:
+    source_experiment: exp029_public_sel15_pf_oof_feature_generation
+    current_local_cutoff_fraction: 0.65
+    desired_pseudotail_cutoff_fractions: [0.45, 0.65, 0.82]
+    expected_rows_cutoff065: 1782279
+    expected_wells: 773
+  distance_buckets:
+    - {name: rows_0_49, max_step: 49}
+    - {name: rows_50_249, max_step: 249}
+    - {name: rows_250_999, max_step: 999}
+    - {name: rows_1000_2499, max_step: 2499}
+    - {name: rows_2500_plus, max_step: 1000000000}
+
+notes:
+  - This experiment is the high-priority backlog item lgbm_pf_confidence_only_features.
+  - Raw PF prediction, raw Beam prediction, public PF gate, hidden branch replacement, and direct candidate selection are intentionally excluded from model features.
+  - The current exp029 artifact has cutoff 0.65 only. Cutoffs 0.45 and 0.82 are requested but will be recorded as missing unless exp056 or another multi-cutoff artifact is supplied.
+  - The backlog requested PF-exp052 disagreement, but the available train-side artifact contains exp026 OOF disagreement. The feature set uses abs_pf_pred_minus_exp026_oof as the available proxy and documents the difference.
+  - The selected raw candidate was inference-ported after user request; the public sample contains only visible train wells, so local submission rows are unchanged versus the public replay SHA, while hidden code execution exercises the hidden branch.
+  - Kaggle train version 1 completed; lgbm_capacity_pf_confidence_only_raw was selected on paired-control support, but direct public PF controls remained stronger on the exp029 pseudo-test surface.
+  - Kaggle inference version 1 completed under kentookumura/exp058-lgbm-pf-confidence-inference; submit-check passed and code submission ref 53535327 completed with Public LB 12.778.

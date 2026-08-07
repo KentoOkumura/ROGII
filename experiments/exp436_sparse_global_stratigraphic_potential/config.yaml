@@ -1,0 +1,372 @@
+experiment:
+  name: exp436_sparse_global_stratigraphic_potential
+  description: >-
+    Fit six fold-safe sparse global stratigraphic potentials U_k(X,Y) from
+    outer-train formation contacts, then predict target suffixes from a fixed
+    equal-weight mean of last-prefix-anchored potential differences.
+  route: pf_beam
+  status: stage0_fail_closed
+  created_at: "2026-07-29"
+  updated_at: "2026-07-29"
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.score_rows
+
+lineage:
+  parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  comparison_references:
+    - exp263_last_anchor_better_candidate_confidence_pair_cache
+    - exp273_two_dimensional_formation_gradient_transition
+    - exp381_formation_contact_order_semimarkov_hmm
+    - exp383_all_tvt_stratigraphic_vector_drift_field
+  steering: ../../.steering/20260729-exp436-sparse-global-stratigraphic-potential
+  diff_summary: >-
+    Replace the incorrect single P(X,Y) design with six formation-specific
+    U_k(X,Y) surfaces. Each surface is solved once per outer fold from
+    outer-train first-contact U=TVT+Z observations. Target raw formation columns
+    are never read. A fixed support set of anchored surface differences is
+    averaged with equal weights; there is no row-wise formation selection,
+    local surface fit, parent fallback, selector, or blend.
+
+design:
+  priority: P2
+  design_frozen: true
+  implementation_authorized: true
+  kaggle_stage_0_authorized: true
+  kaggle_stage_1_authorized: false
+  kaggle_stage_2_authorized: false
+  inference_authorized: false
+  submission_authorized: false
+  same_oof_rescue_allowed: false
+
+implementation:
+  enabled: true
+  code_created: true
+  tests_created: true
+  jupytext_source_created: true
+  canonical_notebook_implemented: true
+  canonical_notebook_status: canonical_train_adopted_for_stage0
+  kaggle_package_created: true
+  kaggle_push_completed: true
+  stage0_completed: true
+  stage1_completed: false
+  stage2_completed: false
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: exp226_outer5_groupfold_sparse_formation_potential_truth_late
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  control:
+    experiment: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    regenerate: false
+    cv_rmse_ft: 9.427109596582213
+    public_lb: 9.837
+    oof_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  secondary_report_only:
+    experiment: exp263_last_anchor_better_candidate_confidence_pair_cache
+    cv_rmse_ft: 8.238331
+    promotion_or_weight_selection_use: forbidden
+  report_scopes:
+    - near_0_250
+    - mid_250_1000
+    - 1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  leakage_policy:
+    - Outer-valid wells are absent from every contact, node, edge, and surface solve.
+    - Outer-valid known TVT_input is used only for the hard anchor and frozen prefix rolling-origin audit.
+    - Outer-valid suffix TVT and raw formation columns are read only after surface, query, support, and prediction SHA freeze.
+    - Target and test raw formation columns and GR are never read by the candidate.
+    - The visible three-well sample test cannot select formation, graph, solver, support, aggregation, gate, or promotion settings.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  raw_train_dir_patterns:
+    - data/raw/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+  raw_horizontal_glob: "*__horizontal_well.csv"
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  visible_prefix_column: TVT_input
+  coordinate_columns: [MD, X, Y, Z]
+  structural_coordinate_formula: U=TVT+Z
+  formation_columns: [ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+  target_allowed_pre_freeze_columns: [well_id, row_idx, MD, X, Y, Z, TVT_input]
+  target_forbidden_columns:
+    - TVT_suffix
+    - GR
+    - ANCC
+    - ASTNU
+    - ASTNL
+    - EGFDU
+    - EGFDL
+    - BUDA
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    patterns:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    pre_freeze_columns: [well_id, row_idx, suffix_offset, fold]
+    post_freeze_columns: [well_id, row_idx, suffix_offset, tvt_true, tvt_pred, fold]
+  hidden_like_assignment:
+    patterns:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_file_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    well_column: well_id
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+contact_observations:
+  source_scope: outer_train_only
+  formation_order: [ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+  equation: Z_minus_formation_surface_equals_zero
+  selection: first_crossing_in_increasing_md
+  exact_zero_precedes_sign_change: true
+  interpolation: linear_between_adjacent_rows_for_MD_X_Y_Z_TVT
+  value_formula: U_contact=TVT_contact+Z_contact
+  maximum_observations_per_well_formation: 1
+  multiple_crossing_oracle_selection: forbidden
+  posthoc_order_repair: forbidden
+
+field:
+  family: deterministic_sparse_global_formation_potential
+  physical_assumption: six_smooth_stratigraphic_potentials_without_faults
+  surfaces_per_fold: 6
+  total_surface_fits: 30
+  node:
+    stable_key: [fold, formation_order, well_id, contact_md]
+    value_formula: U_contact=TVT_contact+Z_contact
+    minimum_source_wells_per_formation: 32
+  graph_edges:
+    scope: within_same_formation_only
+    nearest_unique_wells: 8
+    maximum_nodes_per_source_well: 1
+    maximum_distance_ft: 4000.0
+    kernel_bandwidth_ft: 1000.0
+    weight_formula: exp(-distance_xy^2/(2*1000^2))
+    directed_to_undirected: stable_union
+    cross_formation_edges: forbidden
+  objective:
+    observation_loss: huber
+    huber_delta: 1.345
+    irls_updates: 5
+    scale: outer_train_formation_U_MAD_floor_1e-6
+    graph_smoothness_weight: 1.0
+    graph_laplacian_bending_weight: 0.05
+    ridge_weight: 1.0e-8
+  solver:
+    name: scipy_sparse_lsqr
+    atol: 1.0e-6
+    btol: 1.0e-6
+    iteration_limit: 2000
+    accepted_istop: [1, 2]
+    worker_count: 1
+    blas_thread_count: 1
+
+query:
+  control_md_stride_ft: 64.0
+  include_last_known_and_suffix_end: true
+  maximum_unique_source_wells_per_formation: 16
+  minimum_unique_source_wells_per_formation: 8
+  maximum_distance_ft: 4000.0
+  query_chunk_rows: 4096
+  bandwidth_rule: farthest_selected_unique_well_distance
+  bandwidth_clip_ft: [500.0, 4000.0]
+  interpolation: normalized_gaussian_weighted_mean_then_linear_in_md
+  local_plane_or_query_solve: forbidden
+  formation_support:
+    selection_time: last_known_anchor_before_truth_join
+    require_support_at_all_control_points: true
+    minimum_fixed_formations_per_well: 4
+    fixed_for_entire_suffix: true
+    rowwise_switch_or_drop: forbidden
+  prediction:
+    anchor: exact_last_finite_TVT_input
+    per_formation_delta_formula: U_k_query-U_k_anchor
+    primary_delta_formula: equal_weight_mean_over_fixed_supported_formations
+    TVT_formula: TVT_anchor+mean_delta_U_k-(Z_query-Z_anchor)
+    single_formation_paths: report_only_not_for_selection
+    unsupported_fallback: forbidden_fail_entire_candidate
+
+model:
+  name: deterministic_sparse_global_stratigraphic_potential
+  estimator: robust_sparse_formation_graph_inverse_problem
+  fitted_ml_model: false
+  uses_outer_train_formation: true
+  uses_target_formation: false
+  uses_gr: false
+  uses_hmm: false
+  uses_pf: false
+  uses_beam: false
+  uses_parent_prediction_in_candidate: false
+
+gates:
+  stage0_target_free_resource_integrity:
+    preflight_surface_fold: 0
+    preflight_target_wells: 16
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_folds: 5
+    source_valid_overlap_max: 0
+    target_gr_reads_max: 0
+    target_formation_reads_max: 0
+    valid_suffix_truth_reads_max: 0
+    duplicate_contact_node_edge_keys_max: 0
+    finite_source_coverage_min: 1.0
+    source_wells_per_formation_min: 32
+    successful_surface_solve_fraction_min: 1.0
+    finite_primary_query_row_coverage_min: 1.0
+    supported_formations_per_well_p05_min: 4
+    query_unique_source_wells_p05_min: 8
+    projected_runtime_seconds_max: 21600
+    projected_peak_rss_gb_max: 16
+    fail_action: close_without_formation_exclusion_graph_solver_support_or_aggregation_rescue
+  stage1_prefix_rolling_origin:
+    minimum_prefix_md_ft: 1024.0
+    heldout_prefix_md_ft: 512.0
+    "null": constant_U_from_pseudo_anchor
+    eligible_well_coverage_min: 0.90
+    pooled_relative_rmse_gain_min: 0.05
+    positive_fold_count_min: 4
+    endpoint_absolute_error_delta_max_ft: 0.0
+    fail_action: close_without_horizon_null_or_gate_rescue
+  stage2_truth_late_oof:
+    control_rmse_ft: 9.427109596582213
+    candidate_rmse_max_ft: 9.177109596582213
+    gain_vs_control_min_ft: 0.25
+    positive_fold_count_min: 4
+    suffix_1000_plus_gain_min_ft: 0.25
+    hidden_like_spatial_delta_max_ft: 0.0
+    hidden_like_typewell_purged_delta_max_ft: 0.0
+    near_0_250_delta_max_ft: 0.05
+    by_well_delta_p95_max_ft: 0.0
+    worst_well_delta_max_ft: 0.25
+    prediction_correlation_vs_control_max: 0.9995
+    fail_action: close_without_surface_support_formation_weight_or_blend_rescue
+
+execution:
+  selected_stage: stage0
+  scientific_candidates: 1
+  report_only_single_formation_paths: 6
+  reporting_folds: 5
+  global_surface_fits: 30
+  maximum_sparse_solves_including_irls: 180
+  fitted_ml_models: 0
+  lightgbm_configs: 0
+  trained_ml_folds: 0
+  boosters: 0
+  hmm_runs: 0
+  pf_runs: 0
+  beam_runs: 0
+  seeds: 0
+  particles: 0
+  parent_control_regeneration: 0
+
+runtime:
+  accelerator: cpu
+  internet: false
+  use_amp: false
+  num_workers: 1
+  implementation_approved: true
+  run_approved: false
+  inference_enabled: false
+  submission_enabled: false
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_run_on_push: false
+    inference_run_on_push: false
+    train_kernel_id: kentookumura/exp436-sparse-global-stratigraphic-potential-train
+    train_kernel_title: exp436 sparse global stratigraphic potential train
+    terminal_version: 2
+    kernel_id_no: 129058940
+    terminal_status: complete
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+authorization:
+  implementation_source: user_message_implement_exp436_2026_07_29
+  stage0_execution_source: user_message_execute_exp436_2026_07_29
+  compact_train_candidate_complete: true
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  kaggle_package_authorized: false
+  kaggle_push_authorized: false
+  kaggle_execution_authorized: false
+  stage0_run_authorized: false
+  stage1_run_authorized: false
+  stage2_run_authorized: false
+  inference_authorized: false
+  submission_authorized: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_fold_formation_well_contact_node_edge_query_order
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  logical_sha_artifacts:
+    - fold_manifest
+    - role_read_ledger
+    - contact_catalog
+    - node_catalog
+    - graph_edge_catalog
+    - solver_manifest
+    - query_support
+    - prefix_rolling_origin_predictions
+    - oof_predictions
+  notes:
+    - Save NumPy, SciPy, BLAS, thread, iteration, convergence, and formation metadata.
+    - Do not treat the first run as a deterministic anchor.
+    - Require identical surface/query/prediction logical SHA on rerun.
+  observed:
+    kernel_version: 2
+    kernel_id_no: 129058940
+    terminal_status: complete
+    stage0_passed: false
+    artifact_bundle_sha256: 5b1a20bda01409bb562c241611f023568ab811f9be8683ff7456f212a56da6d2
+
+artifacts:
+  status: stage0_v2_complete_fail_closed
+  output_prefix: exp436_sparse_global_stratigraphic_potential
+
+notes:
+  - The compact self-contained train candidate and contract tests are implemented.
+  - The canonical train notebook was adopted and Kaggle CPU Stage 0 completed in version 2.
+  - Stage 0 failed closed because BUDA had only 4 to 6 outer-train contact wells per fold versus the fixed minimum of 32.
+  - Future package, push, and execution authorization is reset after the terminal run.
+  - Stage 1, Stage 2, inference, and submission remain locked and were not run.
+  - This corrects the earlier single-P design before implementation.
+  - No parameter grid or same-OOF rescue is allowed inside exp436.

@@ -1,0 +1,146 @@
+{
+  "best_same_oof_candidate": "exp013_bucket_shrink",
+  "best_same_oof_cv": 13.501824,
+  "clean_postprocess_supported": false,
+  "experiment": "exp016_public_postprocess_ablation",
+  "leave_one_original_fold_out_selection_cv": 13.551561,
+  "metric": "rmse",
+  "metrics": [
+    {
+      "candidate": "exp013_bucket_shrink",
+      "delta_vs_raw": -0.047434,
+      "method": "distance_bucket_shrink",
+      "params_json": "{\"buckets\":[{\"alpha\":0.2,\"max_step\":49,\"name\":\"rows_0_49\"},{\"alpha\":0.5917180252647632,\"max_step\":249,\"name\":\"rows_50_249\"},{\"alpha\":1.15,\"max_step\":999,\"name\":\"rows_250_999\"},{\"alpha\":1.15,\"max_step\":2499,\"name\":\"rows_1000_2499\"},{\"alpha\":1.0490770312511664,\"max_step\":1000000000,\"name\":\"rows_2500_plus\"}]}",
+      "rmse": 13.501824,
+      "rows": 3783989,
+      "selectable": false
+    },
+    {
+      "candidate": "alpha_tau_250_a020_115",
+      "delta_vs_raw": -0.034125,
+      "method": "alpha_tau",
+      "params_json": "{\"alpha_max\":1.15,\"alpha_min\":0.2,\"tau\":250}",
+      "rmse": 13.515133,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "alpha_tau_50_a020_115",
+      "delta_vs_raw": -0.028998,
+      "method": "alpha_tau",
+      "params_json": "{\"alpha_max\":1.15,\"alpha_min\":0.2,\"tau\":50}",
+      "rmse": 13.52026,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "fade_in_250_a020",
+      "delta_vs_raw": -0.007854,
+      "method": "fade_in",
+      "params_json": "{\"end_alpha\":1.0,\"fade_rows\":250,\"start_alpha\":0.2}",
+      "rmse": 13.541403,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "hold_blend_250_w080",
+      "delta_vs_raw": -0.007854,
+      "method": "hold_blend",
+      "params_json": "{\"hold_rows\":250,\"start_weight\":0.8}",
+      "rmse": 13.541403,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "sg21_then_fade50_a020",
+      "delta_vs_raw": -0.004486,
+      "method": "sg_then_fade",
+      "params_json": "{\"end_alpha\":1.0,\"fade_rows\":50,\"polyorder\":2,\"start_alpha\":0.2,\"window\":21}",
+      "rmse": 13.544771,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "sg_smooth_w51_p2",
+      "delta_vs_raw": -0.002548,
+      "method": "sg_smooth",
+      "params_json": "{\"blend\":1.0,\"polyorder\":2,\"window\":51}",
+      "rmse": 13.54671,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "fade_in_50_a020",
+      "delta_vs_raw": -0.00245,
+      "method": "fade_in",
+      "params_json": "{\"end_alpha\":1.0,\"fade_rows\":50,\"start_alpha\":0.2}",
+      "rmse": 13.546807,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "hold_blend_50_w080",
+      "delta_vs_raw": -0.00245,
+      "method": "hold_blend",
+      "params_json": "{\"hold_rows\":50,\"start_weight\":0.8}",
+      "rmse": 13.546807,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "sg_smooth_w21_p2",
+      "delta_vs_raw": -0.002051,
+      "method": "sg_smooth",
+      "params_json": "{\"blend\":1.0,\"polyorder\":2,\"window\":21}",
+      "rmse": 13.547206,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "raw_lightgbm_no_gr",
+      "delta_vs_raw": 0.0,
+      "method": "raw",
+      "params_json": "{}",
+      "rmse": 13.549257,
+      "rows": 3783989,
+      "selectable": true
+    },
+    {
+      "candidate": "last_anchor",
+      "delta_vs_raw": 2.360595,
+      "method": "last_anchor",
+      "params_json": "{}",
+      "rmse": 15.909853,
+      "rows": 3783989,
+      "selectable": false
+    }
+  ],
+  "notes": "Same-OOF best exp013_bucket_shrink 13.501824; fixed alpha_tau_250 same-OOF 13.515133, but leave-one-original-fold-out selection 13.551561 does not beat raw 13.549257, so clean CV stays raw.",
+  "raw_clean_cv": 13.549257,
+  "rows": 3783989,
+  "selected_clean_cv": 13.549257,
+  "selection_metrics": [
+    {
+      "candidate": "leave_one_original_fold_out_candidate_selection",
+      "delta_vs_raw": 0.002303,
+      "raw_holdout_rmse": 13.549257,
+      "rmse": 13.551561,
+      "rows": 3783989
+    },
+    {
+      "candidate": "well_hash_holdout_candidate_selection",
+      "delta_vs_raw": -0.034125,
+      "raw_holdout_rmse": 13.549257,
+      "rmse": 13.515133,
+      "rows": 3783989
+    }
+  ],
+  "source_experiment": "exp013_model_diversity_or_postprocess",
+  "source_oof_predictions": "data/external/kaggle-output/exp013_model_diversity_or_postprocess/train/artifacts/row_oof_predictions.csv",
+  "source_variant": "lightgbm_no_gr",
+  "status": "completed",
+  "updated_at": "2026-06-04T21:41:56.403432+00:00",
+  "well_hash_holdout_selection_cv": 13.515133,
+  "cv": 13.549257,
+  "key_idea": "OOF-only public-style postprocess ablation on exp013 LightGBM no-GR"
+}

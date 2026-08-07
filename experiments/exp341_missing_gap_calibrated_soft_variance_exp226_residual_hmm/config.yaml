@@ -1,0 +1,132 @@
+experiment:
+  name: exp341_missing_gap_calibrated_soft_variance_exp226_residual_hmm
+  description: >-
+    Conditional one-variant exp226 residual-offset exact-HMM audit that adds
+    exp339-calibrated interpolation variance only on originally missing GR rows.
+  route: pf_beam
+  status: closed_without_run_dependency_exp339_gate_failed
+  created_at: "2026-07-22"
+  updated_at: "2026-07-22"
+
+lineage:
+  parent: exp281_exp226_residual_offset_exact_hmm_transition_probe
+  steering: ../../.steering/20260722-exp341-missing-gap-calibrated-soft-variance-exp226-residual-hmm
+  required_dependency: exp339_missing_gap_pseudomask_uncertainty_readout
+  references:
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation
+    - exp308_imputed_gr_confidence_downweight
+  diff_summary: >-
+    Keeps interpolated GR values and every exp281 state/transition setting fixed.
+    Only raw-missing rows add the frozen exp339 imputation variance in quadrature.
+
+implementation:
+  enabled: false
+  scope: design_only_closed_failed_dependency
+  train_notebook_state: placeholder_only
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.score_rows
+
+validation:
+  strategy: conditional_grouped_exp226_residual_offset_exact_hmm_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  score_rows: tvt_input_unknown_suffix_only_after_prediction_freeze
+  dependency_policy:
+    required_experiment: exp339_missing_gap_pseudomask_uncertainty_readout
+    required_status: all_stage0_gates_passed
+    required_table_sha_status: frozen_before_implementation
+    fail_closed_on_mismatch: true
+  leakage_policy:
+    - Fold-specific imputation variance tables exclude the scored outer-valid well.
+    - Unknown-suffix TVT and error are joined only after the variance schedule and prediction content SHA are frozen.
+
+model:
+  name: missing_gap_soft_variance_exp226_residual_exact_hmm
+  estimator: none
+  active_variants: [exp339_calibrated_missing_variance]
+  variance:
+    observed_row: base_exp281_sigma_squared
+    raw_missing_row: base_exp281_sigma_squared_plus_exp339_sigma_imp_squared
+    run_length_over_64: use_32_64_bin
+    no_finite_anchor: use_32_64_max_distance_cell
+  fixed_parent:
+    shape: exp226_tvt_geop
+    coordinate: residual_offset
+    gr_interpolation: exact_exp281
+    base_sigma: exact_exp281
+    emission: gaussian
+    step: 0.35
+    offset_grid_ft: [-80.0, 80.0]
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    momentum: 0.998
+    output: posterior_mean
+  pass_requires_all:
+    minimum_rmse_gain_vs_exp281_ft: 0.05
+    minimum_improved_folds: 4
+    require_1000_plus_non_regression: true
+    require_hidden_like_spatial_non_regression: true
+    require_hidden_like_typewell_purged_non_regression: true
+    require_by_well_p95_non_regression: true
+    maximum_worst_well_regression_ft: 0.25
+    maximum_direct_rmse_for_promotion: 9.427109596582213
+    require_observed_row_variance_parity: true
+    require_all_missing_bins_finite: true
+  forbidden:
+    - state_neutral_missing_rows
+    - finite_mad
+    - student_t_or_huber
+    - acf_tempering
+    - transition_change
+    - parameter_grid
+    - blend
+
+execution_contract:
+  scientific_variants: 1
+  hmm_well_runs: 773
+  model_configs: 0
+  trained_folds: 0
+  boosters: 0
+  parent_control_retraining: false
+
+execution:
+  implementation_approved: false
+  kaggle_push_approved: false
+  active_stage: closed_dependency_exp339_gate_failed
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  numba_num_threads: 2
+  kaggle: {enable_gpu: false, enable_internet: false, runtime_limit_seconds: 30600}
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_fixed_fold_well_row_and_table_lookup_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: true, submission_sha: false}
+
+inference: {enabled: false, create_submission: false}
+
+notes:
+  - Design frozen on 2026-07-22; implementation is forbidden until exp339 passes and the user separately approves it.
+  - This is a new-number independent hypothesis, not a reopening of exp308.
+  - exp339 Stage 0 failed its real-better-than-circular 4-of-5 fold dependency gate at 2-of-5, so this branch is closed without implementation or execution.

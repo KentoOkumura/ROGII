@@ -1,0 +1,146 @@
+experiment:
+  name: "exp109_typewell_neighbor_prior_features"
+  description: Fold-safe posthoc audit of native typewell overlap neighbor priors as weak corrections for PF/Beam/likPF candidates.
+  route: ensemble
+  status: planned
+  created_at: "2026-06-22"
+  updated_at: "2026-06-22"
+
+lineage:
+  parent: exp099_pf_multi_observation_likelihood_probe
+  cache_parent: exp099_pf_multi_observation_likelihood_probe
+  diagnostic_parents:
+    - exp065_typewell_supertype_cluster_cv_audit
+    - exp072_exp063_full_replay_feature_cache
+    - exp099_pf_multi_observation_likelihood_probe
+  implementation_source: typewell_neighbor_prior_features.py
+  diff_summary: Uses exp065 native typewell overlap clusters to build fold-safe train-neighbor TVT drift priors, then evaluates weak clipped corrections to existing exp099 PF/Beam/likPF candidate predictions. It does not rerun PF, use validation tail labels in the prior pool, train a booster, or submit.
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation:
+  strategy: groupkfold_well_oof_neighbor_prior_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - prior_coverage
+    - bucket_rmse
+    - worst_well_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - GroupKFold is grouped by well.
+    - Each validation well may use its visible prefix context and typewell cluster assignment as a query.
+    - Neighbor drift priors are fit only from same-cluster train-fold wells.
+    - Validation wells and same-fold validation true TVT are never used as neighbor prior sources.
+    - Evaluation true TVT is reconstructed from exp099 target only after prediction generation.
+    - This is train-side audit only; no inference port or submission is selected.
+
+# Common paths and submission columns come from project.yml.
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp065_cluster_assignments_local: experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/common_typewell_cluster_assignments.csv
+
+model:
+  name: typewell_neighbor_prior_posthoc_audit
+  target: true_tvt_for_scoring_only
+  base_prediction: likpf_mean
+  estimator: none
+  neighbor_prior:
+    group_methods:
+      - name: native_overlap_1
+        method: native_overlap
+        threshold: "1"
+      - name: native_overlap_0p999
+        method: native_overlap
+        threshold: "0.999"
+      - name: exact_hash
+        method: exact_hash
+        threshold: byte_hash
+    min_cluster_size: 2
+    min_neighbor_wells: 1
+    min_row_neighbor_values: 1
+    interpolation:
+      x_column: md_since
+      y_column: true_delta_from_anchor
+      require_in_range: true
+    base_candidates:
+      - likpf_mean
+      - pf_ancc
+      - beam_mean
+    correction_alphas: [0.10, 0.20, 0.30]
+    correction_clip_ft: [10.0, 20.0, 40.0]
+    gated_std_thresholds: [5.0, 10.0, 20.0]
+    gated_min_neighbors: [2, 3, 5]
+    score_baselines:
+      - last_anchor_tvt
+      - pf_ancc
+      - beam_mean
+      - likpf_mean
+      - sc_ens
+      - hyb
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: deterministic_groupkfold_no_rng
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - upstream_exp099_multiobs_feature_cache
+    - upstream_exp065_typewell_cluster_discovery
+  parallel_rng_policy: no_parallel_rng_in_exp109
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    cluster_assignment_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a deterministic posthoc audit over upstream caches, but not a submission anchor.
+    - Source gzip cache decompressed content SHA is recorded in the summary JSON.
+
+audit:
+  mode: typewell_neighbor_prior_features
+  output_prefix: exp109_typewell_neighbor_prior_features
+  max_rows: null
+  expected_train_artifacts:
+    - exp109_typewell_neighbor_prior_features_candidate_metrics.csv
+    - exp109_typewell_neighbor_prior_features_bucket_metrics.csv
+    - exp109_typewell_neighbor_prior_features_by_well.csv
+    - exp109_typewell_neighbor_prior_features_oof_predictions.csv.gz
+    - exp109_typewell_neighbor_prior_features_feature_schema.csv
+    - exp109_typewell_neighbor_prior_features_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - If a correction beats likPF with stable bucket and worst-well behavior, add a separate raw-test parity audit before inference.
+
+notes:
+  - Implements the first, lower-risk stage for the typewell/native-overlap prior discussion.
+  - PF internal likelihood modification is intentionally deferred until posthoc prior value is demonstrated.

@@ -1,0 +1,34 @@
+{
+  "cv": null,
+  "closed_reason": "Heatmap-derived path generation is closed as a route. exp202/207/208/210/212/215 showed oracle headroom, but the generated paths themselves remained too weak or implausible for selector candidates; exp203 feature-only also did not beat exp184.",
+  "experiment": "exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158",
+  "key_idea": "Closed selector-candidate experiment; heatmap-derived path artifacts are retained as diagnostic history only.",
+  "parent": "exp203_heatmap_mdn_candidates_into_selector_features",
+  "planned": {
+    "active_selector_variants": 1,
+    "control_or_parent_retraining": false,
+    "folds": 5,
+    "inference_or_submit": false,
+    "lightgbm_configs": 3,
+    "boosters": 15
+  },
+  "private_lb": null,
+  "public_lb": null,
+  "reference_metrics": {
+    "exp158_continuity_rmse": 10.789163253,
+    "exp184_best_viterbi_rmse": 10.560650324533297,
+    "exp202_existing_plus_heatmap_top10_oracle_rmse": 2.745528139819464,
+    "exp202_existing_union_oracle_rmse": 5.068679052719509,
+    "exp212_existing_plus_stitched_top5_oracle_rmse": 5.941479995,
+    "exp212_fallback_unique_row_rate": 0.5699083691839485,
+    "exp215_existing_plus_learned_mtp_top5_oracle_rmse": 5.113654814407508,
+    "exp215_existing_union_oracle_rmse": 7.434029931698595,
+    "exp215_full_grid_fallback_unique_row_rate": 0.0,
+    "exp215_full_grid_source_coverage": 1.0,
+    "exp215_learned_mtp_top5_oracle_rmse": 32.33314288630553,
+    "exp215_learned_mtp_weighted_oracle_rmse": 59.27214158083142
+  },
+  "route": "pf_beam",
+  "status": "closed_rejected_heatmap_path_generation_route",
+  "updated_at": "2026-07-07"
+}

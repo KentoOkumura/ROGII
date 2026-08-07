@@ -1,0 +1,147 @@
+{
+  "experiment": "exp331_prefix_gr_unary_local_ce_exact_ssm",
+  "status": "stage_a_failed_branch_closed",
+  "cv": 24.76036012725314,
+  "cv_scope": "stage_a_fold0_official_hidden_suffix_780457_rows_155_wells",
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse_tvt_posterior_mean",
+  "route": "ensemble",
+  "parent": "exp295_prefix_anchored_wholewell_gr_alignment_ssm",
+  "diff_summary": "Replace exp295 structured training and exact-SSM early stopping with hard nearest-state local CE only; preserve the encoder, inputs, fixed exp209 decoder, controls, and truth-late evaluation.",
+  "implementation_approved": true,
+  "implementation_complete": true,
+  "kaggle_run_approved": true,
+  "stage_a_gpu_approval_consumed": true,
+  "stage_a_neural_models": 1,
+  "stage_a_trained_folds": 1,
+  "stage_a_lightgbm_configs": 0,
+  "stage_a_boosters": 0,
+  "stage_a_pf_beam_runs": 0,
+  "runtime_gate_hours": 8.5,
+  "runtime_gate_peak_gpu_memory_gb": 14.0,
+  "stage0_fixed_view_count": 16,
+  "stage0_status": "passed",
+  "stage0": {
+    "kernel_id": "kentookumura/exp331-prefix-gr-unary-local-ce-exact-ssm-stage0",
+    "kernel_version": 1,
+    "kernel_status": "COMPLETE",
+    "accelerator": "NvidiaTeslaT4",
+    "generated_at_utc": "2026-07-21T10:44:34.119829+00:00",
+    "measurement_rows": 80,
+    "projected_fold_runtime_hours_p50": 3.525366873879352,
+    "projected_fold_runtime_hours_conservative": 4.516838993243879,
+    "peak_gpu_memory_gb": 1.9240517616271973,
+    "runtime_pass": true,
+    "memory_pass": true,
+    "gate_passed": true,
+    "outer_valid_truth_access_count": 0,
+    "trained_stage_a_model_count": 0,
+    "selection_manifest_sha256": "71358ae2725586e78ceb18cd4d19bd0ffb4c7df1fac32a9c86d73cae24d6b937",
+    "measurement_sha256": "c49a001dd2a5316db31df2022a1d0207610866a14d47e062516f80c8444b5fab",
+    "report_sha256": "401d98f2cdc9ced437d66fc02bbe49b9287d4772e4d9036719c573a90b785c59"
+  },
+  "stage_a": {
+    "kernel_id": "kentookumura/exp331-prefix-gr-unary-local-ce-exact-ssm-stage-a",
+    "kernel_version": 1,
+    "kernel_id_no": 128114450,
+    "kernel_status": "COMPLETE",
+    "generated_at_utc": "2026-07-21T15:47:59.216758+00:00",
+    "fold_indices": [0],
+    "fold_counts": {
+      "outer_train_fit": 556,
+      "outer_train_early_stop": 62,
+      "outer_valid": 155
+    },
+    "active_architectures": 1,
+    "seeds": [42],
+    "neural_model_count": 1,
+    "lightgbm_config_count": 0,
+    "total_boosters": 0,
+    "pf_beam_well_runs": 0,
+    "parent_or_control_retraining": 0,
+    "completed_epochs": 8,
+    "selected_epoch": 7,
+    "best_early_stop_local_ce": 4.844268645009687,
+    "train_seconds": 1220.3494942188263,
+    "runtime_seconds": 14815.790443181992,
+    "runtime_hours": 4.115497345328331,
+    "peak_gpu_memory_gb": 1.8898839950561523,
+    "metrics": {
+      "rows": 780457,
+      "wells": 155,
+      "real_rmse": 24.76036012725314,
+      "exp209_rmse": 12.671086935210896,
+      "real_minus_exp209_rmse": 12.089273192042244,
+      "geometry_rmse": 32.46500187040304,
+      "real_gain_vs_geometry_rmse": 7.704641743149899,
+      "shuffle_rmse": 57.87882048754813,
+      "real_gain_vs_shuffle_rmse": 33.11846036029499,
+      "real_true_state_nll": 22.97201776584069,
+      "shuffle_true_state_nll": 27.289439288972194,
+      "real_nll_gain_vs_shuffle": 4.317421523131504,
+      "real_within10_mass": 0.5321142419972794,
+      "shuffle_within10_mass": 0.10320093385802606,
+      "real_within10_gain_vs_shuffle": 0.42891330813925334,
+      "real_within20_mass": 0.7437135310937361,
+      "shuffle_within20_mass": 0.21165703299806393,
+      "real_well_rmse_p95": 44.56071880265675,
+      "exp209_well_rmse_p95": 26.301518475831738,
+      "well_rmse_p95_regression": 18.25920032682501,
+      "maximum_well_regression_vs_exp209_ft": 63.10952042409153,
+      "target_in_grid_rate": 1.0,
+      "prefix_clamp_max_abs_error_ft": 0.0,
+      "finite_prediction_coverage": 1.0
+    },
+    "by_well": {
+      "better_than_exp209": 17,
+      "worse_than_exp209": 138,
+      "median_real_minus_exp209_rmse": 9.831584403995391,
+      "better_than_geometry": 112,
+      "better_than_shuffle": 128
+    },
+    "subgroup_rmse": {
+      "distance_1000_plus": {
+        "real": 26.01653525797482,
+        "exp209": 13.878414072063642
+      },
+      "hidden_like_spatial": {
+        "real": 25.234291262373443,
+        "exp209": 12.761284103683167
+      },
+      "hidden_like_typewell_purged": {
+        "real": 24.169722512396884,
+        "exp209": 12.046808373838555
+      }
+    },
+    "guard": {
+      "passed": false,
+      "failed_checks": [
+        "real_rmse_vs_exp209",
+        "well_p95_non_regression",
+        "worst_well_regression"
+      ],
+      "decision": "close_stage_b_without_exp331_rescue_grid"
+    },
+    "truth_freeze": {
+      "outer_valid_truth_access_count_before_freeze": 0,
+      "truth_loaded_after_global_freeze": true,
+      "forbidden_neighbor_sources": 0,
+      "input_manifest_sha256": "1caa1050421377e573df4a70a5011e01fa7599fe00770a0a4cd223d74bedabc2",
+      "emission_posterior_manifest_sha256": "14dd9e2ecc7874b1ca8f21d3588fe72b6883200bf31ebc00617edea1918c9dc9",
+      "model_sha256": "e9cd7404eabf9192a3026184bdffb2de3f585861aa8b0dee2edd777d542fc61b",
+      "frozen_prediction_gzip_sha256": "120ae26e25d7d598c63b1faa847f869a5441a97853966ce1f8d0ff165e4a82af",
+      "frozen_prediction_decompressed_sha256": "4fdee845e7c3c2605bc0901db5755de09b599f8f2ff5542b473486a71c86b844"
+    },
+    "summary_sha256": "273e51100babeab3554a56d8853e345b1d993ced3c0d23d9568cf60e07dd3356",
+    "log_sha256": "c7be39b40493e545a880bcbdded6a345148416b180909a510b9546159f3d45ff"
+  },
+  "stage_b_status": "closed_by_stage_a_failure",
+  "inference_status": "not_run_closed",
+  "submission_status": "not_run_closed",
+  "contract_tests": {
+    "passed": 16,
+    "skipped": 1
+  },
+  "notes": "Stage A completed technically and showed GR attribution versus circular shuffle and geometry-only, but RMSE and tail safety regressed sharply versus saved exp209. The preregistered policy closes Stage B without an exp331 rescue grid."
+}

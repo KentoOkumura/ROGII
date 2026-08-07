@@ -1,0 +1,75 @@
+{
+  "experiment": "exp509_exp413_strict_public_core_final_slot",
+  "status": "implementation_complete_candidate_notebook_not_adopted",
+  "route": "ensemble",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "portfolio_slot": 1,
+  "formula": {
+    "exp413_weight": 0.8628352666928758,
+    "strict_public_core_weight": 0.13716473330712417,
+    "dtype": "float64",
+    "weight_refit": false
+  },
+  "reference_evidence": {
+    "exp413_cv": 7.884802794404715,
+    "exp413_public_lb": 7.201,
+    "exp497_candidate_cv": 7.87448814999802,
+    "exp497_gain_ft": 0.010314644406695,
+    "exp497_nonworse_folds": 3,
+    "exp497_promotion_gate_passed": false
+  },
+  "implementation": {
+    "implemented": true,
+    "candidate_source": "exp509_exp413_strict_public_core_final_slot_compact_selfcontained_inference.py",
+    "candidate_notebook": "exp509_exp413_strict_public_core_final_slot_compact_selfcontained_inference.ipynb",
+    "candidate_source_lines": 694,
+    "candidate_source_sha256": "cc4dab6ad31e1ccdcc2cff5d44e38bb8253194ddc94867e11fe7ee2d22b4af5c",
+    "candidate_notebook_sha256": "f24c796b2bfadb925750c420a79bd429c9f096178557dea479f5dc202e630bee",
+    "canonical_notebook_adopted": false,
+    "kaggle_package_created": false,
+    "kaggle_run": false,
+    "submitted": false
+  },
+  "execution_inventory": {
+    "scientific_variants": 1,
+    "new_model_configs": 0,
+    "new_folds": 0,
+    "new_boosters": 0,
+    "loaded_exp497_boosters": 40,
+    "loaded_exp497_ridge_models": 2,
+    "loaded_exp413_boosters": 75,
+    "parent_or_control_retraining": 0,
+    "weight_refit": 0,
+    "gpu_training": 0
+  },
+  "visible_parity_contract": {
+    "strict_public_core_max_abs": 0.002,
+    "exp413_max_abs": 0.02,
+    "blend_max_abs": 0.02,
+    "policy": "component_specific_historical_equivalence",
+    "known_exp497_v1_strict_max_abs": 0.0012812500008294592,
+    "known_exp497_v1_blend_max_abs": 0.01419531250030559
+  },
+  "upstream_artifacts": {
+    "exp497_stage_i_version": 4,
+    "serialized_model_set_sha256": "dcc2166f4bd5731364efe0b3fb848a46cf87f8133cbe78890658a1062c604626",
+    "strict_public_core_prediction_sha256": "27641aa6d28204a855b38e4debf0059031727b701066df75e19dad9902378885",
+    "blend_prediction_sha256": "c939c9f8edf83628f610d1ec85988aeb0d7e7ebcd168d5d5aa2e0805fbe56f72"
+  },
+  "validation": {
+    "dedicated_tests": "6_passed",
+    "exp497_dependency_tests": "30_passed",
+    "jupytext_roundtrip": "pass",
+    "py_compile": "pass",
+    "ruff_f821_f401_f811_e501": "pass",
+    "strict_experiment_validation": "pass",
+    "template_validation": "pass",
+    "repository_tests": "1861_passed_8_skipped_4_known_unrelated_failures_exp293_exp296",
+    "bootstrap_dependency_files": "24_present_0_missing",
+    "kaggle_runtime_technical_gate": "not_run"
+  },
+  "notes": "Candidate implementation only. exp497 scientific rejection remains unchanged; canonical notebook adoption, Kaggle execution, output verification, and external submission remain separately gated."
+}

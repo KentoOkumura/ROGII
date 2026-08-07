@@ -1,0 +1,153 @@
+experiment:
+  name: "exp171_bimodal_posterior_pfbeam_candidate_audit"
+  description: Audit whether target-free top2 GR shift-scan modes can form a calibrated posterior mean PF/Beam candidate that improves over hard commit and fixed likPF candidates.
+  route: pf_beam
+  status: completed_train_side_rejected_no_submit
+  created_at: "2026-07-02"
+
+lineage:
+  parent: bimodal_posterior_pfbeam_candidate_audit backlog
+  references:
+    - KAGGLE_DIRECTION.md backlog bimodal_posterior_pfbeam_candidate_audit
+    - Georgy Mamarin "Stop reforking: the best GR fit is the wrong depth" sections 5/7/8
+    - exp133_gr_bimodal_match_ambiguity_detector
+    - exp167_fft_denoised_gr_matching_audit
+    - exp170_heel_calibrated_shift_scan_pfbeam_audit
+    - exp072_exp063_full_replay_feature_cache
+  diff_summary: >
+    Builds a train-side diagnostic over raw train wells that extracts two separated
+    local minima from a target-free GR shift-scan surface, assigns fixed-temperature
+    posterior weights from the top2 costs, and compares hard commit, midpoint,
+    posterior mean, and fixed exp072 PF/Beam/likelihood-PF candidates. It does not
+    rerun PF/Beam, train ML models, create inference outputs, or submit.
+
+validation:
+  strategy: train_well_known_prefix_bimodal_shift_scan_posterior_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within2
+    - within5
+    - within10
+    - mean_abs_error_gain_vs_commit
+    - bimodal_detected_bucket
+    - mode_separation_bucket
+    - worst_well_regression
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: sampled_hidden_tail_and_prefix_backtest_rows
+  leakage_policy:
+    - Mode extraction uses only horizontal GR, typewell GR, prefix-slope prior, and fixed scan costs.
+    - Hidden-tail true TVT is used only for train-side scoring metrics.
+    - Prefix-backtest uses only the prefix before the artificial cutoff.
+    - Fixed exp072 PF/Beam candidates are read for comparison only.
+    - Candidate error, oracle best candidate, and true-error rank are never used to select modes or temperatures.
+
+data:
+  train_dir: data/raw/train
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+
+model:
+  name: none_bimodal_posterior_pfbeam_candidate_audit
+  estimator: deterministic_shift_scan_posterior_diagnostic
+  params: {}
+
+audit:
+  mode: bimodal_posterior_pfbeam_candidate_audit
+  output_prefix: exp171_bimodal_posterior_pfbeam_candidate_audit
+  max_wells: null
+  well_include: []
+  min_prefix_rows: 80
+  max_eval_rows_per_region_per_well: 256
+  prefix_backtest_tail_rows: 256
+  prefix_slope_window_rows: 80
+  slope_clip: [-3.0, 3.0]
+  shift_min_ft: -80.0
+  shift_max_ft: 80.0
+  shift_step_ft: 2.0
+  local_offsets_rows: [-36, -24, -12, -6, 0, 6, 12, 24, 36]
+  typewell_smooth_window: 5
+  ncc_weight: 8.0
+  min_mode_separation_ft: 6.0
+  max_mode_separation_ft: 30.0
+  posterior_temperatures: [2.0, 4.0, 6.0, 8.0, 12.0, 16.0]
+  filters:
+    - name: raw
+      kind: raw
+    - name: rolling_median_11
+      kind: rolling_median
+      window: 11
+    - name: savgol_31_p2
+      kind: savgol
+      window: 31
+      polyorder: 2
+      fallback_kind: rolling_mean
+  pfbeam_candidates:
+    - name: pf_ancc
+      source_columns: [pf_ancc]
+      transform: absolute
+    - name: beam_mean
+      source_columns: [beam_mean_d, beam_mean]
+      transform: base_plus_delta
+    - name: likpf_mean
+      source_columns: [likpf_mean_d, likpf_mean]
+      transform: base_plus_delta
+    - name: sc_ens
+      source_columns: [sc_ens_d, sc_ens]
+      transform: base_plus_delta
+    - name: hyb
+      source_columns: [hyb_d, hyb]
+      transform: base_plus_delta
+    - name: pf_z
+      source_columns: [pf_z]
+      transform: absolute
+  artifacts:
+    - exp171_bimodal_posterior_pfbeam_candidate_audit_row_context.csv.gz
+    - exp171_bimodal_posterior_pfbeam_candidate_audit_candidate_metrics.csv
+    - exp171_bimodal_posterior_pfbeam_candidate_audit_bucket_metrics.csv
+    - exp171_bimodal_posterior_pfbeam_candidate_audit_well_metrics.csv
+    - exp171_bimodal_posterior_pfbeam_candidate_audit_gain_vs_commit.csv
+    - exp171_bimodal_posterior_pfbeam_candidate_audit_well_input_summary.csv
+    - exp171_bimodal_posterior_pfbeam_candidate_audit_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_deterministic_linspace_sampling
+  stochastic_components:
+    - upstream_exp072_pf_beam_likpf_cache
+  parallel_rng_policy: no_parallel_rng_in_exp171
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is a diagnostic audit, not a deterministic submission anchor.
+    - Posterior temperatures are fixed in config and are not chosen from same-OOF truth.
+    - Upstream exp072 cache is used only for fixed candidate comparison.
+    - Gzip output SHA is recorded both as raw gzip SHA and decompressed content SHA.
+
+inference:
+  mode: not_applicable_train_side_audit_only
+  selected_candidate: null
+  notes:
+    - Positive train-side results must pass worst-well, near-row, raw-test parity, and hidden-like stress checks before any inference port.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog bimodal_posterior_pfbeam_candidate_audit.
+  - Direct PF/Beam candidate replacement and exp148 ML add-only features are follow-up decisions, not part of this experiment.

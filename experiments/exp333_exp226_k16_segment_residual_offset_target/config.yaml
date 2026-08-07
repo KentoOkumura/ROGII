@@ -1,0 +1,733 @@
+experiment:
+  name: exp333_exp226_k16_segment_residual_offset_target
+  description: >-
+    Design-frozen strict-nested segment residual experiment that predicts one
+    mean TVT-minus-exp226 offset per exp226-compatible K16 segment from
+    target-free segment-mean features and broadcasts it without clipping,
+    shrinkage, tapering, or slope correction.
+  route: ensemble
+  status: current_test_candidate_inference_v2_completed_no_submission
+  created_at: "2026-07-21"
+  updated_at: "2026-07-23"
+
+lineage:
+  parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  rowwise_residual_comparison: exp228_direct_residual_correction_on_exp226
+  reusable_blend_comparison: exp263_last_anchor_better_candidate_confidence_pair_cache
+  ml_reference: exp287_fold_safe_formation_74_addonly_on_exp264
+  stage_0_implementation_source: exp333_exp226_k16_segment_residual_offset_target_compact_selfcontained_train.py
+  stage_1_implementation_source: exp333_exp226_k16_segment_residual_offset_target_stage1_compact_selfcontained_train.py
+  candidate_inference_implementation_source: exp333_exp226_k16_segment_residual_offset_target_current_test_compact_selfcontained_inference.py
+  steering: ../../.steering/20260721-exp333-exp226-k16-segment-residual-offset-target
+  candidate_inference_steering: ../../.steering/20260723-exp333-exp226-k16-segment-residual-offset-target-current-test-candidate-inference
+  diff_summary: >-
+    Changes the learning unit and residual target from exp228 row-level samples
+    to one row-count-weighted mean residual target per exp226-compatible K16
+    segment. It uses strict nested exp226 predictions, excludes supervised
+    learned-likelihood and selector features, and applies the predicted segment
+    offset directly to the fixed exp226 base. Segment slope, alternate horizons,
+    smoothing, clipping, shrinkage, and candidate selection are unchanged or
+    disabled.
+
+implementation:
+  enabled: true
+  scope: stage_0_and_stage_1_train
+  stage_0_enabled: true
+  stage_1_enabled: true
+  inference_enabled: false
+  submission_enabled: false
+
+downstream_candidate_path_evidence:
+  experiment: exp361_exp333_candidate_path_addone_novelty_audit
+  status: kaggle_cpu_v2_completed_technical_pass_candidate_novelty_pass
+  decision: exp333_candidate_path_novelty_supported
+  h512_oracle_improvement_ft: 0.13310387620658748
+  whole_well_oracle_improvement_ft: 0.10213233914534925
+  h512_strict_unique_best_fraction: 0.11506356748426866
+  improved_folds: 5
+  interpretation: >-
+    The original direct-promotion failure remains valid, but exp333 is
+    supported as an add-on candidate path against the frozen exp293 bank.
+  current_test_candidate_inference_supported_for_separate_approval: true
+  current_test_candidate_inference_approved: false
+  current_test_candidate_inference_approval_date: "2026-07-23"
+  current_test_candidate_inference_authorization_consumed: true
+  current_test_candidate_inference_status: kaggle_cpu_v2_completed_technical_pass
+  authorization_scope: candidate_artifact_only_no_submission
+  submission_approved: false
+
+validation:
+  strategy: strict_nested_exp226_k16_segment_residual_groupkfold
+  metric: rmse
+  primary_metric_definition: row_level_rmse_tvt_after_segment_offset_broadcast
+  seed: 42
+  n_outer_folds: 5
+  n_inner_folds: 4
+  group_column: well_id
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_nonempty_segments: 12368
+  outer_fold_policy: exact_saved_exp226_source_fold_identity
+  inner_fold_policy: stable_sha256_sort_round_robin_four_fold_within_outer_train
+  score_rows: train_unknown_suffix_rows
+  outer_valid_parent_parity_max_abs_ft: 0.00000001
+  leakage_policy:
+    - Outer-valid wells and their true suffix TVT are excluded from every outer-train exp226 donor field, kappa fit, feature, and model fit.
+    - Outer-train residual targets use four-fold inner OOF exp226 predictions; an outer-train well is excluded from the exp226 fit that predicts it.
+    - Outer-valid exp226 predictions are generated from full outer-train only and must reproduce the saved exp226 OOF within 1e-8 ft.
+    - Row feature groups are limited to target-free raw-test-regenerable projection, U-disagreement, and GR-wavelet-rotation confidence groups.
+    - Supervised learned-likelihood, selector score, true error, oracle candidate, residual summary, target slope, and well ID features are forbidden.
+    - Segment target is attached only after base prediction, row feature, fold, and segment assignment are frozen and hashed.
+  technical_guards:
+    required_row_coverage: 1.0
+    required_well_coverage: 1.0
+    required_segment_count: 12368
+    required_segment_id_min: 0
+    required_segment_id_max: 15
+    required_finite_target_coverage: 1.0
+    required_finite_base_prediction_coverage: 1.0
+    required_outer_fold_set: [0, 1, 2, 3, 4]
+    maximum_outer_valid_parent_parity_abs_ft: 0.00000001
+    maximum_feature_forbidden_column_hits: 0
+    maximum_target_or_error_loaded_before_freeze: 0
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  input_target_column: TVT_input
+  id_column: id
+  submission_target_column: tvt
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    patterns:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+    target_free_columns: [well_id, row_idx, suffix_offset, tvt_pred, fold]
+    truth_columns: [well_id, row_idx, tvt_true]
+    forbidden_pre_freeze_columns: [tvt_true, TVT, error, abs_error, residual, oracle_candidate]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    expected_rmse: 9.427109596582213
+  exp228_reference:
+    expected_rmse: 8.94408550082682
+    aggregate_prediction_sha256: 239d53622af7cf3f3b421522de9a1f9cdda0a6ac3b99ba283dc8796032209da8
+  exp263_reference:
+    expected_rmse: 8.238331715
+    public_lb: 7.800
+  exp287_reference:
+    expected_rmse: 8.136708220359452
+    public_lb: 7.530
+    promotion_guard_passed: false
+  exp072_feature_cache:
+    role: target_free_projection_and_u_disagreement_source
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    patterns:
+      - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      - "**/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz"
+    expected_feature_count: 196
+    schema_filename: exp063_full_replay_feature_cache_feature_schema.csv
+    schema_patterns:
+      - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+      - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+      - "**/exp063_full_replay_feature_cache_feature_schema.csv"
+    require_schema_and_decompressed_content_sha: true
+  exp218_grwr_generator:
+    role: target_free_gr_wavelet_rotation_confidence_source
+    require_rawtest_parity_and_content_sha: true
+  hidden_like:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    patterns:
+      - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+segmentation:
+  name: exact_exp226_k16_suffix_segments
+  k_segments: 16
+  row_coordinate: one_based_unknown_suffix_row
+  edges: numpy_linspace_zero_to_suffix_length_17_edges
+  assignment: numpy_searchsorted_edges_1_to_16_side_left_clip_zero_15
+  empty_segment_policy: omit_sample_record_count
+  expected_nonempty_segments: 12368
+  boundary_audit_half_width_rows: 8
+
+target:
+  name: segment_mean_tvt_minus_nested_exp226
+  row_residual: true_tvt_minus_strict_nested_exp226_prediction
+  aggregation: float64_arithmetic_mean
+  sample_weight: segment_row_count
+  broadcast: constant_to_all_rows_in_segment
+  clipping: none
+  shrinkage: none
+  taper: none
+  interpolation: none
+  slope: disabled
+
+features:
+  row_source: exp228_exp218_compatible_target_free_generator
+  allowed_groups:
+    - projection_correction
+    - u_disagreement
+    - gr_wavelet_rotation_confidence
+  include_lgb_oof_features: false
+  u_projection:
+    anchor_definition: local_prefix_u0_equals_T0_plus_Z0
+    degree: 3
+    robust_iters: 3
+    clip_sigma: 4.0
+    include_lgb_oof_features: false
+    sources:
+      pf_ancc:
+        value_column: pf_ancc
+        enabled: true
+      pf_z:
+        value_column: pf_z
+        enabled: true
+      beam_mean:
+        delta_column: beam_mean_d
+        enabled: true
+      beam_med:
+        delta_column: beam_med_d
+        enabled: true
+      likpf_mean:
+        delta_column: likpf_mean_d
+        enabled: true
+  gr_wavelet_rotation_confidence:
+    prefix: grwr_
+    feature_group: gr_wavelet_rotation_confidence
+    prefix_slope_window_rows: 80
+    slope_clip: [-3.0, 3.0]
+    local_windows_rows: [33, 65, 129]
+    candidate_match_offsets_rows: [-32, -24, -16, -8, 0, 8, 16, 24, 32]
+    typewell_smooth_window: 5
+    ncc_weight: 8.0
+    wavelet:
+      name: db4
+      level: 3
+      fallback_window: 65
+    fft:
+      detrend: linear
+      top_k_notch: 3
+      rotation_band_norm: [0.06, 0.35]
+      high_frequency_norm: 0.35
+    denoise_filters:
+      rolling_median_11:
+        kind: rolling_median
+        window: 11
+      savgol_31_p2:
+        kind: savgol
+        window: 31
+        polyorder: 2
+    default_candidate: likpf_mean
+    candidate_match_names: [pf_ancc, beam_mean, likpf_mean, sc_ens, hyb]
+    candidate_tvt_specs:
+      - {name: pf_ancc, column: pf_ancc, kind: absolute}
+      - {name: beam_mean, column: beam_mean_d, kind: delta}
+      - {name: likpf_mean, column: likpf_mean_d, kind: delta}
+      - {name: sc_ens, column: sc_ens_d, kind: delta}
+      - {name: hyb, column: hyb_d, kind: delta}
+      - {name: tvt_dense, column: tvt_dense_d, kind: delta}
+      - {name: tvt_densew, column: tvt_densew_d, kind: delta}
+      - {name: tvt_dense50, column: tvt_dense50_d, kind: delta}
+  forbidden_groups:
+    - learned_likelihood_confidence
+    - selector_score_or_rank_margin
+    - formation_label_derived
+    - true_error_or_oracle
+  row_to_segment_aggregation:
+    numeric: finite_float64_mean
+    all_nonfinite: preserve_nan
+    prohibited: [std, min, max, quantile, first, last, slope]
+  structural_columns:
+    - segment_id
+    - segment_position
+    - segment_row_count
+    - segment_md_span
+    - exp226_pred_mean
+    - exp226_pred_start
+    - exp226_pred_end_minus_start
+  forbidden_columns:
+    - well_id_as_model_feature
+    - TVT
+    - residual
+    - oracle_candidate
+    - target_slope
+
+stage_0_headroom:
+  enabled_after_implementation_approval: true
+  input: saved_exp226_group_safe_oof
+  models: 0
+  boosters: 0
+  oracle_offset_persistence: diagnostic_only_not_saved_as_deployable_feature_or_prediction
+  gates:
+    minimum_rmse_gain_vs_exp226_ft: 1.00
+    minimum_fold_gain_ft: 0.50
+    required_improved_folds: 5
+  fail_action: stop_no_stage_1_no_rescue_grid
+  result:
+    kernel_id: kentookumura/exp333-k16-segment-residual-stage0-train
+    kernel_version: 1
+    kernel_id_no: 128109500
+    kernel_status: COMPLETE
+    readout_elapsed_seconds: 104.648882777
+    final_log_elapsed_seconds: 114.706912127
+    rows: 3783989
+    wells: 773
+    segments: 12368
+    exp226_rmse: 9.427109596582222
+    k16_oracle_offset_rmse: 1.1306025263265356
+    rmse_gain_vs_exp226_ft: 8.296507070255686
+    fold_gains_ft:
+      - 8.359820608911823
+      - 8.002651448697343
+      - 9.211416557393278
+      - 8.005800121731465
+      - 7.879884973868373
+    improved_folds: 5
+    technical_pass: true
+    scientific_pass: true
+    decision: PASS_STAGE0
+    stage_1_may_be_implemented_after_separate_approval: true
+    truth_content_sha256: 3b50d64f7d6bb4cee0cea3dc637494c41605d6e26a4bb9172fecbfde36e8c82e
+    segment_assignment_sha256: 6b833c0bcdbe2b82b2e16df23f5fd0dae1412a890a90cf53743610fbb01e07e3
+    segment_target_content_sha256: 15f47cbb46b655c50b57718d6549d79d5e15101aa7ffde74022c069f1c1f6dfb
+    oracle_readout_content_sha256: 616157b44fc769b111071771f959b37e3ab3f958b7657ee25b20252cf4753d38
+    target_free_contract_sha256: dff6525143c6762d68f7ecba70241a8ed0186b2fc59e4b29781ec767564c6810
+
+model:
+  name: exp226_k16_segment_mean_residual_lgb1
+  estimator: lightgbm
+  active_variants:
+    - k16_mean_residual_offset
+  target: segment_mean_tvt_minus_nested_exp226
+  sample_weight: segment_row_count
+  config_name: exp228_lgb1_single_fixed
+  params:
+    boosting_type: gbdt
+    objective: regression
+    verbose: -1
+    max_bin: 255
+    num_leaves: 64
+    min_child_samples: 40
+    subsample: 0.474
+    subsample_freq: 1
+    colsample_bytree: 0.393
+    reg_lambda: 95.75
+    reg_alpha: 10.79
+    min_child_weight: 0.24
+    learning_rate: 0.0093
+    n_estimators: 10000
+    random_state: 0
+    deterministic: true
+    force_col_wise: true
+    n_jobs: 8
+    num_threads: 8
+  early_stopping_rounds: 250
+  save_models: true
+  save_segment_predictions: true
+  save_row_oof_predictions: true
+  top_n_importance: 60
+
+nested_exp226:
+  outer_valid_fits: 5
+  inner_valid_fits: 20
+  total_donor_field_and_kappa_fits: 25
+  outer_valid_prediction_well_runs: 773
+  inner_valid_prediction_well_runs: 3092
+  total_prediction_well_runs: 3865
+  parent_parameters: exact_exp226_v6_k16_geometry_gr_u_projection
+  parent_control_retraining: false
+  saved_parent_control: exp226_oof
+
+stage_1_result:
+  kernel_id: kentookumura/exp333-k16-segment-residual-stage1-train
+  kernel_version: 1
+  kernel_id_no: 128116592
+  kernel_status: COMPLETE
+  final_summary_elapsed_seconds: 1781.997037206
+  final_log_elapsed_seconds: 1790.189221582
+  rows: 3783989
+  wells: 773
+  segments: 12368
+  model_feature_count: 136
+  boosters: 5
+  nested_fits: 25
+  nested_prediction_well_runs: 3865
+  parent_control_retraining: false
+  exp226_rmse: 9.42710959658222
+  stage_1_rmse: 9.076676660936826
+  gain_vs_exp226_ft: 0.3504329356453937
+  delta_vs_exp228_ft: 0.1325911601100067
+  delta_vs_exp263_ft: 0.8383449459368268
+  fold_stage_1_rmse:
+    - 8.90189667393076
+    - 8.51400409826664
+    - 9.946436960286496
+    - 9.100571745799153
+    - 8.883281183738518
+  fold_gain_vs_exp226_ft:
+    - 0.5547331114752952
+    - 0.6179552609702162
+    - 0.3383904888017497
+    - 0.0867350274410121
+    - 0.1632004651227685
+  near_0_250_delta_vs_exp226_ft: 0.0574393754126107
+  mid_250_1000_delta_vs_exp226_ft: -0.2384160041053125
+  1000_plus_delta_vs_exp226_ft: -0.3806947806905984
+  hidden_spatial_delta_vs_exp226_ft: -0.3679279997471347
+  hidden_typewell_purged_delta_vs_exp226_ft: -0.3556782290662141
+  boundary_pm8_delta_vs_exp226_ft: -0.3295244659344494
+  by_well_p95_delta_vs_exp226_ft: -0.35201760946884164
+  worst_well_id: 7987f2f2
+  worst_well_delta_vs_exp226_ft: 8.099023351054644
+  outer_valid_parent_parity_max_abs_ft: 1.8189894035458565e-12
+  segment_target_improved_folds: 5
+  scientific_pass: false
+  inference_candidate_threshold_pass: false
+  decision: FAIL_CLOSE_BRANCH
+  feature_freeze_sha256: b2c7bff40f9fc994bd60471c03d9085ba48137c30b358402bfbb1cadecc4a078
+  model_manifest_sha256: 3e4c99b2451c7731331bca7fabba44353ce7ac7e80e7c821f4799983d8f297a9
+  oof_prediction_sha256: dbb3f41642a2d6a9da704d276ed6398b706059078bcfcaca95e17e5c7af00784
+  segment_target_sha256: 65a73d741778509edc732949b4a1ba2b94152796a111b836a6af3898c6b00027
+
+execution_contract:
+  stage_0:
+    readouts: 1
+    variants: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+  stage_1_if_stage_0_pass:
+    active_variants: 1
+    model_configs: 1
+    outer_folds: 5
+    inner_folds_for_base_target: 4
+    boosters: 5
+    gpu: false
+    parent_control_retraining: false
+  selected_stage: stage_1_train_completed_fail_closed
+  selected_downstream_stage: current_test_candidate_inference_completed
+  implementation_approved: true
+  stage_1_implementation_approved: true
+  compact_train_candidate_created: true
+  stage_1_compact_train_candidate_created: true
+  compact_inference_candidate_created: true
+  canonical_train_notebook_adopted: true
+  stage_1_canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  candidate_inference_compact_candidate_created: true
+  candidate_inference_canonical_notebook_adopted: true
+  kaggle_push_approved: false
+  stage_0_run_approved: false
+  stage_0_run_authorization_consumed: true
+  stage_1_preflight_approved: false
+  stage_1_preflight_authorization_consumed: true
+  stage_1_run_approved: false
+  stage_1_run_authorization_consumed: true
+  inference_approved: false
+  candidate_inference_approved: false
+  candidate_inference_authorization_consumed: true
+  submission_approved: false
+
+promotion_gates:
+  maximum_pooled_rmse: 8.89408550082682
+  minimum_rmse_gain_vs_exp228_ft: 0.05
+  minimum_rmse_gain_vs_exp226_ft: 0.20
+  minimum_improved_outer_folds_vs_exp226: 4
+  segment_target_weighted_rmse_improved_folds_vs_zero_prior: 5
+  maximum_near_0_250_rmse_delta_vs_exp226_ft: 0.0
+  maximum_1000_plus_rmse_delta_vs_exp226_ft: 0.0
+  maximum_hidden_like_spatial_rmse_delta_vs_exp226_ft: 0.0
+  maximum_hidden_like_typewell_purged_rmse_delta_vs_exp226_ft: 0.0
+  maximum_segment_boundary_band_rmse_delta_vs_exp226_ft: 0.0
+  maximum_by_well_p95_delta_vs_exp226_ft: 0.0
+  maximum_worst_well_delta_vs_exp226_ft: 0.25
+  inference_candidate_additional_maximum_rmse: 8.238331715
+  inference_requires_separate_approval: true
+
+forbidden:
+  - h128_h256_h512_or_variable_length_segment_grid
+  - median_huber_slope_curvature_or_row_target
+  - clipping_shrinkage_taper_interpolation_or_boundary_smoothing
+  - segment_viterbi_hmm_or_candidate_selector
+  - supervised_learned_likelihood_or_selector_score_features
+  - target_error_oracle_or_well_id_feature
+  - non_nested_exp226_training_target
+  - parent_control_retraining
+  - additional_lightgbm_configs_seed_bagging_or_gpu
+  - same_oof_rescue_after_any_gate_failure
+  - direct_promotion_inference_or_submission_before_all_gates_and_separate_approval
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    stage_1_train_kernel_id: kentookumura/exp333-k16-segment-residual-stage1-train
+    stage_1_train_kernel_title: exp333 k16 segment residual stage1 train
+    stage_1_train_kernel_version: 1
+    stage_1_train_kernel_id_no: 128116592
+    stage_1_train_kernel_status: COMPLETE
+    train_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp226-k16-kappa-repro-train
+    candidate_inference_kernel_id: kentookumura/exp333-k16-segment-residual-candidate-inference
+    candidate_inference_kernel_title: exp333 k16 segment residual candidate inference
+    candidate_inference_kernel_version: 2
+    candidate_inference_kernel_id_no: 128368525
+    candidate_inference_kernel_status: COMPLETE
+    inference_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp333-k16-segment-residual-stage1-train
+      - kentookumura/exp226-k16-kappa-repro-inference
+    bootstrap_dependency_files:
+      - source: experiments/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/connortynan_k16_reproduction.py
+        destination: inputs/exp226_source/connortynan_k16_reproduction.py
+      - source: experiments/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/config.yaml
+        destination: inputs/exp226_source/config.yaml
+      - source: experiments/exp228_direct_residual_correction_on_exp226/direct_residual_correction_on_exp226.py
+        destination: inputs/exp228_source/direct_residual_correction_on_exp226.py
+      - source: experiments/exp072_exp063_full_replay_feature_cache/public_notebook_replay_audit.py
+        destination: inputs/exp072_source/public_notebook_replay_audit.py
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  preflight:
+    wells: 32
+    required_projected_stage_1_seconds_at_most: 30600
+    fixed_five_booster_and_artifact_io_reserve_seconds: 1800
+    feature_projection: selected_row_elapsed_scaled_to_expected_full_rows
+    nested_projection: full_25_fit_elapsed_plus_selected_prediction_elapsed_scaled_to_3865_runs
+    result:
+      kernel_id: kentookumura/exp333-k16-segment-residual-stage1-preflight
+      kernel_version: 1
+      kernel_id_no: 128114252
+      kernel_status: COMPLETE
+      selected_wells: 32
+      selected_feature_rows: 166533
+      nested_fits: 25
+      nested_prediction_well_runs: 160
+      models: 0
+      boosters: 0
+      elapsed_seconds: 491.88453146899997
+      nested_elapsed_seconds: 338.20604609199995
+      nested_fit_seconds: 300.8038080109998
+      nested_prediction_seconds: 34.845079881000174
+      feature_elapsed_seconds: 153.67848328700006
+      outer_valid_parent_parity_max_abs_ft: 1.8189894035458565e-12
+      projected_nested_stage_1_seconds: 1142.5302688864103
+      projected_feature_stage_1_seconds: 3491.906650902176
+      fixed_five_booster_and_artifact_io_reserve_seconds: 1800.0
+      projected_full_stage_1_seconds: 6434.436919788586
+      projected_full_stage_1_hours: 1.7873435888301628
+      runtime_margin_seconds: 24165.563080211414
+      runtime_gate_pass: true
+      full_stage_1_executed: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: saved_outer_fold_stable_sha256_inner_fold_lightgbm_random_state_zero
+  stochastic_components:
+    - fixed_upstream_pf_beam_feature_cache
+    - cpu_lightgbm_training
+  parallel_rng_policy: no_global_rng_canonical_fold_well_row_segment_sort_fixed_eight_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    outer_and_inner_fold_sha: true
+    segment_assignment_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    nested_exp226_prediction_sha: true
+    segment_target_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+
+inference:
+  enabled: false
+  create_submission: false
+  reason: >-
+    Full Stage 1 train version 1 failed the fixed pooled, near-0-250, and
+    worst-well gates and did not meet the exp263 candidate threshold.
+    The branch is closed, so no inference path or submission is authorized.
+
+candidate_inference:
+  enabled: true
+  create_submission: false
+  authorization_scope: current_test_candidate_artifact_only
+  selected_variant: exp333_k16_segment_residual_offset
+  base_prediction: exp226_inference_v1
+  base_submission_rows: 14151
+  expected_test_wells: 3
+  k_segments: 16
+  expected_segments: 48
+  saved_model_folds: [0, 1, 2, 3, 4]
+  saved_model_count: 5
+  fold_ensemble: float64_arithmetic_mean
+  offset_clipping: none
+  offset_shrinkage: none
+  offset_taper: none
+  offset_interpolation: none
+  offset_slope: disabled
+  selector: disabled
+  blend: disabled
+  fixed12_average: disabled
+  new_training_variants: 0
+  model_configs_trained: 0
+  folds_trained: 0
+  boosters_trained: 0
+  parent_control_retraining: false
+  runtime:
+    gpu: false
+    n_jobs: 8
+    pf_seeds: 128
+    pf_particles: 500
+    stable_seed_policy: exp072_v2_sha256_per_well_and_split
+  inputs:
+    exp072_feature_schema:
+      filename: exp063_full_replay_feature_cache_feature_schema.csv
+      sha256: 700d38149f583c3ab6574ea7b163c3c8709c2514b675bea381d822f82f4809b8
+      expected_feature_count: 196
+    exp072_replay_source:
+      filename: public_notebook_replay_audit.py
+      sha256: 4af212a8a1c83e36cdcc0bc912942a62df1fbc94ca67fd75789171afaa1a647e
+    exp228_target_free_source:
+      filename: direct_residual_correction_on_exp226.py
+      sha256: 8cf163688daa8a6ed4cf4d9169b66b039a04d167df4d45ac881335bb5ee6e155
+    exp226_inference:
+      kernel_id: kentookumura/exp226-k16-kappa-repro-inference
+      submission_filename: submission.csv
+      submission_sha256: b71e15f7dc7e66f7be70db4a81d9ec72e1001ff2ba13907c3aba24938e906047
+      summary_filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_inference_summary.json
+      summary_sha256: ea2f85d24284fb6768b949f435774885bfc74a749ddc763f18728e12cee7ed6b
+    exp333_stage1_train:
+      kernel_id: kentookumura/exp333-k16-segment-residual-stage1-train
+      model_manifest_filename: exp333_exp226_k16_segment_residual_offset_target_stage1_model_manifest.json
+      model_manifest_sha256: 3e4c99b2451c7731331bca7fabba44353ce7ac7e80e7c821f4799983d8f297a9
+      summary_filename: exp333_exp226_k16_segment_residual_offset_target_stage1_summary.json
+      summary_sha256: 0ccb01042233740183f46c39189065cf4dac5b4c9aa62f3feb3d0c7ec16e5619
+      feature_schema_filename: exp333_exp226_k16_segment_residual_offset_target_stage1_feature_schema.csv
+      feature_schema_file_sha256: b9f21bada91c07fc2f7385d7c2e919752b77f67cc865e2ac60718fa283cc0114
+      feature_schema_content_sha256: 8a6ae01d792e6cf352f22c4519ec7934e5e39ee032a8ae676da9449722684a45
+      sha_manifest_filename: exp333_exp226_k16_segment_residual_offset_target_stage1_sha_manifest.csv
+      sha_manifest_sha256: 5a102493bdcb35f6e2d708c5cf4b8558fb90939a66e947f32ab31a5d608201e0
+      feature_freeze_sha256: b2c7bff40f9fc994bd60471c03d9085ba48137c30b358402bfbb1cadecc4a078
+      saved_oof_file_sha256: 70b623d4c839c4f7eb11fb2134aa214ca8f0ce8d6ebe65e723d2fffa95dcc2dc
+      saved_oof_decompressed_sha256: f2ebc6f6ea243b45fdb785342b8815b3b04947f96d787d3017e5e2be7ff92e5a
+      expected_rows: 3783989
+      expected_wells: 773
+      expected_segments: 12368
+      expected_feature_count: 136
+      expected_boosters: 5
+      expected_exp226_rmse: 9.42710959658222
+      expected_stage1_rmse: 9.076676660936826
+      expected_decision: FAIL_CLOSE_BRANCH
+      model_sha256:
+        "0": 4697f52c9d907e2ef0df3fe9a40dcaeb07cbf1595d1001cef5e8c97862993ffc
+        "1": a9d2f71efc3be487bb0e380eb6b9a7351430fc09e350d5ce1b018a6e42499365
+        "2": 63be39165913b6f061d98fd3810fc694154264432ddf1e29998954bd0c63357f
+        "3": d6a224e9e46da10f00c6d2f590061e863090d933f9710a5f8d4cfba7e90c28e8
+        "4": 7e2ceadd63987f1de09c2fde008fcff30d50ab69ca38a1ca5ad5d38a9b86f668
+  result:
+    kernel_id: kentookumura/exp333-k16-segment-residual-candidate-inference
+    kernel_version: 2
+    kernel_id_no: 128368525
+    kernel_status: COMPLETE
+    rows: 14151
+    wells: 3
+    segments: 48
+    row_feature_count: 129
+    model_feature_count: 136
+    saved_model_count: 5
+    trained_models: 0
+    trained_boosters: 0
+    parent_control_retraining: false
+    submission_created: false
+    technical_pass: true
+    all_technical_guards_passed: true
+    feature_generation_seconds: 51.44646319399999
+    saved_model_inference_seconds: 3.031535549999944
+    total_seconds: 65.25832041800004
+    row_feature_content_sha256: 9475721131bfd93a036d0a636d473a8cf6cc8d7d46eaf203b3879ccba6272a79
+    segment_feature_content_sha256: c6cbe6deedc58dda2b7df4ec072489f881b5893263c02983ad2be2da54ff786c
+    segment_prediction_content_sha256: fc54e72e1865b6669d5a1af2998af26abc0c97473d284ec7ea86c286c8213923
+    candidate_prediction_content_sha256: 316e3b770925cc3e0013bfbc46a86629619b8f214a5913a482c83607c3865d02
+    candidate_file_sha256: d7a6bae97b7ea81aaa41f7b7850a1d56286ccb57db354ed62893c28d74ef49c1
+    candidate_decompressed_sha256: 7571c6281bd2ab484e7bf536a876b8072407b272a0ef0ec5112ca06897a717cd
+    offset_min_ft: -4.2494793032465585
+    offset_max_ft: 2.592368615360002
+    offset_mean_ft: 0.2896888055061519
+    offset_std_ft: 1.7177359914502301
+    candidate_min_ft: 11592.656626661426
+    candidate_max_ft: 12239.918416564442
+    candidate_mean_ft: 11906.23862761861
+    candidate_std_ft: 278.30494686596165
+    local_artifact: kaggle/output/inference_v2/artifacts/exp333_exp226_k16_segment_residual_offset_target_current_test_candidate.csv.gz
+    v1_failure: exp072_train_allowlist_not_applied_to_205_column_raw_replay_frame
+    v2_fix: use_exp072_feature_columns_for_variant_and_subset_exact_196_columns
+
+artifacts:
+  output_prefix: exp333_exp226_k16_segment_residual_offset_target
+  expected_train:
+    - exp333_exp226_k16_segment_residual_offset_target_stage0_contract.json
+    - exp333_exp226_k16_segment_residual_offset_target_stage0_input_manifest.csv
+    - exp333_exp226_k16_segment_residual_offset_target_stage0_target_free_freeze.json
+    - exp333_exp226_k16_segment_residual_offset_target_stage0_fold_metrics.csv
+    - exp333_exp226_k16_segment_residual_offset_target_stage0_segment_counts.csv
+    - exp333_exp226_k16_segment_residual_offset_target_stage0_summary.json
+    - exp333_exp226_k16_segment_residual_offset_target_stage0_sha_manifest.csv
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_contract.json
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_input_manifest.csv
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_fold_manifest.csv
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_feature_schema.csv
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_projection_feature_summary.csv
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_grwr_feature_summary.csv
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_nested_exp226_predictions.csv.gz
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_segment_predictions.csv.gz
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_oof_predictions.csv.gz
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_fold_metrics.csv
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_bucket_metrics.csv
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_hidden_like_metrics.csv
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_boundary_metrics.csv
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_by_well_metrics.csv
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_feature_importance.csv
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_model_manifest.json
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_summary.json
+    - exp333_exp226_k16_segment_residual_offset_target_stage1_sha_manifest.csv
+  expected_inference: []
+  expected_candidate_inference:
+    - exp333_exp226_k16_segment_residual_offset_target_current_test_candidate.csv.gz
+    - exp333_exp226_k16_segment_residual_offset_target_current_test_segment_predictions.csv
+    - exp333_exp226_k16_segment_residual_offset_target_current_test_feature_schema.csv
+    - exp333_exp226_k16_segment_residual_offset_target_current_test_projection_feature_summary.csv
+    - exp333_exp226_k16_segment_residual_offset_target_current_test_grwr_feature_summary.csv
+    - exp333_exp226_k16_segment_residual_offset_target_current_test_model_audit.csv
+    - exp333_exp226_k16_segment_residual_offset_target_current_test_boundary_audit.csv
+    - exp333_exp226_k16_segment_residual_offset_target_current_test_input_manifest.csv
+    - exp333_exp226_k16_segment_residual_offset_target_current_test_summary.json
+    - exp333_exp226_k16_segment_residual_offset_target_current_test_sha_manifest.csv
+
+notes:
+  - Design frozen on 2026-07-21 at the user's request.
+  - Stage 0 implementation was approved on 2026-07-21.
+  - Stage 0 Kaggle CPU version 1 completed and passed on 2026-07-21; the only attached kernel source was the saved exp226 train output.
+  - Stage 0 execution authorization is consumed. Stage 1 implementation was separately approved and completed.
+  - Stage 1 CPU preflight version 1 completed and passed on 2026-07-21; its execution authorization is consumed and the full run remains separately unapproved.
+  - Full Stage 1 CPU train was approved on 2026-07-21 for one variant, one config, five folds, five boosters, 25 nested exp226 fits, and 3,865 prediction well-runs; parent/control retraining remains zero.
+  - Full Stage 1 CPU train version 1 completed on 2026-07-21 but failed the pooled, near-0-250, and worst-well fixed gates. The branch is fail-closed with no inference or submission.
+  - Stage 0 and Stage 1 execution are separate approvals. A Stage 1 scientific PASS does not by itself approve inference.
+  - exp361 CPU v2 supported exp333 as an add-one candidate against the fixed exp293 bank. On 2026-07-23 the user separately approved current-test candidate artifact generation with the saved five models; direct promotion, selector/blend, submission-file generation, and competition submit remain disabled.
+  - Candidate inference v1 failed before feature generation because the raw replay frame exposed 205 columns including nine exp072-excluded likelihood-PF diagnostic columns. Version 2 applied exp072's canonical 196-column allowlist and completed.
+  - Candidate inference v2 produced a validated 14,151-row candidate artifact with five saved models and no training or submission. Its one-run authorization is consumed.

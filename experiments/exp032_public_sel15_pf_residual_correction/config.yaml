@@ -1,0 +1,155 @@
+experiment:
+  name: "exp032_public_sel15_pf_residual_correction"
+  description: Train fold-held residual correction on top of public sel15 PF predictions.
+  route: pf_beam
+  status: completed
+  created_at: "2026-06-07"
+  updated_at: "2026-06-07"
+
+lineage:
+  parent: exp029_public_sel15_pf_oof_feature_generation
+  diff_summary: Learn target_tvt - pf_pred residual corrections from exp029 PF/Beam features generated under the pseudo-test condition, with original-fold and well-hash holdout audits.
+
+validation:
+  leakage_policy:
+    - Input rows come from exp029 where each train well was converted to train well の途中以降を隠した疑似 test by masking TVT_input after the cutoff before PF/Beam runs.
+    - target_tvt is used only as the residual target and scoring label.
+    - Error diagnostic columns such as pf_error, last_anchor_error, and beam_error are not model features.
+    - exp026_oof is excluded because the exp029 artifact has it missing for all rows.
+    - A residual candidate is supported only if both original-fold OOF and stable well-hash holdout beat the required controls.
+
+data:
+  feature_path: experiments/exp029_public_sel15_pf_oof_feature_generation/features/public_sel15_pf_oof_features.csv.gz
+  source_well_summary_path: experiments/exp029_public_sel15_pf_oof_feature_generation/artifacts/public_sel15_pf_oof_well_summary.csv
+
+model:
+  name: public_sel15_pf_residual_correction
+  target: target_tvt_minus_pf_pred
+  base_prediction: pf_pred
+  features:
+    - pf_pred
+    - last_anchor_tvt
+    - beam_pred
+    - pf_selected_scale_pred
+    - pf_scale_3
+    - pf_scale_5
+    - pf_scale_8
+    - pf_scale_12
+    - pf_seed_mean
+    - pf_seed_std
+    - pf_lik_best
+    - pf_lik_mean
+    - pf_lik_std
+    - pf_lik_gap_best_second
+    - pf_weight_entropy
+    - pf_weight_top
+    - pf_weight_best_second_gap
+    - pf_effective_seeds
+    - pf_pred_minus_last_anchor
+    - pf_beam_diff
+    - abs_pf_beam_diff
+    - beam_spread
+    - beam_min
+    - beam_max
+    - beam_final_cost_mean
+    - beam_final_cost_min
+    - selector_code
+    - selector_scale
+    - selector_beam_weight
+    - selector_hold_weight
+    - selector_n_eval
+    - selector_z_span
+    - pseudo_cutoff_fraction
+    - cutoff_row
+    - row_idx
+    - prefix_length
+    - eval_step
+    - eval_fraction
+    - MD
+    - X
+    - Y
+    - Z
+    - GR
+    - gr_isna
+    - gr_prefix_availability
+    - gr_eval_availability
+    - pf_gr_sigma_mean
+    - pf_initial_rate_mean
+    - pf_mean_effective_particles
+    - pf_min_effective_particles
+    - pf_resample_count_mean
+  candidates:
+    - name: ridge_residual
+      estimator: ridge
+      params:
+        alpha: 20.0
+      residual_shrink_values: [0.25, 0.50, 0.75, 1.00]
+      residual_clip_values: [20.0, 40.0, 80.0]
+      target_clip: 80.0
+      max_train_rows: 500000
+      max_train_rows_per_bucket: 120000
+      seed: 42
+    - name: hgb_residual_small
+      estimator: hist_gradient_boosting
+      params:
+        learning_rate: 0.05
+        max_iter: 120
+        max_leaf_nodes: 31
+        min_samples_leaf: 120
+        l2_regularization: 2.0
+        max_bins: 255
+        early_stopping: true
+        validation_fraction: 0.12
+        n_iter_no_change: 10
+      residual_shrink_values: [0.25, 0.50, 0.75, 1.00]
+      residual_clip_values: [20.0, 40.0, 80.0]
+      target_clip: 80.0
+      max_train_rows: 350000
+      max_train_rows_per_bucket: 90000
+      seed: 42
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  chunk_rows: 500000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp029-sel15-pf-oof-train
+
+audit:
+  well_holdout_folds: 5
+  reference_control: public_pf_selector
+  required_controls:
+    - public_pf_selector
+    - pf090_hold010
+  controls:
+    - name: public_pf_selector
+      method: column
+      column: pf_pred
+    - name: pf090_hold010
+      method: blend
+      weights: {pf_pred: 0.90, last_anchor_tvt: 0.10}
+    - name: pf080_hold020
+      method: blend
+      weights: {pf_pred: 0.80, last_anchor_tvt: 0.20}
+    - name: beam
+      method: column
+      column: beam_pred
+    - name: last_anchor
+      method: column
+      column: last_anchor_tvt
+  distance_buckets:
+    - {name: rows_0_49, max_step: 49}
+    - {name: rows_50_249, max_step: 249}
+    - {name: rows_250_999, max_step: 999}
+    - {name: rows_1000_2499, max_step: 2499}
+    - {name: rows_2500_plus, max_step: 1000000000}
+
+notes:
+  - This is an audit-only experiment and does not create a submission.
+  - The residual model is intentionally clipped and shrunk to reduce overcorrection risk.
+  - Inference migration requires a supported candidate in both holdout audits, then a separate exp027 inference-flow implementation.
+  - Kaggle train version 2 completed; selected ridge_residual_shrink0p5_clip20p0 passed both holdout audits.

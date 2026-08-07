@@ -1,0 +1,90 @@
+{
+  "experiment": "exp152_all_well_lightweight_multimode_beam_audit",
+  "status": "completed_all_well_tail_slice_rejected_no_submit",
+  "route": "pf_beam",
+  "parent": "exp143_multimode_pfbeam_local_correlation_audit",
+  "kernel": "kentookumura/exp152-allwell-light-mmbeam-audit-train",
+  "kernel_version": 1,
+  "kaggle_url": "https://www.kaggle.com/code/kentookumura/exp152-allwell-light-mmbeam-audit-train",
+  "output_dir": "experiments/exp152_all_well_lightweight_multimode_beam_audit/kaggle/output/train_v1",
+  "scope": {
+    "rows": 386407,
+    "wells": 773,
+    "max_rows_per_well": 500,
+    "runtime_sec": 780.2388648986816
+  },
+  "cv": {
+    "metric": "rmse",
+    "best_candidate": "exp072_likpf_mean",
+    "best_rmse": 16.11583517108909,
+    "candidates": {
+      "exp072_likpf_mean": {
+        "rmse": 16.11583517108909,
+        "mae": 10.421046354721996,
+        "bias": -1.1114341372285246,
+        "within_10ft": 0.6465954291718318
+      },
+      "exp072_beam_mean": {
+        "rmse": 19.68574230523314,
+        "mae": 14.05212660776572,
+        "bias": -1.270643820557462,
+        "within_10ft": 0.47882931727427297
+      },
+      "multimode_pf_zacc_s010_a020_noise050_best_lik_seed": {
+        "rmse": 20.110700665808704,
+        "mae": 14.501435402086562,
+        "bias": -1.6626768602511406,
+        "within_10ft": 0.4547070834638089,
+        "rmse_delta_vs_exp072_beam_mean": 0.42495836057556247,
+        "mae_delta_vs_exp072_beam_mean": 0.449308794320842,
+        "rmse_delta_vs_exp072_likpf_mean": 3.9948654947196154,
+        "rmse_delta_vs_exp072_pf_z": -4.328490894729452
+      },
+      "exp072_pf_z": {
+        "rmse": 24.439191560538156,
+        "mae": 16.117720692454782,
+        "bias": -1.0928480152970184,
+        "within_10ft": 0.48823649675083525
+      }
+    },
+    "multimode_vs_beam_by_well": {
+      "improved_wells": 364,
+      "worsened_wells": 409,
+      "mean_rmse_delta": 0.39291665425709754,
+      "median_rmse_delta": 0.22559642196948815,
+      "max_rmse_regression": 15.334796745746695,
+      "max_regression_well": "f140c2fa",
+      "best_rmse_improvement": -29.117955941213282,
+      "best_improvement_well": "a959858c"
+    },
+    "multimode_quality": {
+      "variant": "zacc_s010_a020_noise050",
+      "mean_neff_frac": 0.700324,
+      "min_neff_frac": 0.003333,
+      "mean_resample_count": 54.493208,
+      "mean_collapse_rate": 0.128466,
+      "mean_particle_std": 0.546688,
+      "mean_mode_count": 1.056388,
+      "mode_count_le1_rate": 0.944352,
+      "mean_seed_spread_p90_p10": 0.67434
+    },
+    "parity_summary": {
+      "parity_pass": false,
+      "max_abs_diff": 121.73828125,
+      "mean_abs_diff": 14.551679611206055,
+      "p95_abs_diff": 41.25263671875001,
+      "rmse_diff": 20.554778934774433,
+      "note": "Strict PF-Z parity is diagnostic only for this lightweight audit."
+    }
+  },
+  "lb": null,
+  "artifacts": {
+    "summary_json": "experiments/exp152_all_well_lightweight_multimode_beam_audit/kaggle/output/train_v1/artifacts/exp152_all_well_lightweight_multimode_beam_audit_summary.json",
+    "candidate_metrics": "experiments/exp152_all_well_lightweight_multimode_beam_audit/kaggle/output/train_v1/artifacts/exp152_all_well_lightweight_multimode_beam_audit_candidate_metrics.csv",
+    "bucket_metrics": "experiments/exp152_all_well_lightweight_multimode_beam_audit/kaggle/output/train_v1/artifacts/exp152_all_well_lightweight_multimode_beam_audit_bucket_metrics.csv",
+    "by_well": "experiments/exp152_all_well_lightweight_multimode_beam_audit/kaggle/output/train_v1/artifacts/exp152_all_well_lightweight_multimode_beam_audit_by_well.csv",
+    "candidate_wide": "experiments/exp152_all_well_lightweight_multimode_beam_audit/kaggle/output/train_v1/artifacts/exp152_all_well_lightweight_multimode_beam_audit_candidate_wide.csv.gz"
+  },
+  "decision": "Do not port to inference, submit, or generate a full-row minimal candidate cache from this multimode candidate. Close the backlog item.",
+  "notes": "All-well tail500 lightweight train-side audit. Multimode improves over exp072_pf_z but misses the primary Beam comparison and likpf guard."
+}

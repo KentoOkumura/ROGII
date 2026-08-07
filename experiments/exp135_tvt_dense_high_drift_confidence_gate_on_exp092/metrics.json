@@ -1,0 +1,47 @@
+{
+  "experiment": "exp135_tvt_dense_high_drift_confidence_gate_on_exp092",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "ml_model",
+  "parent": "exp092_u_projection_correction_disagreement_fullrun",
+  "implemented_backlog": "tvt_dense_high_drift_confidence_gate_on_exp092",
+  "kernel": {
+    "id": "kentookumura/exp135-tvt-dense-gate-train",
+    "version": 2,
+    "url": "https://www.kaggle.com/code/kentookumura/exp135-tvt-dense-gate-train"
+  },
+  "rows": 3783989,
+  "wells": 773,
+  "base": {
+    "variant": "base_exp092_lgb1",
+    "rmse": 9.322479895503927,
+    "mae": 5.980980396270752,
+    "within10": 0.8220470514052762
+  },
+  "best_non_oracle": {
+    "variant": "base_exp092_lgb1",
+    "rmse": 9.322479895503927,
+    "delta_rmse_vs_exp092": 0.0
+  },
+  "best_gate": {
+    "variant": "seg_dense50_q75_tail1000_min100_clip20_a050",
+    "rmse": 9.874846007647461,
+    "delta_rmse_vs_exp092": 0.5523661121435346,
+    "within10": 0.7883032958076781,
+    "gate_rate": 0.32080061543519284,
+    "gate_wells": 575,
+    "max_well_regression_vs_exp092": 9.535752101849667
+  },
+  "oracle": {
+    "all_candidates_rmse": 3.421443765608967,
+    "dense_candidates_rmse": 10.971366038844979
+  },
+  "common_worst": {
+    "pf_likpf_worst50_single_tvt_densew_delta_rmse_vs_exp092": -4.6522279413579,
+    "pf_likpf_worst50_best_gate_delta_rmse_vs_exp092": -3.129011092829849,
+    "common_pf_ml_worst26_single_tvt_densew_delta_rmse_vs_exp092": -6.432887,
+    "common_pf_ml_worst26_best_gate_delta_rmse_vs_exp092": -3.878499
+  },
+  "decision": "reject_direct_gate_no_inference_port_no_submit",
+  "public_lb": null,
+  "private_lb": null
+}

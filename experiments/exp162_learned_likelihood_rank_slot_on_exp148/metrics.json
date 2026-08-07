@@ -1,0 +1,137 @@
+{
+  "experiment": "exp162_learned_likelihood_rank_slot_on_exp148",
+  "status": "submitted_public_lb_8p100_not_adopted",
+  "updated_at": "2026-07-02",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "learned_likelihood_parent": "exp145_learned_likelihood_rawtest_feature_generator_parity",
+  "rank_slot_source_parent": "exp098_selector_rank_slot_features_on_exp073",
+  "cv": {
+    "status": "split_train_completed",
+    "kernels": {
+      "lgb0": "kentookumura/exp162-ll-rank-slot-exp148-lgb0-train",
+      "lgb1": "kentookumura/exp162-ll-rank-slot-exp148-lgb1-train",
+      "lgb2": "kentookumura/exp162-ll-rank-slot-exp148-lgb2-train"
+    },
+    "kernel_version": 1,
+    "variant": "learned_likelihood_rank_slot_addonly",
+    "mode": "cpu_deterministic_threads8",
+    "rows": 3783989,
+    "features": 375,
+    "source": "kaggle_logs_fold_metrics",
+    "fold_metrics": {
+      "lgb0": [
+        {"fold": 0, "rmse_tvt": 9.248265962587892, "best_iteration": 4995},
+        {"fold": 1, "rmse_tvt": 8.666493615621523, "best_iteration": 766},
+        {"fold": 2, "rmse_tvt": 7.315382134803372, "best_iteration": 1648},
+        {"fold": 3, "rmse_tvt": 8.303875272516935, "best_iteration": 180},
+        {"fold": 4, "rmse_tvt": 8.780813813130763, "best_iteration": 270}
+      ],
+      "lgb1": [
+        {"fold": 0, "rmse_tvt": 9.137180818935946, "best_iteration": 10000},
+        {"fold": 1, "rmse_tvt": 8.467454524874421, "best_iteration": 7264},
+        {"fold": 2, "rmse_tvt": 7.233882811913086, "best_iteration": 1929},
+        {"fold": 3, "rmse_tvt": 8.520441931645728, "best_iteration": 762},
+        {"fold": 4, "rmse_tvt": 8.799596852821711, "best_iteration": 1291}
+      ],
+      "lgb2": [
+        {"fold": 0, "rmse_tvt": 9.105696680827483, "best_iteration": 9981},
+        {"fold": 1, "rmse_tvt": 8.488784217479346, "best_iteration": 3926},
+        {"fold": 2, "rmse_tvt": 7.348655102590403, "best_iteration": 2127},
+        {"fold": 3, "rmse_tvt": 8.472259655164128, "best_iteration": 1716},
+        {"fold": 4, "rmse_tvt": 8.698947760205431, "best_iteration": 1523}
+      ]
+    },
+    "weighted_pooled_estimates": {
+      "note": "Split CPU train completed and wrote artifacts per lgb config. Cross-manifest OOF lgb_mean was not computed locally.",
+      "lgb0": 8.48804924068525,
+      "lgb1": 8.456600573816607,
+      "lgb2": 8.443346041268542,
+      "lgb_mean": null
+    },
+    "artifacts_written": true,
+    "artifact_manifests": {
+      "lgb0": "exp162_learned_likelihood_rank_slot_on_exp148_lgb0_lgb_models/manifest.json",
+      "lgb1": "exp162_learned_likelihood_rank_slot_on_exp148_lgb1_lgb_models/manifest.json",
+      "lgb2": "exp162_learned_likelihood_rank_slot_on_exp148_lgb2_lgb_models/manifest.json"
+    }
+  },
+  "lb": {
+    "ref": 54247043,
+    "date": "2026-07-02 00:02:06.833000",
+    "public": 8.1,
+    "private": null,
+    "status": "SubmissionStatus.COMPLETE",
+    "delta_vs_exp148_public_lb": 0.14,
+    "delta_vs_exp160_public_lb": 0.039,
+    "adopted": false
+  },
+  "public_lb": 8.1,
+  "private_lb": null,
+  "inference": {
+    "kernel": "kentookumura/exp162-ll-rank-slot-exp148-infer",
+    "kernel_version": 4,
+    "status": "complete",
+    "selected_model": "lgb_mean",
+    "model_count": 15,
+    "feature_count": 375,
+    "test_rows": 14151,
+    "submission_rows": 14151,
+    "predicted_rows": 14151,
+    "fallback_rows": 0,
+    "prediction_min": 11590.8623046875,
+    "prediction_max": 12240.15234375,
+    "prediction_mean": 11905.147261360173,
+    "prediction_std": 278.8603867428979,
+    "prediction_sha256": "16ad86b3d400c3aa0bfd67e86e6340eda0d8293d919011694df81d6499b0b7da",
+    "submission_sha256": "75c7374ae07314e996d69968cee3743f4119e6d6229ac5339195ee0107777571",
+    "test_feature_source_kind": "target_free_current_test_generated_learned_likelihood_ml_features",
+    "learned_feature_rows": 14151,
+    "learned_feature_decompressed_sha256": "27efc7c7ef776fc21a9792c8e1a587d4f9fc99a0b2e7945cd8d47d165c658fbb",
+    "elapsed_seconds": 155.072,
+    "model_manifest_prefixes": [
+      "exp162_learned_likelihood_rank_slot_on_exp148_lgb0",
+      "exp162_learned_likelihood_rank_slot_on_exp148_lgb1",
+      "exp162_learned_likelihood_rank_slot_on_exp148_lgb2"
+    ]
+  },
+  "submit_check": {
+    "status": "pass",
+    "submission_path": "experiments/exp162_learned_likelihood_rank_slot_on_exp148/kaggle/output/inference_v4/submission.csv",
+    "sample_path": "data/raw/sample_submission.csv",
+    "rows": 14151,
+    "columns": 2,
+    "duplicate_ids": false,
+    "missing_or_inf_values": false,
+    "header_matches_sample": true,
+    "row_count_matches_sample": true
+  },
+  "submitted": true,
+  "planned_train": {
+    "active_variants": [
+      "learned_likelihood_rank_slot_addonly"
+    ],
+    "disabled_variants": [
+      "exp148_historical_control"
+    ],
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "active_modes": [
+      "cpu_deterministic_threads8"
+    ],
+    "total_boosters": 15,
+    "control_retraining": false,
+    "runtime": "cpu"
+  },
+  "reference_metrics": {
+    "exp148_lgb_mean_pooled_rmse": 8.50128118189582,
+    "exp148_public_lb": 7.96,
+    "exp092_full_lgb1_pooled_rmse": 9.322479895503927,
+    "exp098_lgb1_pooled_rmse": 9.35815105231876,
+    "exp153_lgb_mean_pooled_rmse": 9.423385453890534
+  },
+  "decision": {
+    "ml_route_anchor": false,
+    "reason": "Hidden-safe inference v4 submitted and scored Public LB 8.100, worse than exp148 Public LB 7.960 by +0.140 and exp160 Public LB 8.061 by +0.039. Do not adopt."
+  }
+}

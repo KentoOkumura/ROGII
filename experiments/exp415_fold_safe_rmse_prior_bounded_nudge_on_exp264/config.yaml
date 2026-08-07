@@ -1,0 +1,315 @@
+experiment:
+  name: exp415_fold_safe_rmse_prior_bounded_nudge_on_exp264
+  description: >-
+    Confirm a zero-booster use of fold-safe candidate RMSE as an additive
+    selector prior, then convert the selected candidate difference into a
+    mathematically risk-bounded TVT nudge on corrected exp264 OOF.
+  hypothesis: >-
+    Candidate RMSE can improve the direction of local selector corrections
+    when used as a global score prior rather than task importance. Clipping
+    every TVT correction to 0.25 ft guarantees scope-level RMSE regression no
+    larger than 0.25 ft while retaining repeatable aggregate improvement.
+  route: ensemble
+  status: complete_saved_oof_method_confirmed
+  created_at: "2026-07-26"
+  updated_at: "2026-07-27"
+  inference_enabled: false
+  submission_enabled: false
+  next_action: no_inference_or_submission_diagnostic_method_only
+
+lineage:
+  parent: exp264_exp263_candidate_confidence_dual_selector
+  root_cause_source: exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264
+  root_cause_readout: exp414_fold_safe_candidate_rmse_offset_selector_on_exp264
+  steering: ../../.steering/20260726-exp415-fold-safe-rmse-prior-bounded-nudge-on-exp264
+  references:
+    - docs/06_reproducibility.md
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/config.yaml
+    - experiments/exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264/result.md
+    - experiments/exp414_fold_safe_candidate_rmse_offset_selector_on_exp264/result.md
+  diff_summary: >-
+    Use corrected exp264 saved pred_abs_error scores and candidate TVT values
+    without retraining. Add each outer model's exact-fit candidate RMSE to its
+    candidate score to choose a prior candidate. Move the parent-selected TVT
+    halfway toward that candidate but clip the per-row correction to +/-0.25
+    ft. The ML selector and PF/Beam-containing candidate bank both contribute
+    directly to prediction, so the route is ensemble.
+
+implementation:
+  enabled: true
+  scope: approved_zero_booster_kaggle_confirmation
+  scaffold_created: true
+  steering_frozen: true
+  jupytext_candidate_created: true
+  canonical_notebook_adopted: true
+  canonical_notebook_adoption_requires_explicit_approval: true
+  canonical_notebook_adoption_approved: true
+  canonical_notebook_adoption_approved_at: "2026-07-27"
+  tests_created: true
+  kaggle_package_created: true
+  kaggle_execution_enabled: true
+  kaggle_execution_completed: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: saved_outer_oof_two_phase_risk_bounded_policy_readout
+  metric: rmse
+  diagnostic_only: true
+  route_anchor_update_allowed: false
+  expected_base_rows: 3783989
+  expected_candidate_long_rows: 45407868
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  expected_candidate_count: 12
+  expected_selectable_candidate_count: 11
+  truth_free_phase:
+    allowed_columns:
+      - id
+      - well
+      - well_row_idx
+      - outer_fold
+      - md_since
+      - candidate_id
+      - candidate_tvt
+      - pred_abs_error
+      - feature_schema_sha
+      - candidate_contract_sha
+      - model_fold
+    forbidden_columns:
+      - actual_abs_error
+      - actual_within10
+      - TVT
+      - true_tvt
+      - error
+      - oracle
+    freeze_before_truth_read: true
+  evaluation_phase:
+    allowed_truth_columns: [actual_abs_error]
+    reconstruct_true_tvt_from_candidate_value_and_actual_abs_error: true
+    truth_reconstruction_max_abs_tolerance: 1.0e-6
+  distance_buckets:
+    edges: [-.inf, 250.0, 500.0, 1000.0, .inf]
+    labels: [near_0_250, 250_500, 500_1000, 1000_plus]
+  hidden_like_scopes:
+    hidden_like_spatial:
+      column: verification_like_spatial_role
+      included_value: valid
+    hidden_like_typewell_purged:
+      column: verification_like_typewell_purged_role
+      included_value: valid
+
+data:
+  parent_candidate_score_oof:
+    patterns:
+      - /kaggle/input/datasets/kentookumura/exp409-exp264-stage-b-v5-oof-input/candidate_score_oof.parquet
+      - /kaggle/input/exp409-exp264-stage-b-v5-oof-input/candidate_score_oof.parquet
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_b_v5/artifacts/candidate_score_oof.parquet
+    sha256: 9a91b62599278d4e56d57074df4725d4a09391460458b8eccc02dd50af34d48a
+  candidate_rmse_table:
+    patterns:
+      - inputs/exp407_candidate_task_weight_by_fold.csv
+      - experiments/exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264/kaggle/output/train_v1_small/artifacts/candidate_task_weight_by_fold.csv
+    sha256: ecf3e93b161e2a173ed3cadbf69cc369d367f38d939d8463be1624e4c851922b
+    expected_rows: 60
+    expected_fit_base_rows_per_fold: 60000
+    rmse_column: fit_candidate_rmse
+    weight_columns_forbidden_in_policy:
+      - raw_inverse_rmse
+      - mean_normalized_weight
+      - clipped_weight
+      - final_weight
+  hidden_like_assignment:
+    patterns:
+      - inputs/hidden_like_assignment.csv
+      - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  expected_feature_schema_sha256: aaef4ffdd90667893b099b76a52f1957b22197aea9cee5e5b57bc81048ddd3a4
+  expected_candidate_contract_logical_sha256: 58950e002d4c388f02d8c98117c545aa6a600d6d4e3bbbed9277d23389551081
+
+candidate_bank:
+  order:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__exact_hmm
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+    - likpf_mean__exact_hmm
+    - exp226_w500_50_50
+  primary_domain:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__exact_hmm
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+    - likpf_mean__exact_hmm
+  excluded_fixed_fallback: exp226_w500_50_50
+  stable_tie_break: declared_candidate_order
+
+policy:
+  name: fold_safe_rmse_prior_bounded_tvt_nudge
+  parent_selection: argmin_parent_pred_abs_error_over_primary_domain
+  prior_selection: argmin_parent_pred_abs_error_plus_fit_candidate_rmse
+  candidate_rmse_coefficient: 1.0
+  blend_parent_weight: 0.5
+  blend_prior_weight: 0.5
+  raw_nudge: half_prior_tvt_minus_parent_tvt
+  correction_clip_ft: [-0.25, 0.25]
+  max_abs_correction_ft: 0.25
+  forbidden:
+    - inverse_rmse_weight
+    - candidate_rmse_as_feature
+    - actual_error_before_freeze
+    - candidate_rmse_coefficient_grid
+    - blend_weight_grid
+    - correction_cap_grid
+    - candidate_subset
+    - well_specific_threshold
+    - rescue_after_gate
+
+model:
+  name: fold_safe_rmse_prior_bounded_nudge_zero_booster_readout
+  family: deterministic_saved_oof_policy
+  fitted_model_count: 0
+  booster_count: 0
+  notes: >-
+    No model is fitted. The model section names the deterministic readout so
+    strict experiment validation does not confuse it with a trainable model.
+
+risk_certificate:
+  inequality: rmse_new_minus_rmse_parent_lte_rms_correction_lte_max_abs_correction
+  maximum_scope_rmse_regression_ft: 0.25
+  scopes:
+    - overall
+    - outer_fold
+    - distance_bucket
+    - hidden_like
+    - well
+
+scientific_gate:
+  minimum_overall_rmse_improvement_ft: 0.01
+  required_nonworse_folds: 5
+  required_nonworse_distance_buckets: 4
+  required_nonworse_hidden_like_scopes: 2
+  maximum_worst_well_regression_ft: 0.25
+  risk_bound_absolute_tolerance: 1.0e-12
+
+preliminary_local_readout:
+  disclosure: exploratory_policy_discovery_not_first_full_authoritative_run
+  parent_oof_rmse: 8.587004386703422
+  bounded_nudge_oof_rmse: 8.563473931791524
+  improvement_ft: 0.023530454911897536
+  nonworse_folds: 5
+  nonworse_distance_buckets: 4
+  nonworse_hidden_like_scopes: 2
+  observed_worst_well_regression_ft: 0.17137908743683994
+  max_abs_correction_ft: 0.25
+
+kaggle_confirmation:
+  status: complete
+  decision: rmse_prior_bounded_nudge_method_confirmed_on_saved_oof
+  kernel_id: kentookumura/exp415-fold-safe-rmse-prior-bounded-nudge-train
+  kernel_version: 1
+  kernel_id_no: 128717911
+  worker_status: COMPLETE
+  elapsed_seconds: 126.338
+  package_sha256: 2ef5f85dea2c8b538fa981fc72641adbce69806d8b41bb2246f2c25667832539
+  executed_config_sha256: 21450bcff8569dd4a2ed84c872af13a01aed488634f61466a130d8c5d22bca90
+  jupytext_source_sha256: 8494936082f72c1e7e959b87b61890961acb7cbcfa780d95bf10e8b103c13326
+  canonical_notebook_sha256: 00a95cb16856c47fc2929c2f37411169f26edb938a6fe5135c835988815daa3f
+  technical_checks_passed: 15
+  technical_checks_total: 15
+  scientific_checks_passed: 6
+  scientific_checks_total: 6
+  parent_oof_rmse: 8.587004386703422
+  bounded_nudge_oof_rmse: 8.563473931791524
+  improvement_ft: 0.023530454911897536
+  nonworse_folds: 5
+  nonworse_distance_buckets: 4
+  nonworse_hidden_like_scopes: 2
+  nonworse_wells: 544
+  wells: 773
+  changed_rows: 2685663
+  clipped_rows: 2012310
+  correction_rms_ft: 0.18978710718863193
+  maximum_abs_correction_ft: 0.25
+  worst_well: cc08aa63
+  observed_worst_well_regression_ft: 0.17137908743683994
+  truth_free_freeze_sha256: 0dd3f55991969da433d65391d5f94efaeff61a615608635767962866a0971aec
+  bounded_nudge_oof_predictions_sha256: cb820ae7c499db8cc6aad37d5665b08e517c88d503a5176b27b03c1b45035f61
+  metrics_all_scopes_sha256: 469e3985a4217e0621eb3d5386395aad0b262f7386909fbad442362f723177a8
+  confirmation_gate_sha256: 30bc689e5e4fe178735c150adac1879226541ee68560aeb5bfb5bff51d8054a0
+  risk_certificate_sha256: 25ed51b33bfb2123316075b655e43bc832682448abb152de771f8570fbc148ad
+
+execution:
+  run_approved: true
+  approved_at: "2026-07-27"
+  approved_scope: canonical_train_notebook_and_private_cpu_zero_booster_readout
+  local_notebook_execution_approved: false
+  active_variants: 1
+  models: 0
+  model_configs: 0
+  folds_for_fit: 0
+  boosters: 0
+  control_retraining: 0
+  pf_runs: 0
+  hmm_runs: 0
+  beam_runs: 0
+  gpu_runs: 0
+  inference_runs: 0
+  submissions: 0
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 200000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    canonical_train_kernel_id: kentookumura/exp415-fold-safe-rmse-prior-bounded-nudge-train
+    canonical_train_title: exp415 fold safe rmse prior bounded nudge train
+    canonical_slug_note: >-
+      The 57-character full experiment slug was rejected by Kaggle SaveKernel
+      before execution. This 47-character slug preserves the experiment number,
+      fold-safe RMSE prior, bounded nudge, and train role.
+    train_kernel_sources: []
+    train_dataset_sources:
+      - kentookumura/exp409-exp264-stage-b-v5-oof-input
+    bootstrap_dependency_files:
+      - source: experiments/exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264/kaggle/output/train_v1_small/artifacts/candidate_task_weight_by_fold.csv
+        destination: inputs/exp407_candidate_task_weight_by_fold.csv
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/hidden_like_assignment.csv
+
+reproducibility:
+  seed: null
+  deterministic_anchor: true
+  seed_policy: no_rng_stable_row_and_candidate_order
+  stochastic_components: []
+  parallel_rng_policy: single_process_no_rng
+  record:
+    kernel_version: true
+    input_sha: true
+    freeze_sha: true
+    row_prediction_sha: true
+    metrics_sha: true
+    gate_sha: true
+    model_sha: false
+    submission_sha: false
+  notes:
+    - The first full authoritative readout must run on Kaggle.
+    - This diagnostic does not update an ML, PF/Beam, or ensemble route anchor.
+
+notes:
+  - The policy was discovered in a local saved-OOF analysis and is not presented as prospective.
+  - Passing confirms reproducibility and diagnostic usefulness, not current-test generalization.

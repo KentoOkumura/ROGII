@@ -1,0 +1,180 @@
+experiment:
+  name: exp339_missing_gap_pseudomask_uncertainty_readout
+  description: >-
+    Design-frozen zero-HMM audit that calibrates interpolation uncertainty from
+    deterministic known-prefix pseudo-gaps matching the observed missing-run distribution.
+  route: pf_beam
+  status: stage0_gate_failed_exp341_blocked
+  created_at: "2026-07-22"
+  updated_at: "2026-07-22"
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260722-exp339-missing-gap-pseudomask-uncertainty-readout
+  references:
+    - exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation
+    - exp308_imputed_gr_confidence_downweight
+    - exp337_prefix_backtested_structure_sigma_gr
+  diff_summary: >-
+    Produces no TVT prediction and changes no decoder. It hides deterministic
+    interior finite-GR blocks inside known prefixes and estimates fold-safe
+    interpolation error variance by fixed gap-length and anchor-distance bins.
+
+implementation:
+  enabled: true
+  scope: stage0_only
+  train_notebook_state: compact_selfcontained_candidate_implemented
+  canonical_notebook_adopted: true
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: outer_grouped_known_prefix_pseudogap_uncertainty_readout
+  metric: gaussian_nll
+  seed: 42
+  n_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  expected_rows: 3783989
+  group_column: well_id
+  expected_wells: 773
+  score_rows: outer_valid_known_prefix_pseudogap_rows_only
+  truth_attachment: hidden_raw_gr_after_pseudogap_identity_and_interpolation_content_sha_freeze
+  leakage_policy:
+    - Outer-valid pseudo-gap errors never fit the uncertainty table.
+    - Unknown-suffix TVT, error, abs_error, and oracle labels are unused.
+    - Pseudo-gap identity and interpolation predictions are frozen before hidden GR is restored.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    safe_columns: [well_id, fold]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+
+model:
+  name: missing_gap_pseudomask_uncertainty_readout
+  estimator: none
+  target: hidden_raw_gr
+  pseudo_gap:
+    run_length_clip: [1, 64]
+    run_length_bins: [[1, 3], [4, 7], [8, 15], [16, 31], [32, 64]]
+    nearest_anchor_distance_bins: [[1, 1], [2, 2], [3, 4], [5, 8], [9, 16], [17, 32]]
+    maximum_gaps_per_well_length_bin: 4
+    require_finite_anchor_both_sides: true
+    forbid_row_reuse_within_fold: true
+    selection: stable_sha256_fold_well_length_start
+    length_matching: outer_train_exact_length_histogram_within_fixed_bins
+    length_schedule: stable_sha256_fold_well_length_bin_slot_cdf
+    control_placement: matched_length_and_count_candidate_rank_circular_rotation
+    coverage_unit: outer_valid_wells_with_at_least_one_selected_gap
+    interpolation: exp209_linear_interpolate_both_directions
+  uncertainty_table:
+    value: mean_squared_interpolation_error
+    shrinkage_support_k: 200
+    hierarchy: [length_distance_cell, length_bin, outer_train_global]
+    gaussian_nll: half_log_2pi_variance_plus_squared_error_over_2variance
+    primary: two_dimensional_shrunk_variance
+    control: outer_train_global_constant_variance
+    negative_control: stable_circular_pseudogap_placement
+  pass_requires_all:
+    minimum_pseudogap_coverage_each_fold: 0.90
+    minimum_wells_each_fold: 140
+    minimum_distinct_wells_pooled: 700
+    require_pooled_nll_better_than_global: true
+    minimum_improved_folds_nll_vs_global: 4
+    pooled_variance_calibration_ratio: [0.80, 1.25]
+    fold_variance_calibration_ratio: [0.70, 1.40]
+    minimum_folds_calibrated: 4
+    minimum_pooled_spearman_length_vs_sigma: 0.50
+    minimum_positive_spearman_folds: 4
+    require_real_better_than_circular_pooled: true
+    minimum_folds_real_better_than_circular: 4
+  forbidden:
+    - hmm_decode
+    - tvt_prediction
+    - suffix_tvt
+    - adaptive_bins
+    - interpolation_method_grid
+    - inference
+    - submission
+
+execution_contract:
+  scientific_readouts: 1
+  control_readouts: 2
+  hmm_well_runs: 0
+  model_configs: 0
+  trained_folds: 0
+  boosters: 0
+  parent_control_retraining: false
+
+execution:
+  implementation_approved: true
+  implementation_approval_scope: user_message_implement_exp339
+  kaggle_push_approved: true
+  kaggle_run_approval_scope: user_message_execute_exp339
+  active_stage: stage0_gate_failed_exp341_blocked
+  run_stage_0: true
+  stage_0_completed: true
+  stage_0_gate_passed: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_sha256_pseudogap_identity
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_identity_and_aggregation_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: true, submission_sha: false}
+
+inference:
+  enabled: false
+  mode: disabled_until_all_stage0_gates_pass_and_separate_implementation_approval
+  create_submission: false
+
+kaggle_result:
+  kernel: kentookumura/exp339-missing-gap-pseudomask-uncertainty-train
+  kernel_version: 1
+  kernel_id_no: 128226213
+  runtime_seconds: 320.79614
+  completed_at_utc: "2026-07-22T11:36:21.327252+00:00"
+  promotion_gate_passed: false
+  failed_check: real_better_than_circular_folds
+  folds_real_better_than_circular: 2
+  required_folds_real_better_than_circular: 4
+  table_content_sha256: 6a9bd955a64ab60fc442e6675c2676828f5426a74fdae3e6fbbd68e34d0eb4e5
+  summary_raw_sha256: b626969cb2b4452b9c8b8dd104c2c8337bfab619bb8cb7b2e782dd3c96e43fbd
+
+notes:
+  - Design frozen on 2026-07-22; Stage 0 implementation was explicitly approved later the same day.
+  - Kaggle CPU package, push, and Stage 0 execution were explicitly approved on 2026-07-22.
+  - Approved run cost is one scientific readout plus two controls across five outer audit folds, with zero trained folds, zero model configs, zero boosters, and no parent-control retraining.
+  - This differs from exp337 by isolating interpolation error with hidden raw GR rather than total typewell structural residual variance.
+  - exp341 remains blocked unless every Stage 0 gate passes and the table SHA is frozen.
+  - Kaggle version 1 completed and failed only the 4-of-5 real-better-than-circular fold gate at 2-of-5; no rescue tuning or rerun is allowed.

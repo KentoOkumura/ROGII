@@ -1,0 +1,131 @@
+{
+  "experiment": "exp432_symmetric_datum_defensive_particle_reinjection",
+  "status": "stage0_fail_closed",
+  "route": "pf_beam",
+  "implemented": true,
+  "executed": true,
+  "technical_pass_logged": false,
+  "mechanism_pass": false,
+  "full_eligible": false,
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "kernel": {
+    "id": "kentookumura/exp432-symmetric-defensive-reinjection-train",
+    "version": 1,
+    "id_no": 128974856,
+    "status": "COMPLETE",
+    "is_private": true,
+    "accelerator": "cpu",
+    "internet": false,
+    "docker_image": "gcr.io/kaggle-images/python@sha256:dafd4ce5668bbf1ad422e4c109e0f18c9623c3a7c7f48b0235f13142755c40b9"
+  },
+  "validation": {
+    "stage": "stage_0_fixed32",
+    "is_prediction_cv": false,
+    "wells": 32,
+    "triggered_wells": 21,
+    "no_event_wells": 11
+  },
+  "technical_gates": {
+    "truth_reads_before_freeze_zero": true,
+    "cause_role_reads_before_freeze_zero": true,
+    "event_maximum_once_and_first_entry": true,
+    "no_event_bitwise_parent_parity": true,
+    "synthetic_no_event_parity": true,
+    "finite_log_q_and_importance": true,
+    "importance_upper_bound": true,
+    "importance_moment_contract": true,
+    "trigger_schedule_sha_readback": true,
+    "hmm_saved_parent_parity": true,
+    "pf_saved_parent_parity": true,
+    "base_common_random_pre_event_parity": true,
+    "runtime_projection": false,
+    "peak_rss": true
+  },
+  "mechanism_gates": {
+    "triggered_wells": true,
+    "support_fraction_reduction": false,
+    "triggered_window_sse_reduction": true,
+    "nonworse_reporting_folds": false,
+    "matched_control_pooled_rmse": true,
+    "matched_control_worst_well": false
+  },
+  "diagnostics": {
+    "baseline_majority_seed_outside_support_fraction": 0.18833705357142858,
+    "treatment_majority_seed_outside_support_fraction": 0.19261532738095238,
+    "support_fraction_absolute_reduction": -0.004278273809523808,
+    "triggered_window_baseline_sse": 479234.92771179177,
+    "triggered_window_treatment_sse": 421309.12946834957,
+    "triggered_window_sse_reduction": 0.12087140334286806,
+    "nonworse_folds": 3,
+    "control_baseline_rmse_ft": 5.614644286441045,
+    "control_treatment_rmse_ft": 4.608949871658536,
+    "control_rmse_delta_ft": -1.0056944147825089,
+    "control_worst_well_rmse_delta_ft": 0.583072975663308,
+    "maximum_hmm_saved_parent_diff_ft": 0.0,
+    "maximum_pf_saved_parent_diff_ft": 0.0,
+    "maximum_pre_event_seed_prediction_diff_ft": 0.0,
+    "maximum_log_importance": 0.2231435513142097
+  },
+  "runtime": {
+    "elapsed_seconds": 3798.0632046869996,
+    "peak_rss_gb": 1.2447776794433594,
+    "logged_single_kernel_full_projection_seconds": 91746.96428822033,
+    "design_four_shard_conservative_reference_seconds": 22936.741072055083,
+    "projection_note": "The executed notebook did not divide the logged projection by the configured four PF shards. Mechanism gates fail independently, so full eligibility remains false."
+  },
+  "folds": [
+    {
+      "fold": 0,
+      "rows": 2560,
+      "baseline_sse": 38367.66774185531,
+      "treatment_sse": 39367.531818121555,
+      "nonworse": false
+    },
+    {
+      "fold": 1,
+      "rows": 2048,
+      "baseline_sse": 71834.26435093349,
+      "treatment_sse": 37070.76316087969,
+      "nonworse": true
+    },
+    {
+      "fold": 2,
+      "rows": 1536,
+      "baseline_sse": 243612.51814896497,
+      "treatment_sse": 223711.07500653295,
+      "nonworse": true
+    },
+    {
+      "fold": 3,
+      "rows": 1536,
+      "baseline_sse": 5479.863852824938,
+      "treatment_sse": 5537.408920326534,
+      "nonworse": false
+    },
+    {
+      "fold": 4,
+      "rows": 3072,
+      "baseline_sse": 119940.61361721304,
+      "treatment_sse": 115622.35056248885,
+      "nonworse": true
+    }
+  ],
+  "artifacts": {
+    "predictions_decompressed_sha256": "c25de60c841a2fed6f27981aa65fb44759f41235e44a56feaa3bc0d28ce5ad4b",
+    "schedule_decompressed_sha256": "75cd32276c0a772635705b18d165dcd00b674f2ccb9b496f6b688a2b8fb15b79",
+    "well_metrics_decompressed_sha256": "adf5383d47ac5517e02cd74484a206209b44f28549b5e2630da97d2cb18aae42",
+    "truth_late_rows_decompressed_sha256": "62e62a096bd016a6bf7d1e2058bb606d3628d192236802dd29ff6a284e2d646f",
+    "target_free_sha_ledger_sha256": "c6cbf48f52491f6e269697083380f65e1a626c9bd38c9bdf346b47277d1ea7f6"
+  },
+  "reproducibility": {
+    "scientific_contract_sha256": "46358f83b27cc5481f14b7dd76267046cf25d5805e690689bb602ce574f0efc8",
+    "executed_config_sha256": "c059b0895f35eb850246a41374dfcc9505c63fc27519a44dec502fc5d4cb04af",
+    "package_and_pulled_cell_source_sha256": "07dfda43af46b43e4bfa344e9365bfa427320a966a6028ce9ea525d792bafcf3",
+    "manifest_sha256": "1edb1e1481af84af4e8178fb6e0743fa40315eab0b7441eeff9232b571f93c30",
+    "saved_hmm_decompressed_sha256": "8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5",
+    "saved_pf_decompressed_sha256": "00fe1b90fce84bd601b4b91442d9fc698200aafadd48658f7d8c26ec1fbe0d00",
+    "deterministic_anchor": false
+  }
+}

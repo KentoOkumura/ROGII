@@ -1,0 +1,152 @@
+experiment:
+  name: exp246_negative_space_gr_barrier_audit
+  description: Target-free negative-space GR barrier and anchor-corridor audit for fixed PF/Beam candidate paths.
+  route: pf_beam
+  status: completed_guard_failed
+  created_at: "2026-07-14"
+
+lineage:
+  parent: exp202_heatmap_mdn_candidate_generator_probe + exp072_exp063_full_replay_feature_cache
+  comparison_parent: exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission
+  diff_summary: >-
+    Reuses raw horizontal/typewell GR and saved exp072 PF/Beam/likPF candidates,
+    but adds no unary, candidate, model, or prediction. It creates a conservative
+    raw-plus-smoothed high-mismatch ridge mask, anchor-connected corridor readout,
+    and candidate edge-crossing diagnostics only.
+
+validation:
+  strategy: train_side_official_evaluation_tail_negative_space_audit
+  group_column: well
+  score_rows: TVT_input_is_nan
+  leakage_policy:
+    - Barrier thresholds, morphology, support, corridor edges, and fallback use raw input GR, typewell TVT/GR, row order, and known last TVT only.
+    - Evaluation-tail TVT, target, candidate error, and oracle scores are scoring-only and are never read by barrier construction.
+    - Hidden-like role masks are evaluation subgroups only and do not change barriers or candidates.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  target_column: TVT
+  input_target_column: TVT_input
+  gr_column: GR
+  md_column: MD
+  candidate_cache_filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  candidate_cache_paths:
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  hidden_like_filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  hidden_like_paths:
+    - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+model:
+  name: none_negative_space_barrier_audit_only
+  active_variants:
+    - diagnostic_only
+  lightgbm_config_count: 0
+  fold_training_count: 0
+  booster_count: 0
+  parent_control_retraining: false
+
+audit:
+  mode: diagnostic_only
+  output_prefix: exp246_negative_space_gr_barrier_audit
+  cache_chunksize: 200000
+  max_wells: null
+  bad_candidate_threshold_ft: 10.0
+  distance_buckets:
+    edges: [-1.0, 49.0, 99.0, 249.0, 499.0, 999.0, 1.0e30]
+    labels: [000_050, 050_100, 100_250, 250_500, 500_1000, 1000_plus]
+  candidates:
+    - name: pf_ancc
+      source_column: pf_ancc
+      transform: absolute
+    - name: beam_mean
+      source_column: beam_mean_d
+      transform: base_plus_delta
+    - name: likpf_mean
+      source_column: likpf_mean_d
+      transform: base_plus_delta
+    - name: sc_ens
+      source_column: sc_ens_d
+      transform: base_plus_delta
+    - name: hyb
+      source_column: hyb_d
+      transform: base_plus_delta
+  gr_surface:
+    robust_clip: 8.0
+    raw_abs_difference_threshold: 2.0
+    smooth_abs_difference_threshold: 1.5
+    smooth_window_rows: 11
+    flat_window_rows: 21
+    flat_min_periods: 7
+    flat_std_threshold_gr: 1.0
+  barrier:
+    tvt_grid_step_ft: 4.0
+    min_state_bins: 32
+    max_state_bins: 256
+    min_md_persistence_rows: 5
+    min_tvt_thickness_ft: 12.0
+    max_forbidden_fraction_per_row: 0.85
+    max_corridor_shift_ft_per_row: 4.0
+    max_unsupported_bridge_rows: 32
+    anchor_search_rows: 64
+    anchor_radius_ft: 24.0
+  guards:
+    max_true_path_forbidden_rate: 0.001
+    min_true_anchor_component_survival_rate: 0.995
+    max_good_candidate_false_prune_rate: 0.001
+    max_union_oracle_rmse_delta_ft: 0.0
+    max_worst_well_union_oracle_delta_ft: 0.25
+  outputs:
+    save_row_audit: true
+    row_audit_filename: exp246_negative_space_gr_barrier_audit_row_audit.csv.gz
+    candidate_metrics_filename: exp246_negative_space_gr_barrier_audit_candidate_metrics.csv
+    group_metrics_filename: exp246_negative_space_gr_barrier_audit_group_metrics.csv
+    by_well_filename: exp246_negative_space_gr_barrier_audit_by_well.csv
+    barrier_well_filename: exp246_negative_space_gr_barrier_audit_barrier_well_summary.csv
+    summary_filename: exp246_negative_space_gr_barrier_audit_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: null
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_deterministic_barrier_audit
+  stochastic_components:
+    - upstream_exp072_pf_beam_candidate_cache
+  parallel_rng_policy: sorted_well_single_process_no_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - The audit itself is deterministic for fixed raw files, config, scipy/numpy versions, and candidate-cache content.
+    - It is not a prediction or submission anchor because the fixed upstream candidate cache has stochastic PF/Beam provenance.
+
+inference:
+  enabled: false
+  mode: diagnostic_only_no_hidden_test_inference
+  create_submission: false
+  notes:
+    - Hard HMM/PF/Beam edge cuts are outside this first-stage experiment.
+    - No current-test feature generation or submission is allowed before all safety guards pass.

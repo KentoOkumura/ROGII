@@ -1,0 +1,58 @@
+{
+  "experiment": "exp129_spatial_prior_as_selector_candidate",
+  "status": "completed_train_side_audit_rejected",
+  "updated_at": "2026-06-26",
+  "route": "ensemble",
+  "cv": "best_oof_selector_rmse=13.793157019308065; likpf_mean_rmse=11.594897672217703; oracle_expanded_rmse=6.709126780357057",
+  "public_lb": null,
+  "metric": {
+    "name": "rmse",
+    "best_oof_selector": {
+      "variant": "lgb_error_ranker_rowwise",
+      "rmse": 13.793157019308065,
+      "mae": 7.187177199475788,
+      "within_10ft": 0.769535535119156,
+      "delta_vs_likpf_mean_rmse": 2.198259347090362,
+      "spatial_selection_rate": 0.1096824012966211
+    },
+    "likpf_mean_single": {
+      "rmse": 11.594897672217703,
+      "mae": 7.067632584311985,
+      "within_10ft": 0.772807479091509
+    },
+    "oracle_base_only": {
+      "rmse": 7.434029841171774
+    },
+    "oracle_expanded": {
+      "rmse": 6.709126780357057,
+      "delta_vs_base_oracle_rmse": -0.7249030608147171,
+      "within_10ft": 0.9298533901657748
+    }
+  },
+  "key_idea": "Spatial prior paths add real oracle headroom but the learned row-wise/Viterbi selector fails badly versus likpf_mean, so spatial_prior_as_selector_candidate is rejected as a direct selector and should only inform confidence/ML features.",
+  "kaggle": {
+    "train": {
+      "id": "kentookumura/exp129-spatial-selector-train",
+      "url": "https://www.kaggle.com/code/kentookumura/exp129-spatial-selector-train",
+      "version": 1,
+      "enable_gpu": false,
+      "enable_internet": false,
+      "status": "COMPLETE",
+      "runtime_seconds": 3797.7645909786224,
+      "output_dir": "experiments/exp129_spatial_prior_as_selector_candidate/kaggle/output/train_v1",
+      "summary": "experiments/exp129_spatial_prior_as_selector_candidate/kaggle/output/train_v1/artifacts/exp129_spatial_prior_as_selector_candidate_summary.json",
+      "metrics": "experiments/exp129_spatial_prior_as_selector_candidate/kaggle/output/train_v1/artifacts/exp129_spatial_prior_as_selector_candidate_metrics.csv",
+      "candidate_metrics": "experiments/exp129_spatial_prior_as_selector_candidate/kaggle/output/train_v1/artifacts/exp129_spatial_prior_as_selector_candidate_candidate_metrics.csv",
+      "selection_distribution": "experiments/exp129_spatial_prior_as_selector_candidate/kaggle/output/train_v1/artifacts/exp129_spatial_prior_as_selector_candidate_selection_distribution.csv",
+      "by_well": "experiments/exp129_spatial_prior_as_selector_candidate/kaggle/output/train_v1/artifacts/exp129_spatial_prior_as_selector_candidate_by_well.csv"
+    }
+  },
+  "sha256": {
+    "exp099_source_decompressed": "1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a",
+    "exp114_source_decompressed": "9ffa9f9a026d43d3c0721a549fdff0aaf0acbd73d6c8209218ad9a45a314fe29",
+    "metrics": "788796940937180127a8d17ec520a5e5d97ace96877bc1a72e8aa7104694d17f",
+    "predictions_decompressed": "5c1a0b66154ed7e2d58e38b804c3953614547e87293dded9d980a93e96495617",
+    "model_manifest": "65030ac43f78cb5e82d9190753a5cc9d8c1b28c15d20929cfed6e501660c778a"
+  },
+  "notes": "Train-side spatial prior candidate selector audit. Kaggle train v1 complete; selector rejected."
+}

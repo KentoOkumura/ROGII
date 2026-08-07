@@ -1,0 +1,391 @@
+experiment:
+  name: exp388_exp374_fixed13_dual_selector_on_exp264
+  description: >-
+    Adds the saved exp374 df=4 Student-t absolute-TVT exact-HMM train
+    predictions as the thirteenth candidate to the corrected exp264
+    candidate-long dual selector. Selector objectives, folds, sampling,
+    raw-test-safe context, LightGBM settings, and the fixed fallback domain
+    remain unchanged.
+  route: ensemble
+  status: completed_fixed13_selector_scientific_gate_failed_closed
+  created_at: "2026-07-24"
+  updated_at: "2026-07-24"
+  inference_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.n_folds
+    - validation.score_rows
+
+lineage:
+  parent: exp264_exp263_candidate_confidence_dual_selector
+  candidate_parent: exp374_exp209_student_t_exact_hmm_emission
+  separate_novelty_experiment: not_required_user_selected_direct_selector_inclusion
+  in_run_postfreeze_novelty_diagnostic: enabled_non_gating
+  fixed_bank_source: exp263_last_anchor_better_candidate_confidence_pair_cache
+  design_source: .steering/20260724-exp388-exp374-fixed13-dual-selector-on-exp264
+  diff_summary: >-
+    Changes only the candidate inventory from the corrected exp264 fixed12
+    score bank to fixed12 plus student_t_exact_hmm. The existing exact_hmm
+    path and all formulas remain unchanged. Student-t HMM is added only to
+    the primary hard-select domain; the seven-candidate fixed fallback domain
+    is unchanged. Exp374 is a target-free per-well candidate without a source
+    fold; it is globally key-joined and repartitioned by the existing exp263
+    selector fold. Gaussian/LikPF controls and gate diagnostics are excluded.
+    No objective, selector fold, sample cap, LightGBM parameter, candidate
+    weight, threshold, downstream TVT model, inference, or submission changes.
+
+validation:
+  strategy: outer5_groupkfold_fixed13_selector_then_inner4_nested_stacking
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  outer_folds: 5
+  inner_folds: 4
+  group_column: well
+  score_rows: TVT_input_isna
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_candidates: 13
+  expected_primary_candidates: 12
+  expected_fixed_fallback_candidates: 7
+  expected_compact_features: 77
+  fold_source: exp263_selector_outer_fold_after_global_exp374_key_join
+  leakage_policy:
+    - exp374 is read only through id, well_id, row_idx, Student-t TVT, posterior std, and HMM log-likelihood.
+    - No exp374 truth, error, control prediction, scope, or gate diagnostic is opened before feature freeze.
+    - Exp374 is generated independently per well from known-prefix inputs and has no source fold.
+    - Exp374 is globally joined by well_id,row_idx and repartitioned by exp263 selector outer_fold.
+    - No source fold is synthesized or used as a selector feature.
+    - Outer-valid wells are excluded from inner assignment, fit, and early stopping.
+    - Outer-train compact rows use inner OOF scores only.
+    - Outer-valid compact rows use the four inner-model ensemble only.
+    - Parent exp264 scores are post-fit audit input and never selector features.
+    - Add-one oracle headroom is computed only after selector score freeze and is diagnostic only.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  exp263_stage0_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts
+    - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts
+    - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1/artifacts
+  exp263_stage0_manifest_patterns:
+    - "**/cache_manifest.json"
+  exp263_expected_stage0_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+  exp263_expected_catalog_sha256: 7cd748661b719bfcfb1ed21b9fe314366b1c089cc0dd224a9e4cbd4ba7e9e6e0
+  exp374_predictions:
+    filename: exp374_exp209_student_t_exact_hmm_emission_predictions.csv.gz
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp374-exp209-student-t-exact-hmm-emission-train/artifacts/exp374_exp209_student_t_exact_hmm_emission_predictions.csv.gz
+      - /kaggle/input/exp374-exp209-student-t-exact-hmm-emission-train/artifacts/exp374_exp209_student_t_exact_hmm_emission_predictions.csv.gz
+      - /tmp/kaggle-output/exp374_exp209_student_t_exact_hmm_emission/train_v1/artifacts/exp374_exp209_student_t_exact_hmm_emission_predictions.csv.gz
+      - "**/exp374_exp209_student_t_exact_hmm_emission_predictions.csv.gz"
+    expected_file_sha256: ea6f95334b2d75ab8c96f705c453f66b856397fd222770cd15f3ae0b7fef221e
+    expected_decompressed_sha256: 668fe87da902955acee742c72d30724abb53f32050bb5d0a5c1b3dee0cbd626e
+    expected_prediction_logical_sha256: 668fe87da902955acee742c72d30724abb53f32050bb5d0a5c1b3dee0cbd626e
+    allowlist_columns:
+      - id
+      - well_id
+      - row_idx
+      - student_t_df4_on_exp209_absolute_tvt_hmm_tvt
+      - student_t_df4_on_exp209_absolute_tvt_hmm_std
+      - student_t_df4_on_exp209_absolute_tvt_hmm_loglik
+    forbidden_columns:
+      - TVT
+      - TVT_input
+      - true_tvt
+      - gaussian_hmm_mean
+      - likpf_mean
+      - error
+      - abs_error
+      - oracle_candidate
+      - scope
+      - scientific_gate
+    native_confidence:
+      sigma_tvt: student_t_df4_on_exp209_absolute_tvt_hmm_std
+      source_loglik: student_t_df4_on_exp209_absolute_tvt_hmm_loglik
+      loglik_per_row: source_loglik_divided_by_evaluation_rows_in_well
+    selector_join_policy: global_well_id_row_idx_then_exp263_fold_repartition
+    candidate_generation: target_free_per_well_exact_hmm
+    source_fold_role: not_applicable
+    candidate_requires_oof_fold: false
+    require_source_fold_equal_selector_fold: false
+    current_test_candidate_status: not_generated
+  exp251_selected_feature_schema_patterns:
+    - inputs/exp251_v4_selected_feature_schema.csv
+    - experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/kaggle/output/train_v4_selected/artifacts/exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv
+    - "**/exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv"
+  exp251_expected_selected_feature_count: 295
+  parent_exp264_stage_c:
+    kernel_id: kentookumura/exp264-exp263-confidence-dual-selector-train
+    kernel_version: 6
+    score_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-train/artifacts/nested_outer_valid_candidate_score.parquet
+      - /kaggle/input/exp264-exp263-confidence-dual-selector-train/artifacts/nested_outer_valid_candidate_score.parquet
+      - "**/nested_outer_valid_candidate_score.parquet"
+    expected_score_file_sha256: a10b7848127f01bef522f4b17dfd1640c9784956892dc24fc1159e3869500abc
+    expected_hard_primary_oof_rmse: 8.652531955610227
+    expected_hard_primary_fold_rmse:
+      - 8.991720025343861
+      - 8.426634924939929
+      - 8.900503340840876
+      - 8.426473003260869
+      - 8.499558672015853
+    expected_fixed_fallback_oof_rmse: 8.238331546485645
+  hidden_like_assignment_patterns:
+    - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  hidden_like_assignment_expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  candidate_contract: candidate_contract.yaml
+  feature_contract: feature_contract.yaml
+
+features:
+  parent_surface: exp264_corrected_stage_a_v4_raw_test_safe_88
+  schema_mode: refreeze_after_single_candidate_addition
+  groups: [ctx, cand, conf, bank, formula, id]
+  missing_policy: native_nan_plus_validity_flags
+  exact_duplicate_policy: drop_after_deterministic_audit
+  constant_policy: drop_after_deterministic_audit
+  correlation_policy: report_only_for_abs_pearson_or_spearman_ge_0p999
+  raw_context:
+    horizontal_numeric_allowlist: [MD, X, Y, Z, GR]
+    add_delta_from_last_known_row: true
+    add_typewell_summary: true
+    forbidden_columns: [TVT, TVT_input, target, true_tvt]
+  audit:
+    base_rows_per_fold: 10000
+    correlation_long_rows: 50000
+    pearson_abs_threshold: 0.999
+    spearman_abs_threshold: 0.999
+  shape_windows: [32, 128, 512]
+
+model:
+  name: student_t_fixed13_confidence_dual_objective_candidate_long_lightgbm
+  trains_new_boosters: true
+  objectives:
+    - name: pred_abs_error
+      estimator: lightgbm_regression_l1
+      label: candidate_abs_error
+    - name: p_within10
+      estimator: lightgbm_binary
+      label: candidate_within10
+  training:
+    max_train_base_rows_per_outer_fold: 60000
+    max_valid_base_rows_for_early_stopping: 30000
+    predict_base_row_chunk_size: 20000
+    num_boost_round: 1200
+    early_stopping_rounds: 80
+    log_evaluation_period: 100
+  lightgbm_common:
+    learning_rate: 0.035
+    num_leaves: 63
+    min_child_samples: 80
+    subsample: 0.85
+    subsample_freq: 1
+    colsample_bytree: 0.85
+    reg_alpha: 0.1
+    reg_lambda: 1.0
+    n_jobs: 8
+    deterministic: true
+    force_col_wise: true
+    verbosity: -1
+  nested_downstream_stage:
+    enabled: true
+    variants: 1
+    objectives: 2
+    outer_folds: 5
+    inner_folds: 4
+    planned_cpu_selector_boosters: 40
+    parent_control_retraining: false
+    expected_compact_partitions: 25
+    expected_compact_rows: 18919945
+    expected_outer_valid_score_long_rows: 49191857
+  downstream_tvt_stage:
+    enabled: false
+    conditional_on_stage_c_gate: true
+    planned_new_variant_gpu_boosters: 15
+    saved_parent_control_retraining: false
+
+guards:
+  technical:
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_candidates: 13
+    expected_models: 40
+    expected_compact_partitions: 25
+    expected_compact_rows: 18919945
+    expected_outer_valid_score_long_rows: 49191857
+    expected_compact_feature_count: 77
+    require_exp374_file_decompressed_and_upstream_logical_sha: true
+    require_exp374_native_confidence_finite: true
+    require_exp374_exp263_global_key_parity: true
+    require_exp374_source_fold: false
+    require_exp374_selector_fold_repartition_audit: true
+    forbid_exp374_source_fold_as_model_feature: true
+    require_truth_columns_loaded_before_feature_freeze: 0
+  score:
+    improve_outer_train_prior_pooled: true
+    minimum_improved_folds_each_metric: 4
+  integration:
+    added_candidate: student_t_exact_hmm
+    minimum_added_candidate_primary_top1_fraction: 0.005
+    minimum_positive_usage_folds: 4
+    maximum_pooled_delta_rmse_vs_parent_fixed12_selector: 0.0
+    minimum_improved_folds_vs_parent_fixed12_selector: 4
+    maximum_near_0_250_delta_rmse: 0.02
+    maximum_1000_plus_delta_rmse: 0.02
+    maximum_hidden_like_delta_rmse: 0.02
+    maximum_by_well_p95_delta_rmse: 0.25
+    maximum_worst_well_delta_rmse: 0.25
+    same_oof_rescue_grid_allowed: false
+  diagnostic_only:
+    postfreeze_addone_novelty:
+      enabled: true
+      granularities: [h512, whole_well]
+      tie_atol_squared_ft: 1.0e-12
+      affects_scientific_gate: false
+
+execution:
+  stage: stage_a_stage_c_v1_completed_fail_closed
+  implementation_approved: true
+  implementation_authorization_source: user_message_include_exp374_in_selector
+  run_approved: true
+  run_approved_at: "2026-07-24"
+  run_authorization_source: user_message_proceed_to_include_exp374_in_selector
+  approval_required: true
+  approved_scope: fixed13_stage_a_plus_stage_c_1_variant_2_objectives_5_outer_4_inner_40_cpu_boosters_no_control_retraining
+  approval_consumed: true
+  approved_fold_policy: global_key_join_then_exp263_selector_fold_repartition
+  active_variants: 1
+  lightgbm_objectives: 2
+  outer_folds: 5
+  inner_folds: 4
+  planned_cpu_boosters: 40
+  trained_cpu_boosters: 40
+  parent_control_retraining: false
+  gpu_boosters: 0
+  downstream_tvt_training: false
+  inference: false
+  submission: false
+  kaggle_kernel_id: kentookumura/exp388-exp374-student-t-fixed13-selector-train
+  kaggle_kernel_version: 1
+  kaggle_kernel_id_no: 128464582
+  kaggle_status: KernelWorkerStatus.COMPLETE
+  elapsed_seconds: 7253.168438142
+  decision: FAIL_CLOSE_FIXED13_SELECTOR_BRANCH
+  scientific_gate_passed: false
+  first_push_failure:
+    kernel_id: kentookumura/exp388-exp374-fixed13-dual-selector-on-exp264-train
+    title: exp388 exp374 fixed13 dual selector on exp264 train
+    slug_length: 51
+    error: SaveKernel_400_no_detail
+    run_started: false
+    resolved_by: shorten_id_and_title_to_46_character_matching_slug
+
+outcome:
+  technical_gate_passed: true
+  selector_score_guard_passed: true
+  scientific_gate_passed: false
+  decision: FAIL_CLOSE_FIXED13_SELECTOR_BRANCH
+  hard_primary:
+    fixed13_rmse: 8.73610410942288
+    parent_fixed12_rmse: 8.652531955610227
+    delta_fixed13_minus_parent_ft: 0.08357215381265348
+    fixed_fallback_rmse: 8.238331546485645
+    fold_improvements_vs_parent: 2
+  candidate_usage:
+    pooled_fraction: 0.18304677947002487
+    pooled_rows: 692647
+    positive_usage_folds: 5
+  scopes:
+    near_0_250_delta_ft: 0.00904923807837843
+    distance_1000_plus_delta_ft: 0.08972375559726053
+    hidden_like_spatial_delta_ft: 0.08818437705402715
+    hidden_like_typewell_purged_delta_ft: 0.09125219955095254
+  by_well:
+    improved_wells: 366
+    regressed_wells: 407
+    median_delta_ft: 0.006057639562472
+    p95_delta_ft: 0.9101231719676119
+    worst_well: d2f3b1ab
+    worst_delta_ft: 6.708956172934057
+  diagnostic_oracle:
+    h512_improvement_ft: 0.09729893639770903
+    whole_well_improvement_ft: 0.0734076114032689
+  reproducibility:
+    feature_schema_sha256: 66568a948768a8dd4953a404b6b88f8e7f58c5ecf6f5afe22ca8bcd0a4b881fe
+    nested_selector_model_manifest_sha256: 9acdc4a165b69f737ee4807e953653070b0f3db0647514554744b7790d573044
+    nested_compact_manifest_sha256: 5e9a1242c73963f5947955a653604633d9034ab136ef9b6f56c4154d78e08968
+    nested_outer_valid_candidate_score_sha256: 7ad8419f299419824447ad2b500ebdb353af4a39773ef5aefc702692ef36ecd8
+    summary_sha256: bc5ce77913862c963d6a65ff4491a3f193405b8e6fdf83c9d648615b16b74b99
+
+artifacts:
+  output_prefix: exp388_exp374_fixed13_dual_selector_on_exp264
+  required:
+    - exp388_input_contract.json
+    - exp388_exp374_prediction_manifest.json
+    - exp388_exp374_selector_fold_repartition.json
+    - raw_context_availability_audit.csv
+    - feature_catalog.csv
+    - feature_schema.json
+    - compact_meta_schema.json
+    - nested_fold_manifest.csv
+    - nested_selector_model_manifest.json
+    - nested_compact_partition_manifest.csv
+    - nested_compact_manifest.json
+    - nested_outer_valid_candidate_score.parquet
+    - nested_selector_metrics.json
+    - exp388_fixed13_vs_fixed12_scope_metrics.csv
+    - exp388_fixed13_candidate_usage.csv
+    - exp388_fixed13_vs_fixed12_by_well.csv
+    - exp388_scientific_gate.json
+    - exp388_postfreeze_addone_novelty.csv
+    - exp388_postfreeze_addone_novelty.json
+    - exp388_summary.json
+    - reproducibility_manifest.json
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  batch_size: 20000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    machine_shape: ""
+    kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp374-exp209-student-t-exact-hmm-emission-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-train
+    bootstrap_dependency_files:
+      - source: experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/kaggle/output/train_v4_selected/artifacts/exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv
+        destination: inputs/exp251_v4_selected_feature_schema.csv
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_global_lightgbm_seed_and_stable_sha256_sampling_keys
+  stochastic_components:
+    - lightgbm_row_and_column_sampling
+    - candidate_long_row_sampling
+  parallel_rng_policy: stable_key_sampling_before_parallel_fit_no_global_rng_in_workers
+  feature_sha_policy: decompressed_content_sha_for_gzip_and_logical_or_file_sha_for_parquet
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Stage A and Stage C run on Kaggle CPU with deterministic LightGBM flags.
+    - GPU bitwise reproducibility is not claimed because Stage D is out of scope.
+    - The saved exp374 source is deterministic and SHA-frozen; the stochastic selector keeps this experiment from being a deterministic anchor.
+    - Raw gzip bytes are recorded but decompressed content SHA is the source identity guard.
+    - No submission is generated.

@@ -1,0 +1,53 @@
+manifest_version: 1
+experiment: exp513_hjyact_v2_final_standalone_public_lb_audit
+new_booster_training_count: 0
+parent_control_retraining_count: 0
+runtime_fit:
+  family: Ridge
+  configs: 1
+  folds: 5
+  total_fits: 5
+saved_model_files:
+  total: 13
+  contained_estimators_total: 33
+  trainer_wrappers:
+    - path: models/lightgbm-1/lgbmregressor_trainer_20260526182612.pkl
+      contained_fold_estimators: 5
+      sha256: 5b8c34db51508138826c682d9dc0787557f6bccdb9fbb858d3fad27dc0a84a39
+    - path: models/lightgbm-2/lgbmregressor_trainer_20260526190415.pkl
+      contained_fold_estimators: 5
+      sha256: 4384298a78736530f7b9b00a2908f9c8be478e5856b64cbc8f1f34a3d5889944
+    - path: models/lightgbm-3/lgbmregressor_trainer_20260526192806.pkl
+      contained_fold_estimators: 5
+      sha256: 053d458f382aa1bdc2f22525e13d7ecb3c6b20a7637144eb8b708ef005cef5be
+    - path: models/catboost-1/catboostregressor_trainer_20260526193740.pkl
+      contained_fold_estimators: 5
+      sha256: 5ea8b0705fae314bbd4194ee92c3eb5d2292ba761bd177b91ed898ac72ddf867
+    - path: models/catboost-2/catboostregressor_trainer_20260526194838.pkl
+      contained_fold_estimators: 5
+      sha256: 3abcc44faebd1f374320e5939b19f6a5e911f9b2ac75f55054dd860e37aca4f4
+  learned_trajectory:
+    - path: lgb0.pkl
+      sha256: a6451b3c42aeace6778e952b088287654946dca5412b818990d3f6b397e501e1
+    - path: lgb1.pkl
+      sha256: 4d61ab162af864bd3cfe37bde4421299746f28147faa3239e1ad14f15453f547
+    - path: lgb2.pkl
+      sha256: 1ee24121ecf455d904f3433bba49857d076fc33ca0b6b7a71ff9d538b3b8acf5
+  model_package:
+    - path: models/drift_ncc_xgb_alltrain.json
+      sha256: 4ece08e78da10579640428265bc060028efa0eb7aa27a4336da69933945bf607
+    - path: models/drift_ncc_catboost_alltrain.cbm
+      sha256: 954682b1775d773aa85d2697bfe19cf9196bea3d9758173359ab9dbeb60282b4
+    - path: models/drift_ncc_hgb_alltrain.joblib
+      sha256: 7b497ed9d2f09b4336eee819bfa6c42ed04d7c8ef44393d84e7e0f740fa45e40
+    - path: models/drift_ncc_lgb_alltrain.txt
+      sha256: c7e5af52038188ce683e05f377a13114a61a874976fdd24d58b39f77f8532ed7
+    - path: models/sequence_tcn_tcn_residual.pt
+      sha256: ad001b7e898fd50059a5a6b5ce13ba24aaf0b2a57b18a8bccb0163aeee880efd
+source_feature_inputs:
+  ridge_train_csv_sha256: 68689ad02338581669f5392dc38741e6920a00537c3a5131820e723c2c9bcbcf
+  learned_features_json_sha256: ea9042f88cb3d8716b83e40c5c5ecb39f8bc8fcfeb52edb40d1871cd99496308
+  koolbox_wheel_sha256: f654008252fe17463f27548b6a327926aa5451fdba52fe60fbb7639f5afc4bdc
+excluded_model_files:
+  exp413: 75
+  reason: standalone public component only

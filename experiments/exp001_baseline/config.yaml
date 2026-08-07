@@ -1,0 +1,49 @@
+experiment:
+  name: exp001_baseline
+  description: Last-known TVT anchor baseline with well-level CV
+  route: ml_model
+  status: usable
+  created_at: "2026-05-26"
+  updated_at: "2026-05-28"
+
+lineage:
+  parent: null
+  diff_summary: TVT_input known prefix only; no train-only formation columns
+
+validation:
+  # Shared metric, fold count, seed, group, and score-row defaults come from project.yml.
+  leakage_policy:
+    - Same well is never split across train and validation folds.
+    - Predictions for each well use only the known TVT_input prefix.
+    - Train-only formation columns are not used in exp001.
+
+data: {}
+
+model:
+  name: last_known_tvt_anchor
+  primary_strategy: last_anchor
+  strategies:
+    - last_anchor
+    - recent_linear
+  params:
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+  rationale:
+    - Public notebook survey reports last_anchor_tvt as a strong null model.
+    - Drift/residual modeling is the next step, but exp001 stays deterministic and leak-safe.
+    - recent_linear is logged as a reference only; submission uses last_anchor by default.
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: 30
+  save_well_metrics: true
+  save_oof_predictions: false
+
+notes:
+  - Submission target column is lowercase tvt, while train target is uppercase TVT.
+  - Do not use train-only formation columns directly at inference.
+  - Visible test currently has 3 wells and 14,151 sample_submission rows.

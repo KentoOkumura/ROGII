@@ -1,0 +1,97 @@
+{
+  "experiment": "exp236_exact_hmm_posterior_bimodality_audit",
+  "status": "completed_train_side_posterior_diagnostic",
+  "route": "ensemble",
+  "metric": "train_side_fixed_exp221_hmm_decoder_rmse",
+  "cv": 8.327728486025844,
+  "public_lb": null,
+  "private_lb": null,
+  "submitted": false,
+  "run": {
+    "kernel": "kentookumura/exp236-exact-hmm-posterior-bimodality-audit-train",
+    "kernel_version": 1,
+    "kaggle_status": "COMPLETE",
+    "elapsed_seconds": 27168.333,
+    "rows": 3783989,
+    "wells": 773,
+    "active_hmm_variants": 1,
+    "lightgbm_configs": 0,
+    "folds": 0,
+    "boosters": 0,
+    "enable_gpu": false,
+    "enable_internet": false,
+    "parent_control_retraining": false,
+    "completed_at": "2026-07-12"
+  },
+  "fixed_parent_variant": {
+    "parent": "exp221_lgb_oof_gaussian_emission_hmm_on_exp148",
+    "candidate": "hmm_lgb_exp148_lgb_mean_s2000_l0500",
+    "sigma": 20.0,
+    "lambda": 0.5,
+    "parent_reported_rmse": 8.32773695096078,
+    "replay_rmse_delta": -0.000008464934936
+  },
+  "decoder_metrics": {
+    "posterior_mean": {
+      "rmse": 8.327728486025844,
+      "mae": 4.811963869685946,
+      "within10": 0.8588130145198625
+    },
+    "marginal_map": {
+      "rmse": 8.365160435207475,
+      "mae": 4.843304464083316,
+      "within10": 0.8574401246938086,
+      "rmse_delta_vs_posterior_mean": 0.037431949181631
+    },
+    "dominant_mode_conditional_mean": {
+      "rmse": 8.331754351973887,
+      "mae": 4.8127315483491735,
+      "within10": 0.8585989547009782,
+      "rmse_delta_vs_posterior_mean": 0.004025865948043
+    }
+  },
+  "bimodality": {
+    "bimodal_rows": 35399,
+    "bimodal_row_rate": 0.009354942628004468,
+    "bimodal_wells": 138,
+    "bimodal_segments": 317,
+    "mean_in_valley_rows": 6781,
+    "mean_in_valley_row_rate": 0.0017920242368569253,
+    "mode_mass_switches": 17,
+    "mode_track_breaks": 17
+  },
+  "oracle_top2_diagnostic": {
+    "scope": "bimodal_rows_only_diagnostic",
+    "rows": 35399,
+    "wells": 138,
+    "mae": 4.400838542181616,
+    "within10": 0.8783298963247549,
+    "used_for_decoder_or_selection": false
+  },
+  "step_delta": {
+    "posterior_mean_abs_delta_mean": 0.011034719546703882,
+    "posterior_mean_rate_abs_delta_gt_0p2": 0.000218816703748346,
+    "marginal_map_abs_delta_mean": 0.014407447250523833,
+    "marginal_map_rate_abs_delta_gt_0p2": 0.032659450119965995,
+    "dominant_mode_conditional_mean_abs_delta_mean": 0.011406493377425244,
+    "dominant_mode_conditional_mean_rate_abs_delta_gt_0p2": 0.00039350008681314876
+  },
+  "source": {
+    "exp148_lgb_mean_raw_sha256": "12f2980972c19ef72a88b198efa0f5329ee3614a21b269f1bebc5a37b3ac21b5",
+    "exp148_lgb_mean_decompressed_sha256": "ec28d89641b74c67482aff7a1ebc925db536716f1a024467ae0339dd2326e14d"
+  },
+  "artifacts": {
+    "summary_sha256": "d40109cd499e8f38f9ffe32dfe7a47a3083f9bde1b4fd590e6db89cb2e127f1d",
+    "row_summary_decompressed_sha256": "bf124fda2aed9fd1309ef9c8e608537cd16dfc116e920fd2387904888410e9a0",
+    "kaggle_output_dir": "/kaggle/working/artifacts",
+    "retrieved_summary": "/tmp/kaggle-output/exp236_exact_hmm_posterior_bimodality_audit/train_v1_selected/artifacts/exp236_exact_hmm_posterior_bimodality_audit_summary.json"
+  },
+  "decision": {
+    "accepted_decoder": "posterior_mean",
+    "direct_decoder_replacement": "rejected",
+    "reason": "Bimodality is sparse, mass-mode switches are rare, and both MAP and dominant-mode conditional mean worsen overall RMSE; MAP also creates large step-delta spikes.",
+    "raw_test_inference": false,
+    "submission": false,
+    "mixture_emission_or_mode_state_followup": "not_supported_by_this_audit"
+  }
+}

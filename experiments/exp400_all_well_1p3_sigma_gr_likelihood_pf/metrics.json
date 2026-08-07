@@ -1,0 +1,158 @@
+{
+  "artifact_manifest_sha256": "59c877025e81713639c97822e14b6da1f77bee1d99274dc1f8e933d329ce8dfa",
+  "by_well": {
+    "improved_wells": 305,
+    "median_improvement_ft": -0.17918556195334467,
+    "regressed_wells": 468,
+    "total_wells": 773,
+    "unweighted_mean_improvement_ft": -0.4156706586508733
+  },
+  "completed_at_utc": "2026-07-25T16:32:53.664364+00:00",
+  "cv": 12.221810980460939,
+  "experiment": "exp400_all_well_1p3_sigma_gr_likelihood_pf",
+  "metric": "rmse",
+  "model_sha256": null,
+  "notes": "Train-side candidate only. No parent PF, HMM, Beam, model, raw-test prediction, inference, or submission is produced.",
+  "overall": {
+    "candidate": "likpf_mean_x1p3",
+    "candidate_bias": -1.2100917951393153,
+    "candidate_mae": 7.442312891464382,
+    "candidate_rmse": 12.221810980460939,
+    "candidate_within_10ft": 0.7583742975997023,
+    "comparison": "direct_saved_exp072_likpf_mean",
+    "control": "saved_exp072_likpf_mean",
+    "control_available": true,
+    "control_bias": -1.0994247081134052,
+    "control_mae": 7.067627438813443,
+    "control_rmse": 11.594894395642696,
+    "control_within_10ft": 0.7727929441655353,
+    "delta_rmse_candidate_minus_control": 0.6269165848182432,
+    "improvement_ft": -0.6269165848182432,
+    "rows": 3783989,
+    "scope": "overall",
+    "wells": 773
+  },
+  "prediction_sha256": "009a1d73e187c4126a70231214f14fbe1ae44edee47d9a166818ab1bd928a3bf",
+  "private_lb": null,
+  "kaggle": {
+    "enable_gpu": false,
+    "enable_internet": false,
+    "id_no": 128585102,
+    "kernel_id": "kentookumura/exp400-all-well-1p3-sigma-gr-likelihood-pf-train",
+    "kernel_version": 1,
+    "status": "KernelWorkerStatus.COMPLETE"
+  },
+  "promotion_gate": {
+    "decision": "all_well_likelihood_pf_gs_x1p3_failed_close_without_rescue",
+    "experiment": "exp400_all_well_1p3_sigma_gr_likelihood_pf",
+    "failure_action": "close_without_multiplier_clip_particle_seed_scale_initial_spread_resampling_blend_selector_or_same_oof_rescue",
+    "fixed_exp209_hmm_likpf_50_50_guard": {
+      "candidate_rmse": 10.659967679569341,
+      "control_rmse": 10.269692505026358,
+      "delta_rmse_candidate_minus_control": 0.39027517454298355,
+      "maximum_regression_ft": 0.0,
+      "passed": false
+    },
+    "passed": false,
+    "primary_scientific_gate": {
+      "by_well_rmse_delta_p95": 5.059698166835748,
+      "candidate_rmse": 12.221810980460939,
+      "control_rmse": 11.594894395642696,
+      "folds_non_regressed": 1,
+      "improvement_ft": -0.6269165848182432,
+      "maximum_by_well_rmse_delta_p95": 0.0,
+      "maximum_worst_well_rmse_regression": 0.25,
+      "minimum_folds_non_regressed": 4,
+      "minimum_improvement_ft": 0.05,
+      "minimum_raw_gr_observed_improvement_ft": 0.05,
+      "non_regression_scopes": {
+        "hidden_like_spatial": false,
+        "hidden_like_typewell_purged": false,
+        "md_since_1000_plus": false,
+        "missing_fraction_high": false,
+        "raw_gr_missing": false
+      },
+      "passed": false,
+      "raw_gr_observed_improvement_ft": -0.4530768161171217,
+      "worst_well_rmse_regression": 32.160524219071156
+    },
+    "secondary_scale_policy": "candidate scale 3/5/8/12 metrics are nonselective diagnostics and cannot replace the arithmetic pf_mean primary",
+    "technical_gate": {
+      "all_input_sha_matches": true,
+      "all_wells_completed_without_fallback": true,
+      "audit_wells": 773,
+      "base_scale_max": 60.0,
+      "base_scale_min": 11.193546397187877,
+      "baseline_metric_parity": {
+        "saved_exp072_likpf_mean": {
+          "absolute_difference": 3.2765750077601297e-06,
+          "actual_rmse": 11.594894395642696,
+          "expected_rmse": 11.594897672217703,
+          "passed": true
+        },
+        "saved_exp209_hmm_exp072_likpf_50_50": {
+          "absolute_difference": 3.6416164004293705e-06,
+          "actual_rmse": 10.269692505026358,
+          "expected_rmse": 10.269696146642758,
+          "passed": true
+        }
+      },
+      "candidate_scale_max": 78.0,
+      "candidate_scale_min": 14.55161031634424,
+      "effective_scale_max_abs_error": 0.0,
+      "execution_count_match": true,
+      "execution_counts": {
+        "beam_well_runs": 0,
+        "boosters": 0,
+        "candidate_pf_well_runs": 773,
+        "hmm_well_runs": 0,
+        "lightgbm_configs": 0,
+        "parent_pf_control_reruns": 0,
+        "particle_starts": 49472000,
+        "particles_per_seed": 500,
+        "prediction_readouts": 5,
+        "reporting_folds": 5,
+        "scientific_variants": 1,
+        "seed_well_trajectories": 98944,
+        "seeds_per_well": 128,
+        "trained_folds": 0
+      },
+      "finite_candidate_coverage": 1.0,
+      "multiplier_max_abs_error": 0.0,
+      "passed": true,
+      "post_multiplier_clip_count": 0,
+      "prediction_logical_content_sha256": "009a1d73e187c4126a70231214f14fbe1ae44edee47d9a166818ab1bd928a3bf",
+      "prediction_rows": 3783989,
+      "prediction_wells": 773,
+      "raw_identity_sha256": "bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32",
+      "reporting_folds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "runtime_limit_seconds": 30600.0,
+      "runtime_seconds": 10496.299889087677,
+      "saved_exp072_scale_control_policy": "candidate_only_nonselective_diagnostics_no_parent_pf_rerun",
+      "truth_or_reporting_values_parsed_before_freeze": {
+        "error_rows": 0,
+        "fold_rows": 0,
+        "hidden_like_role_rows": 0,
+        "unknown_suffix_tvt_rows": 0
+      }
+    }
+  },
+  "public_lb": null,
+  "route": "pf_beam",
+  "runtime_seconds": 10496.299889087677,
+  "secondary_scale_diagnostics": {
+    "likpf_scale_3_x1p3_rmse": 11.271336430157438,
+    "likpf_scale_5_x1p3_rmse": 11.174614846889103,
+    "likpf_scale_8_x1p3_rmse": 11.243684790486851,
+    "likpf_scale_12_x1p3_rmse": 11.342898600240288,
+    "policy": "candidate_only_nonselective_diagnostics_no_saved_x1p0_scale_controls_no_primary_rescue"
+  },
+  "status": "train_side_all_well_likelihood_pf_gs_x1p3_gate_failed_closed",
+  "submission_sha256": null
+}

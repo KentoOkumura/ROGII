@@ -1,0 +1,284 @@
+experiment:
+  name: exp337_prefix_backtested_structure_sigma_gr
+  description: >-
+    Design-frozen two-stage exact-HMM audit that decomposes GR emission
+    uncertainty into finite-prefix observation dispersion and a
+    rolling-origin calibrated structural variance caused by typewell mismatch
+    or alignment error.
+  route: pf_beam
+  status: stage0_gate_failed_branch_closed
+  created_at: "2026-07-22"
+  updated_at: "2026-07-22"
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260722-exp337-prefix-backtested-structure-sigma-gr
+  references:
+    - exp307_finite_only_robust_sigma_gr
+    - exp305_tempered_raw_smoothed_exact_hmm_emission
+    - exp310_effective_sample_size_shrunk_sigma_gr
+  diff_summary: >-
+    Replaces only exp209 well-level sigma_GR. The candidate adds a
+    known-prefix rolling-origin structural variance to finite-only population
+    variance in quadrature. GR preprocessing, emission center, Gaussian form,
+    state grammar, transitions, priors, and posterior output remain fixed.
+
+implementation:
+  enabled: true
+  scope: stage0_only
+  train_notebook_state: compact_selfcontained_candidate_implemented
+  canonical_notebook_adopted: true
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.score_rows
+
+validation:
+  strategy: known_prefix_rolling_origin_then_grouped_exact_hmm_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  expected_folds: [0, 1, 2, 3, 4]
+  score_rows: tvt_input_unknown_suffix_only_after_prediction_freeze
+  truth_attachment: after_stage0_scale_audit_or_stage1_prediction_content_sha_is_frozen
+  leakage_policy:
+    - Rolling-origin scale fitting uses only known-prefix rows at or before the origin.
+    - The following 20 percent known-prefix block is used only for forward NLL evaluation, never for that origin's scale fit.
+    - Unknown-suffix TVT, error, abs_error, and oracle labels are forbidden before scale and prediction freeze.
+    - Known TVT_input is allowed only as an inference-available coordinate for typewell GR interpolation, prefix split, initial state, and initial rate.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  saved_controls:
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    hmm_cache_filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    exp072_cache_filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    expected_hmm_prediction_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    expected_exp072_cache_decompressed_sha256: 0503de0512302b06309d26e09fc06ba5095db0ef4d610b1508afe8c8d07ca536
+    raw_hmm_prediction_column: hmm_mean_tvt
+    likpf_anchor_column: last_known_tvt
+    likpf_delta_column: likpf_mean_d
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v3/artifacts
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    safe_columns: [well_id, fold]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    usage: scoring_strata_and_late_truth_only_not_scientific_parent
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  negative_evidence:
+    source: exp307_finite_only_robust_sigma_gr
+    scale_audit_filename: exp307_finite_only_robust_sigma_gr_scale_audit.csv.gz
+    summary_filename: exp307_finite_only_robust_sigma_gr_summary.json
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp307-finite-only-robust-sigma-gr-train/artifacts
+      - /kaggle/input/exp307-finite-only-robust-sigma-gr-train/artifacts
+      - /tmp/kaggle-output/exp307_finite_only_robust_sigma_gr/train_v2_small/artifacts
+    expected_scale_decompressed_sha256: edde07fb51505ae186b8188d3c3688ff6a80dad22aef96e24c92bbc48f221e19
+    expected_summary_sha256: f2905a35399e57b1c6ff13186fb3f4d79162fafce673ea8ecb087fb8e4013cea
+    expected_status: train_side_finite_mad_gate_failed_closed
+    expected_gate_passed: false
+
+model:
+  name: prefix_backtested_structure_sigma_gr_exact_hmm
+  estimator: none
+  target: TVT
+  residual_contract:
+    pair_policy: finite_horizontal_gr_and_finite_typewell_interp_only
+    formula: horizontal_gr_minus_typewell_gr_at_tvt_input
+    affine_a: 1.0
+    affine_b: 0.0
+    order: raw_known_prefix_row_order
+  scale_estimator:
+    internal_fit_fraction: 0.60
+    internal_calibration_fraction: 0.40
+    minimum_total_finite_pairs: 50
+    minimum_early_finite_pairs: 20
+    minimum_late_finite_pairs: 20
+    finite_sigma: population_standard_deviation_early_finite_pairs
+    finite_only_comparator_sigma: population_standard_deviation_all_available_finite_pairs
+    structure_variance: max_0_mean_squared_late_residual_minus_finite_variance
+    effective_variance: early_finite_variance_plus_structure_variance
+    fallback: exp209_zero_fill_sigma_on_same_available_prefix
+    clip: [10.0, 60.0]
+  stage_0_prefix_backtest:
+    enabled_after_implementation: true
+    rolling_origins: [0.60, 0.80]
+    forward_evaluation_fraction: 0.20
+    scale_policies: [finite_only, exp209_zero_fill, structure_added]
+    gaussian_nll_without_constant: log_sigma_plus_half_squared_residual_over_variance
+    pass_requires_all:
+      minimum_evaluable_well_fraction_each_origin: 0.90
+      maximum_fallback_well_fraction_each_origin: 0.10
+      structure_beats_finite_pooled_each_origin: true
+      minimum_folds_structure_beats_finite_each_origin: 4
+      minimum_nll_gain_vs_zero_fill_per_finite_residual_each_origin: 0.005
+      minimum_folds_structure_beats_zero_fill_each_origin: 4
+      minimum_final_median_tau_structure_gr_units: 5.0
+      maximum_final_lower_clip_well_fraction: 0.10
+  stage_1_exact_hmm:
+    enabled_after_implementation: false
+    enable_condition: stage_0_all_gates_pass_and_separate_user_approval
+    active_variants: [prefix_backtested_structure_sigma_gr]
+    sigma_source: full_known_prefix_split_60_40_same_fixed_scale_estimator
+  fixed_hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    lam: 1.0
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    momentum: 0.998
+    emission: gaussian
+    emission_clip_z2: 600.0
+    rate_center: zero
+    evaluation_gr_policy: interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp
+    output: posterior_mean
+  forbidden:
+    - finite_mad
+    - affine_or_mean_center_calibration
+    - temperature_or_likelihood_weight
+    - student_t_or_mixture_emission
+    - row_varying_sigma
+    - missing_gr_downweight
+    - transition_noise_change
+    - blend_weight_grid
+    - posthoc_split_or_threshold_rescue
+
+references:
+  exp209_raw_hmm_rmse: 11.9382872349
+  exp209_likpf_rmse: 11.5948976722
+  exp209_hmm_likpf_50_50_rmse: 10.2696961466
+  exp307_zero_fill_sigma_median: 38.6418
+  exp307_finite_std_sigma_median: 13.8957
+  exp307_finite_std_direct_rmse: 14.2097176758
+  exp307_finite_mad_direct_rmse: 15.6613409181
+
+execution_contract:
+  stage_0:
+    diagnostic_variants: 1
+    hmm_well_runs: 0
+    model_configs: 0
+    trained_folds: 0
+    pf_well_runs: 0
+    beam_well_runs: 0
+    boosters: 0
+  stage_1_if_pass:
+    scientific_variants: 1
+    hmm_well_runs: 773
+    model_configs: 0
+    trained_folds: 0
+    pf_well_runs: 0
+    beam_well_runs: 0
+    boosters: 0
+  parent_control_retraining: false
+
+promotion_gates:
+  minimum_rmse_gain_vs_exp209_raw_hmm_ft: 0.05
+  minimum_improved_folds: 4
+  require_1000_plus_non_regression: true
+  require_hidden_like_spatial_non_regression: true
+  require_hidden_like_typewell_purged_non_regression: true
+  require_by_well_p95_delta_max: 0.0
+  maximum_worst_well_regression_ft: 0.25
+  require_fixed_likpf_50_50_non_regression: true
+  baseline_metric_absolute_tolerance: 1.0e-5
+
+execution:
+  implementation_approved: true
+  implementation_approval_scope: user_message_implement_exp337
+  kaggle_push_approved: true
+  kaggle_run_approval_scope: user_message_execute_exp337
+  active_stage: stage0_gate_failed_branch_closed
+  run_stage_0: true
+  stage_0_completed: true
+  stage_0_gate_passed: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+  kaggle_kernel_id: kentookumura/exp337-prefix-backtested-structure-sigma-gr-train
+  kaggle_kernel_title: exp337 prefix backtested structure sigma gr train
+  kaggle_kernel_version: 1
+  kaggle_kernel_id_no: 128220965
+  kaggle_kernel_url: https://www.kaggle.com/code/kentookumura/exp337-prefix-backtested-structure-sigma-gr-train
+  kaggle_kernel_status: complete
+  runtime_seconds: 143.899363
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp307-finite-only-robust-sigma-gr-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_sorted_well_row_origin_and_scale_policy_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_outer_workers_and_numba_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a deterministic train-side candidate audit, not a deterministic submission anchor.
+    - Stage 0 scale and NLL outputs are frozen before any unknown-suffix truth is joined.
+
+inference:
+  enabled: false
+  mode: disabled_until_stage_1_promotion_and_separate_approval
+  create_submission: false
+
+notes:
+  - Design frozen on 2026-07-22; Stage 0 implementation was explicitly approved later the same day.
+  - Kaggle CPU Stage 0 package/push/run was explicitly approved on 2026-07-22.
+  - Kaggle CPU Stage 0 version 1 completed and failed the fixed gate because structure-added NLL lost to finite-only in 0 of 5 folds at both origins and the full-prefix median structural scale was 0.0.
+  - Stage 1 implementation, inference, and submission remain unapproved.
+  - exp226 is used only for fold/truth scoring artifacts and is not the scientific parent because it does not implement the exp209 Gaussian exact-HMM emission.
+  - Stage 0 failure closed the branch before HMM implementation; no Stage 1, inference, or submission is permitted for this experiment.

@@ -1,0 +1,61 @@
+{
+  "experiment": "exp267_well_segment_candidate_divergence_signature_cluster_on_exp265",
+  "status": "structure_negative_retained_exp264_score_readout_invalidated",
+  "parent_score_readout_valid": false,
+  "parent_invalidation_reason": "exp264 Stage B feature availability leakage",
+  "route": "ensemble",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "structure_stability_and_post_assignment_candidate_score_separation",
+  "stage_a": {
+    "status": "kaggle_v2_complete_guard_failed",
+    "variants": 0,
+    "lightgbm_configs": 0,
+    "folds_trained": 0,
+    "boosters": 0,
+    "parent_control_retraining": false,
+    "expected_wells": 773,
+    "expected_features": 18,
+    "technical_guard_pass": true,
+    "coverage_wells_all_three_segments": 773,
+    "coverage_fallback_wells": 0,
+    "occupancy_guard_pass": false,
+    "pooled_cluster_wells": {
+      "low": 538,
+      "middle": 41,
+      "high": 194
+    },
+    "stability_guard_pass": true,
+    "min_centroid_matched_assignment_agreement": 0.9548387096774194,
+    "divergence_profile_guard_pass": false,
+    "divergence_profile_fold_pass_count": 1,
+    "semantic_label_consistency_guard_pass": true,
+    "structure_guard_pass": false,
+    "candidate_winner_guard_pass": null,
+    "candidate_winner_guard_valid": false,
+    "candidate_winner_modal_fold_count": 1,
+    "calibration_direction_guard_pass": null,
+    "calibration_direction_guard_valid": false,
+    "calibration_direction_fold_count": 5,
+    "worst_cluster_single_well_guard_pass": true,
+    "score_separability_guard_pass": null,
+    "score_separability_guard_valid": false,
+    "stage_a_guard_pass": false
+  },
+  "conditional_stage_b": {
+    "enabled": false,
+    "approval_required": true,
+    "variants": 1,
+    "objectives": 2,
+    "folds": 5,
+    "planned_cpu_boosters": 10
+  },
+  "tests": {
+    "targeted": 4,
+    "targeted_status": "passed",
+    "repository": 87,
+    "repository_status": "passed"
+  },
+  "notes": "Kaggle CPU Stage A version 2 completed on canonical kernel id 127573486. Candidate-only technical, coverage, stability, occupancy, and divergence-profile structure readouts remain recorded. Candidate winner, calibration-direction, score-separability, and the combined Stage A guard are invalid because they use exp264 scores. Conditional Stage B is closed without training."
+}

@@ -1,0 +1,159 @@
+experiment:
+  name: exp323_time_varying_exp226_dip_rate_prior
+  description: >-
+    Design-frozen two-stage audit that ports the fold-safe exp226 K16
+    geometry field into exact HMM as a time-varying dip-rate prior mean,
+    without using exp226 final predictions, absolute TVT unary, or blending.
+  route: pf_beam
+  status: closed_without_run_upstream_exp307_chain_failed
+  created_at: "2026-07-21"
+  updated_at: "2026-07-22"
+
+lineage:
+  parent: exp309_well_adaptive_transition_noise
+  steering: ../../.steering/20260721-exp323-time-varying-exp226-dip-rate-prior
+  references:
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp268_multi_scale_initial_rate_candidates
+    - exp273_two_dimensional_formation_gradient_transition
+    - exp279_exp226_geop_centered_exact_hmm_redecode
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe
+  diff_summary: >-
+    Keeps the promoted parent observation model, sig_r, sig_p, grid,
+    momentum, priors, and posterior mean fixed. The only scientific change is
+    replacing a constant rate-prior mean by the target-well anchored change
+    in the fold-safe exp226 pre-GR/pre-U geometry rate.
+
+closure:
+  closed_at: "2026-07-22"
+  reason: upstream_exp307_failed_so_fixed_exp309_parent_can_never_promote
+  terminal: true
+  reopen_allowed: false
+  successor_policy: >-
+    Do not reparent or reopen exp323. Only if exp338 passes all promotion gates,
+    create a separately approved new-number experiment with the exp323 role and
+    exp338 as its parent.
+
+implementation:
+  enabled: false
+  scope: design_only
+  train_notebook_state: placeholder_only
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: conditional_grouped_two_stage_transition_mean_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  score_rows: tvt_input_unknown_suffix_only_after_target_free_freeze
+  dependency_policy:
+    required_parent: exp309_well_adaptive_transition_noise
+    required_parent_status: all_promotion_gates_passed
+    expected_parent_sha_status: freeze_after_parent_pass_before_implementation
+    fail_closed_on_dependency_mismatch: true
+  leakage_policy:
+    - exp226 donor fields and kappa are rebuilt inside each saved outer fold without the validation well or same-fold validation wells.
+    - Only MD, X, Y, Z, GR availability, TVT_input prefix, and outer-train donor TVT are available before the prior schedule is frozen.
+    - Unknown-suffix TVT, error, abs_error, oracle choice, and exp226 final prediction are forbidden before freeze.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  exp226_oof_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+
+model:
+  name: exp226_delta_rate_prior_exact_hmm
+  estimator: none
+  stage_0_rate_change_readout:
+    enabled_after_implementation: false
+    exp226_component: geometry_only_pre_gr_pre_u_projection
+    k_segments: 16
+    geometry_rate: delta_tvt_geop_plus_delta_z_div_delta_md
+    target_anchor_rate: exact_parent_initial_rate
+    formula: mu_rate_t_equals_parent_initial_rate_plus_r_geo_t_minus_r_geo_first_segment
+    fallback: constant_parent_initial_rate_when_geometry_invalid
+    compare_against: zero_rate_change_constant_parent_prior
+    pass_requires_all:
+      minimum_segment_rate_change_rmse_gain_fraction: 0.05
+      minimum_cumulative_path_rmse_gain_ft: 0.05
+      minimum_improved_folds: 4
+      require_1000_plus_non_regression: true
+      require_hidden_like_spatial_non_regression: true
+      require_hidden_like_typewell_purged_non_regression: true
+      maximum_worst_well_regression_ft: 0.25
+  stage_1_exact_hmm:
+    enabled_after_implementation: false
+    enable_condition: stage_0_all_gates_pass_and_separate_user_approval
+    state_coordinate: residual_rate_about_time_varying_mu
+    residual_initial_mean: 0.0
+    prior_mean_schedule: stage_0_frozen_mu_rate_t
+    active_variants: [exp226_delta_rate_prior_mean]
+  fixed_parent:
+    observation_model: exact_exp309_promoted_parent
+    sig_r: exact_exp309_promoted_parent
+    sig_p: 0.02
+    effective_position_sigma_floor: 0.1225
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    momentum: 0.998
+    output: posterior_mean
+  forbidden:
+    - exp226_final_tvt_prediction
+    - exp226_gr_correction
+    - exp226_u_projection
+    - absolute_tvt_unary
+    - fixed_exp226_path_shape
+    - prediction_blend
+    - parameter_grid
+
+execution_contract:
+  stage_0: {diagnostic_variants: 1, hmm_well_runs: 0, model_configs: 0, trained_folds: 0, boosters: 0}
+  stage_1_if_pass: {scientific_variants: 1, hmm_well_runs: 773, model_configs: 0, trained_folds: 0, boosters: 0}
+  parent_control_retraining: false
+
+promotion_gates:
+  minimum_rmse_gain_vs_parent_ft: 0.05
+  minimum_improved_folds: 4
+  require_1000_plus_non_regression: true
+  require_hidden_like_spatial_non_regression: true
+  require_hidden_like_typewell_purged_non_regression: true
+  require_by_well_p95_delta_max: 0.0
+  maximum_worst_well_regression_ft: 0.25
+  require_fixed_likpf_blend_non_regression: true
+
+execution:
+  implementation_approved: false
+  kaggle_push_approved: false
+  active_stage: closed_without_run
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle: {enable_gpu: false, enable_internet: false, runtime_limit_seconds: 30600}
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_outer_fold_and_well_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: true, submission_sha: false}
+
+inference: {enabled: false, create_submission: false}
+
+notes:
+  - Design frozen on 2026-07-21; implementation and execution are not approved.
+  - Stage 0 must pass before Stage 1 can be implemented.
+  - Closed permanently on 2026-07-22; exp338 PASS may qualify a new-number successor but never reopens this experiment.
+  - The absolute rate level remains target-well anchored; exp226 contributes only its time-varying rate change.

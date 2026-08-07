@@ -1,0 +1,63 @@
+{
+  "experiment": "exp156_test_batch_covariate_context_audit",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "implemented_backlog": "test_batch_covariate_context_audit",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "ml_model",
+  "train": {
+    "status": "complete",
+    "kernel": "kentookumura/exp156-test-batch-context-audit-train",
+    "kernel_version": 1,
+    "rows": 3783989,
+    "wells": 773,
+    "runtime_seconds": 321.645,
+    "active_variants": 0,
+    "lightgbm_configs": 0,
+    "folds": 0,
+    "total_boosters": 0
+  },
+  "baseline": {
+    "variant": "base_exp148_lgb_mean",
+    "rmse": 8.50128118189582,
+    "mae": 5.33565092086792,
+    "within10": 0.8563320347918559,
+    "public_lb": 7.96
+  },
+  "best_non_oracle": {
+    "variant": "base_exp148_lgb_mean",
+    "rmse": 8.50128118189582,
+    "delta_rmse_vs_exp148": 0.0
+  },
+  "best_gate": {
+    "variant": "context_densew_tail1500_q85_min4_clip10_a025",
+    "rmse": 8.502466,
+    "delta_rmse_vs_exp148": 0.001185,
+    "gate_rate": 0.0509903702151354,
+    "gate_wells": 138,
+    "max_well_regression_vs_exp148": 2.321141
+  },
+  "oracle": {
+    "all_candidates_rmse": 3.342164943510641,
+    "dense_candidates_rmse": 10.971366038844979
+  },
+  "worst_set_readout": {
+    "common_pf_ml_worst26_context_densew_delta": -0.399641,
+    "pf_likpf_worst50_context_densew_delta": -0.304031,
+    "exp148_worst50_context_densew_delta": -0.179516
+  },
+  "artifacts": {
+    "output_dir": "experiments/exp156_test_batch_covariate_context_audit/kaggle/output/train_v1",
+    "summary": "artifacts/exp156_test_batch_covariate_context_audit_summary.json",
+    "metrics": "artifacts/exp156_test_batch_covariate_context_audit_metrics.csv",
+    "bucket_metrics": "artifacts/exp156_test_batch_covariate_context_audit_bucket_metrics.csv",
+    "common_worst": "artifacts/exp156_test_batch_covariate_context_audit_common_worst_metrics.csv",
+    "rawtest_parity": "artifacts/exp156_test_batch_covariate_context_audit_rawtest_parity_checklist.csv"
+  },
+  "input_sha": {
+    "exp148_oof_decompressed": "ec28d89641b74c67482aff7a1ebc925db536716f1a024467ae0339dd2326e14d",
+    "exp073_oof_decompressed": "fd6c68050058c40b4960f3ff2af9905bfcb1c12d540c71e331d0aa85ca9756a4",
+    "exp072_feature_cache_decompressed": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350",
+    "feature_schema_sha256": "700d38149f583c3ab6574ea7b163c3c8709c2514b675bea381d822f82f4809b8"
+  },
+  "notes": "Context gates did not beat exp148 globally. No inference port or submission."
+}

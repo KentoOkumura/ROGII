@@ -1,0 +1,81 @@
+experiment:
+  name: "exp138_ancc_surface_predictability_audit"
+  description: Fold-safe audit of whether train-only ANCC formation surface can be predicted without LightGBM
+  route: ml_model
+  status: planned
+  created_at: "2026-06-26"
+
+lineage:
+  parent: KAGGLE_DIRECTION ancc_surface_predictability_audit backlog
+  diff_summary: >
+    Create a target-free ANCC surface predictability audit before any TVT target
+    conditioning. The experiment intentionally avoids LightGBM and compares
+    conventional global median, row-level XY KNN, and well-level local plane KNN
+    surface imputers under well-level fold safety.
+
+validation:
+  leakage_policy:
+    - Same well is never split across train and validation folds.
+    - Validation-fold ANCC is used only for scoring.
+    - Surface models are fit only from train-fold wells.
+    - Test ANCC and validation ANCC are never required as input features.
+    - Downstream TVT target ablation is not performed in this audit.
+
+# Common paths and submission columns come from project.yml.
+data: {}
+
+model:
+  name: fold_safe_ancc_surface_imputer_audit
+  uses_lightgbm: false
+  methods:
+    - global_median
+    - row_knn_xy
+    - well_plane_knn
+  target_column: ANCC
+  feature_policy:
+    - Use only raw-test-compatible coordinates and geometry at prediction time.
+    - Use train-fold ANCC only as the surface fitting target.
+    - Evaluate absolute ANCC_hat and anchor-relative ANCC_hat deltas separately.
+
+surface:
+  row_knn:
+    n_neighbors: 32
+    weights: distance
+    max_rows_per_well: 250
+    max_rows_total: 150000
+  well_plane_knn:
+    n_neighbors: 16
+    chunk_size: 50000
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: 40
+  save_oof_predictions: true
+  save_target_distribution_summary: true
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_global_seed_plus_fold_offset_for_row_sampling
+  stochastic_components:
+    - deterministic row subsampling for row_knn_xy
+  parallel_rng_policy: no parallel RNG; KNN predictions are deterministic after sampled rows are fixed
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - No GPU, PF/Beam, seed bagging, or LightGBM is used.
+    - This audit is not a deterministic ML route anchor.
+    - Kaggle Notebook output metrics and CSV SHA are the evidence.
+
+notes:
+  - Output files are ancc_surface_oof_predictions.csv, method_metrics.csv, bucket_metrics.csv, and target_distribution_summary.csv.
+  - Passing this audit only permits a later ANCC_hat residual target ablation; it does not itself create a submission candidate.

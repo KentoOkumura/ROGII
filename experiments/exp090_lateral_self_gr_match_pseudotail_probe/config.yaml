@@ -1,0 +1,186 @@
+experiment:
+  name: "exp090_lateral_self_gr_match_pseudotail_probe"
+  description: Same-horizontal-well prefix-to-evaluation GR match summary feature probe on the fixed exp073 full replay LightGBM surface.
+  route: ml_model
+  status: train_completed_weak_positive
+  created_at: "2026-06-20"
+  updated_at: "2026-06-20"
+
+lineage:
+  parent: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  implementation_source: lateral_self_gr_match_pseudotail_probe.py
+  public_replay_source: public_notebook_replay_audit.py
+  diff_summary: Keeps the exp073/exp072 deterministic 196-feature full replay surface and original TVT-minus-last-anchor target, then adds target-free same-horizontal-well GR prefix/evaluation match summary features.
+
+validation:
+  strategy: groupkfold_by_exp063_well_same_features_self_gr_match_ablation
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Train features are read from exp072's raw-train-only deterministic feature cache.
+    - The supervised target remains exp073's TVT minus last_known_tvt residual.
+    - GroupKFold is grouped by well; a well never appears in train and validation in the same fold.
+    - Self-GR features use only same-well horizontal GR, finite prefix TVT_input, row index, and target-free evaluation-zone GR.
+    - Evaluation-zone true TVT is not used for GR matching, feature selection, or sample weights.
+    - This is a train-side ablation and not a submission candidate until CV, bucket, and worst-well checks are reviewed.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_summary_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_summary.json
+
+model:
+  name: exp090_lateral_self_gr_match_pseudotail_probe_lgbm
+  source_experiment: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  feature_source: exp072_exp063_full_replay_train_feature_cache
+  expected_base_feature_count: 196
+  target: target
+  base_prediction: last_known_tvt
+  estimator: lightgbm
+  lgb_config_family: exp063_public_pixiux_lgb0_lgb1_lgb2
+  self_gr_match:
+    half_windows: [8, 15, 25]
+    stride: 3
+    prefix_tail_rows: 1024
+    feature_groups:
+      self_gr_core:
+        - self_gr_score_max
+        - self_gr_score_gap_best_second
+        - self_gr_delta_tvt_ens
+        - self_gr_best_l2
+        - self_gr_best_scale
+      self_gr_multiscale:
+        - self_gr_sc8_score
+        - self_gr_sc8_delta_tvt
+        - self_gr_sc8_l2
+        - self_gr_sc15_score
+        - self_gr_sc15_delta_tvt
+        - self_gr_sc15_l2
+        - self_gr_sc25_score
+        - self_gr_sc25_delta_tvt
+        - self_gr_sc25_l2
+      self_gr_context:
+        - self_gr_known_prefix_rows
+        - self_gr_eval_len
+        - self_gr_prefix_missing_rate
+        - self_gr_eval_missing_rate
+        - self_gr_md_rank_from_anchor
+        - self_gr_delta_tvt_range
+        - self_gr_delta_tvt_std
+  feature_ablation:
+    selected_variant: null
+    active_variants:
+      - name: control_exp073_base196
+        description: Exp073 full replay 196-feature control, original target and no self-GR match features.
+        feature_groups: []
+        sample_weight_policy: null
+        enabled: true
+      - name: self_gr_core
+        description: Add compact same-well GR match confidence and matched-prefix TVT-offset summary.
+        feature_groups:
+          - self_gr_core
+        sample_weight_policy: null
+        enabled: true
+      - name: self_gr_core_multiscale
+        description: Add core plus per-scale NCC score, matched TVT-offset, and z-normalized L2 distance.
+        feature_groups:
+          - self_gr_core
+          - self_gr_multiscale
+        sample_weight_policy: null
+        enabled: true
+      - name: self_gr_core_context
+        description: Add core plus prefix/evaluation length and GR missingness context.
+        feature_groups:
+          - self_gr_core
+          - self_gr_context
+        sample_weight_policy: null
+        enabled: true
+  training:
+    early_stopping_rounds: 250
+    max_train_rows: null
+    max_rows: null
+    save_models: true
+    save_predictions: true
+    top_n_importance: 40
+    active_modes:
+      - gpu_repro_guard_dp_threads8
+    modes:
+      exp063_gpu_float32_reference:
+        description: Exp063-like GPU LightGBM setting; included for optional rerun comparison.
+        use_gpu: true
+        common_overrides:
+          gpu_use_dp: false
+          n_jobs: -1
+      gpu_repro_guard_dp_threads8:
+        description: GPU double precision plus fixed thread count and deterministic flags.
+        use_gpu: true
+        common_overrides:
+          gpu_use_dp: true
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+      cpu_deterministic_threads8:
+        description: CPU deterministic LightGBM control with fixed thread count.
+        use_gpu: false
+        common_overrides:
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+audit:
+  mode: lateral_self_gr_match_pseudotail_probe_from_exp072_cache
+  output_prefix: exp090_lateral_self_gr_match_pseudotail_probe
+  fast: false
+  bucket_columns:
+    distance: md_since
+    tail_rank: id
+  expected_train_artifacts:
+    - exp090_lateral_self_gr_match_pseudotail_probe_metrics.csv
+    - exp090_lateral_self_gr_match_pseudotail_probe_by_well.csv
+    - exp090_lateral_self_gr_match_pseudotail_probe_bucket_metrics.csv
+    - exp090_lateral_self_gr_match_pseudotail_probe_self_gr_feature_summary.csv
+    - exp090_lateral_self_gr_match_pseudotail_probe_sample_weight_summary.csv
+    - exp090_lateral_self_gr_match_pseudotail_probe_feature_importance.csv
+    - exp090_lateral_self_gr_match_pseudotail_probe_feature_importance_mean.csv
+    - exp090_lateral_self_gr_match_pseudotail_probe_feature_importance_mean_top.png
+    - exp090_lateral_self_gr_match_pseudotail_probe_predictions.csv.gz
+    - exp090_lateral_self_gr_match_pseudotail_probe_feature_schema.csv
+    - exp090_lateral_self_gr_match_pseudotail_probe_lgb_models/manifest.json
+    - exp090_lateral_self_gr_match_pseudotail_probe_summary.json
+
+inference:
+  mode: not_selected_train_side_self_gr_match_probe
+  selected_variant: null
+  selected_mode: gpu_repro_guard_dp_threads8
+  selected_model: lgb_mean
+  notes:
+    - Inference is intentionally not selected until train-side self-GR match ablation results are reviewed.
+    - If selected, the inference notebook must regenerate raw-test full replay features and compute the same same-well GR match features from hidden test horizontal wells.
+
+notes:
+  - This implements the backlog item `lateral_self_gr_match_pseudotail_probe`.
+  - GR matching is used only as target-free feature summary, not as a direct TVT replacement.
+  - Exp008 typewell NCC and exp017 DTW/DWT add-only features worsened earlier anchors, so this probe is judged by distance bucket and worst-well behavior, not pooled RMSE alone.

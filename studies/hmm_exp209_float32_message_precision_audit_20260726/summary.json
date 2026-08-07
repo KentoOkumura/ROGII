@@ -1,0 +1,18 @@
+{
+  "scope": {
+    "steps": 512,
+    "scenarios": 4,
+    "precision_runs": 12
+  },
+  "maximum_filtered_mean_abs_difference_vs_normalized_float64_ft": 0.00015175170806713822,
+  "maximum_smoothed_mean_abs_difference_vs_normalized_float64_ft": 0.0001482630695051057,
+  "maximum_smoothed_sign_symmetry_error_ft": 0.00018086803359551595,
+  "stress": {
+    "additive_emission_log_offsets": [
+      0.0,
+      -3.5
+    ],
+    "guard": "A uniform additive log offset is posterior-invariant in exact arithmetic; -3.5 per row drives a 512-step unnormalized message to roughly the worst exp270 saved log-likelihood scale."
+  },
+  "interpretation_guard": "This vectorized sparse log recurrence is a controlled numerical stress test, not an actual-well float64 redecode. A material difference would establish a precision mechanism; a negligible difference strongly rejects float32 scale handling as the root cause but cannot prove bitwise actual-well parity."
+}

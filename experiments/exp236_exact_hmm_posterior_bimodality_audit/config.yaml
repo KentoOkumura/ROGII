@@ -1,0 +1,220 @@
+experiment:
+  name: "exp236_exact_hmm_posterior_bimodality_audit"
+  description: >
+    Train-side posterior-shape audit for the fixed exp221 Gaussian-emission
+    exact HMM. It measures bimodality and mode persistence without changing
+    the HMM emission, transition, grid, or prediction rule.
+  route: ensemble
+  status: completed_train_side_posterior_diagnostic
+  created_at: "2026-07-12"
+  updated_at: "2026-07-12"
+  inference_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.strategy
+    - validation.score_rows
+
+lineage:
+  parent: exact_hmm_posterior_bimodality_audit backlog
+  references:
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp133_gr_bimodal_match_ambiguity_detector
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - KAGGLE_DIRECTION.md exact_hmm_posterior_bimodality_audit
+  implementation_source:
+    - posterior_bimodality_audit.py
+    - exact_hmm_smoother.py
+  diff_summary: >
+    Replays only exp221's completed fixed exp148-lgb-mean Gaussian-emission
+    HMM (sigma=20, lambda=0.50) with return_post=true. It extracts target-free
+    row and segment posterior-shape summaries, then uses train TVT only for
+    decoder and oracle diagnostic readouts. The HMM, LGB center, grid,
+    transition, emission, and posterior-mean prediction are unchanged.
+
+validation:
+  strategy: train_side_fixed_exp221_posterior_bimodality_and_mode_persistence_audit
+  metric: rmse
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  success_criteria:
+    - The exp148 lgb_mean OOF source exactly covers all HMM evaluation ids with no duplicate id.
+    - HMM settings and LGB emission values equal the exp221 single selected variant.
+    - Row, segment, and well posterior summaries are emitted without saving a full posterior tensor.
+    - Decoder comparison covers overall, distance bucket, hidden-like, bimodal, mean-in-valley, worst-well, and step-delta views.
+    - Oracle top2 values are saved as diagnostic-only quantities and never influence a decoder, threshold, or plot selection.
+  leakage_policy:
+    - HMM input is raw train horizontal/typewell data, observed TVT_input prefix, GR, MD, Z, typewell, and saved exp148 OOF centers.
+    - Target-free posterior classification is computed before true train TVT is joined for metrics.
+    - True TVT and error are prohibited from peak selection, bimodality thresholds, mode tracking, HMM settings, and decoder selection.
+    - No parent/control retraining, raw-test regeneration, inference, submission, mixture emission, mode-state, or post-hoc correction is run.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp148_lgb_mean_oof_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+    - /kaggle/input/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+    - /tmp/kaggle-output/exp148_train_v1/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+    - experiments/exp148_learned_likelihood_fulltrain_addonly_on_exp092/artifacts/viewer/exp148_lgb_mean_oof_viewer.csv
+  exp115_fold_assignment_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+model:
+  name: exact_hmm_posterior_bimodality_audit
+  estimator: none_fixed_hmm_diagnostic
+  target: train_tvt_for_readout_only
+  base_prediction: exp221_posterior_mean
+  feature_ablation:
+    selected_variant: exp221_exp148_lgb_mean_s2000_l0500_fixed
+    active_variants:
+      - name: exp221_exp148_lgb_mean_s2000_l0500_fixed
+        enabled: true
+        description: Exact exp221 selected posterior; diagnostic extraction only.
+        feature_groups:
+          - raw_prefix_and_typewell_gr
+          - saved_exp148_lgb_mean_oof_center
+          - exact_hmm_marginal_posterior
+      - name: modified_emission_or_decoder
+        enabled: false
+        description: Explicitly prohibited placeholder; posterior mean remains the HMM output.
+        feature_groups: []
+  training:
+    active_modes:
+      - cpu_single_fixed_hmm_audit
+    modes:
+      cpu_single_fixed_hmm_audit:
+        use_gpu: false
+        active_hmm_variants: 1
+        lightgbm_configs: 0
+        folds: 0
+        boosters: 0
+        parent_control_retraining: false
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+  lgb_emission:
+    source: exp148_lgb_mean
+    sigma: 20.0
+    lambda: 0.50
+    emission_clip: 600.0
+    model_filter: lgb_mean
+    prediction_column: pred_tvt
+
+posterior_audit:
+  output_prefix: exp236_exact_hmm_posterior_bimodality_audit
+  min_peak_height: 0.02
+  min_top2_mass: 0.10
+  min_top2_to_top1_mass_ratio: 0.25
+  min_peak_separation_ft: 6.0
+  min_valley_depth: 0.30
+  mean_valley_density_ratio_max: 1.20
+  mode_track_allowance_ft: 6.0
+  oracle_top2_within_ft: 10.0
+  plot_well_limit: 12
+  plot_rows_per_well: 384
+  write_row_summary: true
+  representative_sort:
+    - mean_in_valley_rows_desc
+    - bimodal_rows_desc
+    - well_asc
+  expected_train_artifacts:
+    - exp236_exact_hmm_posterior_bimodality_audit_row_summary.csv.gz
+    - exp236_exact_hmm_posterior_bimodality_audit_segment_summary.csv
+    - exp236_exact_hmm_posterior_bimodality_audit_well_summary.csv
+    - exp236_exact_hmm_posterior_bimodality_audit_decoder_metrics.csv
+    - exp236_exact_hmm_posterior_bimodality_audit_distance_bucket_metrics.csv
+    - exp236_exact_hmm_posterior_bimodality_audit_hidden_like_metrics.csv
+    - exp236_exact_hmm_posterior_bimodality_audit_step_delta_rates.csv
+    - exp236_exact_hmm_posterior_bimodality_audit_oracle_top2_metrics.csv
+    - exp236_exact_hmm_posterior_bimodality_audit_plot_index.csv
+    - exp236_exact_hmm_posterior_bimodality_audit_summary.json
+
+comparison:
+  primary_decoder: posterior_mean
+  decoder_columns:
+    - posterior_mean
+    - marginal_map
+    - dominant_mode_conditional_mean
+  distance_buckets:
+    - 000_050
+    - 050_100
+    - 100_250
+    - 250_500
+    - 500_1000
+    - 1000_plus
+  step_delta_thresholds: [0.08, 0.10, 0.20]
+  hidden_like:
+    enabled: true
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  numba_num_threads: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp148-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+execution:
+  train_only: true
+  run_hmm_per_well: true
+  full_posterior_tensor_persisted: false
+  rerun_selected_wells_for_plots: true
+  raw_test_inference: false
+  submission: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_fixed_exp221_hmm_serial_well_order
+  stochastic_components:
+    - saved_exp148_gpu_lightgbm_oof_source
+  parallel_rng_policy: no_parallel_rng_outer_workers_1_numba_threads_1
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This experiment creates no new model and no inference prediction.
+    - Full posterior arrays are process-local and discarded after a well summary is written.
+    - Representative plot selection is deterministic after train-side metrics are calculated.
+
+inference:
+  mode: disabled_diagnostic_only
+  selected_variant: null
+  notes:
+    - Raw-test HMM regeneration, decoder porting, and submission are prohibited.

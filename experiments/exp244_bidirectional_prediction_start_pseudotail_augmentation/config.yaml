@@ -1,0 +1,383 @@
+experiment:
+  name: exp244_bidirectional_prediction_start_pseudotail_augmentation
+  description: Train and evaluate a fold-safe exp218-family variant with early/original/late prediction-start views.
+  route: ml_model
+  status: completed_v4_train_side_guard_failed_no_inference_no_submit
+  created_at: '2026-07-13'
+  updated_at: '2026-07-16'
+
+lineage:
+  parent: exp239_distribution_matched_multicut_pseudotail
+  model_parent: exp218_gr_wavelet_rotation_confidence_features_on_exp148
+  calibration_followup: prefix_pseudotail_test_time_calibrator
+  diff_summary: >
+    Extends the exp239 early-start replay contract with fixed, symmetric
+    prediction-start views around the official cutoff. Negative offsets are
+    early-start views, zero is the official control, and positive offsets are
+    train-only late-start views. Every view rebuilds TVT_input and prefix
+    features from raw rows. V4 directly trains one exp218-family augmentation
+    variant from the official full cache and four offset-specific pseudo caches;
+    full-prefix cache slicing, validation/test unknown-tail TVT, inference, and
+    submission remain disabled.
+
+validation:
+  strategy: source_well_groupkfold_official_start_primary
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: source_well
+  fold_assignment: exp218_official_tail_row_weighted_groupkfold
+  legacy_v1_fold_assignment: unique_well_equal_weight_groupkfold
+  primary_score_surface: official_start_oof
+  stress_surfaces:
+    - start_kind
+    - remaining_tail_rows
+    - rows_1000_plus
+    - exp115_hidden_like
+    - worst_well
+  leakage_policy:
+    - Every derived view inherits exactly one fold from its source well.
+    - Outer-valid source-well views are excluded from the corresponding outer-train fold.
+    - Positive-offset late views are train-only and cannot be generated from current-test unknown tail TVT.
+    - Feature generation may read TVT only through the selected start to construct TVT_input.
+    - TVT after the selected start is target-only and is attached after feature generation.
+    - Official-start OOF remains the adoption metric.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  horizontal_glob: '*__horizontal_well.csv'
+  target_column: TVT
+  input_target_column: TVT_input
+  md_column: MD
+  gr_column: GR
+  coordinate_columns: [X, Y, Z]
+  exp218_oof_predictions_local: /tmp/exp218_train_v1_output/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_predictions.csv.gz
+  exp218_model_manifest_local: /tmp/exp218_train_v1_output/artifacts/exp218_gr_wavelet_rotation_confidence_features_on_exp148_lgb_models/manifest.json
+  exp244_v1_fold_manifest_local: experiments/exp244_bidirectional_prediction_start_pseudotail_augmentation/artifacts/exp244_bidirectional_prediction_start_pseudotail_augmentation_fold_manifest.csv
+
+frozen_anchor_parity:
+  experiment: exp218_gr_wavelet_rotation_confidence_features_on_exp148
+  variant: gr_wavelet_rotation_confidence_addonly
+  mode: gpu_repro_guard_dp_threads8
+  model: lgb_mean
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_rmse: 8.475793752
+  rmse_tolerance: 0.000001
+  expected_oof_decompressed_sha256: 5f3fc95182eea348f3545771e67778ce191e7ba468eee7b267f4993369422976
+  expected_model_manifest_sha256: 904570def0d6ad0140f3df95c8bb38f31823295fd191206290e3833b5b2cc237
+  expected_v1_fold_manifest_sha256: e896c1afbba8d6cefe29f52d3073a2265c184ceb992bbe892654752f47f28176
+  expected_model_count: 15
+  require_exact_raw_surface: true
+
+confidence_shrink_meta_validation:
+  variant: dual_start_linear_backtest_shrink_max005
+  early_offsets_rows: [-1000, -250]
+  local_linear_window_rows: 128
+  risk_aggregation: minimum_requires_both_starts_bad
+  risk_no_shrink_rmse: 10.0
+  risk_max_shrink_rmse: 30.0
+  max_shrink_fraction: 0.05
+  alpha_min: 0.95
+  alpha_max: 1.0
+  expected_parity_fold_manifest_sha256: 33694a894b4c616b8ac187d9cb752171c70815a5e607c3c27beccfb896883c0f
+  expected_hidden_assignment_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  active_variants: 1
+  lightgbm_configs: 0
+  folds_trained: 0
+  boosters: 0
+  parent_control_retrained: false
+  adoption_guards:
+    require_overall_improvement: true
+    require_1000_plus_non_worse: true
+    require_hidden_like_spatial_non_worse: true
+    require_hidden_like_typewell_purged_non_worse: true
+    max_worst_well_regression: 2.0
+    min_improved_folds: 3
+  forbidden_operations:
+    - official_tail_truth_alpha_fit
+    - outer_train_oof_meta_fit_without_nested_base_oof
+    - free_per_well_weight_grid
+    - full_model_finetune
+    - test_prediction
+    - submission
+
+model:
+  name: bidirectional_prediction_start_integrated_exp218_augmentation
+  estimator: lightgbm
+  parent_model_family: exp218_lgb0_lgb1_lgb2
+  parent_cv_rmse: 8.475793752
+  view_generation:
+    start_offsets_rows: [-1000, -250, 0, 250, 1000]
+    min_prefix_rows: 200
+    min_remaining_tail_rows: 50
+    max_views_per_well: 5
+    max_total_views: 4000
+    max_late_view_share: 0.45
+    require_original_view: true
+  materialization:
+    enabled: true
+    max_rows_per_view: 1000
+    recent_windows: [32, 128]
+    distance_buckets:
+      - {name: rows_000_049, min_step: 0, max_step: 49, quota: 200}
+      - {name: rows_050_249, min_step: 50, max_step: 249, quota: 200}
+      - {name: rows_250_999, min_step: 250, max_step: 999, quota: 200}
+      - {name: rows_1000_2499, min_step: 1000, max_step: 2499, quota: 200}
+      - {name: rows_2500_plus, min_step: 2500, max_step: null, quota: 200}
+    fill_remaining: true
+    forbidden_feature_columns: [TVT, target_tvt]
+  replay_contract:
+    mask_columns_after_start: [TVT_input]
+    target_only_columns_after_start: [TVT]
+    regenerate_feature_groups:
+      - anchor_and_prefix_statistics
+      - projection_correction
+      - pf_beam_likelihood_candidates
+      - learned_likelihood_confidence
+      - gr_wavelet_rotation_confidence
+      - pf_hmm_initial_state_and_confidence
+    forbid_full_prefix_cache_slice: true
+    feature_generation_may_read_tail_tvt: false
+  calibration_backtest:
+    enabled: true
+    allowed_start_kinds: [early]
+    min_known_evaluation_rows: 50
+    actual_prediction_start_may_be_exceeded: false
+    allowed_parameters:
+      - bias
+      - confidence_shrink
+      - candidate_temperature
+      - fixed_candidate_weight
+      - hmm_emission_sigma
+    forbidden_operations:
+      - full_model_finetune
+      - free_per_well_weight_grid
+      - unknown_tail_tvt_access
+  execution:
+    stage: v4_integrated_training_complete_rejected
+    active_audits: 0
+    active_variants: 1
+    lightgbm_configs: 3
+    folds_configured: 5
+    folds_trained: 5
+    boosters_configured: 15
+    boosters_trained: 15
+    parent_control_retrained: false
+    inference_prediction_enabled: false
+    submission_enabled: false
+  integrated_augmentation:
+    enabled: true
+    run_approved: true
+    approval:
+      user_approved: true
+      approved_at: '2026-07-15'
+      approved_scope: one_variant_three_configs_five_folds_fifteen_boosters
+      parent_control_retrained: false
+      activation_prerequisite: all_four_offset_cache_sha_contracts_pass
+    variant: bidirectional_balanced250_weight050
+    train_view_offsets_rows: [-1000, -250, 250, 1000]
+    original_source: exp239_official_exp218_feature_cache_v1
+    validation_rows: official_start_only
+    official_row_weight: 1.0
+    pseudo_row_weight: 0.5
+    sampling:
+      max_rows_per_view: 250
+      fill_remaining: true
+      distance_buckets:
+        - {name: rows_000_049, min_step: 0, max_step: 49, quota: 50}
+        - {name: rows_050_249, min_step: 50, max_step: 249, quota: 50}
+        - {name: rows_250_999, min_step: 250, max_step: 999, quota: 50}
+        - {name: rows_1000_2499, min_step: 1000, max_step: 2499, quota: 50}
+        - {name: rows_2500_plus, min_step: 2500, max_step: null, quota: 50}
+    expected_official_rows: 3783989
+    expected_pseudo_rows: 770157
+    expected_pseudo_views: 3081
+    expected_feature_count: 380
+    cache_batch_request_count: 25
+    cache_specs:
+      - label: m1000
+        offset_rows: -1000
+        expected_requests: 764
+        expected_rows: 191000
+        expected_shards: 31
+        expected_manifest_sha256: 1471fa08662b5af1e5870ac3ea74ee3f301acad5659645e07552f3e1c574f289
+        expected_schema_sha256: 197c7ee8c296b9ef151931ce9127b0abe2856a6d5961f27ec24be29b7a9209b5
+        expected_request_manifest_sha256: b16c057d015062a1a4fe2a4d888cf375fcac0d8421d08e08a836f13fd699e005
+        expected_feature_columns_sha256: 1aff486413a6d86331d0f4537eea918dddc7db8d68cc8a0ea26a1a1297d777b9
+        kernel_source: kentookumura/exp244-multiview-cache-m1000
+      - label: m250
+        offset_rows: -250
+        expected_requests: 773
+        expected_rows: 193250
+        expected_shards: 31
+        expected_manifest_sha256: a30f23b78bb65b3fca59f7366cf464b6b5cb86ce3f90ffce98115acb221e7923
+        expected_schema_sha256: 197c7ee8c296b9ef151931ce9127b0abe2856a6d5961f27ec24be29b7a9209b5
+        expected_request_manifest_sha256: 6ac53c5aeaf7014a0fd06df40202bfa0386d16a1af493480f18a3d3a381690e2
+        expected_feature_columns_sha256: 1aff486413a6d86331d0f4537eea918dddc7db8d68cc8a0ea26a1a1297d777b9
+        kernel_source: kentookumura/exp244-multiview-cache-m250
+      - label: p250
+        offset_rows: 250
+        expected_requests: 773
+        expected_rows: 193157
+        expected_shards: 31
+        expected_manifest_sha256: 6c40ab4a3eef6e7b53c699764f8476db375faf9eba93ec4fbab3011a38a4f979
+        expected_schema_sha256: 197c7ee8c296b9ef151931ce9127b0abe2856a6d5961f27ec24be29b7a9209b5
+        expected_request_manifest_sha256: cabf50b89a3191189ac78084b1d4a445b400d713d32c0455a4b41723c85cd135
+        expected_feature_columns_sha256: 1aff486413a6d86331d0f4537eea918dddc7db8d68cc8a0ea26a1a1297d777b9
+        kernel_source: kentookumura/exp244-multiview-cache-p250
+      - label: p1000
+        offset_rows: 1000
+        expected_requests: 771
+        expected_rows: 192750
+        expected_shards: 31
+        expected_manifest_sha256: 4262c3b218ad4073a8813f88a7fc8d74d3cd95cc7ccf0832da03cf9c3e1611c1
+        expected_schema_sha256: 197c7ee8c296b9ef151931ce9127b0abe2856a6d5961f27ec24be29b7a9209b5
+        expected_request_manifest_sha256: 9d9c144830ba15353fc78f14f9abe30b78c24773665b37aaf3a328d3a973c2ac
+        expected_feature_columns_sha256: 1aff486413a6d86331d0f4537eea918dddc7db8d68cc8a0ea26a1a1297d777b9
+        kernel_source: kentookumura/exp244-multiview-cache-p1000
+    official_cache:
+      prefix: exp239_distribution_matched_multicut_pseudotail
+      expected_shards: 16
+      kernel_source: kentookumura/exp239-official-exp218-feature-cache-v1
+      expected_manifest_sha256: a2c89e0ae432ac59e8f8ffee457f530398707549d9b87eded44d6cb5ac0b27ef
+      expected_schema_sha256: 197c7ee8c296b9ef151931ce9127b0abe2856a6d5961f27ec24be29b7a9209b5
+      expected_feature_columns_sha256: 1aff486413a6d86331d0f4537eea918dddc7db8d68cc8a0ea26a1a1297d777b9
+    feature_generation:
+      n_jobs: 4
+      pf_seeds: 128
+      pf_particles: 500
+      use_full_prefix_cache_slice: false
+      regenerate_exp072_base: true
+      regenerate_learned_likelihood: true
+      regenerate_grwr: true
+    training:
+      active_variants: 1
+      lightgbm_configs: 3
+      folds: 5
+      boosters: 15
+      parent_control_retrained: false
+      reference_exp218_lgb_mean_rmse: 8.475793751656624
+    adoption_guards:
+      require_overall_improvement: true
+      require_1000_plus_non_worse: true
+      require_hidden_like_spatial_non_worse: true
+      require_hidden_like_typewell_purged_non_worse: true
+      max_worst_well_regression: 2.0
+      min_improved_folds: 3
+    result:
+      kernel_id: kentookumura/exp244-bidirectional-multiview-train
+      kernel_version: 1
+      raw_exp218_oof_rmse: 8.475793751656624
+      integrated_oof_rmse: 8.472379730655001
+      delta_rmse: -0.0034140210016229133
+      improved_folds: 3
+      worst_well: 059c8f24
+      worst_well_regression: 16.650566701962056
+      wells_over_2ft_regression: 14
+      adoption_supported: false
+      inference_prediction_performed: false
+      submission_created: false
+
+generator:
+  chunksize: 200000
+  include_candidate_values: false
+  default_candidate: likpf_mean
+  candidates:
+    - {name: pf_ancc, column: pf_ancc}
+    - {name: beam_mean, column: beam_mean}
+    - {name: likpf_mean, column: likpf_mean}
+    - {name: sc_ens, column: sc_ens}
+    - {name: hyb, column: hyb}
+  row_context_columns: [last_known_tvt, pf_ancc_std, beam_mean_d, sc_ens_d, hyb_d, eval_len, md_since, likpf_mean_d]
+  multiobs_global_columns: [multiobs_score_max, multiobs_score_mean, multiobs_score_gap, multiobs_top1_source_id, multiobs_top1_mae, multiobs_top1_ncc]
+  feature_cache:
+    include_candidate_tvt: true
+    include_multiobs_scores: true
+    include_probability_features: true
+    include_expected_error_features: true
+  multi_observation_likelihood:
+    observation_offsets: [-24, -12, 0, 12, 24]
+    gr_rolling_window: 5
+    gr_scale: 18.0
+    out_of_range_scale: 80.0
+    softmax_temperatures: [0.15, 0.30]
+    likpf_blend_weights: [0.25, 0.50]
+
+runtime:
+  use_gpu: false
+  internet: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    multiview_cache_m1000:
+      enable_gpu: false
+    multiview_cache_m250:
+      enable_gpu: false
+    multiview_cache_p250:
+      enable_gpu: false
+    multiview_cache_p1000:
+      enable_gpu: false
+    integrated_train:
+      enable_gpu: true
+    guard_kernel_sources:
+      - kentookumura/exp218-gr-wavelet-rotation-exp148-train
+      - kentookumura/exp244-bidirectional-pseudotail-augmentation-train
+    train_variant0_kernel_sources:
+      - kentookumura/exp218-gr-wavelet-rotation-exp148-train
+      - kentookumura/exp244-frozen-anchor-parity-guard
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp145-train
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp112-learned-pf-likelihood-followup-train
+    integrated_train_kernel_sources:
+      - kentookumura/exp239-official-exp218-feature-cache-v1
+      - kentookumura/exp244-multiview-cache-m1000
+      - kentookumura/exp244-multiview-cache-m250
+      - kentookumura/exp244-multiview-cache-p250
+      - kentookumura/exp244-multiview-cache-p1000
+      - kentookumura/exp218-gr-wavelet-rotation-exp148-train
+    bootstrap_dependency_files:
+      - source: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: dependencies/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - source: experiments/exp072_exp063_full_replay_feature_cache/public_notebook_replay_audit.py
+        destination: public_notebook_replay_audit.py
+      - source: experiments/exp099_pf_multi_observation_likelihood_probe/pf_multi_observation_likelihood_probe.py
+        destination: pf_multi_observation_likelihood_probe.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/learned_likelihood_rawtest_feature_generator_parity.py
+        destination: learned_likelihood_rawtest_feature_generator_parity.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: inputs/exp218_config.yaml
+      - source: experiments/exp239_distribution_matched_multicut_pseudotail/exp239_exp218_pseudotail_augmentation.py
+        destination: exp239_exp218_pseudotail_augmentation.py
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_source_well_start_offset_and_fold
+  stochastic_components: []
+  parallel_rng_policy: no_global_rng_sorted_well_and_view_order
+  feature_sha_policy: canonical_decompressed_csv_content_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Initial implementation is deterministic CPU audit code but is not called a deterministic anchor before Kaggle rerun SHA confirmation.
+    - PF/Beam regeneration is contract-only in the initial audit and must inherit stable per-view seeds when enabled.
+
+notes:
+  - V1-v3 trained no model; v4 trained one approved direct integrated augmentation variant and failed the worst-well adoption guard.
+  - Late-start views use train true TVT only through the synthetic start and are forbidden on current test.
+  - v2 parity preflight reads the frozen exp218 OOF and model manifest but does not retrain or re-predict exp218.

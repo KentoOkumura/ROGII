@@ -1,0 +1,175 @@
+experiment:
+  name: exp015_public_pf_beam_scale_selector_features
+  description: Add lightweight fold-safe PF/beam scale selector features to the exp012/exp013 LightGBM no-GR residual anchor
+  status: completed
+  created_at: "2026-06-04"
+  updated_at: "2026-06-04"
+
+lineage:
+  parent: exp013_model_diversity_or_postprocess
+  diff_summary: Keep the exp012/exp013 LightGBM no-GR residual anchor and add deterministic PF/beam-style candidate path, likelihood, hold-weight, and divergence features
+
+validation:
+  leakage_policy:
+    - Same well is never split across train and validation folds.
+    - Target-derived features use only the known TVT_input prefix.
+    - Evaluation-zone TVT is used only as the residual target during training/CV.
+    - Train-only formation columns are not used.
+    - PF/beam features use only MD, Z, GR, TVT_input prefix, and paired typewell GR available at inference.
+    - PF/beam path generation is deterministic and uses a small scale/shift grid for this first full-CV snapshot.
+
+data: {}
+
+model:
+  name: lightgbm_last_anchor_residual_pf_beam_features
+  primary_strategy: drift_model
+  drift_strategy: drift_model
+  feature_set: no_gr_signal
+  strategies:
+    - last_anchor
+    - drift_model
+  params:
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+    gr_slope_window: 200
+    max_abs_gr_slope: 2.0
+    gr_roll_short: 25
+    gr_roll_long: 100
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  drift_model:
+    estimator: LGBMRegressor
+    params:
+      n_estimators: 800
+      learning_rate: 0.03
+      num_leaves: 31
+      min_child_samples: 80
+      subsample: 0.9
+      colsample_bytree: 0.9
+      reg_lambda: 0.1
+      n_jobs: 2
+  training:
+    max_train_rows_per_fold: 300000
+    max_train_rows_final: 450000
+    max_train_rows_per_well: 800
+  pf_beam:
+    enabled: false
+    min_valid_fraction: 0.30
+    min_abs_prior_slope: 0.005
+    fallback_abs_prior_slope: 0.03
+    dtw_max_points: 160
+    dtw_band_fraction: 0.12
+    confidence_hold_scale: 2.0
+    long_eval_rows: 5700
+    high_z_span: 120.0
+    candidates:
+      - name: s3
+        scale: 3.0
+        slope_scale: 0.375
+        window: 25
+        radius: 90.0
+        shift_step: 15.0
+      - name: s5
+        scale: 5.0
+        slope_scale: 0.625
+        window: 35
+        radius: 120.0
+        shift_step: 15.0
+      - name: s8
+        scale: 8.0
+        slope_scale: 1.0
+        window: 50
+        radius: 160.0
+        shift_step: 20.0
+      - name: s12
+        scale: 12.0
+        slope_scale: 1.5
+        window: 75
+        radius: 220.0
+        shift_step: 20.0
+  rationale:
+    - exp012/exp013 lightgbm_no_gr is the current raw model CV anchor at 13.549257.
+    - exp014 audited distance-bucket postprocess separately, so this experiment should test model-side PF/beam features against the raw anchor.
+    - Public notebook updates point toward PF/beam scale selectors, likelihood, hold blends, and candidate uncertainty; this experiment first converts those signals into deterministic OOF features.
+
+ablation:
+  baseline_experiment: exp002_drift_minimal
+  baseline_cv: 14.124569
+  baseline_public_lb: 12.533
+  cv_anchor_experiment: exp012_single_catboost_lightgbm_residual
+  cv_anchor_cv: 13.549257
+  cv_anchor_public_lb: 12.320
+  postprocess_anchor_experiment: exp014_postprocess_cv_audit
+  postprocess_anchor_cv: 13.535596
+  selected_variant: pf_beam_no_gr
+  variants:
+    - name: control_lightgbm_no_gr
+      variable: control
+      description: Re-run exp012/exp013 selected LightGBM no-GR residual model as the raw anchor.
+      overrides:
+        model:
+          feature_set: no_gr_signal
+          pf_beam:
+            enabled: false
+    - name: pf_beam_no_gr
+      variable: pf_beam_features
+      description: Add deterministic PF/beam scale selector, likelihood, hold weight, and candidate divergence features to the LightGBM no-GR anchor.
+      overrides:
+        model:
+          feature_set: no_gr_signal_plus_pf_beam
+          pf_beam:
+            enabled: true
+
+postprocess:
+  selected_method: raw
+  selection_variant: pf_beam_no_gr
+  diversity_control_variant: control_lightgbm_no_gr
+  alpha_clip:
+    min: 0.20
+    max: 1.15
+  distance_buckets:
+    - name: rows_0_49
+      max_step: 49
+    - name: rows_50_249
+      max_step: 249
+    - name: rows_250_999
+      max_step: 999
+    - name: rows_1000_2499
+      max_step: 2499
+    - name: rows_2500_plus
+      max_step: 1000000000
+  candidates:
+    global_residual_shrink_alphas: []
+    near_anchor_damping: []
+    sg_smooth: []
+    blend_lightgbm_weights: []
+  methods:
+    raw: {}
+    distance_bucket_shrink:
+      buckets:
+        - max_step: 49
+          alpha: 0.20
+        - max_step: 249
+          alpha: 0.5917180252647632
+        - max_step: 999
+          alpha: 1.15
+        - max_step: 2499
+          alpha: 1.15
+        - max_step: 1000000000
+          alpha: 1.0490770312511664
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: 30
+  save_well_metrics: true
+  save_oof_predictions: true
+
+notes:
+  - Submission target column is lowercase tvt, while train target is uppercase TVT.
+  - Do not use train-only formation columns directly at inference.
+  - Train notebook writes ablation metrics, fold metrics, well metrics, model training rows, and row OOF predictions for selected/control variants.
+  - The top-level CV tracks ablation.selected_variant, not the exp014 held-out postprocess audit score.

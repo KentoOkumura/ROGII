@@ -1,0 +1,52 @@
+{
+  "experiment": "exp384_fault_aware_piecewise_stratigraphic_vector_field",
+  "status": "closed_by_exp383_stage0_resource_fail",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "control_experiment": "exp383_all_tvt_stratigraphic_vector_drift_field",
+  "implementation": true,
+  "implementation_validation": {
+    "contract_tests_passed": 14,
+    "scaffold_notebook_tests_passed": 11,
+    "ruff": "passed",
+    "py_compile": "passed",
+    "jupytext_roundtrip": "passed",
+    "strict_experiment_validation": "passed",
+    "repository_tests": {
+      "passed": 853,
+      "skipped": 6,
+      "failed": 2,
+      "exp384_failed": 0,
+      "unrelated_failures": [
+        "tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py::test_config_fixes_one_approved_kaggle_cpu_variant",
+        "tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py::test_full_runner_requires_separate_kaggle_cpu_approval"
+      ]
+    }
+  },
+  "parent_manifest_logical_sha256": null,
+  "stage0": null,
+  "stage1": null,
+  "kaggle_run_authorized": false,
+  "closure": {
+    "confirmed": true,
+    "confirmed_at": "2026-07-25",
+    "source": "user_message_close_exp383_and_downstream"
+  },
+  "kaggle_run_approval_source": "user_message_execute_exp384_2026_07_24",
+  "prerequisite_audit": {
+    "local_parent_artifacts_found": false,
+    "kaggle_parent_kernel_found": false,
+    "kaggle_exp384_kernel_found": false,
+    "package_created": false,
+    "push_started": false,
+    "run_started": false,
+    "blocker": "exp383_stage0_resource_fail_closed"
+  },
+  "kaggle_run": false,
+  "inference": false,
+  "submission": false,
+  "notes": "Closed without execution because exp383 failed its Stage 0 resource gate before producing PASS artifacts or a pinned parent manifest SHA."
+}

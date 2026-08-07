@@ -1,0 +1,198 @@
+experiment:
+  name: exp247_missing_gr_masking
+  description: Exact-HMM ablation that makes raw horizontal-GR missing rows state-neutral while keeping the exp221 LGB unary and grammar fixed.
+  route: ensemble
+  status: completed_rejected
+  created_at: "2026-07-14"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.strategy
+    - validation.score_rows
+
+lineage:
+  parent: exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+  references:
+    - exp148_learned_likelihood_fulltrain_addonly_on_exp092
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - KAGGLE_DIRECTION.md missing_gr_masking
+  implementation_source: exact_hmm_smoother.py
+  diff_summary: >-
+    Keeps the exp221 exact-HMM grid, transition, GR sigma, interpolation control,
+    and exp148 LGB OOF Gaussian unary fixed. The only prediction change is that
+    evaluation rows whose raw horizontal GR is missing receive zero GR-emission
+    contribution before the unchanged LGB unary is added. The saved exp221 v3
+    prediction is loaded as the control and is not regenerated.
+
+validation:
+  strategy: train_side_oof_fixed_control_missing_gr_mask_ablation
+  metric: rmse
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  success_criteria:
+    - Raw-GR missing rows improve versus the fixed exp221 interpolation control.
+    - Overall, 1000_plus, both exp115 hidden-like groups, and short missing-run rows do not materially regress.
+    - Prediction and posterior-standard-deviation finite coverage remain 100 percent.
+    - Worst-well regression and changed-segment length remain bounded and interpretable.
+  leakage_policy:
+    - The emission mask is exactly raw horizontal GR non-finiteness and never reads target, OOF error, hidden-like role, or oracle information.
+    - The exp148 LGB OOF prediction is a fixed out-of-fold unary center and is not retrained.
+    - Train TVT is used only after prediction generation for metrics and row-audit output.
+    - Visible test files are used only for GR missing-run distribution readout, not for score evidence or model selection.
+    - No raw-test prediction, hidden-test inference, selector, run-length gate, or submission is produced.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  control_prediction_column: hmm_lgb_exp148_lgb_mean_s2000_l0500_mean_tvt
+  control_std_column: hmm_lgb_exp148_lgb_mean_s2000_l0500_std
+  control_finite_column: hmm_lgb_exp148_lgb_mean_s2000_l0500_finite
+  control_loglik_column: hmm_lgb_exp148_lgb_mean_s2000_l0500_loglik
+  control_cache_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp221-lgb-oof-gaussian-emission-hmm-exp148-train/artifacts/exp221_lgb_oof_gaussian_emission_hmm_on_exp148_lgb_oof_gaussian_emission_hmm_train_features.csv.gz
+    - /kaggle/input/exp221-lgb-oof-gaussian-emission-hmm-exp148-train/artifacts/exp221_lgb_oof_gaussian_emission_hmm_on_exp148_lgb_oof_gaussian_emission_hmm_train_features.csv.gz
+    - /tmp/kaggle-output/exp221_train_v3/artifacts/exp221_lgb_oof_gaussian_emission_hmm_on_exp148_lgb_oof_gaussian_emission_hmm_train_features.csv.gz
+  hidden_like_candidates:
+    - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+model:
+  name: exact_hmm_missing_gr_mask_only_ablation
+  estimator: none
+  target: TVT
+  active_variants:
+    - mask_only
+  lightgbm_config_count: 0
+  fold_training_count: 0
+  booster_count: 0
+  parent_control_retraining: false
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+  gr_missing:
+    policy: raw_horizontal_gr_missing_rows_have_zero_gr_emission
+    apply_to: evaluation_suffix_only
+    missing_definition: not_finite_raw_horizontal_gr
+    lgb_unary_on_missing_rows: true
+    run_length_gate: false
+  notes:
+    - Every HMM parameter is copied from exp221 train v3.
+    - Prefix calibration and sigma retain the exp221 implementation exactly.
+    - Interpolated GR is still computed identically but its GR unary is discarded on raw-missing evaluation rows.
+
+lgb_emission:
+  enabled: true
+  active_sources:
+    - exp148_lgb_mean
+  sigma_grid:
+    - 20.0
+  lambda_grid:
+    - 0.50
+  sigma_floor: 6.0
+  sigma_cap: 30.0
+  emission_clip: 600.0
+  max_variants: 1
+  sources:
+    exp148_lgb_mean:
+      description: Fixed exp148 GPU train v1 lgb_mean OOF prediction.
+      id_column: id
+      prediction_column: null
+      model_filter: lgb_mean
+      candidates:
+        - /kaggle/input/notebooks/kentookumura/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+        - /kaggle/input/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+        - /tmp/kaggle-output/exp148_train_v1/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+        - experiments/exp148_learned_likelihood_fulltrain_addonly_on_exp092/artifacts/viewer/exp148_lgb_mean_oof_viewer.csv
+
+audit:
+  output_prefix: exp247_missing_gr_masking
+  max_wells: null
+  prediction_change_tolerance_ft: 1.0e-6
+  fixed_control_parity_tolerance_ft: 1.0e-5
+  distance_buckets:
+    edges: [-1.0, 49.0, 99.0, 249.0, 499.0, 999.0, 1.0e30]
+    labels: ["000_050", "050_100", "100_250", "250_500", "500_1000", "1000_plus"]
+  missing_run_buckets:
+    edges: [0, 4, 31, 127, 255, 999, 2147483647]
+    labels: ["1_4", "5_31", "32_127", "128_255", "256_999", "1000_plus"]
+  post_gap_buckets:
+    edges: [0, 128, 256, 2147483647]
+    labels: [post_gap_001_128, post_gap_129_256, post_gap_257_plus]
+  hidden_like_roles:
+    verification_like_spatial: verification_like_spatial_role
+    verification_like_typewell_purged: verification_like_typewell_purged_role
+  outputs:
+    row_audit_filename: exp247_missing_gr_masking_row_audit.csv.gz
+    prediction_filename: exp247_missing_gr_masking_mask_only_predictions.csv.gz
+    raw_file_sha_filename: exp247_missing_gr_masking_raw_file_sha.csv
+    missing_well_filename: exp247_missing_gr_masking_missing_well_inventory.csv
+    missing_run_filename: exp247_missing_gr_masking_missing_run_inventory.csv
+    control_readout_filename: exp247_missing_gr_masking_control_missing_readout.csv
+    group_metrics_filename: exp247_missing_gr_masking_group_metrics.csv
+    by_well_filename: exp247_missing_gr_masking_by_well_metrics.csv
+    divergence_segment_filename: exp247_missing_gr_masking_divergence_segments.csv
+    finite_coverage_filename: exp247_missing_gr_masking_finite_coverage.csv
+    generation_well_filename: exp247_missing_gr_masking_generation_by_well.csv
+    summary_filename: exp247_missing_gr_masking_summary.json
+
+runtime:
+  use_amp: false
+  outer_workers: 2
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp221-lgb-oof-gaussian-emission-hmm-exp148-train
+      - kentookumura/exp148-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_exact_hmm_deterministic_ablation
+  stochastic_components:
+    - fixed_upstream_exp148_lgb_oof_models
+  parallel_rng_policy: sorted_wells_no_new_rng_thread_count_recorded
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    prediction_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - The new HMM computation uses no RNG and is deterministic for fixed inputs, runtime versions, and thread settings.
+    - It is not promoted to a deterministic submission anchor because this experiment has no inference or submission output.
+
+inference:
+  enabled: false
+  mode: train_side_ablation_only
+  create_submission: false
+  notes:
+    - Positive train-side evidence does not authorize current-test inference or submission.
+    - Run-length gating is outside the experiment even if some missing buckets regress.

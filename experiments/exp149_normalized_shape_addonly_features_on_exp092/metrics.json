@@ -1,0 +1,76 @@
+{
+  "experiment": "exp149_normalized_shape_addonly_features_on_exp092",
+  "status": "completed_train_side_supported_no_submit",
+  "route": "ml_model",
+  "parent": "exp092_u_projection_correction_disagreement_fullrun",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "cv": 9.34168837139576,
+  "metric": "pooled_rmse_tvt_lgb_mean",
+  "public_lb": null,
+  "private_lb": null,
+  "key_idea": "Add target-free well-local normalized U/MD shape features to exp092; lgb1/lgb2 improve slightly, lgb_mean improves -0.001375695 vs exp092, no submit until raw-test parity and hidden-like stress pass.",
+  "updated_at": "2026-06-28",
+  "kaggle_train": {
+    "kernel_id": "kentookumura/exp149-nshape-addonly-exp092-train",
+    "kernel_version": 1,
+    "status": "complete",
+    "output_dir": "experiments/exp149_normalized_shape_addonly_features_on_exp092/kaggle/output/train_v1",
+    "runtime_seconds": 16187.913,
+    "active_variants": [
+      "normalized_shape_addonly"
+    ],
+    "lightgbm_config_count": 3,
+    "folds": 5,
+    "booster_count": 15,
+    "control_retraining": false,
+    "rows": 3783989,
+    "features": 334,
+    "added_shape_features": 94
+  },
+  "pooled_metrics": {
+    "lgb0": {
+      "rmse_tvt": 9.55898189402738,
+      "delta_vs_exp092_same_model": 0.025855456356618234,
+      "prediction_sha256": "dff1bff1f3997cc8db3e545bbe3174ebd06913d681a0c5d2e26ef53e7c273980"
+    },
+    "lgb1": {
+      "rmse_tvt": 9.315846067176455,
+      "delta_vs_exp092_same_model": -0.006633828327471392,
+      "delta_vs_exp139_lgb1": -0.009061573483148067,
+      "prediction_sha256": "2eed044e805e2b6bffe172b57f91e3002ab396a7ae92c556bca3228aa6fe3e9c"
+    },
+    "lgb2": {
+      "rmse_tvt": 9.327179161212149,
+      "delta_vs_exp092_same_model": -0.01101324343303034,
+      "delta_vs_exp139_lgb2": -0.01039915016320947,
+      "prediction_sha256": "ef29c5396effed936cb1d77b93f6a7c8740548ad959f7f486222af1204a18c96"
+    },
+    "lgb_mean": {
+      "rmse_tvt": 9.34168837139576,
+      "delta_vs_exp092_same_model": -0.001375694599312638,
+      "delta_vs_exp139_lgb_mean": -0.028895853930961835,
+      "prediction_sha256": "c98c59ae6e084beff4c9129288c052d7b3eae30c8efa8159baf9dee2e0b57611"
+    }
+  },
+  "reference_metrics": {
+    "exp092_lgb0_cv": 9.533126437670761,
+    "exp092_lgb1_cv": 9.322479895503927,
+    "exp092_lgb2_cv": 9.338192404645179,
+    "exp092_lgb_mean_cv": 9.343064065995073,
+    "exp092_public_lb": 8.35,
+    "exp098_lgb1_cv": 9.35815105231876,
+    "exp139_lgb1_cv": 9.324907640659603,
+    "exp139_lgb2_cv": 9.337578311375358,
+    "exp139_lgb_mean_cv": 9.370584225326722
+  },
+  "artifact_sha256": {
+    "predictions_decompressed": "af7191254d1b618aceb0fc9d43bf4061b22f240ad55429cb00d98d0cd00fe561",
+    "feature_schema": "720c7b54038c24ba257ea337161633e1839e53e736d3e7e0c9f86f938d4be573",
+    "model_manifest": "638dfe06ea40fa568b00a6fd522a075b667a03b5276e4b4b2d8dde6fd1500c5e"
+  },
+  "decision": {
+    "direct_submission_candidate": "not_selected_yet",
+    "inference_port": false,
+    "reason": "OOF supports normalized shape add-only features, especially lgb1/lgb2, but raw-test feature parity and exp115 hidden-like stress are not yet checked."
+  }
+}

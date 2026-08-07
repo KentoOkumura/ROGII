@@ -1,0 +1,100 @@
+{
+  "cv": 9.509990853500197,
+  "experiment": "exp088_sequence_model_residual_diversity",
+  "metric": "rmse",
+  "notes": "Best OOF prediction: ridge_blend_pred_tvt",
+  "private_lb": null,
+  "public_lb": null,
+  "status": "completed",
+  "summary": {
+    "active_folds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "amp_enabled": false,
+    "artifact_sha256": {
+      "bucket_metrics": "7795a7318c490cb08bb690639a5edb4a55a79c3c9456079ff5f3f25606596b3e",
+      "diversity_metrics": "88d465666f96a2b92353cb59caeae63c46332972aa824d5cd718667d45bd71da",
+      "metrics": "41a823a93c573161a46594790c70aaecb26fa0ed652c35c86caf6f3d03223ffa",
+      "oof_predictions_content": "27fac6bfff8953d5ad770cef2e69e1d4871d28c9f9b4bbe4afd6219bdee807c3",
+      "rmse_plot": "b4d372a5680b52516a458f002c5aedd2c1e21854b8458cac5f3ef7a457f5dbef",
+      "summary": "00d24e4587a8bcb1fe1884225ccd5e4450dab7e58a7924c1c97d3fad63fdd19a",
+      "train_history": "e49417847ccd473863594c711e3358c1b9203e4ada7bab24183a10982912e56b"
+    },
+    "artifacts": {
+      "bucket_metrics": "exp088_sequence_model_residual_diversity_bucket_metrics.csv",
+      "diversity_metrics": "exp088_sequence_model_residual_diversity_diversity_metrics.csv",
+      "metrics": "exp088_sequence_model_residual_diversity_metrics.csv",
+      "oof_predictions": "exp088_sequence_model_residual_diversity_oof_predictions.csv.gz",
+      "rmse_plot": "exp088_sequence_model_residual_diversity_rmse.png",
+      "summary": "exp088_sequence_model_residual_diversity_summary.json",
+      "train_history": "exp088_sequence_model_residual_diversity_train_history.csv"
+    },
+    "baseline_rmse_tvt": 9.524813476455735,
+    "best_prediction": "ridge_blend_pred_tvt",
+    "best_rmse_tvt": 9.509990853500197,
+    "blend_info": {
+      "alpha_blend_gru32_ctx64_pred_tvt": {
+        "alpha": 0.0,
+        "source": "gru32_ctx64_pred_tvt"
+      },
+      "alpha_blend_tcn32_ctx64_pred_tvt": {
+        "alpha": 0.0,
+        "source": "tcn32_ctx64_pred_tvt"
+      },
+      "ridge_blend_pred_tvt": {
+        "columns": [
+          "baseline_pred_tvt",
+          "gru32_ctx64_pred_tvt",
+          "tcn32_ctx64_pred_tvt"
+        ],
+        "l2": 0.001,
+        "weights": [
+          1.1149482108889932,
+          -0.15024057993821774,
+          0.03529269456802314
+        ]
+      }
+    },
+    "device": "cuda",
+    "elapsed_seconds": 943.469,
+    "experiment": "exp088_sequence_model_residual_diversity",
+    "feature_columns": [
+      "md_since",
+      "eval_len",
+      "known_len",
+      "dz",
+      "likpf_mean_d",
+      "beam_std_d",
+      "dense_dist",
+      "dense_nb_std",
+      "pf_vs_dense",
+      "tvt_densew_d",
+      "tvt_dense50_d",
+      "tvt_dense_d",
+      "pf_ancc_delta",
+      "pf_z_delta"
+    ],
+    "feature_join_missing_rows": 24576,
+    "float32_only": true,
+    "input_paths": {
+      "exp072_feature_cache": "/kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz",
+      "exp073_oof_predictions": "/kaggle/input/notebooks/kentookumura/exp073-full-replay-repro-guard-train/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz"
+    },
+    "input_sha256": {
+      "exp072_feature_cache_content": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350",
+      "exp073_oof_predictions_content": "fd6c68050058c40b4960f3ff2af9905bfcb1c12d540c71e331d0aa85ca9756a4"
+    },
+    "rows": 3759413,
+    "sequence_columns": [
+      "gru32_ctx64_pred_tvt",
+      "tcn32_ctx64_pred_tvt"
+    ],
+    "status": "completed",
+    "torch_version": "2.10.0+cu128",
+    "wells": 773
+  }
+}

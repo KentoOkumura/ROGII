@@ -1,0 +1,526 @@
+{
+  "experiment": "exp015_public_pf_beam_scale_selector_features",
+  "status": "completed",
+  "created_at": "2026-06-04",
+  "updated_at": "2026-06-04T15:16:44.804489+00:00",
+  "debug": false,
+  "cv": 14.442743,
+  "cv_mean_fold_rmse": 14.40169,
+  "public_lb": null,
+  "selected_postprocess": {
+    "candidate": "distance_bucket_shrink_fit",
+    "method": "distance_bucket_shrink",
+    "source": "pf_beam_no_gr",
+    "rmse": 14.394712,
+    "params": {
+      "buckets": [
+        {
+          "alpha": 0.2,
+          "max_step": 49.0,
+          "name": "rows_0_49"
+        },
+        {
+          "alpha": 0.5524116857397325,
+          "max_step": 249.0,
+          "name": "rows_50_249"
+        },
+        {
+          "alpha": 1.15,
+          "max_step": 999.0,
+          "name": "rows_250_999"
+        },
+        {
+          "alpha": 1.15,
+          "max_step": 2499.0,
+          "name": "rows_1000_2499"
+        },
+        {
+          "alpha": 0.8750020961651583,
+          "max_step": 1000000000.0,
+          "name": "rows_2500_plus"
+        }
+      ]
+    }
+  },
+  "postprocess_records": [
+    {
+      "candidate": "raw_lightgbm_no_gr",
+      "method": "raw",
+      "source": "pf_beam_no_gr",
+      "rmse": 14.442743,
+      "delta_vs_raw": 0.0,
+      "rows": 3783989,
+      "params_json": "{}"
+    },
+    {
+      "candidate": "distance_bucket_shrink_fit",
+      "method": "distance_bucket_shrink",
+      "source": "pf_beam_no_gr",
+      "rmse": 14.394712,
+      "delta_vs_raw": -0.048031,
+      "rows": 3783989,
+      "params_json": "{\"buckets\": [{\"alpha\": 0.2, \"max_step\": 49.0, \"name\": \"rows_0_49\"}, {\"alpha\": 0.5524116857397325, \"max_step\": 249.0, \"name\": \"rows_50_249\"}, {\"alpha\": 1.15, \"max_step\": 999.0, \"name\": \"rows_250_999\"}, {\"alpha\": 1.15, \"max_step\": 2499.0, \"name\": \"rows_1000_2499\"}, {\"alpha\": 0.8750020961651583, \"max_step\": 1000000000.0, \"name\": \"rows_2500_plus\"}]}"
+    }
+  ],
+  "private_lb": null,
+  "metric": "rmse",
+  "seed": 42,
+  "primary_strategy": "drift_model",
+  "selected_variant": "pf_beam_no_gr",
+  "best_variant_by_cv": "control_lightgbm_no_gr",
+  "baseline_experiment": "exp002_drift_minimal",
+  "baseline_cv": 14.124569,
+  "cv_anchor_experiment": "exp012_single_catboost_lightgbm_residual",
+  "cv_anchor_cv": 13.549257,
+  "n_folds": 5,
+  "n_wells": 773,
+  "strategies": {
+    "last_anchor": {
+      "oof_rmse": 15.909853,
+      "mean_fold_rmse": 15.894391,
+      "fold_rmse": [
+        15.077329,
+        15.175248,
+        15.574938,
+        16.120531,
+        17.523911
+      ],
+      "rows": 3783989,
+      "per_well_rmse_mean": 12.812466,
+      "per_well_rmse_median": 10.665141
+    },
+    "drift_model": {
+      "oof_rmse": 14.442743,
+      "mean_fold_rmse": 14.40169,
+      "fold_rmse": [
+        13.223819,
+        13.638793,
+        14.190791,
+        14.215861,
+        16.739188
+      ],
+      "rows": 3783989,
+      "per_well_rmse_mean": 11.550049,
+      "per_well_rmse_median": 9.516506
+    }
+  },
+  "ablation": {
+    "records": [
+      {
+        "variant": "control_lightgbm_no_gr",
+        "variable": "control",
+        "description": "Re-run exp012/exp013 selected LightGBM no-GR residual model as the raw anchor.",
+        "primary_strategy": "drift_model",
+        "feature_set": "no_gr_signal",
+        "n_features": 25,
+        "estimator": "LGBMRegressor",
+        "max_rows_per_fold": 300000,
+        "max_rows_final": 450000,
+        "max_rows_per_well": 800,
+        "residual_shrink": 0.85,
+        "cv": 13.549257,
+        "cv_mean_fold_rmse": 13.52137,
+        "rows": 3783989,
+        "delta_vs_exp002_cv": -0.575312,
+        "delta_vs_exp003_cv": 0.0
+      },
+      {
+        "variant": "pf_beam_no_gr",
+        "variable": "pf_beam_features",
+        "description": "Add deterministic PF/beam scale selector, likelihood, hold weight, and candidate divergence features to the LightGBM no-GR anchor.",
+        "primary_strategy": "drift_model",
+        "feature_set": "no_gr_signal_plus_pf_beam",
+        "n_features": 82,
+        "estimator": "LGBMRegressor",
+        "max_rows_per_fold": 300000,
+        "max_rows_final": 450000,
+        "max_rows_per_well": 800,
+        "residual_shrink": 0.85,
+        "cv": 14.442743,
+        "cv_mean_fold_rmse": 14.40169,
+        "rows": 3783989,
+        "delta_vs_exp002_cv": 0.318174,
+        "delta_vs_exp003_cv": 0.893486
+      }
+    ],
+    "variants": {
+      "control_lightgbm_no_gr": {
+        "variant": "control_lightgbm_no_gr",
+        "variable": "control",
+        "description": "Re-run exp012/exp013 selected LightGBM no-GR residual model as the raw anchor.",
+        "primary_strategy": "drift_model",
+        "feature_set": "no_gr_signal",
+        "n_features": 25,
+        "estimator": "LGBMRegressor",
+        "max_rows_per_fold": 300000,
+        "max_rows_final": 450000,
+        "max_rows_per_well": 800,
+        "residual_shrink": 0.85,
+        "cv": 13.549257,
+        "cv_mean_fold_rmse": 13.52137,
+        "rows": 3783989,
+        "delta_vs_exp002_cv": -0.575312,
+        "delta_vs_exp003_cv": 0.0,
+        "overrides": {
+          "model": {
+            "feature_set": "no_gr_signal",
+            "pf_beam": {
+              "enabled": false
+            }
+          }
+        },
+        "feature_columns": [
+          "md",
+          "x",
+          "y",
+          "z",
+          "row_index",
+          "eval_step",
+          "eval_progress",
+          "eval_row_count",
+          "known_row_count",
+          "delta_md",
+          "delta_md_abs",
+          "delta_x",
+          "delta_y",
+          "delta_z",
+          "delta_xy",
+          "delta_xyz",
+          "anchor_dz_dmd",
+          "step_dz_dmd",
+          "last_known_md",
+          "last_known_tvt",
+          "last_known_x",
+          "last_known_y",
+          "last_known_z",
+          "recent_tvt_slope",
+          "prefix_md_span"
+        ],
+        "strategies": {
+          "last_anchor": {
+            "oof_rmse": 15.909853,
+            "mean_fold_rmse": 15.894391,
+            "fold_rmse": [
+              15.077329,
+              15.175248,
+              15.574938,
+              16.120531,
+              17.523911
+            ],
+            "rows": 3783989,
+            "per_well_rmse_mean": 12.812466,
+            "per_well_rmse_median": 10.665141
+          },
+          "drift_model": {
+            "oof_rmse": 13.549257,
+            "mean_fold_rmse": 13.52137,
+            "fold_rmse": [
+              12.763181,
+              13.328149,
+              12.515785,
+              13.707424,
+              15.292309
+            ],
+            "rows": 3783989,
+            "per_well_rmse_mean": 10.901288,
+            "per_well_rmse_median": 8.948822
+          }
+        }
+      },
+      "pf_beam_no_gr": {
+        "variant": "pf_beam_no_gr",
+        "variable": "pf_beam_features",
+        "description": "Add deterministic PF/beam scale selector, likelihood, hold weight, and candidate divergence features to the LightGBM no-GR anchor.",
+        "primary_strategy": "drift_model",
+        "feature_set": "no_gr_signal_plus_pf_beam",
+        "n_features": 82,
+        "estimator": "LGBMRegressor",
+        "max_rows_per_fold": 300000,
+        "max_rows_final": 450000,
+        "max_rows_per_well": 800,
+        "residual_shrink": 0.85,
+        "cv": 14.442743,
+        "cv_mean_fold_rmse": 14.40169,
+        "rows": 3783989,
+        "delta_vs_exp002_cv": 0.318174,
+        "delta_vs_exp003_cv": 0.893486,
+        "overrides": {
+          "model": {
+            "feature_set": "no_gr_signal_plus_pf_beam",
+            "pf_beam": {
+              "enabled": true
+            }
+          }
+        },
+        "feature_columns": [
+          "md",
+          "x",
+          "y",
+          "z",
+          "row_index",
+          "eval_step",
+          "eval_progress",
+          "eval_row_count",
+          "known_row_count",
+          "delta_md",
+          "delta_md_abs",
+          "delta_x",
+          "delta_y",
+          "delta_z",
+          "delta_xy",
+          "delta_xyz",
+          "anchor_dz_dmd",
+          "step_dz_dmd",
+          "last_known_md",
+          "last_known_tvt",
+          "last_known_x",
+          "last_known_y",
+          "last_known_z",
+          "recent_tvt_slope",
+          "prefix_md_span",
+          "pf_beam_available",
+          "pf_beam_best_score",
+          "pf_beam_second_score",
+          "pf_beam_confidence",
+          "pf_beam_ambiguity",
+          "pf_beam_score_entropy",
+          "pf_beam_best_scale",
+          "pf_beam_best_shift_tvt",
+          "pf_beam_best_slope_scale",
+          "pf_beam_best_dtw_cost",
+          "pf_beam_hold_weight",
+          "pf_beam_recent_delta_tvt",
+          "pf_beam_best_delta_tvt",
+          "pf_beam_mean_delta_tvt",
+          "pf_beam_std_delta_tvt",
+          "pf_beam_range_delta_tvt",
+          "pf_beam_best_minus_recent",
+          "pf_beam_mean_minus_recent",
+          "pf_beam_max_pairwise_delta",
+          "pf_beam_eval_length_selector",
+          "pf_beam_z_span_selector",
+          "pf_beam_s3_score",
+          "pf_beam_s3_shift_tvt",
+          "pf_beam_s3_slope_scale",
+          "pf_beam_s3_dtw_cost",
+          "pf_beam_s3_pred_tvt",
+          "pf_beam_s3_delta_tvt",
+          "pf_beam_s3_minus_recent",
+          "pf_beam_s3_typewell_gr",
+          "pf_beam_s3_gr_abs_error",
+          "pf_beam_s5_score",
+          "pf_beam_s5_shift_tvt",
+          "pf_beam_s5_slope_scale",
+          "pf_beam_s5_dtw_cost",
+          "pf_beam_s5_pred_tvt",
+          "pf_beam_s5_delta_tvt",
+          "pf_beam_s5_minus_recent",
+          "pf_beam_s5_typewell_gr",
+          "pf_beam_s5_gr_abs_error",
+          "pf_beam_s8_score",
+          "pf_beam_s8_shift_tvt",
+          "pf_beam_s8_slope_scale",
+          "pf_beam_s8_dtw_cost",
+          "pf_beam_s8_pred_tvt",
+          "pf_beam_s8_delta_tvt",
+          "pf_beam_s8_minus_recent",
+          "pf_beam_s8_typewell_gr",
+          "pf_beam_s8_gr_abs_error",
+          "pf_beam_s12_score",
+          "pf_beam_s12_shift_tvt",
+          "pf_beam_s12_slope_scale",
+          "pf_beam_s12_dtw_cost",
+          "pf_beam_s12_pred_tvt",
+          "pf_beam_s12_delta_tvt",
+          "pf_beam_s12_minus_recent",
+          "pf_beam_s12_typewell_gr",
+          "pf_beam_s12_gr_abs_error"
+        ],
+        "strategies": {
+          "last_anchor": {
+            "oof_rmse": 15.909853,
+            "mean_fold_rmse": 15.894391,
+            "fold_rmse": [
+              15.077329,
+              15.175248,
+              15.574938,
+              16.120531,
+              17.523911
+            ],
+            "rows": 3783989,
+            "per_well_rmse_mean": 12.812466,
+            "per_well_rmse_median": 10.665141
+          },
+          "drift_model": {
+            "oof_rmse": 14.442743,
+            "mean_fold_rmse": 14.40169,
+            "fold_rmse": [
+              13.223819,
+              13.638793,
+              14.190791,
+              14.215861,
+              16.739188
+            ],
+            "rows": 3783989,
+            "per_well_rmse_mean": 11.550049,
+            "per_well_rmse_median": 9.516506
+          }
+        }
+      }
+    }
+  },
+  "model_training": [
+    {
+      "variant": "control_lightgbm_no_gr",
+      "variable": "control",
+      "fold": 0,
+      "n_train_wells": 618,
+      "n_valid_wells": 155,
+      "n_train_rows": 300000,
+      "max_rows_per_fold": 300000,
+      "max_rows_final": 450000,
+      "max_rows_per_well": 800,
+      "feature_set": "no_gr_signal",
+      "estimator": "LGBMRegressor",
+      "n_features": 25,
+      "residual_shrink": 0.85
+    },
+    {
+      "variant": "control_lightgbm_no_gr",
+      "variable": "control",
+      "fold": 1,
+      "n_train_wells": 618,
+      "n_valid_wells": 155,
+      "n_train_rows": 300000,
+      "max_rows_per_fold": 300000,
+      "max_rows_final": 450000,
+      "max_rows_per_well": 800,
+      "feature_set": "no_gr_signal",
+      "estimator": "LGBMRegressor",
+      "n_features": 25,
+      "residual_shrink": 0.85
+    },
+    {
+      "variant": "control_lightgbm_no_gr",
+      "variable": "control",
+      "fold": 2,
+      "n_train_wells": 618,
+      "n_valid_wells": 155,
+      "n_train_rows": 300000,
+      "max_rows_per_fold": 300000,
+      "max_rows_final": 450000,
+      "max_rows_per_well": 800,
+      "feature_set": "no_gr_signal",
+      "estimator": "LGBMRegressor",
+      "n_features": 25,
+      "residual_shrink": 0.85
+    },
+    {
+      "variant": "control_lightgbm_no_gr",
+      "variable": "control",
+      "fold": 3,
+      "n_train_wells": 619,
+      "n_valid_wells": 154,
+      "n_train_rows": 300000,
+      "max_rows_per_fold": 300000,
+      "max_rows_final": 450000,
+      "max_rows_per_well": 800,
+      "feature_set": "no_gr_signal",
+      "estimator": "LGBMRegressor",
+      "n_features": 25,
+      "residual_shrink": 0.85
+    },
+    {
+      "variant": "control_lightgbm_no_gr",
+      "variable": "control",
+      "fold": 4,
+      "n_train_wells": 619,
+      "n_valid_wells": 154,
+      "n_train_rows": 300000,
+      "max_rows_per_fold": 300000,
+      "max_rows_final": 450000,
+      "max_rows_per_well": 800,
+      "feature_set": "no_gr_signal",
+      "estimator": "LGBMRegressor",
+      "n_features": 25,
+      "residual_shrink": 0.85
+    },
+    {
+      "variant": "pf_beam_no_gr",
+      "variable": "pf_beam_features",
+      "fold": 0,
+      "n_train_wells": 618,
+      "n_valid_wells": 155,
+      "n_train_rows": 300000,
+      "max_rows_per_fold": 300000,
+      "max_rows_final": 450000,
+      "max_rows_per_well": 800,
+      "feature_set": "no_gr_signal_plus_pf_beam",
+      "estimator": "LGBMRegressor",
+      "n_features": 82,
+      "residual_shrink": 0.85
+    },
+    {
+      "variant": "pf_beam_no_gr",
+      "variable": "pf_beam_features",
+      "fold": 1,
+      "n_train_wells": 618,
+      "n_valid_wells": 155,
+      "n_train_rows": 300000,
+      "max_rows_per_fold": 300000,
+      "max_rows_final": 450000,
+      "max_rows_per_well": 800,
+      "feature_set": "no_gr_signal_plus_pf_beam",
+      "estimator": "LGBMRegressor",
+      "n_features": 82,
+      "residual_shrink": 0.85
+    },
+    {
+      "variant": "pf_beam_no_gr",
+      "variable": "pf_beam_features",
+      "fold": 2,
+      "n_train_wells": 618,
+      "n_valid_wells": 155,
+      "n_train_rows": 300000,
+      "max_rows_per_fold": 300000,
+      "max_rows_final": 450000,
+      "max_rows_per_well": 800,
+      "feature_set": "no_gr_signal_plus_pf_beam",
+      "estimator": "LGBMRegressor",
+      "n_features": 82,
+      "residual_shrink": 0.85
+    },
+    {
+      "variant": "pf_beam_no_gr",
+      "variable": "pf_beam_features",
+      "fold": 3,
+      "n_train_wells": 619,
+      "n_valid_wells": 154,
+      "n_train_rows": 300000,
+      "max_rows_per_fold": 300000,
+      "max_rows_final": 450000,
+      "max_rows_per_well": 800,
+      "feature_set": "no_gr_signal_plus_pf_beam",
+      "estimator": "LGBMRegressor",
+      "n_features": 82,
+      "residual_shrink": 0.85
+    },
+    {
+      "variant": "pf_beam_no_gr",
+      "variable": "pf_beam_features",
+      "fold": 4,
+      "n_train_wells": 619,
+      "n_valid_wells": 154,
+      "n_train_rows": 300000,
+      "max_rows_per_fold": 300000,
+      "max_rows_final": 450000,
+      "max_rows_per_well": 800,
+      "feature_set": "no_gr_signal_plus_pf_beam",
+      "estimator": "LGBMRegressor",
+      "n_features": 82,
+      "residual_shrink": 0.85
+    }
+  ],
+  "key_idea": "Lightweight fold-safe PF/beam scale selector features on top of exp012/exp013 LightGBM no-GR",
+  "notes": "Kaggle train kentookumura/exp015-pf-beam-train v1 COMPLETE; control_lightgbm_no_gr reproduced CV 13.549257; pf_beam_no_gr worsened to CV 14.442743; no submission."
+}

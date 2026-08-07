@@ -1,0 +1,299 @@
+experiment:
+  name: exp258_gr_residual_noise_transplant_augmentation
+  description: Fold-safe measured GR residual block augmentation for the nested candidate ranker and downstream TVT LightGBM.
+  route: ml_model
+  status: selector_guard_failed_final_train_forbidden
+  created_at: '2026-07-15'
+  updated_at: '2026-07-15'
+
+lineage:
+  parent: exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218
+  ml_parent: exp218_gr_wavelet_rotation_confidence_features_on_exp148
+  candidate_parent: exp237_hmm_exp226_candidate_selector_on_exp183
+  calibration_reference: exp211_affine_calibrated_gr_observation_pfbeam
+  comparison_parents:
+    - exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218
+    - exp251_raw_test_safe_dual_objective_candidate_ranker
+    - exp248_candidate_perturbation_augmentation_for_likelihood_ranker
+  implementation_source:
+    - src/gr_residual_noise_augmentation.py
+    - exp258_gr_residual_noise_transplant_augmentation_selector_train.py
+    - exp258_gr_residual_noise_transplant_augmentation_train.py
+  diff_summary: Keep the exp238 11-candidate/HMM/PF/Beam surface, outer5-inner4 fold contract, 35 rank-slot features, and exp218 380-feature final model fixed; add only fold-safe GR residual corruption views to inner selector training, then retrain the downstream TVT LightGBM after selector guards pass.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  historical_selector_artifact_dir_local: experiments/exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218/artifacts
+  selector_artifact_dir_local: experiments/exp258_gr_residual_noise_transplant_augmentation/artifacts
+  historical_final_oof_local: experiments/exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218/kaggle/output/final_train_v5/artifacts/exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218_final_oof_predictions.csv.gz
+
+validation:
+  strategy: exp238_outer5_inner4_groupkfold_nested_selector_clean_validation_then_exp218_addonly_final
+  metric: rmse
+  seed: 42
+  group_column: well
+  outer_folds: 5
+  inner_folds: 4
+  leakage_policy:
+    - Donor residuals for one inner selector model come only from that model's inner-train wells.
+    - Inner-valid and outer-valid GR, candidates, features, and targets are never augmented.
+    - Recipient true TVT is used only to forward-generate an inner-train synthetic GR view.
+    - Candidate TVT paths, HMM/PF/Beam generation, transition, and emission formulas stay fixed.
+    - Outer-train final-model rank-slot features come from inner OOF selector scores.
+    - Outer-valid final-model rank-slot features come from four inner selectors that never saw outer-valid wells.
+  historical_selector_reference:
+    global_delta_rmse_vs_likpf: -3.0899109840393066
+    near_000_050_delta_rmse_vs_likpf: -0.60954048037529
+    longtail_1000_plus_delta_rmse_vs_likpf: -3.3722251892089843
+    worst_well_max_regression_vs_likpf: 37.6808967590332
+  historical_final_reference:
+    exp238_lgb_mean_rmse: 7.936689853668213
+    exp218_lgb_mean_rmse: 8.475793751656624
+    exp238_public_lb: 7.775
+  selector_guard:
+    require_historical_baseline_artifacts: true
+    max_global_delta_vs_historical: 0.0
+    max_near_delta_vs_historical: 0.0
+    max_longtail_delta_vs_historical: 0.0
+    max_expected_error_mae_delta_vs_historical: 0.0
+    max_candidate_auc_drop_vs_historical: 0.0
+    max_worst_well_regression_delta_vs_historical: 0.0
+    require_all_folds_nonworse: false
+  final_guard:
+    require_selector_guard_pass: true
+    max_overall_delta_vs_exp238: 0.0
+    max_near_delta_vs_exp238: 0.0
+    max_longtail_delta_vs_exp238: 0.0
+    max_hidden_like_delta_vs_exp238: 0.0
+    max_worst_well_regression_vs_exp238: 0.25
+    require_three_of_five_folds_nonworse: true
+    allow_failure_for_inference: false
+
+execution:
+  selected_stage: selector_train
+  allowed_stages:
+    - residual_audit_only
+    - selector_train
+    - final_train
+  selected_variant: real_residual_block
+  allowed_selector_variants:
+    - clean_duplicate
+    - real_residual_block
+    - white_noise
+    - shuffled_residual
+  primary_variant: real_residual_block
+  final_train_variant: real_residual_block
+  final_train_requires_selector_artifact_guard: true
+  inference_enabled: false
+  submission_enabled: false
+
+augmentation:
+  fit_scope: full_true_tvt
+  affine:
+    trim_quantile: 0.90
+    iterations: 3
+    min_points: 40
+    slope_bounds: [0.25, 4.0]
+  block_lengths_rows: [64, 128, 256]
+  residual_clip_abs: 200.0
+  gr_rolling_window: 5
+  augmented_base_row_fraction: 0.25
+  max_augmented_base_rows_per_model: 4096
+  views_per_recipient: 1
+  donor_policy: inner_train_only_exclude_recipient_when_possible
+  missing_policy: transplant_contiguous_mask_then_interpolate_before_multiobs_scoring
+  multi_observation_likelihood:
+    observation_offsets: [-24, -12, 0, 12, 24]
+    gr_scale: 18.0
+    out_of_range_scale: 80.0
+    softmax_temperatures: [0.15, 0.30]
+    likpf_blend_weights: [0.25, 0.50]
+    recompute_candidate_names: [pf_ancc, beam_mean, likpf_mean, sc_ens, hyb]
+  forbidden:
+    - validation_residual_donor
+    - row_wise_iid_noise_as_primary
+    - candidate_tvt_perturbation
+    - direct_tvt_correction
+    - hmm_pfbeam_regeneration
+    - hmm_transition_change
+    - hmm_emission_change
+    - same_fold_target_feature
+
+model:
+  name: gr_residual_noise_augmented_nested_ranker_then_exp218_lgbm
+  parent_control_retraining: false
+  selector:
+    objective: regression_l1_candidate_absolute_error
+    configs: 1
+    outer_folds: 5
+    inner_folds: 4
+    boosters_per_variant: 20
+    variants_run_separately: true
+    candidates: [pf_ancc, beam_mean, likpf_mean, sc_ens, hyb, tvt_dense, tvt_densew, tvt_dense50, blend_likpf_hmm_w500, hmm_selfgr_boost_only_a070_c100, v6_k16_geometry_gr_u_projection]
+    max_train_long_rows_per_model: 120000
+    max_valid_long_rows_per_model: 120000
+    predict_chunk_rows: 50000
+    params:
+      n_estimators: 1200
+      learning_rate: 0.04
+      num_leaves: 31
+      max_depth: 8
+      min_child_samples: 80
+      subsample: 0.85
+      colsample_bytree: 0.85
+      reg_alpha: 0.1
+      reg_lambda: 1.0
+      n_jobs: -1
+      verbose: -1
+  final:
+    configs: 3
+    folds: 5
+    boosters: 15
+    family: exp218_lgb0_lgb1_lgb2
+    base_feature_count: 380
+    selector_feature_count: 35
+    total_feature_count: 415
+    training_mode: gpu_repro_guard_dp_threads8
+    parent_control_retraining: false
+  stage_cost:
+    residual_audit_only:
+      variants: 0
+      configs: 0
+      folds: 0
+      boosters: 0
+    selector_train_one_variant:
+      variants: 1
+      configs: 1
+      outer_folds: 5
+      inner_folds: 4
+      boosters: 20
+    selector_train_all_four_variants:
+      variants: 4
+      configs: 1
+      outer_folds: 5
+      inner_folds: 4
+      boosters: 80
+    final_train_primary_only:
+      variants: 1
+      configs: 3
+      folds: 5
+      boosters: 15
+
+runtime:
+  kaggle:
+    enabled: true
+    internet: false
+    selector_train:
+      enable_gpu: false
+    train:
+      enable_gpu: true
+      machine_shape: NvidiaTeslaT4
+    inference:
+      enable_gpu: true
+      machine_shape: NvidiaTeslaT4
+    selector_train_kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp109-typewell-neighbor-prior-train
+      - kentookumura/exp114-spatial-neighbor-prior-signal-audit-train
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp237-hmm-exp226-candidate-selector-exp183-train
+      - kentookumura/exp238-nested-selector-train
+    train_kernel_sources:
+      - kentookumura/exp258-gr-residual-noise-transplant-selector-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp145-train
+      - kentookumura/exp218-gr-wavelet-rotation-exp148-train
+      - kentookumura/exp237-hmm-exp226-candidate-selector-exp183-train
+      - kentookumura/exp238-nested-rank-slot-exp218-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+    bootstrap_dependency_files:
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/hmm_exp226_candidate_selector_on_exp183.py
+        destination: exp237_source/hmm_exp226_candidate_selector_on_exp183.py
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/settings.py
+        destination: exp237_source/settings.py
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/config.yaml
+        destination: exp237_source/config.yaml
+      - source: experiments/exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218/nested_hmm_exp226_selector_rank_slot_addonly_on_exp218.py
+        destination: exp238_source/nested_hmm_exp226_selector_rank_slot_addonly_on_exp218.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/settings.py
+        destination: exp218_source/settings.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: exp218_source/config.yaml
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/public_notebook_replay_audit.py
+        destination: exp218_source/public_notebook_replay_audit.py
+    push_requires_user_approval: true
+    user_approval:
+      authorized: true
+      authorized_at: '2026-07-16'
+      scope: primary_real_residual_selector_20_cpu_then_conditional_final_15_gpu
+
+reproducibility:
+  seed: 42
+  stochastic_feature_generation: true
+  rng_policy: sha256_seed_variant_outer_inner_recipient_well_row_id_view_slot
+  parallel_policy: per_recipient_independent_rng_no_global_rng
+  fold_policy: deterministic_outer5_inner4_groupkfold_by_sorted_well
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  final_gpu_flags:
+    gpu_use_dp: true
+    deterministic: true
+    force_col_wise: true
+    n_jobs: 8
+    num_threads: 8
+  record:
+    residual_profile_sha: true
+    donor_manifest_sha: true
+    augmentation_inventory_sha: true
+    fold_manifest_sha: true
+    feature_schema_sha: true
+    selector_score_sha: true
+    selector_model_sha: true
+    final_model_sha: true
+    oof_prediction_sha: true
+
+audit:
+  output_prefix: exp258_gr_residual_noise_transplant_augmentation
+  expected_selector_artifacts:
+    - exp258_gr_residual_noise_transplant_augmentation_residual_profile_inventory.csv
+    - exp258_gr_residual_noise_transplant_augmentation_residual_audit_summary.json
+    - exp258_gr_residual_noise_transplant_augmentation_fold_manifest.csv
+    - exp258_gr_residual_noise_transplant_augmentation_augmentation_inventory.csv.gz
+    - exp258_gr_residual_noise_transplant_augmentation_selector_model_manifest.csv
+    - exp258_gr_residual_noise_transplant_augmentation_selector_calibration.csv
+    - exp258_gr_residual_noise_transplant_augmentation_selector_safety_metrics.csv
+    - exp258_gr_residual_noise_transplant_augmentation_selector_by_well.csv
+    - exp258_gr_residual_noise_transplant_augmentation_nested_scores_outer0.csv.gz
+    - exp258_gr_residual_noise_transplant_augmentation_nested_scores_outer1.csv.gz
+    - exp258_gr_residual_noise_transplant_augmentation_nested_scores_outer2.csv.gz
+    - exp258_gr_residual_noise_transplant_augmentation_nested_scores_outer3.csv.gz
+    - exp258_gr_residual_noise_transplant_augmentation_nested_scores_outer4.csv.gz
+    - exp258_gr_residual_noise_transplant_augmentation_selector_summary.json
+  expected_final_artifacts:
+    - exp258_gr_residual_noise_transplant_augmentation_final_metrics.csv
+    - exp258_gr_residual_noise_transplant_augmentation_final_oof_predictions.csv.gz
+    - exp258_gr_residual_noise_transplant_augmentation_feature_importance_mean.csv
+    - exp258_gr_residual_noise_transplant_augmentation_final_model_manifest.json
+    - exp258_gr_residual_noise_transplant_augmentation_final_summary.json
+
+inference:
+  status: forbidden_until_selector_and_final_guards_pass
+  augmentation_at_inference: false
+  selected_model: null
+  submission_requested: false
+
+submission:
+  status: not_submitted
+  public_lb: null
+  private_lb: null

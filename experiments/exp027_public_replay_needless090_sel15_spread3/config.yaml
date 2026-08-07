@@ -1,0 +1,52 @@
+experiment:
+  name: "exp027_public_replay_needless090_sel15_spread3"
+  description: Public replay of needless090/lb8-781-rogii-sel15-spread3 as a no-modification Kaggle inference candidate.
+  route: pf_beam
+  status: completed
+  created_at: "2026-06-06"
+
+lineage:
+  parent: public_notebook_catchup_after_self_improvements
+  diff_summary: Replay the selected public sel15 PF notebook before blending it with self-built pseudo-tail submissions.
+
+source_notebook:
+  ref: needless090/lb8-781-rogii-sel15-spread3
+  title: "[LB8.781]rogii-sel15-spread3"
+  archived_path: docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_latest/needless090__lb8-781-rogii-sel15-spread3/lb8-781-rogii-sel15-spread3.ipynb
+  archived_metadata: docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_latest/needless090__lb8-781-rogii-sel15-spread3/kernel-metadata.json
+  known_public_lb_from_title: 8.781
+  replay_policy: no_modification_except_kaggle_packaging_bootstrap
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation: {}
+
+# Common paths and submission columns come from project.yml.
+data: {}
+
+model:
+  name: public_sel15_pf_replay
+  params:
+    n_particles: 500
+    n_seeds: 128
+    selector_scales: [3.0, 5.0, 8.0, 12.0]
+    beam_configs: 14
+
+postprocess:
+  output_file: submission.csv
+  submit_check_required: true
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    expected_sources:
+      dataset_sources: []
+      kernel_sources: []
+      model_sources: []
+
+notes:
+  - CV is not computed in this replay experiment.
+  - Do not blend with exp026 until Kaggle replay output, submit-check, and 見えない test で使えるty review are recorded.

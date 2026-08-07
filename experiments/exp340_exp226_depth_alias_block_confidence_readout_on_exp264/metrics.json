@@ -1,0 +1,42 @@
+{
+  "experiment": "exp340_exp226_depth_alias_block_confidence_readout_on_exp264",
+  "status": "stage_0_completed_guard_failed",
+  "route": "ensemble",
+  "stage": "stage_0",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "kaggle": {
+    "kernel_id": "kentookumura/exp340-exp226-alias-readout-on-exp264-train",
+    "kernel_version": 1,
+    "kernel_id_no": 128356047,
+    "runtime_seconds": 26.4001681804657,
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "execution_contract": {
+    "readout_families": 7,
+    "controls": 1,
+    "models": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "hmm_well_runs": 0,
+    "parent_control_retraining": false
+  },
+  "technical_passed": true,
+  "scientific_passed": false,
+  "passed_families": [],
+  "decision": "close_depth_alias_confidence_branch_without_rescue",
+  "feature_content_sha256": "70748900630ac7b67fb5d489c8410a1200f0ded547b3df13502e7bb21626e437",
+  "quantile_content_sha256": "e207e5598542030747fbbdfdbc6c21ea2d8b686ce81b95fd681d34df00cbee98",
+  "pooled_readout": {
+    "top1_top2_margin": {"q4_minus_q1_mean_rmse": -0.3463532104770781, "bad10_auc": 0.4869355997384237, "positive_folds": 2},
+    "softmax_entropy": {"q4_minus_q1_mean_rmse": -0.35059409576906386, "bad10_auc": 0.4978473099649328, "positive_folds": 1},
+    "likelihood_weighted_shift_std": {"q4_minus_q1_mean_rmse": 0.1426338027009777, "bad10_auc": 0.5124455546743054, "positive_folds": 3},
+    "zero_shift_rank": {"q4_minus_q1_mean_rmse": 0.9053414739835812, "bad10_auc": 0.5418940386285662, "positive_folds": 5},
+    "absolute_top1_shift": {"q4_minus_q1_mean_rmse": 1.359544826831625, "bad10_auc": 0.5447366938724756, "positive_folds": 5},
+    "top1_shift_jump_from_previous_block": {"q4_minus_q1_mean_rmse": 2.2537953166745783, "bad10_auc": 0.5743920565408048, "positive_folds": 5, "real_better_than_circular_folds": 3},
+    "three_block_sign_inconsistency": {"q4_minus_q1_mean_rmse": 1.5138542336989316, "bad10_auc": 0.5481551803413169, "positive_folds": 5, "real_better_than_circular_folds": 5}
+  },
+  "notes": "Zero-booster readout only; no prediction, inference, or submission was generated."
+}

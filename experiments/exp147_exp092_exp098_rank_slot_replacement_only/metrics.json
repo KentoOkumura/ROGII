@@ -1,0 +1,85 @@
+{
+  "experiment": "exp147_exp092_exp098_rank_slot_replacement_only",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "ml_model",
+  "parent": "exp092_u_projection_correction_disagreement_fullrun",
+  "rank_slot_source_parent": "exp098_selector_rank_slot_features_on_exp073",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "selected_variant": "u_projection_rank_slot_replacement_only",
+  "train_plan": {
+    "active_variants": 1,
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "total_boosters": 15,
+    "dropped_generated_columns": 22,
+    "replacement_rank_slot_columns": 25,
+    "control_retraining": false
+  },
+  "kaggle_train": {
+    "kernel": "kentookumura/exp147-rank-slot-replacement-train",
+    "version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp147-rank-slot-replacement-train",
+    "status": "COMPLETE",
+    "runtime_seconds": 15532.769,
+    "rows": 3783989,
+    "wells": 773,
+    "features": 243,
+    "model_count": 15,
+    "local_model_files_downloaded": 15,
+    "output_dir": "experiments/exp147_exp092_exp098_rank_slot_replacement_only/kaggle/output/train_v1"
+  },
+  "cv": {
+    "best_model": "lgb2",
+    "best_rmse_tvt": 9.397013392978039,
+    "lgb0_rmse_tvt": 9.66561251619198,
+    "lgb1_rmse_tvt": 9.42389383771385,
+    "lgb2_rmse_tvt": 9.397013392978039,
+    "lgb_mean_rmse_tvt": 9.438575715119802,
+    "delta_best_vs_exp092_lgb1": 0.07453349747411156,
+    "delta_lgb1_vs_exp092_lgb1": 0.10141394220992302,
+    "delta_lgb2_vs_exp092_lgb2": 0.05882098833285965,
+    "delta_lgb_mean_vs_exp092_lgb_mean": 0.09551164912472914,
+    "delta_best_vs_exp139_lgb1": 0.0721057523184359,
+    "delta_lgb_mean_vs_exp139_lgb_mean": 0.06799148979307977,
+    "prediction_sha256": {
+      "lgb0": "85a67e32a4fc5eb2c13d0200bf1f58eec68affb8659e07436f8456a378184909",
+      "lgb1": "a7d910034f128de685b7bcabfb71e4d3ba85c67abaa5ed511acd1566a17059a2",
+      "lgb2": "80ded477646c24f9fd1899c3fee6e61c55675ef5ac07996c9d3a3f98e815d005",
+      "lgb_mean": "cce131d6d77f4e976d4c277a1c85d4fde8de61af235fb8a1e5fb2bbda0935674"
+    }
+  },
+  "bucket_readout": {
+    "lgb1_distance_000_050_rmse": 1.3012446165084839,
+    "lgb1_distance_1000_plus_rmse": 10.34688949584961,
+    "lgb2_distance_000_050_rmse": 1.3518543243408203,
+    "lgb2_distance_1000_plus_rmse": 10.317358016967773,
+    "lgb_mean_distance_000_050_rmse": 1.1437119245529175,
+    "lgb_mean_distance_1000_plus_rmse": 10.365809440612793
+  },
+  "reference_metrics": {
+    "exp092_lgb1_rmse_tvt": 9.322479895503927,
+    "exp092_lgb2_rmse_tvt": 9.338192404645179,
+    "exp092_lgb_mean_rmse_tvt": 9.343064065995073,
+    "exp092_public_lb": 8.35,
+    "exp098_lgb1_rmse_tvt": 9.35815105231876,
+    "exp098_public_lb": 8.441,
+    "exp139_lgb1_rmse_tvt": 9.324907640659603,
+    "exp139_lgb_mean_rmse_tvt": 9.370584225326722
+  },
+  "artifacts": {
+    "log_sha256": "c72df9e2db19e3297c4b36670911531024c345c82a04c8f7cc9420cbf80053ca",
+    "metrics_sha256": "679c02f7ed5ccf3bc7a8449740bab5be537c20e8d40b6e89cea5b54f0794e23b",
+    "by_well_sha256": "76a27cea28edccc5bc02c417db982fe88b2d09bf41e3a1cb9c11b1e6fad09cb4",
+    "bucket_metrics_sha256": "fc9b16481c06e7ba3e07f308780cd2aa7e949fefa796503fbf04fa0b55f2fa30",
+    "feature_importance_mean_sha256": "e8e9cacc22975d1d990f91eae2476b9700b70547e6336e652d7a2c6c4ea8b850",
+    "feature_schema_sha256": "678eccdd08c1dd3235018da27a0f75d7ef66c2258b88551f8bb944e45ebfbd53",
+    "summary_sha256": "cd14152fcb87a039d15d46bd497ae075323f6fc195159e6310cdf801e40b91d1",
+    "model_manifest_sha256": "2302a59ec1d93725f1bbc2161b3087de3ca893b9e700fd6d78b8eb74b5042579"
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "decision": {
+    "submit": false,
+    "reason": "Best lgb2 RMSE 9.397013 is +0.074533 worse than exp092 lgb1 and +0.072106 worse than exp139 lgb1; replacement-only rank-slot features do not update the ML anchor."
+  }
+}

@@ -1,0 +1,68 @@
+schema_version: 1.0.0
+implementation_status: compact_stage_a_stage_c_complete_run_not_approved
+parent_schema: exp264_corrected_stage_a_v4_raw_test_safe_88
+mode: single_candidate_addition_then_prefreeze_schema_refreeze
+
+groups:
+  - ctx
+  - cand
+  - conf
+  - bank
+  - formula
+  - id
+
+raw_context_allowlist: [MD, X, Y, Z, GR]
+added_candidate_value: geometry_mean_reverting_hmm
+added_candidate_native_confidence:
+  - geometry_mean_reverting_delta_mean
+  - geometry_mean_reverting_hmm_std
+
+derived_feature_families:
+  - candidate_availability_and_coverage
+  - candidate_anchor_distance
+  - candidate_local_shape_windows_32_128_512
+  - candidate_bank_disagreement
+  - candidate_family_kind_and_id_one_hot
+  - native_confidence_value_and_validity
+
+mechanical_drop_policy:
+  allowed: [all_missing, constant, exact_duplicate]
+  correlation_drop_allowed: false
+  truth_or_score_guided_drop_allowed: false
+  freeze_before_truth_join: true
+  record_catalog_schema_and_content_sha: true
+
+forbidden_tokens_and_sources:
+  - TVT
+  - TVT_input
+  - true_tvt
+  - error
+  - abs_error
+  - oracle
+  - target
+  - exp357_parent_prediction
+  - exp226_pred
+  - fold
+  - role
+  - episode
+  - scope
+  - gate
+  - by_well
+  - exp498
+  - exp499
+
+fold_contract:
+  outer_fold_source: exp263_selector_outer_fold
+  exp490_source_fold_feature_allowed: false
+  exp490_source_fold_split_allowed: false
+  global_key_join_before_selector_partition: true
+  suffix_offset_parity_required: true
+  outer_train_compact_source: inner_oof_scores_only
+  outer_valid_compact_source: four_inner_model_ensemble_only
+  outer_valid_fit_or_early_stopping_allowed: false
+
+reproducibility:
+  sampling_key: stable_sha256_of_fold_objective_candidate_and_row_identity
+  global_rng_in_workers_allowed: false
+  final_feature_count: freeze_after_mechanical_audit_before_truth
+  sha_required: [feature_catalog, feature_schema, feature_content, compact_schema]

@@ -1,0 +1,211 @@
+{
+  "experiment": "exp491_exp226_final_tvt_rate_direct_hmm",
+  "status": "stage0_fail_closed",
+  "route": "pf_beam",
+  "parent": "exp437_neighbor_geometry_tvt_only_transition_hmm",
+  "prediction_source": "exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction",
+  "metric": "rmse_tvt",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "stage0_is_cv": false,
+  "stage0_is_promotion_evidence": false,
+  "implementation_complete": true,
+  "stage0_execution_authorized": true,
+  "stage0_execution_complete": true,
+  "stage1_eligible_for_separate_approval": false,
+  "stage1_execution_authorized": false,
+  "inference_authorized": false,
+  "submission_authorized": false,
+  "execution_contract": {
+    "current_scientific_variants": 1,
+    "current_hmm_well_runs": 32,
+    "attempted_hmm_well_runs_across_v1_v2": 64,
+    "parent_control_hmm_reruns": 0,
+    "fitted_ml_models": 0,
+    "lightgbm_configs": 0,
+    "trained_ml_folds": 0,
+    "boosters": 0,
+    "pf_runs": 0,
+    "beam_runs": 0,
+    "gpu_runs": 0
+  },
+  "contract_tests": {
+    "passed": 9,
+    "failed": 0
+  },
+  "source_sha256": "ce5fc269ec18f81494e52926438418872216a7861a5ae0f36d6a2578ec4f3a7b",
+  "jupytext_roundtrip": "pass",
+  "input_preflight": {
+    "exp226_oof_decompressed_sha256": "709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609",
+    "exp226_oof_allowlist_present": true,
+    "fixed32_suffix_rows": 156088,
+    "persistent_episode_well_coverage": "16/16"
+  },
+  "kaggle": {
+    "kernel_id": "kentookumura/exp491-exp226-final-tvt-rate-direct-hmm-train",
+    "title": "exp491 exp226 final tvt rate direct hmm train",
+    "url": "https://www.kaggle.com/code/kentookumura/exp491-exp226-final-tvt-rate-direct-hmm-train",
+    "id_no": 129213586,
+    "completed_version": 2,
+    "status": "complete",
+    "enable_gpu": false,
+    "enable_internet": false,
+    "docker_image": "gcr.io/kaggle-images/python@sha256:dafd4ce5668bbf1ad422e4c109e0f18c9623c3a7c7f48b0235f13142755c40b9",
+    "package_notebook_sha256": "0f9d2b0a344eaffe1419479a216c8a0e03c8e0f7cf9280c91bba7c52fa7c0c67",
+    "kernel_metadata_sha256": "7f4b09c5e8f3c7f26452b751ce9e9d50a297d4b82f7a555f73c8f8d51587f022",
+    "pulled_metadata_sha256": "8e44fa3119f599f55707b9848be10f6389f4ba75fccf1771cedd16935f343f50",
+    "v1_failure": {
+      "status": "error",
+      "candidate_hmm_wells_completed": 32,
+      "stage": "artifact_serialization_before_truth_readout",
+      "error": "EOFError: Compressed file ended before the end-of-stream marker was reached",
+      "scientific_gate_evaluated": false
+    }
+  },
+  "runtime": {
+    "cpu_only": true,
+    "elapsed_seconds": 35.91759330000002,
+    "candidate_hmm_seconds": 10.073263762000124,
+    "projected_full_runtime_seconds": 243.3322777508155,
+    "peak_rss_gb": 0.4491996765136719,
+    "numba_threads": 4,
+    "python": "3.12.13",
+    "numpy": "2.0.2",
+    "pandas": "2.3.3",
+    "numba": "0.60.0"
+  },
+  "diagnostics": {
+    "candidate_all32_rmse_ft": 12.290250881875158,
+    "exp226_final_all32_rmse_ft": 7.976056519436894,
+    "gain_vs_exp226_final_all32_ft": -4.314194362438264,
+    "candidate_matched_control_rmse_ft": 6.101789221167135,
+    "exp226_final_matched_control_rmse_ft": 7.081195340022579,
+    "candidate_persistent_rmse_ft": 16.169236484891623,
+    "exp226_final_persistent_rmse_ft": 8.757067231798857,
+    "improving_folds_vs_exp226_final": 3,
+    "persistent_episode_sse_reduction_fraction": -3.1422999273046353,
+    "paired_by_well_delta_p95_ft": 22.805438505669883,
+    "worst_well_delta_ft": 24.27744423658175,
+    "finite_coverage": 1.0,
+    "positive_delta_md_coverage": 1.0,
+    "source_manifest_fold_match": 1.0,
+    "maximum_first_difference_parity_abs_ft": 0.0,
+    "maximum_rate_increment_identity_abs_ft": 0.0,
+    "maximum_transition_row_sum_error": 4.440892098500626e-16,
+    "maximum_posterior_normalization_error": 2.4424906541753444e-15,
+    "raw_suffix_gr_evidence_reused": true,
+    "raw_gr_scopes_report_only_stage0": {
+      "observed": {
+        "rows": 110370,
+        "candidate_rmse_ft": 12.363989490435669,
+        "exp226_rmse_ft": 8.27720994989751,
+        "delta_ft": 4.08677954053816
+      },
+      "missing": {
+        "rows": 45718,
+        "candidate_rmse_ft": 12.110384813146867,
+        "exp226_rmse_ft": 7.19728311736368,
+        "delta_ft": 4.913101695783187
+      }
+    }
+  },
+  "fold_metrics": [
+    {
+      "fold": 0,
+      "candidate_rmse_ft": 15.732414570645256,
+      "exp226_final_rmse_ft": 6.326170282674794,
+      "delta_ft": 9.406244287970463,
+      "improved": false
+    },
+    {
+      "fold": 1,
+      "candidate_rmse_ft": 19.620685169525906,
+      "exp226_final_rmse_ft": 10.678340235419446,
+      "delta_ft": 8.94234493410646,
+      "improved": false
+    },
+    {
+      "fold": 2,
+      "candidate_rmse_ft": 5.9177904542622874,
+      "exp226_final_rmse_ft": 6.42513858104916,
+      "delta_ft": -0.5073481267868729,
+      "improved": true
+    },
+    {
+      "fold": 3,
+      "candidate_rmse_ft": 4.694932579925033,
+      "exp226_final_rmse_ft": 8.041871699006798,
+      "delta_ft": -3.346939119081765,
+      "improved": true
+    },
+    {
+      "fold": 4,
+      "candidate_rmse_ft": 7.450705141958446,
+      "exp226_final_rmse_ft": 8.456556957277847,
+      "delta_ft": -1.0058518153194012,
+      "improved": true
+    }
+  ],
+  "gates": {
+    "technical_all_pass": true,
+    "technical": {
+      "duplicate_rows": true,
+      "finite_source_schedule_prediction_coverage": true,
+      "first_difference_parity": true,
+      "fixed32_folds": true,
+      "fixed32_roles_and_unique_wells": true,
+      "fixed32_rows": true,
+      "forbidden_exp226_columns_before_freeze": true,
+      "missing_rows": true,
+      "peak_rss": true,
+      "positive_delta_md_coverage": true,
+      "posterior_normalization": true,
+      "prediction_readback_logical_sha": true,
+      "projected_full_runtime": true,
+      "rate_increment_identity": true,
+      "schedule_manifest_sha_recorded": true,
+      "source_manifest_fold_match": true,
+      "transition_row_sum": true,
+      "truth_role_episode_reads_before_freeze": true
+    },
+    "mechanism_pass_count": 1,
+    "mechanism_fail_count": 6,
+    "mechanism": {
+      "gain_vs_exp226_final_all32": false,
+      "matched_control_delta_vs_exp226_final": true,
+      "persistent_gain_vs_exp226_final": false,
+      "improving_folds_vs_exp226_final": false,
+      "persistent_episode_sse_reduction": false,
+      "paired_by_well_delta_p95": false,
+      "worst_well_delta": false
+    },
+    "stage0_all_gates_pass": false
+  },
+  "artifacts": {
+    "predictions": {
+      "rows": 156088,
+      "raw_sha256": "ab6c9b8a177acfdbf34ffcdc57e2e9b8c86e58b524475a23a7950bfb85c78fad",
+      "decompressed_sha256": "8b137edc5ee9cf578f0c6f17d6ab7fd3c34f5b86d3c3a6cbc29f432a7d15ee56",
+      "logical_sha256": "8b137edc5ee9cf578f0c6f17d6ab7fd3c34f5b86d3c3a6cbc29f432a7d15ee56",
+      "readback_logical_sha256": "8b137edc5ee9cf578f0c6f17d6ab7fd3c34f5b86d3c3a6cbc29f432a7d15ee56"
+    },
+    "schedule_manifest_sha256": "d5f31bc77de5bfe24c3a05ea1d6c9d019ac630b4855fa0aa698b27d520c59ff4",
+    "well_metrics_sha256": "8f1fd018d9c7938dfc13dba590f24af004a12406e23421c037758501112c821b",
+    "episode_metrics_sha256": "9652b528a0f522bda3380d0f42e19522431e29df4182d3e0c8be320bccc05f05",
+    "input_manifest_sha256": "0ea1a658cca0898bc822f1b562c54ad3be1f592dd457ad43dfe38c47be90a9e3",
+    "summary_sha256": "1a434e951a62e80aaaaa4a3a2b4e9b2cb7731c0de67c26f6829f4b891b0d57d6",
+    "prediction_manifest_sha256": "023f0fcb6a9e9dabbe34fc8d6dc16fc79d9c8d4f3724e4bbcf2cb497faf91906",
+    "diagnostic_manifest_sha256": "b6ff40e23788d0213fc52eaf0b064d8fc64341980d998c0e9a3ce7503110b019",
+    "schedule_manifest_content_sha256": "0dc5b8eb152ad70bda55c33917530eb737f4f3dfac83ddd3e5e6b165e4ba68d0",
+    "scientific_contract_sha256": "b89a89e14cc0ff628aaa8e49814f4fa66f68eab7d5e0a732b7d1565e4fb841c4"
+  },
+  "decision": {
+    "result": "fail_closed",
+    "reason": "All technical gates passed, but six of seven fixed Stage 0 mechanism gates failed.",
+    "stage1": "blocked",
+    "pf_rescue": "blocked",
+    "inference": "blocked",
+    "submission": "blocked"
+  }
+}

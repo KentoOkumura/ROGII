@@ -1,0 +1,168 @@
+experiment:
+  name: "exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction"
+  description: Source-port Connor Tynan's K16 spline + kernel kNN + adaptive kappa deterministic fallback without external v7/v8 weights.
+  route: pf_beam
+  status: submitted_public_lb_9p837_not_adopted
+  created_at: "2026-07-09"
+  updated_at: "2026-07-09"
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.n_folds
+    - validation.score_rows
+
+lineage:
+  parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction backlog
+  source_notebook: /tmp/kaggle-notebooks/connortynan-k16-versioned/rogii-k16-spline-kernel-knn-adaptive-kappa.py
+  source_kernel: connortynan/rogii-k16-spline-kernel-knn-adaptive-kappa
+  references:
+    - KAGGLE_DIRECTION.md exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - /tmp/kaggle-notebooks/connortynan-k16-versioned/kernel-metadata.json
+    - /tmp/kaggle-notebooks/connortynan-dzdtvt/dz-dtvt-eda.ipynb
+    - exp206_discussion711308_dz_dtvt_bpeak_cluster_baseline
+  diff_summary: >
+    Ports the public deterministic v6 fallback components from Connor Tynan's K16
+    script: K=16 segment spline coefficients, raw/smoothed donor fields,
+    XY local-linear kernel kNN, adaptive kappa fit over donor-distance regimes,
+    near-strike ANCC local-theta substitute column, typewell GR correction, and
+    U-projection. The optional v7 e2e/stacker neural committee and v8 LightGBM
+    meta-layer are intentionally excluded because their external weights are not
+    available in this repository. Unlike exp206, this does not reuse the
+    dTVT ~= a*dZ+b linear fit.
+
+validation:
+  strategy: group_safe_kfold_source_port_target_well_excluded
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  max_wells: null
+  debug_max_wells: null
+  fail_fast: true
+  distance_buckets:
+    - 0
+    - 50
+    - 100
+    - 250
+    - 500
+    - 1000
+  leakage_policy:
+    - Validation target wells are removed from donor fields before raw/smoothed local-linear kNN estimation.
+    - Validation target wells are removed from adaptive kappa fitting, so their true TVT and ANCC surface samples do not affect their prediction.
+    - Target unknown-suffix TVT is used only for metrics and artifact summaries.
+    - Target known prefix TVT_input, GR, geometry, and typewell files are allowed because the public test notebooks have the same information.
+    - Public v7/v8 external weights are not loaded, searched, or emulated.
+    - No blind LB weight search or residual blending is performed.
+  success_criteria:
+    - Train-side group-safe RMSE is materially better than exp206 v4 CV 52.507.
+    - Fold and distance-bucket metrics do not show a catastrophic long-tail regression.
+    - Kaggle inference creates a valid 14,151-row submission with finite TVT and sample order parity.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: connortynan_k16_spline_kernel_knn_adaptive_kappa_v6_fallback
+  estimator: deterministic_geometry_pf_beam_style
+  params:
+    selected_variant: v6_k16_geometry_gr_u_projection
+    variants:
+      - v6_k16_geometry_gr_u_projection
+    theta0: 118.4
+    k_segments: 16
+    local_linear_k: 50
+    local_linear_bandwidth: 500.0
+    local_linear_ridge: 1.0
+    smooth_rho: 10.0
+    gate: 0.35
+    field_min_proj: 0.3
+    kbins:
+      - 0.0
+      - 750.0
+      - 1500.0
+      - 2500.0
+      - 4000.0
+      - 1000000000000000000.0
+    kappa_regimes:
+      - 0.0
+      - 1000.0
+      - 1500.0
+      - 2000.0
+    rot_max_deg: 60.0
+    ancc_theta_bandwidth: 1500.0
+    enable_gr_correction: true
+    enable_u_projection: true
+  expected_kappa_terms: 12
+  notes:
+    - Kappa terms are raw donor-distance bins x5, smoothed donor-distance bins x5, sqrt(position), and near-strike committee.
+    - The public source header's v8 score claim is treated as external-weight-dependent and is not used as evidence for this stage.
+
+external_weights:
+  v7_neural_committee: disabled_missing_weights
+  v8_gbm_meta_layer: disabled_missing_weights
+  stage2_audit: deferred
+
+artifacts:
+  output_prefix: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  expected_train:
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_by_well_metrics.csv
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_fold_metrics.csv
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_distance_bucket_metrics.csv
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_summary.json
+  expected_inference:
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_test_prediction_summary.csv
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_full_train.csv
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_inference_summary.json
+    - submission.csv
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources: []
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: deterministic_sorting_and_sha256_fold_assignment
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - No random numbers are consumed in Stage 1; fold assignment is a stable SHA256 ordering over well ids.
+    - Not a deterministic anchor until Kaggle kernel version, train OOF SHA, and submission SHA are recorded.
+
+inference:
+  mode: direct_submission
+  selected_variant: v6_k16_geometry_gr_u_projection
+  output_file: submission.csv
+  max_train_wells: null
+  max_test_wells: null
+  notes:
+    - Full train wells fit donor fields and kappa once, then test wells are predicted from known prefix, geometry, GR, and typewell files.
+
+notes:
+  - This is a no-GPU, no-booster deterministic reproduction of the public fallback path.
+  - Stage 2 external-weight audit is deliberately deferred until Stage 1 CV/LB evidence exists.

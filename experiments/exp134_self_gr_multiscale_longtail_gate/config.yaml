@@ -1,0 +1,176 @@
+experiment:
+  name: "exp134_self_gr_multiscale_longtail_gate"
+  description: "Posthoc train-side audit for exp090 self-GR multiscale signal as an auxiliary longtail / PF-dense disagreement gate confidence."
+  route: ml_model
+  status: completed_train_side_rejected_no_submit
+  created_at: "2026-06-26"
+  updated_at: "2026-06-26"
+
+lineage:
+  parent: exp090_lateral_self_gr_match_pseudotail_probe
+  diagnostic_parents:
+    - exp072_exp063_full_replay_feature_cache
+    - exp073_gpu_reproducibility_guard_for_exp063_full_replay
+    - exp092_u_projection_correction_disagreement_fullrun
+    - exp126_exp073_exp092_pf_beam_pseudotail_failure_map
+    - exp128_trajectory_local_typewell_self_gr_switch_audit
+  implementation_source: self_gr_multiscale_longtail_gate.py
+  diff_summary: >
+    Reuses the exp090 self-GR multiscale GR match signal as target-free confidence
+    for high-drift / PF-dense disagreement regimes. This experiment does not train
+    LightGBM, does not make self-GR a direct TVT candidate, and does not create a
+    submission candidate.
+
+validation:
+  strategy: posthoc_self_gr_multiscale_longtail_gate_diagnostic
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - dense_switch_rate
+    - distance_bucket_rmse
+    - tail_rank_bucket_rmse
+    - pf_dense_disagreement_bucket_rmse
+    - self_gr_quality_bucket_rmse
+    - common_worst_top26_delta
+    - near_row_delta
+    - worst_well_delta_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: exp072_full_replay_train_pseudotail_rows
+  leakage_policy:
+    - Self-GR features use only same-well horizontal GR, finite prefix TVT_input, row index, and target-free evaluation-zone GR.
+    - PF/Beam/likelihood-PF and dense candidates are read from exp072 deterministic train feature cache.
+    - Optional exp073/exp092 OOF predictions are used for comparison only.
+    - target_tvt is used only for scoring diagnostics, bucket summaries, and common-worst readouts.
+    - Gate thresholds are fixed from target-free score quantiles and do not use true TVT or oracle labels.
+    - This experiment is diagnostic only; any LightGBM add-only feature or inference port must be implemented separately.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_feature_cache:
+    - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v1/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema:
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp073_predictions:
+    - /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/train_v2/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp073-full-replay-repro-guard-train/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+  exp092_predictions:
+    - /tmp/exp092_train_output_check/artifacts/exp092_u_projection_correction_disagreement_fullrun_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp092-uproj-corr-disagree-train/artifacts/exp092_u_projection_correction_disagreement_fullrun_predictions.csv.gz
+
+model:
+  name: no_new_model_self_gr_multiscale_longtail_gate_audit
+  estimator: none
+  base_prediction: likpf_mean
+  candidate_columns:
+    - last_anchor_tvt
+    - likpf_mean
+    - tvt_dense
+    - exp073_lgb_mean
+    - exp092_lgb1
+
+self_gr:
+  half_windows: [8, 15, 25]
+  focus_half_window: 25
+  stride: 3
+  prefix_tail_rows: 1024
+  quality_score:
+    score_rank_weight: 0.45
+    l2_inverse_rank_weight: 0.35
+    scale_agreement_weight: 0.20
+
+audit:
+  mode: self_gr_multiscale_longtail_gate
+  output_prefix: exp134_self_gr_multiscale_longtail_gate
+  fast: false
+  optional_prediction_inputs_required: false
+  max_rows: null
+  common_worst_top_n:
+    - 26
+    - 50
+  gate_variants:
+    - name: dense_longtail_pf_dense_q4
+      description: Use tvt_dense only on longtail rows with high PF-dense disagreement.
+      min_md_since: 1000.0
+      pf_dense_quantile: 0.75
+      self_gr_quality_quantile: null
+    - name: dense_longtail_pf_dense_q4_self_q60
+      description: Add self-GR multiscale quality q60 to the longtail / PF-dense gate.
+      min_md_since: 1000.0
+      pf_dense_quantile: 0.75
+      self_gr_quality_quantile: 0.60
+    - name: dense_longtail_pf_dense_q4_self_q75
+      description: Add self-GR multiscale quality q75 to the longtail / PF-dense gate.
+      min_md_since: 1000.0
+      pf_dense_quantile: 0.75
+      self_gr_quality_quantile: 0.75
+    - name: dense_tail500_pf_dense_q4_self_q75
+      description: Relax distance to 500ft while requiring self-GR multiscale quality q75.
+      min_md_since: 500.0
+      pf_dense_quantile: 0.75
+      self_gr_quality_quantile: 0.75
+  expected_train_artifacts:
+    - exp134_self_gr_multiscale_longtail_gate_metrics.csv
+    - exp134_self_gr_multiscale_longtail_gate_by_well.csv
+    - exp134_self_gr_multiscale_longtail_gate_bucket_metrics.csv
+    - exp134_self_gr_multiscale_longtail_gate_signal_metrics.csv
+    - exp134_self_gr_multiscale_longtail_gate_common_worst_metrics.csv
+    - exp134_self_gr_multiscale_longtail_gate_gate_predictions.csv.gz
+    - exp134_self_gr_multiscale_longtail_gate_feature_schema.csv
+    - exp134_self_gr_multiscale_longtail_gate_summary.json
+    - README.md
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp073-full-replay-repro-guard-train
+      - kentookumura/exp092-uproj-corr-disagree-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_posthoc_gate_diagnostic
+  stochastic_components:
+    - upstream_exp072_pf_beam_likpf_feature_cache
+    - upstream_exp073_lightgbm_oof_predictions_optional
+    - upstream_exp092_lightgbm_oof_predictions_optional
+  parallel_rng_policy: no_parallel_rng_in_exp134
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This audit itself has no RNG and performs no training.
+    - Source gzip prediction/cache content SHA is recorded using decompressed CSV bytes.
+    - This experiment is not a deterministic submission anchor and has no inference port.
+
+inference:
+  mode: disabled_diagnostic_only
+  selected_variant: null
+  notes:
+    - No submission.csv candidate is created.
+    - If self-GR signal is useful, move it into an exp092 add-only LightGBM feature or ranker enrichment ablation.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog item `self_gr_multiscale_longtail_gate`.
+  - GR-derived signal is confidence-only; it is not a direct correction or submit candidate.

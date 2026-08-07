@@ -1,0 +1,109 @@
+{
+  "experiment": "exp352_typewell_transfer_safety_guard_readout",
+  "status": "completed_stage_0_guard_failed_closed",
+  "route": "pf_beam",
+  "stage": "stage_0_guard_readout",
+  "cv": {
+    "passed": false,
+    "checks": {
+      "fold_safe_exact_group_coverage": true,
+      "identity_fallback_row_parity": true,
+      "outer_valid_truth_before_manifest_freeze_zero": true,
+      "same_group_folds_improved": true,
+      "same_group_gain": true,
+      "spatial_typewell_purged_non_regression": true,
+      "unseen_group_non_regression": true,
+      "worst_well_safety": false
+    },
+    "fold_safe_exact_group_coverage": 0.9728331177231565,
+    "identity_fallback_parity_max_abs": 0.0,
+    "outer_valid_truth_rows_before_manifest_freeze": 0,
+    "same_group_folds_improved": 5,
+    "same_group_gain_gr_api": 0.3815401371749694,
+    "unseen_group_negative_transfer_gr_api": -0.16486187972617827,
+    "spatial_typewell_purged_negative_transfer_gr_api": -0.49675245904578347,
+    "worst_well_regression_gr_api": 12.914715996994493,
+    "worst_well": "d07aed8f",
+    "worst_surface": "same_typewell_heldout_well"
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "transfer_gain_and_negative_transfer_safety",
+  "artifacts_generated": true,
+  "score_unit": "horizontal_gr_api",
+  "runtime_seconds": 12.973408720999998,
+  "kaggle": {
+    "kernel_id": "kentookumura/exp352-typewell-transfer-guard-readout-train",
+    "kernel_version": 1,
+    "id_no": 128360039,
+    "url": "https://www.kaggle.com/code/kentookumura/exp352-typewell-transfer-guard-readout-train",
+    "cpu_only": true,
+    "internet_enabled": false
+  },
+  "execution_contract": {
+    "diagnostic_variants": 1,
+    "audit_surfaces": 3,
+    "reporting_folds": 5,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "decoder_runs": 0,
+    "hmm_well_runs": 0,
+    "parent_control_retraining": false
+  },
+  "surface_population": {
+    "same_typewell_heldout_well": {
+      "wells": 773,
+      "selected_exact_wells": 752,
+      "selected_global_wells": 21,
+      "selected_identity_wells": 0
+    },
+    "leave_one_typewell_group_out": {
+      "wells": 773,
+      "selected_exact_wells": 0,
+      "selected_global_wells": 773,
+      "selected_identity_wells": 0
+    },
+    "spatial_typewell_purged": {
+      "wells": 200,
+      "selected_exact_wells": 138,
+      "selected_global_wells": 62,
+      "selected_identity_wells": 0
+    }
+  },
+  "parent_input": {
+    "kernel_id": "kentookumura/exp311-typewell-gr-calibration-readout-train",
+    "kernel_version": 1,
+    "summary_raw_sha256": "821499b895a8bdb6ed8202c714ddb95ea8739defe9b4aaa0e13c35b346a1ca29",
+    "pair_decompressed_sha256": "14f506da542a0d6f460425ddb56ff7119e19699b7d6110956fde86e63311e335"
+  },
+  "output_sha256": {
+    "availability_manifest_freeze": "2cbc04ebc4badbdd0d4d482f6bf9447ef085b8b98ab3dd77d7095f0ed93331a3",
+    "availability_fallback_table_raw": "b853453c769b33fbdc61f23907258381d42da4b05f54d6154c5f2cd1728d81f7",
+    "availability_fallback_table_content": "6648b769c2f2eb15a0166670ca82019c3141f5c9e65582d6cfd93c4b36303be0",
+    "score_table_raw": "adf380689ac1eaeb8ccd92456490467bef9e455ece8328f0d0205d0774d629f2",
+    "score_table_content": "b56498246fb401ca18a1d6e94b09f8dd82f047497f279504c3c834c12243c4d3",
+    "surface_metrics_raw": "ef262c200f74f6b0f92538623097f50fa6ce861fcae11e51ea374d365352b8eb",
+    "surface_metrics_content": "f19fadbe84d45ff4496091db0653a93124b669abe177a1b2a5a859c4b0523448",
+    "gate_raw": "84b304d7d95177830d9d892d5dd593e6236bd922809fb28faf023bcf9d769972",
+    "summary_raw": "d4130c7e72b8a840b76f434d9b94e28c6acb7f04c238974a7801def4045739e8"
+  },
+  "canonical_notebook_adopted": true,
+  "inference_enabled": false,
+  "submission_enabled": false,
+  "implementation_sha256": {
+    "config": "84d1297559fc9ead8c6a7281fbc93028918014768b06df75c1ef5a53f577631a",
+    "train_source": "8058956057ce61836c2489edb7cbd74d83144f067551a4364c2f8e9af03a8784",
+    "inference_source": "0d76bc514412a710c22506c08aa31845cae9d2154a250fb5b180347a7009702e",
+    "contract_test": "fb32f2a3c51bbe9c4fedb6969d793d7607b077e979451351da3982537296e1bd",
+    "canonical_train_notebook": "d3d7b265e20cf42c12efc129ca6c667549a734ea9859e0678cb6c0a1910bceb6",
+    "compact_train_notebook": "65bb74829f435a9e0fb6dbd51f9a9d008f88e2a2b54f465f1281ba1446806aac",
+    "inference_notebook": "a71c5053caf2391a96d147ec4138263ee822f808ddefaabe75787429a967a895"
+  },
+  "execution_package_sha256": {
+    "config": "9309d0286fa0454843c7a7a50dce274514d858a9d16f08d8d8ede5735c0c1b92",
+    "kernel_metadata": "2899f642d78ecba538bee4b61293f9120974ff6c94c563c898f8dceb98c7d5ca",
+    "notebook": "e397b4db9442dd3f8b9640e08db1eca2b554a0c75e123d39835cb53d042bd8ba"
+  },
+  "notes": "Kaggle CPU version 1 completed. Seven of eight fixed checks passed, but the +12.914716 GR API worst-well regression failed the +0.25 gate. The branch is closed without rescue, inference, or submission."
+}

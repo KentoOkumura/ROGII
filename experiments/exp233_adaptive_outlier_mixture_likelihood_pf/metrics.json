@@ -1,0 +1,118 @@
+{
+  "experiment": "exp233_adaptive_outlier_mixture_likelihood_pf",
+  "status": "completed_train_side_rejected_no_inference_no_submit",
+  "route": "pf_beam",
+  "execution": {
+    "split_strategy": "full_eligible_wells_one_mixture_variant_per_cpu_kernel",
+    "full_eligible_well_surface_required": true,
+    "active_outlier_mixture_variants_in_base_config": null,
+    "planned_runs": [
+      {
+        "variant": "mix_eps_0p02",
+        "epsilon": 0.02,
+        "notebook_kind": "train_variant0",
+        "kernel": "kentookumura/exp233-outlier-mixture-pf-e02",
+        "title": "exp233 outlier mixture pf e02"
+      },
+      {
+        "variant": "mix_eps_0p05",
+        "epsilon": 0.05,
+        "notebook_kind": "train_variant1",
+        "kernel": "kentookumura/exp233-outlier-mixture-pf-e05",
+        "title": "exp233 outlier mixture pf e05"
+      }
+    ],
+    "result_status": "both_mixture_variants_complete_and_rejected_after_id_aligned_exp232_comparison",
+    "completed_run": {
+      "variant": "mix_eps_0p02",
+      "epsilon": 0.02,
+      "kernel": "kentookumura/exp233-adaptive-outlier-mixture-likpf-train",
+      "version": 3,
+      "status": "KernelWorkerStatus.COMPLETE",
+      "runtime_seconds": 32369.847880363464,
+      "rmse": 13.519962656874812,
+      "delta_rmse_vs_primary_baseline": 1.9250649846571088,
+      "rmse_1000_plus": 14.75920972918308,
+      "max_well_regression_vs_primary": 44.48536390801355,
+      "gate_any_seed_rows": 4641,
+      "gate_all_seed_rows": 659
+    },
+    "completed_run_e05": {
+      "variant": "mix_eps_0p05",
+      "epsilon": 0.05,
+      "kernel": "kentookumura/exp233-adaptive-outlier-mixture-likpf-train",
+      "version": 4,
+      "status": "KernelWorkerStatus.COMPLETE",
+      "runtime_seconds": 24345.639946699142,
+      "rmse": 13.55017306854338,
+      "delta_rmse_vs_primary_baseline": 1.9552753963256766,
+      "rmse_1000_plus": 14.799418368466547,
+      "max_well_regression_vs_primary": 46.711288332682784,
+      "gate_any_seed_rows": 4662,
+      "gate_all_seed_rows": 677,
+      "reason": "The dedicated e05 kernel session remains unavailable, so the completed canonical exp233 kernel was reused for this single-variant run."
+    }
+  },
+  "metric": "train_side_rmse",
+  "cv": 13.519962656874812,
+  "public_lb": null,
+  "private_lb": null,
+  "updated_at": "2026-07-13",
+  "control": {
+    "candidate": "exp072_likpf_mean",
+    "source": "exp209:hmm_mean_tvt-hmm_minus_likpf_mean",
+    "regenerated": false,
+    "full_exp072_artifact_exact_parity": "unproven"
+  },
+  "outlier_mixture_variants": [
+    {
+      "name": "mix_eps_0p02",
+      "epsilon": 0.02,
+      "component": "raw_gr_uniform_state_neutral",
+      "uniform_gr_min": 0.0,
+      "uniform_gr_max": 500.0
+    },
+    {
+      "name": "mix_eps_0p05",
+      "epsilon": 0.05,
+      "component": "raw_gr_uniform_state_neutral",
+      "uniform_gr_min": 0.0,
+      "uniform_gr_max": 500.0
+    }
+  ],
+  "temperature_comparison": {
+    "experiment": "exp232_adaptive_robust_likelihood_pf",
+    "required_for_acceptance": true,
+    "status": "completed_id_aligned_temp_t2_v2_vs_mix_eps_0p05_v4",
+    "temp_t2_kernel": "kentookumura/exp232-adaptive-robust-pf-t2",
+    "temp_t2_kernel_version": 2,
+    "shared_exp072_input_control_schema_content_sha": true,
+    "temp_t2_rmse": 13.52988710902271,
+    "mix_eps_0p05_rmse": 13.55017306854338,
+    "mix_eps_0p05_minus_temp_t2_rmse": 0.020285959520670027
+  },
+  "previous_kernel": "kentookumura/exp233-adaptive-outlier-mixture-likpf-train",
+  "previous_kernel_version": 2,
+  "previous_failure": {
+    "stage": "input/control contract check",
+    "message": "The saved exp072 likpf_mean control is required for this experiment.",
+    "pf_generation_started": false
+  },
+  "kernel_status": "KernelWorkerStatus.COMPLETE",
+  "latest_run": {
+    "version": 4,
+    "status": "KernelWorkerStatus.COMPLETE",
+    "variant": "mix_eps_0p05",
+    "diagnosis": "The e05 dedicated session remained unavailable after cancellation, so the existing canonical exp233 kernel ran the epsilon=0.05 single-variant notebook to completion. Both mixture variants failed all acceptance guards.",
+    "pf_metrics_available": true
+  },
+  "results": {
+    "decision": "rejected_train_side",
+    "best_mixture_variant": "mix_eps_0p02",
+    "baseline_rmse": 11.594897672217703,
+    "mix_eps_0p02_rmse": 13.519962656874812,
+    "mix_eps_0p05_rmse": 13.55017306854338,
+    "mix_eps_0p05_minus_temp_t2_rmse": 0.020285959520670027
+  },
+  "notes": "Both mixture variants completed on the full eligible-well surface and fail the overall, 1000_plus, and worst-well guards. The ID-aligned epsilon=0.05 run is also worse than exp232 temp_t2 v2. v1 failed before PF generation because the exp072 ML cache lacks likpf_mean; v2 was cancelled after the timeout report. No inference or submission was generated."
+}

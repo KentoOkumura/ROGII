@@ -1,0 +1,451 @@
+experiment:
+  name: exp493_student_t_exact_hmm_full_replacement_on_exp264
+  description: >-
+    exp264の12候補ID・順序・legal domain・88列candidate-long schemaを維持したまま、
+    exact_hmm semantic slotをexp374のdf=4 Student-t exact HMMへ全面置換する。
+    exact_hmm依存のpairと固定3-wayも再計算し、corrected strict nested dual selectorだけを
+    1 variant、2 objectives、outer 5 x inner 4で評価する設計凍結実験。
+  hypothesis: >-
+    exp374 Student-t HMMはGaussian exact HMMよりsaved OOF RMSEを0.217809 ft改善した。
+    13本目として追加したexp388ではcandidate count増加に伴うincumbent rerankingが発生したため、
+    semantic slotを置換して候補数を12本に保てば、その平均改善と補完性をより安定して
+    selectorへ伝播できる可能性がある。
+  route: ensemble
+  status: stage_c_completed_scientific_gate_failed_closed
+  created_at: "2026-07-30"
+
+lineage:
+  parent: exp264_exp263_candidate_confidence_dual_selector
+  physical_candidate_parent: exp374_exp209_student_t_exact_hmm_emission
+  fixed13_negative_reference: exp388_exp374_fixed13_dual_selector_on_exp264
+  semantic_replacement_reference: exp413_scale5_likpf_full_replacement_on_exp335
+  steering: ../../.steering/20260730-exp493-student-t-exact-hmm-full-replacement-on-exp264
+  diff_summary: >-
+    12候補のID、宣言順、primary 11本、fixed fallback 7本、outer/inner fold、
+    selector objective、sampling、LightGBM config、88列feature schemaを固定する。
+    exact_hmmの値とnative confidenceをexp374へ差し替え、
+    exp226_k16__exact_hmm、likpf_mean__exact_hmm、exp226_w500_50_50を再計算する。
+    残る8候補はparent値とのparityを必須にする。13本目追加、Gaussianとの共存、
+    downstream TVT、推論、提出は行わない。
+
+authorization:
+  design_approved: true
+  design_approval_source: user_message_create_backlog_experiment_steering_and_freeze_design_2026_07_30
+  implementation_approved: true
+  implementation_approval_source: user_message_implement_exp493_2026_07_31
+  canonical_notebook_adoption_approved: true
+  canonical_notebook_adoption_approval_source: user_message_execute_exp493_2026_07_31
+  kaggle_package_approved: true
+  kaggle_package_approval_source: user_message_execute_exp493_2026_07_31
+  kaggle_run_approved: true
+  kaggle_run_approval_source: user_message_execute_exp493_2026_07_31
+  kaggle_v3_rerun_approved: true
+  kaggle_v3_rerun_approval_source: user_message_rerun_exp493_2026_07_31
+  inference_approved: false
+  submission_approved: false
+
+implementation:
+  enabled: true
+  scaffold_created: true
+  executable_code_created: true
+  canonical_notebooks_placeholder_only: false
+  jupytext_source_created: true
+  helper_code_created: true
+  tests_created: true
+  kaggle_package_created: true
+
+validation:
+  strategy: exp264_outer5_inner4_strict_nested_fixed12_exact_hmm_semantic_replacement
+  metric: rmse
+  metric_weighting: unweighted_suffix_rows
+  seed: 42
+  outer_folds: 5
+  inner_folds: 4
+  group_column: well
+  score_rows: TVT_input_isna
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_score_candidates: 12
+  expected_primary_candidates: 11
+  expected_fixed_fallback_candidates: 7
+  expected_candidate_long_features: 88
+  expected_compact_features: 74
+  saved_control:
+    experiment: exp264_exp263_candidate_confidence_dual_selector
+    surface: corrected_stage_c_v6_strict_nested_outer_valid
+    hard_primary_oof_rmse: 8.652531955610227
+    hard_primary_fold_rmse:
+      - 8.991720025343861
+      - 8.426634924939929
+      - 8.900503340840876
+      - 8.426473003260869
+      - 8.499558672015853
+    fixed_fallback_oof_rmse: 8.238331546485645
+    retraining_boosters: 0
+  physical_evidence:
+    candidate_rmse: 11.720478702142103
+    gaussian_control_rmse: 11.938287234887435
+    gain_ft: 0.21780853274533207
+    improved_folds: 4
+    total_folds: 5
+    by_well_p95_delta_ft: 0.9826613435468504
+    worst_well_delta_ft: 35.015963235760445
+  fixed13_negative_evidence:
+    experiment: exp388_exp374_fixed13_dual_selector_on_exp264
+    hard_rmse: 8.73610410942288
+    delta_vs_parent_fixed12_ft: 0.08357215381265348
+    improved_folds: 2
+    top1_rows: 692647
+    top1_fraction: 0.18304677947002487
+    interpretation: candidate_count_change_and_incumbent_reranking_are_removed_by_this_design
+  leakage_policy:
+    - exp374はid、well_id、row_idx、Student-t TVT、posterior std、HMM log-likelihoodだけを読む。
+    - exp374をglobalにwell_id,row_idxでjoinしてから、exp263 selector outer foldへ再分割する。
+    - source foldは存在せず、合成もfeature利用もしない。
+    - Gaussian control、LikPF control、truth、error、scope、gate列をfeature freeze前に開かない。
+    - outer-valid wellはinner fit、early stopping、calibration、threshold選択へ入れない。
+    - outer-train compact rowsはinner OOF score、outer-valid rowsはinner model ensembleだけを使う。
+
+data:
+  raw_dir: data/raw
+  candidate_contract: candidate_contract.yaml
+  feature_contract: feature_contract.yaml
+  exp263_stage0_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts
+    - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts
+    - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1/artifacts
+  exp263_expected_stage0_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+  exp263_expected_catalog_sha256: 7cd748661b719bfcfb1ed21b9fe314366b1c089cc0dd224a9e4cbd4ba7e9e6e0
+  parent_exp264:
+    config_sha256: 55a878f80c5c316efdf3291a076b9e29054cc235a802b5ac7ca93b444ed9c185
+    candidate_contract_sha256: 4f4d3f77db01d7477f9e73066ac311cfdc2c14b15eba84fab9830f4cf5486c20
+    stage_a_feature_schema_file_sha256: b91ec1517a82641fe4d96f41c97872151f273a8bbfcb537284f91d47aacf1035
+    stage_a_feature_schema_logical_sha256: aaef4ffdd90667893b099b76a52f1957b22197aea9cee5e5b57bc81048ddd3a4
+    stage_a_feature_catalog_file_sha256: 3a443a1a5a71874499affdfe68ff07c8f40d0abbb86530f8808b45dee9781235
+    stage_c_compact_schema_file_sha256: e3a677610899cb33bf58262f4cf02f650300c8c2207c46b53588d3418162ea74
+    stage_c_outer_valid_score_file_sha256: a10b7848127f01bef522f4b17dfd1640c9784956892dc24fc1159e3869500abc
+    config_patterns:
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/config.yaml
+      - "**/exp264_exp263_candidate_confidence_dual_selector/config.yaml"
+      - "**/exp264_parent_config.yaml"
+    feature_schema_patterns:
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_c_v6/artifacts/feature_schema.json
+      - "**/feature_schema.json"
+    feature_catalog_patterns:
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_c_v6/artifacts/feature_catalog.csv
+      - "**/feature_catalog.csv"
+    compact_schema_patterns:
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_c_v6/artifacts/compact_meta_schema.json
+      - "**/compact_meta_schema.json"
+    stage_c_outer_valid_score_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-train/artifacts/nested_outer_valid_candidate_score.parquet
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_c_v6/artifacts/nested_outer_valid_candidate_score.parquet
+      - "**/nested_outer_valid_candidate_score.parquet"
+  replacement_prediction:
+    source_experiment: exp374_exp209_student_t_exact_hmm_emission
+    source_config_sha256: f16878e8969b3930637945735950c69e968637c67b274409ade968b8f12f9fbd
+    source_train_sha256: 0229f4cd25e052f2ce2b07cedb407175f90125b6c76f7157bce242584829c735
+    filename: exp374_exp209_student_t_exact_hmm_emission_predictions.csv.gz
+    value_column: student_t_df4_on_exp209_absolute_tvt_hmm_tvt
+    std_column: student_t_df4_on_exp209_absolute_tvt_hmm_std
+    loglik_column: student_t_df4_on_exp209_absolute_tvt_hmm_loglik
+    expected_file_sha256: ea6f95334b2d75ab8c96f705c453f66b856397fd222770cd15f3ae0b7fef221e
+    expected_decompressed_sha256: 668fe87da902955acee742c72d30724abb53f32050bb5d0a5c1b3dee0cbd626e
+    expected_prediction_logical_sha256: 668fe87da902955acee742c72d30724abb53f32050bb5d0a5c1b3dee0cbd626e
+    expected_post_read_prediction_sha256: 506842291a539c9c8dd4da1a0a1eb6a11bfb2c8466fb022f4410b9bfdc234854
+    allowlist_columns:
+      - id
+      - well_id
+      - row_idx
+      - student_t_df4_on_exp209_absolute_tvt_hmm_tvt
+      - student_t_df4_on_exp209_absolute_tvt_hmm_std
+      - student_t_df4_on_exp209_absolute_tvt_hmm_loglik
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp374-exp209-student-t-exact-hmm-emission-train/artifacts/exp374_exp209_student_t_exact_hmm_emission_predictions.csv.gz
+      - /kaggle/input/exp374-exp209-student-t-exact-hmm-emission-train/artifacts/exp374_exp209_student_t_exact_hmm_emission_predictions.csv.gz
+      - /tmp/kaggle-output/exp374_exp209_student_t_exact_hmm_emission/train_v1/artifacts/exp374_exp209_student_t_exact_hmm_emission_predictions.csv.gz
+      - "**/exp374_exp209_student_t_exact_hmm_emission_predictions.csv.gz"
+  hidden_like_assignment:
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    patterns:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+
+replacement:
+  semantic_slot_id: exact_hmm
+  replacement_source_id: student_t_exact_hmm
+  keep_candidate_ids_and_order: true
+  score_candidate_count: 12
+  changed_candidate_count: 4
+  unchanged_candidate_count: 8
+  changed_candidates:
+    - exact_hmm
+    - exp226_k16__exact_hmm
+    - likpf_mean__exact_hmm
+    - exp226_w500_50_50
+  unchanged_candidates:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+  native_confidence_mapping:
+    sigma_tvt: student_t_df4_on_exp209_absolute_tvt_hmm_std
+    source_loglik: student_t_df4_on_exp209_absolute_tvt_hmm_loglik
+    loglik_per_row: source_loglik_divided_by_evaluation_rows_in_well
+  gaussian_and_replacement_coexist: false
+  add_thirteenth_candidate: false
+
+features:
+  schema_mode: preserve_exp264_corrected_stage_a_v4_exact_88_names_and_order
+  schema_refreeze_allowed: false
+  groups: [ctx, cand, conf, bank, formula, id]
+  raw_context_allowlist: [MD, X, Y, Z, GR]
+  forbidden_training_only_columns: [ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+  forbidden_target_tokens: [TVT, TVT_input, target, true_tvt, error, oracle]
+  recompute_direct_and_transitive_dependencies: true
+  unchanged_candidate_parity_atol: 0.0
+  formula_parity_atol: 1.0e-6
+
+model:
+  name: student_t_semantic_fixed12_confidence_dual_objective_candidate_long_lightgbm
+  active_variants: [student_t_exact_hmm_semantic_replacement]
+  objectives:
+    - name: pred_abs_error
+      estimator: lightgbm_regression_l1
+      label: candidate_abs_error
+    - name: p_within10
+      estimator: lightgbm_binary
+      label: candidate_within10
+  training:
+    max_train_base_rows_per_outer_fold: 60000
+    max_valid_base_rows_for_early_stopping: 30000
+    predict_base_row_chunk_size: 20000
+    num_boost_round: 1200
+    early_stopping_rounds: 80
+    log_evaluation_period: 100
+  lightgbm_common:
+    learning_rate: 0.035
+    num_leaves: 63
+    min_child_samples: 80
+    subsample: 0.85
+    subsample_freq: 1
+    colsample_bytree: 0.85
+    reg_alpha: 0.1
+    reg_lambda: 1.0
+    n_jobs: 8
+    deterministic: true
+    force_col_wise: true
+    verbosity: -1
+
+guards:
+  technical:
+    expected_models: 40
+    expected_compact_partitions: 25
+    expected_compact_rows: 18919945
+    expected_outer_valid_score_long_rows: 45407868
+    require_candidate_ids_order_and_domains_equal_parent: true
+    require_parent_feature_schema_equal: true
+    require_changed_candidates_exactly: 4
+    require_unchanged_candidates_exactly: 8
+    require_unchanged_candidate_value_parity: true
+    require_replacement_decompressed_and_logical_sha: true
+    require_global_key_parity: true
+    require_truth_columns_loaded_before_feature_freeze: 0
+  selector_score:
+    improve_outer_train_prior_pooled: true
+    minimum_improved_folds_each_metric: 4
+  scientific:
+    primary_readout: hard_primary_11_candidate_domain
+    maximum_pooled_delta_rmse_vs_parent_fixed12_selector: 0.0
+    minimum_improved_folds_vs_parent_fixed12_selector: 4
+    maximum_near_0_250_delta_rmse_ft: 0.02
+    maximum_1000_plus_delta_rmse_ft: 0.02
+    maximum_hidden_like_delta_rmse_ft: 0.02
+    maximum_by_well_p95_delta_rmse_ft: 0.25
+    maximum_worst_well_delta_rmse_ft: 0.25
+    changed_family_usage: report_only
+    fixed_fallback_7_candidate_result: report_only_because_its_exact_hmm_values_also_change
+    same_oof_rescue_allowed: false
+    pass_action: qualify_same_exp_implementation_followup_for_separate_user_decision
+    fail_action: close_without_weight_threshold_domain_or_gate_rescue
+
+execution:
+  stage: stage_c_completed_scientific_gate_failed_closed
+  run_approved: true
+  approved_scope: fixed12_student_t_replacement_stage_a_stage_c_1_variant_2_objectives_outer5_inner4_40_cpu_boosters_no_control_retraining
+  active_variants: 1
+  lightgbm_objectives: 2
+  outer_folds: 5
+  inner_folds: 4
+  planned_cpu_selector_boosters: 40
+  trained_cpu_boosters: 40
+  parent_control_retraining: false
+  gpu_boosters: 0
+  downstream_tvt_training: false
+  inference: false
+  submission: false
+  implementation_requires_separate_approval: false
+  kaggle_package_and_run_require_separate_approval: false
+  v3_rerun_additional_cpu_selector_boosters: 40
+  v3_rerun_cumulative_cpu_selector_boosters: 80
+  v3_rerun_requires_separate_approval: false
+  v3_rerun_approved_scope: fixed12_student_t_v3_postprocess_fix_additional40_cumulative80_cpu_boosters_no_control_retraining
+
+results:
+  decision: FAIL_CLOSE_FIXED12_STUDENT_T_REPLACEMENT_SELECTOR
+  scientific_gate_passed: false
+  hard_primary_oof_rmse: 8.616237400142841
+  saved_parent_hard_primary_oof_rmse: 8.652531955610227
+  delta_vs_saved_parent_ft: -0.03629455546738569
+  hard_primary_fold_rmse:
+    - 8.82761003396056
+    - 8.547425036060813
+    - 8.69826515915735
+    - 8.566946237404876
+    - 8.435310875227435
+  fold_improvements_vs_parent: 3
+  fixed_fallback_oof_rmse: 8.160447730654221
+  saved_parent_fixed_fallback_oof_rmse: 8.238331546485645
+  fixed_fallback_delta_ft: -0.07788381583142368
+  scope_delta_rmse_ft:
+    near_0_250: -0.0038407911472484
+    distance_1000_plus: -0.0396632733488324
+    hidden_like_spatial: -0.1049284713048859
+    hidden_like_typewell_purged: -0.0676291424125246
+  by_well_p95_delta_rmse_ft: 0.5400958549515298
+  worst_well: f6d009f4
+  worst_well_delta_rmse_ft: 10.472288432924444
+  changed_family_top1_rows: 1372891
+  changed_family_top1_fraction: 0.3628158009973073
+  selector_score_guard_passed: true
+  technical_gate_passed: true
+  leakage_audit_passed: true
+  model_count: 40
+  compact_partition_count: 25
+  compact_rows: 18919945
+  outer_valid_score_long_rows: 45407868
+  notebook_elapsed_seconds: 5896.184329532
+  cumulative_cpu_selector_boosters_across_v2_v3: 80
+  parent_control_retraining: false
+  downstream_tvt_training: false
+  inference: false
+  submission: false
+  sha256:
+    replacement_decompressed: 668fe87da902955acee742c72d30724abb53f32050bb5d0a5c1b3dee0cbd626e
+    feature_schema: b91ec1517a82641fe4d96f41c97872151f273a8bbfcb537284f91d47aacf1035
+    compact_schema: e3a677610899cb33bf58262f4cf02f650300c8c2207c46b53588d3418162ea74
+    replacement_semantic_manifest: a93d20c9cdc129c4ef8ec792d9beb80a55a54109cbd94858e878e799a43a7213
+    nested_selector_model_manifest: 2560711a4a2f333a31cc2b3b423ace9d7b3d31062c0513e0505376e4ff80d0ca
+    nested_outer_valid_candidate_score: da4f6af616c3a87495d643cca3ef6e3e531cb2828dca769ef32fe7f4c6f9db89
+    nested_compact_manifest: 548514a2d775f42dbfc87a43f4e4d378c305b6f34d85722f10827ccc3e6fd5d9
+    scientific_gate: 1c024bbe1893edb4afc96c1141c284e7f0ea74e1156b13908e947d4e82066bf5
+    summary: d3811e4fe49f272d7b992fabee681b9e42ea8cd44efeba9295736ae033620b74
+
+notebook_contract:
+  current_executable_notebook_count: 2
+  canonical_executable_notebook_count: 1
+  compact_candidate_notebook_count: 1
+  train_notebook_role: implemented_stage_a_and_stage_c_selector_evaluation_candidate
+  canonical_train_notebook_role: adopted_stage_a_and_stage_c_selector_evaluation
+  inference_notebook_role: disabled_placeholder
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  batch_size: 20000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    max_runtime_seconds: 14400
+    planned_kernel_slug: kentookumura/exp493-studentt-fixed12-replacement-selector-train
+    kernel_id: kentookumura/exp493-studentt-fixed12-replacement-selector-train
+    title: exp493 studentt fixed12 replacement selector train
+    run_on_push: true
+    package_prepared_at_utc: "2026-07-31 03:47:17 UTC"
+    pushed_at_utc: "2026-07-31 03:49:34 UTC"
+    kernel_version: 3
+    kernel_id_no: 129218034
+    kernel_url: https://www.kaggle.com/code/kentookumura/exp493-studentt-fixed12-replacement-selector-train
+    latest_status: complete
+    completed_at_utc: "2026-07-31 05:28:52 UTC"
+    run_history:
+      - version: 1
+        status: error
+        pushed_at_utc: "2026-07-30 23:20:43 UTC"
+        failed_at_elapsed_seconds: 18.985
+        trained_cpu_selector_boosters: 0
+        error: exp264_parent_config_not_resolved_before_stage_a
+      - version: 2
+        status: error
+        pushed_at_utc: "2026-07-30 23:30:36 UTC"
+        failed_at_elapsed_seconds: 5846.077
+        trained_cpu_selector_boosters: 40
+        failed_stage: post_scientific_gate_feature_importance
+        scientific_gate_executed: true
+        output_artifacts_downloadable: false
+        error: feature_importance_gain_column_not_found
+      - version: 3
+        status: complete
+        pushed_at_utc: "2026-07-31 03:49:34 UTC"
+        completed_at_utc: "2026-07-31 05:28:52 UTC"
+        notebook_elapsed_seconds: 5896.184329532
+        trained_cpu_selector_boosters: 40
+        cumulative_cpu_selector_boosters: 80
+        decision: FAIL_CLOSE_FIXED12_STUDENT_T_REPLACEMENT_SELECTOR
+        scientific_gate_passed: false
+        selected_output_downloaded: true
+        full_output_archive_downloaded: false
+    v1_pushed_package_sha256:
+      notebook: 2d991fb00fdebf096df0a45921e8b46ccbaecc25b80d68d5fcf33de1dc346056
+      config: ab840a59fbeadd9a47c9df34ca7cb481f4cee596ad5f074fa00974ea06233792
+      candidate_contract: 06dbf350157d24025dd0e29f0d0edca07197bc5b16174c1ffb79fee95ac27edc
+      feature_contract: 7adcf7dd6d40f256c3779c6976e70e514c3f809dababb02eac883fe36eee0ad2
+      exact_hmm_full_replacement_py: 4452fbdb697ae764b064984874506944dfee8613c9046b812f2ca865e63bb011
+    v2_pushed_package_sha256:
+      notebook: 6fdad48d5193ae5bb823fb7b827e7c3a8d460c862c4dc576c0066af68d2fe6d8
+      config: 6347f5c5165027793e583b0cef168e68fc6df987fa4652e3679c5328dac4e201
+      candidate_contract: 06dbf350157d24025dd0e29f0d0edca07197bc5b16174c1ffb79fee95ac27edc
+      feature_contract: 7adcf7dd6d40f256c3779c6976e70e514c3f809dababb02eac883fe36eee0ad2
+      exact_hmm_full_replacement_py: 4452fbdb697ae764b064984874506944dfee8613c9046b812f2ca865e63bb011
+    v3_pushed_package_sha256:
+      notebook: 40def465079a0fb0b94f4bb408d563446344496a4628f3f71ec240f0ee32034b
+      config: bacdf7d712d479493eefde1300a57dc84e06d2000baeca8ce3cb4a301f5de25a
+      candidate_contract: 06dbf350157d24025dd0e29f0d0edca07197bc5b16174c1ffb79fee95ac27edc
+      feature_contract: 7adcf7dd6d40f256c3779c6976e70e514c3f809dababb02eac883fe36eee0ad2
+      exact_hmm_full_replacement_py: 6cfd9b51dee10db48d59eb3d818328487af214a1c4a43ffb83a179bdcdbe885b
+    bootstrap_dependency_files:
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/config.yaml
+        destination: inputs/exp264_parent_config.yaml
+    kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp374-exp209-student-t-exact-hmm-emission-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_global_lightgbm_seed_and_stable_sha256_sampling_keys
+  stochastic_components:
+    - lightgbm_row_and_column_sampling
+    - candidate_long_row_sampling
+  parallel_rng_policy: stable_key_sampling_before_parallel_fit_no_global_rng_in_workers
+  feature_sha_policy: decompressed_content_sha_for_gzip_and_logical_or_file_sha_for_parquet
+  record:
+    kernel_version: true
+    input_sha: true
+    candidate_contract_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    outer_valid_score_sha: true
+    oof_prediction_sha: true
+    submission_sha: false
+  rerun_policy: independent_identical_rerun_required_before_deterministic_anchor
+  notes:
+    - PF、Beam、HMM candidateは再生成せず、SHA固定済みsaved OOFだけを入力にする。
+    - gzipはraw archive SHAではなくdecompressed content SHAを主証拠にする。
+    - 2026-07-31のユーザー実行依頼で正規Notebook採用・Kaggle package・runを承認済み。

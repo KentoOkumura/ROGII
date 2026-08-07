@@ -1,0 +1,89 @@
+{
+  "experiment": "exp094_projection_only_on_exp073",
+  "status": "completed_no_inference_guard_failed",
+  "route": "ml_model",
+  "parent": "exp073_gpu_reproducibility_guard_for_exp063_full_replay",
+  "cv": 9.399456024169922,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "implemented_backlog": "projection_only_on_exp073",
+  "kaggle_train": {
+    "kernel_id": "kentookumura/exp094-projection-only-on-exp073-train",
+    "kernel_version": 1,
+    "status": "COMPLETED",
+    "enable_gpu": false,
+    "enable_internet": false,
+    "url": "https://www.kaggle.com/code/kentookumura/exp094-projection-only-on-exp073-train",
+    "output_path": "/tmp/kaggle-output/exp094_projection_only_on_exp073/train_v1",
+    "runtime_seconds": 3412.934,
+    "rows": 3783989,
+    "wells": 773
+  },
+  "baseline": {
+    "experiment": "exp073_gpu_reproducibility_guard_for_exp063_full_replay",
+    "mode": "gpu_repro_guard_dp_threads8",
+    "model": "lgb_mean",
+    "rmse_tvt": 9.526374816894531,
+    "prediction_sha256": "5b443dfd6a71ad9c5af2d85002a4d77ff333fd90b64b03bc5c48902d91d0e50c"
+  },
+  "best_variant": {
+    "variant": "degree4_beta0.75_c2",
+    "degree": 4.0,
+    "beta": 0.75,
+    "robust_c": 2.0,
+    "rmse_tvt": 9.399456024169922,
+    "delta_vs_baseline": -0.12691872522075975,
+    "error_abs_mean": 6.084671497344971,
+    "correction_abs_mean": 1.2417714595794678,
+    "correction_abs_p95": 3.44091796875,
+    "correction_abs_max": 20.202392578125,
+    "prediction_sha256": "bc4f02808ae1fd1cc0a174ee558cfee462734961ae51ef9a65a1018c38889200"
+  },
+  "guard": {
+    "passes_guard": false,
+    "recommendation": "do_not_port_without_review",
+    "max_fold_regression": -0.09049510955810547,
+    "near_row_regression": 1.4394659996032715,
+    "short_tail_regression": -0.04963958263397217,
+    "passing_variant_count": 0,
+    "thresholds": {
+      "min_rmse_gain": 0.0,
+      "max_fold_regression": 0.0,
+      "max_near_row_regression": 0.02,
+      "max_short_tail_regression": 0.02,
+      "max_correction_abs_p95": 10.0
+    }
+  },
+  "bucket_findings": {
+    "best_variant_near_distance_000_050_delta": 1.4394659996032715,
+    "best_variant_tail_rank_000_099_delta": 1.130416,
+    "best_variant_distance_050_100_delta": 0.82452,
+    "best_variant_long_tail_1000_plus_delta": -0.134509
+  },
+  "source": {
+    "exp073_oof_predictions": {
+      "path": "/kaggle/input/notebooks/kentookumura/exp073-full-replay-repro-guard-train/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz",
+      "raw_file_sha256": "986e26c5c6617ade714623d44433e9beacdb2b1027d46c4a4e70825bc8ab87fc",
+      "decompressed_content_sha256": "fd6c68050058c40b4960f3ff2af9905bfcb1c12d540c71e331d0aa85ca9756a4",
+      "prediction_sha256": "3a10327457f5712420f4672432fba11cd8a432b6d3321d67d57ab557acff4d01"
+    },
+    "raw_context": {
+      "raw_dir": "/kaggle/input/competitions/rogii-wellbore-geology-prediction/train",
+      "anchor_t0_vs_exp073_last_known_abs_max": 0.0,
+      "anchor_t0_vs_exp073_last_known_abs_mean": 0.0,
+      "known_prefix_rows_min": 851,
+      "known_prefix_rows_max": 2392
+    }
+  },
+  "outputs": {
+    "variant_metrics": "artifacts/exp094_projection_only_on_exp073_variant_metrics.csv",
+    "fold_metrics": "artifacts/exp094_projection_only_on_exp073_fold_metrics.csv",
+    "bucket_metrics": "artifacts/exp094_projection_only_on_exp073_bucket_metrics.csv",
+    "by_well": "artifacts/exp094_projection_only_on_exp073_by_well.csv",
+    "best_predictions": "artifacts/exp094_projection_only_on_exp073_best_predictions.csv.gz",
+    "context_schema": "artifacts/exp094_projection_only_on_exp073_context_schema.csv",
+    "summary": "artifacts/exp094_projection_only_on_exp073_summary.json"
+  },
+  "notes": "Projection-only postprocess improves overall exp073 OOF RMSE from 9.526374817 to 9.399456024, but every grid variant fails the near-row guard. Best variant worsens distance 0-50 ft by +1.439466 RMSE and tail rank 0-99 by +1.130416 RMSE. Do not port to inference without a near-prefix gated policy."
+}

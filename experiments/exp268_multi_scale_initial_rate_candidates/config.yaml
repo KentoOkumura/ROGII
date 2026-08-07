@@ -1,0 +1,236 @@
+experiment:
+  name: exp268_multi_scale_initial_rate_candidates
+  description: >-
+    Generates exact-HMM candidate paths whose only difference is a robust
+    known-prefix initial-rate window of 32, 64, 128, or 256 rows, then audits
+    their target-free candidate-bank diversity and oracle headroom against the
+    saved exp209 tail-30 HMM control.
+  route: pf_beam
+  status: completed_train_side_candidate_bank_audit
+  created_at: "2026-07-17"
+  inference_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.metric
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - exp205_exact_hmm_smoother_exp072_compatible_cache_audit
+    - exp242_two_regime_rate_noise_pf
+    - exp243_pf_seed_medoids
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md multi_scale_initial_rate_candidates
+  implementation_source:
+    - exp268_multi_scale_initial_rate_candidates_train.py
+    - exp268_multi_scale_initial_rate_candidates_train_variant0.py
+    - exp268_multi_scale_initial_rate_candidates_train_variant1.py
+  diff_summary: >-
+    Keeps the exp209 exact-HMM grid, transition grammar, Gaussian GR emission,
+    calibration, rate prior width, and evaluation surface fixed. The saved
+    exp209 tail_n=30 HMM remains the control and is not regenerated. Four new
+    paths change only the known-prefix robust-rate window to 32/64/128/256.
+    Wells are split by stable SHA256 into two execution shards; this sharding is
+    operational and does not change candidate definitions. No candidate mean,
+    blend, selector, weight fitting, inference, or submission is included.
+
+validation:
+  strategy: full_train_exact_hmm_initial_rate_candidate_bank_audit
+  metric: rmse_tvt_and_candidate_bank_oracle_headroom
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  success_criteria:
+    - Both target-free well shards cover the expected 773 wells and 3,783,989 rows exactly once.
+    - The saved exp209 tail-30 HMM and all four new window candidates align by id with no mismatch.
+    - Initial-rate spread, rate/path duplicate rates, unique-best rates, and row/block/whole-well oracle metrics are recorded.
+    - Candidate-bank headroom is reported separately from deployable direct metrics; no oracle prediction is persisted as a candidate.
+  leakage_policy:
+    - Candidate rate windows use only known TVT_input, MD, and Z prefix rows.
+    - HMM generation uses raw horizontal/typewell GR, known TVT_input, MD, and Z; unknown-suffix true TVT is excluded from every generation input.
+    - Well sharding uses only a stable hash of well id.
+    - Unknown-suffix true TVT is attached only after all candidate paths are frozen and is used only for train-side diagnostics.
+    - Candidate windows, block sizes, duplicate tolerances, and banks are fixed before target metrics are inspected.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  exp072_cache:
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    candidates:
+      - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    expected_decompressed_sha256: 99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350
+  exp209_hmm_control:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    candidates:
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+  shard_outputs:
+    - shard_index: 0
+      filename: exp268_multi_scale_initial_rate_candidates_shard0.csv.gz
+      candidates:
+        - experiments/exp268_multi_scale_initial_rate_candidates/artifacts/exp268_multi_scale_initial_rate_candidates_shard0.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp268-multi-scale-initial-rate-shard0/artifacts/exp268_multi_scale_initial_rate_candidates_shard0.csv.gz
+        - /kaggle/input/exp268-multi-scale-initial-rate-shard0/artifacts/exp268_multi_scale_initial_rate_candidates_shard0.csv.gz
+    - shard_index: 1
+      filename: exp268_multi_scale_initial_rate_candidates_shard1.csv.gz
+      candidates:
+        - experiments/exp268_multi_scale_initial_rate_candidates/artifacts/exp268_multi_scale_initial_rate_candidates_shard1.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp268-multi-scale-initial-rate-shard1/artifacts/exp268_multi_scale_initial_rate_candidates_shard1.csv.gz
+        - /kaggle/input/exp268-multi-scale-initial-rate-shard1/artifacts/exp268_multi_scale_initial_rate_candidates_shard1.csv.gz
+
+model:
+  name: exact_hmm_multi_scale_initial_rate_candidate_bank
+  estimator: none_candidate_generation_audit
+  target: train_unknown_suffix_tvt_for_post_generation_scoring_only
+  control:
+    candidate: hmm_ir_tail30
+    source: saved_exp209_exact_hmm
+    rate_window_rows: 30
+    regenerate: false
+  initial_rate:
+    estimator: median_surface_increment_per_md
+    formula: median((delta_TVT_input + delta_Z) / delta_MD)
+    windows: [32, 64, 128, 256]
+    candidate_columns: [hmm_ir_w32, hmm_ir_w64, hmm_ir_w128, hmm_ir_w256]
+    min_valid_steps: 3
+    fallback_rate: 0.0
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+
+candidate_bank:
+  direct_candidates:
+    - exp072_likpf_mean
+    - hmm_ir_tail30
+    - hmm_ir_w32
+    - hmm_ir_w64
+    - hmm_ir_w128
+    - hmm_ir_w256
+  oracle_banks:
+    tail30_control: [hmm_ir_tail30]
+    initial_rate_5: [hmm_ir_tail30, hmm_ir_w32, hmm_ir_w64, hmm_ir_w128, hmm_ir_w256]
+    likpf_plus_initial_rate_5: [exp072_likpf_mean, hmm_ir_tail30, hmm_ir_w32, hmm_ir_w64, hmm_ir_w128, hmm_ir_w256]
+
+audit:
+  output_prefix: exp268_multi_scale_initial_rate_candidates
+  oracle_block_rows: [128, 256, 512]
+  rate_duplicate_atol: 0.000000000001
+  path_duplicate_atol_ft: 0.000001
+  prefix_length_buckets: [64, 128, 256]
+  distance_buckets_ft: [50, 100, 250, 500, 1000]
+  persist_oracle_predictions: false
+  persist_candidate_mean: false
+  persist_selector: false
+  expected_aggregate_artifacts:
+    - exp268_multi_scale_initial_rate_candidates_candidate_metrics.csv
+    - exp268_multi_scale_initial_rate_candidates_distance_bucket_metrics.csv
+    - exp268_multi_scale_initial_rate_candidates_prefix_length_metrics.csv
+    - exp268_multi_scale_initial_rate_candidates_hidden_like_metrics.csv
+    - exp268_multi_scale_initial_rate_candidates_by_well.csv
+    - exp268_multi_scale_initial_rate_candidates_rate_diagnostics.csv
+    - exp268_multi_scale_initial_rate_candidates_duplicate_diagnostics.csv
+    - exp268_multi_scale_initial_rate_candidates_unique_best.csv
+    - exp268_multi_scale_initial_rate_candidates_oracle_scope_metrics.csv
+    - exp268_multi_scale_initial_rate_candidates_input_manifest.csv
+    - exp268_multi_scale_initial_rate_candidates_summary.json
+
+execution:
+  canonical_train_mode: aggregate
+  shard_count: 2
+  shard_policy: sha256_exp268_well_shard_modulo_2
+  active_hmm_variants: 4
+  total_hmm_well_runs: 3092
+  outer_workers: 2
+  numba_num_threads: 2
+  progress_every_wells: 4
+  max_wells_per_shard: null
+  lightgbm_config_count: 0
+  fold_count: 0
+  total_boosters: 0
+  control_or_parent_retraining: false
+  gpu: false
+  inference: false
+  submission: false
+  projected_runtime_per_shard_seconds: 22572
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp268-multi-scale-initial-rate-shard0
+      - kentookumura/exp268-multi-scale-initial-rate-shard1
+    train_variant0_kernel_sources: []
+    train_variant1_kernel_sources: []
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_exact_hmm_stable_sha256_well_shard_only
+  stochastic_components: []
+  parallel_rng_policy: no_rng_joblib_threads2_numba_threads2
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Exact HMM generation consumes no random numbers.
+    - Stable SHA256 determines only the operational well shard and never a candidate value.
+    - Numba parallel floating arithmetic may vary at tiny precision, so this train-side audit is not promoted to a deterministic submission anchor.
+    - Raw and decompressed gzip SHA are both recorded; decompressed content SHA is primary.
+
+inference:
+  enabled: false
+  mode: disabled_train_side_candidate_bank_audit_only
+  create_submission: false
+  selected_candidate: null
+
+notes:
+  - No candidate average, blend, target-aware window selection, selector fitting, inference, or submission is implemented.
+  - Oracle paths exist only transiently while aggregate diagnostic metrics are computed and are never persisted as deployable candidates.

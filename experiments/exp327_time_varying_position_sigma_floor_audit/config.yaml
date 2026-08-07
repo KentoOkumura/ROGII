@@ -1,0 +1,133 @@
+experiment:
+  name: exp327_time_varying_position_sigma_floor_audit
+  description: >-
+    Low-priority design-frozen audit of a deterministic time-varying exact-HMM
+    position sigma above the active 0.35-grid-step floor, driven only by the
+    row-wise transition-mean quantization residual.
+  route: pf_beam
+  status: closed_without_run_upstream_exp307_chain_failed
+  created_at: "2026-07-21"
+  updated_at: "2026-07-22"
+
+lineage:
+  parent: exp323_time_varying_exp226_dip_rate_prior
+  steering: ../../.steering/20260721-exp327-time-varying-position-sigma-floor-audit
+  references:
+    - exp307_finite_only_robust_sigma_gr
+    - exp309_well_adaptive_transition_noise
+  diff_summary: >-
+    Changes only the effective position-transition sigma from the fixed
+    0.35*step floor to one deterministic per-row schedule based on grid
+    quantization residual. Rate mean/variance, GR, momentum, grid, and decoder
+    are fixed.
+
+closure:
+  closed_at: "2026-07-22"
+  reason: fixed_exp323_parent_closed_without_run
+  terminal: true
+  reopen_allowed: false
+  successor_policy: >-
+    Create a new-number equivalent only after exp338 passes and its separately
+    created new exp323-equivalent also passes all promotion gates.
+
+implementation: {enabled: false, scope: closed_design_history, inference_enabled: false, submission_enabled: false}
+
+validation:
+  strategy: low_priority_prefix_transition_score_then_grouped_hmm_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  dependency_policy:
+    required_parent: exp323_time_varying_exp226_dip_rate_prior
+    required_parent_status: all_promotion_gates_passed
+    scheduling_policy: run_only_after_exp324_exp325_exp326_decisions
+    fail_closed_on_dependency_mismatch: true
+  leakage_policy:
+    - Sigma uses only the parent transition means, full fixed rate grid, delta MD, delta Z, and grid step.
+    - Prefix TVT is used only to score the preregistered formula in Stage 0.
+    - Suffix truth is attached only after Stage 1 prediction freeze.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+
+model:
+  name: quantization_aware_time_varying_sig_p_exact_hmm
+  estimator: none
+  position_sigma_schedule:
+    grid_step_ft: 0.35
+    base_sig_p_argument_ft: 0.02
+    effective_floor_formula: 0.35_times_grid_step
+    effective_floor_ft: 0.1225
+    transition_mean_per_rate_state: parent_mu_rate_t_plus_residual_rate_state_times_delta_md_minus_delta_z
+    quantization_residual_per_state: transition_mean_minus_grid_step_times_round_transition_mean_div_grid_step
+    row_quantization_scale: median_absolute_quantization_residual_over_fixed_rate_states
+    formula: sqrt_effective_floor_squared_plus_row_quantization_scale_squared
+    clip_ft: [0.1225, 0.245]
+    fallback_ft: 0.1225
+    parameter_grid: false
+  stage_0_prefix_transition_score:
+    enabled_after_implementation: false
+    compare_against: fixed_effective_floor_0p1225
+    score: visible_prefix_one_step_position_transition_nll
+    pass_requires_all:
+      minimum_nll_gain_fraction: 0.01
+      minimum_improved_folds: 4
+      minimum_mean_sigma_increase_ft: 0.01
+      maximum_upper_clip_fraction: 0.25
+      required_finite_schedule_coverage: 1.0
+  stage_1_exact_hmm:
+    enabled_after_implementation: false
+    enable_condition: stage_0_all_gates_pass_and_separate_user_approval
+    active_variants: [quantization_aware_sig_p_t]
+  fixed_parent:
+    rate_prior_mean: exact_exp323
+    sig_r: exact_exp323
+    observation_model: exact_exp323
+    momentum: 0.998
+    state_grid: exact_exp323
+    output: posterior_mean
+  forbidden:
+    - sig_p_values_below_effective_floor
+    - changing_grid_step
+    - changing_rate_transition
+    - posterior_or_error_feedback
+    - sigma_grid
+    - blend
+
+execution_contract:
+  stage_0: {diagnostic_variants: 1, hmm_well_runs: 0, model_configs: 0, trained_folds: 0, boosters: 0}
+  stage_1_if_pass: {scientific_variants: 1, hmm_well_runs: 773, model_configs: 0, trained_folds: 0, boosters: 0}
+  parent_control_retraining: false
+
+promotion_gates:
+  minimum_rmse_gain_vs_parent_ft: 0.05
+  minimum_improved_folds: 4
+  require_1000_plus_non_regression: true
+  require_hidden_like_spatial_non_regression: true
+  require_hidden_like_typewell_purged_non_regression: true
+  require_by_well_p95_delta_max: 0.0
+  maximum_worst_well_regression_ft: 0.25
+
+execution: {implementation_approved: false, kaggle_push_approved: false, active_stage: closed_without_run, run_stage_0: false, run_stage_1: false, run_inference: false, create_submission: false}
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle: {enable_gpu: false, enable_internet: false, runtime_limit_seconds: 30600}
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_deterministic_grid_quantization_schedule
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: true, submission_sha: false}
+inference: {enabled: false, create_submission: false}
+notes:
+  - Design frozen on 2026-07-21 as a low-priority numerical audit.
+  - Values below 0.1225 ft are forbidden because they are inactive in the parent implementation.
+  - Closed permanently on 2026-07-22; a future equivalent must use a new experiment number under the exp338 successor chain.

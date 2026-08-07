@@ -1,0 +1,149 @@
+experiment:
+  name: exp020_distance_weighted_training_audit
+  description: Audit row-distance error structure and compare small distance-weighted LightGBM residual variants
+  route: ml_model
+  status: completed
+  created_at: "2026-06-06"
+  updated_at: "2026-06-06"
+
+lineage:
+  parent: exp013_model_diversity_or_postprocess
+  diff_summary: Keep the exp013 LightGBM no-GR anchor, audit its distance-bucket residual errors, then compare near downweight, far upweight, and near/mid/far segmented residual models.
+
+validation:
+  leakage_policy:
+    - Same well is never split across train and validation folds.
+    - Target-derived features use only the known TVT_input prefix.
+    - Existing raw comparison uses GroupKFold-by-well OOF predictions from exp013.
+    - Distance weighting is fitted only on training-fold wells and evaluated on held-out wells.
+    - Train-only formation columns are not used.
+
+data: {}
+
+model:
+  name: distance_weighted_last_anchor_residual
+  primary_strategy: drift_model
+  drift_strategy: drift_model
+  feature_set: no_gr_signal
+  strategies:
+    - last_anchor
+    - recent_linear
+    - drift_model
+  params:
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+    gr_slope_window: 200
+    max_abs_gr_slope: 2.0
+    gr_roll_short: 25
+    gr_roll_long: 100
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  drift_model:
+    estimator: LGBMRegressor
+    params:
+      n_estimators: 800
+      learning_rate: 0.03
+      num_leaves: 31
+      min_child_samples: 80
+      subsample: 0.9
+      colsample_bytree: 0.9
+      reg_lambda: 0.1
+      n_jobs: 2
+  training:
+    max_train_rows_per_fold: 300000
+    max_train_rows_final: 450000
+    max_train_rows_per_well: 800
+
+audit:
+  raw_anchor_experiment: exp013_model_diversity_or_postprocess
+  raw_anchor_variant: lightgbm_no_gr
+  raw_clean_cv: 13.549257
+  heldout_postprocess_cv: 13.535596
+  raw_oof_path: data/external/kaggle-output/exp013_model_diversity_or_postprocess/train/artifacts/row_oof_predictions.csv
+  raw_oof_variant: lightgbm_no_gr
+  chunk_rows: 250000
+  distance_buckets:
+    - name: rows_0_49
+      max_step: 49
+    - name: rows_50_249
+      max_step: 249
+    - name: rows_250_999
+      max_step: 999
+    - name: rows_1000_2499
+      max_step: 2499
+    - name: rows_2500_plus
+      max_step: 1000000000
+  postprocess:
+    exp014_heldout_bucket_shrink:
+      - name: rows_0_49
+        max_step: 49
+        alpha: 0.20
+      - name: rows_50_249
+        max_step: 249
+        alpha: 0.5917180252647632
+      - name: rows_250_999
+        max_step: 999
+        alpha: 1.15
+      - name: rows_1000_2499
+        max_step: 2499
+        alpha: 1.15
+      - name: rows_2500_plus
+        max_step: 1000000000
+        alpha: 1.0490770312511664
+  training_variants:
+    enabled: true
+    variants:
+      - name: control_lightgbm_no_gr
+        kind: sample_weight
+        weight_profile: uniform
+      - name: near_downweight_lightgbm
+        kind: sample_weight
+        weight_profile: near_downweight
+        weights:
+          - max_step: 49
+            weight: 0.25
+          - max_step: 249
+            weight: 0.75
+      - name: far_upweight_lightgbm
+        kind: sample_weight
+        weight_profile: far_upweight
+        far_upweight_c: 0.75
+        max_weight: 2.0
+        reference_step: 2500
+      - name: near_down_far_up_lightgbm
+        kind: sample_weight
+        weight_profile: near_down_far_up
+        weights:
+          - max_step: 49
+            weight: 0.35
+          - max_step: 249
+            weight: 0.80
+        far_upweight_c: 0.50
+        max_weight: 2.0
+        reference_step: 2500
+      - name: near_mid_far_segmented_lightgbm
+        kind: segment_models
+        segments:
+          - name: near
+            max_step: 249
+          - name: mid
+            max_step: 2499
+          - name: far
+            max_step: 1000000000
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: 30
+  kaggle:
+    kernel_sources:
+      - kentookumura/exp013-model-diversity-or-postprocess-train
+
+notes:
+  - This experiment writes no inference submission.
+  - OOF artifact audit separates raw, near-row anchors, recent linear extrapolation, and exp014 bucket shrink.
+  - Weighted training variants are small CV comparisons; selection must be based on held-out wells, not same-row fitted postprocess.
+  - Kaggle full CV selected near_down_far_up_lightgbm at 13.470015, improving raw 13.549257 and exp014 held-out postprocess 13.535596.

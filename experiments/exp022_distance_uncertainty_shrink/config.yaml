@@ -1,0 +1,229 @@
+experiment:
+  name: exp022_distance_uncertainty_shrink
+  description: Apply inference-safe uncertainty-aware residual shrink on top of the exp021 distance-weighted LightGBM OOF and inference flow
+  route: ml_model
+  status: completed
+  created_at: "2026-06-06"
+  updated_at: "2026-06-06"
+
+lineage:
+  parent: exp021_distance_weighted_inference_postprocess
+  diff_summary: Keep exp021 selected near-down/far-up LightGBM training weights, then compare fixed uncertainty-aware residual shrink candidates against weighted raw and exp014-style distance bucket shrink.
+
+validation:
+  leakage_policy:
+    - Same well is never split across train and validation folds.
+    - Target-derived features use only the known TVT_input prefix.
+    - Existing raw comparison uses GroupKFold-by-well OOF predictions from exp013.
+    - Distance weighting is fitted only on training-fold wells and evaluated on held-out wells during CV.
+    - Inference final fit uses only train wells and the selected weight profile from exp020.
+    - Bucket shrink uses only row distance, raw weighted prediction, and last-known TVT anchor at inference.
+    - Uncertainty shrink uses only inference-available proxy features: row distance, tail length, GR missingness, Z displacement, and raw residual magnitude.
+    - Uncertainty shrink coefficients are fixed in config for the initial audit; same-OOF target residuals are not used to tune the selected candidate.
+    - Train-only formation columns are not used.
+
+data: {}
+
+model:
+  name: distance_uncertainty_shrink
+  primary_strategy: drift_model
+  drift_strategy: drift_model
+  feature_set: no_gr_signal
+  strategies:
+    - last_anchor
+    - recent_linear
+    - drift_model
+  params:
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+    gr_slope_window: 200
+    max_abs_gr_slope: 2.0
+    gr_roll_short: 25
+    gr_roll_long: 100
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  drift_model:
+    estimator: LGBMRegressor
+    params:
+      n_estimators: 800
+      learning_rate: 0.03
+      num_leaves: 31
+      min_child_samples: 80
+      subsample: 0.9
+      colsample_bytree: 0.9
+      reg_lambda: 0.1
+      n_jobs: 2
+  training:
+    max_train_rows_per_fold: 300000
+    max_train_rows_final: 450000
+    max_train_rows_per_well: 800
+
+audit:
+  parent_experiment: exp021_distance_weighted_inference_postprocess
+  parent_best_variant: weighted_distance_bucket_shrink
+  parent_best_cv: 13.415799
+  parent_weighted_raw_cv: 13.470015
+  raw_anchor_experiment: exp013_model_diversity_or_postprocess
+  raw_anchor_variant: lightgbm_no_gr
+  raw_clean_cv: 13.549257
+  heldout_postprocess_cv: 13.535596
+  public_lb_anchor_experiment: exp013_model_diversity_or_postprocess
+  public_lb_anchor: 12.271
+  exp021_public_lb: 12.523
+  raw_oof_path: data/external/kaggle-output/exp013_model_diversity_or_postprocess/train/artifacts/row_oof_predictions.csv
+  raw_oof_variant: lightgbm_no_gr
+  chunk_rows: 250000
+  distance_buckets:
+    - name: rows_0_49
+      max_step: 49
+    - name: rows_50_249
+      max_step: 249
+    - name: rows_250_999
+      max_step: 999
+    - name: rows_1000_2499
+      max_step: 2499
+    - name: rows_2500_plus
+      max_step: 1000000000
+  postprocess:
+    exp014_heldout_bucket_shrink:
+      - name: rows_0_49
+        max_step: 49
+        alpha: 0.20
+      - name: rows_50_249
+        max_step: 249
+        alpha: 0.5917180252647632
+      - name: rows_250_999
+        max_step: 999
+        alpha: 1.15
+      - name: rows_1000_2499
+        max_step: 2499
+        alpha: 1.15
+      - name: rows_2500_plus
+        max_step: 1000000000
+        alpha: 1.0490770312511664
+  training_variants:
+    enabled: true
+    selected_variant: near_down_far_up_lightgbm
+    variants:
+      - name: control_lightgbm_no_gr
+        kind: sample_weight
+        weight_profile: uniform
+      - name: near_downweight_lightgbm
+        kind: sample_weight
+        weight_profile: near_downweight
+        weights:
+          - max_step: 49
+            weight: 0.25
+          - max_step: 249
+            weight: 0.75
+      - name: far_upweight_lightgbm
+        kind: sample_weight
+        weight_profile: far_upweight
+        far_upweight_c: 0.75
+        max_weight: 2.0
+        reference_step: 2500
+      - name: near_down_far_up_lightgbm
+        kind: sample_weight
+        weight_profile: near_down_far_up
+        weights:
+          - max_step: 49
+            weight: 0.35
+          - max_step: 249
+            weight: 0.80
+        far_upweight_c: 0.50
+        max_weight: 2.0
+        reference_step: 2500
+      - name: near_mid_far_segmented_lightgbm
+        kind: segment_models
+        segments:
+          - name: near
+            max_step: 249
+          - name: mid
+            max_step: 2499
+          - name: far
+            max_step: 1000000000
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: 30
+  kaggle:
+    kernel_sources: []
+
+postprocess:
+  selected_method: uncertainty_shrink_medium
+  candidate_methods:
+    - raw
+    - distance_bucket_shrink
+    - uncertainty_shrink_conservative
+    - uncertainty_shrink_medium
+    - uncertainty_shrink_aggressive
+  methods:
+    raw: {}
+    distance_bucket_shrink:
+      buckets:
+        - max_step: 49
+          alpha: 0.20
+        - max_step: 249
+          alpha: 0.5917180252647632
+        - max_step: 999
+          alpha: 1.15
+        - max_step: 2499
+          alpha: 1.15
+        - max_step: 1000000000
+          alpha: 1.0490770312511664
+    uncertainty_shrink_conservative:
+      base_method: distance_bucket_shrink
+      min_alpha: 0.12
+      max_alpha: 1.15
+      shrink_floor: 0.80
+      shrink_strength: 0.45
+      reference_step: 2500
+      z_reference: 800
+      residual_reference: 40
+      weights:
+        distance: 0.30
+        tail_progress: 0.20
+        gr_missing: 0.15
+        z_span: 0.15
+        raw_residual_abs: 0.20
+    uncertainty_shrink_medium:
+      base_method: distance_bucket_shrink
+      min_alpha: 0.10
+      max_alpha: 1.15
+      shrink_floor: 0.65
+      shrink_strength: 0.75
+      reference_step: 2500
+      z_reference: 800
+      residual_reference: 40
+      weights:
+        distance: 0.30
+        tail_progress: 0.25
+        gr_missing: 0.15
+        z_span: 0.15
+        raw_residual_abs: 0.15
+    uncertainty_shrink_aggressive:
+      base_method: distance_bucket_shrink
+      min_alpha: 0.08
+      max_alpha: 1.10
+      shrink_floor: 0.50
+      shrink_strength: 1.10
+      reference_step: 2500
+      z_reference: 800
+      residual_reference: 35
+      weights:
+        distance: 0.25
+        tail_progress: 0.30
+        gr_missing: 0.15
+        z_span: 0.15
+        raw_residual_abs: 0.15
+
+notes:
+  - exp020 Kaggle full CV selected near_down_far_up_lightgbm at 13.470015, improving raw 13.549257 and exp014 held-out postprocess 13.535596.
+  - exp021 weighted_distance_bucket_shrink improved clean CV to 13.415799 but Public LB worsened to 12.523 vs exp013 12.271.
+  - This experiment tests whether inference-safe uncertainty proxies can shrink high-risk residuals without fitting target-derived postprocess coefficients on the same OOF rows.
+  - Compare uncertainty candidates against weighted_raw, exp021 bucket shrink, exp014 held-out postprocess reference, and exp013 Public LB anchor before submission.
+  - Kaggle train completed. Best remained weighted_distance_bucket_shrink at 13.415799; all fixed uncertainty shrink candidates worsened overall CV, so inference and submission are skipped.

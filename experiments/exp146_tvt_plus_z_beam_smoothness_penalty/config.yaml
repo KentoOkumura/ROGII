@@ -1,0 +1,185 @@
+experiment:
+  name: "exp146_tvt_plus_z_beam_smoothness_penalty"
+  description: "Train-side audit that reruns Beam search with TVT+Z and dTVT/dMD+dZ/dMD smoothness penalties."
+  route: pf_beam
+  status: completed_train_side_beam_improved_not_adopted_no_submit
+  created_at: "2026-06-27"
+  updated_at: "2026-06-27"
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  diagnostic_parents:
+    - exp083_pf_beam_true_tvt_2d_well_eda
+    - exp140_z_slope_posthoc_correction_on_pfbeam_candidates
+  implementation_source: tvt_plus_z_beam_smoothness_penalty.py
+  diff_summary: >
+    Implements the KAGGLE_DIRECTION backlog tvt_plus_z_beam_smoothness_penalty.
+    Unlike exp140 posthoc correction and the invalid exp142 v2 mixed variant, this
+    reruns Beam search itself. The transition cost keeps the GR match and TVT move
+    penalties, then adds target-free penalties on U = TVT + Z - (T0 + Z0),
+    dU/dMD = dTVT/dMD + dZ/dMD, and optional dU/dMD curvature.
+
+validation:
+  strategy: train_well_pseudotail_beam_smoothness_cost_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within10
+    - bucket_rmse_by_md_since
+    - representative_z_driven_well_rmse
+    - beam_likpf_gap_top_quartile_rmse
+    - path_mean_abs_step
+    - path_mean_abs_du_slope
+    - max_well_regression_vs_likpf_mean
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp072_rows
+  leakage_policy:
+    - Existing PF/Beam/likPF candidates are read from exp072 raw-train deterministic feature cache.
+    - Generated Beam variants use raw horizontal MD/Z/GR, finite prefix TVT_input anchor, and typewell TVT/GR only.
+    - U and dU/dMD penalties use target-free Z trajectory and candidate TVT states, never evaluation-zone true TVT.
+    - Evaluation-zone true TVT is materialized as last_known_tvt + target only for scoring metrics.
+    - This experiment is train-side diagnostic only; inference port requires separate raw-test parity and worst-well guard review.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+model:
+  name: tvt_plus_z_beam_smoothness_penalty
+  estimator: none_beam_candidate_audit
+  target: true_tvt_for_scoring_only
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  beam_smoothness:
+    variants:
+      - name: beam_replay_cons
+        beam_size: 32
+        move_cost: 15.0
+        error_scale: 100.0
+        smooth_radius: 0
+        u_abs_cost: 0.0
+        u_abs_scale: 100.0
+        u_slope_cost: 0.0
+        u_curve_cost: 0.0
+      - name: beam_replay_sm5
+        beam_size: 32
+        move_cost: 15.0
+        error_scale: 100.0
+        smooth_radius: 5
+        u_abs_cost: 0.0
+        u_abs_scale: 100.0
+        u_slope_cost: 0.0
+        u_curve_cost: 0.0
+      - name: tvt_plus_z_uslope_c050
+        beam_size: 32
+        move_cost: 15.0
+        error_scale: 100.0
+        smooth_radius: 5
+        u_abs_cost: 0.0
+        u_abs_scale: 100.0
+        u_slope_cost: 50.0
+        u_curve_cost: 0.0
+      - name: tvt_plus_z_uslope_c100_uabs005
+        beam_size: 32
+        move_cost: 15.0
+        error_scale: 100.0
+        smooth_radius: 5
+        u_abs_cost: 0.05
+        u_abs_scale: 100.0
+        u_slope_cost: 100.0
+        u_curve_cost: 0.0
+      - name: tvt_plus_z_uslope_c100_ucurve025
+        beam_size: 32
+        move_cost: 15.0
+        error_scale: 100.0
+        smooth_radius: 5
+        u_abs_cost: 0.0
+        u_abs_scale: 100.0
+        u_slope_cost: 100.0
+        u_curve_cost: 25.0
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_beam_dynamic_programming
+  stochastic_components:
+    - upstream_exp072_pf_beam_likpf_cache
+  parallel_rng_policy: no_parallel_rng_in_exp146
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    candidate_wide_sha: true
+    metrics_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - This is not a submission anchor because it is a train-side Beam candidate audit.
+    - Source gzip cache decompressed content SHA and output gzip decompressed SHA are recorded in summary JSON.
+
+audit:
+  mode: tvt_plus_z_beam_smoothness_penalty
+  output_prefix: exp146_tvt_plus_z_beam_smoothness_penalty
+  primary_baseline: beam_mean
+  adoption_guard: likpf_mean
+  max_rows: null
+  max_wells: null
+  representative_wells:
+    - 91b301ce
+    - ba48188d
+    - fef8af96
+    - 1b1eba53
+  candidates:
+    - name: pf_ancc
+      role: selected_pf
+      source_columns: [pf_ancc]
+      transform: absolute
+    - name: beam_mean
+      role: exp072_beam_mean
+      source_columns: [beam_mean_d, beam_mean]
+      transform: base_plus_delta
+    - name: likpf_mean
+      role: likelihood_pf
+      source_columns: [likpf_mean_d, likpf_mean]
+      transform: base_plus_delta
+    - name: pf_z
+      role: z_velocity_pf_auxiliary
+      source_columns: [pf_z]
+      transform: absolute
+  expected_train_artifacts:
+    - exp146_tvt_plus_z_beam_smoothness_penalty_candidate_metrics.csv
+    - exp146_tvt_plus_z_beam_smoothness_penalty_bucket_metrics.csv
+    - exp146_tvt_plus_z_beam_smoothness_penalty_by_well.csv
+    - exp146_tvt_plus_z_beam_smoothness_penalty_group_metrics.csv
+    - exp146_tvt_plus_z_beam_smoothness_penalty_beam_quality.csv
+    - exp146_tvt_plus_z_beam_smoothness_penalty_candidate_wide.csv.gz
+    - exp146_tvt_plus_z_beam_smoothness_penalty_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_candidate: null
+  notes:
+    - No inference candidate is selected at implementation time.
+    - Positive train-side results must pass near-prefix, representative-well, max-well-regression, and raw-test parity checks before any inference port.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog tvt_plus_z_beam_smoothness_penalty.
+  - exp142 v2 is explicitly invalid for this backlog because it mixed a Beam reference penalty into trajectory_aware_pf_transition_prior rather than rerunning Beam search cost.

@@ -1,0 +1,355 @@
+experiment:
+  name: exp433_rsd_sparse_anchor_direct_oof_readout
+  description: >-
+    Apply the frozen exp426 RSD-binned GR score bank to the real exp226 OOF
+    prediction with one fixed sparse-anchor Viterbi decoder and judge actual
+    full-OOF RMSE rather than stopping on dense score coverage.
+  hypothesis: >-
+    Although exp426 supports only a sparse subset of blocks, those target-free
+    absolute-datum observations may still reduce exp226 accumulated offset
+    when unsupported blocks carry the previous datum through a fixed decoder.
+  route: pf_beam
+  status: completed_scientific_failed_closed
+  priority: P2
+  created_at: "2026-07-28"
+  updated_at: "2026-07-28"
+
+lineage:
+  parent: exp426_rsd_binned_pattern_absolute_reanchor
+  base_prediction: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  steering: ../../.steering/20260728-exp433-rsd-sparse-anchor-direct-oof-readout
+  references:
+    - exp280_exp226_shift_likelihood_separability_readout
+    - exp360_typewell_reference_shift_zncc_confidence_readout
+    - exp421_signed_segment_rate_numerical_contract_stage1
+  diff_summary: >-
+    Keeps the failed exp426 Stage-A score, support, block, offset, and rank
+    artifacts byte/logically frozen; changes only the evaluation contract by
+    applying the preregistered sparse-datum Viterbi to the actual exp226 OOF
+    and making full-row RMSE the primary outcome.
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+implementation:
+  enabled: true
+  scope: compact_selfcontained_train_implementation_ready
+  compact_train_source_created: true
+  compact_train_source: exp433_rsd_sparse_anchor_direct_oof_readout_compact_selfcontained_train.py
+  compact_train_notebook_created: true
+  compact_train_notebook: exp433_rsd_sparse_anchor_direct_oof_readout_compact_selfcontained_train.ipynb
+  tests_created: true
+  canonical_train_notebook_is_placeholder: false
+  canonical_train_notebook_adopted: true
+  canonical_train_notebook_adoption_source: user_message_2026_07_28_execute_exp433
+  canonical_inference_notebook_is_placeholder: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: frozen_saved_score_direct_full_oof_replay_then_late_truth_evaluation
+  metric: rmse_and_fixed_mechanism_tail_gates
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  expected_blocks: 7787
+  expected_score_rows: 101231
+  fixed_probe_well: 000d7d20
+  parent_rmse: 9.427109596582213
+  parent_rmse_atol_ft: 1.0e-6
+  primary_prediction: sparse_rsd_viterbi
+  diagnostic_prediction: blockwise_rsd_top1_zero_fallback
+  coverage_role: mandatory_report_not_a_truth_read_or_scientific_stop_gate
+  truth_attachment: after_input_decoder_support_datum_path_and_prediction_sha_freeze
+  report_scopes:
+    - pooled
+    - fold
+    - distance_0_50
+    - distance_50_100
+    - distance_100_500
+    - distance_500_1000
+    - distance_1000_plus
+    - raw_gr_observed
+    - raw_gr_missing
+    - high_missing
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+    - persistent_episode
+    - by_well
+  leakage_policy:
+    - The exp426 score bank is immutable input and is never regenerated.
+    - Before prediction freeze, read only score-bank target-free columns and exp226 well_id, row_idx, suffix_offset, fold, and tvt_pred.
+    - Truth, error, oracle offset, persistent episode, and hidden-like roles are late joins only.
+    - Input, support, datum path, row prediction, and logical content SHAs freeze before late joins.
+    - Coverage or post-freeze outcomes never activate, select, shrink, clip, or blend the primary prediction.
+
+data:
+  exp426:
+    experiment: exp426_rsd_binned_pattern_absolute_reanchor
+    kernel_id: kentookumura/exp426-rsd-binned-pattern-absolute-reanchor-train
+    kernel_version: 1
+    kernel_id_no: 128930757
+    score_bank:
+      filename: exp426_rsd_binned_pattern_absolute_reanchor_stage_a_target_free_score_bank.csv.gz
+      patterns:
+        - /kaggle/input/notebooks/kentookumura/exp426-rsd-binned-pattern-absolute-reanchor-train/artifacts/exp426_rsd_binned_pattern_absolute_reanchor_stage_a_target_free_score_bank.csv.gz
+        - /kaggle/input/exp426-rsd-binned-pattern-absolute-reanchor-train/artifacts/exp426_rsd_binned_pattern_absolute_reanchor_stage_a_target_free_score_bank.csv.gz
+        - "**/exp426_rsd_binned_pattern_absolute_reanchor_stage_a_target_free_score_bank.csv.gz"
+      rows: 101231
+      blocks: 7787
+      offsets_per_block: 13
+      logical_content_sha256: 463aa32bef9a1045469466e2cf5fd68e038258e75f11fc88153fd9ca7f8dd2fd
+      decompressed_sha256: 6adb009b83c884681fa64e29c03bc05c6dac15d3bb6826df1a000961c8bbe575
+      schema_sha256: 6e86f76bf7df038e5b3b8077db80888c737bfa3880377ac24fe74d236706e9bd
+    well_manifest:
+      filename: exp426_rsd_binned_pattern_absolute_reanchor_stage_a_well_manifest.csv.gz
+      patterns:
+        - /kaggle/input/notebooks/kentookumura/exp426-rsd-binned-pattern-absolute-reanchor-train/artifacts/exp426_rsd_binned_pattern_absolute_reanchor_stage_a_well_manifest.csv.gz
+        - /kaggle/input/exp426-rsd-binned-pattern-absolute-reanchor-train/artifacts/exp426_rsd_binned_pattern_absolute_reanchor_stage_a_well_manifest.csv.gz
+        - "**/exp426_rsd_binned_pattern_absolute_reanchor_stage_a_well_manifest.csv.gz"
+      rows: 773
+      logical_content_sha256: 6af41b07945527af423405a860bd04ef356656266cfb264b80c471a72e7d0266
+      decompressed_sha256: e36e3b7dae4625fa44bb39370daa0112612ab27f16fd4440807e4e19b9fe69fc
+      schema_sha256: 47a74386f8e528605c95ae4aa07519cc5864735435640148ba628a14e94aaf6f
+    input_manifest:
+      filename: exp426_rsd_binned_pattern_absolute_reanchor_stage_a_input_manifest.csv.gz
+      patterns:
+        - /kaggle/input/notebooks/kentookumura/exp426-rsd-binned-pattern-absolute-reanchor-train/artifacts/exp426_rsd_binned_pattern_absolute_reanchor_stage_a_input_manifest.csv.gz
+        - /kaggle/input/exp426-rsd-binned-pattern-absolute-reanchor-train/artifacts/exp426_rsd_binned_pattern_absolute_reanchor_stage_a_input_manifest.csv.gz
+        - "**/exp426_rsd_binned_pattern_absolute_reanchor_stage_a_input_manifest.csv.gz"
+      rows: 773
+      logical_content_sha256: 7933f0f2babaa382ee23ae64db096db0dcc775035fc399254e64e7b30fe7656b
+      decompressed_sha256: 899beb7b1fcc4dfcd6777398abfbc6fb15fa75d74dc250950b7e2a705b30e435
+      schema_sha256: d21ab7618bb3075014310c4398f93b5ce726065017a3834566ccfa52e53fc56a
+    regenerate: false
+    stage_a_decision_remains: technical_failed_closed
+  exp226:
+    experiment: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+    decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    expected_rmse: 9.427109596582213
+    safe_columns_before_freeze: [well_id, row_idx, suffix_offset, fold, tvt_pred]
+    truth_column_after_freeze: tvt_true
+    regenerate: false
+  hidden_like_assignment:
+    experiment: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    read_policy: after_prediction_freeze
+  persistent_episode:
+    source: studies/exp226_offset_root_cause_audit_20260727/persistent_offset_episodes.csv
+    expected_sha256: bf287bf42021eecce5984c815e67e74a7ee37e0f91736dadd2670149cf11b080
+    patterns:
+      - assets/persistent_offset_episodes.csv
+      - studies/exp226_offset_root_cause_audit_20260727/persistent_offset_episodes.csv
+      - "**/persistent_offset_episodes.csv"
+    read_policy: after_prediction_freeze
+    threshold_ft: 10.0
+    minimum_rows: 128
+  raw_train:
+    root_candidates:
+      - data/raw/train
+      - /kaggle/input/rogii-wellbore-geology-prediction/train
+      - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+
+model:
+  name: sparse_rsd_absolute_datum_viterbi
+  estimator: none
+  frozen_candidate_contract:
+    source: exp426_version_1_score_bank
+    block_size_rows: 512
+    block_overlap_rows: 0
+    offsets_ft: [-80, -40, -20, -10, -5, -2, 0, 2, 5, 10, 20, 40, 80]
+    tie_order_ft: [0, -2, 2, -5, 5, -10, 10, -20, 20, -40, 40, -80, 80]
+    score_column: rsd_bin_score
+    valid_column: rsd_valid
+    score_support_rank_regeneration: forbidden
+  primary:
+    name: sparse_rsd_viterbi
+    role: sole_scientific_primary
+    initial_center_ft: 0.0
+    initial_sigma_ft: 5.0
+    transition_sigma_ft: 10.0
+    maximum_initial_step_ft: 20.0
+    maximum_adjacent_step_ft: 40.0
+    unsupported_block_emission: zero_all_states_transition_only_carry
+    partially_invalid_candidate_emission: negative_infinity
+    row_projection: linear_boundary_zero_through_block_centers_then_last_hold
+    maximum_constructive_row_slope_ft: 0.078125
+    prediction: exp226_tvt_pred_plus_interpolated_datum_correction
+  diagnostics:
+    blockwise_top1:
+      role: report_only
+      unsupported_fallback_offset_ft: 0.0
+      selectable_as_primary: false
+    support:
+      valid_offset_count_per_block: true
+      zero_offset_valid: true
+      symmetric_pair_valid_count: true
+      all_thirteen_valid: true
+      invalid_reason_counts: true
+      per_well_supported_fraction: true
+      supported_gap_blocks: [median, p90, maximum]
+      supported_distance_buckets: true
+
+gates:
+  technical:
+    require_score_and_manifest_content_sha_match: true
+    require_score_inventory_match: true
+    require_exp226_inventory_and_parent_rmse_parity: true
+    require_truth_hidden_episode_reads_before_prediction_freeze_zero: true
+    require_no_score_regeneration: true
+    require_independent_decoder_prediction_sha_match: true
+    require_no_duplicate_or_missing_prediction_rows: true
+    maximum_row_correction_slope_ft: 0.078125000001
+    maximum_runtime_seconds: 1800
+    maximum_peak_rss_gb: 25
+    minimum_supported_block_fraction: null
+    minimum_supported_well_fraction: null
+  scientific:
+    minimum_rmse_gain_vs_exp226_ft: 0.10
+    minimum_improvement_folds: 4
+    minimum_distance_1000_plus_gain_ft: 0.20
+    minimum_persistent_episode_sse_reduction: 0.10
+    minimum_persistent_well_improvement_fraction: 0.60
+    maximum_scoped_regression_ft: 0.02
+    guarded_scopes:
+      - distance_0_50
+      - distance_50_100
+      - raw_gr_missing
+      - hidden_like_spatial
+      - hidden_like_typewell_purged
+    maximum_new_episode_sse_fraction_of_corrected_total: 0.05
+    maximum_by_well_delta_rmse_p95_ft: 0.25
+    maximum_worst_well_regression_ft: 5.0
+
+execution_contract:
+  active_stage: completed_scientific_failed_closed
+  primary_decoders: 1
+  diagnostic_replays: 1
+  wells_decoded: 773
+  reporting_folds: 5
+  model_configs: 0
+  trained_folds: 0
+  boosters: 0
+  hmm_runs: 0
+  pf_runs: 0
+  beam_runs: 0
+  parent_control_regeneration: false
+  score_regeneration: false
+  gpu_runs: 0
+
+execution:
+  implementation_authorized: true
+  canonical_notebook_replacement_authorized: true
+  kaggle_package_authorized: true
+  kaggle_push_authorized: true
+  kaggle_execution_authorized: true
+  kaggle_run_approval_source: user_message_2026_07_28_execute_exp433
+  kaggle_kernel_id: kentookumura/exp433-rsd-sparse-anchor-direct-oof-readout-train
+  kaggle_kernel_title: exp433 rsd sparse anchor direct oof readout train
+  kaggle_kernel_version: 3
+  kaggle_kernel_id_no: 128939253
+  kaggle_status: complete
+  kaggle_execution_completed: true
+  kaggle_result: scientific_failed_closed_without_rescue
+  kaggle_attempts:
+    - version: 1
+      status: technical_error_before_decoder
+      reason: non_roundtrip_safe_producer_logical_sha_consumer_check
+    - version: 2
+      status: technical_error_after_prediction_freeze
+      reason: fold_reserved_scope_routed_to_scope_table
+    - version: 3
+      status: complete
+      result: scientific_failed_closed
+  run_train: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp433-rsd-sparse-anchor-direct-oof-readout-train
+    train_title: exp433 rsd sparse anchor direct oof readout train
+    train_kernel_sources:
+      - kentookumura/exp426-rsd-binned-pattern-absolute-reanchor-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    bootstrap_dependency_files:
+      - source: studies/exp226_offset_root_cause_audit_20260727/persistent_offset_episodes.csv
+        destination: assets/persistent_offset_episodes.csv
+
+artifacts:
+  output_prefix: exp433_rsd_sparse_anchor_direct_oof_readout
+  planned:
+    - exp433_rsd_sparse_anchor_direct_oof_readout_support_diagnostics.csv
+    - exp433_rsd_sparse_anchor_direct_oof_readout_datum_path.csv.gz
+    - exp433_rsd_sparse_anchor_direct_oof_readout_row_predictions.csv.gz
+    - exp433_rsd_sparse_anchor_direct_oof_readout_scope_metrics.csv
+    - exp433_rsd_sparse_anchor_direct_oof_readout_fold_metrics.csv
+    - exp433_rsd_sparse_anchor_direct_oof_readout_by_well_metrics.csv
+    - exp433_rsd_sparse_anchor_direct_oof_readout_episode_metrics.csv
+    - exp433_rsd_sparse_anchor_direct_oof_readout_block_diagnostic_metrics.csv
+    - exp433_rsd_sparse_anchor_direct_oof_readout_summary.json
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: true
+  seed_policy: no_rng
+  stochastic_components: []
+  parallel_rng_policy: no_rng_and_stable_key_order_reduction
+  feature_sha_policy: decompressed_and_logical_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    datum_path_sha: true
+    prediction_sha: true
+    metrics_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - Independent decoder rerun parity is required before a deterministic train-side claim.
+    - Model and submission SHA are not applicable.
+    - Train OOF PASS would not establish hidden-test score-generation parity.
+
+forbidden:
+  - exp426_score_bin_block_offset_support_rank_or_top3_regeneration_or_change
+  - coverage_threshold_as_truth_read_or_primary_activation_gate
+  - posttruth_primary_decoder_or_gate_selection
+  - blockwise_top1_as_primary
+  - viterbi_sigma_hard_step_interpolation_or_tie_grid
+  - truth_error_oracle_episode_or_hidden_role_based_activation
+  - clip_shrink_blend_taper_or_well_gate
+  - parent_control_or_score_regeneration
+  - model_hmm_pf_beam_or_gpu_execution
+  - reinterpret_exp426_as_pass
+  - inference_or_submission_without_new_design_and_authorization
+
+notes:
+  - This is a user-directed follow-up with a different evaluation question, not a parameter rescue of exp426.
+  - The primary outcome is actual full-row exp226 OOF RMSE after one frozen sparse-anchor decoder.
+  - Coverage and oracle agreement are diagnostics, not substitutes for direct prediction utility.

@@ -1,0 +1,101 @@
+experiment:
+  name: "exp167_fft_denoised_gr_matching_audit"
+  description: Audit whether target-free FFT-denoised horizontal GR improves typewell GR shift-scan localization before using it in PF/Beam or ML features.
+  route: pf_beam
+  status: implemented
+  created_at: "2026-07-02"
+
+lineage:
+  parent: fft_denoised_gr_matching_audit backlog
+  references:
+    - KAGGLE_DIRECTION.md backlog fft_denoised_gr_matching_audit
+    - Georgy Mamarin "Stop reforking: the best GR fit is the wrong depth" section 4
+    - exp132_multi_scale_gr_observation_likelihood
+    - exp133_gr_bimodal_match_ambiguity_detector
+  diff_summary: >
+    Adds a train-side diagnostic that compares raw, rolling, Savitzky-Golay/fallback,
+    and FFT-notched horizontal GR filters under the same known-prefix linear TVT prior
+    and typewell shift scan. It does not train ML models, generate PF/Beam candidates,
+    replace predictions, or create a submission.
+
+validation: {}
+
+data:
+  train_dir: data/raw/train
+
+model:
+  name: none_fft_denoised_gr_matching_audit
+  params: {}
+
+audit:
+  mode: fft_denoised_gr_matching_audit
+  output_prefix: exp167_fft_denoised_gr_matching_audit
+  max_wells: null
+  well_include: []
+  min_prefix_rows: 80
+  max_eval_rows_per_region_per_well: 256
+  prefix_backtest_tail_rows: 256
+  prefix_slope_window_rows: 80
+  slope_clip: [-3.0, 3.0]
+  shift_min_ft: -220.0
+  shift_max_ft: 220.0
+  shift_step_ft: 5.0
+  local_offsets_rows: [-36, -24, -12, -6, 0, 6, 12, 24, 36]
+  typewell_smooth_window: 5
+  score_temperature: 6.0
+  ncc_weight: 8.0
+  decoy_offsets_ft: [15.0, 20.0, 25.0]
+  primary_thresholds_ft: [2.0, 5.0, 10.0]
+  filters:
+    - name: raw
+      kind: raw
+    - name: rolling_median_11
+      kind: rolling_median
+      window: 11
+    - name: savgol_31_p2
+      kind: savgol
+      window: 31
+      polyorder: 2
+      fallback_kind: rolling_mean
+    - name: fft_notch_top2
+      kind: fft_notch
+      max_peaks: 2
+      min_period_ft: 6.0
+      max_period_ft: 120.0
+      notch_width_bins: 2
+  artifacts:
+    - exp167_fft_denoised_gr_matching_audit_row_context.csv.gz
+    - exp167_fft_denoised_gr_matching_audit_filter_metrics.csv
+    - exp167_fft_denoised_gr_matching_audit_bucket_metrics.csv
+    - exp167_fft_denoised_gr_matching_audit_well_metrics.csv
+    - exp167_fft_denoised_gr_matching_audit_filter_gain_vs_raw.csv
+    - exp167_fft_denoised_gr_matching_audit_well_input_summary.csv
+    - exp167_fft_denoised_gr_matching_audit_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_deterministic_linspace_sampling
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - No ML model, PF/Beam generation, prediction replacement, or submission is produced.
+    - Evaluation true TVT is used only for train-side metric computation.
+
+notes:
+  - Positive evidence only promotes a follow-up PF/Beam generation audit or exp148 confidence feature experiment.
+  - Raw-vs-denoised improvements must hold in prefix backtest, near-row, 1000_plus, and worst-well readouts before follow-up.

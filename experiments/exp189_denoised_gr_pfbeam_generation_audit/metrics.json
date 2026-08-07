@@ -1,0 +1,119 @@
+{
+  "experiment": "exp189_denoised_gr_pfbeam_generation_audit",
+  "status": "completed_train_side_diagnostic_no_submit",
+  "route": "pf_beam",
+  "parent": "denoised_gr_pfbeam_generation_audit backlog",
+  "cv": "diagnostic_only",
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "kernel": {
+    "id": "kentookumura/exp189-denoised-gr-pfbeam-audit-train",
+    "version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp189-denoised-gr-pfbeam-audit-train",
+    "id_no": 125901169,
+    "runtime_seconds_from_summary": 1416.5469472408295,
+    "last_log_time_seconds": 1539.589622371,
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "validation": {
+    "strategy": "train_well_pseudotail_denoised_gr_pfbeam_generation_audit",
+    "score_rows": "TVT_input_missing_equivalent_exp063_rows",
+    "source_cache": "exp072_exp063_full_replay_feature_cache",
+    "source_rows": 3783989,
+    "source_wells": 773,
+    "source_decompressed_sha256": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350"
+  },
+  "rows": 478958,
+  "wells": 64,
+  "target_wells_selected": 64,
+  "primary_baseline": {
+    "candidate": "pf_raw_lik_mean",
+    "rows": 478958,
+    "rmse": 20.22546384840998,
+    "mae": 13.027728361783549,
+    "within10": 0.5645463694102615
+  },
+  "best_non_oracle_candidate_by_rmse": {
+    "candidate": "exp072_pf_ancc",
+    "rows": 478958,
+    "rmse": 17.494197129514692,
+    "mae": 10.454962780612417,
+    "within10": 0.6684907653698237,
+    "delta_rmse_vs_primary_baseline": -2.731266718895288,
+    "max_well_regression_vs_primary": 43.91643970875103
+  },
+  "best_generated_non_oracle_candidate": {
+    "candidate": "beam_rolling_median_w11_top1",
+    "rows": 478958,
+    "rmse": 18.028587289692325,
+    "mae": 12.620730628553286,
+    "within10": 0.5294138525716242,
+    "delta_rmse_vs_pf_raw_lik_mean": -2.196876558717655,
+    "delta_rmse_vs_beam_raw_top1": -0.31060023139746207,
+    "max_well_regression_vs_primary": 17.73265640549002,
+    "improved_wells_vs_primary": 32,
+    "worsened_wells_vs_primary": 32
+  },
+  "pf_smoothing_candidates": {
+    "pf_rolling_median_w11_lik_mean": {
+      "rmse": 26.89337627089717,
+      "delta_rmse_vs_pf_raw_lik_mean": 6.667912422487191,
+      "improved_wells_vs_primary": 17,
+      "worsened_wells_vs_primary": 47,
+      "max_well_regression_vs_primary": 32.26293750249755
+    },
+    "pf_savgol_w31_p2_lik_mean": {
+      "rmse": 27.94334316957415,
+      "delta_rmse_vs_pf_raw_lik_mean": 7.717879321164169,
+      "improved_wells_vs_primary": 17,
+      "worsened_wells_vs_primary": 47,
+      "max_well_regression_vs_primary": 44.01649273563265
+    }
+  },
+  "selector_headroom": {
+    "oracle_best_filter_candidate_rmse": 9.39425174264446,
+    "oracle_best_smoothed_candidate_rmse": 10.643256670944398,
+    "oracle_best_smoothed_delta_rmse_vs_primary": -9.582207177465582,
+    "oracle_best_smoothed_improved_wells_vs_primary": 54,
+    "oracle_best_smoothed_worsened_wells_vs_primary": 10,
+    "oracle_best_smoothed_max_well_regression_vs_primary": 7.191859649512953
+  },
+  "pf_diagnostics_summary": {
+    "raw": {
+      "ess_mean": 175.91308903694153,
+      "resampling_rate": 0.05120174353942275,
+      "gr_sigma": 13.897758962125387
+    },
+    "rolling_median_w11": {
+      "ess_mean": 177.72213292121887,
+      "resampling_rate": 0.03935719403671101,
+      "gr_sigma": 11.66379279904639
+    },
+    "savgol_w31_p2": {
+      "ess_mean": 180.39369010925293,
+      "resampling_rate": 0.03920409717829898,
+      "gr_sigma": 11.598911842641721
+    }
+  },
+  "sha256": {
+    "candidate_metrics": "e480516c5a78e4d269ca76949837c6cce3d0b700db72df0c65b7d3b9d5a3f48d",
+    "filter_delta_metrics": "c8d259825e3aabd0cf17c4884a1ff1837ee9c65bbdb0c142df1620eafe0211de",
+    "bucket_metrics": "a1e9f4bc2bf6c0dccd681ee0e67d57b62eb11430d17b51d14a75a5a76fd3c337",
+    "by_well": "3c488325b84a2e3b71d525ba3554d00c24384c289e90e4fde18c182b8340155a",
+    "group_metrics": "49c436ac421f2e08a75fcd3d7f940bd7fb534f342fa051d3c57714007bba5195",
+    "pf_diagnostics": "564c7125cbc6f512f1ca1dab204a910e01e855c1515fd750df516d483ba72ba4",
+    "target_wells": "b430641fc305cb56a9332ec4f41ee2497db4bbd269310c969d3754721ad5eac6",
+    "well_status": "84442ac0aee0201bec82c43b2a68e24056ceff660356b4ee5f6198cae2e09a39",
+    "row_candidates_raw_gzip": "5059ee061d3bef78eaccf3efe2e3ae5b467526fadeaefbfeb7d35365e33fd66f",
+    "row_candidates_decompressed": "614225c6265a04e30917bc8e417d70d1b6ecab1597816a700786cb99728adc55",
+    "summary": "5927aef99830c1895264e8812f4cfad036905d05274027f2b56cbce8ada74946"
+  },
+  "artifacts_dir": "experiments/exp189_denoised_gr_pfbeam_generation_audit/kaggle/output/train_v1/artifacts",
+  "decision": {
+    "submit_candidate": false,
+    "reason": "PF likelihood smoothing severely worsens direct PF candidates; Beam smoothing is only a small diagnostic improvement and remains weaker than exp072_pf_ancc."
+  },
+  "notes": "Kaggle train v1 completed. Treat smoothing as diagnostic/selector-headroom evidence only; no direct replacement, inference port, or submission."
+}

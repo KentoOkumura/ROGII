@@ -1,0 +1,262 @@
+{
+  "experiment": "exp259_coordinate_equivariance_path_warp_augmentation",
+  "updated_at": "2026-07-16",
+  "route": "ensemble",
+  "status": "completed_train_side_guard_failed_no_inference_no_submit",
+  "stage": "train_exact_datum_after_transform_audit",
+  "cv": 8.42712555102057,
+  "public_lb": null,
+  "private_lb": null,
+  "kaggle": {
+    "kernel": "kentookumura/exp259-coordinate-equivariance-warp-audit-train",
+    "kernel_id_no": 127328846,
+    "version": 1,
+    "status": "COMPLETE",
+    "audit_summary_time_seconds": 208.947046164,
+    "last_log_time_seconds": 218.8043317,
+    "gpu": false,
+    "internet": false
+  },
+  "training_kaggle": {
+    "kernel": "kentookumura/exp259-exact-datum-fullwell-train",
+    "kernel_id_no": 127436131,
+    "version": 1,
+    "status": "COMPLETE",
+    "runtime_seconds": 4776.872522115707,
+    "gpu": false,
+    "internet": false,
+    "fixed_control_kernel": "kentookumura/exp251-rawtest-safe-dualobj-candidate-ranker-train",
+    "fixed_control_status": "COMPLETE",
+    "control_retraining": false
+  },
+  "execution_contract": {
+    "active_variants": 1,
+    "model_configs": 2,
+    "folds": 5,
+    "boosters": 10,
+    "parent_control_retraining": false
+  },
+  "transform_contract": {
+    "exact_transforms": 4,
+    "approximate_transforms": 5,
+    "view_slots_per_transform": 1,
+    "stable_seed": "sha256(seed,well,transform,view_slot,parameter)",
+    "inverse_tolerance": 1e-07,
+    "anchor_tolerance": 1e-09,
+    "min_typewell_coverage": 0.95
+  },
+  "audit": {
+    "wells": 773,
+    "transforms": 9,
+    "views": 6957,
+    "accepted_views": 6129,
+    "rejected_views": 828,
+    "manifest_duplicate_well_transform_slots": 0,
+    "exact_inverse_guard_pass": true,
+    "exact_inverse_max_abs": 9.313225746154785e-10,
+    "exact_local_metric_relative_delta_max": 0.0,
+    "accept_rate_by_transform": {
+      "heel_center_translation": 1.0,
+      "lateral_reflection": 1.0,
+      "yaw_rotation": 1.0,
+      "tvt_datum_shift": 1.0,
+      "low_frequency_spline_warp": 0.9909443725743855,
+      "md_stretch": 0.0,
+      "smooth_xyz_control_perturbation": 0.9482535575679172,
+      "tvt_shear": 0.9961190168175937,
+      "xy_plane_tilt": 0.9935316946959897
+    },
+    "md_stretch": {
+      "factor_0_97_rejected": 395,
+      "factor_1_03_rejected": 378,
+      "accepted": 0,
+      "common_reject_reasons": {
+        "out_of_envelope:xy_curvature_q95": 773,
+        "out_of_envelope:xy_slope_q95": 773,
+        "out_of_envelope:z_curvature_abs_q95": 773,
+        "out_of_envelope:md_step_q01": 395,
+        "out_of_envelope:md_step_q99": 378
+      }
+    }
+  },
+  "training": {
+    "variant": "exact_tvt_datum_shift",
+    "rows": 3783989,
+    "wells": 773,
+    "candidate_count": 11,
+    "selected_feature_count": 295,
+    "synthetic_wells": 193,
+    "synthetic_well_fraction": 0.24967658473479948,
+    "md_stretch_excluded": true,
+    "equivariance_guards": {
+      "folds_passed": 5,
+      "folds_total": 5,
+      "absolute_tvt_feature_count": 7,
+      "relative_feature_count": 288,
+      "candidate_error_invariant": true,
+      "within10_label_invariant": true,
+      "relative_features_invariant": true,
+      "max_absolute_shift_error": 0.0,
+      "tolerance": 1e-05
+    },
+    "metrics": {
+      "probability_rowwise": {
+        "rmse_tvt": 8.55605266725529,
+        "mae_tvt": 5.1643655955312635,
+        "within10": 0.8522889469287569,
+        "oracle_label_accuracy": 0.1689751212278894,
+        "path_switch_count": 1003205
+      },
+      "expected_error_rowwise": {
+        "rmse_tvt": 8.532211478197349,
+        "mae_tvt": 5.041134406727431,
+        "within10": 0.8476438488589687,
+        "oracle_label_accuracy": 0.18987238070723778,
+        "path_switch_count": 842877
+      },
+      "expected_error_fixed_viterbi": {
+        "rmse_tvt": 8.42712555102057,
+        "mae_tvt": 4.982795758614454,
+        "within10": 0.8494012535448703,
+        "oracle_label_accuracy": 0.19917394051621187,
+        "path_switch_count": 7053
+      }
+    },
+    "candidate_metrics": {
+      "candidate_auc": 0.9244276486017355,
+      "candidate_logloss": 0.3277089672103913,
+      "candidate_brier": 0.10371512980552813,
+      "expected_error_mae": 4.58659720074359,
+      "candidate_rows": 41623879,
+      "observed_within10": 0.6077122941857486,
+      "predicted_within10": 0.6093870740758495
+    }
+  },
+  "post_run_control_comparison": {
+    "control_experiment": "exp251_raw_test_safe_dual_objective_candidate_ranker",
+    "control_variant": "raw_test_regenerated_copcf",
+    "mode": "expected_error_fixed_viterbi",
+    "control_rmse_tvt": 8.502212004569888,
+    "variant_rmse_tvt": 8.42712555102057,
+    "rmse_delta": -0.07508645354931787,
+    "mae_delta": -0.02739988186078257,
+    "within10_delta": -0.00028409173493892936,
+    "oracle_label_accuracy_delta": 0.001117339400299539,
+    "path_switch_count_delta": -54,
+    "candidate_auc_delta": -3.108825119556346e-05,
+    "candidate_logloss_delta": -2.6563221167756892e-05,
+    "candidate_brier_delta": -3.09695147818162e-05,
+    "candidate_expected_error_mae_delta": 0.03275221050051158,
+    "distance_1000_plus_rmse": 9.244368080312194,
+    "distance_1000_plus_rmse_delta": -0.08217742443253462,
+    "exp115_spatial_rmse": 8.855452659935088,
+    "exp115_spatial_rmse_delta": 0.06731943212420788,
+    "exp115_typewell_purged_rmse": 8.79149021364286,
+    "exp115_typewell_purged_rmse_delta": 0.04537725553612981,
+    "improved_wells": 386,
+    "worsened_wells": 384,
+    "unchanged_wells": 3,
+    "maximum_well_regression": {
+      "well": "aed44918",
+      "control_rmse_tvt": 7.2486082283138495,
+      "variant_rmse_tvt": 13.619161218295552,
+      "delta": 6.370552989981908
+    },
+    "absolute_worst_well": {
+      "well": "fb03ae90",
+      "control_rmse_tvt": 58.00423602964172,
+      "variant_rmse_tvt": 58.021328890048004,
+      "delta": 0.01709286040628366
+    },
+    "guard_checks": {
+      "overall_rmse": true,
+      "candidate_logloss": true,
+      "distance_1000_plus_rmse": true,
+      "exp115_spatial_rmse": false,
+      "exp115_typewell_purged_rmse": false,
+      "maximum_well_regression_le_0_25": false
+    },
+    "all_guards_pass": false,
+    "fold_fixed_viterbi_rmse": {
+      "control": [
+        7.653335510820508,
+        9.472239430305429,
+        8.075131903075638,
+        9.01700913534903,
+        8.163005322362862
+      ],
+      "variant": [
+        7.719531192213333,
+        9.384259811697056,
+        7.947896044862719,
+        8.814951527601847,
+        8.158448432432387
+      ],
+      "delta": [
+        0.066195681392825,
+        -0.087979618608373,
+        -0.127235858212919,
+        -0.202057607747183,
+        -0.004556889930475
+      ],
+      "improved_folds": 4,
+      "total_folds": 5
+    },
+    "original_absolute_distance_1000_plus_guard": {
+      "threshold": 9.234366422577242,
+      "variant_rmse": 9.244368080312194,
+      "excess": 0.010001657734952,
+      "pass": false
+    }
+  },
+  "artifacts": {
+    "directory": "kaggle/output/train_v1/artifacts",
+    "executed_config_sha256": "4460f35ee0ea018790f84e7ddc982e995f1b2ce872a808f35837bd6616dfe2d2",
+    "real_well_summary_sha256": "f7d8c1c586941a8d9895adb84b1c1033738852b01fe3c9ecd2812d637207852f",
+    "distribution_envelope_sha256": "478068423fbb7678a5a67aa44836e5740c7bf7938cdcb5e2deaa0f9002b8bcd1",
+    "distribution_envelope_content_sha256": "583a3d896a1a485135295458f2375c2740da3167d9391760a2c8b1d6d9574c1e",
+    "transform_manifest_raw_sha256": "f3969121e959d2bec96b528be66f3d799b5daf4d182407fc4eb53e1e67757af0",
+    "transform_manifest_decompressed_content_sha256": "0afcc19742ca20b2dbd0ef6b48b78ca7657fc1df5eb89eb0476ba5efba6276bd",
+    "transform_summary_sha256": "353ec69c03ff005437438689e7576c291361f3dde1323466313767a950779c89",
+    "preview_rows_raw_sha256": "b4a97256441fcdc434086b411413d66add4883e008095aac6b8fac8a5b37b5a7",
+    "preview_rows_decompressed_content_sha256": "ac469d091e9a639ea5a0b85950679acb7a4d0cacfa0c079dd1acfe4458de0956",
+    "all_downloaded_sha_checks_match": true,
+    "model_sha256": null,
+    "prediction_sha256": null,
+    "submission_sha256": null
+  },
+  "training_artifacts": {
+    "directory": "kaggle/output/train_variant0_v1/artifacts",
+    "summary_sha256": "74909725f644daea693320f61972d9c5b4ac85b6440c44bec4ab39194a2995e7",
+    "feature_schema_sha256": "7a9217d6ed96f5f1e569dbefff2a1fb17751405d6ddccae5e5d9dbf12da787ae",
+    "model_manifest_sha256": "7f6cd5c84dd7693c271359537ace1e359af2ecffd39cf6e7fa5e446c7d326d4b",
+    "oof_predictions_decompressed_sha256": "96d34a2f7eb68f576f6a7e51bec8c11b6ef7294ec8989442d9fda8d644290913",
+    "downloaded_small_artifact_sha_checks_match": true,
+    "diagnostic_artifacts_independently_checked": 15,
+    "diagnostic_artifacts_all_match": true,
+    "models_downloaded_for_independent_sha_check": true,
+    "models_independently_checked": 10,
+    "models_all_match": true,
+    "imputers_independently_checked": 5,
+    "imputers_all_match": true,
+    "oof_downloaded_for_independent_sha_check": true,
+    "oof_decompressed_sha_independently_matches": true,
+    "large_validation_files_retained_in_experiment_directory": false,
+    "prediction_sha256": null,
+    "submission_sha256": null
+  },
+  "adoption_supported": false,
+  "augmentation_training_ready": false,
+  "augmentation_training_running": false,
+  "augmentation_training_complete": true,
+  "inference_allowed": false,
+  "submission_allowed": false,
+  "notes": [
+    "The transform audit completed without training a model or scoring OOF/LB; its evidence remains unchanged.",
+    "Exact transforms passed, and four approximate transforms retained at least 94.8% of views.",
+    "The current MD-only stretch is not eligible for training because all 773 views violated the real-train geometry envelope.",
+    "Training version 1 added only exact TVT datum views and did not retrain the separately executed exp251 295-feature clean control.",
+    "The fixed-Viterbi overall and 1000+ metrics improved, but both hidden-like guards and the maximum per-well regression guard failed.",
+    "The exact-datum augmentation is rejected for inference and submission under the predeclared guard contract."
+  ]
+}

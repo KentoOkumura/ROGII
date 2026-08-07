@@ -1,0 +1,275 @@
+experiment:
+  name: "exp232_adaptive_robust_likelihood_pf"
+  description: >
+    Full exp072-compatible likelihood-PF audit that weakens only a gated row's
+    particle observation likelihood with a fixed temperature.
+  route: pf_beam
+  status: completed_train_side_rejected_no_inference_no_submit
+  created_at: "2026-07-11"
+  updated_at: "2026-07-13"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  references:
+    - exp214_public_raw_gr_residual_scale_control
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp200_pf_step_delta_soft_prior_full_replay_replacement
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - KAGGLE_DIRECTION.md adaptive_robust_likelihood_pf
+  implementation_source: adaptive_robust_likelihood_pf.py
+  diff_summary: >
+    Keeps exp072's raw typewell-GR surface state, 500 particles, 128 seeds,
+    transition, stable per-well seed policy, and ESS resampling threshold fixed.
+    The T=1 control is reconstructed from the exp209 enriched comparison cache
+    as hmm_mean_tvt - hmm_minus_likpf_mean and is not regenerated. New variants
+    apply L=exp(-0.5*r^2/T) only when a target-free gate has high
+    innovation plus at least one corroborating GR novelty/change-point or
+    pre-update particle-collapse signal. All other rows use T=1 exactly.
+    Kaggle's 12-hour CPU limit is handled by executing one predeclared
+    temperature variant per independent kernel; this changes no scientific
+    parameter or T=1 comparison control.
+
+validation:
+  strategy: full_train_exp072_pseudotail_target_free_adaptive_temperature_pf
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within10
+    - particle_interval_coverage_sampled
+    - first_sampled_particle_loss
+    - pf_effective_sample_size
+    - pf_resampling_rate
+    - gate_rate
+    - hidden_like_rmse
+    - worst_well_regression_vs_exp072
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  success_criteria:
+    - Temperature variants improve or preserve exp072 likpf_mean RMSE while improving sampled particle p05-p95 coverage.
+    - 1000_plus, exp115 hidden-like, and worst-well readouts have no material regression versus exp072 likpf_mean.
+    - Gate-outside rows use the exact baseline particle observation likelihood.
+  leakage_policy:
+    - The exp072 cache supplies true TVT only for train-side scoring, interval coverage, and first-loss readout.
+    - Gate inputs use only raw evaluation GR, typewell GR, the observed prefix, and pre-update particle state.
+    - Gate selection never uses true TVT, target delta, true error, oracle candidates, Public LB, or seed-level aggregation weight.
+    - The exp209 reconstructed T=1 output is a comparison reference; no control cache is regenerated.
+    - Raw-test regeneration, inference, and submission are not part of this train-side experiment.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp209_enriched_likpf_control_local: experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+  exp209_enriched_likpf_control_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+  exp072_reference_candidates:
+    - likpf_mean
+    - pf_ancc
+    - beam_mean
+    - pf_z
+
+model:
+  name: adaptive_robust_likelihood_pf
+  estimator: none_pfbeam_generation_audit
+  target: exp072_target_for_scoring_only
+  validation_surface:
+    selection_mode: all_eligible_wells
+    max_target_wells: null
+    well_include: []
+    min_known_prefix_rows: 160
+    min_eval_rows: 64
+  temperature_variants:
+    - name: temp_t2
+      temperature: 2.0
+    - name: temp_t4
+      temperature: 4.0
+  runtime:
+    particles: 500
+    seed_count: 128
+    seed_aggregation: mean
+    resample_threshold: 0.5
+    init_spread: 4.5
+    momentum: 0.998
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_pos_noise: 0.10
+    resample_velocity_noise: 0.001
+    grid_step: 0.2
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+  gate:
+    enabled: true
+    innovation_threshold: 2.5
+    change_point_window: 32
+    change_point_threshold: 3.0
+    novelty_short_window: 8
+    novelty_long_window: 64
+    novelty_threshold: 2.5
+    ess_ratio_threshold: 0.25
+    max_weight_threshold: 0.10
+    min_corroborating_signals: 1
+    history_scale_floor: 5.0
+    notes:
+      - Innovation is computed from the propagated, pre-update weighted particle GR expectation.
+      - Change point and novelty use only current and previous raw evaluation GR rows.
+      - ESS ratio and max weight are from the pre-update particle posterior.
+      - High innovation plus one other signal is required; no gate persistence or target-derived threshold is used.
+  interval_audit:
+    enabled: true
+    selected_well_count: 64
+    selection_policy: stable_sha256_well_order
+    row_stride: 64
+    include_gate_rows: true
+    quantiles: [0.05, 0.95]
+
+comparison:
+  baseline_candidate: exp072_likpf_mean
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+
+audit:
+  mode: adaptive_temperature_likelihood_pf_full_train_audit
+  output_prefix: exp232_adaptive_robust_likelihood_pf
+  primary_baseline: exp072_likpf_mean
+  path_jump_threshold_ft: 8.0
+  expected_train_artifacts:
+    - runs/<active_variant>/exp232_adaptive_robust_likelihood_pf_candidate_metrics.csv
+    - runs/<active_variant>/exp232_adaptive_robust_likelihood_pf_distance_bucket_metrics.csv
+    - runs/<active_variant>/exp232_adaptive_robust_likelihood_pf_hidden_like_metrics.csv
+    - runs/<active_variant>/exp232_adaptive_robust_likelihood_pf_by_well.csv
+    - runs/<active_variant>/exp232_adaptive_robust_likelihood_pf_pf_diagnostics.csv
+    - runs/<active_variant>/exp232_adaptive_robust_likelihood_pf_gate_diagnostics.csv
+    - runs/<active_variant>/exp232_adaptive_robust_likelihood_pf_interval_metrics.csv
+    - runs/<active_variant>/exp232_adaptive_robust_likelihood_pf_target_wells.csv
+    - runs/<active_variant>/exp232_adaptive_robust_likelihood_pf_well_status.csv
+    - runs/<active_variant>/exp232_adaptive_robust_likelihood_pf_row_candidates.csv.gz
+    - runs/<active_variant>/exp232_adaptive_robust_likelihood_pf_summary.json
+
+execution:
+  split_runs: true
+  planned_temperature_variants:
+    - temp_t2
+    - temp_t4
+  variant_runs:
+    temp_t2:
+      notebook_kind: train_variant0
+      active_temperature_variants:
+        - temp_t2
+      kernel_id: kentookumura/exp232-adaptive-robust-pf-t2
+      title: exp232 adaptive robust pf t2
+    temp_t4:
+      notebook_kind: train_variant1
+      active_temperature_variants:
+        - temp_t4
+      kernel_id: kentookumura/exp232-adaptive-robust-pf-t4
+      title: exp232 adaptive robust pf t4
+  progress_every_wells: 16
+  notes:
+    - Kaggle CPU timeout recovery; two independent notebooks each execute one existing temperature variant across all eligible wells.
+    - train_variant0 selects temp_t2 and train_variant1 selects temp_t4 in notebook memory; config.yaml itself does not select a default active variant.
+    - The two kernels can run concurrently because they read identical fixed input/control sources and write separate Kaggle outputs.
+    - Input cache/control provenance is read once in the notebook and passed into the PF orchestration.
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp209-joint-exact-parity-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_well_variant_seed_index_with_numba_single_worker
+  stochastic_components:
+    - likelihood_pf_particle_propagation
+    - likelihood_pf_resampling
+  parallel_rng_policy: numba_kernel_uses_per_well_variant_stable_seed_base_no_thread_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is a CPU-only train-side PF audit; it is not a deterministic submission anchor.
+    - The exp072 ML feature cache, exp209 reconstructed control, and exp115 split artifact SHA are recorded when available.
+    - Candidate row output records a decompressed content SHA.
+
+inference:
+  mode: disabled_pending_train_side_coverage_and_rmse_guards
+  selected_candidate: null
+  notes:
+    - No inference or submission is generated by this implementation.
+    - A raw-test port requires a separate user decision after train-side results.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog adaptive_robust_likelihood_pf as temperature-only.
+  - Outlier mixture is intentionally deferred to adaptive_outlier_mixture_likelihood_pf.
+  - No LightGBM, folds, boosters, parent control rerun, or Beam variants are included.
+  - Both split CPU kernels completed on 2026-07-12. A checkpoint-free temp_t2 v2 recovery run completed on 2026-07-13 and supplied the final row-level artifacts; neither temperature met the RMSE or worst-well guards, so inference and submission remain disabled.
+
+results:
+  decision: rejected_train_side
+  reason: >
+    Both gated temperature variants materially regressed against the exp209-reconstructed
+    exp072 likpf_mean comparison control, including the 1000_plus and worst-well guards.
+  split_runs:
+    temp_t2:
+      kernel_id: kentookumura/exp232-adaptive-robust-pf-t2
+      kernel_version: 2
+      status: complete
+      purpose: checkpoint_free_row_artifact_recovery
+      runtime_seconds: 39327.23625588417
+      rmse: 13.52988710902271
+      delta_rmse_vs_exp072_likpf_mean: 1.9349894368050062
+      rmse_1000_plus: 14.775088742565213
+      worst_well_regression: 45.905685192661714
+      gate_all_seed_rows: 685
+      gate_any_seed_rows: 4673
+    temp_t4:
+      kernel_id: kentookumura/exp232-adaptive-robust-pf-t4
+      kernel_version: 2
+      status: complete
+      runtime_seconds: 34207.47654128075
+      rmse: 13.532730350229121
+      delta_rmse_vs_exp072_likpf_mean: 1.937832678011418
+      rmse_1000_plus: 14.778863970192129
+      worst_well_regression: 45.70617098525676
+      gate_all_seed_rows: 715
+      gate_any_seed_rows: 4764
+  provenance_caveat: >
+    The original temp_t2 v1 and temp_t4 v2 outputs resolved the exp072 input cache from
+    different Kaggle dataset copies, so their fine-grained subgroup difference is not exact
+    parity evidence. The checkpoint-free temp_t2 v2 recovery output shares the exp072 input,
+    exp209 control, and schema content SHA with exp233 mix_eps_0p05 v4, making that
+    temperature-versus-mixture comparison ID-aligned.

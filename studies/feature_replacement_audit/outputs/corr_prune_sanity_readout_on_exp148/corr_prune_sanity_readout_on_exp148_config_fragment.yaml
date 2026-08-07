@@ -1,0 +1,74 @@
+model:
+  feature_ablation:
+    selected_variant: drop_exact_replacements_17
+    active_variants:
+    - name: drop_exact_replacements_17
+      description: Drop only the high-confidence constant, exact duplicate, sign-flip,
+        and already-emitted delta/disagreement columns identified by corr_prune_sanity_readout_on_exp148.
+      feature_groups:
+      - projection_correction
+      - u_disagreement
+      - learned_likelihood_confidence
+      drop_columns:
+      - sc_trust
+      - ll_candidate_tvt_likpf_mean_minus_likpf_mean_tvt
+      - ll_candidate_tvt_beam_mean_minus_last_known_tvt
+      - ll_candidate_tvt_beam_mean_minus_likpf_mean_tvt
+      - ll_candidate_tvt_hyb_minus_last_known_tvt
+      - ll_candidate_tvt_likpf_mean_minus_last_known_tvt
+      - ll_candidate_tvt_pf_ancc_minus_last_known_tvt
+      - ll_candidate_tvt_pf_ancc_minus_likpf_mean_tvt
+      - ll_candidate_tvt_sc_ens_minus_last_known_tvt
+      - tda0
+      - dense_bias
+      - uproj_beam_mean_resid
+      - uproj_beam_med_resid
+      - uproj_diff_pf_ancc_minus_pf_z
+      - uproj_likpf_mean_resid
+      - uproj_pf_ancc_resid
+      - uproj_pf_z_resid
+      enabled: true
+    - name: drop_exact_plus_formation_last50_29
+      description: 'Follow-up only: add formation last50 near-duplicate drops to the
+        exact 17-column prune list. Do not run together with the first exact-prune
+        ablation unless explicitly selected.'
+      feature_groups:
+      - projection_correction
+      - u_disagreement
+      - learned_likelihood_confidence
+      drop_columns:
+      - sc_trust
+      - ll_candidate_tvt_likpf_mean_minus_likpf_mean_tvt
+      - ll_candidate_tvt_beam_mean_minus_last_known_tvt
+      - ll_candidate_tvt_beam_mean_minus_likpf_mean_tvt
+      - ll_candidate_tvt_hyb_minus_last_known_tvt
+      - ll_candidate_tvt_likpf_mean_minus_last_known_tvt
+      - ll_candidate_tvt_pf_ancc_minus_last_known_tvt
+      - ll_candidate_tvt_pf_ancc_minus_likpf_mean_tvt
+      - ll_candidate_tvt_sc_ens_minus_last_known_tvt
+      - tda0
+      - dense_bias
+      - uproj_beam_mean_resid
+      - uproj_beam_med_resid
+      - uproj_diff_pf_ancc_minus_pf_z
+      - uproj_likpf_mean_resid
+      - uproj_pf_ancc_resid
+      - uproj_pf_z_resid
+      - bw50_ANCC
+      - bw50_ASTNU
+      - bw50_ASTNL
+      - bw50_EGFDU
+      - bw50_EGFDL
+      - bw50_BUDA
+      - tvtF50_ANCC
+      - tvtF50_ASTNU
+      - tvtF50_ASTNL
+      - tvtF50_EGFDU
+      - tvtF50_EGFDL
+      - tvtF50_BUDA
+      enabled: false
+runtime_note:
+  control_retraining: false
+  gpu_training_required_for_this_readout: false
+  expected_exact_prune_feature_count: 277
+  expected_exact_plus_formation_feature_count: 265

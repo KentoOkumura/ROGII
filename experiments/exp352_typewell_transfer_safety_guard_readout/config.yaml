@@ -1,0 +1,167 @@
+experiment:
+  name: exp352_typewell_transfer_safety_guard_readout
+  description: >-
+    Independent zero-model successor to exp313 that tests whether a frozen,
+    target-free Type Well transfer availability and fallback guard can retain
+    exp311 same-group gain without negative transfer or worst-well regression.
+  route: pf_beam
+  status: completed_stage_0_guard_failed_closed
+  created_at: "2026-07-23"
+  updated_at: "2026-07-23"
+
+lineage:
+  parent: exp311_typewell_group_prefix_suffix_gr_calibration_readout
+  steering: ../../.steering/20260723-exp352-typewell-transfer-safety-guard-readout
+  references:
+    - exp312_typewell_group_conditional_gr_emission_table
+    - exp313_typewell_group_unseen_transfer_guard
+  diff_summary: >-
+    Does not override the exp311/312 failed promotion decisions and does not
+    reopen exp313. It independently audits only the preregistered availability,
+    support, and identity-safe fallback contract against frozen exp311 outputs.
+
+implementation:
+  enabled: true
+  scope: stage_0_compact_selfcontained_guard_readout
+  train_notebook_state: compact_selfcontained_canonical_adopted
+  canonical_notebook_adopted: true
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: frozen_exp311_typewell_transfer_guard_three_surface_audit
+  metric: transfer_gain_and_negative_transfer_safety
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  fit_scope: saved_outer_train_group_statistics_only
+  truth_attachment: after_availability_fallback_manifest_content_sha_freeze
+  audit_surfaces:
+    - same_typewell_heldout_well
+    - leave_one_typewell_group_out
+    - spatial_typewell_purged
+  primary_surface: same_typewell_heldout_well
+  score_unit: horizontal_gr_api
+  leakage_policy:
+    - Availability, support, prior source, and fallback reason are frozen before outer-valid truth or error is joined.
+    - Allowed test-like inputs are Type Well content, known-prefix GR, and raw geometry only.
+    - Unknown-suffix TVT, suffix error, train-only formation columns, and well-id rules are forbidden.
+
+data:
+  exp311_artifacts:
+    expected_kernel_id: kentookumura/exp311-typewell-gr-calibration-readout-train
+    expected_kernel_version: 1
+    expected_summary_raw_sha256: 821499b895a8bdb6ed8202c714ddb95ea8739defe9b4aaa0e13c35b346a1ca29
+    expected_pair_decompressed_sha256: 14f506da542a0d6f460425ddb56ff7119e19699b7d6110956fde86e63311e335
+    root_candidates:
+      - experiments/exp311_typewell_group_prefix_suffix_gr_calibration_readout/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp311-typewell-gr-calibration-readout-train/artifacts
+      - /kaggle/input/exp311-typewell-gr-calibration-readout-train/artifacts
+    filenames:
+      summary: exp311_typewell_group_prefix_suffix_gr_calibration_readout_summary.json
+      fold_manifest: exp311_typewell_group_prefix_suffix_gr_calibration_readout_fold_manifest.csv
+      group_membership: exp311_typewell_group_prefix_suffix_gr_calibration_readout_group_membership.csv
+      group_priors: exp311_typewell_group_prefix_suffix_gr_calibration_readout_group_priors.csv
+      suffix_by_well: exp311_typewell_group_prefix_suffix_gr_calibration_readout_suffix_by_well.csv
+      pair_table: exp311_typewell_group_prefix_suffix_gr_calibration_readout_pair_table.csv.gz
+
+model:
+  name: none
+  guard:
+    exact_group_min_peer_wells: 2
+    exact_group_min_effective_rows: 64
+    group_scheme: native_overlap_1
+    fallback_order: [exact_native_overlap_group, global_outer_train_prior, identity_no_correction]
+    default_fallback: identity_no_correction
+    soft_similarity_enabled: false
+    global_prior_aggregation: equal_group_median_excluding_target_group
+    global_prior_min_source_groups: 1
+    score_unit: horizontal_gr_api
+  stage_0:
+    pass_requires_all:
+      minimum_fold_safe_coverage: 0.90
+      maximum_identity_fallback_parity_abs: 1.0e-10
+      minimum_same_group_gain_gr_api: 0.05
+      minimum_improved_folds: 4
+      maximum_unseen_group_negative_transfer_gr_api: 0.00
+      maximum_spatial_typewell_purged_negative_transfer_gr_api: 0.00
+      maximum_worst_well_regression_gr_api: 0.25
+  forbidden:
+    - support_threshold_grid
+    - fallback_order_grid
+    - soft_similarity
+    - correction_or_prediction_generation
+    - selector_or_decoder_training
+    - automatic_unlock_of_exp314_to_exp320
+
+artifacts:
+  output_prefix: exp352_typewell_transfer_safety_guard_readout
+  expected_stage_0_artifacts:
+    - exp352_typewell_transfer_safety_guard_readout_availability_fallback_table.csv
+    - exp352_typewell_transfer_safety_guard_readout_score_table.csv
+    - exp352_typewell_transfer_safety_guard_readout_surface_metrics.csv
+    - exp352_typewell_transfer_safety_guard_readout_gate.json
+    - exp352_typewell_transfer_safety_guard_readout_input_manifest.json
+    - exp352_typewell_transfer_safety_guard_readout_scientific_contract.json
+    - exp352_typewell_transfer_safety_guard_readout_summary.json
+
+execution_contract:
+  stage_0: {diagnostic_variants: 1, audit_surfaces: 3, folds: 5, hmm_well_runs: 0, model_configs: 0, trained_folds: 0, boosters: 0, decoder_runs: 0}
+  parent_control_retraining: false
+
+execution:
+  implementation_approved: true
+  implementation_approved_at: "2026-07-23"
+  kaggle_push_approved: true
+  kaggle_push_approved_at: "2026-07-23"
+  active_stage: completed_stage_0_guard_failed_closed
+  run_stage_0: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 1800
+    train_run_on_push: false
+    train_kernel_id: kentookumura/exp352-typewell-transfer-guard-readout-train
+    train_title: exp352 typewell transfer guard readout train
+    train_kernel_sources:
+      - kentookumura/exp311-typewell-gr-calibration-readout-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_saved_fold_group_and_well_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads_and_stable_reduction_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - The saved exp311 kernel version and decompressed group-statistic SHA are hard preflight inputs.
+    - No deterministic-anchor claim is made before a separately approved rerun parity check.
+
+inference: {enabled: false, create_submission: false}
+
+notes:
+  - Stage 0 implementation was approved and completed on 2026-07-23.
+  - Canonical train notebook adoption and the Kaggle CPU Stage 0 package/push/run were approved on 2026-07-23.
+  - The preregistered numeric gates are unchanged, but their unit is horizontal GR API because exp311 generated no TVT prediction or decoder.
+  - A PASS only supports the guard readout and does not reverse exp311/312 or unlock old downstream experiments.
+  - Kaggle CPU version 1 completed and failed only the frozen worst-well safety gate; rerun, rescue tuning, inference, and submission are disabled.

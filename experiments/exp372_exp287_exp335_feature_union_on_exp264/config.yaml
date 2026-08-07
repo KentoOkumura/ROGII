@@ -1,0 +1,750 @@
+experiment:
+  name: exp372_exp287_exp335_feature_union_on_exp264
+  description: >-
+    Combine the saved exp287 fold-safe formation 74 features and the saved
+    exp335 strict-nested signed-residual 23 features on the corrected exp264
+    clean-273 plus saved compact-74 downstream surface. Train only one
+    444-feature union variant with the unchanged three-config LightGBM family.
+  route: ml_model
+  status: submission_complete_public_lb_7p587_train_guard_failed
+  created_at: "2026-07-24"
+  updated_at: "2026-07-26"
+
+implementation:
+  enabled: true
+  scope: canonical_compact_selfcontained_train_and_contract_tests
+  train_notebook_state: compact_selfcontained_candidate_adopted_as_canonical
+  inference_notebook_state: compact_selfcontained_adopted_as_canonical
+  jupytext_source_created: true
+  jupytext_inference_source_created: true
+  helper_code_created: false
+  shared_pipeline_created: true
+  tests_created: true
+  kaggle_package_created: true
+  kaggle_inference_package_created: true
+
+lineage:
+  parent: exp264_exp263_candidate_confidence_dual_selector
+  formation_parent: exp287_fold_safe_formation_74_addonly_on_exp264
+  signed_parent: exp335_signed_residual_meta_on_exp264
+  steering: ../../.steering/20260724-exp372-exp287-exp335-feature-union-on-exp264
+  references:
+    - exp218_gr_wavelet_rotation_confidence_features_on_exp148
+    - exp263_last_anchor_better_candidate_confidence_pair_cache
+    - exp264_exp263_candidate_confidence_dual_selector
+    - exp287_fold_safe_formation_74_addonly_on_exp264
+    - exp335_signed_residual_meta_on_exp264
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md
+  diff_summary: >-
+    Keep the corrected exp264 folds, target, clean 273 features, saved nested
+    compact 74 features, three LightGBM configs, and all training parameters
+    fixed. Add both saved exp287 fold-safe formation 74 and saved exp335
+    strict-nested signed-residual 23 feature families in the frozen order
+    clean273, saved74, formation74, signed23. Do not retrain or regenerate
+    either standalone parent, any selector, or the saved exp264 control.
+
+validation:
+  strategy: corrected_exp264_outer5_groupfold_saved_feature_union
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_isna
+  expected_rows: 3783989
+  expected_wells: 773
+  target: target_residual_from_last_known_tvt
+  saved_controls:
+    exp264:
+      rmse: 8.460811237612477
+      oof_sha256: b11c5005ca566f76588f4e1735386c15b8f016b874701a82e1c0741c8b839ae2
+      prediction_column: selector_compact_addonly__lgb_mean__pred_tvt
+      clean_prediction_column: matched_control__lgb_mean__pred_tvt
+    exp287:
+      rmse: 8.136708220359452
+      public_lb: 7.530
+      oof_sha256: 8f026c5c5f6508fb142981832994c6ba9cded4940168c648a9df9f3e698c3913
+      prediction_column: fold_safe_formation_74_addonly__lgb_mean__pred_tvt
+      fold_rmse:
+        0: 8.070368347456087
+        1: 8.25583843158472
+        2: 7.893630010579036
+        3: 8.10656673057163
+        4: 8.349625947273056
+    exp335:
+      rmse: 8.146107755881022
+      public_lb: 7.517
+      oof_sha256: 8b28a3f29b981cbba118c9f98a5e7dd92e75613d87dddce39c2d162fb6a769b1
+      prediction_column: signed_residual_meta_addonly__lgb_mean__pred_tvt
+      fold_rmse:
+        0: 8.00056181144867
+        1: 8.685333868691478
+        2: 7.672684841097233
+        3: 7.832720178696507
+        4: 8.493249805815765
+  better_standalone_by_fold:
+    0: {experiment: exp335, rmse: 8.00056181144867}
+    1: {experiment: exp287, rmse: 8.25583843158472}
+    2: {experiment: exp335, rmse: 7.672684841097233}
+    3: {experiment: exp335, rmse: 7.832720178696507}
+    4: {experiment: exp287, rmse: 8.349625947273056}
+  better_standalone_by_scope:
+    near_0_250: {experiment: exp335, rmse: 1.4927324738661478}
+    mid_250_1000: {experiment: exp335, rmse: 3.910355874321575}
+    1000_plus: {experiment: exp287, rmse: 8.936647821747155}
+    hidden_like_spatial: {experiment: exp287, rmse: 8.799767730914455}
+    hidden_like_typewell_purged: {experiment: exp287, rmse: 8.735403757763525}
+  leakage_policy:
+    - The exp287 formation train partition was generated with target-well self-exclusion and the valid partition with outer-train references only.
+    - The exp335 signed outer-train rows use inner OOF predictions and outer-valid rows use the frozen four-inner-model ensemble.
+    - Every parent, formation, and signed partition is joined only after exact id, well, role, and downstream outer-fold alignment.
+    - Feature names, order, manifests, and partition content hashes are frozen before target or error columns are opened for fit and scoring.
+    - Saved exp287 and exp335 OOF predictions are reporting controls only and are never model features.
+    - Public LB values are provenance only and are not used for feature, parameter, or gate selection.
+
+data:
+  exp264_stage_c_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-train/artifacts
+    - /kaggle/input/exp264-exp263-confidence-dual-selector-train/artifacts
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_c_v6/artifacts
+  exp264_nested_compact_manifest_sha256: f4855726de446b8308a8acf80d6ff6cd6a789f18ef90e165b98fa05d12aecf1c
+  exp264_nested_selector_metrics_sha256: 421376abe55378ac3e0d9c37d2a882a97d6fd4ebf866ec4395e7346c1d4f478b
+  exp264_nested_selector_model_manifest_sha256: 3f28b04a017f0edadb815be44bf6f6f039dbd115bb72b3401e2681d3002422d2
+  exp264_compact_schema_file_sha256: e3a677610899cb33bf58262f4cf02f650300c8c2207c46b53588d3418162ea74
+  exp264_compact_schema_logical_sha256: 23614916c99edbbd513bcefee958d26cdfae5b83fb05c232c19736f2708dd725
+  exp287_formation_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp287-foldsafe-form74-addonly-exp264-train/artifacts
+    - /kaggle/input/exp287-foldsafe-form74-addonly-exp264-train/artifacts
+  exp287_formation_manifest: formation_fold_manifest.json
+  exp287_formation_manifest_sha256: 25611e281299991d626f1caca48673aee6225a890ad47ecdcd28a117ae827772
+  exp287_formation_relationship_audit_sha256: 868cc2bc3d8ea57103c70a2c150f240a29cc4d0087595d9fc4d68e864f0c86a3
+  exp287_formation_availability_audit_sha256: 6f93a502c9b58301e49da6effbf47b36d4635d4045157681749a762f08c89c67
+  exp335_stage_s_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp335-signed-residual-meta-on-exp264-train/artifacts
+    - /kaggle/input/exp335-signed-residual-meta-on-exp264-train/artifacts
+    - experiments/exp335_signed_residual_meta_on_exp264/kaggle/output/stage_s_v3/artifacts
+  exp335_signed_compact_manifest: signed_compact_manifest.json
+  exp335_signed_compact_manifest_sha256: 237486930a0e6f7479d40d2b2d2ccb8e033e3787eb273c406d1eb5a3fc8a6b64
+  exp335_signed_compact_schema_patterns:
+    - inputs/exp335_signed_compact_schema.json
+    - experiments/exp335_signed_residual_meta_on_exp264/kaggle/output/preflight_v2/artifacts/signed_compact_schema.json
+  exp335_signed_compact_schema_file_sha256: e57c6d5fde307eb26193a1c5efdb31accde94a6836df75de03100189d232021a
+  exp335_signed_compact_schema_logical_sha256: 74abf31f057dfe29177221895e3e26c5a261e5b51defc04f081d6b140f2be44c
+  exp335_stage_s_reproducibility_manifest_sha256: f4e37ce4bb8f38c2e9abc462b4625965612ac36815068cf9360766fff5d70ccb
+  clean_273_allowlist_patterns:
+    - inputs/exp218_clean_273_allowlist.csv
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+  clean_273_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
+  exp218_source_patterns:
+    - inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+    - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+  exp218_source_sha256: 6712d5b4261a9c57cc1fd77ebbf835c351976357dd3d8afebada0d3c4c3f7a33
+  exp218_config_patterns:
+    - inputs/exp218_source/config.yaml
+    - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+  exp218_config_sha256: fd547494adcceb7de8781f198757bd9fcfd2240fcfb32fc654d3be04c04fa09d
+  exp264_oof_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-tvt-train/artifacts/stage_d_oof_predictions.parquet
+  exp287_oof_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp287-foldsafe-form74-addonly-exp264-train/artifacts/fold_safe_formation_oof_predictions.parquet
+  exp335_oof_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp335-signed-residual-meta-on-exp264-tvt-train/artifacts/stage_d_oof_predictions.parquet
+  hidden_like_assignment_patterns:
+    - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  hidden_like_assignment_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  expected_parent_compact_partitions: 25
+  expected_formation_partitions: 10
+  expected_signed_partitions: 25
+  expected_rows_across_each_five_fold_surface: 18919945
+
+features:
+  schema_source: corrected_exp264_stage_a_v4_fixed_88
+  shape_windows: [32, 128, 512]
+  raw_context:
+    horizontal_numeric_allowlist: [MD, X, Y, Z, GR]
+    add_delta_from_last_known_row: true
+    add_typewell_summary: true
+    forbidden_columns: [TVT, TVT_input, target, true_tvt]
+  frozen_order:
+    - clean_273
+    - saved_exp264_compact_74
+    - saved_exp287_fold_safe_formation_74
+    - saved_exp335_signed_residual_23
+  counts:
+    clean_base: 273
+    saved_nested_compact: 74
+    fold_safe_formation: 74
+    signed_residual: 23
+    final: 444
+  exact_duplicate_policy: report_only_no_pruning
+  correlation_policy: report_only_no_pruning
+  missing_policy: preserve_each_parent_training_semantics
+  forbidden_columns:
+    - true_tvt
+    - TVT
+    - target
+    - error
+    - abs_error
+    - actual_rank
+    - oracle_label
+    - is_oracle
+
+formation_generator:
+  family: exp072_public_replay_formation_only
+  formations: [ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+  plane_k: 10
+  dense_samples_per_well: 60
+  dense_k: 20
+  dense_nfetch: 5000
+  query_workers: 1
+  n_jobs: 8
+  correlation_sample_rows: 50000
+  exact_duplicate_policy: full_rows_report_only
+  correlation_policy: deterministic_sample_report_only_no_pruning
+  current_test_reference_policy: all_train_wells
+  current_test_target_formation_columns_read: false
+
+model:
+  name: exp264_clean273_saved74_formation74_signed23_union_lightgbm
+  downstream_tvt:
+    target: target_residual_from_last_known_tvt
+    model_family: exp218_exp063_public_pixiux_lgb0_lgb1_lgb2
+    mode: gpu_repro_guard_dp_threads8
+    lightgbm_config_indices: [0, 1, 2]
+    active_variants: [formation74_signed23_union_addonly]
+    expected_source_base_feature_count: 380
+    expected_base_feature_count: 273
+    base_feature_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
+    saved_compact_feature_count: 74
+    formation_feature_count: 74
+    signed_feature_count: 23
+    final_feature_count: 444
+    early_stopping_rounds: 250
+    log_evaluation_period: 100
+    matrix_copy_chunk_columns: 32
+    relationship_sample_rows: 20000
+    execution_count:
+      variants: 1
+      lightgbm_configs: 3
+      folds: 5
+      planned_gpu_boosters: 15
+      parent_control_retraining_boosters: 0
+      exp287_standalone_retraining_boosters: 0
+      exp335_standalone_retraining_boosters: 0
+      selector_retraining_boosters: 0
+      formation_generation_runs: 0
+      signed_generation_runs: 0
+
+guards:
+  technical:
+    require_exp264_manifest_sha: true
+    require_exp287_manifest_and_partition_sha: true
+    require_exp335_manifest_and_partition_sha: true
+    require_partition_id_well_fold_role_alignment: true
+    require_feature_count: 444
+    require_unique_feature_names: true
+    require_complete_oof_rows: 3783989
+    require_complete_oof_wells: 773
+    require_all_finite_model_matrix: true
+    require_truth_or_error_loaded_before_schema_freeze: 0
+  incremental_utility:
+    best_standalone_experiment: exp287_fold_safe_formation_74_addonly_on_exp264
+    best_standalone_rmse: 8.136708220359452
+    minimum_pooled_improvement_ft: 0.02
+    maximum_union_rmse: 8.116708220359452
+    minimum_folds_with_delta_le_0p02_vs_better_standalone: 4
+    maximum_fold_delta_vs_better_standalone_rmse: 0.02
+    maximum_scope_delta_vs_better_standalone_rmse: 0.02
+    require_positive_total_gain_for_formation_family: true
+    require_positive_total_gain_for_signed_family: true
+    minimum_positive_gain_folds_per_added_family: 4
+  tail_promotion:
+    control_experiment: exp264_exp263_candidate_confidence_dual_selector
+    maximum_by_well_delta_p95_vs_exp264_rmse: 0.0
+    maximum_worst_well_delta_vs_exp264_rmse: 0.25
+    clean273_worsened_well_thresholds_ft: [1.0, 3.0, 5.0]
+    maximum_worsened_well_counts_vs_clean273:
+      plus_1_ft: 135
+      plus_3_ft: 39
+      plus_5_ft: 14
+    require_all_checks: true
+  decision:
+    promotion_requires_technical_incremental_utility_and_tail: true
+    scientific_failure_action: close_without_same_oof_rescue
+    inference_after_failure: separate_explicit_user_override_only
+  forbidden:
+    - zero_booster_complementarity_gate_as_prerequisite
+    - retrain_exp264_control
+    - retrain_exp287_standalone
+    - retrain_exp335_standalone
+    - retrain_parent_or_signed_selector
+    - regenerate_saved_train_formation_or_signed_features
+    - feature_or_lightgbm_grid
+    - feature_pruning_or_family_weighting
+    - direct_prediction_blend
+    - hard_selector_or_candidate_replacement
+    - gate_relaxation_or_same_oof_rescue
+    - inference_or_submission_without_separate_approval
+
+execution:
+  stage: submission_complete_public_lb_7p587_train_guard_failed
+  implementation_approved: true
+  implementation_approval_received_at: "2026-07-24"
+  canonical_train_notebook_adoption_approved: true
+  canonical_train_notebook_adoption_approval_received_at: "2026-07-25"
+  canonical_train_notebook_sha256: 33f0978521812059e65c80b80da21bb2b7f661da28c05de6306275c5201cc95a
+  kaggle_package_approved: true
+  kaggle_push_approved: false
+  train_run_approved: false
+  train_run_approval_received_at: "2026-07-25"
+  run_train: false
+  technical_retry_approved: true
+  technical_retry_approval_received_at: "2026-07-25"
+  technical_retry_package_prepared: true
+  planned_train_kernel_version: 2
+  train_kernel_version: 2
+  train_v2_pushed_at_utc: "2026-07-25 01:34:15 UTC"
+  train_v2_pushed_at_jst: "2026-07-25 10:34:15 JST"
+  train_pushed_at_utc: "2026-07-25 01:09:39 UTC"
+  train_pushed_at_jst: "2026-07-25 10:09:39 JST"
+  train_push_url: https://www.kaggle.com/code/kentookumura/exp372-exp287-exp335-feature-union-train
+  last_train_run:
+    kernel_version: 1
+    kernel_id_no: 128530478
+    status: technical_error
+    observed_terminal_at_utc: "2026-07-25 01:21:06 UTC"
+    log_last_time_seconds: 619.970949342
+    gpu_boosters_started: 0
+    error_type: KeyError
+    error_key: compact_features
+    failed_stage: prefit_parent_compact_fold_load
+    logs_sha256: 89d00097a675bb0373f3e1d4b464aeaa6a4d1d403f89043e369d3458607da8d8
+    local_fix: adapt_verified_features_to_compact_features_loader_contract
+    local_fix_validated: true
+  current_train_run:
+    kernel_version: 2
+    kernel_id_no: 128530478
+    status: complete
+    result_status: train_complete_guard_failed_closed
+    observed_terminal_at_utc: "2026-07-25 06:41:59 UTC"
+    log_last_time_seconds: 18425.058989808
+    gpu_boosters_completed: 15
+    model_slots_completed: 15
+    pooled_cv_rmse: 8.071563864946972
+    improvement_vs_best_standalone_ft: 0.065144355412480
+    technical_gate_passed: true
+    incremental_utility_gate_passed: false
+    tail_promotion_gate_passed: false
+    promotion_gate_passed: false
+    scientific_failure_action: close_without_same_oof_rescue
+    package_notebook_sha256: f8dab2b5044ec22691d9c99b20f4c7d8a419867da7ec55200ece63f2d2315ecf
+    embedded_config_sha256: 7290a1c8848cd3d5f6b7a8a4ef93ec3d5699c9c0f6e25c3d42042d82f8d45e47
+    embedded_pipeline_sha256: 7fa27865dbcf12d9987547452742ad1352d0c4ecfaaf2f5f9bfc5cc427caa4f7
+    pullback_notebook_sha256: 4226b6db045106dc639c3c983ef780493b48e636d1e954e3a7e6f38910edba19
+    pullback_metadata_sha256: ce342e24158bf1d93076ccc886862620900667224b598df995e3c1370fe243d1
+    logs_sha256: 0f8134297af145f7d4cb2da9bed6fef7c795bac9201e38adb151b16251a5704f
+    feature_schema_sha256: 049800d626b04f16fbf08eb33e8a980ecbe62008402ff7b24f3e77e04e6ef4e9
+    model_manifest_sha256: e0d7f85c34d5c64410fe1b2e641669ee1887346a4cbd754579d0dd7e15875b5a
+    oof_prediction_sha256: 635dea78b9bf7ad07a1bef267d37e4e2d1707f648799c1590715d4255c02e6f8
+    reproducibility_manifest_sha256: 90eeede79b13d39ec3fcf6cb08268e6b396db42cb0e1f9e62fd9dca712ccdb5d
+    output_archive_downloaded: true
+    output_archive_reason: oof_metrics_model_manifest_and_sha_verification
+  inference_approved: true
+  inference_approval_received_at: "2026-07-25"
+  inference_guard_override: true
+  canonical_inference_notebook_adoption_approved: true
+  canonical_inference_notebook_adoption_approval_received_at: "2026-07-25"
+  canonical_inference_notebook_sha256: 351cf32064c3a624ac1eb2de3f118bab528e3297d1192587fc49a1dcf70f890b
+  inference_jupytext_source_sha256: aef37567990af0236d0ca1bf09fde5ed2cacb758eddae7f7e3612b51d036d506
+  inference_package_approved: true
+  inference_push_approved: false
+  inference_run_approved: false
+  planned_inference_kernel_version: 4
+  inference_package_notebook_sha256: 3b8e6516b25de70da2b9ab83f1dbb52348a0e6ffcfe54f878ea31d93db232fec
+  inference_package_metadata_sha256: 65824e371e7639a8b85e84220180aaefee5e4cc37056ff11327993ff3564dfb6
+  inference_embedded_config_sha256: 8afb33a7fc0c322e888c481e225ec3c4951ea0d9e7294b030d6c44c05892b5c3
+  inference_embedded_support_zip_sha256: d3755d97f529b3f065cec746071517ae21e80df334ff70f778b6f8e93befd10c
+  inference_package_cells: 19
+  inference_package_support_files: 42
+  inference_kernel_source_count: 9
+  inference_dataset_source_count: 1
+  inference_kernel_version: 4
+  inference_pushed_at_utc: "2026-07-25 09:07:35 UTC"
+  inference_pushed_at_jst: "2026-07-25 18:07:36 JST"
+  inference_v2_pushed_at_utc: "2026-07-25 09:33:06 UTC"
+  inference_v2_pushed_at_jst: "2026-07-25 18:33:06 JST"
+  inference_v3_pushed_at_utc: "2026-07-25 10:20:46 UTC"
+  inference_v3_pushed_at_jst: "2026-07-25 19:20:46 JST"
+  inference_v4_pushed_at_utc: "2026-07-25 10:35:31 UTC"
+  inference_v4_pushed_at_jst: "2026-07-25 19:35:31 JST"
+  inference_push_url: https://www.kaggle.com/code/kentookumura/exp372-exp287-exp335-feature-union-inference
+  inference_v1_run:
+    kernel_version: 1
+    kernel_id_no: 128563759
+    status: technical_error
+    observed_terminal_at_utc: "2026-07-25 09:11:05 UTC"
+    log_last_time_seconds: 25.54908745
+    model_fits_started: 0
+    failed_stage: union_model_manifest_status_validation
+    error_type: ValueError
+    error_message: exp372_train_guard_failed_status_must_remain_explicit
+    logs_sha256: b1b73c4f946a266d7bb5365f9cded29dfc2920017e2337c8c616a15b9f0e6970
+    root_cause: >-
+      inference_compared_the_model_artifact_manifest_status_against_the_separate_scientific_result_status
+    local_fix: >-
+      compare_model_manifest_status_to_completed_15_gpu_boosters_while_retaining_train_result_guard_failure_separately
+    local_fix_validated: true
+    package_notebook_sha256: 59838d3ef7e899c1d85378dee60675aa20ef5339dab4f02703829b0d0023e0e6
+    embedded_config_sha256: 00491716b604e31701d380187d3961666afdde0dd01a991903f0dc1e7f986f0e
+    embedded_support_zip_sha256: 316796311ff5e7b66fd913f3f897552716e94354dba9aec5b7e3369c62bb0402
+    pullback_notebook_sha256: ef2a831ab41e6bda33808d70e7aa0cdb741362e8c614bca88827c248672bc290
+    pullback_metadata_sha256: 93ad64c7239a7ccf2c28b82984d8bcb52e06048fad94d1e42a1c716bb31ca127
+  inference_v2_run:
+    kernel_version: 2
+    kernel_id_no: 128563759
+    status: technical_error
+    observed_terminal_at_utc: "2026-07-25 10:17:27 UTC"
+    log_last_time_seconds: 434.628234989
+    candidate_generation_completed: true
+    candidate_rows: 14151
+    candidate_wells: 3
+    model_fits_started: 0
+    failed_stage: selector_chunk_size_config_lookup
+    error_type: KeyError
+    error_key: selector
+    logs_sha256: 1caaa1d541bee7a1d86afcf3331f644671decb337ccba0e5540c1b66bdaf8f3e
+    root_cause: >-
+      inference_reused_an_exp335_nested_model_selector_config_path_that_exp372_does_not_define
+    local_fix: >-
+      move_chunk_size_and_signed_top1_tolerance_to_exp372_inference_contract
+    local_fix_validated: true
+    model_fits_planned: 0
+    package_notebook_sha256: 6ead654605fc94b242a74aee7ed3282eb6e0386743ed61dd15b390c774247b79
+    embedded_config_sha256: 06fa9fdd004ab53073a52f363645511cce22feb3a562391729cea149905ab388
+    embedded_support_zip_sha256: a993c7c3778d0bb8d7caa527a5870666bcb1de2fda22b7eb47a5be7b7718e600
+    pullback_notebook_sha256: 0c0a4136ce23628032263d63fd837ad8983bbb2c407df17d5639f0feb7c39499
+    pullback_metadata_sha256: 93ad64c7239a7ccf2c28b82984d8bcb52e06048fad94d1e42a1c716bb31ca127
+  last_inference_run:
+    kernel_version: 3
+    kernel_id_no: 128563759
+    status: technical_error
+    observed_terminal_at_utc: "2026-07-25 10:33:07 UTC"
+    log_last_time_seconds: 412.991783575
+    candidate_generation_completed: true
+    candidate_rows: 14151
+    candidate_wells: 3
+    model_fits_started: 0
+    failed_stage: selector_current_test_missingness_guard
+    error_type: ValueError
+    error_features:
+      - ctx__raw__md
+      - ctx__raw__x
+      - ctx__raw_delta_last__x
+      - ctx__raw__y
+      - ctx__raw_delta_last__y
+      - ctx__raw__z
+      - ctx__raw_delta_last__z
+    logs_sha256: dfc98eaf752dd8a693e04477927af80215e77a9b9fee8183967aaeccc6e5236b
+    root_cause: >-
+      exp372_features_omitted_the_corrected_exp264_raw_context_allowlist_so_expected_dense_columns_were_reindexed_as_nan
+    local_fix: >-
+      inherit_the_frozen_corrected_exp264_md_x_y_z_gr_raw_context_contract
+    local_fix_validated: true
+    model_fits_planned: 0
+    package_notebook_sha256: 5e84ccd8b5289e733a2b212bd99405d21d10b52658b6fea40f02413ba24ea6a0
+    embedded_config_sha256: 755c791e7461e73ce549bc1116b938885827a3d24c97fc0fb092f6883e6795f0
+    embedded_support_zip_sha256: 6be9a531036692b7533c5dd136d00e7f9649460128609df6acd4d61619adc5d9
+    pullback_notebook_sha256: 085a70e2cf5bae59cdce0406cf3ceffa9ca849e103470bf2176168a03c0f923a
+    pullback_metadata_sha256: 93ad64c7239a7ccf2c28b82984d8bcb52e06048fad94d1e42a1c716bb31ca127
+  current_inference_run:
+    kernel_version: 4
+    kernel_id_no: 128563759
+    status: complete_submit_check_pass_no_external_submit
+    observed_terminal_at_utc: "2026-07-25 12:15:24 UTC"
+    runtime_seconds: 459.376
+    log_last_time_seconds: 490.494217252
+    rows: 14151
+    wells: 3
+    candidate_count: 12
+    selector_feature_count: 88
+    base_feature_count: 273
+    parent_compact_feature_count: 74
+    formation_feature_count: 74
+    signed_compact_feature_count: 23
+    final_feature_count: 444
+    parent_selector_model_count: 40
+    signed_selector_model_count: 20
+    tvt_model_count: 15
+    booster_training_count: 0
+    model_fits_planned: 0
+    max_abs_formula_parity: 0.0
+    signed_top1_value_parity_max_abs_error: 0.0
+    technical_output_audit_passed: true
+    submit_check_passed: true
+    submit_check_fail_count: 0
+    submit_check_warn_count: 0
+    competition_submit_authorized: false
+    competition_submit_performed: false
+    incremental_utility_gate_passed: false
+    tail_promotion_gate_passed: false
+    promotion_gate_passed: false
+    prediction_min: 11591.6962890625
+    prediction_max: 12239.3095703125
+    prediction_mean: 11905.2734375
+    prediction_std: 278.5018310546875
+    logs_sha256: 5e405b2015a80a16c8262c54cfadd749d9bcba675e22fab21955359009fbf811
+    inference_metrics_sha256: f5436406513d306fef8e75c63f10b9446fb8cc5ca0204e975eb9f27daa72cd8d
+    reproducibility_manifest_sha256: f5436406513d306fef8e75c63f10b9446fb8cc5ca0204e975eb9f27daa72cd8d
+    prediction_decompressed_sha256: 5f18bcaf8cdd6952652155c6029c8045272b0b052a69ac8157bbf170aad4bc54
+    inference_feature_schema_sha256: bac4d7c539ea6b647c9393c75f00c99349c83887bf644a4a093c3fa89a0116f2
+    formation_parquet_sha256: d5363041a9a8d48fcca29e6529f3a636e3e2cd0ba2a7d98bbcccc3d53365ab80
+    formation_logical_content_sha256: cc974f8cc4bd3976b42767fc690a8085389d39d249d73ff3f8e6bdf0c44c9d8c
+    submission_sha256: 3688de824db2ae0ff1002fb9c2c9ed8543ed09d4e5bbfdd45d7bbf3c9c7eacdd
+    output_downloaded_for_validation: true
+    output_download_location: /tmp/kaggle-output/exp372_exp287_exp335_feature_union_on_exp264/inference_v4
+    persistent_submission_copy_created: false
+    package_notebook_sha256: 3b8e6516b25de70da2b9ab83f1dbb52348a0e6ffcfe54f878ea31d93db232fec
+    embedded_config_sha256: 8afb33a7fc0c322e888c481e225ec3c4951ea0d9e7294b030d6c44c05892b5c3
+    embedded_support_zip_sha256: d3755d97f529b3f065cec746071517ae21e80df334ff70f778b6f8e93befd10c
+    pullback_notebook_sha256: 421bf54b305d6d06f12c0c263150c8e69773ae4672fb1f4bbb39ccab12b77b30
+    pullback_metadata_sha256: 93ad64c7239a7ccf2c28b82984d8bcb52e06048fad94d1e42a1c716bb31ca127
+  observed_submission:
+    ref: 54975325
+    file_name: submission.csv
+    status: complete
+    public_lb: 7.587
+    private_lb: null
+    submitted_at_utc: "2026-07-25 12:28:12.460000 UTC"
+    observed_at_utc: "2026-07-25 23:09:34 UTC"
+    source: kaggle_competitions_submissions_and_submission_monitor
+    attribution: user_confirmed_latest_scored_code_submission_after_inference_v4
+    monitor_log: ../../logs/submission_exp372_exp287_exp335_feature_union_on_exp264.log
+    performed_by_codex: false
+    inference_notebook_external_submit: false
+    train_scientific_gate_reclassified: false
+    ml_public_lb_anchor_updated: false
+  submission_approved: false
+  observed_external_submission: true
+  run_inference: false
+  create_submission: false
+  submit_to_kaggle: false
+  canonical_train_kernel_id: kentookumura/exp372-exp287-exp335-feature-union-train
+  canonical_train_title: exp372 exp287 exp335 feature union train
+  canonical_inference_kernel_id: kentookumura/exp372-exp287-exp335-feature-union-inference
+  canonical_inference_title: exp372 exp287 exp335 feature union inference
+  inference_scope: saved_model_cpu_inference_generate_submission_file_no_external_submit
+  planned_scope: one_variant_three_configs_five_folds_15_gpu_boosters_zero_control_retraining
+  gpu_quota_note: >-
+    Kaggle GPU quota was unavailable when the design was frozen. The
+    2026-07-25 execution instruction authorized canonical Kaggle T4 version 1,
+    which stopped before booster fit on a technical error. The explicit retry
+    instruction authorized version 2 with the unchanged 15-booster contract.
+    Version 2 completed all 15 boosters and failed the frozen incremental and
+    tail gates. The 2026-07-25 user instruction explicitly overrides only the
+    inference prohibition; no Colab run, retraining, same-OOF rescue, or
+    external competition submission was authorized for the Codex-run
+    inference workflow. A later user-confirmed external submission was
+    observed as ref 54975325 with Public LB 7.587; Codex did not submit it.
+
+inference:
+  status: user_authorized_2026_07_25_cpu_after_guard_failure
+  result_status: cpu_inference_complete_submit_check_pass_external_submission_scored_public_lb_7p587
+  authorization_scope: saved_model_cpu_inference_generate_submission_file_no_external_submit
+  authorization_received_at: "2026-07-25"
+  explicit_user_override_after_guard_failure: true
+  train_result_status: train_complete_guard_failed_closed
+  technical_gate_passed: true
+  incremental_utility_gate_passed: false
+  tail_promotion_gate_passed: false
+  promotion_gate_passed: false
+  retained_guard_failure: >-
+    mid_250_1000_plus_0p048400_vs_best_standalone_and_exp264_by_well_p95_plus_2p198026_worst_plus_13p023263
+  runtime: kaggle_cpu
+  booster_training_count: 0
+  raw_test_candidate_source: exp263_stage1_source_port_same_process
+  public_test_row_artifact_as_input: false
+  candidate_count: 12
+  selector_predict_base_row_chunk_size: 20000
+  signed_top1_value_parity_atol: 1.0e-5
+  parent_selector_model_bundle: inputs/stage_c_inference_models.tar.xz
+  parent_selector_model_bundle_sha256: 0e1ae1a59047ddbba8037b63e06bddbd8b903b378f944e37ecb75f52440b5adf
+  parent_selector_model_manifest_sha256: 3f28b04a017f0edadb815be44bf6f6f039dbd115bb72b3401e2681d3002422d2
+  parent_selector_model_count: 40
+  parent_selector_models_per_outer_objective: 4
+  selector_feature_schema_file_sha256: b91ec1517a82641fe4d96f41c97872151f273a8bbfcb537284f91d47aacf1035
+  selector_feature_catalog: inputs/exp264_stage_a_feature_catalog.csv
+  selector_feature_catalog_sha256: 3a443a1a5a71874499affdfe68ff07c8f40d0abbb86530f8808b45dee9781235
+  selector_training_sparse_feature_count: 25
+  expected_selector_feature_count: 88
+  parent_compact_schema_file_sha256: e3a677610899cb33bf58262f4cf02f650300c8c2207c46b53588d3418162ea74
+  parent_compact_schema_logical_sha256: 23614916c99edbbd513bcefee958d26cdfae5b83fb05c232c19736f2708dd725
+  expected_parent_compact_feature_count: 74
+  signed_selector_model_manifest_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp335-signed-residual-meta-on-exp264-train/artifacts/signed_selector_model_manifest.json
+    - "**/signed_selector_model_manifest.json"
+  signed_selector_model_manifest_sha256: 2b626a0964d48da27b452e113afe8e05ee4342017fdd96bab80bea269e7390f5
+  signed_selector_model_count: 20
+  signed_selector_models_per_outer: 4
+  signed_compact_schema_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp335-signed-residual-meta-on-exp264-train/artifacts/signed_compact_schema.json
+    - "**/signed_compact_schema.json"
+  signed_compact_schema_file_sha256: e57c6d5fde307eb26193a1c5efdb31accde94a6836df75de03100189d232021a
+  signed_compact_schema_logical_sha256: 74abf31f057dfe29177221895e3e26c5a261e5b51defc04f081d6b140f2be44c
+  expected_signed_compact_feature_count: 23
+  expected_formation_feature_count: 74
+  tvt_model_manifest_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp372-exp287-exp335-feature-union-train/artifacts/model_manifest.json
+    - "**/model_manifest.json"
+  tvt_model_manifest_sha256: e0d7f85c34d5c64410fe1b2e641669ee1887346a4cbd754579d0dd7e15875b5a
+  tvt_model_manifest_status: completed_15_gpu_boosters
+  tvt_model_feature_schema_sha256: 049800d626b04f16fbf08eb33e8a980ecbe62008402ff7b24f3e77e04e6ef4e9
+  tvt_model_variant: formation74_signed23_union_addonly
+  tvt_model_count: 15
+  expected_source_base_feature_count: 380
+  expected_base_feature_count: 273
+  source_base_feature_catalog: inputs/exp218_feature_availability.csv
+  source_base_feature_catalog_sha256: 6f93a502c9b58301e49da6effbf47b36d4635d4045157681749a762f08c89c67
+  base_feature_allowlist: inputs/exp218_clean_273_allowlist.csv
+  base_feature_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
+  expected_final_feature_count: 444
+  score_sample_rows: 10000
+  required_namespaced_confidence_column_count: 21
+  generate_submission_file: true
+  submit_to_kaggle: false
+  competition_submit_authorized: false
+  competition_submit_requires_submit_check_pass: true
+  train_union_rmse: 8.071563864946972
+  train_best_standalone_rmse: 8.136708220359452
+  train_by_well_delta_p95_vs_exp264: 2.19802617730974
+  train_worst_well_delta_vs_exp264: 13.023263265570503
+  train_worst_well: fb03ae90
+  kaggle_kernel_id: kentookumura/exp372-exp287-exp335-feature-union-inference
+  kaggle_kernel_version: 4
+  kaggle_status_final: KernelWorkerStatus.COMPLETE
+  runtime_seconds: 459.376
+  output_rows: 14151
+  output_wells: 3
+  final_selector_feature_count: 88
+  final_feature_count: 444
+  parent_selector_models_used: 40
+  signed_selector_models_used: 20
+  tvt_models_used: 15
+  model_fits_performed: 0
+  submission_file_generated: true
+  submit_check_status: PASS
+  submit_check_fail_count: 0
+  submit_check_warn_count: 0
+  competition_submit_performed: false
+  prediction_decompressed_sha256: 5f18bcaf8cdd6952652155c6029c8045272b0b052a69ac8157bbf170aad4bc54
+  inference_feature_schema_sha256: bac4d7c539ea6b647c9393c75f00c99349c83887bf644a4a093c3fa89a0116f2
+  formation_logical_content_sha256: cc974f8cc4bd3976b42767fc690a8085389d39d249d73ff3f8e6bdf0c44c9d8c
+  submission_sha256: 3688de824db2ae0ff1002fb9c2c9ed8543ed09d4e5bbfdd45d7bbf3c9c7eacdd
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  batch_size: 50000
+  kaggle:
+    enable_internet: false
+    enable_gpu: false
+    machine_shape: ""
+    gpu_use_dp: true
+    deterministic: true
+    force_col_wise: true
+    num_threads: 8
+    bootstrap_dependency_files:
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/candidate_contract.yaml
+        destination: inputs/exp264_candidate_contract.yaml
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_a_v4/artifacts/feature_catalog.csv
+        destination: inputs/exp264_stage_a_feature_catalog.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_a_v4/artifacts/feature_schema.json
+        destination: inputs/exp264_stage_a_feature_schema.json
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+        destination: inputs/exp218_clean_273_allowlist.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_feature_availability.csv
+        destination: inputs/exp218_feature_availability.csv
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: inputs/exp218_source/config.yaml
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/settings.py
+        destination: inputs/exp218_source/settings.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/learned_likelihood_rawtest_feature_generator_parity.py
+        destination: inputs/exp145_source/learned_likelihood_rawtest_feature_generator_parity.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/pf_multi_observation_likelihood_probe.py
+        destination: inputs/exp145_source/pf_multi_observation_likelihood_probe.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/settings.py
+        destination: inputs/exp145_source/settings.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/config.yaml
+        destination: inputs/exp145_source/config.yaml
+      - source: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+        destination: exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_builder.py
+        destination: inputs/exp263_source/candidate_cache_builder.py
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_contract.py
+        destination: inputs/exp263_source/candidate_cache_contract.py
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_loader.py
+        destination: inputs/exp263_source/candidate_cache_loader.py
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/config.yaml
+        destination: inputs/exp263_source/config.yaml
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    train_kernel_sources:
+      - kentookumura/exp264-exp263-confidence-dual-selector-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-tvt-train
+      - kentookumura/exp287-foldsafe-form74-addonly-exp264-train
+      - kentookumura/exp335-signed-residual-meta-on-exp264-train
+      - kentookumura/exp335-signed-residual-meta-on-exp264-tvt-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp145-train
+    inference_kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp073-full-replay-repro-guard-infer
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp226-k16-kappa-repro-inference
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp335-signed-residual-meta-on-exp264-train
+      - kentookumura/exp372-exp287-exp335-feature-union-train
+    inference_dataset_sources:
+      - kentookumura/exp264-stage-c-selector-models
+    inference:
+      enable_gpu: false
+      machine_shape: ""
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_exp264_fold_and_lightgbm_family_seeds_no_new_random_feature_generation
+  stochastic_components:
+    - gpu_lightgbm_downstream_training
+  parallel_rng_policy: no_new_random_draws_and_no_global_rng_in_parallel_paths
+  feature_sha_policy: parquet_file_sha_plus_logical_float32_content_sha_per_partition
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - All three saved feature surfaces are manifest- and partition-SHA verified before fit.
+    - GPU LightGBM is not assumed to be bitwise reproducible even with deterministic flags.
+    - The output manifest must record 15 unique fold-config model slots and every model SHA.
+    - OOF and train output SHA are recorded for Kaggle T4 version 2.
+    - The inference override uses saved model text files and fits zero models.
+    - Raw-test candidate, clean, parent compact, signed compact, and formation surfaces are regenerated in one CPU run.
+    - Test prediction decompressed content SHA and submission SHA must be recorded.
+    - Kaggle bootstrap config and source SHA must be checked immediately before inference push.
+
+notes:
+  - Design frozen on 2026-07-24 by explicit user request.
+  - The user explicitly chose the direct union path and waived the proposed zero-booster complementarity diagnostic as a prerequisite.
+  - Implementation was explicitly approved on 2026-07-24.
+  - The compact self-contained train candidate, shared union pipeline, and contract tests are implemented.
+  - Canonical train notebook adoption, Kaggle package creation, push, and one T4 train run were explicitly authorized on 2026-07-25.
+  - The 2026-07-25 user instruction explicitly authorizes saved-model CPU inference after the frozen scientific failure.
+  - The inference override includes submission-file generation for validation but excludes external competition submission, retraining, same-OOF rescue, and Colab fallback.

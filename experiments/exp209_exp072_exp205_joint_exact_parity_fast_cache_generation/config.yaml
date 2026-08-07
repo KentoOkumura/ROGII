@@ -1,0 +1,227 @@
+experiment:
+  name: "exp209_exp072_exp205_joint_exact_parity_fast_cache_generation"
+  description: Joint Kaggle train notebook for exp072 full replay cache and exp205 exact HMM cache generation with exact-parity guards and lower wall time.
+  route: pf_beam
+  status: completed_v6_outer_workers_4_numba_threads_1_slower_best_runtime_v5_default
+  created_at: "2026-07-07"
+  updated_at: "2026-07-09"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.metric
+
+lineage:
+  parent: exp072_exp205_joint_exact_parity_fast_cache_generation backlog
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - exp205_exact_hmm_smoother_exp072_compatible_cache_audit
+    - KAGGLE_DIRECTION.md exp072_exp205_joint_exact_parity_fast_cache_generation
+  implementation_source: joint_cache_generation.py
+  diff_summary: >
+    Generates the exp072 full Pixiux likelihood-PF public replay train cache and
+    the exp205 amerhu exact HMM train cache in one Kaggle notebook. The first
+    fast path keeps the exp205 comparison columns from the generated exp072
+    DataFrame in memory so the 2GB exp072 gzip cache is not decompressed a
+    second time.
+    HMM well-level outer parallelism is implemented as a guarded config option.
+    The selected runtime default is the v5 setting with outer_workers=2 and
+    numba_num_threads=2; v6 outer_workers=4 and numba_num_threads=1 preserved
+    parity but was slower.
+    PF seeds, particle counts, HMM grid, blend weights, feature definitions, and
+    metric logic are intentionally unchanged.
+
+validation:
+  strategy: train_side_joint_generation_exact_parity_runtime_audit
+  metric: wall_time_and_exact_feature_parity
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  success_criteria:
+    - exp072 generated train cache has the same rows, wells, schema, and values as exp072 v2, ignoring row order only when sorted-content parity is explicitly checked.
+    - exp205 generated HMM cache has the same rows, wells, schema, and values as exp205 v2, ignoring row order only when sorted-content parity is explicitly checked.
+    - exp205 direct comparison reproduces v2 best candidate `blend_likpf_hmm_w500` and metrics within exact or documented float tolerance.
+    - wall time is below 6h for the default guarded fast path; stretch target is below 4h30m if HMM outer parallelism is enabled and parity passes.
+  leakage_policy:
+    - exp072 generation uses only raw train files and stable per-well seeds.
+    - HMM generation uses only raw train horizontal/typewell files, observed TVT_input prefix, GR, MD, Z, and typewell GR/TVT.
+    - Unknown-suffix train TVT is written only as target and used only for train-side metrics.
+    - Reference exp072/exp205 artifacts are used only for parity checking, never as generation inputs when joint generation is enabled.
+    - No raw test files, model training, inference, submission, oracle best, true-error rank, or OOF absolute error are used as features.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: joint_pfbeam_hmm_feature_cache_audit
+  estimator: none
+  target: target
+  base_prediction: last_known_tvt
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+  notes:
+    - HMM defaults match exp205 and the public amerhu notebook default configuration.
+    - The HMM posterior mean is evaluated only as a train-side diagnostic candidate.
+
+feature_cache:
+  exp072:
+    variant: pixiux_likpf_public_replay
+    deterministic_pf: true
+    seed_policy: stable_sha256_per_well
+    expected_feature_count: 196
+    output_prefix: exp063_full_replay_feature_cache
+    n_jobs: 8
+    pf_seeds: 128
+    pf_particles: 500
+    fast: false
+    max_wells: null
+    keep_frame_for_comparison: true
+    expected_artifacts:
+      - exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      - exp063_full_replay_feature_cache_feature_schema.csv
+      - exp063_full_replay_feature_cache_summary.json
+  hmm:
+    variant: amerhu_exact_hmm_smoother_default
+    output_prefix: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    expected_feature_count: 13
+    fast: false
+    max_wells: null
+    outer_workers: 2
+    expected_artifacts:
+      - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_feature_schema.csv
+      - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_by_well_generation_summary.csv
+      - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_summary.json
+
+execution:
+  run_exp072_full_cache: true
+  run_hmm_cache: true
+  run_direct_comparison: true
+  direct_comparison_use_in_memory_exp072: true
+  run_reference_parity_checks: true
+  compare_sorted_full_frames_on_sha_mismatch: false
+  write_joint_summary: true
+  benchmark_notes:
+    - Default fast path removes exp205 comparison reread of the exp072 2GB gzip.
+    - HMM outer parallelism is implemented but disabled by default; enable with feature_cache.hmm.outer_workers > 1 only after a serial parity baseline.
+
+reference_artifacts:
+  exp072_train_features:
+    expected_raw_gzip_sha256: 14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18
+    candidates:
+      - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v2_stream/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp205_hmm_train_features:
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    candidates:
+      - /tmp/kaggle-output/exp205_exact_hmm_smoother_exp072_compatible_cache_audit/train_v2_small/artifacts/exp205_exact_hmm_smoother_exp072_compatible_cache_audit_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp205-exact-hmm-smoother-cache-audit-train/artifacts/exp205_exact_hmm_smoother_exp072_compatible_cache_audit_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - experiments/exp205_exact_hmm_smoother_exp072_compatible_cache_audit/artifacts/exp205_exact_hmm_smoother_exp072_compatible_cache_audit_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+  exp205_comparison_summary:
+    candidates:
+      - /tmp/kaggle-output/exp205_exact_hmm_smoother_exp072_compatible_cache_audit/train_v2_small/artifacts/exp205_vs_exp072_summary.json
+      - /kaggle/input/notebooks/kentookumura/exp205-exact-hmm-smoother-cache-audit-train/artifacts/exp205_vs_exp072_summary.json
+
+comparison:
+  baseline_experiment: exp072_exp063_full_replay_feature_cache
+  output_prefix: exp209_vs_exp072_exp205
+  baseline_feature_cache:
+    - /kaggle/working/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  hmm_feature_cache:
+    - /kaggle/working/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+  baseline_candidate_columns:
+    - likpf_mean
+    - pf_ancc
+    - pf_z
+    - beam_mean
+  blend_hmm_weights:
+    - 0.25
+    - 0.50
+    - 0.75
+  expected_best_candidate: blend_likpf_hmm_w500
+  expected_best_rmse_tvt: 10.269699957242537
+  expected_exp072_likpf_mean_rmse_tvt: 11.594897668440991
+  metric_abs_tolerance: 0.000000001
+  uncertainty_bins: 10
+  write_enriched_cache: true
+  step_delta_thresholds:
+    - 0.08
+    - 0.10
+    - 0.20
+  result_artifacts:
+    - exp209_vs_exp072_exp205_overall_metrics.csv
+    - exp209_vs_exp072_exp205_distance_bucket_metrics.csv
+    - exp209_vs_exp072_exp205_by_well_delta.csv
+    - exp209_vs_exp072_exp205_hmm_std_calibration.csv
+    - exp209_vs_exp072_exp205_step_delta_rates.csv
+    - exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    - exp209_vs_exp072_exp205_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp205-exact-hmm-smoother-cache-audit-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: exp072_stable_sha256_per_well_hmm_no_rng
+  stochastic_components:
+    - exp072 ANCC PF / Z PF / likelihood-PF stable per-well seed vectors
+  parallel_rng_policy: exp072 stable per-well seeds; HMM default has no RNG; HMM v6 outer_workers=4 with numba_num_threads=1 was evaluated and was slower than v5, so the default remains outer_workers=2 with numba_num_threads=2
+  feature_sha_policy: decompressed_content_sha_for_gzip plus raw gzip SHA recorded separately
+  record:
+    kernel_version: true
+    input_sha: false
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This experiment is a train-side generation/runtime audit, not a deterministic submission anchor.
+    - exp072 PF components are stochastic internally but use stable SHA256 per-well seeds inherited from exp072 v2.
+    - Default HMM generation consumes no random numbers.
+    - Numba parallel floating arithmetic may vary at tiny precision, so any HMM outer parallel run must be compared against the serial baseline before being accepted.
+
+inference:
+  mode: not_applicable_train_feature_cache_only
+  selected_candidate: null
+  notes:
+    - This experiment intentionally does not create raw-test features, predictions, or submission.csv.
+    - Raw-test-safe HMM regeneration remains a separate follow-up backlog.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog exp072_exp205_joint_exact_parity_fast_cache_generation.
+  - Does not implement likpf-only/slim cache; the generated exp072 cache remains full 196-feature parity target.
+  - Does not change PF seeds/particles, HMM grid, dtype policy, candidate columns, or blend weights for speed.

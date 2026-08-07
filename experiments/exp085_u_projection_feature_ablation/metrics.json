@@ -1,0 +1,28 @@
+{
+  "experiment": "exp085_u_projection_feature_ablation",
+  "status": "kaggle_train_v1_timeout_log_eval",
+  "route": "ml_model",
+  "parent": "exp073_gpu_reproducibility_guard_for_exp063_full_replay",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "cv": {
+    "source": "kaggle_train_v1_logs",
+    "official_pooled": null,
+    "best_complete_model_mean_fold_rmse": 9.291006,
+    "best_complete_variant": "u_projection_correction_plus_disagreement",
+    "best_complete_model": "lgb1",
+    "best_complete_delta_vs_matching_control": -0.243542,
+    "note": "Simple mean of fold RMSE recovered from logs, not pooled OOF RMSE."
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "key_idea": "Add-only U-space projection correction and PF/Beam/likelihood-PF disagreement features on the exp073 full replay ML surface while keeping the original TVT residual target.",
+  "artifacts": [
+    "artifacts/exp085_train_v1_log_fold_metrics.csv",
+    "artifacts/exp085_train_v1_log_variant_model_summary.csv"
+  ],
+  "notes": [
+    "Kaggle train v1 timed out after 59/60 fold-model metrics.",
+    "u_projection_correction_plus_disagreement improved log-derived mean fold RMSE for lgb0/lgb1 and had only lgb2 fold4 missing.",
+    "LGB OOF U-space features are deferred until nested fold generation is implemented."
+  ]
+}

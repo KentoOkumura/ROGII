@@ -1,0 +1,153 @@
+experiment:
+  name: "exp186_typewell_late_range_pfbeam_generation_soft_prior"
+  description: CPU-only exp072-style full replay train feature cache rebuilt from raw files with a typewell late-range soft prior inside PF/Beam generation.
+  route: pf_beam
+  status: completed_train_feature_cache_direct_pfbeam_rejected_no_submit
+  created_at: "2026-07-04"
+  updated_at: "2026-07-04"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.metric
+
+lineage:
+  parent: typewell_late_range_pfbeam_generation_soft_prior backlog
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - exp176_typewell_late_range_pfbeam_candidate_prior
+    - exp174_typewell_late_range_ml_posthoc_clip_audit
+  implementation_source: feature_cache.py
+  public_replay_source: late_soft_prior_public_replay.py
+  superseded_audit_source: typewell_late_range_pfbeam_generation_soft_prior.py
+  diff_summary: >
+    Rebuilds the exp072-style full Pixiux public replay train feature cache from raw
+    competition files, without using an existing full replay cache as input. The
+    selected typewell late-range soft prior is applied inside PF_ANCC, PF_Z, Beam,
+    and likelihood-PF generation. Direct PF/Beam RMSE TVT comparison against exp072
+    shows small pf_ancc and beam_mean gains but a large likpf_mean regression, so the
+    generated cache is rejected as an exp072 replacement. No LightGBM model is
+    trained, no inference port is created, and no submission candidate is produced.
+
+validation:
+  strategy: full_replay_train_feature_cache_generation
+  metric: generated_feature_contract
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  leakage_policy:
+    - Uses raw competition train horizontal/typewell files as generation input.
+    - Does not read the existing exp072 full replay cache while generating features.
+    - The train TVT label is written only as the target column for downstream CV and is not used by PF/Beam generation.
+    - Does not read raw test files, train models, infer, submit, or use labels outside the generated train target column.
+    - Downstream inference notebooks must regenerate current raw test features directly with the same soft-prior generation code.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: no_model_train_feature_cache
+  estimator: none
+  target: target
+  base_prediction: last_known_tvt
+  selected_soft_prior_variant: pct50_strong2_pct70_weak0p5
+  soft_prior_variants:
+    - name: no_prior
+      weak_pct: 0.70
+      strong_pct: 0.50
+      weak_penalty: 0.0
+      strong_penalty: 0.0
+      known_last_pct_threshold: 0.75
+      known_last_multiplier: 0.0
+    - name: pct50_strong2_pct70_weak0p5
+      weak_pct: 0.70
+      strong_pct: 0.50
+      weak_penalty: 0.5
+      strong_penalty: 2.0
+      known_last_pct_threshold: 0.75
+      known_last_multiplier: 1.0
+    - name: pct50_strong4_pct70_weak1
+      weak_pct: 0.70
+      strong_pct: 0.50
+      weak_penalty: 1.0
+      strong_penalty: 4.0
+      known_last_pct_threshold: 0.75
+      known_last_multiplier: 1.5
+    - name: pct50_strong8_pct70_weak2
+      weak_pct: 0.70
+      strong_pct: 0.50
+      weak_penalty: 2.0
+      strong_penalty: 8.0
+      known_last_pct_threshold: 0.75
+      known_last_multiplier: 2.0
+
+feature_cache:
+  variant: pixiux_likpf_late_soft_prior_public_replay
+  selected_soft_prior_variant: pct50_strong2_pct70_weak0p5
+  deterministic_pf: true
+  seed_policy: stable_sha256_per_well
+  expected_feature_count: 196
+  output_prefix: exp186_typewell_late_range_pfbeam_generation_soft_prior_full_replay_cache
+  n_jobs: 8
+  pf_seeds: 128
+  pf_particles: 500
+  fast: false
+  max_wells: null
+  expected_artifacts:
+    - exp186_typewell_late_range_pfbeam_generation_soft_prior_full_replay_cache_pixiux_likpf_late_soft_prior_public_replay_train_features.csv.gz
+    - exp186_typewell_late_range_pfbeam_generation_soft_prior_full_replay_cache_feature_schema.csv
+    - exp186_typewell_late_range_pfbeam_generation_soft_prior_full_replay_cache_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources: []
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_well
+  stochastic_components:
+    - full_replay_pf_particle_propagation
+    - full_replay_pf_resampling
+    - full_replay_likelihood_pf_seed_ensemble
+  parallel_rng_policy: joblib_threads_with_per_well_stable_sha256_seeds
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it generates a train feature cache only.
+    - PF seeds are stable per well and split; soft prior changes likelihood weights and resampling decisions but not seed derivation.
+    - Beam variants are deterministic for fixed input and config.
+    - No inference or submission output is generated by this experiment.
+
+inference:
+  mode: not_applicable_train_feature_cache_only
+  selected_candidate: null
+  notes:
+    - Test PF/Beam/likelihood-PF features are intentionally not cached here.
+    - Each downstream inference notebook should regenerate current raw test features directly with the same soft-prior generation code.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog typewell_late_range_pfbeam_generation_soft_prior as an exp072-style full replay train cache rebuild.
+  - The earlier prefix-holdout audit implementation is superseded because it did not rebuild the full replay cache output.
+  - Existing full replay cache is not a generation input; it is only a comparison target for downstream review.
+  - Direct PF/Beam comparison vs exp072 rejects this cache as a replacement because likpf_mean RMSE worsened from 11.594898 to 12.942278.
+  - Direct hard invalidation, clipping, LightGBM training, inference, and submit are explicitly out of scope.

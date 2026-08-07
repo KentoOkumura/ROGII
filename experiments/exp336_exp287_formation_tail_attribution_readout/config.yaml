@@ -1,0 +1,317 @@
+experiment:
+  name: exp336_exp287_formation_tail_attribution_readout
+  description: >-
+    Completed design-frozen zero-booster CPU readout testing whether
+    preregistered, target-free formation reliability attributes explain the
+    well-level tail regression introduced by exp287 relative to corrected
+    exp264. Stage A froze values, quartiles, and SHA before Stage B opened truth
+    or OOF error. All six families failed the fixed AND gate, so the branch is
+    closed without prediction, correction, inference, or submission.
+  route: ml_model
+  status: kaggle_cpu_v2_complete_no_stable_formation_attribution_closed
+  created_at: "2026-07-22"
+  updated_at: "2026-07-22"
+
+lineage:
+  parent: exp287_fold_safe_formation_74_addonly_on_exp264
+  comparison: exp264_exp263_candidate_confidence_dual_selector
+  trigger: exp334_equal_well_loss_weighting_on_exp287
+  steering: ../../.steering/20260722-exp336-exp287-formation-tail-attribution-readout
+  diff_summary: >-
+    Changes no model or prediction. It reads the saved outer-valid formation
+    cache from exp287, freezes six deployable formation-risk families without
+    truth, then joins SHA-pinned exp287 and corrected-exp264 OOF only for
+    attribution. exp334 is trigger evidence only and is not a scoring input.
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.score_rows
+
+validation:
+  strategy: saved_oof_target_free_attribute_freeze_then_error_join
+  metric: formation_tail_attribution_gate
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_isna
+  expected_rows: 3783989
+  expected_wells: 773
+  primary_endpoint: well_rmse_delta_exp287_minus_exp264
+  reference_scores:
+    exp264_rmse: 8.460811237612477
+    exp264_public_lb: 7.562
+    exp287_rmse: 8.136708220359452
+    exp287_public_lb: 7.530
+    exp287_delta_rmse: -0.3241030172530248
+    exp287_worst_well_delta_rmse: 8.228409822385604
+    exp334_rmse: 8.09349752413077
+    exp334_delta_rmse_vs_exp287: -0.04321069622868201
+    exp334_worst_well_delta_rmse_vs_exp264: 7.156485376687872
+  hidden_like_scopes:
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  leakage_policy:
+    - Stage A must not load actual_tvt, TVT, target, prediction, error, abs_error, squared_error, worst-well identity, or by-well outcome files.
+    - Stage A uses only exp287 outer-valid formation cache columns, row identity, well, outer fold, raw MD/X/Y/Z/TVT_input context, and reference manifests.
+    - Risk-family values, well aggregation, eligible families, and quartile boundaries are written and SHA-frozen before Stage B loads either OOF file.
+    - Stage B uses truth and predictions only to evaluate the frozen attributes; it cannot change attributes, boundaries, direction, coverage, or gates.
+    - The exp334 OOF is not a scoring input because exp334 changes the loss rather than the formation surface.
+
+data:
+  exp287_artifact_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp287-foldsafe-form74-addonly-exp264-train/artifacts
+    - experiments/exp287_fold_safe_formation_74_addonly_on_exp264/kaggle/output/train_v5/artifacts
+  exp287_oof_filename: fold_safe_formation_oof_predictions.parquet
+  exp287_prediction_column: fold_safe_formation_74_addonly__lgb_mean__pred_tvt
+  expected_exp287_oof_sha256: 8f026c5c5f6508fb142981832994c6ba9cded4940168c648a9df9f3e698c3913
+  expected_exp287_model_manifest_sha256: 419dbdf83dd6bc343f0265aca56dd690ba1f231ee419e7cf0ff456ffdb797590
+  expected_exp287_metrics_sha256: 435434342494aaa62cee6e627809363ac34f16174973f4b81301d2923f780862
+  expected_exp287_fold_metrics_sha256: 864eca0452eea578c96baa653d25c4f2ae241c84b8e5d659b277407b5e427141
+  expected_exp287_by_well_sha256: 3562cec13abe3c3df496e57d71b46aeb592ea2022c7bf0b9b5df1e062c21024d
+  expected_exp287_formation_fold_manifest_sha256: 25611e281299991d626f1caca48673aee6225a890ad47ecdcd28a117ae827772
+  expected_exp287_formation_relationship_audit_sha256: 868cc2bc3d8ea57103c70a2c150f240a29cc4d0087595d9fc4d68e864f0c86a3
+  expected_exp287_raw_schema_audit_sha256: 45d0bf77b1893adfce74921f4427c4ca5ba6d95c69326cbbd35abb766e502a41
+  expected_exp287_model_feature_schema_sha256: c1327324d6e0719eab45b9f8841033dd6cf09dd09228b044e6e8cc85f0fa8413
+  expected_exp287_formation_feature_schema_sha256: 64e8ceb0e0cf63317d040d7d72bbc8beae4a8805ba9a189dec04888abfcd914f
+  required_formation_partitions:
+    roles: [valid]
+    folds: [0, 1, 2, 3, 4]
+    expected_partition_count: 5
+    source_manifest_total_partition_count: 10
+  exp264_oof_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-tvt-train/artifacts/stage_d_oof_predictions.parquet
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_d_v3_corrected/artifacts/stage_d_oof_predictions.parquet
+  exp264_prediction_column: selector_compact_addonly__lgb_mean__pred_tvt
+  exp264_clean_control_prediction_column: matched_control__lgb_mean__pred_tvt
+  expected_exp264_oof_sha256: b11c5005ca566f76588f4e1735386c15b8f016b874701a82e1c0741c8b839ae2
+  hidden_like_assignment_patterns:
+    - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  expected_hidden_like_assignment_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  raw_train_dir_patterns:
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+    - data/raw/train
+  raw_context_allowed_columns: [MD, X, Y, Z, TVT_input]
+  raw_context_forbidden_columns: [TVT, ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+
+model:
+  name: none_readout_only
+  estimator: none
+  target: none
+  active_variants: 0
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  booster_count: 0
+  parent_control_retraining: false
+
+audit:
+  stage_a_target_free_freeze:
+    source_role: outer_valid_only
+    require_all_oof_rows_exactly_once: true
+    require_unique_id: true
+    require_unique_well_outer_fold: true
+    require_finite_formation_features: true
+    expected_formation_feature_count: 74
+    error_columns_must_be_absent: true
+    quantile_method: numpy_linear
+    quartile_probabilities: [0.25, 0.50, 0.75]
+    require_strictly_increasing_quartile_edges_for_family_eligibility: true
+    freeze_before_error_join: true
+  primary_risk_families:
+    - name: plane_reference_distance
+      source_columns: [spatial_knn_dist]
+      well_scalar: row_quantile_0p90
+      high_is_risky: true
+    - name: dense_reference_distance
+      source_columns: [dense_dist]
+      well_scalar: row_quantile_0p90
+      high_is_risky: true
+    - name: dense_neighbor_uncertainty
+      source_columns: [dense_std]
+      well_scalar: row_quantile_0p90
+      high_is_risky: true
+    - name: plane_dense_disagreement
+      source_columns: [spatial_vs_dense]
+      transform: absolute_value
+      well_scalar: row_quantile_0p90
+      high_is_risky: true
+    - name: formation_consensus_spread
+      source_columns: [form_rng_d]
+      well_scalar: row_quantile_0p90
+      high_is_risky: true
+    - name: known_prefix_formation_calibration_error
+      source_columns: [frm_rmse_ANCC, frm_rmse_ASTNU, frm_rmse_ASTNL, frm_rmse_EGFDU, frm_rmse_EGFDL, frm_rmse_BUDA, dense_rmse]
+      well_scalar: maximum_of_per_well_constant_values
+      high_is_risky: true
+  technical_and_context_readouts:
+    - plane_reference_available_well_count_by_fold
+    - dense_reference_available_well_count_by_fold
+    - formation_feature_nonfinite_or_missing_rate
+    - known_prefix_row_count
+    - evaluation_to_known_row_count_ratio
+    - suffix_to_prefix_md_span_ratio
+    - evaluation_xy_distance_from_last_known_p90_div_prefix_xy_span
+    - signal_disagreement_sig_std_p90
+    - dense_known_neighbor_std_dense_nb_std
+  context_definitions:
+    known_prefix_rows: TVT_input_is_not_null
+    evaluation_rows: TVT_input_is_null
+    prefix_md_span: max_known_md_minus_min_known_md
+    suffix_md_span: max_evaluation_md_minus_last_known_md
+    prefix_xy_span: known_xy_bounding_box_diagonal
+    evaluation_xy_distance: euclidean_distance_from_last_known_xy
+    evaluation_xy_aggregation: row_quantile_0p90_numpy_linear
+    denominator_floor: 1.0e-6
+  context_can_pass_primary_gate: false
+  stage_b_error_join:
+    require_exact_id_well_fold_alignment: true
+    require_actual_tvt_match_between_oof_files: true
+    actual_tvt_absolute_tolerance: 1.0e-4
+    endpoint_aggregation: unweighted_well_rmse
+    delta_definition: exp287_well_rmse_minus_exp264_well_rmse
+    secondary_reports:
+      - row_weighted_rmse_delta_report_only
+      - spearman_risk_vs_well_delta_report_only
+      - plus_1ft_3ft_5ft_worsening_rate_by_quartile
+      - single_largest_absolute_delta_well_sensitivity_report_only
+  decision_gate:
+    family_pass_rule: any_preregistered_primary_family_passes_all_checks
+    global_q4_minus_q1_mean_delta_rmse_minimum_ft: 0.25
+    require_global_q4_minus_q1_median_delta_positive: true
+    minimum_positive_direction_folds: 4
+    required_fold_count: 5
+    require_positive_direction_hidden_like_spatial: true
+    require_positive_direction_hidden_like_typewell_purged: true
+    minimum_global_wells_per_endpoint_quartile: 100
+    minimum_wells_per_endpoint_quartile_per_fold: 10
+    minimum_wells_per_endpoint_quartile_per_hidden_like_scope: 15
+    require_no_error_dependent_family_or_boundary: true
+    close_if_no_family_passes: true
+    pass_means_separate_intervention_experiment_is_eligible_only: true
+  expected_outputs:
+    - scientific_contract.json
+    - input_artifact_manifest.json
+    - target_free_well_attributes.csv
+    - target_free_attribute_freeze_manifest.json
+    - well_oof_delta_metrics.csv
+    - family_quartile_metrics.csv
+    - fold_direction_metrics.csv
+    - hidden_like_direction_metrics.csv
+    - technical_context_readout.csv
+    - attribution_decision.json
+    - reproducibility_manifest.json
+
+guards:
+  forbidden:
+    - worst_well_id_as_attribute_or_rule
+    - truth_error_or_prediction_in_stage_a
+    - posthoc_attribute_feature_or_boundary_selection
+    - same_oof_threshold_weight_clip_shrink_or_gate_optimization
+    - formation_feature_deletion_or_rescue_training
+    - corrected_oof_or_prediction_generation
+    - model_training_or_parent_control_retraining
+    - inference_or_submission
+    - guard_relaxation_after_results
+
+result:
+  status: NO_STABLE_FORMATION_ATTRIBUTION_CLOSE
+  passed_family_count: 0
+  primary_family_count: 6
+  passed_families: []
+  closes_formation_attribution_branch: true
+  authorizes_separate_intervention_experiment: false
+  promotes_exp287_or_exp334: false
+  authorizes_prediction_inference_or_submission: false
+  stage_a_freeze_manifest_sha256: e65a9924c11f77008d1574070f71b6cf2d099993e8510eeaf7cc285c5d54979f
+  pooled_oof_report_only:
+    exp287_rmse: 8.136708220359452
+    exp264_rmse: 8.460811237612477
+    delta_rmse: -0.3241030172530248
+    well_delta_mean: -0.16968355253980363
+    well_delta_median: -0.06512229968663474
+  technical:
+    expected_rows_aligned: 3783989
+    expected_wells_aligned: 773
+    actual_tvt_max_abs_difference: 0.0
+    all_six_families_strictly_eligible: true
+    all_artifact_sha256_verified: true
+  kaggle:
+    kernel: kentookumura/exp336-exp287-formtail-attribution-readout-train
+    kernel_id_no: 128221753
+    completed_version: 2
+    completed_runtime_seconds: 92.458
+    notebook_total_seconds: 102.406
+    version_1_status: technical_error_before_family_evaluation
+    version_1_failure: duplicate_sha_identical_hidden_like_assignment_paths
+  generated_model: false
+  generated_prediction: false
+  generated_submission: false
+
+execution:
+  implementation_approved: true
+  kaggle_push_approved: false
+  kaggle_push_approval_received_at: "2026-07-22"
+  kaggle_push_approval_scope: >-
+    Canonical train adoption and one Kaggle CPU full-attribution readout with
+    6 frozen families, 0 models, 0 trained folds, 0 boosters, and no inference
+    or submission.
+  active_stage: implementation_complete_no_run
+  allowed_stages:
+    - implementation_complete_no_run
+    - full_attribution_readout
+  run_stage_a_freeze: false
+  run_stage_b_attribution: false
+  run_model_training: false
+  run_inference: false
+  create_submission: false
+  submit_to_kaggle: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  blas_threads: 1
+  expected_runtime_seconds_minimum: 1200
+  expected_runtime_seconds_maximum: 7200
+  planning_runtime_upper_bound_seconds: 14400
+  actual_runtime_seconds: 92.458
+  actual_notebook_total_seconds: 102.406
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp287-foldsafe-form74-addonly-exp264-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-tvt-train
+    inference_kernel_sources: []
+    bootstrap_dependency_files:
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_sorted_identity_and_fixed_numpy_linear_quantiles
+  stochastic_components: []
+  parallel_rng_policy: no_rng_single_worker_and_fixed_blas_threads
+  feature_sha_policy: logical_csv_content_sha256_with_canonical_row_and_column_order
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - The readout claims deterministic diagnostic reproducibility, not a deterministic model or submission anchor.
+    - Sort attributes by well and family, metrics by family/scope/fold/quartile, and JSON keys before hashing.
+    - Record the Stage A freeze-manifest SHA before opening either OOF error surface in Stage B.
+    - Rebuild and inspect the Kaggle bootstrap only after separate implementation and push approval.
+
+notes:
+  - Implementation and notebook candidates were approved on 2026-07-22.
+  - The user authorized canonical adoption and one Kaggle CPU full-attribution run on 2026-07-22; version 2 completed after a technical-only resolver fix following version 1.
+  - All six primary families failed the preregistered AND gate, so the formation attribution branch is closed without same-OOF rescue.
+  - The compact and canonical inference notebooks remain fail closed; no prediction, correction, inference, or submission was generated or authorized.

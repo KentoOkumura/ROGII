@@ -1,0 +1,55 @@
+experiment:
+  name: exp317_hierarchical_bayesian_typewell_gr_calibration
+  description: Global→Type Well群→wellの階層BayesでGR affine/noise校正を部分プーリングするtrain-side監査
+  route: pf_beam
+  status: design_frozen_blocked_on_exp311_exp313
+  created_at: "2026-07-21"
+
+lineage:
+  parent: exp311_typewell_group_prefix_suffix_gr_calibration_readout
+  dependencies: [exp313_typewell_group_unseen_transfer_guard]
+  diff_summary: exp311のplug-in統計を階層Student-tモデルへ置換し、特にgroup-level noise/reliabilityを部分プーリングする。decoderは動かさずposterior predictiveだけを評価する。
+
+implementation: {enabled: false, scope: design_only, inference_enabled: false, submission_enabled: false}
+
+validation:
+  strategy: sha256_well_grouped_5fold_plus_leave_one_typewell_group_out
+  n_folds: 5
+  fit_scope: outer_train_only
+  truth_join_policy: freeze_posterior_hyperparameters_before_outer_valid_scoring
+
+bayes_model:
+  likelihood: student_t_df5
+  hierarchy: [global, native_overlap_typewell_group, well]
+  parameters: [slope_log, intercept, residual_sigma_log]
+  primary_variant: sigma_only_hierarchy_identity_affine
+  diagnostic_ablations: [global_only, affine_and_sigma_hierarchy, unpooled_well]
+  inference_method: deterministic_laplace_map
+  min_peer_wells: 2
+  default: identity_affine_global_sigma
+
+execution_contract: {scientific_variants: 1, diagnostic_ablations: 3, model_configs: 0, folds: 5, boosters: 0, decoder_runs: 0}
+
+model:
+  name: deterministic_hierarchical_map_laplace
+  params: {}
+
+promotion_gates:
+  posterior_predictive_nll_gain_min: 0.01
+  suffix_rmse_gain_min_ft: 0.05
+  folds_improved_min: 4
+  leave_group_out_nonregression: true
+  worst_well_delta_max_ft: 0.25
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_folds_deterministic_map_initialization
+  stochastic_components: []
+  parallel_rng_policy: deterministic optimizer starts and stable reductions
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: true, prediction_sha: false, submission_sha: false}
+
+notes:
+  - MCMC is out of scope; deterministic MAP/Laplace is fixed to control runtime and reproducibility.
+  - Any HMM emission integration requires a separate experiment after this readout passes.

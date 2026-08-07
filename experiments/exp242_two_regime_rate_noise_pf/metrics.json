@@ -1,0 +1,52 @@
+{
+  "experiment": "exp242_two_regime_rate_noise_pf",
+  "status": "completed_train_side_rejected_no_inference_no_submit",
+  "route": "pf_beam",
+  "metric": "rmse",
+  "cv": {
+    "rows": 3783989,
+    "wells": 773,
+    "runtime_seconds": 23665.00225377083,
+    "baseline": {
+      "candidate": "exp072_likpf_mean",
+      "rmse": 11.594897672217703,
+      "mae": 7.067632584311985,
+      "within10": 0.772807479091509
+    },
+    "two_regime": {
+      "candidate": "pf_two_regime_k4_mean",
+      "rmse": 13.254455162133958,
+      "mae": 8.912313990988164,
+      "within10": 0.678840239757568,
+      "delta_rmse_vs_baseline": 1.6595574899162546,
+      "max_well_regression": 41.956967958940524
+    },
+    "hidden_like_delta_rmse": {
+      "spatial": 0.86421450044744,
+      "typewell_purged": 0.906063709045496
+    },
+    "by_well": {
+      "improved": 275,
+      "worsened": 498,
+      "median_delta_rmse": 1.2363987143855053
+    },
+    "regime": {
+      "turn_particle_fraction_mean": 0.018088150420075555,
+      "turn_posterior_mass_mean": 0.01789724021453656,
+      "entry_fraction_mean": 0.00019634739530602902,
+      "exit_fraction_mean": 0.00036515682210905097,
+      "switch_fraction_mean": 0.0005615042168785605
+    }
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "active_variant_count": 1,
+  "lightgbm_config_count": 0,
+  "fold_count": 0,
+  "total_boosters": 0,
+  "control_regenerated": false,
+  "kernel_id": "kentookumura/exp242-two-regime-rate-noise-pf-train",
+  "kernel_version": 2,
+  "row_candidates_decompressed_sha256": "13ca093b6fccf197e8c4265f4ede3ddc26e8f5e80e5ef64ad6b8d39dfb448635",
+  "notes": "Version 2 completed; the fixed two-regime candidate worsened overall and every guard bucket, so it was rejected without inference or submission."
+}

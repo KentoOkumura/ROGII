@@ -1,0 +1,100 @@
+{
+  "created_at": "2026-07-07",
+  "cv": 5.113654814407508,
+  "experiment": "exp215_mtp_full_tail_heatmap_path_generator_probe",
+  "kaggle": {
+    "kernel": "kentookumura/exp215-mtp-full-tail-heatmap-path-generator-train",
+    "kernel_version": 1,
+    "machine_shape": "NvidiaTeslaT4",
+    "status": "KernelWorkerStatus.COMPLETE",
+    "url": "https://www.kaggle.com/code/kentookumura/exp215-mtp-full-tail-heatmap-path-generator-train"
+  },
+  "key_idea": "Learned MTP full-tail heatmap path generator fixed exp212 fallback coverage and improved existing PF/Beam candidate-union oracle headroom, but learned-only weighted path is too weak for direct replacement.",
+  "metric": "existing_plus_learned_mtp_topk_oracle_rmse",
+  "notes": "Train-side GPU diagnostic only. No inference or submission. Metrics are from Kaggle logs; output archive was not downloaded.",
+  "private_lb": null,
+  "public_lb": null,
+  "status": "completed_train_side_gpu_probe_supported_no_submit",
+  "summary": {
+    "aggregate_mtp_window_metrics": {
+      "dense_rank1_center_rmse": 64.79214762462101,
+      "dense_rank1_path_rmse": 64.86995888088877,
+      "dense_samples": 60266,
+      "dense_top10_oracle_center_rmse": 15.741723880365694,
+      "dense_weighted_center_rmse": 60.093226732173605,
+      "dense_weighted_path_rmse": 60.270815798438875,
+      "elapsed_sec": 1181.145870923996,
+      "folds_completed": 5,
+      "sparse_rank1_center_rmse": 63.47439069321158,
+      "sparse_top10_oracle_center_rmse": 15.515651292301497,
+      "sparse_weighted_center_rmse": 58.55921344785318,
+      "train_samples": 86576,
+      "valid_samples": 7730
+    },
+    "artifact_sha": {
+      "candidate_union_by_well_csv_sha256": "ccb488ddaffa12a9966dd9f7a28e6afd83ebf6523049583f5d43358de72e01e9",
+      "candidate_union_distance_bucket_metrics_csv_sha256": "fb9e02d552cc6a4703646ce25483a3956e8e76f3d66ad88845a259f7a7b59d93",
+      "candidate_union_metrics_csv_sha256": "a8ca12409bea71e4378d9dbe68276d272a419b214d3f39fe03889f423530cadd",
+      "dense_predictions_csv_decompressed_sha256": "32ed9a1853f6c3d33b4bad84cf3888c34709eb7fd29244abf3fecf6ac1c22991",
+      "feature_schema_csv_sha256": "39c86637d58a4d3985af7f5a54da8f2e5077711635e747d3e08260fdf148f2b5",
+      "fold_metrics_csv_sha256": "b56e7e68d986f8c5ae7bd217f0fea15099681bfb9587544a634ee6d6fbc9eed9",
+      "full_grid_candidate_paths_csv_decompressed_sha256": "2334e62225e0b35328886ef6a3ebfcbc02faf83cef57e43472a16f3b29549871",
+      "metrics_csv_sha256": "870875efbc1438fa91de907d86f0f6182209a5630bfacbb25be333bb21d8edff",
+      "model_manifest_json_sha256": "f450eab8a847438c6f39a78639544fe3b2fac77e84b0c9bb1de458d74e2782a0",
+      "run_spec_manifest_json_sha256": "acb2821eadc539066d7e2c7873f6aa98e8552e8a4f3c515543faaaf64321a893",
+      "sample_index_csv_decompressed_sha256": "05c348c6c044eab72058ec952ead908caf6b39f5a72ddb9c7cf7c70856e66275",
+      "summary_json_sha256": "be1c0cab26c32da399ddd9c1acf022410c6b861c5b7f74b3ed39647778e8a828",
+      "training_history_csv_sha256": "226db176463ad7f3c01ea735845dc24e05698202f931152f5de70cf42ce6e42c",
+      "window_candidate_paths_npz_sha256": "31ce7a34366481165d87aadabcbf844f6ad369c83ad465256dee9e995bcbb582",
+      "window_path_rank_index_csv_decompressed_sha256": "c5af9f4d4d3400d1720940116cea5069c806b8390570401dfcec25931f01dcdb",
+      "window_path_samples_csv_decompressed_sha256": "e70e37b8a2f5b7d6cd3b25b35cb7eade2da87e6a82165f02523c52fd0f761f0c"
+    },
+    "candidate_union": {
+      "existing_candidates": [
+        "pf_ancc",
+        "beam_mean",
+        "likpf_mean",
+        "sc_ens",
+        "hyb"
+      ],
+      "fallback_row_rate": 0.0,
+      "learned_candidates": [
+        "mtp_rank1",
+        "mtp_rank2",
+        "mtp_rank3",
+        "mtp_rank4",
+        "mtp_rank5"
+      ],
+      "rows_joined": 3783989,
+      "source_covered_row_rate": 1.0,
+      "status": "ok"
+    },
+    "full_grid_contract": {
+      "duplicate_key_rows": 0,
+      "fallback_unique_row_rate": 0.0,
+      "null_required_value_count": 0,
+      "path_ranks": 5,
+      "row_coverage_rate_vs_cache": 1.0,
+      "rows": 18919945,
+      "unique_row_ids": 3783989,
+      "wells": 773
+    },
+    "key_metrics": {
+      "candidate_union_status": "ok",
+      "existing_plus_learned_mtp_topk_oracle_rmse": 5.113654814407508,
+      "existing_plus_learned_mtp_topk_oracle_rmse_delta_vs_existing": -2.3203751172910874,
+      "existing_plus_learned_mtp_topk_within10": 0.9458637432614101,
+      "existing_union_oracle_rmse": 7.434029931698595,
+      "existing_union_within10": 0.9065253625208741,
+      "full_grid_fallback_unique_row_rate": 0.0,
+      "full_grid_source_coverage": 1.0,
+      "learned_mtp_topk_oracle_rmse": 32.33314288630553,
+      "learned_mtp_topk_oracle_rmse_delta_vs_existing": 24.899112954606935,
+      "learned_mtp_topk_within10": 0.4776509656872681,
+      "learned_mtp_weighted_oracle_rmse": 59.27214158083142,
+      "learned_mtp_weighted_oracle_rmse_delta_vs_existing": 51.83811164913283,
+      "learned_mtp_weighted_within10": 0.1535237021037852
+    }
+  },
+  "updated_at": "2026-07-07"
+}

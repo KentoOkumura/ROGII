@@ -1,0 +1,323 @@
+experiment:
+  name: exp437_neighbor_geometry_tvt_only_transition_hmm
+  description: >-
+    Replace only the exp435 TVT-only transition center from -delta_Z to the
+    first difference of the fold-safe exp226 neighbor-geometry path, without
+    restoring a persistent U-rate or branch state.
+  hypothesis: >-
+    The severe exp435 dz-only negative transfer is caused primarily by its
+    zero-rate transition mean. A fold-safe signed neighbor-geometry increment
+    can retain the TVT-only no-hysteresis state while restoring the missing
+    directional drift.
+  route: pf_beam
+  status: stage0_fail_closed
+  created_at: "2026-07-29"
+
+lineage:
+  parent: exp435_tvt_memoryless_u_rate_dzonly_hmm
+  geometry_evidence_parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  related_negative_evidence:
+    - exp355_exp226_dip_rate_prior_on_exp209
+    - exp394_soft_sticky_exp226_k16_branch_hmm
+  independent_physics_candidate:
+    - exp436_sparse_global_stratigraphic_potential
+  steering: ../../.steering/20260729-exp437-neighbor-geometry-tvt-only-transition-hmm
+  diff_summary: >-
+    Keep the exp435 TVT-only probability state, GR emission, grid, process
+    noise, and forward-backward decoder fixed. Replace only each row's
+    transition center with the adjacent difference of fold-safe exp226
+    geometry-only tvt_geop. No persistent rate, rate prior, branch state,
+    exp226 GR/U correction, final prediction, selector, or blend is used.
+
+design:
+  priority: P2
+  design_frozen: true
+  implementation_authorized: true
+  implementation_approval_source: user_message_implement_exp437_2026_07_29
+  canonical_notebook_adoption_authorized: true
+  canonical_notebook_adoption_source: user_message_implement_exp437_2026_07_29
+  kaggle_stage_0_authorized: false
+  kaggle_stage_0_approval_source: user_message_execute_exp437_2026_07_29
+  kaggle_stage_0_completed: true
+  kaggle_stage_0_all_gates_pass: false
+  stage_1_eligible_for_separate_approval: false
+  kaggle_stage_1_authorized: false
+  inference_authorized: false
+  submission_authorized: false
+  stage_0_role: fixed32_mechanism_only_not_cv_or_promotion
+  same_oof_rescue_allowed: false
+
+implementation:
+  enabled: true
+  scope: compact_selfcontained_stage0_candidate_and_fail_closed_inference
+  code_created: true
+  tests_created: true
+  jupytext_source_created: true
+  canonical_notebook_implemented: true
+  kaggle_package_created: true
+  kaggle_push_completed: true
+  stage0_completed: true
+  stage1_completed: false
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: fixed32_mechanism_then_full_group_safe_oof
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  truth_join: after_schedule_prediction_and_diagnostic_sha_freeze
+  stage_0:
+    role: mechanism_preflight_only
+    wells: 32
+    persistent_wells: 16
+    matched_control_wells: 16
+    suffix_rows: 156088
+    candidate_hmm_well_runs: 32
+    parent_control_hmm_reruns: 0
+  stage_1:
+    unlock: stage0_all_gates_pass_and_separate_user_approval
+    wells: 773
+    candidate_hmm_well_runs: 773
+    parent_control_hmm_reruns: 0
+  report_scopes:
+    - near_0_250
+    - mid_250_1000
+    - 1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  leakage_policy:
+    - The saved exp226 OOF is read with a five-column allowlist before candidate freeze.
+    - Suffix TVT, error, abs_error, gr_delta, and final tvt_pred are forbidden before candidate freeze.
+    - The exp226 tvt_geop source is group-safe; outer-valid wells were excluded from donor fields and kappa fitting.
+    - Target TVT_input is allowed only for the exact last-known anchor and prefix GR calibration inherited from exp435.
+    - Role, fold outcome, persistent episode outcome, and truth are joined only after all target-free artifacts are frozen.
+    - Public three-well test outcomes cannot select the transition, gate, or parameter.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp226_geometry_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    pre_freeze_allowlist: [well_id, row_idx, suffix_offset, tvt_geop, fold]
+    pre_freeze_forbidden:
+      - tvt_true
+      - tvt_pred
+      - gr_delta
+      - error
+      - abs_error
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    patterns:
+      - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+  exp435_stage0_predictions:
+    filename: exp435_tvt_memoryless_u_rate_dzonly_hmm_stage0_predictions.csv.gz
+    expected_logical_sha256: aa79810f6c189dd7fbb9d53b8c172a4a051d29ac1780ee4696237e8c24e214c3
+    scientific_contract_sha256: 92f3e307007fa1dc94bd4921f519aa01267f044c0874b31d6581a61a7a356a63
+    use: saved_stage0_control_only
+    regenerate: false
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp435-tvt-memoryless-u-rate-dzonly-hmm-train/artifacts
+      - /kaggle/input/exp435-tvt-memoryless-u-rate-dzonly-hmm-train/artifacts
+      - /tmp/kaggle-output/exp435_tvt_memoryless_u_rate_dzonly_hmm/train_v1/artifacts
+      - experiments/exp435_tvt_memoryless_u_rate_dzonly_hmm/artifacts
+    patterns:
+      - "**/exp435_tvt_memoryless_u_rate_dzonly_hmm_stage0_predictions.csv.gz"
+  fixed32_manifest:
+    filename: stage0_fixed32_manifest.csv
+    expected_sha256: fbbc62b7cb79e16a7fb436f3a9d11f8975e935ad2475a17e2dec4fd7b142e4d6
+    local: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+
+controls:
+  exp226_geometry:
+    full_oof_rmse_ft: 10.077950290784381
+    fixed32_all_rmse_ft: 9.2672047781933
+    fixed32_matched_control_rmse_ft: 8.719886308092539
+    fixed32_persistent_rmse_ft: 9.768805033681078
+  exp226_final:
+    full_oof_rmse_ft: 9.427109596582213
+    public_lb: 9.837
+  exp435_saved_fixed32:
+    parent_exp209_matched_control_rmse_ft: 3.4284362857550077
+    dz_only_matched_control_rmse_ft: 17.133652290742923
+    memoryless_matched_control_rmse_ft: 19.579963224749534
+  report_only:
+    exp263_fixed_physical_blend_cv_rmse_ft: 8.238331
+
+model:
+  name: neighbor_geometry_direct_transition_tvt_only_exact_hmm
+  fitted_ml_model: false
+  persistent_state: tvt_probability_distribution_only
+  point_state_forbidden: true
+  rate_state_present: false
+  branch_state_present: false
+  active_scientific_variants:
+    - neighbor_geometry_direct_transition
+  transition:
+    candidate_formula: >-
+      first_difference(exp226_fold_safe_tvt_geop,
+      prepend=last_finite_TVT_input)
+    control_formula: delta_tvt_equals_negative_delta_z
+    geometry_schedule_updated_by_emission: false
+    geometry_schedule_uses_exp226_gr_delta: false
+    geometry_schedule_uses_exp226_u_projection: false
+    geometry_schedule_uses_exp226_final_prediction: false
+    position_kernel_cells: 5
+  fixed_exp435_hmm:
+    step: 0.35
+    sig_p: 0.02
+    start_sig: 0.75
+    band_pad: 100.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    position_kernel_cells: 5
+    typewell_gr_emission: true
+    forward_backward: true
+
+gates:
+  stage_0_technical:
+    expected_wells: 32
+    expected_rows: 156088
+    expected_folds: 5
+    source_manifest_fold_match_min: 1.0
+    duplicate_rows_max: 0
+    missing_rows_max: 0
+    finite_schedule_prediction_coverage_min: 1.0
+    forbidden_column_reads_before_freeze_max: 0
+    truth_role_episode_reads_before_freeze_max: 0
+    schedule_first_difference_parity_max_abs_ft: 1.0e-10
+    transition_row_sum_max_error: 1.0e-6
+    posterior_normalization_max_error: 1.0e-6
+    logical_sha_readback_required: true
+    projected_full_runtime_seconds_max: 3600
+    peak_rss_gb_max: 8
+  stage_0_mechanism:
+    gain_vs_exp226_geometry_all32_min_ft: 0.10
+    matched_control_delta_vs_exp226_geometry_max_ft: 0.02
+    persistent_gain_vs_exp226_geometry_min_ft: 0.10
+    matched_control_gain_vs_exp435_dz_only_min_ft: 1.0
+    improving_folds_vs_exp226_geometry_min: 4
+    paired_by_well_delta_p95_max_ft: 0.25
+    worst_well_delta_max_ft: 2.0
+    fail_action: close_without_transition_schedule_noise_emission_grid_or_gate_rescue
+  stage_1_promotion:
+    candidate_rmse_max_ft: 9.377109596582213
+    gain_vs_exp226_final_min_ft: 0.05
+    gain_vs_exp226_geometry_min_ft: 0.20
+    improving_folds_vs_exp226_final_min: 4
+    suffix_1000_plus_gain_min_ft: 0.05
+    hidden_like_spatial_delta_max_ft: 0.0
+    hidden_like_typewell_purged_delta_max_ft: 0.0
+    near_0_250_delta_max_ft: 0.02
+    paired_by_well_delta_p95_max_ft: 0.25
+    worst_well_delta_max_ft: 2.0
+    fail_action: close_without_transition_noise_emission_blend_selector_or_same_oof_rescue
+
+execution:
+  selected_stage: stage_0_fixed32
+  run_hmm: false
+  create_prediction: false
+  create_submission: false
+  scientific_variants: 1
+  stage_0_candidate_hmm_well_runs: 32
+  stage_1_max_candidate_hmm_well_runs: 773
+  parent_control_hmm_reruns: 0
+  fitted_ml_models: 0
+  lightgbm_configs: 0
+  trained_ml_folds: 0
+  boosters: 0
+  pf_runs: 0
+  beam_runs: 0
+  gpu_runs: 0
+  implementation_complete: true
+  notebook_status: stage0_v1_complete_mechanism_failed_closed
+
+runtime:
+  target: kaggle_private_cpu
+  enable_gpu: false
+  enable_internet: false
+  use_amp: false
+  num_workers: 1
+  numba_threads_per_worker: 4
+  implementation_approved: true
+  run_approved: false
+  inference_enabled: false
+  submission_enabled: false
+  hard_runtime_limit_seconds: 3600
+  peak_rss_limit_gb: 8
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp437-neighbor-geometry-tvt-transition-hmm-train
+    train_title: exp437 neighbor geometry tvt transition hmm train
+    train_kernel_version: 1
+    train_kernel_id_no: 129056603
+    train_status: COMPLETE
+    train_stage0_elapsed_seconds: 39.153269533000014
+    train_peak_rss_gb: 0.4159660339355469
+    train_package_notebook_sha256: 7b6820691e0e0cc08eeb4908e8c14dd38477ab2f83a2a866a5337491bc52de7a
+    train_package_config_sha256: 0937732cf6bad08ad463a7619d813faa41d6eec37012af8f9328b7e64cccb7cc
+    train_bootstrap_source_sha256: cde657d1fd1e5c4423e0270ef0685b67c85ff5061c93f13bb0c8d4b707e97a2b
+    bootstrap_dependency_files:
+      - source: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+        destination: assets/stage0_fixed32_manifest.csv
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp435-tvt-memoryless-u-rate-dzonly-hmm-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_fixed_fold_well_row_variant_and_reduction_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_worker_and_numba_thread_count
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    allowlist_schema_sha: true
+    geometry_schedule_sha: true
+    prediction_sha: true
+    diagnostic_sha: true
+    metrics_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - The first run is not a deterministic anchor.
+    - Reclassify only after an identical rerun matches schedule and prediction logical SHA.
+    - Verify Kaggle bootstrap config and source SHA before any approved push.
+
+forbidden_changes:
+  - persistent_rate_state
+  - rate_to_rate_transition
+  - stationary_or_adaptive_rate_mixture
+  - exp226_gr_delta_or_u_projection_or_final_prediction
+  - exp226_geometry_scale_or_clip_grid
+  - transition_noise_or_grid_or_emission_grid
+  - branch_hmm_or_soft_sticky_state
+  - parent_control_rerun
+  - same_oof_gate_or_subset_rescue
+  - blend_selector_or_postprocess
+  - inference_or_submission_without_separate_approval
+
+inference:
+  enabled: false
+  create_submission: false
+  unlock_condition: >-
+    Stage 0 all gates pass, Stage 1 is separately approved and passes, and
+    raw-test exp226 geometry regeneration is separately designed and approved.

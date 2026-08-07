@@ -1,0 +1,156 @@
+{
+  "experiment": "exp500_exp490_mean_reversion_residual_likelihood_pf",
+  "status": "stage1_fail_closed_under_override",
+  "route": "pf_beam",
+  "stage": "stage1_full_oof_under_explicit_stage0_override",
+  "next_action": "terminal_close_without_same_oof_rescue",
+  "generated_at_utc": "2026-08-02T12:10:20.304605+00:00",
+  "metric": "rmse_tvt_unknown_suffix",
+  "cv": 8.813504627432842,
+  "public_lb": null,
+  "private_lb": null,
+  "stage0_status_preserved": "stage0_fail_closed",
+  "kaggle": {
+    "stage_0_kernel_id": "kentookumura/exp500-mean-revert-residual-likpf-train",
+    "stage_0_kernel_id_no": 129380054,
+    "stage_0_completed_version": 2,
+    "stage_1_shard_kernel_ids": [
+      "kentookumura/exp500-mean-revert-resid-likpf-full-shard0",
+      "kentookumura/exp500-mean-revert-resid-likpf-full-shard1",
+      "kentookumura/exp500-mean-revert-resid-likpf-full-shard2",
+      "kentookumura/exp500-mean-revert-resid-likpf-full-shard3"
+    ],
+    "stage_1_shard_versions": [1, 1, 1, 1],
+    "stage_1_merge_kernel_id": "kentookumura/exp500-mean-revert-resid-likpf-full-merge",
+    "stage_1_merge_kernel_id_no": 129465486,
+    "stage_1_merge_completed_version": 3,
+    "device": "cpu",
+    "internet_enabled": false,
+    "gpu_enabled": false,
+    "merge_version_1_status": "technical_error_after_shard_sha_verification_on_csv_readback_hash",
+    "merge_version_2_status": "complete_but_exp226_reference_column_contract_mismatch",
+    "merge_version_3_status": "complete_final"
+  },
+  "implementation": {
+    "canonical_notebook_adopted": true,
+    "stage_0_completed": true,
+    "stage_1_implemented": true,
+    "stage_1_completed": true,
+    "inference_enabled": false,
+    "submission_enabled": false,
+    "contract_tests_passed": 10
+  },
+  "execution": {
+    "scientific_variants": 1,
+    "rows": 3783989,
+    "wells": 773,
+    "reporting_folds": 5,
+    "candidate_pf_well_runs": 773,
+    "seed_well_trajectories": 98944,
+    "particle_starts": 49472000,
+    "control_pf_reruns": 0,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "hmm_well_runs": 0,
+    "beam_well_runs": 0,
+    "gpu_runs": 0,
+    "shards": [
+      {"index": 0, "wells": 200, "rows": 983418, "wall_seconds": 7366.198215723038, "peak_rss_gib": 1.2957267761230469, "prediction_logical_sha256": "cd4b3972c93070fe98b7be0a6731c77c12f900808446f977ac9e0aa9ed59cc7c"},
+      {"index": 1, "wells": 182, "rows": 906216, "wall_seconds": 7777.175432443619, "peak_rss_gib": 1.2338981628417969, "prediction_logical_sha256": "c10e75cd1293a3a00b5cd0c6a4ba33e393614d91843e815e13908941e64884f3"},
+      {"index": 2, "wells": 181, "rows": 898293, "wall_seconds": 6406.646442890167, "peak_rss_gib": 1.1558952331542969, "prediction_logical_sha256": "e75302810d40bbd2e654dd18931de1ce5d43bda6d24c8cba9f8ba1e50bd02712"},
+      {"index": 3, "wells": 210, "rows": 996062, "wall_seconds": 8465.693026065826, "peak_rss_gib": 1.2986488342285156, "prediction_logical_sha256": "47e5e5eba9e04876592bc283cea8c8eceeb50d1cea047af72af163500131d012"}
+    ]
+  },
+  "reference_rmse_ft": {
+    "candidate": 8.813504627432842,
+    "exp404_likelihood_pf": 10.914522073423171,
+    "exp486_residual_pf": 11.139812021086678,
+    "exp226_final": 9.427109596582222,
+    "candidate_exp209_50_50": 8.661349061843389,
+    "exp404_exp209_50_50": 10.084909848760013
+  },
+  "rmse_gain_ft": {
+    "vs_exp404": 2.1010174459903297,
+    "vs_exp486": 2.326307393653836,
+    "vs_exp226": 0.61360496914938,
+    "candidate_exp209_50_50_vs_exp404_exp209_50_50": 1.423560786916624
+  },
+  "fold_rmse_ft": {
+    "fold_0": {"rows": 742514, "wells": 155, "candidate": 8.844861302633156, "exp404": 9.360014232082705, "gain": 0.5151529294495489},
+    "fold_1": {"rows": 770907, "wells": 155, "candidate": 9.059117750693906, "exp404": 10.979418533830609, "gain": 1.9203007831367032},
+    "fold_2": {"rows": 746011, "wells": 155, "candidate": 9.2101841882316, "exp404": 10.694277026924821, "gain": 1.484092838693222},
+    "fold_3": {"rows": 746131, "wells": 154, "candidate": 8.12974330882405, "exp404": 10.747502029477594, "gain": 2.617758720653544},
+    "fold_4": {"rows": 778426, "wells": 154, "candidate": 8.778094572244868, "exp404": 12.482449116595678, "gain": 3.70435454435081}
+  },
+  "scope_rmse_ft": {
+    "raw_gr_observed": {"candidate": 8.97931254571466, "exp404": 10.912495892684479, "gain": 1.9331833469698196},
+    "raw_gr_missing": {"candidate": 8.445805627661601, "exp404": 10.918879369685431, "gain": 2.4730737420238302},
+    "missing_fraction_high": {"candidate": 7.898378137156817, "exp404": 10.32693449043304, "gain": 2.428556353276223},
+    "md_since_1000_plus": {"candidate": 9.664325319332399, "exp404": 11.93947768921434, "gain": 2.2751523698819422},
+    "hidden_like_spatial": {"candidate": 10.00196222472833, "exp404": 13.03836335562771, "gain": 3.03640113089938},
+    "hidden_like_typewell_purged": {"candidate": 10.048634847436707, "exp404": 12.777979773575527, "gain": 2.72934492613882}
+  },
+  "gate": {
+    "all_pass": false,
+    "technical_all_pass": true,
+    "scientific_all_pass": false,
+    "technical_checks_passed": 18,
+    "technical_checks_total": 18,
+    "scientific_checks": {
+      "absolute_candidate_rmse": true,
+      "pooled_gain_vs_exp404": true,
+      "pooled_gain_vs_exp486": true,
+      "gain_vs_exp226": true,
+      "improved_folds_vs_exp404": true,
+      "scope_checks": true,
+      "fixed_exp209_50_50_rmse": true,
+      "exp408_episode_sse": true,
+      "exp408_episode_count": true,
+      "exp408_recovery_256": true,
+      "exp408_recovery_512": true,
+      "exp410_episode_sse": true,
+      "by_well_p95": false,
+      "worst_well": false
+    },
+    "improved_folds_vs_exp404": 5,
+    "by_well_delta_p95_vs_exp404_ft": 6.653601018697123,
+    "worst_well_id": "389ae58f",
+    "worst_well_regression_vs_exp404_ft": 46.15467103223343
+  },
+  "episode_metrics": {
+    "exp408_sse_reduction_fraction": 0.48933732104561833,
+    "exp408_episode_count_delta": -142,
+    "exp408_recovery_delta_256": 0.029780564263322873,
+    "exp408_recovery_delta_512": 0.04231974921630094,
+    "exp410_sse_reduction_fraction": 0.5252543406664276
+  },
+  "runtime": {
+    "maximum_shard_wall_seconds": 8465.693026065826,
+    "merge_and_evaluation_wall_seconds": 956.7896101474762,
+    "merge_peak_rss_gib": 5.071952819824219,
+    "maximum_allowed_seconds": 30600,
+    "maximum_allowed_peak_rss_gib": 25
+  },
+  "leakage_ledger": {
+    "before_freeze_truth_reads": 0,
+    "before_freeze_control_reads": 0,
+    "before_freeze_role_fold_episode_reads": 0,
+    "before_freeze_forbidden_geometry_reads": 0,
+    "after_freeze_truth_rows": 3783989,
+    "after_freeze_control_rows": 11351967,
+    "after_freeze_role_fold_episode_rows": 3786239
+  },
+  "reproducibility": {
+    "deterministic_anchor": false,
+    "scientific_contract_sha256": "dc5c1690312d76964bf4c0dbbb406402509049fa6828c44f6e42f13c0dea2c91",
+    "prediction_logical_sha256": "a4bfa0c48203566be31cfefa4c255182c0bec5949056d6ae688b5252b965210a",
+    "prediction_raw_gzip_sha256": "d93bfb03bff0f5aa598d963ea63c4b6a798903f8746b33b04fc63495b09f5f8b",
+    "prediction_decompressed_sha256": "97a4a6bcf9f675e1e51afcc009537415d89743902419e3102ef9d9ffa335a44f",
+    "gate_report_sha256": "b9ff9832584d384498be191714241df58119db5462e9a04c284398d7a73b59d5",
+    "primary_metrics_sha256": "886a53bce2f5a95a049d217ba920b7d5d468d2570c2957e9574e34dd28cefbf0",
+    "summary_sha256": "019e730b6fc7d23017ac681f9a3c0ac4bb39b6673165433bd05808ba82e48680",
+    "freeze_manifest_sha256": "b95128415743bd14b509fad358524fd4fc55da19b0945a199d6cbf6dd4b2acd5"
+  },
+  "interpretation": "The unchanged Stage 1 candidate improved pooled RMSE, all five folds, every fixed scope, and the persistent episode readouts. It nevertheless failed the preregistered by-well p95 and worst-well guards, so the branch is terminally closed without same-OOF rescue, inference, or submission."
+}

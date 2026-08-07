@@ -1,0 +1,153 @@
+{
+  "experiment": "exp191_typewell_continuity_selector_confidence_replacement_only_on_exp148",
+  "status": "completed_negative_no_submit",
+  "source": "kaggle_output_train_lgb0_lgb1_lgb2_v1",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "continuity_selector_parent": "exp191_typewell_late_range_continuity_selector_on_exp176",
+  "candidate_ranker_parent": "exp176_typewell_late_range_pfbeam_candidate_prior",
+  "variant": "exp191_continuity_selector_confidence_replacement_only",
+  "mode": "cpu_deterministic_threads8",
+  "model": "lgb_mean_split3",
+  "rows": 3783989,
+  "wells": 773,
+  "features": 295,
+  "feature_groups": "projection_correction,u_disagreement,exp191_continuity_selector_confidence",
+  "removed_feature_group": "learned_likelihood_confidence",
+  "planned_boosters": 15,
+  "kaggle_train_kernels": {
+    "train_lgb0": {
+      "kernel": "kentookumura/exp191-typewell-continuity-repl-exp148-train-lgb0",
+      "version": 1,
+      "status": "KernelWorkerStatus.COMPLETE"
+    },
+    "train_lgb1": {
+      "kernel": "kentookumura/exp191-typewell-continuity-repl-exp148-train-lgb1",
+      "version": 1,
+      "status": "KernelWorkerStatus.COMPLETE"
+    },
+    "train_lgb2": {
+      "kernel": "kentookumura/exp191-typewell-continuity-repl-exp148-train-lgb2",
+      "version": 1,
+      "status": "KernelWorkerStatus.COMPLETE"
+    }
+  },
+  "rmse_tvt": 9.321908826194106,
+  "rmse_target": 9.321909300319088,
+  "mae_tvt": 5.9722260309015995,
+  "within_1ft": 0.17904544648517742,
+  "within_2ft": 0.3240664811657751,
+  "within_5ft": 0.6066122285239202,
+  "within_10ft": 0.8190697700231159,
+  "prediction_sha256": "10f9d4ef35b2371c196a65ba7b533f70a5045dd90b4d096f211532e5bdb6c668",
+  "individual_split_metrics": [
+    {
+      "model": "lgb0",
+      "rmse_tvt": 9.464292702215204,
+      "rmse_target": 9.464292714534768,
+      "prediction_sha256": "bd1859c555da1a03403409c32e686dfb970d191753b14bee56cab800350e662d",
+      "elapsed_seconds": 20752.006
+    },
+    {
+      "model": "lgb1",
+      "rmse_tvt": 9.33174286237702,
+      "rmse_target": 9.33174285817351,
+      "prediction_sha256": "0ff72745577dce2b705c26cebfe69cf1281b8b6b9dd4c37471ea0982a67d46b3",
+      "elapsed_seconds": 17484.66
+    },
+    {
+      "model": "lgb2",
+      "rmse_tvt": 9.313152705849234,
+      "rmse_target": 9.313152573055143,
+      "prediction_sha256": "622aef9042653af53b7136dd33e633b06143cdf0ad3a0256ab6fde8733ed2d2f",
+      "elapsed_seconds": 17333.009
+    }
+  ],
+  "deltas": {
+    "vs_exp148_lgb_mean": 0.8206276442982858,
+    "vs_exp193_lgb_mean": 0.8652433876513275,
+    "vs_exp194_replacement_lgb_mean": -0.007984276229967335
+  },
+  "distance_bucket_rmse_tvt": {
+    "000_050": {
+      "rows": 38650,
+      "rmse_tvt": 1.1332989418492245,
+      "error_abs_mean": 0.7512816340556274
+    },
+    "050_100": {
+      "rows": 38650,
+      "rmse_tvt": 1.4087628312847422,
+      "error_abs_mean": 1.0158353209896507
+    },
+    "100_250": {
+      "rows": 115950,
+      "rmse_tvt": 2.206831820774099,
+      "error_abs_mean": 1.550700337227792
+    },
+    "250_500": {
+      "rows": 193157,
+      "rmse_tvt": 3.507212864737638,
+      "error_abs_mean": 2.4577164115525196
+    },
+    "500_1000": {
+      "rows": 385911,
+      "rmse_tvt": 5.23423028478711,
+      "error_abs_mean": 3.6256682417343313
+    },
+    "1000_plus": {
+      "rows": 3011671,
+      "rmse_tvt": 10.23001742147714,
+      "error_abs_mean": 6.799157161020929
+    }
+  },
+  "worst_wells_top5": [
+    {
+      "well": "86454a6f",
+      "rows": 7964,
+      "rmse_tvt": 56.312288514840745,
+      "error_mean": -51.66435286916123,
+      "error_abs_mean": 51.66807616697012
+    },
+    {
+      "well": "fb03ae90",
+      "rows": 6431,
+      "rmse_tvt": 40.03936893730723,
+      "error_mean": 38.235218084279275,
+      "error_abs_mean": 38.236991416090035
+    },
+    {
+      "well": "1b1eba53",
+      "rows": 4655,
+      "rmse_tvt": 39.196409500135466,
+      "error_mean": -35.510502819548876,
+      "error_abs_mean": 35.51066687365736
+    },
+    {
+      "well": "91b301ce",
+      "rows": 6570,
+      "rmse_tvt": 35.97889473145367,
+      "error_mean": 25.400323439878235,
+      "error_abs_mean": 25.87257434955289
+    },
+    {
+      "well": "389ae58f",
+      "rows": 6463,
+      "rmse_tvt": 34.63016547647348,
+      "error_mean": -33.33884950874207,
+      "error_abs_mean": 33.33884890434009
+    }
+  ],
+  "artifacts": {
+    "train_lgb0_output": "experiments/exp191_typewell_continuity_selector_confidence_replacement_only_on_exp148/kaggle/output/train_lgb0_v1",
+    "train_lgb1_output": "experiments/exp191_typewell_continuity_selector_confidence_replacement_only_on_exp148/kaggle/output/train_lgb1_v1",
+    "train_lgb2_output": "experiments/exp191_typewell_continuity_selector_confidence_replacement_only_on_exp148/kaggle/output/train_lgb2_v1",
+    "split_lgb_mean_metrics": "experiments/exp191_typewell_continuity_selector_confidence_replacement_only_on_exp148/kaggle/output/exp191_split_lgb_mean_metrics.json",
+    "by_well": "experiments/exp191_typewell_continuity_selector_confidence_replacement_only_on_exp148/kaggle/output/exp191_split_lgb_mean_by_well.csv",
+    "bucket_metrics": "experiments/exp191_typewell_continuity_selector_confidence_replacement_only_on_exp148/kaggle/output/exp191_split_lgb_mean_bucket_metrics.csv"
+  },
+  "decision": {
+    "selected_for_inference": false,
+    "selected_for_submission": false,
+    "reason": "Replacing exp148 learned_likelihood_confidence with exp191 continuity selector confidence worsened lgb_mean_split3 by 0.820627644 RMSE TVT versus exp148."
+  },
+  "public_lb": null
+}

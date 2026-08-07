@@ -1,0 +1,90 @@
+experiment:
+  name: "exp201_typewell_spatial_tvt_error_readout"
+  description: "Diagnostic OOF readout for common typewell, XY-neighbor, sharp TVT-step, and well-offset error patterns on exp148."
+  route: ml_model  # ml_model, pf_beam, or ensemble
+  status: completed
+  created_at: "2026-07-05"
+
+lineage:
+  parent: exp148_learned_likelihood_fulltrain_addonly_on_exp092
+  diff_summary: "No new model training. Reads exp148 train v1 lgb_mean OOF predictions and native_overlap_1 common typewell groups to produce diagnostic error readouts."
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation:
+  strategy: exp148_oof_diagnostic_readout_by_well
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  kind: diagnostic_oof_readout
+  source_prediction_model: lgb_mean
+  source_prediction_mode: gpu_repro_guard_dp_threads8
+  source_prediction_variant: learned_likelihood_confidence_addonly
+
+# Common paths and submission columns come from project.yml.
+data:
+  target_column: TVT
+  id_column: id
+  sample_submission: data/raw/sample_submission.csv
+  submission_target_column: tvt
+  exp148_prediction_candidates:
+    - /tmp/kaggle-output/exp148_train_v1/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+    - experiments/exp148_learned_likelihood_fulltrain_addonly_on_exp092/kaggle/output/train_v1/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+    - /kaggle/input/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+  typewell_summary_candidates:
+    - inputs/native_overlap_1_well_position_typewell_summary.csv
+    - experiments/exp201_typewell_spatial_tvt_error_readout/inputs/native_overlap_1_well_position_typewell_summary.csv
+    - artifacts/typewell_position_groups/native_overlap_1_well_position_typewell_summary.csv
+    - /kaggle/input/rogii-local-artifacts/typewell_position_groups/native_overlap_1_well_position_typewell_summary.csv
+  output_dir: experiments/exp201_typewell_spatial_tvt_error_readout/artifacts
+
+readout:
+  xy_neighbor_k: 8
+  residual_profile_bins: 100
+  sharp_step_quantile: 0.995
+  offset_abs_bias_threshold_ft: 10.0
+  offset_bias_rmse_ratio_threshold: 0.70
+  high_error_top_n: 30
+
+model:
+  name: no_new_model_oof_readout
+  params:
+    estimator: none
+    trains_model: false
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp148-train
+    train_kernel_sources:
+      - kentookumura/exp148-train
+    bootstrap_files:
+      - inputs/native_overlap_1_well_position_typewell_summary.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_diagnostic_readout
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Diagnostic only; do not treat OOF readout metrics as route anchors.
+    - No model, prediction, or submission is generated.
+
+notes:
+  - "Common typewell means native_overlap_1 exact_typewell_group: one well belongs to exactly one group."
+  - "Residual sign is pred_tvt - target_tvt; positive means TVT overprediction."

@@ -1,0 +1,129 @@
+experiment:
+  name: "exp094_projection_only_on_exp073"
+  description: "Projection-only postprocess audit on the deterministic exp073 full replay ML OOF prediction."
+  route: ml_model
+  status: completed_no_inference_guard_failed
+  created_at: "2026-06-20"
+  updated_at: "2026-06-20"
+
+lineage:
+  parent: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  public_reference: pilkwang/rogii-target-free-tvt-geosteering
+  implementation_source: projection_only_on_exp073.py
+  diff_summary: Keeps the exp073 saved LightGBM OOF prediction fixed and applies only a target-free U-space projection postprocess, where U = TVT + Z - (anchor_TVT + anchor_Z). No model retraining, feature addition, PF/Beam regeneration, public submission blend, or target-space refit is introduced.
+
+validation:
+  strategy: exp073_oof_target_free_projection_guard
+  metric: rmse
+  secondary_metrics:
+    - original_fold_delta
+    - well_hash_fold_delta
+    - distance_bucket_delta
+    - tail_rank_bucket_delta
+    - tail_length_bucket_delta
+    - correction_abs_p95
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - The input prediction is the fold-out exp073 OOF lgb_mean prediction.
+    - Projection fitting uses only exp073 pred_tvt, raw geometry Z/MD, and known-prefix anchor TVT_input/Z per well.
+    - target_tvt is used only for scoring the fixed projection variants.
+    - No validation-well true TVT tail values are used to fit the polynomial projection.
+    - Fixed variants must improve overall RMSE and avoid original-fold, well-hash-fold, near-row, and short-tail regressions before any inference port.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp073_oof_predictions:
+    - /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/train_v2/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp073-full-replay-repro-guard-train/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+  exp073_inference_predictions:
+    - /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/inference_v2/artifacts/exp063_full_replay_repro_guard_inference_test_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp073-full-replay-repro-guard-infer/artifacts/exp063_full_replay_repro_guard_inference_test_predictions.csv.gz
+
+model:
+  name: projection_only_postprocess
+  source_experiment: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  base_prediction: exp073_lgb_mean_oof_pred_tvt
+  estimator: none
+  projection_space: TVT_plus_Z_minus_prefix_anchor
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp073-full-replay-repro-guard-train
+    inference_kernel_sources:
+      - kentookumura/exp073-full-replay-repro-guard-infer
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_projection_postprocess
+  stochastic_components:
+    - upstream_exp073_gpu_lightgbm_oof_prediction
+  parallel_rng_policy: no_parallel_rng_in_exp094
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - This audit itself has no RNG and performs no training.
+    - Source gzip prediction content SHA is recorded using decompressed CSV bytes.
+    - Do not treat this as a deterministic submission anchor unless a selected inference run is rerun and submission SHA is stable.
+
+audit:
+  mode: projection_only_oof_postprocess_on_exp073
+  output_prefix: exp094_projection_only_on_exp073
+  selected_mode: gpu_repro_guard_dp_threads8
+  selected_model: lgb_mean
+  max_rows: null
+  prediction_read_chunksize: 500000
+  grid:
+    degrees: [3, 4, 5]
+    betas: [0.25, 0.5, 0.75]
+    robust_c: [1.25, 1.5, 2.0]
+    robust_iters: 4
+    x_column: md_since
+    max_abs_correction_ft: null
+  selection_guard:
+    min_rmse_gain: 0.0
+    max_fold_regression: 0.0
+    max_near_row_regression: 0.02
+    max_short_tail_regression: 0.02
+    max_correction_abs_p95: 10.0
+  expected_train_artifacts:
+    - exp094_projection_only_on_exp073_variant_metrics.csv
+    - exp094_projection_only_on_exp073_fold_metrics.csv
+    - exp094_projection_only_on_exp073_bucket_metrics.csv
+    - exp094_projection_only_on_exp073_by_well.csv
+    - exp094_projection_only_on_exp073_best_predictions.csv.gz
+    - exp094_projection_only_on_exp073_context_schema.csv
+    - exp094_projection_only_on_exp073_summary.json
+
+inference:
+  mode: gated_projection_port_only_after_train_guard
+  selected_variant: null
+  notes:
+    - Keep selected_variant null until train-side OOF guard passes.
+    - If selected, set degree/beta/robust_c from the fixed train-side winner and run submit-check before any Kaggle submission.
+
+notes:
+  - Implements backlog item projection_only_on_exp073.
+  - This is postprocess-only; exp073 raw deterministic anchor remains the baseline.
+  - Inference port is intentionally disabled until fold and bucket guards are reviewed.

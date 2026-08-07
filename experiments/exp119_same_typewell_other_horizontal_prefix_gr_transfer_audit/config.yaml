@@ -1,0 +1,154 @@
+experiment:
+  name: "exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit"
+  description: Fold-safe train-side audit of transferring source-prefix GR/TVT_input paths from other horizontal wells in the same native typewell group.
+  route: ensemble
+  status: planned
+  created_at: "2026-06-24"
+  updated_at: "2026-06-24"
+
+lineage:
+  parent: exp109_typewell_neighbor_prior_features
+  cache_parent: exp099_pf_multi_observation_likelihood_probe
+  diagnostic_parents:
+    - exp065_typewell_supertype_cluster_cv_audit
+    - exp099_pf_multi_observation_likelihood_probe
+    - exp109_typewell_neighbor_prior_features
+    - exp114_spatial_neighbor_prior_signal_audit
+  implementation_source: same_typewell_other_horizontal_prefix_gr_transfer_audit.py
+  diff_summary: Uses the exp065 native overlap group as a fold-safe source pool, but instead of interpolating source tail true TVT drift as exp109 did, it matches validation evaluation-zone raw GR windows to train-fold source prefix raw GR windows only. It transfers source prefix TVT_input-derived offset, local slope, and local path deltas as weak priors or clipped corrections to exp099 PF/Beam/likPF candidates. It also writes same-typewell deterministic random and different-typewell GR-match negative controls. This is a diagnostic only and does not submit.
+
+validation:
+  strategy: groupkfold_well_oof_same_typewell_prefix_gr_transfer_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - match_coverage
+    - match_score
+    - source_count
+    - bucket_rmse
+    - worst_well_rmse
+    - signal_correlation
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - GroupKFold is grouped by well.
+    - Each validation well may use its raw GR in the evaluation zone and its visible pseudo-prefix anchor.
+    - Source wells are restricted to train-fold wells; validation wells and same-fold validation true TVT never enter the source pool.
+    - Source-side transfer uses only rows before that source well's pseudo predict start, reconstructed from exp099 row ids.
+    - Source prefix TVT_input is allowed only before the source pseudo predict start; source tail true TVT is not used.
+    - Evaluation true TVT is reconstructed from exp099 target only after candidate generation for scoring.
+    - Negative controls use either deterministic random source-prefix centers in the same typewell group or GR-matched wells outside the query typewell group.
+    - This is train-side audit only; no inference port or submission is selected.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp065_cluster_assignments_local: experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/common_typewell_cluster_assignments.csv
+
+model:
+  name: same_typewell_other_horizontal_prefix_gr_transfer_audit
+  target: true_tvt_for_scoring_only
+  base_prediction: likpf_mean
+  estimator: none
+  gr_transfer:
+    group_methods:
+      - name: native_overlap_0p999
+        method: native_overlap
+        threshold: "0.999"
+    modes:
+      - same_typewell_gr_match
+      - same_typewell_random_control
+      - different_typewell_gr_match
+    delta_kinds:
+      - path
+      - slope
+      - offset
+    min_cluster_size: 2
+    max_source_wells: 6
+    top_k_sources: 5
+    window_radius_rows: 32
+    query_stride_rows: 8
+    source_stride_rows: 8
+    min_gr_valid_fraction: 0.70
+    min_match_score: 0.15
+    chunk_size: 192
+    base_candidates:
+      - likpf_mean
+    correction_alphas: [0.10]
+    correction_clip_ft: [20.0]
+    score_baselines:
+      - last_anchor_tvt
+      - pf_ancc
+      - beam_mean
+      - likpf_mean
+      - sc_ens
+      - hyb
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: deterministic_groupkfold_plus_sha256_control_indices
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp099
+    - upstream_exp065_typewell_cluster_discovery
+  parallel_rng_policy: no_parallel_rng_in_exp119
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    cluster_assignment_sha: true
+    raw_horizontal_context_summary: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - The exp119 matching itself is deterministic and single-process.
+    - The same-typewell random control uses SHA256-derived source center indices, not global RNG.
+    - Source gzip cache decompressed content SHA is recorded in the summary JSON.
+
+audit:
+  mode: same_typewell_other_horizontal_prefix_gr_transfer_audit
+  output_prefix: exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit
+  max_rows: null
+  max_wells: null
+  expected_train_artifacts:
+    - exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit_candidate_metrics.csv
+    - exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit_bucket_metrics.csv
+    - exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit_by_well.csv
+    - exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit_signal_metrics.csv
+    - exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit_oof_predictions.csv.gz
+    - exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit_feature_schema.csv
+    - exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - If same-typewell GR transfer beats the negative controls and likPF without worst-well regression, add a separate raw-test/rules parity audit before any inference work.
+    - Test-batch use of other wells' TVT_input is intentionally out of scope for this experiment.
+
+notes:
+  - Implements the backlog item `same_typewell_other_horizontal_prefix_gr_transfer_audit`.
+  - The first success condition is signal separation versus same-typewell random and different-typewell controls, not direct submit readiness.

@@ -1,0 +1,121 @@
+schema_version: 1.0.0
+source_of_truth: exp263_deployable12_plus_saved_exp389_huber_predictions
+expected_rows: 3783989
+expected_wells: 773
+
+score_candidates:
+  - {id: exp226_k16, kind: primitive, family: geometry}
+  - {id: selfgr_hmm_a070, kind: primitive, family: self_gr_hmm}
+  - {id: likpf_mean, kind: primitive, family: likelihood_pf}
+  - {id: exact_hmm, kind: primitive, family: exact_hmm}
+  - {id: pf_ancc, kind: primitive, family: particle_filter}
+  - {id: beam_mean, kind: primitive, family: beam}
+  - id: exp226_k16__selfgr_hmm_a070
+    kind: pair_mean_50
+    family: geometry_self_gr_hmm_pair
+    parents: [exp226_k16, selfgr_hmm_a070]
+    weights: [0.5, 0.5]
+  - id: exp226_k16__exact_hmm
+    kind: pair_mean_50
+    family: geometry_exact_hmm_pair
+    parents: [exp226_k16, exact_hmm]
+    weights: [0.5, 0.5]
+  - id: exp226_k16__likpf_mean
+    kind: pair_mean_50
+    family: geometry_likelihood_pf_pair
+    parents: [exp226_k16, likpf_mean]
+    weights: [0.5, 0.5]
+  - id: selfgr_hmm_a070__likpf_mean
+    kind: pair_mean_50
+    family: self_gr_hmm_likelihood_pf_pair
+    parents: [selfgr_hmm_a070, likpf_mean]
+    weights: [0.5, 0.5]
+  - id: likpf_mean__exact_hmm
+    kind: pair_mean_50
+    family: likelihood_pf_exact_hmm_pair
+    parents: [likpf_mean, exact_hmm]
+    weights: [0.5, 0.5]
+  - id: exp226_w500_50_50
+    kind: named_fixed
+    family: geometry_likelihood_pf_exact_hmm_fixed
+    parents: [exp226_k16, likpf_mean, exact_hmm]
+    weights: [0.5, 0.25, 0.25]
+  - id: huber_exact_hmm
+    kind: huber_exact_hmm
+    family: exact_hmm_robust_emission
+    source_experiment: exp389_exp209_huber_exact_hmm_emission
+    prediction_column: huber_delta1p345_on_exp209_absolute_tvt_hmm_tvt
+    native_confidence:
+      sigma_tvt: huber_delta1p345_on_exp209_absolute_tvt_hmm_std
+      source_loglik: huber_delta1p345_on_exp209_absolute_tvt_hmm_loglik
+      loglik_per_row: source_loglik_divided_by_evaluation_rows_in_well
+    candidate_generation: target_free_per_well_exact_hmm
+    source_fold_column: null
+    source_fold_role: not_applicable
+    selector_join_policy: global_well_id_row_idx_then_exp263_fold_repartition
+    source_fold_used_as_model_feature: false
+
+legal_domains:
+  primitive_pair_bank:
+    role: primary_meta_domain
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_k16__selfgr_hmm_a070
+      - exp226_k16__exact_hmm
+      - exp226_k16__likpf_mean
+      - selfgr_hmm_a070__likpf_mean
+      - likpf_mean__exact_hmm
+      - huber_exact_hmm
+  primitive_fixed_bank:
+    role: unchanged_fixed_fallback_comparison_domain
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_w500_50_50
+
+candidate_id_model_encoding:
+  type: one_hot
+  order_source: score_candidates_declared_order
+  width: 13
+  keep_string_id_in_artifacts: true
+  ordinal_index_as_model_feature: false
+
+confidence_contract:
+  native_confidence_required_for_every_candidate: false
+  exp389_native_confidence_available: true
+  exp389_confidence_valid_rule: candidate_and_native_fields_are_finite
+  current_test_required_fields_by_added_candidate:
+    huber_exact_hmm:
+      - confidence_valid
+      - sigma_tvt
+      - source_loglik
+      - loglik_per_row
+  universal_proxy_required_for_every_candidate: true
+  universal_proxy_groups:
+    - candidate_availability_and_coverage
+    - candidate_anchor_distance
+    - candidate_local_shape
+    - candidate_bank_disagreement
+    - candidate_family_and_kind_one_hot
+
+forbidden_behaviors:
+  - use_exp389_truth_error_or_gate_diagnostic_columns_as_feature
+  - synthesize_or_use_exp389_source_fold_as_feature
+  - use_exp389_gaussian_control_or_likpf_reporting_columns_as_feature
+  - require_exp389_source_fold_for_target_free_candidate
+  - use_candidate_error_or_oracle_as_feature
+  - change_selector_objective_or_lightgbm_config
+  - add_exp389_to_fixed_fallback_domain
+  - tune_candidate_weight_or_usage_threshold_on_same_oof
+  - softmax_average_candidate_tvt
+  - train_downstream_tvt_in_stage_c_run
+  - inference_or_submission_before_gate

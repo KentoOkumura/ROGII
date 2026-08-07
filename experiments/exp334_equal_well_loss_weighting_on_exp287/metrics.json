@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0.0",
+  "experiment": "exp334_equal_well_loss_weighting_on_exp287",
+  "status": "train_complete_guard_failed_closed_no_inference",
+  "updated_at": "2026-07-22",
+  "route": "ml_model",
+  "parent": "exp287_fold_safe_formation_74_addonly_on_exp264",
+  "metric": "rmse",
+  "metric_weighting": "unweighted_rows",
+  "cv": 8.09349752413077,
+  "public_lb": null,
+  "private_lb": null,
+  "rows": 3783989,
+  "wells": 773,
+  "feature_count": 421,
+  "model_count": 15,
+  "runtime_seconds": 21882.805369142,
+  "cost_contract": {
+    "active_variants": 1,
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "planned_gpu_boosters": 15,
+    "completed_gpu_boosters": 15,
+    "control_retraining_boosters": 0
+  },
+  "preflight": {
+    "kernel_version": 1,
+    "kernel_id_no": 128110184,
+    "status": "preflight_passed_zero_boosters",
+    "runtime_seconds_to_pass_message": 647.994780625,
+    "manifest_sha256": "132169c0315febbd8fda69e164bc40e3c55eeb0cf12dd80524b495912c65bacb",
+    "weight_summary_sha256": "2826a8408093d18c911030395a0ce5a76564824b9bc6ef0d157ed88ac41c2ca5",
+    "weight_by_well_sha256": "2cdc3c29605c58e9458e8e86bccd7777d4a354c4ebcc951fc7b683824d836555",
+    "maximum_total_weight_abs_error": 9.094947017729282e-13
+  },
+  "train": {
+    "kernel_version": 2,
+    "kernel_id_no": 128110184,
+    "kaggle_status": "COMPLETE",
+    "machine_shape": "NvidiaTeslaT4",
+    "enable_internet": false,
+    "validation_weight": null,
+    "parent_control_retrained": false
+  },
+  "comparison_vs_exp287": {
+    "parent_rmse": 8.136708220359452,
+    "delta_rmse_new_minus_parent": -0.04321069622868201,
+    "nonworse_folds": 5,
+    "folds": [
+      {"outer_fold": 0, "rows": 757738, "rmse": 7.996714883984829, "parent_rmse": 8.070368347456087, "delta": -0.07365346347125801},
+      {"outer_fold": 1, "rows": 756650, "rmse": 8.175088576930923, "parent_rmse": 8.25583843158472, "delta": -0.08074985465379747},
+      {"outer_fold": 2, "rows": 756255, "rmse": 7.892278533239922, "parent_rmse": 7.893630010579036, "delta": -0.0013514773391145596},
+      {"outer_fold": 3, "rows": 757101, "rmse": 8.09182726211449, "parent_rmse": 8.10656673057163, "delta": -0.014739468457140248},
+      {"outer_fold": 4, "rows": 756245, "rmse": 8.305461844392541, "parent_rmse": 8.349625947273056, "delta": -0.04416410288051509}
+    ],
+    "scope_deltas": {
+      "near_0_250": 0.0037868518703358944,
+      "mid_250_1000": 0.011048518587725376,
+      "1000_plus": -0.05043450730126686,
+      "hidden_like_spatial": -0.07213785910677117,
+      "hidden_like_typewell_purged": -0.06835271197500603
+    },
+    "by_well_delta_p95": 0.42958461722215363
+  },
+  "tail_vs_exp264_clean_control": {
+    "worst_well_delta_rmse": 7.156485376687872,
+    "worsened_well_threshold_counts": {
+      "plus_1ft": {"count": 133, "maximum_allowed": 135, "passed": true},
+      "plus_3ft": {"count": 40, "maximum_allowed": 39, "passed": false},
+      "plus_5ft": {"count": 19, "maximum_allowed": 14, "passed": false}
+    }
+  },
+  "promotion_guard": {
+    "checks": {
+      "pooled_rmse_budget_vs_exp287": true,
+      "minimum_nonworse_folds_vs_exp287": true,
+      "all_scope_rmse_budgets_vs_exp287": true,
+      "by_well_delta_p95_vs_exp287": false,
+      "worst_well_delta_vs_exp264": false,
+      "worsened_well_counts_vs_clean_not_above_exp264": false
+    },
+    "passed": false
+  },
+  "artifact_sha256": {
+    "oof": "7c0bab3e24d72116bf955220b7b53c66b29afed7a0c8a3f093cb97d63d033afa",
+    "model_manifest": "8d2212b64bef1147967f68255a469965c0d60dd502726973746efaebeb816174",
+    "reproducibility_manifest": "782d10868ac10bb54a38442bfc561be7d95e19a59d2beb8db6fd8adac7b0aacd",
+    "feature_schema": "c1327324d6e0719eab45b9f8841033dd6cf09dd09228b044e6e8cc85f0fa8413",
+    "kaggle_logs": "68dc71b80709c352e24db78b881a1810311825cb31087c68cc76aed65ae3e15b"
+  },
+  "artifact_audit": {
+    "non_model_files_verified": 11,
+    "model_files_verified": 15,
+    "all_manifest_sha256_matched": true,
+    "oof_rows_and_folds_recomputed": true,
+    "deterministic_anchor": false
+  },
+  "inference_run": false,
+  "submission_created": false,
+  "submitted_to_kaggle": false,
+  "decision": "close_without_promotion_or_inference"
+}

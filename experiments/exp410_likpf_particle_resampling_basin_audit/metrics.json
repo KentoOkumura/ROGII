@@ -1,0 +1,190 @@
+{
+  "experiment": "exp410_likpf_particle_resampling_basin_audit",
+  "status": "complete_diagnostic",
+  "route": "pf_beam",
+  "parent": "exp072_exp063_full_replay_feature_cache",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "prediction_candidate": false,
+  "counts": {
+    "wells": 496,
+    "episodes": 839,
+    "episode_rows": 819288,
+    "suffix_rows": 2500744,
+    "counterfactual_sentinel_wells": 12,
+    "counterfactual_sentinel_episodes": 16
+  },
+  "parity": {
+    "wells_checked": 496,
+    "failed_wells": 0,
+    "max_abs_ft": 0.0
+  },
+  "exclusive_cause_sse_fraction": {
+    "support_or_clamp_shortage": 0.3647012321771327,
+    "across_seed_aggregation_multiplicity": 0.3624407233102074,
+    "within_seed_particle_mean_multiplicity": 0.10856137111152978,
+    "transition_propagation_escape": 0.10717660355196933,
+    "gr_emission_alias_observed": 0.036663699906658846,
+    "mixed_or_unresolved": 0.012879701616273798,
+    "resampling_particle_extinction": 0.007576668326228172
+  },
+  "nonexclusive_mechanism_sse_fraction": {
+    "particle_support_shortage": 0.836379,
+    "across_seed_multiplicity": 0.428304,
+    "within_seed_multiplicity": 0.112081,
+    "transition": 0.109814,
+    "resampling": 0.056839,
+    "emission": 0.040619,
+    "hard_clamp_shortage": 0.0,
+    "initial_condition_support_miss": 0.0
+  },
+  "row_readout": {
+    "episode_rmse_ft": 23.518102,
+    "truth_outside_particle_support_row_fraction": 0.642853,
+    "truth_outside_particle_support_sse_fraction": 0.830651,
+    "truth_outside_hard_clamp_rows": 0,
+    "best_seed_improves_at_least_5ft_row_fraction": 0.793253,
+    "best_seed_improves_at_least_5ft_sse_fraction": 0.871065,
+    "best_seed_improves_at_least_10ft_row_fraction": 0.62391,
+    "best_seed_improves_at_least_10ft_sse_fraction": 0.776469,
+    "oracle_best_seed_per_row_rmse_ft": 11.029368,
+    "oracle_best_seed_per_row_sse_relative": 0.219936,
+    "target_free_seed_median_sse_relative": 1.10219
+  },
+  "stage_effect": {
+    "gr_update_sse_relative": 0.999542,
+    "gr_update_mean_abs_displacement_ft": 0.031676,
+    "resampling_immediate_sse_delta": -5.770281,
+    "resampling_mean_abs_displacement_ft": 0.000245,
+    "mean_ess": 371.593322,
+    "resampled_seed_fraction": 0.023811,
+    "unique_ancestor_fraction": 0.989813,
+    "majority_seed_resampling_extinction_rows": 0,
+    "severe_ancestor_concentration_rows": 0
+  },
+  "recapture": {
+    "predictive_mass_lost_episodes": 319,
+    "predictive_mass_recaptured_given_loss_fraction": 0.811912,
+    "truth_close_seed_lost_episodes": 639,
+    "truth_close_seed_recaptured_given_loss_fraction": 0.641628,
+    "fixed_output_within5_recaptured_episodes": 416,
+    "fixed_output_no_recapture_sse_fraction": 0.854226
+  },
+  "hmm_comparison": {
+    "pf_episodes_with_any_hmm_overlap_fraction": 0.5387365911799762,
+    "overlapping_pf_sse_fraction": 0.7893833036405038,
+    "same_error_sign_given_overlap_fraction": 0.9026548672566371,
+    "mechanism_family_match_given_overlap_fraction": 0.084070796460177,
+    "mechanism_family_match_sse_fraction": 0.10020598804043532
+  },
+  "counterfactual": {
+    "status": "complete_strict_merge",
+    "variants": 12,
+    "full_well_runs": 144,
+    "preflight_well_runs": 12,
+    "preflight_baseline_parity_max_abs_ft": 0.0,
+    "preflight_peak_rss_gb": 1.9805259704589844,
+    "full_baseline_parity_max_abs_ft": 0.0,
+    "wells": 12,
+    "episodes": 16,
+    "episode_rows": 55104,
+    "readouts": 22,
+    "baseline_episode_sse": 113223940.62123871,
+    "baseline_episode_rmse_ft": 45.32914946456657,
+    "paired_episode_sse_relative": {
+      "oracle_best_seed_per_row": 0.281166928252516,
+      "roughening_x10": 0.7529970814301431,
+      "best_full_suffix_loglik_seed": 0.8289519676058411,
+      "full_suffix_loglik_weighted_seed_mean": 0.8309628768062594,
+      "process_noise_x3": 0.8916906574338012,
+      "init_spread_x3": 0.9270310613529414,
+      "resample_threshold_0p1": 0.962925137447311,
+      "clamp_margin_x2": 1.0,
+      "particle_mode_seed_mean": 1.0005914853856221,
+      "seed_median": 1.0027214940471159,
+      "particle_mode_seed_median": 1.0147693175994537,
+      "gr_sigma_x3": 1.0236614181436219,
+      "momentum_one": 1.0255310849475634,
+      "gr_sigma_x1p3": 1.1400674121258516,
+      "resampling_disabled": 3.480911709409758,
+      "zero_process_noise": 6.265854960955687,
+      "gr_emission_near_disabled": 8.835072127570301
+    },
+    "roughening_x10_stability": {
+      "episodes_improved": 10,
+      "episodes_total": 16,
+      "episode_sign_test_two_sided_p": 0.454498291015625,
+      "wells_improved": 8,
+      "wells_total": 12,
+      "well_sign_test_two_sided_p": 0.3876953125,
+      "median_well_sse_relative": 0.694757738359876,
+      "leave_one_well_out_relative_min": 0.6025717860946977,
+      "leave_one_well_out_relative_max": 0.8262032236741508,
+      "leave_one_well_out_all_improve": true
+    },
+    "process_noise_x3_stability": {
+      "episodes_improved": 11,
+      "episodes_total": 16,
+      "episode_sign_test_two_sided_p": 0.210113525390625,
+      "wells_improved": 8,
+      "wells_total": 12,
+      "well_sign_test_two_sided_p": 0.3876953125,
+      "median_well_sse_relative": 0.8397530733071061,
+      "leave_one_well_out_relative_min": 0.7849904241431128,
+      "leave_one_well_out_relative_max": 0.9756872499742618,
+      "leave_one_well_out_all_improve": true
+    },
+    "gr_emission_near_disabled_stability": {
+      "episodes_improved": 2,
+      "episodes_worsened": 14,
+      "episode_sign_test_two_sided_p": 0.004180908203125,
+      "wells_improved": 1,
+      "wells_worsened": 11,
+      "well_sign_test_two_sided_p": 0.00634765625
+    },
+    "runtime": {
+      "shard_elapsed_seconds": [
+        1880.7970051500001,
+        2067.560128622,
+        1356.2601740270002,
+        2118.807704862
+      ],
+      "sum_variant_well_seconds": 6506.944584278001,
+      "max_peak_rss_gb": 1.9827537536621092
+    },
+    "guards": {
+      "all_shard_guards_passed": true,
+      "baseline_persisted_prediction_parity_zero": true,
+      "identical_implementation_sha_across_shards": true,
+      "no_duplicate_well_variant_episode_readout_or_row": true,
+      "strict_episode_and_row_coverage": true,
+      "strict_four_shard_coverage": true,
+      "strict_twelve_variant_per_well_coverage": true,
+      "strict_twelve_well_coverage": true
+    },
+    "interpretation": {
+      "hard_clamp_primary_cause": false,
+      "immediate_resampling_extinction_primary_cause": false,
+      "gr_emission_overall_primary_cause": false,
+      "finite_particle_support_and_basin_aggregation_primary_cause": true,
+      "roughening_and_process_noise_are_population_validated_candidates": false,
+      "sentinel_selection_is_target_late": true
+    }
+  },
+  "sha256": {
+    "fixed_prediction_logical": "b3aa657aeb24be33e710098823bd52ddf95c8484eefdda7160edee9c26198c5f",
+    "episodes": "0bffbc6bd6d89fdbfa11aa86419df8dbd84b1819af717413f0ae3bfa82799804",
+    "target_wells": "ae9d4fd7429ad2b51f8d620a0413e74cb55efccefbb30cce0e2031230548f30e",
+    "full_code": "750ddbdd20f1e0cd46f1e0a6fcc3ff630524d781dac144a0ac636390a4b6dce1",
+    "full_config": "15cb5ef655a2b499a87ab1ced9a8c4017c73fb3a4434d2051c6be9473bb8d10c",
+    "counterfactual_sentinels": "7e8491d4e1cde59caaed12c638451615b8f113c42811dd7f70f356afe0cf9a04",
+    "counterfactual_baseline_kernel": "0fb334969a47cd375889590c758292f6f3f2566154174e0bb4bbd97518298050",
+    "counterfactual_config": "4a10a0479c42f10c9d59f35ad73c5fd4f4072091981488ab33ca38964f8b6a65",
+    "counterfactual_runner": "ad45d435252e6b62cd384ca3be9bca11305fcb838e1b5f4285430d5e710002e4",
+    "counterfactual_variant_contract": "4ef9ab14aa75ba23ce0b8d1d7457b1359b76e22df45c8c667993500269d89be9",
+    "counterfactual_paired_overall": "2a50d1c9a2dfbe23023f647fb9ba5ff5a0e151111e9fe3f71ec0d90d866921fb",
+    "counterfactual_well_stability": "283b0e0b440c11f75d5fcb014ea6a66c5c87fc8c852b19729898ae94d265afc0",
+    "counterfactual_strict_merge_summary": "6fd4b43d33c68f27aa6ea34d8d70578c9a8870e20f551141be844dabb06b7ef7"
+  }
+}

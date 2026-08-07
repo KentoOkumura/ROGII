@@ -1,0 +1,48 @@
+{
+  "experiment": "exp137_target_free_gr_quality_features_on_exp092",
+  "status": "completed_train_side_audit_rejected",
+  "route": "ml_model",
+  "parent": "exp092_u_projection_correction_disagreement_fullrun",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "quality_context_parent": "exp065_typewell_supertype_cluster_cv_audit",
+  "kaggle_train": {
+    "kernel": "kentookumura/exp137-gr-quality-train",
+    "version": 2,
+    "status": "COMPLETE",
+    "elapsed_seconds": 16038.686,
+    "active_model_indices": [
+      0
+    ],
+    "rows": 3783989,
+    "diagnostic_features": 32,
+    "feature_source_sha256": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18"
+  },
+  "metrics": {
+    "pooled_rmse_tvt": {
+      "exp092_full_row_control_lgb0": 9.535793274086194,
+      "target_free_gr_quality_addonly_lgb0": 9.72965651223404,
+      "delta_addonly_minus_control": 0.19386323814784667
+    },
+    "bucket_delta_addonly_minus_control": {
+      "distance_000_050": -0.007979,
+      "distance_050_100": -0.021365,
+      "distance_100_250": 0.037757,
+      "distance_250_500": 0.103499,
+      "distance_500_1000": 0.064636,
+      "distance_1000_plus": 0.215175,
+      "tail_rank_500_999": 0.123502,
+      "tail_rank_1000_plus": 0.193867
+    },
+    "by_well_delta_addonly_minus_control": {
+      "count": 773,
+      "mean": 0.08411,
+      "median": 0.043437,
+      "min": -8.36873,
+      "max": 12.713932
+    }
+  },
+  "decision": {
+    "direct_submission_candidate": "not_selected",
+    "reason": "target-free GR quality add-only lgb0 worsened full-row OOF RMSE by +0.193863 versus the exp092 control and worsened the 1000_plus longtail bucket"
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "experiment": "exp166_prefix_crop_midwindow_replacement_on_exp148",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "baseline": {
+    "experiment": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+    "model": "lgb_mean",
+    "cv_rmse_tvt": 8.50128118189582,
+    "public_lb": 7.96
+  },
+  "motivation": "Run案2 first: increase the crop window from last50 to tail500/tail1000 and test replacement-only before trying案1 last50 replacement-only.",
+  "execution": {
+    "runtime": "cpu_deterministic_threads8",
+    "two_stage": true,
+    "cache_kernel": "kentookumura/exp166-prefix-crop-midwindow-exp148-features",
+    "cache_kernel_version": 1,
+    "cache_completed": {
+      "rows": 3783989,
+      "wells": 773,
+      "feature_count": 96,
+      "elapsed_seconds": 9879.882,
+      "feature_cache_bytes": 1090133321,
+      "feature_sha256": "43775b5e6a9d5a83bc817991cb0c57f5ea34071f4b7261f69912a83ae822a4cc",
+      "feature_decompressed_sha256": "5af911c88878822a88fc48207284bb72bdb70821728efea7fa8c37d59fba1e1b",
+      "schema_sha256": "8844a3fbd94297a638394ee4a2a41b3b33927f196a89580a9118999dfaebef0f",
+      "summary_sha256": "e41f806960f91b788669b2affd762dcf0fd1a8b53e121e103d499cfdb13d3b38"
+    },
+    "train_kernels": {
+      "lgb0": "kentookumura/exp166-prefix-crop-midwindow-exp148-train-lgb0",
+      "lgb1": "kentookumura/exp166-prefix-crop-midwindow-exp148-train-lgb1",
+      "lgb2": "kentookumura/exp166-prefix-crop-midwindow-exp148-train-lgb2"
+    },
+    "train_kernel_versions": {
+      "lgb0": 2,
+      "lgb1": 2,
+      "lgb2": 2
+    },
+    "train_v1_failure": {
+      "status": "error",
+      "stage": "prefix_crop_join_start",
+      "reason": "DeadKernelError after loading the 96-column tail500/tail1000 prefix cache and before LightGBM fold start; treated as memory peak during all-prefix-column concat."
+    },
+    "train_v2_retry": {
+      "status": "complete",
+      "change": "Load and join only the 48 prefix crop columns required by each variant, train that variant, then release the columns before the next variant."
+    },
+    "active_variants": [
+      "prefix_crop_tail500_replacement",
+      "prefix_crop_tail1000_replacement"
+    ],
+    "active_modes": [
+      "cpu_deterministic_threads8"
+    ],
+    "lgb_configs": [
+      "lgb0",
+      "lgb1",
+      "lgb2"
+    ],
+    "folds": 5,
+    "boosters_total": 30,
+    "boosters_per_split_kernel": 10,
+    "control_rerun": false
+  },
+  "replacement": {
+    "drop_columns": [
+      "sc8_d",
+      "sc8_sc",
+      "sc15_d",
+      "sc15_sc",
+      "sc25_d",
+      "sc25_sc",
+      "sc_cons_d",
+      "sc_ens_d",
+      "sc_trust",
+      "cal_a",
+      "cal_b",
+      "pfx_rmse",
+      "slp_all",
+      "slp_z",
+      "slp_b_d_all",
+      "ktvt_range",
+      "ktvt_std"
+    ],
+    "drop_learned_prefixes": [
+      "ll_multiobs_score_",
+      "ll_multiobs_mae_",
+      "ll_multiobs_ncc_"
+    ],
+    "add_groups": [
+      "prefix_crop_tail500",
+      "prefix_crop_tail1000"
+    ]
+  },
+  "results": {
+    "source": "kaggle_logs",
+    "submit": false,
+    "conclusion": "tail500/tail1000 replacement-only worsened versus exp148 and is not a submit candidate.",
+    "best_single": {
+      "variant": "prefix_crop_tail500_replacement",
+      "model": "lgb0",
+      "rmse_tvt": 8.566426970340796,
+      "delta_vs_exp148_lgb_mean": 0.065145788444976,
+      "delta_vs_exp161_last50_addonly_best_single": 0.001701974427656,
+      "prediction_sha256": "099216962f1409f2fe3f0337055f4cf227909a5b851bfb6b4dab97698459e48e"
+    },
+    "best_tail1000": {
+      "variant": "prefix_crop_tail1000_replacement",
+      "model": "lgb2",
+      "rmse_tvt": 8.574216682757848,
+      "delta_vs_exp148_lgb_mean": 0.072935500862028,
+      "delta_vs_exp161_last50_addonly_best_single": 0.009491686844708,
+      "prediction_sha256": "fc57b07ba1d18a83e2e09e7e929d61cf89245b639962b6bfc652be207027826b"
+    },
+    "pooled_metrics": {
+      "prefix_crop_tail500_replacement": {
+        "lgb0": {
+          "rmse_tvt": 8.566426970340796,
+          "prediction_sha256": "099216962f1409f2fe3f0337055f4cf227909a5b851bfb6b4dab97698459e48e"
+        },
+        "lgb1": {
+          "rmse_tvt": 8.59529670454605,
+          "prediction_sha256": "35803cdd519bee2dadf4044485b398fc38ab959d0b014618d8fdd9c069de6183"
+        },
+        "lgb2": {
+          "rmse_tvt": 8.638434980896186,
+          "prediction_sha256": "c88281c1b62c84a8874445c7b5b11dcb2af57b4d78e749cba5b40b624c643127"
+        }
+      },
+      "prefix_crop_tail1000_replacement": {
+        "lgb0": {
+          "rmse_tvt": 8.615045272753367,
+          "prediction_sha256": "02fd7afdd2933dbf9a3ea2a3668a5cfad009a856cf12acd705b10a8b113c256d"
+        },
+        "lgb1": {
+          "rmse_tvt": 8.589982014957261,
+          "prediction_sha256": "2f4510aa487c2a219c98743dfb123978642e9cc41462b5cb80429b87dea060fc"
+        },
+        "lgb2": {
+          "rmse_tvt": 8.574216682757848,
+          "prediction_sha256": "fc57b07ba1d18a83e2e09e7e929d61cf89245b639962b6bfc652be207027826b"
+        }
+      }
+    },
+    "fold_metrics": {
+      "prefix_crop_tail500_replacement": {
+        "lgb0": [9.107177466049903, 8.800431559936229, 7.481625908636992, 8.361222002275989, 8.979333854546017],
+        "lgb1": [9.049977423414829, 8.652112539945477, 7.537631218836804, 8.684193515830952, 8.965796449772249],
+        "lgb2": [9.066424503590298, 8.829791135121791, 7.4912015999011565, 8.679100242084814, 9.026923349091955]
+      },
+      "prefix_crop_tail1000_replacement": {
+        "lgb0": [9.191619124976633, 8.837732293343919, 7.873893819570613, 8.277003514901244, 8.830681429290372],
+        "lgb1": [8.988717196187299, 8.751068586080299, 7.6376213513926166, 8.655139646246784, 8.84870687199724],
+        "lgb2": [8.94284653680869, 8.760746330701298, 7.615245531229637, 8.639978346467167, 8.84330435413163]
+      }
+    },
+    "elapsed_seconds_by_kernel": {
+      "lgb0": 30436.394,
+      "lgb1": 21954.595,
+      "lgb2": 18444.034
+    },
+    "cross_lgb_ensemble": {
+      "computed": false,
+      "reason": "Split kernel prediction outputs were not downloaded; all single configs were worse than exp148, so a cross-kernel ensemble was not pursued."
+    }
+  }
+}

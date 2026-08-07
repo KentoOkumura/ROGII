@@ -1,0 +1,359 @@
+experiment:
+  name: exp428_similar_well_gr_registration_map_transfer_readout
+  description: >-
+    GR波形が似たsame-Type-Well donorから、donor自身のType Well GRとHorizontal GRの
+    対応付けoffsetをheld-out queryへ転送できるかを測る0-model OOF readout
+  route: pf_beam
+  status: completed_stage0_technical_failed_closed_no_rescue
+  created_at: "2026-07-28"
+  stage: 0
+
+lineage:
+  parent: exp423_same_typewell_gr_dtw_truth_warp_transfer_readout
+  references:
+    - exp065_typewell_supertype_cluster_cv_audit
+    - exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit
+    - exp230_dtw_typewell_warp_hmm_emission_correction
+    - exp288_known_tvt_typewell_horizontal_gr_visualization
+    - exp311_typewell_group_prefix_suffix_gr_calibration_readout
+    - exp360_typewell_reference_shift_zncc_confidence_readout
+    - exp365_bounded_gr_registration_offset_hmm
+  diff_summary: >-
+    exp423のquery-horizontal対donor-horizontal DTW順位は類似well選択のみに使う。
+    donorの正解TVT増分/pathは転写せず、donor内でType Well GRを真のTVTから何ft
+    ずらすとHorizontal GRに合うかを表すregistration offsetだけを転写する。
+    queryの真のTVTはoffset候補とartifactをfreezeした後の参照offset作成と評価に限る。
+
+implementation:
+  scope: compact_selfcontained_stage_0
+  design_frozen: true
+  implementation_approved: true
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_is_placeholder: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  kaggle_run_approved: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: group_kfold_pseudo_tail_registration_map_oof
+  n_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  expected_wells: 773
+  group_column: well_id
+  seed: 42
+  fold_identity: exp423_exp109_sorted_well_groupkfold
+  query_region: pseudo_unknown_suffix
+  score_unit: equal_well_weight
+  primary_metric: global_registration_shift_mae_ft
+  secondary_metrics:
+    - block_registration_shift_mae_ft
+    - within_2ft
+    - within_5ft
+    - shift_sign_accuracy
+    - mean_zncc_gain_vs_zero_shift
+    - gr_dtw_cost_vs_transfer_error_spearman
+  outer_valid_truth_policy: late_join_after_candidate_and_artifact_freeze
+
+data:
+  raw_train_candidates:
+    - data/raw/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+  horizontal_columns_before_freeze:
+    - MD
+    - GR
+    - TVT_input
+  horizontal_truth_column:
+    - TVT
+  typewell_columns:
+    - TVT
+    - GR
+  inputs:
+    exp065_cluster_assignments:
+      filename: common_typewell_cluster_assignments.csv
+      local_path: experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/common_typewell_cluster_assignments.csv
+      expected_raw_sha256: dcda8588cc1dd9261bafae7de00c890393e38b8a0ca0eb86fbba18a2cffc4a50
+      method: native_overlap
+      threshold: "1"
+    exp065_native_overlap_pairs:
+      filename: typewell_native_overlap_pairs.csv
+      local_path: experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/typewell_native_overlap_pairs.csv
+      expected_raw_sha256: 76789df91eb57d5eeb683a97a18f240572c889cbd48106091878183d9a2c7ade
+    exp099_inventory:
+      filename: exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+      expected_raw_sha256: 4bd9df60f5c09f7a3029dac399afef73aa45b0158a7fd06a62a56f85fd0fde38
+      expected_decompressed_sha256: 1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a
+      prefreeze_safe_columns: [id, well, last_known_tvt, md_since, eval_len]
+      postfreeze_truth_columns: [id, well, target]
+    exp115_hidden_like_assignments:
+      filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      expected_raw_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+typewell_axis_contract:
+  group: native_overlap_1
+  representative: exp065_representative_well_id
+  pair_filter:
+    exact_match_rate_min: 1.0
+    overlap_fraction_shorter_min: 0.80
+  edge_offset_column: tvt_delta_b_minus_a_median
+  edge_consistency_columns:
+    - tvt_delta_b_minus_a_min
+    - tvt_delta_b_minus_a_max
+  edge_consistency_tolerance_ft: 1.0e-6
+  graph_cycle_tolerance_ft: 1.0e-6
+  transfer_formula: delta_donor_to_query = delta_donor + axis_offset_query - axis_offset_donor
+  prohibited_as_axis_offset:
+    - row_lag_b_minus_a
+    - row_lag_ft_equivalent
+  notes:
+    - row lagはType Well CSVのtrim位置差を含むため、registrationのft補正には使わない。
+    - exact-overlap部分のTVT差から共通Type Well軸へのoffsetを決める。
+    - exp065の全candidate lagではなくexact_match_rate=1の10697 edgesだけを使う。
+
+well_similarity:
+  eligibility:
+    donor_split: outer_train_only
+    same_native_overlap_group: true
+    minimum_donors: 1
+  horizontal_gr_preprocessing:
+    region: pseudo_unknown_suffix
+    smoothing: centered_rolling_median_5_rows
+    progress_grid_points: 256
+    normalization: median_mad_robust_zscore
+    minimum_finite_fraction: 0.70
+    minimum_pair_common_fraction: 0.70
+  dtw:
+    orientation: forward_only
+    point_cost: squared_robust_z_difference
+    sakoe_chiba_band_points: 32
+    max_consecutive_horizontal_or_vertical: 4
+    tie_break: [normalized_cost_asc, donor_well_id_asc]
+  selected_donors: 5
+  primary_donor_rank: 1
+  notes:
+    - query/donorのHorizontal GR DTWはdonor順位だけに使い、TVT path転写には使わない。
+
+registration_map:
+  coordinate: typewell_tvt_ft_relative_to_true_horizontal_tvt
+  sign_definition: >-
+    positive delta means sampling Type Well GR at true_horizontal_TVT + delta
+  block_rows: 512
+  block_stride_rows: 512
+  shift_grid_ft: [-80.0, -40.0, -20.0, -10.0, -5.0, -2.0, 0.0, 2.0, 5.0, 10.0, 20.0, 40.0, 80.0]
+  typewell_sampling: linear_interpolation_no_extrapolation
+  score: raw_finite_zncc
+  minimum_finite_pairs: 32
+  tie_break: [zncc_desc, absolute_shift_asc, shift_ft_asc]
+  identifiable_block:
+    best_zncc_min: 0.30
+    best_minus_second_zncc_min: 0.05
+  donor_map:
+    local_offset: best_shift_per_identifiable_block
+    global_shift: median_identifiable_block_shift
+    minimum_identifiable_blocks: 3
+    local_interpolation: linear_between_block_centers_with_constant_edge_hold
+  mapping_shape_readout:
+    shift_ft: median_local_offset
+    stretch_ft_per_suffix: least_squares_slope_over_normalized_progress
+    local_warp_mad_ft: mad_after_removing_shift_and_linear_slope
+  query_reference:
+    build_after_freeze: true
+    same_grid_score_support_and_tie_break_as_donor: true
+
+candidates:
+  primary:
+    name: selected_top1_global_shift
+    value: selected_donor_global_shift_after_typewell_axis_conversion
+  diagnostics:
+    selected_top1_local_map:
+      role: local_warp_incremental_readout
+      progress_mapping: selected_query_to_donor_horizontal_gr_dtw_path
+    selected_top1_mapping_shape:
+      fields: [shift_ft, stretch_ft_per_suffix, local_warp_mad_ft]
+    top5_oracle_global_shift:
+      role: postfreeze_transferability_headroom_only
+      deployable: false
+  controls:
+    zero_shift:
+      value_ft: 0.0
+    stable_random_same_group:
+      method: sha256_query_well_mod_sorted_eligible_donors
+    same_group_median_global_shift:
+      source: outer_train_donors_only
+      reducer: median
+  unsupported_fallback:
+    artifact_value_ft: 0.0
+    include_in_primary_supported_metric: false
+  prohibit_posthoc_primary_switch: true
+
+freeze_contract:
+  before_query_truth_join:
+    - row_and_fold_inventory
+    - donor_query_separation
+    - typewell_group_and_axis_offsets
+    - donor_registration_maps
+    - query_donor_gr_dtw_ranking
+    - selected_and_control_predictions
+    - support_and_fallback
+    - config_input_schema_and_content_sha
+  allowed_truth_before_freeze:
+    donor_outer_train_tvt: donor_registration_map_estimation_only
+    query_outer_valid_tvt: false
+  assertions:
+    donor_query_well_intersection: 0
+    query_truth_reads_before_freeze: 0
+    typewell_axis_graph_conflicts: 0
+    duplicate_row_identity: 0
+
+evaluation:
+  supported_scope: query_reference_identifiable_and_candidate_supported
+  reports:
+    - overall_equal_well
+    - fold
+    - by_well
+    - support_and_fallback
+    - typewell_axis_alignment
+    - donor_rank
+    - block_shift
+    - mapping_shape
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  local_shape_decision: >-
+    local mapはprimaryを救済しない。global-shift gate通過後にlocal mapがglobal shiftより
+    block MAEを1.0 ft以上、4/5 foldsで改善した場合だけlocal shapeの追加転送性を支持する。
+
+success_gates:
+  logical_operator: all
+  technical:
+    folds_complete: 5
+    donor_query_intersection_max: 0
+    query_truth_reads_before_freeze_max: 0
+    typewell_axis_graph_conflicts_max: 0
+    supported_query_well_fraction_min: 0.70
+    identifiable_query_block_fraction_min: 0.50
+    supported_prediction_finite_fraction_min: 1.00
+    deterministic_content_sha_match: true
+  scientific:
+    oracle_vs_zero_global_shift_mae_gain_min_ft: 2.0
+    oracle_nonworse_folds_min: 4
+    primary_vs_zero_global_shift_mae_gain_min_ft: 1.0
+    primary_vs_zero_nonworse_folds_min: 4
+    primary_vs_random_global_shift_mae_gain_min_ft: 1.0
+    primary_vs_random_nonworse_folds_min: 4
+    primary_vs_group_median_global_shift_mae_gain_min_ft: 0.5
+    primary_vs_group_median_nonworse_folds_min: 4
+    gr_dtw_cost_vs_global_shift_error_spearman_min: 0.15
+    positive_spearman_folds_min: 4
+    mean_query_zncc_gain_vs_zero_shift_min: 0.01
+    positive_zncc_gain_folds_min: 4
+    hidden_like_shift_mae_delta_max_ft: 0.0
+    by_well_shift_abs_error_delta_p90_max_ft: 5.0
+  local_shape_incremental:
+    local_vs_global_block_shift_mae_gain_min_ft: 1.0
+    local_vs_global_nonworse_folds_min: 4
+    hidden_like_block_shift_mae_delta_max_ft: 0.0
+
+decision:
+  technical_fail: invalid_or_insufficient_registration_support
+  oracle_fail: close_cross_well_registration_map_transfer
+  oracle_pass_primary_fail: registration_map_headroom_but_gr_similarity_selection_failed
+  global_pass_local_fail: support_global_shift_transfer_only
+  global_and_local_pass: support_global_and_local_registration_shape_transfer
+  rescue_grid_allowed: false
+  next_step_requires_new_experiment_and_user_approval: true
+
+model:
+  name: none_registration_map_transfer_readout
+  family: zero_model
+  params: {}
+
+runtime:
+  device: cpu
+  use_amp: false
+  num_workers: 1
+  new_training: false
+  pf_beam_execution: false
+  enable_internet: false
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+execution:
+  audit_variants: 1
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  pf_well_runs: 0
+  hmm_well_runs: 0
+  beam_well_runs: 0
+  gpu_runs: 0
+  parent_control_reruns: 0
+  implementation_approved: true
+  kaggle_package_approved: true
+  kaggle_push_approved: true
+  kaggle_run_approved: true
+  inference_approved: false
+  submission_approved: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: deterministic_matching_with_stable_sha256_random_control
+  stochastic_components: []
+  parallel_rng_policy: single_process_no_global_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  expected_target_free_content_sha256: null
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Kaggle version 1はGR内部欠損をDTW入力でもNaNにした実装差によりsupport 0となった。
+    - version 2は親互換補間へ修正したがsupported query fraction 0.395860で固定下限0.70をFAILした。
+    - support FAILが独立してterminalのため独立rerunは行わずdeterministic anchorにはしない。
+
+outputs:
+  target_free:
+    - exp428_similar_well_gr_registration_map_transfer_readout_target_free_wells.csv.gz
+    - exp428_similar_well_gr_registration_map_transfer_readout_target_free_blocks.csv.gz
+    - exp428_similar_well_gr_registration_map_transfer_readout_donor_registration_maps.csv.gz
+    - exp428_similar_well_gr_registration_map_transfer_readout_donor_registration_block_scores.csv.gz
+    - exp428_similar_well_gr_registration_map_transfer_readout_donor_rankings.csv.gz
+    - exp428_similar_well_gr_registration_map_transfer_readout_fold_separation_audit.csv
+    - exp428_similar_well_gr_registration_map_transfer_readout_typewell_axis_graph.csv
+    - exp428_similar_well_gr_registration_map_transfer_readout_input_manifest.json
+    - exp428_similar_well_gr_registration_map_transfer_readout_target_free_freeze_contract.json
+  post_freeze:
+    - exp428_similar_well_gr_registration_map_transfer_readout_well_readout.csv.gz
+    - exp428_similar_well_gr_registration_map_transfer_readout_query_reference_blocks.csv.gz
+    - exp428_similar_well_gr_registration_map_transfer_readout_scope_metrics.csv.gz
+    - exp428_similar_well_gr_registration_map_transfer_readout_fold_metrics.csv.gz
+    - exp428_similar_well_gr_registration_map_transfer_readout_by_well.csv.gz
+    - exp428_similar_well_gr_registration_map_transfer_readout_dtw_spearman.csv.gz
+    - exp428_similar_well_gr_registration_map_transfer_readout_local_by_well.csv.gz
+    - exp428_similar_well_gr_registration_map_transfer_readout_local_metrics.csv.gz
+    - exp428_similar_well_gr_registration_map_transfer_readout_mapping_shape_metrics.csv.gz
+    - exp428_similar_well_gr_registration_map_transfer_readout_technical_gate.json
+    - exp428_similar_well_gr_registration_map_transfer_readout_scientific_gate.json
+    - exp428_similar_well_gr_registration_map_transfer_readout_local_shape_gate.json
+    - exp428_similar_well_gr_registration_map_transfer_readout_summary.json
+
+inference:
+  enabled: false
+  create_submission: false
+  reason: train_side_registration_transfer_readout_only
+
+notes:
+  - donor true TVT path、TVT増分、geometry path、exp423 truth-warpは転写しない。
+  - registration offsetをTVT予測へ直接加減しない。
+  - PASSしてもHMM/PF/Beam emissionやcandidateへの統合は別実験・別承認とする。

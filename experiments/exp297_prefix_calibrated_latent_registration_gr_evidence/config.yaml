@@ -1,0 +1,272 @@
+experiment:
+  name: exp297_prefix_calibrated_latent_registration_gr_evidence
+  description: >-
+    Keeps the exp293 deployable12 paths fixed and audits whether prefix-calibrated
+    Type Well/horizontal GR latent-registration evidence assigns probability mass
+    to low-SSE candidates at H128/H256/H512 without producing a TVT prediction.
+  route: pf_beam
+  status: completed_fail_stop_no_stage4
+  created_at: "2026-07-19"
+  inference_enabled: false
+
+overrides:
+  project_defaults: [validation.metric]
+
+lineage:
+  parent: exp293_physics_only_candidate_bank_headroom_contract
+  references:
+    - exp292_typewell_gr_warp_rate_identifiability_audit
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - experiments/exp293_physics_only_candidate_bank_headroom_contract/downstream_branch_contract.md
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md prefix_calibrated_latent_registration_gr_evidence
+  design_source: .steering/20260719-exp297-prefix-calibrated-latent-registration-gr-evidence
+  diff_summary: >-
+    Adds only target-free GR calibration, 21-state observation registration,
+    reliable/unreliable posterior evidence, circular-shuffle control, and
+    expected-candidate-SSE readout on the frozen exp293 bank. Candidate paths,
+    folds, block assignment, and physical TVT values remain unchanged.
+
+validation:
+  strategy: fixed_exp293_bank_latent_registration_gr_evidence_audit
+  metric: h256_expected_candidate_sse_headroom_recovery
+  seed: 42
+  n_folds: 5
+  trained_folds: 0
+  group_column: well
+  fold_policy: reuse_exp293_outer_fold_identity_without_refit
+  expected_rows: 3783989
+  expected_wells: 773
+  horizons_rows: [128, 256, 512]
+  primary_horizon_rows: 256
+  continuity_horizon_rows: 512
+  success_criteria:
+    minimum_pooled_h256_recovery: 0.35
+    require_positive_h256_recovery_folds: 5
+    require_real_better_than_shuffle_pooled: true
+    require_real_better_than_shuffle_folds: 5
+    maximum_h512_recovery_drop_from_h256: 0.05
+    require_1000_plus_anchor_nonregression: true
+    require_hidden_like_spatial_anchor_nonregression: true
+    require_hidden_like_typewell_purged_anchor_nonregression: true
+    require_truth_access_before_freeze_zero: true
+
+data:
+  exp293:
+    kernel_source: kentookumura/exp293-physics-bank-headroom-audit-train
+    candidate_matrix_patterns:
+      - experiments/exp293_physics_only_candidate_bank_headroom_contract/kaggle/output/train_v2/.exp293_work/exp293_physics_only_candidate_bank_headroom_contract_candidate_bank.f32
+      - /kaggle/input/notebooks/kentookumura/exp293-physics-bank-headroom-audit-train/.exp293_work/exp293_physics_only_candidate_bank_headroom_contract_candidate_bank.f32
+      - /kaggle/input/exp293-physics-bank-headroom-audit-train/.exp293_work/exp293_physics_only_candidate_bank_headroom_contract_candidate_bank.f32
+    candidate_matrix_file_sha256: 1281c1ec501c21bdee9d918d805eb320b3e0e82715d993c2cfd0f9dda18909bc
+    candidate_content_sha256: 29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474
+    bank_manifest_patterns:
+      - experiments/exp293_physics_only_candidate_bank_headroom_contract/kaggle/output/train_v2/artifacts/exp293_physics_only_candidate_bank_headroom_contract_bank_manifest.json
+      - /kaggle/input/notebooks/kentookumura/exp293-physics-bank-headroom-audit-train/artifacts/exp293_physics_only_candidate_bank_headroom_contract_bank_manifest.json
+      - /kaggle/input/exp293-physics-bank-headroom-audit-train/artifacts/exp293_physics_only_candidate_bank_headroom_contract_bank_manifest.json
+    bank_manifest_file_sha256: 646a394fed300469bd3e880290457b43df23cda5ce152c1ee43014f3a8278cdf
+    block_assignment_patterns:
+      - experiments/exp293_physics_only_candidate_bank_headroom_contract/kaggle/output/train_v2/artifacts/exp293_physics_only_candidate_bank_headroom_contract_block_assignment.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp293-physics-bank-headroom-audit-train/artifacts/exp293_physics_only_candidate_bank_headroom_contract_block_assignment.csv.gz
+      - /kaggle/input/exp293-physics-bank-headroom-audit-train/artifacts/exp293_physics_only_candidate_bank_headroom_contract_block_assignment.csv.gz
+    block_assignment_file_sha256: 49571a6e674f9cec2729e47ccf7c7740417c2f560eeb7b5d5dcf47ab3475667c
+    block_assignment_decompressed_sha256: b0755c22aa8d791012d3f605e2f1b66063ce9bb6ba46ddd4b48dca77cce032d7
+    block_assignment_logical_sha256: 63f9a26a243ce3b1dd0cbec85c9674fd69a0768246220728ee9d54defba046e5
+    key_content_sha256: 42ede2f53e28dc2ccb28f847e0bc23680d1121bb29e980016dee989dbdddfef7
+  raw_train_dir_patterns:
+    - data/raw/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+  raw_horizontal_glob: "*__horizontal_well.csv"
+  hidden_like_assignment:
+    patterns:
+      - experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_file_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    well_column: well_id
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+candidate_bank:
+  expected_count: 12
+  order:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__exact_hmm
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+    - likpf_mean__exact_hmm
+    - exp226_w500_50_50
+  safe_candidate: exp226_w500_50_50
+  regenerate_candidates: false
+  persist_selected_row_prediction: false
+
+audit:
+  name: prefix_calibrated_latent_registration_gr_evidence
+  output_prefix: exp297_prefix_calibrated_latent_registration_gr_evidence
+  block_partition:
+    source: exp293_frozen_nonoverlap_assignment
+    horizons_rows: [128, 256, 512]
+    include_final_short_block: true
+  prefix_calibration:
+    maximum_rows: 512
+    minimum_pairs: 64
+    huber_delta: 1.345
+    irls_iterations: 2
+    minimum_typewell_gr_std: 5.0
+    slope_clip: [0.25, 4.0]
+    maximum_prefix_rmse: 60.0
+    invalid_policy: unreliable_safe
+  residual_component:
+    distribution: student_t
+    degrees_of_freedom: 4.0
+    scale: 1p4826_times_prefix_residual_mad
+    scale_clip: [10.0, 60.0]
+  derivative_component:
+    formula: slope_times_typewell_gradient_at_registered_candidate_midpoint_times_candidate_tvt_delta
+    score: negative_mean_absolute_residual_over_prefix_derivative_scale
+    scale_clip: [1.0, 30.0]
+    minimum_median_absolute_forward_delta_gr_per_row: 0.25
+  ncc_component:
+    formula: pearson_on_state_specific_common_finite_rows
+  block_coverage:
+    minimum_pairs: 64
+    minimum_fraction: 0.50
+  registration:
+    query_formula: candidate_tvt_plus_delta
+    minimum_ft: -20.0
+    maximum_ft: 20.0
+    step_ft: 2.0
+    expected_states: 21
+    prior: laplace
+    prior_scale_ft: 10.0
+    extrapolation: disabled
+  composite:
+    normalization_scope: one_block_control_component_over_12x21_states
+    zscore: median_1p4826mad
+    zero_mad_threshold: 0.000000001
+    zscore_clip: [-5.0, 5.0]
+    weights: [0.3333333333333333, 0.3333333333333333, 0.3333333333333333]
+  reliability:
+    reliable_prior: 0.9
+    unreliable_prior: 0.1
+    outlier_log_likelihood: 0.0
+    outlier_candidate: exp226_w500_50_50
+  shuffled_control:
+    kind: stable_within_well_finite_value_circular_rotation_preserve_nan_mask
+    seed: 42
+    minimum_rotation_rows: 32
+    minimum_rotation_fraction: 0.25
+    same_rotation_all_horizons: true
+  truth_readout:
+    expected_sse_formula: sum_candidate_probability_times_candidate_block_sse
+    recovery_formula: anchor_minus_expected_over_anchor_minus_oracle
+    primary_horizon_rows: 256
+    subgroup_horizon_rows: 256
+    persist_truth_joined_candidate_rows: false
+  forbidden_actions:
+    - add_remove_or_regenerate_candidate
+    - tune_registration_grid
+    - tune_affine_scale_component_weight_or_prior
+    - hard_top1_or_rowwise_switch
+    - candidate_tvt_average_or_posterior_mean_tvt
+    - add_registration_offset_to_tvt
+    - selector_or_model_fit
+    - persist_selected_or_corrected_row_prediction
+    - raw_test_inference
+    - submission
+  expected_artifacts:
+    - exp297_prefix_calibrated_latent_registration_gr_evidence_contract.json
+    - exp297_prefix_calibrated_latent_registration_gr_evidence_input_manifest.csv
+    - exp297_prefix_calibrated_latent_registration_gr_evidence_calibration.csv
+    - exp297_prefix_calibrated_latent_registration_gr_evidence_block_index.csv.gz
+    - exp297_prefix_calibrated_latent_registration_gr_evidence_joint_reliable_posterior.npy
+    - exp297_prefix_calibrated_latent_registration_gr_evidence_candidate_posterior.parquet
+    - exp297_prefix_calibrated_latent_registration_gr_evidence_registration_posterior.parquet
+    - exp297_prefix_calibrated_latent_registration_gr_evidence_block_summary.csv.gz
+    - exp297_prefix_calibrated_latent_registration_gr_evidence_readout_metrics.csv
+    - exp297_prefix_calibrated_latent_registration_gr_evidence_subgroup_metrics.csv
+    - exp297_prefix_calibrated_latent_registration_gr_evidence_sha_manifest.csv
+    - exp297_prefix_calibrated_latent_registration_gr_evidence_summary.json
+
+model:
+  name: none_latent_registration_evidence_audit
+  estimator: none
+  target: post_freeze_true_tvt_readout_only
+  params: {}
+
+execution:
+  implementation: true
+  active_audit_variants: 1
+  lightgbm_config_count: 0
+  evaluation_fold_count: 5
+  trained_fold_count: 0
+  total_boosters: 0
+  hmm_pf_well_runs: 0
+  control_or_parent_retraining: false
+  gpu: false
+  inference: false
+  submission: false
+  kaggle_push_approved: false
+  kaggle_inference_push_approved: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  kaggle_run_completed: true
+  active_kernel_version: 2
+  active_kernel_id_no: 127897451
+  completed_kernel_version: 2
+  completed_kernel_id_no: 127897451
+  failed_kernel_versions: [1]
+  one_run_authorization_consumed: true
+  stage2_decision: FAIL_STOP_NO_STAGE4
+  stage3_authorized: false
+  stage4_authorized: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp297-latent-registration-gr-audit-train
+    train_kernel_title: exp297 latent registration gr audit train
+    train_kernel_sources:
+      - kentookumura/exp293-physics-bank-headroom-audit-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_real_stable_sha256_local_rng_per_well_shuffle
+  stochastic_components: [stable_within_well_circular_shuffle_negative_control]
+  parallel_rng_policy: single_process_local_rng_per_well_no_global_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    joint_posterior_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Fixed-input deterministic diagnostic, not a deterministic submission anchor.
+    - Target-free evidence and posterior must be closed and rehashed before truth access.
+
+inference:
+  enabled: false
+  create_submission: false
+
+notes:
+  - Stage 2 design is copied from the immutable exp293 downstream branch contract.
+  - Kaggle private CPU version 2 completed the fixed Stage 2 audit and returned FAIL_STOP_NO_STAGE4.
+  - Inference, submission, Stage 3, and Stage 4 remain disabled.

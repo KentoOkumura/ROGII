@@ -1,0 +1,234 @@
+{
+  "experiment": "exp161_prefix_crop_window_features_on_exp148",
+  "status": "kaggle_split_train_completed",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "baseline": {
+    "experiment": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+    "model": "lgb_mean",
+    "cv_rmse": 8.50128118189582,
+    "public_lb": 7.96
+  },
+  "planned_run": {
+    "active_variants": [
+      "prefix_crop_window_addonly"
+    ],
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "active_modes": [
+      "cpu_deterministic_threads8"
+    ],
+    "total_boosters": 15,
+    "control_retrain": false,
+    "kaggle_enable_gpu": false
+  },
+  "kaggle_train": {
+    "kernel": "kentookumura/exp161-prefix-crop-exp148-train",
+    "version": 4,
+    "url": "https://www.kaggle.com/code/kentookumura/exp161-prefix-crop-exp148-train",
+    "status": "CANCEL_ACKNOWLEDGED",
+    "id_no": 125415387,
+    "enable_gpu": false,
+    "machine_shape": null,
+    "enable_internet": false
+  },
+  "kaggle_train_v2_patch": {
+    "reason": "v1 ran for more than one hour without reaching fold0 on CPU",
+    "raw_csv_usecols": true,
+    "ncc_max_starts": 256,
+    "progress_logs": [
+      "prefix_crop_build_start",
+      "prefix_crop_well_done",
+      "prefix_crop_build_done",
+      "lgb_fold_start"
+    ]
+  },
+  "kaggle_train_v2_failure": {
+    "status": "ERROR",
+    "error": "DeadKernelError after prefix_crop_build_done and before lgb_fold_start",
+    "prefix_crop_elapsed_seconds": 7143.007,
+    "prefix_crop_rows": 3783989,
+    "prefix_crop_wells": 773,
+    "prefix_crop_generated_features": 144,
+    "likely_cause": "memory pressure while joining 144 prefix crop features and preparing the LightGBM frame"
+  },
+  "kaggle_train_v3_patch": {
+    "status": "superseded_by_cache_split_train_v4",
+    "kernel_version": 3,
+    "windows": [
+      "last50"
+    ],
+    "prefix_crop_generated_features_smoke": 48,
+    "memory_reduction": "drop tail1000 and tail2000 crop windows; avoid memory-heavy merge when id/well row order matches",
+    "additional_logs": [
+      "prefix_crop_join_start",
+      "prefix_crop_join_done"
+    ]
+  },
+  "prefix_crop_feature_cache_kernel": {
+    "kernel": "kentookumura/exp161-prefix-crop-exp148-features",
+    "version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp161-prefix-crop-exp148-features",
+    "status": "COMPLETE",
+    "enable_gpu": false,
+    "enable_internet": false,
+    "rows": 3783989,
+    "wells": 773,
+    "feature_count": 48,
+    "elapsed_seconds": 10438.318,
+    "feature_bytes": 452509419,
+    "feature_sha256": "86b22a14b30425b079e532de0d3796f1e33bb9a25b1f61f6a5fcfc47d951a69b",
+    "feature_decompressed_sha256": "2061855a1d4d352c35ab6e4e9847d34bc68758526e8fce7a6c4ef3499ccb6a1e",
+    "outputs": {
+      "features": "exp161_prefix_crop_window_features_on_exp148_prefix_crop_train_features.csv.gz",
+      "schema": "exp161_prefix_crop_window_features_on_exp148_prefix_crop_feature_schema.csv",
+      "summary": "exp161_prefix_crop_window_features_on_exp148_prefix_crop_feature_summary.csv",
+      "manifest": "exp161_prefix_crop_window_features_on_exp148_prefix_crop_feature_manifest.json"
+    }
+  },
+  "train_cache_split": {
+    "enabled": true,
+    "train_requires_prefix_crop_cache": true,
+    "train_kernel_source": "kentookumura/exp161-prefix-crop-exp148-features",
+    "train_kernel_version": 4,
+    "train_status": "CANCEL_ACKNOWLEDGED",
+    "reason": "avoid Kaggle train timeout from multi-hour prefix crop feature generation before LightGBM"
+  },
+  "split_train_lgb_kernels": {
+    "reason": "avoid Kaggle notebook timeout by running one LightGBM config per CPU notebook",
+    "total_boosters": 15,
+    "per_kernel_boosters": 5,
+    "kernels": [
+      {
+        "lgb_config_index": 0,
+        "kernel": "kentookumura/exp161-prefix-crop-exp148-train-lgb0",
+        "version": 1,
+        "url": "https://www.kaggle.com/code/kentookumura/exp161-prefix-crop-exp148-train-lgb0",
+        "status": "COMPLETE",
+        "enable_gpu": false,
+        "enable_internet": false
+      },
+      {
+        "lgb_config_index": 1,
+        "kernel": "kentookumura/exp161-prefix-crop-exp148-train-lgb1",
+        "version": 1,
+        "url": "https://www.kaggle.com/code/kentookumura/exp161-prefix-crop-exp148-train-lgb1",
+        "status": "COMPLETE",
+        "enable_gpu": false,
+        "enable_internet": false
+      },
+      {
+        "lgb_config_index": 2,
+        "kernel": "kentookumura/exp161-prefix-crop-exp148-train-lgb2b",
+        "version": 1,
+        "url": "https://www.kaggle.com/code/kentookumura/exp161-prefix-crop-exp148-train-lgb2b",
+        "status": "COMPLETE",
+        "original_kernel": "kentookumura/exp161-prefix-crop-exp148-train-lgb2",
+        "superseded_kernel": "kentookumura/exp161-prefix-crop-exp148-train-lgb2a",
+        "push_errors": [
+          "Maximum batch CPU session count of 5 reached",
+          "Notebook not found on same-slug retry",
+          "Maximum batch CPU session count of 5 reached on lgb2a retry",
+          "Notebook not found on lgb2a retry after lgb0/lgb1 completed"
+        ],
+        "enable_gpu": false,
+        "enable_internet": false
+      }
+    ]
+  },
+  "split_train_results": {
+    "best_single_model": "lgb2",
+    "best_single_rmse_tvt": 8.56472499591314,
+    "best_single_delta_vs_exp148_lgb_mean": 0.06344381401732,
+    "combined_lgb_mean_across_split": null,
+    "combined_lgb_mean_note": "Not evaluated; split notebooks each ran one LGB config, so their internal lgb_mean equals the selected single config.",
+    "rows": 3783989,
+    "features": 342,
+    "prefix_crop_feature_count": 48,
+    "models": [
+      {
+        "model": "lgb0",
+        "kernel": "kentookumura/exp161-prefix-crop-exp148-train-lgb0",
+        "version": 1,
+        "status": "COMPLETE",
+        "elapsed_seconds": 16193.874,
+        "rmse_tvt": 8.573959480512093,
+        "rmse_target": 8.573959632880227,
+        "fold_rmse_tvt": [
+          9.086285031312698,
+          8.911342038437647,
+          7.487926993230402,
+          8.349104868800723,
+          8.932985315562743
+        ],
+        "best_iterations": [
+          4988,
+          435,
+          484,
+          116,
+          234
+        ],
+        "prediction_sha256": "67ea3ee0cb2c4599466dc97dc1e695e963559c8c48d7c3d44ef151a1b07a296e"
+      },
+      {
+        "model": "lgb1",
+        "kernel": "kentookumura/exp161-prefix-crop-exp148-train-lgb1",
+        "version": 1,
+        "status": "COMPLETE",
+        "elapsed_seconds": 9408.618,
+        "rmse_tvt": 8.575152249652412,
+        "rmse_target": 8.575152073712934,
+        "fold_rmse_tvt": [
+          9.029034734019946,
+          8.677456435310157,
+          7.49670851229148,
+          8.57513786353678,
+          9.005239802894584
+        ],
+        "best_iterations": [
+          9999,
+          1216,
+          1514,
+          586,
+          1723
+        ],
+        "prediction_sha256": "79ec59669f4800421cf5ded390294718175db257f6e3b0109476f0cea0dcec99"
+      },
+      {
+        "model": "lgb2",
+        "kernel": "kentookumura/exp161-prefix-crop-exp148-train-lgb2b",
+        "version": 1,
+        "status": "COMPLETE",
+        "elapsed_seconds": 14034.888,
+        "rmse_tvt": 8.56472499591314,
+        "rmse_target": 8.564725092032251,
+        "fold_rmse_tvt": [
+          8.991120983399577,
+          8.703167092408991,
+          7.443797796472158,
+          8.601688562839596,
+          8.987295797886462
+        ],
+        "best_iterations": [
+          9983,
+          4395,
+          1849,
+          1648,
+          1435
+        ],
+        "prediction_sha256": "bf8f0e2bea3634bebf892a819563175ac05481c06d099d381b69e402da867b66"
+      }
+    ]
+  },
+  "feature_groups": [
+    "projection_correction",
+    "u_disagreement",
+    "learned_likelihood_confidence",
+    "prefix_crop_window"
+  ],
+  "metric": "rmse",
+  "cv": 8.56472499591314,
+  "public_lb": null,
+  "private_lb": null,
+  "submitted": false
+}

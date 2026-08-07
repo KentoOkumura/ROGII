@@ -1,0 +1,284 @@
+experiment:
+  name: exp292_typewell_gr_warp_rate_identifiability_audit
+  description: >-
+    Audits whether prefix-calibrated Type Well forward-GR frequency and shape
+    can rank the five saved exp268 exact-HMM initial-rate candidates without
+    using unknown-suffix TVT, error, or oracle information.
+  route: pf_beam
+  status: completed_fail_closed
+  created_at: "2026-07-19"
+  inference_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+lineage:
+  parent: exp268_multi_scale_initial_rate_candidates
+  references:
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp288_known_tvt_typewell_horizontal_gr_visualization
+    - exp170_heel_calibrated_shift_scan_pfbeam_audit
+    - exp211_affine_calibrated_gr_observation_pfbeam
+    - exp132_multi_scale_gr_observation_likelihood
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md typewell_gr_warp_rate_identifiability_audit
+  implementation_source: exp292_typewell_gr_warp_rate_identifiability_audit_compact_selfcontained_train.py
+  diff_summary: >-
+    Keeps the saved exp268 tail30/w32/w64/w128/w256 paths, exp209 HMM
+    generation contract, and all rate windows fixed. Adds one target-free
+    readout that robustly calibrates Type Well GR on the known prefix, scores
+    each fixed path over H128/H256/H512 using Gaussian residual, NCC, and
+    chain-rule derivative residual, and compares real scores with a stable
+    within-well circular-shuffle and the always-tail30 safe control. No HMM/PF
+    regeneration, candidate averaging, model fit, inference, or submission is
+    included.
+
+validation:
+  strategy: fixed_exp268_rate_candidate_typewell_gr_warp_identifiability_audit
+  metric: candidate_best_auc_and_fixed_top1_rmse_vs_tail30_safe
+  seed: 42
+  n_folds: 5
+  trained_folds: 0
+  group_column: well
+  fold_policy: sklearn_groupkfold_n5_on_one_row_per_sorted_well
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  primary_horizon_rows: 256
+  diagnostic_horizon_rows: [128, 512]
+  success_criteria:
+    minimum_primary_eligible_well_fraction: 0.90
+    minimum_primary_eligible_row_fraction: 0.90
+    minimum_pooled_auc_lift_real_vs_shuffle: 0.02
+    minimum_positive_auc_lift_folds: 4
+    minimum_pooled_rmse_gain_ft_top1_vs_safe: 0.10
+    minimum_improved_rmse_folds: 4
+    require_1000_plus_nonregression: true
+    require_hidden_like_spatial_nonregression: true
+    require_hidden_like_typewell_purged_nonregression: true
+  leakage_policy:
+    - Target-free scoring accepts only fixed candidate paths, MD, GR, TVT_input, and Type Well TVT/GR.
+    - TVT, target, true_tvt, error, abs_error, and oracle columns are rejected before score freeze.
+    - Robust affine calibration and residual scales use only the known TVT_input prefix.
+    - Unknown-suffix true TVT is joined only after score, eligibility, and top1 selection content SHA are frozen.
+    - True TVT, candidate error, fold metrics, and oracle labels never alter calibration, score, eligibility, shuffle, tie, or fallback.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  id_column: id
+  well_column: well
+  target_column: TVT
+  exp268_shards:
+    expected_shards: 2
+    expected_candidate_rows: 3783989
+    expected_wells: 773
+    require_aggregate_complete: true
+    aggregate_summary_filename: exp268_multi_scale_initial_rate_candidates_summary.json
+    aggregate_manifest_filename: exp268_multi_scale_initial_rate_candidates_input_manifest.csv
+    expected_aggregate_summary_sha256: 8bd2064892f7eb05392785d602e810b9aea8b686225994cd515247609370e0c6
+    expected_aggregate_manifest_sha256: 427aa3f15c8577b38448836d3adea58ef69dcf43d6a79237f0c603b9bf04494b
+    expected_prediction_content_sha256: fc18952f564dcefed8222ee30510828a4fb47f51c06a0eec5b1ddf37887ecdd1
+    aggregate_summary_candidates:
+      - experiments/exp268_multi_scale_initial_rate_candidates/artifacts/exp268_multi_scale_initial_rate_candidates_summary.json
+      - /kaggle/input/notebooks/kentookumura/exp268-multi-scale-initial-rate-aggregate/artifacts/exp268_multi_scale_initial_rate_candidates_summary.json
+    aggregate_manifest_candidates:
+      - experiments/exp268_multi_scale_initial_rate_candidates/artifacts/exp268_multi_scale_initial_rate_candidates_input_manifest.csv
+      - /kaggle/input/notebooks/kentookumura/exp268-multi-scale-initial-rate-aggregate/artifacts/exp268_multi_scale_initial_rate_candidates_input_manifest.csv
+    shard_specs:
+      - shard_index: 0
+        filename: exp268_multi_scale_initial_rate_candidates_shard0.csv.gz
+        candidates:
+          - experiments/exp268_multi_scale_initial_rate_candidates/artifacts/exp268_multi_scale_initial_rate_candidates_shard0.csv.gz
+          - /kaggle/input/notebooks/kentookumura/exp268-multi-scale-initial-rate-shard0/artifacts/exp268_multi_scale_initial_rate_candidates_shard0.csv.gz
+        expected_decompressed_sha256: a38ac16d12c9cd650170d16a9eb0b75159dd6e119443d33b7d7290a9e5347066
+        expected_rows: 1853957
+        expected_wells: 375
+        expected_prediction_content_sha256: a9fcc6c26bc6ddf53613e887dfbe540aed3f31904f14d8dd05ac1b7b55c282e2
+      - shard_index: 1
+        filename: exp268_multi_scale_initial_rate_candidates_shard1.csv.gz
+        candidates:
+          - experiments/exp268_multi_scale_initial_rate_candidates/artifacts/exp268_multi_scale_initial_rate_candidates_shard1.csv.gz
+          - /kaggle/input/notebooks/kentookumura/exp268-multi-scale-initial-rate-shard1/artifacts/exp268_multi_scale_initial_rate_candidates_shard1.csv.gz
+        expected_decompressed_sha256: 30d6d7e930ffdec02f0da46108803c5640a03b26ea9b6cf8232ad7fdb06f0d36
+        expected_rows: 1930032
+        expected_wells: 398
+        expected_prediction_content_sha256: c978172caa961e3071f1791aa2f742dcf6f0ebefe5ba7df7ef7cc36f51a4070d
+  exp209_tail30_control:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    candidates:
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+  hidden_like:
+    fold_assignment_candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    role_columns:
+      spatial: verification_like_spatial_role
+      typewell_purged: verification_like_typewell_purged_role
+
+candidate_bank:
+  order:
+    - hmm_ir_tail30
+    - hmm_ir_w32
+    - hmm_ir_w64
+    - hmm_ir_w128
+    - hmm_ir_w256
+  safe_candidate: hmm_ir_tail30
+  source_initial_rate_windows: [30, 32, 64, 128, 256]
+  regenerate_candidates: false
+  persist_selected_row_prediction: false
+
+model:
+  name: none_fixed_candidate_identifiability_audit
+  estimator: none
+  target: train_unknown_suffix_tvt_for_post_freeze_readout_only
+  params: {}
+
+audit:
+  mode: typewell_gr_warp_rate_identifiability
+  output_prefix: exp292_typewell_gr_warp_rate_identifiability_audit
+  horizons_rows: [128, 256, 512]
+  primary_horizon_rows: 256
+  short_horizon_min_rows: 64
+  common_pair_coverage:
+    minimum_pairs: 32
+    minimum_fraction_of_effective_horizon: 0.50
+    require_all_candidates_common_mask: true
+  typewell:
+    finite_only: true
+    sort_by_tvt_stable: true
+    duplicate_tvt_gr_aggregation: median
+    extrapolation: disabled
+  prefix_calibration:
+    scope: last_known_prefix_rows
+    maximum_rows: 512
+    minimum_pairs: 40
+    trim_quantile: 0.90
+    robust_iterations: 2
+    minimum_typewell_gr_std: 5.0
+    slope_range: [0.25, 4.0]
+    maximum_prefix_rmse: 60.0
+    invalid_policy: disable_gr_selection_and_use_safe
+  gaussian_component:
+    residual_scale: 1p4826_times_prefix_residual_mad
+    sigma_clip: [10.0, 60.0]
+    log_likelihood_clip: 600.0
+  derivative_component:
+    formula: affine_slope_times_typewell_gr_gradient_at_candidate_midpoint_times_candidate_tvt_delta
+    residual_scale: 1p4826_times_prefix_residual_first_difference_mad
+    scale_clip: [1.0, 30.0]
+    minimum_median_absolute_forward_delta_gr_per_row: 0.25
+  ncc_component:
+    formula: pearson_correlation_on_common_finite_horizon_rows
+  composite:
+    component_order: [gaussian, ncc, derivative]
+    component_normalization: candidate_median_mad_zscore_clip
+    zscore_clip: [-5.0, 5.0]
+    zero_mad_threshold: 0.000000001
+    weights: [0.3333333333333333, 0.3333333333333333, 0.3333333333333333]
+    tie_policy: candidate_order_safe_first
+  shuffled_control:
+    kind: stable_within_well_circular_rotation
+    seed: 42
+    seed_keys: [experiment, seed, well]
+    minimum_rotation_rows: 32
+    minimum_rotation_fraction: 0.25
+    use_same_rotation_for_all_horizons: true
+  truth_readout:
+    candidate_best_label: minimum_candidate_rmse_with_all_ties_positive
+    truth_rmse_tie_atol_ft: 0.000000001
+    auc_horizon_rows: 256
+    fixed_top1_horizon_rows: 256
+    fixed_top1_score_scope: horizon
+    fixed_top1_rmse_scope: full_unknown_suffix
+    selected_prediction_persisted: false
+  forbidden_actions:
+    - tune_rate_window
+    - tune_horizon
+    - tune_affine_or_scale
+    - tune_coverage_or_gradient_threshold
+    - tune_component_weight
+    - candidate_average_or_softmax_tvt
+    - hmm_or_pf_regeneration
+    - selector_or_weight_learning
+    - raw_test_inference
+    - submission
+  expected_artifacts:
+    - exp292_typewell_gr_warp_rate_identifiability_audit_contract.json
+    - exp292_typewell_gr_warp_rate_identifiability_audit_input_manifest.csv
+    - exp292_typewell_gr_warp_rate_identifiability_audit_fold_manifest.csv
+    - exp292_typewell_gr_warp_rate_identifiability_audit_calibration_eligibility.csv
+    - exp292_typewell_gr_warp_rate_identifiability_audit_target_free_scores.csv.gz
+    - exp292_typewell_gr_warp_rate_identifiability_audit_target_free_selection.csv
+    - exp292_typewell_gr_warp_rate_identifiability_audit_auc_metrics.csv
+    - exp292_typewell_gr_warp_rate_identifiability_audit_rmse_metrics.csv
+    - exp292_typewell_gr_warp_rate_identifiability_audit_subgroup_metrics.csv
+    - exp292_typewell_gr_warp_rate_identifiability_audit_by_well.csv
+    - exp292_typewell_gr_warp_rate_identifiability_audit_sha_manifest.csv
+    - exp292_typewell_gr_warp_rate_identifiability_audit_summary.json
+
+execution:
+  implementation: true
+  active_audit_variants: 1
+  lightgbm_config_count: 0
+  evaluation_fold_count: 5
+  trained_fold_count: 0
+  total_boosters: 0
+  hmm_pf_well_runs: 0
+  control_or_parent_retraining: false
+  gpu: false
+  inference: false
+  submission: false
+  kaggle_push_approved: true
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp268-multi-scale-initial-rate-aggregate
+      - kentookumura/exp268-multi-scale-initial-rate-shard0
+      - kentookumura/exp268-multi-scale-initial-rate-shard1
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_real_score_stable_sha256_local_rng_for_circular_shuffle_only
+  stochastic_components:
+    - stable_within_well_circular_shuffle_negative_control
+  parallel_rng_policy: single_process_local_rng_per_well_no_global_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is a fixed-input deterministic diagnostic, not a model or submission anchor.
+    - Target-free score and selection content SHA must be frozen before truth is joined.
+    - Raw and decompressed gzip SHA are recorded; decompressed content SHA is primary.
+
+inference:
+  enabled: false
+  mode: disabled_train_side_identifiability_audit_only
+  create_submission: false
+
+notes:
+  - The compact self-contained train notebook is adopted as canonical by the 2026-07-19 execution instruction.
+  - The inference notebook remains unadopted and disabled.
+  - Kaggle CPU version 1 completed under kernel id 127888550 and the preregistered decision is FAIL_CLOSE_NO_RESCUE_GRID.
+  - No rescue grid, inference, selected row prediction, or submission is allowed from this result.

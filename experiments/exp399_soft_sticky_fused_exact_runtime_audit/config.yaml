@@ -1,0 +1,505 @@
+experiment:
+  name: exp399_soft_sticky_fused_exact_runtime_audit
+  description: >-
+    Exact-equivalent runtime audit of the exp394 soft-sticky E/H HMM. Replace
+    per-row materialized transition tables with an on-the-fly sparse kernel,
+    fuse docking with local H transitions, and decode two independent wells in
+    parallel without pruning any TVT or residual-rate state.
+  route: pf_beam
+  status: full_oof_rejected_no_rescue
+  created_at: "2026-07-25"
+  updated_at: "2026-07-26"
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+lineage:
+  parent: exp394_soft_sticky_exp226_k16_branch_hmm
+  scientific_parent: exp355_exp226_dip_rate_prior_on_exp209
+  branch_parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  decoder_parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  promotion_baseline: exp263_last_anchor_better_candidate_confidence_pair_cache
+  steering: ../../.steering/20260725-exp399-soft-sticky-fused-exact-runtime-audit
+  references:
+    - exp394_soft_sticky_exp226_k16_branch_hmm
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp270_exact_hmm_posterior_mode_candidate_audit
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe
+    - exp357_exp226_huber_emission_independent_audit
+    - exp391_prefix_anchored_mode_persistence_hmm_readout
+    - docs/06_reproducibility.md
+  diff_summary: >-
+    Keep the complete exp394 scientific contract and all full-grid states.
+    Change only the implementation: compute each source state's at-most
+    3-rate by 5-position transitions on demand, calculate the H-to-E docking
+    expectation in the same local traversal, and use two independent
+    well-level workers with stable output ordering. The saved exp394 fixed16
+    output is a load-only numerical and runtime baseline.
+
+implementation:
+  enabled: true
+  scope: full_773_well_oof_completed_promotion_rejected
+  helper_code_created: false
+  compact_selfcontained_source_created: true
+  compact_selfcontained_notebook_created: true
+  jupytext_source_created: true
+  canonical_notebook_adopted: true
+  kaggle_package_created: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: saved_parent_fixed16_exact_equivalence_and_runtime_preflight
+  metric: numerical_parity_and_wall_time
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  score_rows: unknown_suffix_only_after_prediction_and_branch_posterior_freeze
+  truth_attachment: after_schedule_branch_posterior_prediction_and_content_sha_freeze
+  leakage_policy:
+    - exp226 tvt_geop must preserve its saved group-safe outer-fold contract.
+    - exp226 gr_delta, tvt_pred, U projection, truth, error, and oracle columns are forbidden before freeze.
+    - Suffix truth, error, and hidden-like roles must have zero reads before prediction freeze.
+    - Sticky length, docking width, emission, grid, and rate scale cannot be selected on the same OOF.
+    - Saved exp394 fixed16 output is parity-only and cannot enter candidate generation.
+  technical_preflight:
+    wells: 16
+    selection: per_fold_longest_three_plus_global_median_length_stable_well_id
+    truth_or_error_used_for_selection: false
+    scientific_score_gate: false
+    parent_reference:
+      source: exp394_soft_sticky_exp226_k16_branch_hmm
+      kernel_version: 1
+      kernel_id_no: 128536142
+      prediction_content_sha256: b71bf25441d217e992b97dacceaca93ab2bcff2646d7043aafd34f7b39b4710a
+      branch_posterior_content_sha256: 40558f9e94792fca4f2da950a5e547bc5ef1eb7688604a57054f4e15d56c82a1
+      schedule_content_sha256: c05a0764382c0fb0f366614bff642e2f2ffb41f865190b56d13f0c4e32c9843b
+      runtime_seconds: 3703.079063761
+      decode_seconds: 3636.740856
+      state_time_units: 3290350409
+      projected_full_runtime_seconds: 112736.8894386766
+    parity:
+      maximum_prediction_abs_diff_ft: 1.0e-5
+      maximum_branch_probability_abs_diff: 2.0e-6
+      maximum_diagnostic_abs_diff: 2.0e-5
+      require_schedule_content_sha_match: true
+      practical_equivalence_rationale: >-
+        Fixed-width max-plus-sum reduction changes floating-point association.
+        The fixed16 observed prediction-difference RMSE is 5.65e-7 ft,
+        p99 is 3.63e-6 ft, and maximum is 7.89e-6 ft; 1e-5 ft is
+        sub-millimetre practical equivalence without changing any state,
+        probability, schedule, or scientific parameter.
+    minimum_state_time_normalized_speedup: 3.684212073159366
+    require_completed_wells: 16
+    require_finite_prediction_coverage: 1.0
+    require_h_full_grid_coverage: 1.0
+    maximum_posterior_normalization_error: 1.0e-8
+    maximum_transition_row_sum_error: 1.0e-10
+    maximum_projected_runtime_seconds: 30600
+    maximum_projected_peak_rss_gb: 25
+    fail_interpretation: technical_blocker_not_scientific_negative_result
+  full_oof:
+    enabled_only_after_preflight_technical_pass_and_separate_user_approval: true
+    required_preflight_summary_sha256: ac800ac0ada91fd1df4486ea5ae580c32e7afd3c0ae7de48172476291550c660
+    scientific_variants: 1
+    switching_hmm_well_runs: 773
+    reporting_folds: 5
+    reporting_fold:
+      column: fold
+      source: exp226_geometry_oof_group_safe_fold_frozen_before_truth
+      exp263_generation_fold_column: exp263_fold
+      require_same_assignment_as_exp263: false
+      rationale: >-
+        Fold-specific promotion reporting was preimplemented on the frozen
+        exp226 group-safe fold. The exp263 baseline is joined by well/row as a
+        load-only OOF prediction generated under an independent exp072
+        group-safe fold; that generation fold remains provenance and is not a
+        join constraint.
+    primary_baseline:
+      source: exp263_last_anchor_better_candidate_confidence_pair_cache
+      candidate: exp226_w500_50_50
+      saved_oof_rmse_ft: 8.238331546
+      public_lb: 7.800
+      regenerate: false
+    reporting_references:
+      exp226_oof_rmse_ft: 9.427109596
+      exp209_oof_rmse_ft: 11.938287235
+      exp355_oof_rmse_ft: 11.291976616
+    promotion_requires_all:
+      minimum_rmse_gain_vs_exp263_ft: 0.25
+      minimum_improved_folds: 4
+      maximum_near_0_250_regression_ft: 0.02
+      maximum_1000_plus_regression_ft: 0.02
+      maximum_hidden_like_spatial_regression_ft: 0.02
+      maximum_hidden_like_typewell_purged_regression_ft: 0.02
+      minimum_improved_or_equal_well_fraction_exclusive: 0.50
+      maximum_paired_by_well_delta_p95_ft: 0.0
+      maximum_worst_well_regression_ft: 0.25
+      branch_occupancy_each_range: [0.05, 0.95]
+      minimum_expected_switches_per_1000_md_ft_exclusive: 0.0
+      maximum_expected_switches_per_1000_md_ft: 2.0
+      maximum_persistent_offset_episode_count_delta: 0
+      minimum_recovery_within_512_rate_delta: 0.0
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  exp226_geometry_oof:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    candidates:
+      - experiments/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    patterns:
+      - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+    allowed_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    forbidden_columns: [tvt_pred, gr_delta, tvt_true, error, abs_error]
+    branch_value: tvt_geop
+  exp394_fixed16_reference:
+    source: exp394_soft_sticky_exp226_k16_branch_hmm
+    prediction_filename: exp394_soft_sticky_exp226_k16_branch_hmm_preflight_predictions.csv.gz
+    runtime_filename: exp394_soft_sticky_exp226_k16_branch_hmm_preflight_runtime.csv
+    schedule_filename: exp394_soft_sticky_exp226_k16_branch_hmm_preflight_rate_schedule.csv.gz
+    expected_prediction_decompressed_sha256: 86763ca9bfd8abbb9bb4d8f6ee2c204caea072c52ea126e8352896d0bc5a606f
+    expected_runtime_raw_sha256: 07ddd34f1befa6b212b8f1894cba49b923ffc1c24d51a295f6abff6bd1af8f92
+    expected_schedule_decompressed_sha256: 358c0574fb14891005b98c127c43a68969ef7c9178a1c1f30c7e35030ac09d83
+    usage: late_parity_only_never_candidate_generation
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp394-soft-sticky-exp226-k16-branch-hmm-train/artifacts
+      - /kaggle/input/exp394-soft-sticky-exp226-k16-branch-hmm-train/artifacts
+      - /tmp/kaggle-output/exp394_soft_sticky_exp226_k16_branch_hmm/train_v1/artifacts
+    prediction_patterns:
+      - "**/exp394_soft_sticky_exp226_k16_branch_hmm_preflight_predictions.csv.gz"
+    runtime_patterns:
+      - "**/exp394_soft_sticky_exp226_k16_branch_hmm_preflight_runtime.csv"
+    schedule_patterns:
+      - "**/exp394_soft_sticky_exp226_k16_branch_hmm_preflight_rate_schedule.csv.gz"
+  exp209_saved_control:
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    candidates:
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5_small/artifacts
+    patterns:
+      - "**/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz"
+    prediction_column: hmm_mean_tvt
+    saved_oof_rmse_ft: 11.938287235
+    usage: late_metric_baseline_only_no_control_rerun
+  exp263_fixed_physical_candidate:
+    source: exp263_last_anchor_better_candidate_confidence_pair_cache
+    candidate: exp226_w500_50_50
+    formula: exp226_0p50_plus_likpf_0p25_plus_exact_hmm_0p25
+    expected_stage0_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+    saved_oof_rmse_ft: 8.238331546
+    regenerate: false
+    cache_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts
+      - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts
+      - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1_small/artifacts
+  hidden_like:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    late_join_only: true
+    role_columns:
+      - verification_like_spatial_role
+      - verification_like_typewell_purged_role
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    patterns:
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+
+model:
+  name: soft_sticky_exp226_k16_full_grid_exact_hmm
+  estimator: deterministic_switching_exact_hmm
+  fitted_model: false
+  regimes: [E_exp226_geometry, H_free_exact_hmm]
+  initial_regime_probability:
+    E_exp226_geometry: 0.5
+    H_free_exact_hmm: 0.5
+  e_branch:
+    state_count_per_row: 1
+    tvt_value: exp226_tvt_geop
+    uses_target_gr_in_candidate_generation: false
+    emission: exact_exp209_gaussian_at_tvt_geop
+  h_branch:
+    coordinate: absolute_tvt_and_residual_rate_about_k16_mu
+    retain_all_tvt_grid_states: true
+    retain_all_rate_states: true
+    transition_mean_schedule:
+      source: exp355_exp226_dip_rate_prior_on_exp209
+      exp226_component: geometry_only_pre_gr_pre_u_projection
+      k_segments: 16
+      geometry_rate: delta_tvt_geop_plus_delta_z_div_delta_md
+      target_anchor_rate: exp209_known_prefix_initial_rate
+      formula: parent_initial_rate_plus_geometry_rate_minus_first_segment_geometry_rate
+      fallback: exact_exp355
+      gr_correction_timing: before_gr_observation
+    fixed_hmm:
+      step_ft: 0.35
+      n_rates: 41
+      residual_rate_span: 0.10
+      sig_r: 0.002
+      sig_p: 0.02
+      effective_position_sigma_floor: 0.1225
+      emission: gaussian
+      sigma_mode: std
+      start_sig: 0.75
+      r0_sig: 0.01
+      band_pad_ft: 100.0
+      momentum: 0.998
+      output_inside_branch: posterior_mean
+  observation:
+    source: exact_exp209
+    prefix_affine_calibration: exact_exp209
+    sigma_gr: exact_exp209
+    missing_gr_policy: exact_exp209
+    h_evaluation: all_absolute_tvt_grid_values
+    e_evaluation: exp226_tvt_geop
+  soft_sticky:
+    coordinate: measured_depth_ft
+    base_switching_length_md_ft: 1000.0
+    switch_hazard_formula: one_minus_exp_negative_delta_md_over_base_switching_length
+    dwell_interpretation: >-
+      E prior mean dwell is 1000 MD-ft; H dwell can be longer because H-to-E
+      switch probability is multiplied by the docking score.
+    e_to_h_injection:
+      source_tvt: previous_exp226_tvt_geop
+      source_residual_rate: 0.0
+      destination_distribution: normalized_h_transition_kernel
+    h_to_e_docking:
+      sigma_ft: 6.0
+      score: >-
+        expectation_under_normalized_h_transition_kernel_of_gaussian_distance
+        between_next_h_absolute_tvt_and_current_exp226_tvt_geop
+      probability_formula: switch_hazard_times_gaussian_docking
+    h_to_h_probability: one_minus_h_to_e_probability
+    e_to_e_probability: one_minus_switch_hazard
+  inference:
+    algorithm: exact_log_space_forward_backward
+    output: joint_regime_and_state_posterior_mean
+    formula: gamma_E_times_tvt_geop_plus_sum_gamma_H_times_absolute_tvt
+  implementation:
+    transition_kernel: on_the_fly_source_normalized_sparse_3x5
+    docking: fused_forward_and_backward_transition_traversal
+    materialized_position_destination_tensor: false
+    outer_well_workers: 2
+    stable_output_sort: [well_id, row_idx]
+  forbidden:
+    - low_rank_3d_geologic_field
+    - formation_or_rgt_prerequisite
+    - exp226_gr_delta_or_final_tvt_pred_or_u_projection
+    - manually_enumerated_hmm_modes
+    - marginal_map_viterbi_or_topk_mode_bank
+    - student_t_or_huber_emission
+    - hard_router_or_rowwise_selector
+    - posthoc_blend_or_oracle_branch_choice
+    - parameter_grid_or_same_oof_rescue
+
+audit:
+  output_prefix: exp399_soft_sticky_fused_exact_runtime_audit
+  persistent_offset:
+    error_threshold_ft: 10.0
+    minimum_consecutive_rows: 128
+    return_threshold_ft: 5.0
+    recovery_horizons_rows: [512]
+  expected_preflight_artifacts:
+    - exp399_soft_sticky_fused_exact_runtime_audit_preflight_well_ledger.csv
+    - exp399_soft_sticky_fused_exact_runtime_audit_preflight_predictions.csv.gz
+    - exp399_soft_sticky_fused_exact_runtime_audit_preflight_runtime.csv
+    - exp399_soft_sticky_fused_exact_runtime_audit_preflight_gate.json
+    - exp399_soft_sticky_fused_exact_runtime_audit_preflight_summary.json
+    - exp399_soft_sticky_fused_exact_runtime_audit_preflight_parent_parity.json
+  expected_full_oof_artifacts:
+    - exp399_soft_sticky_fused_exact_runtime_audit_oof_predictions.csv.gz
+    - exp399_soft_sticky_fused_exact_runtime_audit_branch_posterior.csv.gz
+    - exp399_soft_sticky_fused_exact_runtime_audit_by_well_runtime.csv
+    - exp399_soft_sticky_fused_exact_runtime_audit_scope_metrics.csv
+    - exp399_soft_sticky_fused_exact_runtime_audit_by_well_metrics.csv
+    - exp399_soft_sticky_fused_exact_runtime_audit_reporting_references.json
+    - exp399_soft_sticky_fused_exact_runtime_audit_recovery_episodes.csv
+    - exp399_soft_sticky_fused_exact_runtime_audit_recovery_summary.csv
+    - exp399_soft_sticky_fused_exact_runtime_audit_promotion_gate.json
+    - exp399_soft_sticky_fused_exact_runtime_audit_summary.json
+
+execution:
+  implementation_approved: true
+  implementation_approved_at: "2026-07-25"
+  implementation_authorization_source: user_message_proceed_with_exact_kernel_optimization
+  kaggle_package_approved: true
+  kaggle_push_approved: true
+  technical_preflight_approved: true
+  technical_preflight_approved_at: "2026-07-25"
+  technical_preflight_authorization_source: user_message_proceed_with_exact_kernel_optimization
+  technical_preflight_completed_at: "2026-07-25T06:20:24.900332+00:00"
+  technical_preflight_gate_passed: true
+  technical_preflight_decision: technical_preflight_passed_full_oof_requires_separate_approval
+  full_oof_approved: true
+  full_oof_approved_at: "2026-07-25"
+  full_oof_authorization_source: user_message_execute_after_exp399_preflight_pass
+  full_oof_completed_at: "2026-07-25T21:53:23.969219+00:00"
+  full_oof_decision: promotion_rejected_no_parameter_rescue_blend_selector_inference_or_submission
+  run_technical_preflight: false
+  run_full_oof: false
+  run_inference: false
+  create_submission: false
+  technical_preflight_counts:
+    technical_variants: 1
+    selected_wells: 16
+    switching_hmm_well_runs: 16
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    parent_control_reruns: 0
+    gpu: false
+  full_oof_counts:
+    scientific_variants: 1
+    reporting_folds: 5
+    switching_hmm_well_runs: 773
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    parent_control_reruns: 0
+
+runtime:
+  device: cpu
+  use_gpu: false
+  use_amp: false
+  num_workers: 2
+  numba_num_threads: 2
+  maximum_seconds: 30600
+  maximum_peak_rss_gb: 25
+  parent_exp394_fixed16_runtime_seconds: 3703.079063761
+  parent_exp394_projected_full_runtime_seconds: 112736.8894386766
+  risk: exact_equivalence_and_parallel_runtime
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_run_on_push: false
+    train_kernel_id: kentookumura/exp399-soft-sticky-fused-exact-runtime-audit-train
+    train_title: exp399 soft sticky fused exact runtime audit train
+    train_kernel_version: 6
+    train_kernel_id_no: 128546220
+    train_url: https://www.kaggle.com/code/kentookumura/exp399-soft-sticky-fused-exact-runtime-audit-train
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp394-soft-sticky-exp226-k16-branch-hmm-train
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    bootstrap_files:
+      - exp399_soft_sticky_fused_exact_runtime_audit_preflight_summary.json
+    inference_kernel_sources: []
+
+results:
+  stage: full_oof
+  status: full_oof_rejected_no_rescue
+  generated_at_utc: "2026-07-25T21:53:23.969219+00:00"
+  kernel_version: 6
+  kernel_id_no: 128546220
+  gate_passed: false
+  decision: promotion_rejected_no_parameter_rescue_blend_selector_inference_or_submission
+  rows: 3783989
+  wells: 773
+  cv_rmse_ft: 11.395645678483454
+  exp263_cv_rmse_ft: 8.23833166670289
+  gain_vs_exp263_ft: -3.1573140117805636
+  improved_folds: 0
+  improved_or_equal_well_fraction: 0.4049159120310479
+  runtime_seconds: 25118.126808599
+  prediction_freeze_seconds: 24669.330588937002
+  runtime_limit_seconds: 30600.0
+  runtime_limit_ratio: 0.820853817274
+  finite_prediction_coverage: 1.0
+  posterior_normalization_max_abs_error: 5.5289106626332796e-14
+  transition_row_sum_max_abs_error: 8.881784197001252e-16
+  truth_rows_before_freeze: 0
+  hidden_rows_before_freeze: 0
+  duplicate_rows: 0
+  models: 0
+  boosters: 0
+  parent_control_reruns: 0
+  inference_enabled: false
+  submission_created: false
+  branch_occupancy:
+    e: 0.05298961541440245
+    h: 0.9470103845855973
+  expected_switches_per_1000_md_ft: 0.3483807791723012
+  stress_delta_candidate_minus_exp263_ft:
+    near_000_250: 0.5175253236341013
+    long_1000_plus: 3.4881008827165605
+    hidden_like_spatial: 4.385663152061284
+    hidden_like_typewell_purged: 4.198109275953575
+    paired_by_well_p95: 12.034886073888778
+    worst_well: 38.148059320881174
+  failed_scientific_checks:
+    - minimum_rmse_gain
+    - minimum_improved_folds
+    - near_000_250_guard
+    - long_1000_plus_guard
+    - hidden_like_spatial_guard
+    - hidden_like_typewell_purged_guard
+    - improved_or_equal_well_fraction
+    - paired_by_well_p95
+    - persistent_episode_count
+    - worst_well
+  technical_checks_all_passed: true
+  prediction_content_sha256: d44b382a310c7d53bf5dc90a238c44a247b2ba09d2a1f0648174f4d7c85fb18e
+  branch_posterior_content_sha256: d953cebc3d46ef8cd4a03d9faaceab0cf74fbe998a2fe9a9d2141563996cd8a1
+  schedule_content_sha256: 98e6f2781c615d5bcecc594904597a2a72707347c41ac150a601f40155b02a31
+  scientific_contract_sha256: b640bce974b9d940b4988e5204b9df42dc4e216b2566e01061a04db9a4e3002f
+  oof_archive_raw_sha256: 4edf39adc1d91d71a50a01c5623cf1a9ea75f8e374718a50e156e31047bc5cbd
+  branch_archive_raw_sha256: 3d7d05af3aeac54121fa86f93d29ec222dd21ac2a4b73b4a2965a1c9125fe84a
+  schedule_archive_raw_sha256: 41630d69fbe02c7d38b7c2235df1b13abfb81b68086da9a44b0813445ece6cce
+  gate_raw_sha256: ace88e93431b264da907935812927492891a59844158ad6a4d84d591b216a747
+  preflight_summary_raw_sha256: ac800ac0ada91fd1df4486ea5ae580c32e7afd3c0ae7de48172476291550c660
+  package:
+    kernel_id: kentookumura/exp399-soft-sticky-fused-exact-runtime-audit-train
+    kernel_version: 6
+    kernel_id_no: 128546220
+    enable_gpu: false
+    enable_internet: false
+  output_archive: /tmp/kaggle-output/exp399_soft_sticky_fused_exact_runtime_audit/train_v6
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: true
+  seed_policy: no_rng_stable_fold_well_row_branch_tvt_rate_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads_and_stable_reduction_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  freeze_before_truth:
+    - k16_rate_schedule
+    - transition_contract
+    - branch_posterior
+    - joint_prediction
+    - content_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+
+notes:
+  - The user approved implementation and the fixed16 exact-equivalence/runtime audit on 2026-07-25.
+  - The saved exp394 version 1 fixed16 outputs are load-only parity and runtime references; the parent is not rerun.
+  - Full 773-well OOF was separately approved and completed in Kaggle kernel version 6.
+  - Public LB 6.5 is an aspirational target, not a claim supported by current OOF evidence.
+  - Version 5 decoded and froze all 773 wells in 28107.311 seconds, then failed only because the late readout incorrectly required independent exp226 and exp263 grouped-fold ledgers to be identical.
+  - Version 6 keeps the scientific candidate unchanged, validates both fold ledgers independently, and checkpoints frozen truth-free predictions before late readout.
+  - Version 6 passed every technical guard but failed 10 scientific promotion checks; no rescue, inference, or submission is allowed.

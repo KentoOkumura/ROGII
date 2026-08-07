@@ -1,0 +1,341 @@
+experiment:
+  name: "exp368_marginalized_reliability_pf"
+  description: >-
+    Run a zero-PF identifiability readout for a Rao-Blackwellized sticky
+    normal/weak GR reliability state before any exp072 particle replay.
+  hypothesis: >-
+    A sticky weak-GR state can reduce exp072 observation overconfidence without
+    sampling another particle axis, provided its predictive and bad-block
+    identification signals transfer across folds and hidden-like scopes.
+  route: pf_beam
+  status: stage_0_failed_close_without_rescue
+  created_at: "2026-07-23"
+  updated_at: "2026-07-25"
+
+implementation:
+  enabled: true
+  scope: stage0_train_side_reliability_readout
+  stage_1_implemented: false
+  train_notebook_state: canonical_adopted_from_compact_selfcontained
+  canonical_notebook_adopted: true
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.score_rows
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  steering: ../../.steering/20260723-exp368-marginalized-reliability-pf
+  references:
+    - exp232_adaptive_robust_likelihood_pf
+    - exp233_adaptive_outlier_mixture_likelihood_pf
+    - exp241_adaptive_likelihood_pf_trajectory_containment_audit
+    - exp363_sticky_gr_reliability_exact_hmm
+  diff_summary: >-
+    Keep exp072 particle dynamics and counts fixed. Stage 0 first checks a
+    normalized two-state Gaussian forward recursion on a final contiguous
+    128-row known-prefix history and 64-row held-out segment, then freezes the
+    same weak posterior on the saved exp072 likpf_mean path before suffix truth
+    is attached. Stage 1 PF is deliberately not implemented.
+
+validation:
+  strategy: two_stage_reliability_predictive_readout_then_marginalized_pf
+  metric: predictive_nll_and_bad10_auc
+  seed: 42
+  n_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  expected_wells: 773
+  expected_rows: 3783989
+  group_column: well_id
+  score_rows: unknown_suffix_only
+  truth_attachment: after_prefix_and_suffix_feature_content_sha_freeze
+  stage_0:
+    name: known_prefix_nll_and_saved_likpf_bad_block_readout
+    pf_seed_well_runs: 0
+    known_prefix:
+      history_rows: 128
+      heldout_rows: 64
+      selection: final_contiguous_192_rows_with_finite_tvt_input
+      gr_preprocessing: exp072_linear_interpolate_both_directions_then_typewell_mean
+      sigma_fit_rows: exp072_full_known_prefix_with_missing_gr_filled_zero
+      state_posterior: carry_history_posterior_into_heldout
+      base_predictive_density: normalized_gaussian_sigma_1x
+      marginalized_predictive_density: normalized_two_state_gaussian_sigma_1x_4x
+      score: pooled_heldout_predictive_nll_gain_fraction
+    suffix:
+      block_rows: 512
+      stride_rows: 256
+      tail_policy: keep_short_tail_from_stride_starts
+      posterior_score: row_weighted_mean_forward_filtered_weak_probability
+      bad_block_label_after_freeze: exp072_likpf_block_rmse_greater_than_or_equal_10ft
+      bad_block_rmse_ft: 10.0
+      quartile_edges: [0.25, 0.75]
+      fold_pass_definition: real_bad10_auc_strictly_greater_than_0p50
+      hidden_like_policy: require_both_spatial_and_typewell_purged
+      negative_control:
+        kind: within_well_nonzero_circular_shift_of_block_weak_score
+        key_prefix: exp368
+        offset_formula: one_plus_sha256_well_prefix_mod_block_count_minus_one
+        preserve_within_well_score_multiset: true
+        single_block_well_policy: identity_and_report
+    all_required:
+      minimum_known_prefix_predictive_nll_gain_fraction: 0.01
+      minimum_bad_block_auc: 0.60
+      minimum_auc_gain_over_circular: 0.02
+      minimum_passing_folds: 4
+      minimum_hidden_like_auc: 0.55
+      weak_posterior_mean_range: [0.02, 0.50]
+  stage_1:
+    enabled_only_after_stage_0_pass_and_separate_user_approval: true
+    particles: 500
+    seed_count: 128
+    well_count: 773
+    pf_seed_well_runs: 98944
+    all_required:
+      minimum_rmse_gain_vs_exp072_likpf_mean_ft: 0.05
+      minimum_improved_folds: 4
+      maximum_1000_plus_regression_ft: 0.02
+      maximum_hidden_like_spatial_regression_ft: 0.02
+      maximum_hidden_like_typewell_purged_regression_ft: 0.02
+      maximum_by_well_p95_regression_ft: 0.02
+      maximum_worst_well_regression_ft: 0.25
+
+data:
+  train_dir: data/raw/train
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  parent_control:
+    candidate: likpf_mean
+    direct_rmse_ft: 11.594897672
+    usage: saved_prediction_only_no_pf_control_replay
+  saved_exp072_path:
+    kernel_source: kentookumura/exp072-exp063-full-replay-feature-cache-train
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts
+      - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts
+      - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v2_stream/artifacts
+      - experiments/exp072_exp063_full_replay_feature_cache/artifacts
+    id_column: id
+    well_column: well
+    base_column: last_known_tvt
+    delta_column: likpf_mean_d
+    safe_columns: [id, well, last_known_tvt, likpf_mean_d]
+    forbidden_columns: [target, TVT, tvt_true, error, abs_error]
+    expected_raw_gzip_sha256: 14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    truth_columns: [well_id, row_idx, tvt_true]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+model:
+  name: marginalized_sticky_gr_reliability_likelihood_pf
+  estimator: none_stage0_then_stochastic_rao_blackwellized_likelihood_pf_if_promoted
+  particle_state: [position, rate]
+  marginalized_state: gr_reliability_probability
+  path_emission:
+    kind: normalized_gaussian_logpdf_with_squared_z_clip
+    squared_z_clip: 600.0
+    horizontal_gr_policy: exp072_linear_interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_drop_duplicate_then_linear_interp_endpoint_hold
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+    suffix_sigma_source: exp072_full_known_prefix_residual_std
+  gr_reliability:
+    states: [normal, weak]
+    transition_matrix:
+      - [0.998046875, 0.001953125]
+      - [0.0078125, 0.9921875]
+    initial_probability: [0.8, 0.2]
+    normal_sigma_multiplier: 1.0
+    weak_sigma_multiplier: 4.0
+    weak_mean: same_as_normal_predicted_gr
+    update: exact_two_state_normalized_gaussian_forward_per_path
+  fixed_from_exp072:
+    particles: 500
+    seed_count: 128
+    seed_aggregation: mean
+    momentum: 0.998
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_threshold: 0.5
+    resample_position_noise: 0.10
+    resample_velocity_noise: 0.001
+  forbidden:
+    - sampled_reliability_particles
+    - uniform_outlier_component
+    - adaptive_temperature_or_sigma
+    - transition_or_sigma_multiplier_grid
+    - rate_prediction_from_prefix_or_geometry
+    - particle_or_seed_increase
+    - blend_or_selector
+    - parent_pf_control_replay
+
+audit:
+  output_prefix: exp368_marginalized_reliability_pf
+  expected_artifacts:
+    - exp368_marginalized_reliability_pf_scientific_contract.json
+    - exp368_marginalized_reliability_pf_raw_well_manifest.csv
+    - exp368_marginalized_reliability_pf_input_manifest.json
+    - exp368_marginalized_reliability_pf_target_free_known_prefix_nll.csv.gz
+    - exp368_marginalized_reliability_pf_target_free_block_ledger.csv.gz
+    - exp368_marginalized_reliability_pf_target_free_weak_posterior_blocks.csv.gz
+    - exp368_marginalized_reliability_pf_late_truth_block_readout.csv.gz
+    - exp368_marginalized_reliability_pf_scope_metrics.csv
+    - exp368_marginalized_reliability_pf_stage0_gate.json
+    - exp368_marginalized_reliability_pf_summary.json
+
+runtime:
+  device: cpu
+  use_gpu: false
+  use_amp: false
+  num_workers: 1
+  maximum_seconds: 30600
+  maximum_peak_rss_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    train_run_on_push: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stage0_then_stable_sha256_experiment_well_family_seed_index
+  stochastic_components: []
+  parallel_rng_policy: single_worker_no_rng_stage0
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Freeze known-prefix NLL rows and suffix weak posterior before attaching suffix truth.
+    - The circular control uses a stable SHA256-derived nonzero block shift.
+    - Stage 0 is deterministic and creates no prediction or submission anchor.
+    - A future Stage 1 must use one local RNG stream per well and seed index.
+
+execution_contract:
+  stage_0:
+    diagnostic_variants: 1
+    reporting_folds: 5
+    pf_seed_well_runs: 0
+    pf_control_replays: 0
+    model_configs: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+  stage_1_if_pass_and_separately_approved:
+    scientific_variants: 1
+    reporting_folds: 5
+    pf_treatment_replays: 1
+    pf_control_replays: 0
+    particles: 500
+    seeds: 128
+    wells: 773
+    seed_well_runs: 98944
+    model_configs: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+  parent_control_retraining: false
+
+execution:
+  implementation_approved: true
+  implementation_approval_scope: user_message_implement_exp368
+  implementation_approved_at: "2026-07-25"
+  kaggle_push_approved: false
+  kaggle_push_approval_scope: user_message_execute_exp368
+  kaggle_push_approved_at: "2026-07-25"
+  active_stage: stage_0_completed_failed_closed
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+  kaggle_kernel_id: kentookumura/exp368-marginalized-reliability-pf-train
+  kaggle_kernel_title: exp368 marginalized reliability pf train
+  kaggle_kernel_version: 1
+  kaggle_kernel_id_no: 128591117
+  kaggle_kernel_url: https://www.kaggle.com/code/kentookumura/exp368-marginalized-reliability-pf-train
+  kaggle_kernel_status: COMPLETE
+  stage_1_counts:
+    scientific_variants: 1
+    reporting_folds: 5
+    pf_treatment_replays: 1
+    pf_control_replays: 0
+    particles: 500
+    seeds: 128
+    wells: 773
+    seed_well_runs: 98944
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    parent_control_reruns: 0
+
+results:
+  stage: stage_0
+  decision: stage_0_failed_close_without_rescue
+  technical_gate_passed: true
+  scientific_gate_passed: false
+  stage_1_eligible: false
+  rows: 3783989
+  wells: 773
+  blocks: 15174
+  known_prefix_rows: 49472
+  runtime_seconds: 630.5312643051147
+  known_prefix_predictive_nll_gain_fraction: 0.0003735644189361208
+  pooled_bad10_auc: 0.6366746645665088
+  circular_bad10_auc: 0.5784107647406126
+  real_minus_circular_auc: 0.05826389982589619
+  q4_minus_q1_mean_block_rmse_ft: 5.977433882706623
+  passing_folds_auc_gt_0p50: 5
+  hidden_like_spatial_auc: 0.6417948662245243
+  hidden_like_typewell_purged_auc: 0.6361146191645426
+  row_weighted_weak_mass: 0.009689476043273458
+  failed_scientific_checks:
+    - known_prefix_predictive_nll_gain_fraction_below_0p01
+    - row_weighted_weak_mass_below_0p02
+
+inference:
+  enabled: false
+  mode: disabled_stage0_failed_closed
+  create_submission: false
+
+notes:
+  - Design frozen on 2026-07-23.
+  - User approved Stage 0 implementation on 2026-07-25.
+  - User approved the Kaggle private CPU Stage 0 run on 2026-07-25.
+  - Kaggle CPU version 1 completed with technical PASS and scientific FAIL.
+  - The known-prefix predictive NLL gain and weak-mass lower-bound gates failed.
+  - Stage 1 PF is ineligible; inference and submission remain disabled.
+  - Any Stage 0 gate failure closes the branch without transition, multiplier, sigma, threshold, or blend rescue.

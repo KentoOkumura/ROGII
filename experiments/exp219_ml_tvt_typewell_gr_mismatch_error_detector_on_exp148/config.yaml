@@ -1,0 +1,169 @@
+experiment:
+  name: "exp219_ml_tvt_typewell_gr_mismatch_error_detector_on_exp148"
+  description: "Use exp148 ML-predicted TVT as a provisional typewell-GR alignment position and evaluate GR mismatch as an OOF error detector."
+  route: ml_model
+  status: completed_readout_rejected_no_addonly_no_submit
+  created_at: "2026-07-07"
+  updated_at: "2026-07-08"
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+lineage:
+  parent: exp148_learned_likelihood_fulltrain_addonly_on_exp092
+  comparison_parents:
+    - exp193_typewell_late_interval_context_features_addonly_on_exp148
+    - exp178_supervised_gr_window_matcher_from_known_tvt_prefix
+    - exp180_learned_gr_window_matcher_features_on_exp148
+    - exp132_multi_scale_gr_likelihood
+    - exp093_typewell_self_gr_candidate_audit
+    - exp201_typewell_spatial_tvt_error_readout
+  implementation_source: ml_tvt_typewell_gr_mismatch_error_detector_on_exp148.py
+  diff_summary: >
+    Reads exp148 train v1 lgb_mean OOF predictions and treats pred_tvt as a
+    provisional position on the typewell TVT axis. Around pred_tvt + configured
+    offsets, it compares raw horizontal GR windows with raw typewell GR windows
+    and writes target-free mismatch/confidence features plus readout labels.
+    It does not train a new model, replace TVT with best_offset, postprocess,
+    blend, submit, or create a PF/Beam candidate.
+
+validation:
+  strategy: exp148_oof_no_training_gr_mismatch_error_detector_readout
+  metric: auc_abs_error_gt10_and_high_mismatch_error_lift
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: exp148_lgb_mean_oof_rows
+  source_prediction_model: lgb_mean
+  source_prediction_mode: gpu_repro_guard_dp_threads8
+  source_prediction_variant: learned_likelihood_confidence_addonly
+  leakage_policy:
+    - exp148 pred_tvt is an OOF prediction and may be used as a target-free provisional alignment coordinate.
+    - raw horizontal GR, raw typewell GR, MD, Z, known-prefix TVT_input, and optional exp145 candidate disagreement are allowed feature sources.
+    - target_tvt, residual, abs_error, abs_error_gt*, true-error rank, and oracle best are readout labels only and must not feed feature generation.
+    - best_offset is diagnostic only. It must not be used as hard correction, direct replacement, row-wise switch, blend, or PF weight replacement.
+    - raw-vs-denoised GR is used only as confidence/mismatch description; denoised GR does not replace raw GR generation.
+    - Group-level and hidden-like readouts are diagnostics only and do not tune thresholds for submission.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  id_column: id
+  sample_submission: data/raw/sample_submission.csv
+  submission_target_column: tvt
+  output_dir: experiments/exp219_ml_tvt_typewell_gr_mismatch_error_detector_on_exp148/artifacts
+  exp148_prediction_candidates:
+    - /tmp/kaggle-output/exp148_train_v1/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+    - experiments/exp148_learned_likelihood_fulltrain_addonly_on_exp092/kaggle/output/train_v1/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+    - /kaggle/input/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+  learned_likelihood_feature_candidates:
+    - experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/kaggle/output/train_v2/artifacts/exp145_learned_likelihood_rawtest_feature_generator_parity_full_train_ml_features.csv.gz
+    - /kaggle/input/exp145-learned-likelihood-rawtest-feature-generator-parity-train/artifacts/exp145_learned_likelihood_rawtest_feature_generator_parity_full_train_ml_features.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp145-learned-likelihood-rawtest-feature-generator-parity-train/artifacts/exp145_learned_likelihood_rawtest_feature_generator_parity_full_train_ml_features.csv.gz
+  hidden_like_fold_assignment_candidates:
+    - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - experiments/exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+model:
+  name: no_new_model_ml_tvt_gr_mismatch_error_detector_readout
+  trains_model: false
+  source_experiment: exp148_learned_likelihood_fulltrain_addonly_on_exp092
+  feature_source: exp148_lgb_mean_oof_pred_tvt_plus_raw_horizontal_typewell_gr
+  ml_tvt_typewell_gr_mismatch_features:
+    prefix: mlgr_
+    feature_group: ml_tvt_typewell_gr_mismatch_error_detector
+    offsets_ft: [-50, -25, -10, 0, 10, 25, 50]
+    window_half_rows: 32
+    typewell_smooth_window: 5
+    derivative_scale: 3.0
+    local_u_window_rows: 129
+
+readout:
+  primary_error_threshold_ft: 10.0
+  error_thresholds_ft: [5.0, 10.0, 20.0]
+  high_signal_quantiles: [0.80, 0.90, 0.95]
+  primary_high_signal_quantile: 0.90
+  distance_bucket_edges_ft: [0, 50, 250, 500, 1000, 1000000000000]
+  candidate_disagreement_columns:
+    - candidate_tvt_range
+    - candidate_tvt_std
+    - learned_prob_entropy
+  signal_columns:
+    - mlgr_mismatch_signal
+    - mlgr_score_gap
+    - mlgr_abs_best_offset_ft
+    - mlgr_entropy
+    - mlgr_score_at_ml
+    - mlgr_decoy_gap
+    - mlgr_local_z_mse
+    - mlgr_abs_raw_vs_denoised_score_gap
+    - mlgr_score_gap_x_candidate_disagreement
+    - mlgr_abs_best_offset_x_candidate_disagreement
+  correction_diagnostic:
+    alphas: [0.1, 0.25]
+    clips_ft: [2.5, 5.0, 10.0]
+  addonly_gate:
+    auc_abs_error_gt10: 0.65
+    high_mismatch_error_lift: 1.5
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 32
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp148-train
+      - kentookumura/exp145-learned-likelihood-rawtest-feature-generator-parity-train
+    train_kernel_sources:
+      - kentookumura/exp148-train
+      - kentookumura/exp145-learned-likelihood-rawtest-feature-generator-parity-train
+    dataset_sources: []
+    bootstrap_files: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_diagnostic_readout
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - No random sampling is used in feature generation or readout.
+    - The shuffled typewell decoy uses a deterministic SHA256-derived roll per well.
+    - This experiment is not a deterministic submission anchor because it does not generate a submission.
+
+audit:
+  mode: ml_tvt_typewell_gr_mismatch_error_detector_readout
+  output_prefix: exp219_ml_tvt_typewell_gr_mismatch_error_detector_on_exp148
+  inference_status: "disabled_until_no_training_readout_passes_auc_and_lift_gate"
+  expected_artifacts:
+    - exp219_ml_tvt_typewell_gr_mismatch_error_detector_on_exp148_features.csv.gz
+    - exp219_ml_tvt_typewell_gr_mismatch_error_detector_on_exp148_feature_schema.csv
+    - exp219_ml_tvt_typewell_gr_mismatch_error_detector_on_exp148_signal_auc.csv
+    - exp219_ml_tvt_typewell_gr_mismatch_error_detector_on_exp148_signal_lift.csv
+    - exp219_ml_tvt_typewell_gr_mismatch_error_detector_on_exp148_distance_bucket_metrics.csv
+    - exp219_ml_tvt_typewell_gr_mismatch_error_detector_on_exp148_by_well.csv
+    - exp219_ml_tvt_typewell_gr_mismatch_error_detector_on_exp148_correction_diagnostics.csv
+    - exp219_ml_tvt_typewell_gr_mismatch_error_detector_on_exp148_subgroup_metrics.csv
+    - exp219_ml_tvt_typewell_gr_mismatch_error_detector_on_exp148_well_feature_summary.csv
+    - exp219_ml_tvt_typewell_gr_mismatch_error_detector_on_exp148_summary.json
+
+notes:
+  - Implements the `ml_tvt_typewell_gr_mismatch_error_detector_on_exp148` backlog item as exp219.
+  - Initial Kaggle train is CPU readout-only: active variants 0, LightGBM configs 0, folds 0, planned boosters 0, parent/control retraining 0.
+  - Proceed to exp148/exp193 add-only LightGBM only if the readout shows meaningful abs_error_gt10 AUC and high-mismatch error lift without hidden-like or worst-well concerns.

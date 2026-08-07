@@ -1,0 +1,61 @@
+experiment:
+  name: "exp028_public_replay_second_sel15_or_blend_audit"
+  description: Public replay of a second needless090 sel15 PF notebook before deciding whether to blend public replay anchors.
+  route: pf_beam
+  status: completed
+  created_at: "2026-06-07"
+
+lineage:
+  parent: public_notebook_catchup_after_self_improvements
+  diff_summary: Replay the second no-external-source sel15 PF candidate and keep blend auditing separate until replay output and LB are recorded.
+
+source_notebook:
+  ref: needless090/lb-8-860-rogii-sel15-256seeds
+  title: "[LB 8.860]rogii-sel15-256seeds"
+  archived_path: docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_latest/needless090__lb-8-860-rogii-sel15-256seeds/lb-8-860-rogii-sel15-256seeds.ipynb
+  archived_metadata: docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_latest/needless090__lb-8-860-rogii-sel15-256seeds/kernel-metadata.json
+  known_public_lb_from_title: 8.860
+  replay_policy: no_modification_except_kaggle_packaging_bootstrap
+  alternative_notebook_if_replay_fails: aidensong123/rogii-sel15-rerun
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation: {}
+
+# Common paths and submission columns come from project.yml.
+data: {}
+
+model:
+  name: public_second_sel15_pf_replay
+  params:
+    n_particles: 500
+    n_seeds: 256
+    selector_scales: [3.0, 5.0, 8.0, 12.0]
+    beam_configs: 14
+
+postprocess:
+  output_file: submission.csv
+  submit_check_required: true
+  blend_policy:
+    enabled: false
+    reason: Do not blend exp027 and exp028 outputs until exp028 Kaggle output, submit-check, and LB are recorded.
+    possible_inputs:
+      - exp027_public_replay_needless090_sel15_spread3
+      - exp028_public_replay_second_sel15_or_blend_audit
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    expected_sources:
+      dataset_sources: []
+      kernel_sources: []
+      model_sources: []
+
+notes:
+  - CV is not computed in this replay experiment.
+  - Compare against exp027 public replay after Kaggle output is available.
+  - Do not create a public-replay blend until both replay artifacts are locally saved and submission limit risk is reviewed.
+  - Kaggle replay output was identical to exp027, so no separate submit was made.

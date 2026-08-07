@@ -1,0 +1,33 @@
+{
+  "experiment": "exp090_lateral_self_gr_match_pseudotail_probe",
+  "status": "train_completed_weak_positive",
+  "route": "ml_model",
+  "parent": "exp073_gpu_reproducibility_guard_for_exp063_full_replay",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "cv": 9.516732864806912,
+  "public_lb": null,
+  "private_lb": null,
+  "key_idea": "Self-GR core+multiscale match features weakly improve the exp073 full replay ML control by -0.009557 RMSE, but well-level deltas are mixed and inference is not selected.",
+  "selected_variant": "self_gr_core_multiscale",
+  "control_cv": 9.526290307637334,
+  "delta_vs_control": -0.009557442830422147,
+  "prediction_sha256": "6ffd17d023d1b0db0d85e4782d5b5cc75effb094635d030721b095a1616fc3d9",
+  "source_feature_sha256": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18",
+  "kaggle_kernel": "kentookumura/exp090-self-gr-train",
+  "kaggle_kernel_version": 1,
+  "artifacts": [
+    "artifacts/exp090_lateral_self_gr_match_pseudotail_probe_metrics.csv",
+    "artifacts/exp090_lateral_self_gr_match_pseudotail_probe_bucket_metrics.csv",
+    "artifacts/exp090_lateral_self_gr_match_pseudotail_probe_by_well.csv",
+    "artifacts/exp090_lateral_self_gr_match_pseudotail_probe_feature_importance_mean.csv",
+    "artifacts/exp090_lateral_self_gr_match_pseudotail_probe_feature_schema.csv",
+    "artifacts/exp090_lateral_self_gr_match_pseudotail_probe_model_manifest.json",
+    "artifacts/exp090_lateral_self_gr_match_pseudotail_probe_result_readout.json"
+  ],
+  "notes": [
+    "Kaggle train v1 completed on kentookumura/exp090-self-gr-train.",
+    "Best lgb_mean variant self_gr_core_multiscale improved control by -0.009557 RMSE.",
+    "Well-level deltas are mixed: 402 wells improved and 371 worsened, so inference is not selected yet.",
+    "Predictions gzip download was interrupted after metrics were available; use metrics prediction_sha256 as the OOF evidence."
+  ]
+}

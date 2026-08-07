@@ -1,0 +1,215 @@
+experiment:
+  name: exp306_robust_rts_l1_convergence_calibration_audit
+  description: >-
+    Design-frozen target-free CPU audit that tests whether exp304 robust RTS
+    and L1 trend solver failures can be removed by preregistered iteration and
+    tolerance changes without reading truth or scientific separability scores.
+  route: pf_beam
+  status: stage0_completed_l1_full_eligible_rts_ineligible_awaiting_decision
+  created_at: "2026-07-21"
+  updated_at: "2026-07-22"
+
+lineage:
+  parent: exp304_gr_denoiser_emission_separability_readout
+  steering: ../../.steering/20260721-exp306-robust-rts-l1-convergence-calibration-audit
+  diff_summary: >-
+    Keeps exp304 common inputs and solver objectives fixed. Robust RTS first
+    increases max IRLS iterations from 8 to 32 at tolerance 1e-6 and permits a
+    single conditional 1e-4 tolerance branch only after Stage 0 failure. L1
+    keeps lambda, rho, and tolerances fixed and only increases ADMM iterations
+    from 500 to 2000. No truth or scientific score is evaluated.
+
+implementation:
+  enabled: true
+  scope: stage0_only
+  compact_train_source: exp306_robust_rts_l1_convergence_calibration_audit_compact_selfcontained_train.py
+  compact_inference_source: exp306_robust_rts_l1_convergence_calibration_audit_compact_selfcontained_inference.py
+  canonical_notebook_adopted: true
+  full_audit_implemented: false
+  scientific_score_implemented: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.score_rows
+
+validation:
+  strategy: two_stage_target_free_solver_convergence_calibration_audit
+  metric: solver_technical_coverage
+  seed: 42
+  n_folds: 0
+  group_column: well_id
+  score_rows: no_truth_no_scientific_score
+  expected_wells: 773
+  expected_series_per_full_branch: 1546
+  leakage_policy:
+    - Horizontal TVT, truth, error, abs_error, formation, MRR, and top3 are forbidden inputs.
+    - Typewell TVT is used only as the physical coordinate of the reference GR series.
+    - Passing this audit changes no exp304 metric, selected denoiser, prediction, or submission.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  horizontal_allowed_columns: [MD, GR, TVT_input]
+  horizontal_forbidden_columns: [TVT, error, abs_error, formation]
+  typewell_required_columns: [TVT, GR]
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  expected_exp304_scientific_contract_sha256: 8822df968200b74ea9969b0bc023ec127debbff01933bdc89ff3db9844d55064
+  exp304_solver_status_filename: exp304_gr_denoiser_emission_separability_readout_solver_status.csv
+
+model:
+  name: robust_rts_l1_solver_convergence_calibration
+  estimator: none
+  target: none
+  lightgbm_config_count: 0
+  fold_training_count: 0
+  booster_count: 0
+  parent_control_retraining: false
+  common_input:
+    missing_gr_policy: interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+    horizontal_order: within_well_md
+    typewell_order: within_typewell_tvt
+    cross_group_smoothing: forbidden
+  robust_rts_fixed:
+    kind: student_t_iteratively_reweighted_rts_level_slope
+    coordinate_normalization: median_positive_spacing
+    measurement_df: 4.0
+    measurement_scale: robust_scale_first_difference_div_sqrt2
+    process_acceleration_scale: robust_scale_second_divided_difference
+    transition_matrix: constant_velocity_F_dt
+    process_covariance: discrete_white_acceleration_Q_dt
+    initial_mean: first_level_and_median_normalized_slope
+    initial_covariance: diag_R_and_R_plus_acceleration_variance
+    finite_scale_floor: 1.0e-6
+  robust_rts_stage0:
+    candidate_a:
+      name: rts_iter32_tol1e6
+      maximum_iterations: 32
+      relative_mean_tolerance: 1.0e-6
+    conditional_candidate_b:
+      name: rts_iter32_tol1e4
+      enabled_only_if_candidate_a_has_any_stage0_failure: true
+      maximum_iterations: 32
+      relative_mean_tolerance: 1.0e-4
+    additional_grid: false
+  l1_trend:
+    kind: second_order_l1_trend_filter
+    objective: 0.5_l2_data_plus_lambda_l1_second_difference
+    lambda: mad_first_difference_div_0.67448975_div_sqrt2_times_sqrt_2_log_n
+    solver: admm
+    rho: 1.0
+    maximum_iterations: 2000
+    absolute_tolerance: 1.0e-4
+    relative_tolerance: 1.0e-4
+    adaptive_rho: false
+    additional_grid: false
+
+audit:
+  stage0:
+    sample_wells: 64
+    sample_salt: exp306-stage0-v1
+    sample_rule: sort_by_lowercase_sha256_of_utf8_salt_pipe_well_id_then_well_id_take_first_64
+    series_kinds: [horizontal, typewell]
+    expected_series_per_candidate: 128
+    deterministic_parity_wells: 8
+    require_all_series_converged: true
+    require_finite_input_output: true
+    require_length_order_identity: true
+    require_silent_fallback_count: 0
+    runtime_projection_formula: stage0_elapsed_seconds_div_64_times_773
+    runtime_projection_limit_seconds: 30600
+  full:
+    run_eligible_branches_separately: true
+    expected_wells_per_branch: 773
+    expected_series_per_branch: 1546
+    require_all_series_converged: true
+    require_finite_input_output: true
+    require_length_order_identity: true
+    require_silent_fallback_count: 0
+    runtime_limit_seconds_per_branch: 30600
+    failure_scope: failing_branch_only
+  execution_counts:
+    stage0_core_series_runs_without_conditional_rts_b: 256
+    stage0_core_series_runs_maximum: 384
+    stage0_parity_series_runs_maximum: 32
+    full_series_runs_per_eligible_branch: 1546
+    full_series_runs_maximum: 3092
+    hmm_well_runs: 0
+    pf_well_runs: 0
+    beam_well_runs: 0
+  expected_outputs:
+    - exp306_robust_rts_l1_convergence_calibration_audit_scientific_contract.json
+    - exp306_robust_rts_l1_convergence_calibration_audit_stage0_sample_manifest.csv
+    - exp306_robust_rts_l1_convergence_calibration_audit_stage0_input.csv.gz
+    - exp306_robust_rts_l1_convergence_calibration_audit_stage0_solver_status.csv.gz
+    - exp306_robust_rts_l1_convergence_calibration_audit_stage0_output.csv.gz
+    - exp306_robust_rts_l1_convergence_calibration_audit_stage0_gate.json
+    - exp306_robust_rts_l1_convergence_calibration_audit_parity_manifest.json
+    - exp306_robust_rts_l1_convergence_calibration_audit_full_solver_status.csv.gz
+    - exp306_robust_rts_l1_convergence_calibration_audit_full_output.csv.gz
+    - exp306_robust_rts_l1_convergence_calibration_audit_full_gate.json
+    - exp306_robust_rts_l1_convergence_calibration_audit_summary.json
+
+execution:
+  implementation_approved: true
+  kaggle_push_approved: true
+  active_stage: stage0_completed
+  run_stage0: false
+  run_full_rts: false
+  run_full_l1: false
+  run_scientific_score: false
+  run_inference: false
+  create_submission: false
+  kaggle_kernel_id: kentookumura/exp306-rts-l1-convergence-calibration-audit-train
+  kaggle_kernel_version: 1
+  kaggle_kernel_id_no: 128231380
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  blas_threads: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp304-gr-denoiser-separability-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_fixed_sha256_stage0_sample
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_single_worker_and_recorded_blas_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This audit claims only solver technical reproducibility, not a deterministic prediction or submission anchor.
+    - Record sample, prepared-input, output, and solver-status content SHA for every stage and branch.
+    - Rebuild and inspect the Kaggle bootstrap only after implementation and push approval.
+
+inference:
+  enabled: false
+  mode: disabled_train_side_solver_audit_only
+  create_submission: false
+
+notes:
+  - Stage 0 implementation was approved and completed on 2026-07-22.
+  - Kaggle CPU Stage 0 version 1 completed on 2026-07-22; L1 is the only full-eligible branch.
+  - Both preregistered RTS branches failed the all-series convergence gate; no additional RTS rescue is allowed in exp306.
+  - Full audit remains unimplemented and unapproved; all run flags are fail-closed after Stage 0 completion.
+  - Full audit code and execution remain fail-closed until Stage 0 evidence and a separate approval exist.
+  - The L1 full audit was split into design-only successor exp351_exp306_l1_full_convergence_audit on 2026-07-23 by explicit user request.
+  - Any new tolerance, rho, lambda, iteration, adaptive solver, or scientific score requires a new steering decision.

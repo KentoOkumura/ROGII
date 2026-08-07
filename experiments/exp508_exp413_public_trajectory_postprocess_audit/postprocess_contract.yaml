@@ -1,0 +1,60 @@
+contract: exp508_public_trajectory_postprocess_v1
+source:
+  file: docs/notebooks/rogii-wellbore-geology-prediction/date_run_recent_20260611/jaemin3404__rogii-sp45-fleongg-jy-dynamic-v1/rogii-sp45-fleongg-jy-dynamic-v1.py
+  source_function: make_prediction
+  source_note: savgol effect described as approximately 0.01 ft
+  source_sha256: 39b477f3687fed5c1679fc30b82a2980906bf1910df189696065800eb2b1f3ad
+
+control:
+  id: raw_exp413_stage_d_oof
+  input_surface: final_tvt
+
+selectable_primary:
+  id: sg61_p3_final_tvt
+  transform: scipy.signal.savgol_filter
+  apply_by: well
+  group_sort: false
+  well_order: source_first_appearance
+  row_order: preserve_source_order_within_well
+  input_dtype: float64
+  window_length: 61
+  polyorder: 3
+  mode: scipy_default_interp
+  short_well_rule:
+    effective_window: min_61_and_n_rows_then_decrement_if_even
+    apply_if_effective_window_at_least: 5
+    otherwise: unchanged
+  after_filter:
+    reanchor: false
+    clip: false
+    monotonic_projection: false
+    u_space_projection: false
+    residual_readdition: false
+
+report_only:
+  - id: tau85_warmup_final_delta
+    selectable: false
+    formula: last_plus_one_minus_exp_minus_max_md_since_zero_over_85_times_exp413_minus_last
+    may_rescue_primary: false
+  - id: tau85_warmup_then_sg61_p3
+    selectable: false
+    first_transform: tau85_warmup_final_delta
+    second_transform: sg61_p3_final_tvt
+    may_rescue_primary: false
+
+phase_order:
+  - verify_input_key_row_order_fold_and_environment
+  - generate_control_and_all_three_candidates_without_truth_or_error
+  - freeze_prediction_and_contract_sha
+  - attach_truth_and_fixed_scope_assignments
+  - score_and_decide_selectable_primary
+  - score_report_only_controls
+
+forbidden:
+  - public_model60_likpf40_recipe
+  - direct_likpf_blend
+  - parameter_grid
+  - fold_specific_parameter
+  - row_or_well_selection
+  - public_fixed_well_shape_router
+  - same_oof_rescue

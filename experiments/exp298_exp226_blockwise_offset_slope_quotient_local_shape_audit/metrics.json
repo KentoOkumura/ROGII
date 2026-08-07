@@ -1,0 +1,123 @@
+{
+  "experiment": "exp298_exp226_blockwise_offset_slope_quotient_local_shape_audit",
+  "status": "kaggle_cpu_v2_completed_scientific_guard_failed_branch_closed",
+  "route": "pf_beam",
+  "parent": "exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction",
+  "hypothesis": "The exp226 pre-U path is top-tier for H256/H512 local TVT shape after diagnostic-only offset and affine-trend quotienting.",
+  "change_from_parent": "A frozen-component post-truth diagnostic readout with no candidate generation, correction, decoder, model, inference, or submission.",
+  "canonical_train_notebook_adopted": true,
+  "kaggle_run_completed": true,
+  "kaggle_kernel": {
+    "id": "kentookumura/exp298-exp226-local-shape-quotient-audit-train",
+    "id_no": 127956072,
+    "version": 2,
+    "status": "COMPLETE",
+    "run_config_sha256": "2a75d9068289bfc761d074b6eeb1b8228967bf043815a64eaab668beac3cd3ea",
+    "audit_completed_at_seconds": 259.82995478,
+    "log_last_timestamp_seconds": 269.929042517,
+    "completed_at": "2026-07-20T01:37:20.832572+00:00"
+  },
+  "execution_contract": {
+    "audits": 1,
+    "evaluation_folds": 5,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "pf_beam_reruns": 0,
+    "gpu": false,
+    "internet": false,
+    "inference": false,
+    "submission": false
+  },
+  "rows": 3783989,
+  "wells": 773,
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "primary": {
+    "h256": {
+      "affine_quotient_rmse": 0.3482675904552506,
+      "rank": 4,
+      "post_u_rmse": 0.3041197991208009,
+      "strict_unique_best_block_fraction": 0.11363037173741102
+    },
+    "h512": {
+      "affine_quotient_rmse": 0.7224085770990538,
+      "rank": 5,
+      "post_u_rmse": 0.6096467778987567,
+      "strict_unique_best_block_fraction": 0.11547848426461144
+    }
+  },
+  "fold_rank_at_most3_counts": {
+    "h256": 0,
+    "h512": 0
+  },
+  "h512_risk_ranks": {
+    "1000_plus": 5,
+    "hidden_like_spatial": 5,
+    "hidden_like_typewell_purged": 5
+  },
+  "singleton_exclusion": {
+    "h128": {"blocks": 4, "rows": 4, "wells": 4},
+    "h256": {"blocks": 2, "rows": 2, "wells": 2},
+    "h512": {"blocks": 2, "rows": 2, "wells": 2},
+    "whole_well": {"blocks": 0, "rows": 0, "wells": 0},
+    "technical_coverage_denominator": "affine_eligible_rows_only"
+  },
+  "technical_passed": true,
+  "technical_checks": {
+    "row_count_exact": true,
+    "well_count_exact": true,
+    "fold_inventory_exact": true,
+    "candidate_order_exact": true,
+    "candidate_bank_content_sha_exact": true,
+    "block_assignment_decompressed_sha_exact": true,
+    "duplicate_id_zero": true,
+    "candidate_finite_coverage_one": true,
+    "component_finite_coverage_one": true,
+    "exp226_allowlist_exact": true,
+    "truth_or_error_column_loaded_before_freeze_zero": true,
+    "truth_access_before_freeze_zero": true,
+    "post_u_alias_parity": true,
+    "offset_quotient_row_coverage_one": true,
+    "affine_eligible_row_coverage_one": true,
+    "affine_invalid_eligible_blocks_zero": true,
+    "singleton_exclusion_candidate_independent": true,
+    "oracle_coefficients_persisted_false": true,
+    "corrected_prediction_persisted_false": true
+  },
+  "scientific_passed": false,
+  "scientific_checks": {
+    "pooled_h256_rank_at_most_3": false,
+    "pooled_h512_rank_at_most_3": false,
+    "rank1_at_one_primary_horizon": false,
+    "h256_four_of_five_folds_rank_at_most_3": false,
+    "h512_four_of_five_folds_rank_at_most_3": false,
+    "pre_u_nonworse_than_post_u_h256": false,
+    "pre_u_nonworse_than_post_u_h512": false,
+    "h512_1000_plus_rank_at_most_3": false,
+    "h512_hidden_like_spatial_rank_at_most_3": false,
+    "h512_hidden_like_typewell_purged_rank_at_most_3": false,
+    "unique_best_block_fraction_at_least_0p05_one_primary_horizon": true
+  },
+  "by_well_h512_pre_u": {
+    "p50_rmse": 0.6393351697016137,
+    "p95_rmse": 1.132512066440755,
+    "worst_rmse": 2.0207611654958115,
+    "worst_well": "d0cb63ae"
+  },
+  "sha256": {
+    "candidate_bank_content": "29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474",
+    "component_content": "41390811200b2bb5e9876db4beac1eb21cacc73590b5b67849c320c065b1ef10",
+    "block_assignment_decompressed": "b0755c22aa8d791012d3f605e2f1b66063ce9bb6ba46ddd4b48dca77cce032d7",
+    "truth_content": "e9067327058431278a0fd994e8e6005b76ab99acbd3942118974599afb69a8d0",
+    "readout_content": "9dec97ae83b83a65c2118a42f217a4cbec499004bdfbb7f3d087cd2178184edd",
+    "sha_manifest_file": "25cbecf995bdaa16f8545c0573ec95003d3787f512a0a6012653db3a1e95a8e1"
+  },
+  "audit_passed": false,
+  "scientific_decision": "fail_branch_closed",
+  "next_branch": "branch_closed_without_rescue_grid",
+  "next_action": "Do not start downstream Stage 2/3/4 or a rescue grid; keep inference and submission disabled.",
+  "created_at": "2026-07-20",
+  "updated_at": "2026-07-20"
+}

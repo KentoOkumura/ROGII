@@ -1,0 +1,265 @@
+{
+  "experiment": "exp416_roughening_x10_likpf_full_oof_ablation",
+  "hypothesis": "The exp410 roughening-x10 target-late improvement generalizes to all 773 train wells without fold, scope, well-tail, or persistent-offset regression.",
+  "status": "train_side_roughening_x10_full_oof_gate_failed_closed",
+  "route": "pf_beam",
+  "parent": "exp072_exp063_full_replay_feature_cache",
+  "cv": 13.617717557749454,
+  "control_cv": 11.594894395642696,
+  "improvement_ft": -2.022823162106759,
+  "public_lb": null,
+  "private_lb": null,
+  "prediction_candidate": false,
+  "deterministic_anchor_eligible": false,
+  "decision": "roughening_x10_rejected_close_without_rescue",
+  "implementation_started": true,
+  "implementation_complete": true,
+  "canonical_notebook_adopted": true,
+  "kaggle_package_created": true,
+  "kaggle_run_complete": true,
+  "kaggle": {
+    "kernel_id": "kentookumura/exp416-rough-x10-merge",
+    "kernel_id_no": 128912230,
+    "kernel_version": 2,
+    "status": "COMPLETE",
+    "generated_at_utc": "2026-07-28T09:50:58.749007+00:00",
+    "runtime_seconds_merge_and_readout": 344.62690472602844
+  },
+  "planned_execution": {
+    "scientific_pf_variants": 1,
+    "candidate_pf_well_runs": 773,
+    "control_pf_well_runs": 0,
+    "particles": 500,
+    "seeds": 128,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "gpu_runs": 0,
+    "kaggle_cpu_shards": 4
+  },
+  "actual_execution": {
+    "scientific_pf_variants": 1,
+    "candidate_pf_well_runs": 773,
+    "control_pf_well_runs": 0,
+    "seed_well_trajectories": 98944,
+    "particle_starts": 49472000,
+    "reporting_folds": 5,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "hmm_well_runs": 0,
+    "beam_well_runs": 0,
+    "gpu_runs": 0,
+    "kaggle_cpu_shards": 4,
+    "shard_runtime_seconds": [
+      5425.840190410614,
+      9066.87704539299,
+      8077.340826034546,
+      5452.695415496826
+    ],
+    "shard_peak_rss_gb": [
+      0.515899658203125,
+      0.5258865356445312,
+      0.5231857299804688,
+      0.5213775634765625
+    ]
+  },
+  "fixed_intervention": {
+    "rough_position_control": 0.1,
+    "rough_position_candidate": 1.0,
+    "rough_rate_control": 0.001,
+    "rough_rate_candidate": 0.01,
+    "multiplier": 10.0
+  },
+  "primary_metrics": {
+    "overall": {
+      "rows": 3783989,
+      "wells": 773,
+      "candidate_rmse": 13.617717557749454,
+      "control_rmse": 11.594894395642696,
+      "candidate_mae": 8.849153,
+      "control_mae": 7.067627,
+      "candidate_bias": -0.104186,
+      "control_bias": -1.099425,
+      "candidate_within_10ft": 0.695594,
+      "control_within_10ft": 0.772793,
+      "improvement_ft": -2.022823162106759
+    },
+    "folds": [
+      {
+        "fold": 0,
+        "candidate_rmse": 12.600855,
+        "control_rmse": 10.125768,
+        "improvement_ft": -2.475088
+      },
+      {
+        "fold": 1,
+        "candidate_rmse": 13.341482,
+        "control_rmse": 11.493865,
+        "improvement_ft": -1.847617
+      },
+      {
+        "fold": 2,
+        "candidate_rmse": 14.832413,
+        "control_rmse": 12.206459,
+        "improvement_ft": -2.625954
+      },
+      {
+        "fold": 3,
+        "candidate_rmse": 11.53812,
+        "control_rmse": 10.954209,
+        "improvement_ft": -0.583911
+      },
+      {
+        "fold": 4,
+        "candidate_rmse": 15.338597,
+        "control_rmse": 12.926234,
+        "improvement_ft": -2.412363
+      }
+    ],
+    "scopes": {
+      "raw_gr_observed": {
+        "candidate_rmse": 13.43595,
+        "control_rmse": 11.657445,
+        "improvement_ft": -1.7785047484802199
+      },
+      "raw_gr_missing": {
+        "candidate_rmse": 14.000727,
+        "control_rmse": 11.459183,
+        "improvement_ft": -2.541544
+      },
+      "md_since_1000_plus": {
+        "candidate_rmse": 14.902648,
+        "control_rmse": 12.702987,
+        "improvement_ft": -2.199661
+      },
+      "hidden_like_spatial": {
+        "candidate_rmse": 15.78301,
+        "control_rmse": 13.643821,
+        "improvement_ft": -2.139189
+      },
+      "hidden_like_typewell_purged": {
+        "candidate_rmse": 15.63495,
+        "control_rmse": 13.506814,
+        "improvement_ft": -2.128136
+      }
+    }
+  },
+  "gates": {
+    "passed": false,
+    "technical": {
+      "passed": false,
+      "failure": "exp209 reconstructed control row parity exceeded the preregistered tolerance",
+      "exp209_reconstructed_control_row_parity_max_abs_ft": 0.000471875000584987,
+      "exp209_reconstructed_control_row_parity_atol_ft": 0.00001,
+      "saved_control_rmse_parity_absolute_difference_ft": 3.2765750077601297e-06,
+      "saved_control_rmse_parity_atol_ft": 0.00001,
+      "prediction_rows": 3783989,
+      "prediction_wells": 773,
+      "reporting_folds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "audit_wells": 773,
+      "all_wells_completed_without_fallback": true,
+      "finite_candidate_coverage": 1.0,
+      "execution_count_match": true,
+      "truth_or_reporting_values_parsed_before_freeze": {
+        "control_prediction_rows": 0,
+        "fold_rows": 0,
+        "hidden_like_role_rows": 0,
+        "persistent_episode_rows": 0,
+        "unknown_suffix_tvt_rows": 0
+      },
+      "probe_rerun_available": false,
+      "probe_rerun_required_for_technical_gate": false
+    },
+    "scientific": {
+      "passed": false,
+      "candidate_rmse": 13.617717557749454,
+      "control_rmse": 11.594894395642696,
+      "improvement_ft": -2.022823162106759,
+      "minimum_improvement_ft": 0.05,
+      "improved_folds": 0,
+      "minimum_improved_folds": 4,
+      "raw_gr_observed_improvement_ft": -1.7785047484802199,
+      "minimum_raw_gr_observed_improvement_ft": 0.05,
+      "non_regression_scopes": {
+        "raw_gr_missing": false,
+        "md_since_1000_plus": false,
+        "hidden_like_spatial": false,
+        "hidden_like_typewell_purged": false
+      },
+      "by_well_rmse_delta_p95": 14.104741606946275,
+      "maximum_by_well_rmse_delta_p95": 0.0,
+      "worst_well_rmse_regression": 41.05036062005086,
+      "maximum_worst_well_rmse_regression": 0.25,
+      "persistent_episode_count": 16,
+      "persistent_episode_rows": 55104,
+      "persistent_episode_candidate_sse": 85257299.90140347,
+      "persistent_episode_control_sse": 113224053.55777258,
+      "persistent_episode_sse_reduction_fraction": 0.24700364257934881,
+      "minimum_persistent_episode_sse_reduction_fraction": 0.05
+    }
+  },
+  "implementation_contract": {
+    "scientific_variant": "roughening_x10",
+    "parameter_diff_only": [
+      "rough_position",
+      "rough_rate"
+    ],
+    "truth_attachment": "after_candidate_prediction_and_logical_content_sha_freeze",
+    "shard_policy": "deterministic_lpt_suffix_rows",
+    "strict_merge": true,
+    "persistent_episode_wells": 12,
+    "persistent_episode_count": 16,
+    "persistent_episode_rows": 55104,
+    "control_pf_reruns": 0
+  },
+  "artifact_evidence": {
+    "scientific_contract_sha256": "9c9bdaa93f0e64aa2ea54a46ae8fbb2a4f1f4f05a34b0d98e734e2b3c8ac398a",
+    "artifact_manifest_sha256": "708bb257e3ab360f09821823d5413fa9e1c5c32ef4ddb4917b41573943dffb86",
+    "prediction_logical_content_sha256": "6088e3cc3c94f45aa475094e4df51b3dd9247f04acabb6e3921b89fbffbe693c",
+    "prediction_raw_gzip_sha256": "4a956c5625659305bcb3b3d0c51e6bee0fed9a52447397f87bc2b32f4f9deafe",
+    "prediction_decompressed_sha256": "83247dad59d9d0d1a4705f3b4ad118cf33253347f00e8da4166374ac1f931add",
+    "prediction_schema_sha256": "61c38c607a29ebb009ace2364f15553c4adb821cca04d17b06c12bc5011dd54f",
+    "shard_logical_content_sha256": [
+      "13722e8c32ac9dbca5ea7e656c64c02804e830eeb5186d9edd6bb262d8a2181b",
+      "6ba78348db71a2d9f83403df7015ad4b0664a29368ad025af6971c9f284b043a",
+      "37fe39b4a9c3972018d554326b3db89745aa6b97aa6a504aa9a15e387743b355",
+      "120c4cb871355267e2072e5494c903d9ccf6072a7d3e4fb420e7a6675c3279a8"
+    ]
+  },
+  "implementation_sha256": {
+    "compact_train_source": "ebb63e89f76463f89beb8fab89db0c568e0659770014102e69efe5fb9e85c8ab",
+    "compact_train_notebook": "038ed5a23c5d5ed24c0dcf5106427129ca66c8f10d0ca9e1281369ad5121fdad",
+    "merge_v2_package_notebook": "cc82247bc6b3be5ee4c8801a327ef8742ff06c055ffc23ebc51f3cc021872555",
+    "merge_v2_package_config": "0b115a2b24b25eb91ac1e9859bf80decba5df23382012c4ef55cd0749a1ee9d1",
+    "contract_tests": "7e12002d449bd0b8e023883b9b6bfdb0e62886f2ac7a0c578c14e6602d819aa0"
+  },
+  "validation": {
+    "contract_tests": 12,
+    "targeted_tests_total": 23,
+    "jupytext_roundtrip": true,
+    "py_compile": true,
+    "ruff_f821_e9": true,
+    "strict_experiment_validation": true
+  },
+  "generated_artifacts": [
+    "exp416_roughening_x10_likpf_full_oof_ablation_merged_candidate_predictions.csv.gz",
+    "exp416_roughening_x10_likpf_full_oof_ablation_merged_well_audit.csv",
+    "exp416_roughening_x10_likpf_full_oof_ablation_merged_well_manifest.csv",
+    "exp416_roughening_x10_likpf_full_oof_ablation_overall_fold_scope_metrics.csv",
+    "exp416_roughening_x10_likpf_full_oof_ablation_by_well_metrics.csv",
+    "exp416_roughening_x10_likpf_full_oof_ablation_persistent_episode_metrics.csv",
+    "exp416_roughening_x10_likpf_full_oof_ablation_scientific_gate.json",
+    "exp416_roughening_x10_likpf_full_oof_ablation_scientific_contract.json",
+    "exp416_roughening_x10_likpf_full_oof_ablation_artifact_manifest.csv",
+    "exp416_roughening_x10_likpf_full_oof_ablation_summary.json"
+  ],
+  "next_action": "Close exp416 without rescue, inference, or submission. Any cause attribution must be a separate saved-output-only readout with no PF rerun.",
+  "notes": "Kaggle merge version 2 completed. The fixed 10x roughening improved the preregistered 16 persistent-offset episodes by 24.700%, but worsened overall RMSE by 2.022823 ft, worsened all 5 folds and every stress scope, and caused large by-well tail regressions. The branch is rejected under the preregistered AND gate. The technical gate also failed because exp209 row parity exceeded its 1e-5-ft tolerance, although all execution, identity, finite, truth-freeze, runtime, memory, and saved-control RMSE checks passed. Probe, inference, submission, and same-OOF rescue were not run. Logs provided all required metrics and SHA evidence, so the Kaggle output archive was not downloaded."
+}

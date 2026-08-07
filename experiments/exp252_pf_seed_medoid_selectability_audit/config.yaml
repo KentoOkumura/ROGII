@@ -1,0 +1,192 @@
+experiment:
+  name: exp252_pf_seed_medoid_selectability_audit
+  description: >-
+    Audits whether fixed target-free PF seed-cluster diagnostics can identify
+    when exp243 K8 medoids add useful trajectory modes to the exp237 base8 bank.
+  route: pf_beam
+  status: completed_candidate_likelihood_signal_bank_gate_weak_no_selector
+  created_at: "2026-07-15"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.metric
+
+lineage:
+  parent: exp243_pf_seed_medoids
+  references:
+    - exp237_hmm_exp226_candidate_selector_on_exp183
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md pf_seed_medoid_selectability_audit
+  diff_summary: >-
+    Reads the canonical exp243 v3 base8 plus K8 row candidates, K8 cluster
+    manifest and summary, and PF diagnostics without replaying PF. It freezes
+    standalone target-free bank and medoid scores before joining true TVT for
+    best-source labels, AUC, top1 regret, and coverage readouts.
+
+validation:
+  strategy: full_train_exp243_saved_candidate_selectability_audit
+  metric: diagnostic_auc_regret_coverage
+  n_folds: 0
+  group_column: well
+  score_rows: exp243_fixed_pseudotail_rows
+  scopes:
+    - row
+    - block_128
+    - block_256
+    - block_512
+    - whole_well
+  leakage_policy:
+    - All score values use only saved PF trajectories, cluster membership, likelihood, and PF diagnostics.
+    - True TVT is passed only to the loss-and-label stage after score tables are frozen.
+    - K, score signs, scope definitions, tie policy, coverage fraction, and shuffle policy are fixed before execution.
+    - No score is combined, tuned, filtered, or selected using target-side results.
+
+data:
+  parent_kernel: kentookumura/exp243-pf-seed-medoids-train
+  expected_rows: 3783989
+  expected_wells: 773
+  inputs:
+    row_candidates:
+      filename: exp243_pf_seed_medoids_row_candidates.csv.gz
+      paths:
+        - experiments/exp243_pf_seed_medoids/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp243-pf-seed-medoids-train/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz
+        - /kaggle/input/exp243-pf-seed-medoids-train/artifacts/exp243_pf_seed_medoids_row_candidates.csv.gz
+      sha_kind: decompressed
+      expected_sha256: 0583836a76e1b9515f8289965a25b0f41cf661294a20195a3021efbcd43e32bd
+    cluster_manifest:
+      filename: exp243_pf_seed_medoids_cluster_manifest.csv.gz
+      paths:
+        - experiments/exp243_pf_seed_medoids/artifacts/exp243_pf_seed_medoids_cluster_manifest.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp243-pf-seed-medoids-train/artifacts/exp243_pf_seed_medoids_cluster_manifest.csv.gz
+        - /kaggle/input/exp243-pf-seed-medoids-train/artifacts/exp243_pf_seed_medoids_cluster_manifest.csv.gz
+      sha_kind: decompressed
+      expected_sha256: 5b8f3d90e4b858aa1607e26a8c7fb30432d0d4c041bdf677365bd2f6dd9b9dca
+    cluster_summary:
+      filename: exp243_pf_seed_medoids_cluster_summary.csv
+      paths:
+        - experiments/exp243_pf_seed_medoids/artifacts/exp243_pf_seed_medoids_cluster_summary.csv
+        - /kaggle/input/notebooks/kentookumura/exp243-pf-seed-medoids-train/artifacts/exp243_pf_seed_medoids_cluster_summary.csv
+        - /kaggle/input/exp243-pf-seed-medoids-train/artifacts/exp243_pf_seed_medoids_cluster_summary.csv
+      sha_kind: raw
+      expected_sha256: d3eea9f7c4ff777bed0a3c2ff2c60a076a1d49257c85b547a7b279df9735d333
+    pf_diagnostics:
+      filename: exp243_pf_seed_medoids_pf_diagnostics.csv
+      paths:
+        - experiments/exp243_pf_seed_medoids/artifacts/exp243_pf_seed_medoids_pf_diagnostics.csv
+        - /kaggle/input/notebooks/kentookumura/exp243-pf-seed-medoids-train/artifacts/exp243_pf_seed_medoids_pf_diagnostics.csv
+        - /kaggle/input/exp243-pf-seed-medoids-train/artifacts/exp243_pf_seed_medoids_pf_diagnostics.csv
+      sha_kind: raw
+      expected_sha256: acb89b30d65c7676133097964910b7bd788b593205a2b68d1de6c1df6a57bf72
+
+model:
+  name: none_saved_candidate_selectability_audit
+  estimator: none
+  k_values: [8]
+  active_variant_count: 1
+  lightgbm_config_count: 0
+  fold_count: 0
+  booster_count: 0
+  pf_replay_count: 0
+  parent_control_retraining: false
+
+audit:
+  mode: fixed_target_free_score_readout
+  base_candidates:
+    - pf_base_pf_ancc
+    - pf_base_beam_mean
+    - pf_base_likpf_mean
+    - pf_base_sc_ens
+    - pf_base_hyb
+    - pf_base_tvt_dense
+    - pf_base_tvt_densew
+    - pf_base_tvt_dense50
+  medoid_candidates:
+    - pf_seed_medoid_k8_m0
+    - pf_seed_medoid_k8_m1
+    - pf_seed_medoid_k8_m2
+    - pf_seed_medoid_k8_m3
+    - pf_seed_medoid_k8_m4
+    - pf_seed_medoid_k8_m5
+    - pf_seed_medoid_k8_m6
+    - pf_seed_medoid_k8_m7
+  block_rows: [128, 256, 512]
+  row_loss: absolute_error
+  aggregate_loss: rmse
+  tie_tolerance_ft: 1.0e-6
+  coverage_top_fraction: 0.10
+  ratio_epsilon: 1.0e-6
+  primary_bank_label: union_best_source_is_k8
+  primary_candidate_label: medoid_is_union_best
+  secondary_candidate_label: medoid_beats_best_base8
+  bank_scores:
+    - cluster_normalized_entropy
+    - negative_cluster_hhi
+    - effective_cluster_count
+    - mean_assignment_distance
+    - max_pairwise_seed_distance
+    - negative_ess_mean
+    - resampling_rate
+    - log_likelihood_std
+    - seed_prediction_std
+    - k8_max_nearest_base_disagreement
+  candidate_scores:
+    - cluster_seed_mass
+    - cluster_likelihood_mass
+    - medoid_likelihood_rank_score
+    - medoid_likelihood_gap_from_best
+    - negative_mean_within_distance
+    - separation_to_within_ratio
+    - nearest_base8_disagreement
+  shuffled_control:
+    enabled: true
+    seed: 42
+    static_policy: stable_well_permutation_preserve_candidate_slot
+    dynamic_policy: stable_scope_unit_permutation_preserve_candidate_slot
+  outputs:
+    score_contract_filename: exp252_pf_seed_medoid_selectability_audit_score_contract.csv
+    scope_metrics_filename: exp252_pf_seed_medoid_selectability_audit_scope_metrics.csv
+    score_metrics_filename: exp252_pf_seed_medoid_selectability_audit_score_metrics.csv
+    top1_regret_filename: exp252_pf_seed_medoid_selectability_audit_top1_regret.csv
+    by_well_filename: exp252_pf_seed_medoid_selectability_audit_by_well.csv
+    summary_filename: exp252_pf_seed_medoid_selectability_audit_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp243-pf-seed-medoids-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_scope_score_for_shuffled_control
+  stochastic_components:
+    - shuffled_score_negative_control_only
+  parallel_rng_policy: local_numpy_generator_single_process_no_global_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Determinism is claimed only for the diagnostic given fixed canonical exp243 v3 inputs.
+    - The upstream exp243 candidate bank inherits PF stochastic provenance but passed exact replay parity against exp072.
+    - This experiment is not a prediction or submission anchor.
+
+inference:
+  enabled: false
+  mode: disabled_train_side_selectability_audit_only
+  selected_candidate: null
+  create_submission: false
+  notes:
+    - A clear target-free signal may only motivate a separate outer-well-fold selector experiment.
+    - This experiment never regenerates raw-test PF candidates or creates submission.csv.

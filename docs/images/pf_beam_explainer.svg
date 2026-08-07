@@ -1,0 +1,182 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1050" viewBox="0 0 1800 1050">
+  <rect width="1800" height="1050" fill="#ffffff"/>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#111827"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#f97316"/>
+    </marker>
+    <style>
+      text { font-family: Arial, "Noto Sans CJK JP", "Yu Gothic", sans-serif; fill: #111827; }
+      .title { font-size: 42px; font-weight: 700; }
+      .subtitle { font-size: 24px; fill: #374151; }
+      .h2 { font-size: 30px; font-weight: 700; }
+      .h3 { font-size: 24px; font-weight: 700; }
+      .body { font-size: 20px; fill: #374151; }
+      .small { font-size: 17px; fill: #4b5563; }
+      .tiny { font-size: 14px; fill: #6b7280; }
+      .axis { stroke: #111827; stroke-width: 3; marker-end: url(#arrow); }
+      .grid { stroke: #e5e7eb; stroke-width: 1; }
+      .dash { stroke-dasharray: 8 8; }
+      .panel { fill: #f8fafc; stroke: #111827; stroke-width: 2; rx: 14; }
+      .input { fill: #eef2ff; stroke: #4f46e5; stroke-width: 2; rx: 10; }
+      .out { fill: #f0fdf4; stroke: #16a34a; stroke-width: 2; rx: 10; }
+      .warn { fill: #fff7ed; stroke: #f97316; stroke-width: 2; rx: 10; }
+    </style>
+  </defs>
+
+  <text x="900" y="55" text-anchor="middle" class="title">PF / Beam による TVT trajectory tracking</text>
+  <text x="900" y="92" text-anchor="middle" class="subtitle">
+    上位公開 notebook で多い発想: GR と typewell を見ながら、予測区間の TVT パス候補を複数追跡する
+  </text>
+
+  <!-- Inputs -->
+  <rect x="45" y="130" width="330" height="840" class="panel"/>
+  <text x="210" y="172" text-anchor="middle" class="h2">Inputs</text>
+
+  <rect x="75" y="205" width="270" height="92" class="input"/>
+  <text x="210" y="236" text-anchor="middle" class="h3">Known prefix</text>
+  <text x="210" y="266" text-anchor="middle" class="body">TVT_input が見える区間</text>
+  <text x="210" y="288" text-anchor="middle" class="small">last_known_tvt が anchor</text>
+
+  <rect x="75" y="330" width="270" height="126" class="input"/>
+  <text x="210" y="362" text-anchor="middle" class="h3">Horizontal well</text>
+  <text x="210" y="394" text-anchor="middle" class="body">MD, X, Y, Z, GR</text>
+  <text x="210" y="423" text-anchor="middle" class="small">予測区間では TVT_input = NaN</text>
+
+  <rect x="75" y="490" width="270" height="126" class="input"/>
+  <text x="210" y="522" text-anchor="middle" class="h3">Typewell</text>
+  <text x="210" y="554" text-anchor="middle" class="body">TVT coordinate + GR</text>
+  <text x="210" y="583" text-anchor="middle" class="small">候補 TVT に対応する</text>
+  <text x="210" y="606" text-anchor="middle" class="small">typewell GR を参照</text>
+
+  <!-- mini typewell GR -->
+  <line x1="120" y1="675" x2="120" y2="900" stroke="#111827" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="116" y="657" text-anchor="middle" class="body">TVT</text>
+  <path d="M210,675 C170,690 250,705 205,720 C165,735 250,750 220,765 C175,782 260,792 205,812 C165,830 255,845 218,865 C190,880 238,895 205,910"
+        fill="none" stroke="#111827" stroke-width="3"/>
+  <text x="232" y="657" text-anchor="middle" class="body">GR</text>
+
+  <!-- Main chart -->
+  <rect x="415" y="130" width="930" height="840" class="panel"/>
+  <text x="880" y="172" text-anchor="middle" class="h2">Candidate TVT paths over MD</text>
+
+  <!-- axes -->
+  <line x1="500" y1="890" x2="1260" y2="890" class="axis"/>
+  <line x1="500" y1="830" x2="500" y2="230" class="axis"/>
+  <text x="1278" y="897" class="body">MD</text>
+  <text x="468" y="232" text-anchor="end" class="body">TVT</text>
+  <text x="465" y="257" text-anchor="end" class="small">larger downward</text>
+
+  <!-- grid verticals -->
+  <g>
+    <line x1="620" y1="230" x2="620" y2="890" class="grid"/>
+    <line x1="740" y1="230" x2="740" y2="890" class="grid"/>
+    <line x1="860" y1="230" x2="860" y2="890" class="grid"/>
+    <line x1="980" y1="230" x2="980" y2="890" class="grid"/>
+    <line x1="1100" y1="230" x2="1100" y2="890" class="grid"/>
+    <line x1="1220" y1="230" x2="1220" y2="890" class="grid"/>
+  </g>
+
+  <!-- known prefix -->
+  <path d="M500,575 C545,570 585,566 620,555 C665,542 700,530 740,525"
+        fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/>
+  <text x="610" y="535" text-anchor="middle" class="body" fill="#1d4ed8">known prefix</text>
+  <circle cx="740" cy="525" r="11" fill="#2563eb" stroke="#111827" stroke-width="2"/>
+  <text x="742" y="500" text-anchor="middle" class="small">anchor</text>
+
+  <line x1="740" y1="230" x2="740" y2="890" stroke="#111827" stroke-width="2" class="dash"/>
+  <text x="740" y="915" text-anchor="middle" class="small">prediction start</text>
+
+  <!-- candidate path bundle -->
+  <path d="M740,525 C790,520 835,510 880,505 C930,500 985,495 1040,492 C1105,488 1160,490 1220,495"
+        fill="none" stroke="#94a3b8" stroke-width="3" opacity="0.8"/>
+  <path d="M740,525 C790,555 835,590 880,620 C930,650 985,675 1040,710 C1105,750 1160,785 1220,805"
+        fill="none" stroke="#94a3b8" stroke-width="3" opacity="0.8"/>
+  <path d="M740,525 C790,500 835,480 880,450 C930,420 985,398 1040,380 C1105,355 1160,345 1220,340"
+        fill="none" stroke="#94a3b8" stroke-width="3" opacity="0.8"/>
+  <path d="M740,525 C790,530 835,548 880,570 C930,595 985,618 1040,632 C1105,650 1160,665 1220,680"
+        fill="none" stroke="#94a3b8" stroke-width="3" opacity="0.8"/>
+  <path d="M740,525 C790,512 835,530 880,540 C930,548 985,544 1040,548 C1105,552 1160,560 1220,570"
+        fill="none" stroke="#16a34a" stroke-width="8" stroke-linecap="round"/>
+  <text x="1065" y="535" class="body" fill="#15803d">selected / weighted mean path</text>
+
+  <!-- particle dots -->
+  <g opacity="0.9">
+    <circle cx="860" cy="448" r="6" fill="#60a5fa"/>
+    <circle cx="860" cy="512" r="9" fill="#2563eb"/>
+    <circle cx="860" cy="570" r="6" fill="#60a5fa"/>
+    <circle cx="860" cy="625" r="4" fill="#93c5fd"/>
+    <circle cx="980" cy="398" r="4" fill="#93c5fd"/>
+    <circle cx="980" cy="495" r="10" fill="#2563eb"/>
+    <circle cx="980" cy="615" r="6" fill="#60a5fa"/>
+    <circle cx="980" cy="680" r="4" fill="#93c5fd"/>
+    <circle cx="1100" cy="355" r="3" fill="#bfdbfe"/>
+    <circle cx="1100" cy="548" r="11" fill="#2563eb"/>
+    <circle cx="1100" cy="650" r="6" fill="#60a5fa"/>
+    <circle cx="1100" cy="750" r="3" fill="#bfdbfe"/>
+  </g>
+
+  <!-- PF process boxes -->
+  <rect x="470" y="205" width="395" height="150" fill="#eff6ff" stroke="#2563eb" stroke-width="2" rx="12"/>
+  <text x="668" y="237" text-anchor="middle" class="h3" fill="#1d4ed8">Particle Filter (PF)</text>
+  <text x="495" y="273" class="body">1. TVT particles を anchor から散らす</text>
+  <text x="495" y="302" class="body">2. 次の MD へ predict</text>
+  <text x="495" y="331" class="body">3. GR一致度で weight / resample</text>
+
+  <!-- Beam process boxes -->
+  <rect x="900" y="205" width="395" height="150" fill="#fff7ed" stroke="#f97316" stroke-width="2" rx="12"/>
+  <text x="1098" y="237" text-anchor="middle" class="h3" fill="#c2410c">Beam Search / Viterbi</text>
+  <text x="925" y="273" class="body">1. 上位 K 本の path だけ保持</text>
+  <text x="925" y="302" class="body">2. 候補を展開して score</text>
+  <text x="925" y="331" class="body">3. GR mismatch + smoothness で枝刈り</text>
+
+  <!-- Beam branches -->
+  <path d="M740,525 L860,505 L980,495 L1100,548 L1220,570" fill="none" stroke="#f97316" stroke-width="4"/>
+  <path d="M740,525 L860,570 L980,615 L1100,650 L1220,680" fill="none" stroke="#f97316" stroke-width="2" opacity="0.75"/>
+  <path d="M740,525 L860,448 L980,398 L1100,355 L1220,340" fill="none" stroke="#f97316" stroke-width="2" opacity="0.45"/>
+  <text x="980" y="745" text-anchor="middle" class="small">thin lines = alternative candidate paths</text>
+  <text x="980" y="770" text-anchor="middle" class="small">thick green = selected / weighted final TVT</text>
+
+  <!-- Outputs -->
+  <rect x="1385" y="130" width="370" height="840" class="panel"/>
+  <text x="1570" y="172" text-anchor="middle" class="h2">Outputs / features</text>
+
+  <rect x="1420" y="210" width="300" height="170" class="out"/>
+  <text x="1570" y="243" text-anchor="middle" class="h3" fill="#15803d">Candidate distribution</text>
+  <text x="1445" y="282" class="body">- mean / median TVT path</text>
+  <text x="1445" y="312" class="body">- std / range / divergence</text>
+  <text x="1445" y="342" class="body">- top1-top2 margin</text>
+
+  <rect x="1420" y="415" width="300" height="170" class="out"/>
+  <text x="1570" y="448" text-anchor="middle" class="h3" fill="#15803d">Likelihood signals</text>
+  <text x="1445" y="487" class="body">- GR match likelihood</text>
+  <text x="1445" y="517" class="body">- prefix fit error</text>
+  <text x="1445" y="547" class="body">- confidence / entropy</text>
+
+  <rect x="1420" y="620" width="300" height="170" class="warn"/>
+  <text x="1570" y="653" text-anchor="middle" class="h3" fill="#c2410c">Public route details</text>
+  <text x="1445" y="692" class="body">- scale selector</text>
+  <text x="1445" y="722" class="body">- GR interpolation</text>
+  <text x="1445" y="752" class="body">- beam / hold blend</text>
+
+  <rect x="1420" y="825" width="300" height="95" fill="#fef2f2" stroke="#dc2626" stroke-width="2" rx="10"/>
+  <text x="1570" y="858" text-anchor="middle" class="h3" fill="#b91c1c">Caution</text>
+  <text x="1570" y="890" text-anchor="middle" class="body">単体 submission より</text>
+  <text x="1570" y="918" text-anchor="middle" class="body">fold-safe 診断/特徴化が安全</text>
+
+  <!-- arrows between columns -->
+  <line x1="375" y1="390" x2="415" y2="390" stroke="#111827" stroke-width="3" marker-end="url(#arrow)"/>
+  <line x1="1345" y1="545" x2="1385" y2="545" stroke="#111827" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- bottom explanation -->
+  <rect x="45" y="995" width="1710" height="36" fill="#f9fafb" stroke="#d1d5db" stroke-width="1" rx="8"/>
+  <text x="900" y="1019" text-anchor="middle" class="small">
+    PF は stochastic な粒子群、Beam は deterministic な上位 path 探索。どちらも TVT の単一値ではなく、候補パスと不確実性を作る手法として使う。
+  </text>
+</svg>

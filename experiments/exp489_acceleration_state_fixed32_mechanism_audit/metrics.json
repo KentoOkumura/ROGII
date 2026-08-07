@@ -1,0 +1,75 @@
+{
+  "experiment": "exp489_acceleration_state_fixed32_mechanism_audit",
+  "route": "pf_beam",
+  "status": "stage0b_fail_closed",
+  "kernel": {
+    "id": "kentookumura/exp489-accel-state-fixed32-mechanism-audit-train",
+    "version": 1,
+    "id_no": 129171668,
+    "status": "COMPLETE"
+  },
+  "validation": {
+    "stage": "stage0b_fixed32_mechanism_preflight_not_cv",
+    "cv": null,
+    "lb": null
+  },
+  "technical_all_pass": true,
+  "technical_gates": {
+    "acceleration_posterior_nonzero_mass": true,
+    "expected_rows": true,
+    "expected_wells": true,
+    "finite_coverage": true,
+    "new28_all_frozen": true,
+    "outer_workers": true,
+    "peak_rss": true,
+    "target_free_artifact_readback_sha": true,
+    "truth_role_fold_episode_cause_control_reads_before_freeze": true,
+    "worker_threads_one": true
+  },
+  "mechanism_all_pass": false,
+  "mechanism_gates": {
+    "forward_cause_episode_sse": false,
+    "future_rate_curvature_direction": false,
+    "future_rate_curvature_direction_folds": false,
+    "matched_exp209_control_by_well_p95_safety": true,
+    "matched_exp209_control_pooled_safety": true,
+    "persistent_episode_sse": false,
+    "persistent_improved_wells": false,
+    "persistent_improving_folds": false
+  },
+  "stage1_eligible_pending_separate_user_approval": false,
+  "result": {
+    "direction_agreement": 0.5003086935363206,
+    "direction_agreement_by_fold": {
+      "0": 0.4984890033018076,
+      "1": 0.5011896668932699,
+      "2": 0.5003529965484782,
+      "3": 0.5023528609425083,
+      "4": 0.49959713328527205
+    },
+    "direction_positive_folds": 0,
+    "finite_coverage": 1.0,
+    "forward_cause_episode_sse_reduction_fraction": 0.0043545775942613885,
+    "matched_exp209_control_by_well_delta_p95": 0.07780788250883275,
+    "matched_exp209_control_candidate_rmse": 3.265587215165632,
+    "matched_exp209_control_pooled_rmse_delta": -0.1628490705893757,
+    "matched_exp209_control_saved_rmse": 3.4284362857550077,
+    "mean_acceleration_posterior_nonzero_mass": 0.664838700579429,
+    "new28_decode_wall_seconds": 794.097711528,
+    "notebook_elapsed_seconds": 851.4206769140001,
+    "persistent_episode_sse_reduction_fraction": -0.036667343060657664,
+    "persistent_improved_wells": 8,
+    "persistent_improving_folds": 2,
+    "process_tree_peak_rss_gb": 13.971542358398438
+  },
+  "artifacts": {
+    "executed_bootstrap_config_sha256": "6c98d6c1eb45b1f8e9efbf1a770170e20918c72d90b29d8feff144a2a0007633",
+    "prediction_decompressed_sha256": "b1b21bb6d6007b78b49d226c09a6d3a1ec65bed7fabc6d6f65c683b08d96e960",
+    "acceleration_posterior_decompressed_sha256": "c256258e0f89a98159a7cf830d23ccfed4f75172028a1afb0dc7ebadd4f76634",
+    "target_free_diagnostic_logical_sha256": "3baae5da89ac06fc7e87cd2c56a507bf1acce43a091f1d0de48e0cbca71d8cf0",
+    "well_metrics_decompressed_sha256": "e32ac68dd5b57cb9fb1fc8cf9c15c38d708e4ee3deceb25e16aba10cd3a1ec3e",
+    "episode_metrics_decompressed_sha256": "f8f8ed9b0206f6c32a3fee151fbd7555cc1d77402d48f1e9f5a6fa735bef6e59",
+    "runtime_manifest_sha256": "f5ae2db27d163aa2f125ff0071bf3ff3d207246715f6fbaa3bac67c54bde203b",
+    "summary_sha256": "bbd3bb20250c4702ced2f9f8500fb31d07468bd00b029694a7d0aa610916439a"
+  }
+}

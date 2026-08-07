@@ -1,0 +1,170 @@
+{
+  "experiment": "exp211_affine_calibrated_gr_observation_pfbeam",
+  "status": "completed_train_side_diagnostic_no_submit",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "route": "pf_beam",
+  "parent": "affine_calibrated_gr_observation_pfbeam backlog",
+  "kaggle_train_v1": {
+    "kernel_id": "kentookumura/exp211-affine-gr-pfbeam-train",
+    "url": "https://www.kaggle.com/code/kentookumura/exp211-affine-gr-pfbeam-train",
+    "id_no": 126197987,
+    "version": 1,
+    "status": "complete",
+    "runtime_seconds_summary": 3300.654089450836,
+    "runtime_seconds_log_last": 3543.860241207,
+    "output_dir": "experiments/exp211_affine_calibrated_gr_observation_pfbeam/kaggle/output/train_v1"
+  },
+  "validation": {
+    "strategy": "train_well_pseudotail_affine_gr_observation_pfbeam_audit",
+    "score_rows": "TVT_input_missing_equivalent_exp063_rows",
+    "rows": 478958,
+    "wells": 64,
+    "target_wells": "max_64_target_free_selection",
+    "exp072_cache_rows": 3783989,
+    "exp072_cache_wells": 773,
+    "exp072_cache_decompressed_sha256": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350"
+  },
+  "planned_variants": [
+    "raw",
+    "affine",
+    "raw_structural",
+    "affine_structural"
+  ],
+  "planned_boosters": 0,
+  "planned_folds": 0,
+  "primary_baseline": {
+    "candidate": "pf_raw_lik_mean",
+    "rmse": 18.64006275126819,
+    "mae": 12.097552,
+    "within10": 0.598904
+  },
+  "best_candidate_by_rmse": {
+    "candidate": "oracle_best_variant_candidate",
+    "is_oracle_diagnostic": true,
+    "rmse": 12.731057906822324,
+    "mae": 6.520979380629408,
+    "within10": 0.803644578439028,
+    "delta_rmse_vs_primary_baseline": -5.909004844445866
+  },
+  "best_non_oracle_candidate_by_rmse": {
+    "candidate": "exp072_pf_ancc",
+    "rmse": 17.494197129514692,
+    "mae": 10.454962780612417,
+    "within10": 0.6684907653698237,
+    "delta_rmse_vs_primary_baseline": -1.1458656217534973,
+    "max_well_regression_vs_primary": 46.64425252777409
+  },
+  "key_candidates": {
+    "beam_affine_top1": {
+      "rmse": 18.06501037479284,
+      "mae": 13.01407958787618,
+      "within10": 0.5120428095991716,
+      "delta_rmse_vs_beam_raw_top1": -0.274177146296946,
+      "delta_rmse_vs_primary_baseline": -0.5750523764753501,
+      "improved_wells_vs_primary": 31,
+      "worsened_wells_vs_primary": 33,
+      "max_well_regression_vs_primary": 20.781499370285847
+    },
+    "beam_affine_structural_top1": {
+      "rmse": 18.176859692815813,
+      "mae": 13.095639,
+      "within10": 0.510565,
+      "delta_rmse_vs_beam_raw_top1": -0.162327828273974,
+      "delta_rmse_vs_primary_baseline": -0.463203058452377,
+      "improved_wells_vs_primary": 30,
+      "worsened_wells_vs_primary": 34,
+      "max_well_regression_vs_primary": 20.78156135166621
+    },
+    "pf_affine_lik_mean": {
+      "rmse": 21.18475795619927,
+      "mae": 14.008033,
+      "within10": 0.550432,
+      "delta_rmse_vs_pf_raw_lik_mean": 2.54469520493108,
+      "improved_wells_vs_primary": 26,
+      "worsened_wells_vs_primary": 38,
+      "max_well_regression_vs_primary": 19.521376101938312
+    },
+    "pf_affine_structural_lik_mean": {
+      "rmse": 21.143707892544906,
+      "mae": 14.148794,
+      "within10": 0.529666,
+      "delta_rmse_vs_pf_raw_lik_mean": 2.503645141276716,
+      "improved_wells_vs_primary": 28,
+      "worsened_wells_vs_primary": 36,
+      "max_well_regression_vs_primary": 20.094382467195324
+    }
+  },
+  "selector_headroom": {
+    "oracle_best_variant_candidate_rmse": 12.731057906822324,
+    "oracle_best_variant_delta_rmse_vs_primary": -5.909004844445866,
+    "oracle_best_nonraw_variant_candidate_rmse": 13.179087861420319,
+    "oracle_best_nonraw_variant_delta_rmse_vs_primary": -5.46097488984787
+  },
+  "affine_calibration": {
+    "fallback_wells": 0,
+    "fallback_rate": 0.0,
+    "slope_mean": 0.852530,
+    "slope_median": 0.852239,
+    "slope_min": 0.506014,
+    "slope_max": 1.121831,
+    "prefix_rmse_mean": 7.893849,
+    "prefix_rmse_median": 7.514946,
+    "prefix_rmse_max": 13.680113
+  },
+  "pf_diagnostics": {
+    "raw": {
+      "gr_sigma": 13.897758962125387,
+      "ess_mean": 175.94384956359863,
+      "resampling_rate": 0.051147842314094305,
+      "log_likelihood_mean": -1762.2099203869661
+    },
+    "affine": {
+      "gr_sigma": 15.314360357432347,
+      "ess_mean": 176.16805458068848,
+      "resampling_rate": 0.05252361041493714,
+      "log_likelihood_mean": -2318.9420441316993
+    },
+    "raw_structural": {
+      "gr_sigma": 13.897758962125387,
+      "ess_mean": 175.94654893875122,
+      "resampling_rate": 0.05155526552698575,
+      "log_likelihood_mean": -1995.4822910816927
+    },
+    "affine_structural": {
+      "gr_sigma": 15.314360357432347,
+      "ess_mean": 176.16604232788086,
+      "resampling_rate": 0.05271822708891705,
+      "log_likelihood_mean": -2684.767874785825
+    }
+  },
+  "artifacts": {
+    "candidate_metrics": "experiments/exp211_affine_calibrated_gr_observation_pfbeam/kaggle/output/train_v1/artifacts/exp211_affine_calibrated_gr_observation_pfbeam_candidate_metrics.csv",
+    "filter_delta_metrics": "experiments/exp211_affine_calibrated_gr_observation_pfbeam/kaggle/output/train_v1/artifacts/exp211_affine_calibrated_gr_observation_pfbeam_filter_delta_metrics.csv",
+    "bucket_metrics": "experiments/exp211_affine_calibrated_gr_observation_pfbeam/kaggle/output/train_v1/artifacts/exp211_affine_calibrated_gr_observation_pfbeam_bucket_metrics.csv",
+    "by_well": "experiments/exp211_affine_calibrated_gr_observation_pfbeam/kaggle/output/train_v1/artifacts/exp211_affine_calibrated_gr_observation_pfbeam_by_well.csv",
+    "group_metrics": "experiments/exp211_affine_calibrated_gr_observation_pfbeam/kaggle/output/train_v1/artifacts/exp211_affine_calibrated_gr_observation_pfbeam_group_metrics.csv",
+    "pf_diagnostics": "experiments/exp211_affine_calibrated_gr_observation_pfbeam/kaggle/output/train_v1/artifacts/exp211_affine_calibrated_gr_observation_pfbeam_pf_diagnostics.csv",
+    "row_candidates": "experiments/exp211_affine_calibrated_gr_observation_pfbeam/kaggle/output/train_v1/artifacts/exp211_affine_calibrated_gr_observation_pfbeam_row_candidates.csv.gz",
+    "summary": "experiments/exp211_affine_calibrated_gr_observation_pfbeam/kaggle/output/train_v1/artifacts/exp211_affine_calibrated_gr_observation_pfbeam_summary.json",
+    "target_wells": "experiments/exp211_affine_calibrated_gr_observation_pfbeam/kaggle/output/train_v1/artifacts/exp211_affine_calibrated_gr_observation_pfbeam_target_wells.csv",
+    "well_status": "experiments/exp211_affine_calibrated_gr_observation_pfbeam/kaggle/output/train_v1/artifacts/exp211_affine_calibrated_gr_observation_pfbeam_well_status.csv"
+  },
+  "sha256": {
+    "candidate_metrics": "320c84bc3845e30b0f76b3397bef0a19b1dd82e5b6be47fcab7a5e4dc85009d5",
+    "filter_delta_metrics": "3c90e429602bc3c88c552deb49ec1fb8a533b57e635bdb0d9712232e966370e1",
+    "bucket_metrics": "a707bf5eda9bd63081dea02055d6e07d6a2d754aa2716c8265f2214ac41de702",
+    "by_well": "cd9031629b78f4f91357ac552ef0d8ebbc8879863dace96b96f186a629c6892d",
+    "group_metrics": "0480ef036ef9ae79ae0be0590f6c569d2a3cc3a86658cb73d622d4325cc005a6",
+    "pf_diagnostics": "aefd8b3ab9e65e576c1e42fc07adaabbe6b0def436f78374b00265d652ed3c36",
+    "target_wells": "b430641fc305cb56a9332ec4f41ee2497db4bbd269310c969d3754721ad5eac6",
+    "well_status": "25be73081775b0f32a4acdd06aa73bf713ce3caf72f66d261fa242f145879584",
+    "row_candidates_raw_gzip": "9b9e4d8d1b4f98b01d3227388652ae728f425929693786b4c69e5e0726efa22e",
+    "row_candidates_decompressed": "8dba28dfe8a82536293f56e7f204715679ce2f7354f8e14ac46c6b079ec71465",
+    "summary": "7d06d1b5ec086e20f77d13caeac1b0291c8c22d82b93ecbd8c4a83824463eb51"
+  },
+  "decision": "no_direct_replacement_no_inference_no_submit",
+  "notes": "Affine Beam improves raw Beam slightly but does not beat exp072_pf_ancc; affine PF/likPF worsens. Keep affine calibration quality only as selector/confidence diagnostic material."
+}

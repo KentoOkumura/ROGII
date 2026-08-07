@@ -1,0 +1,155 @@
+experiment:
+  name: "exp369_stratified_registration_offset_pf"
+  description: >-
+    Separate physical particle position from a bounded GR registration offset
+    and preserve all offset strata during exp072 likelihood-PF resampling.
+  route: pf_beam
+  status: design_frozen_not_implemented
+  created_at: "2026-07-23"
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  steering: ../../.steering/20260723-exp369-stratified-registration-offset-pf
+  references:
+    - exp230_dtw_warp_hmm
+    - exp297_latent_registration
+    - exp345_time_varying_gr_affine
+    - exp365_bounded_gr_registration_offset_hmm
+  diff_summary: >-
+    Extend each exp072 particle to (physical_position,rate,delta) for
+    delta in {-6,-3,0,3,6} ft. Evaluate GR at p+delta but output p. Keep 500
+    particles and 128 seeds, with a fixed zero-heavy initial allocation and a
+    minimum 25 particles per delta after resampling.
+
+validation:
+  strategy: known_prefix_registration_preflight_then_stratified_likelihood_pf
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: unknown_suffix_only
+  stage_0:
+    name: independent_known_prefix_heldout_gr_registration_readout
+    pf_seed_well_runs: 0
+    history_rows: 128
+    heldout_rows: 64
+    stride_rows: 64
+    minimum_known_prefix_rows: 256
+    baseline: delta_zero
+    negative_control: within_well_circular_shift_of_heldout_gr
+    all_required:
+      minimum_predictive_gr_nll_gain_fraction: 0.01
+      minimum_passing_folds: 4
+      minimum_real_minus_circular_nll_gain_fraction: 0.005
+      nonzero_posterior_mean_range: [0.05, 0.50]
+      maximum_boundary_posterior_mass: 0.25
+      minimum_adjacent_window_sign_agreement: 0.60
+  stage_1:
+    enabled_only_after_stage_0_pass_and_separate_user_approval: true
+    particles: 500
+    seed_count: 128
+    well_count: 773
+    pf_seed_well_runs: 98944
+    all_required:
+      minimum_rmse_gain_vs_exp072_likpf_mean_ft: 0.05
+      minimum_improved_folds: 4
+      maximum_1000_plus_regression_ft: 0.02
+      maximum_hidden_like_spatial_regression_ft: 0.02
+      maximum_hidden_like_typewell_purged_regression_ft: 0.02
+      maximum_by_well_p95_regression_ft: 0.02
+      maximum_worst_well_regression_ft: 0.25
+      minimum_each_offset_posterior_mass: 0.01
+
+data:
+  parent_control:
+    candidate: likpf_mean
+    direct_rmse_ft: 11.594897672
+    usage: saved_prediction_only_no_pf_control_replay
+
+model:
+  name: stratified_registration_offset_likelihood_pf
+  estimator: stochastic_likelihood_pf
+  state: [physical_position, rate, gr_registration_offset]
+  gr_registration_offset:
+    values_ft: [-6.0, -3.0, 0.0, 3.0, 6.0]
+    initial_particle_counts: [50, 75, 250, 75, 50]
+    adjacent_move_probability_per_direction: 0.001953125
+    boundary_policy: invalid_move_mass_added_to_stay
+    minimum_post_resample_count_each_offset: 25
+    remaining_particle_allocation: systematic_by_posterior_offset_mass
+    physical_output: physical_position
+    emission_lookup_position: physical_position_plus_gr_registration_offset
+  fixed_from_exp072:
+    particles: 500
+    seed_count: 128
+    seed_aggregation: mean
+    momentum: 0.998
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_threshold: 0.5
+    resample_position_noise: 0.10
+    resample_velocity_noise: 0.001
+    gaussian_gr_likelihood: true
+  forbidden:
+    - output_position_plus_offset
+    - dtw_or_affine_gr_transform
+    - offset_transition_or_quota_grid
+    - rate_prediction_from_prefix_or_geometry
+    - particle_or_seed_increase
+    - likelihood_or_dynamics_change
+    - blend_or_selector
+    - parent_pf_control_replay
+
+runtime:
+  device: cpu
+  use_gpu: false
+  use_amp: false
+  num_workers: 1
+  maximum_seconds: 30600
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_experiment_well_family_seed_index
+  stochastic_components:
+    - initial_particle_jitter
+    - offset_transition
+    - rate_and_position_propagation
+    - stratified_systematic_resampling
+    - resampling_jitter
+  parallel_rng_policy: per_well_seed_stream_independent_of_thread_schedule
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Stage 0 uses only visible prefix TVT_input and GR.
+    - Raw train and raw test PF generation are separate and content-SHA recorded.
+
+execution:
+  implementation_approved: false
+  kaggle_push_approved: false
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+  stage_1_counts:
+    scientific_variants: 1
+    reporting_folds: 5
+    pf_treatment_replays: 1
+    pf_control_replays: 0
+    particles: 500
+    seeds: 128
+    wells: 773
+    seed_well_runs: 98944
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+
+notes:
+  - Design frozen on 2026-07-23; notebooks and PF code are placeholders only.

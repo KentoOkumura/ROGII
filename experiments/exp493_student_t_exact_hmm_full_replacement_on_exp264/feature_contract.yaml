@@ -1,0 +1,54 @@
+schema_version: 1.0.0
+parent: exp264_corrected_stage_a_v4_raw_test_safe_88
+status: implemented_schema_frozen_not_run
+
+schema:
+  mode: exact_name_order_reuse
+  expected_candidate_long_feature_count: 88
+  expected_parent_logical_sha256: aaef4ffdd90667893b099b76a52f1957b22197aea9cee5e5b57bc81048ddd3a4
+  expected_compact_feature_count: 74
+  refreeze_allowed: false
+  add_or_remove_columns_allowed: false
+
+recompute:
+  semantic_primitive: exact_hmm
+  direct_formula_candidates:
+    - exp226_k16__exact_hmm
+    - likpf_mean__exact_hmm
+    - exp226_w500_50_50
+  dependent_feature_groups:
+    - candidate_value_shape_and_anchor_distance
+    - native_confidence_under_exact_hmm_namespace
+    - bank_rank_spread_and_disagreement
+    - formula_parent_disagreement_and_validity
+    - candidate_long_labels_after_truth_late_join
+    - nested_selector_scores
+    - compact_top1_top2_margin_and_per_candidate_scores
+
+parity:
+  unchanged_candidate_ids:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+  unchanged_candidate_value_atol: 0.0
+  formula_value_atol: 1.0e-6
+  stable_row_order_required: true
+
+retained_groups: [ctx, cand, conf, bank, formula, id]
+raw_context_allowlist: [MD, X, Y, Z, GR]
+forbidden_training_only_columns: [ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+forbidden_target_tokens: [TVT, TVT_input, target, true_tvt, error, oracle]
+
+freeze:
+  before_truth_join: true
+  before_fit: true
+  candidate_ids_order_domains: true
+  feature_names_order: true
+  fold_assignments: true
+  sample_keys: true
+  lightgbm_params: true

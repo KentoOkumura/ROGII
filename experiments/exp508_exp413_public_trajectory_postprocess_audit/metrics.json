@@ -1,0 +1,143 @@
+{
+  "experiment": "exp508_exp413_public_trajectory_postprocess_audit",
+  "status": "stage_a_complete_fail_closed",
+  "route": "ml_model",
+  "parent": "exp413_scale5_likpf_full_replacement_on_exp335",
+  "metric": "rmse",
+  "seed": 42,
+  "cv": 7.878669066831366,
+  "public_lb": null,
+  "private_lb": null,
+  "cost": {
+    "scientific_primary_variants": 1,
+    "report_only_controls": 2,
+    "trained_models": 0,
+    "lightgbm_configs": 0,
+    "total_boosters": 0,
+    "hmm_runs": 0,
+    "pf_runs": 0,
+    "beam_runs": 0,
+    "parent_or_control_retraining": 0,
+    "gpu_runs": 0
+  },
+  "implementation": {
+    "jupytext_source": "exp508_exp413_public_trajectory_postprocess_audit_compact_selfcontained_train.py",
+    "candidate_notebook": "exp508_exp413_public_trajectory_postprocess_audit_compact_selfcontained_train.ipynb",
+    "canonical_train_notebook": "exp508_exp413_public_trajectory_postprocess_audit_train.ipynb",
+    "contract_test": "test_exp508_contract.py",
+    "canonical_train_notebook_adopted": true,
+    "kaggle_package_created": true,
+    "stage_a_executed": true,
+    "inference_implemented": false,
+    "submission_created": false
+  },
+  "kaggle_stage_a": {
+    "kernel_id": "kentookumura/exp508-exp413-public-sg61p3-audit-train",
+    "kernel_version": 1,
+    "kernel_id_no": 129625989,
+    "status": "complete",
+    "pushed_at": "2026-08-03 23:26:41 UTC",
+    "metrics_created_at": "2026-08-03T23:27:45.379122+00:00",
+    "status_confirmed_at": "2026-08-03 23:30:45 UTC",
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "primary": {
+    "id": "sg61_p3_final_tvt",
+    "pooled": {
+      "rows": 3783989,
+      "wells": 773,
+      "exp413_rmse": 7.884802794404715,
+      "sg61_p3_rmse": 7.878669066831366,
+      "gain_ft": 0.00613372757334929,
+      "delta_sg_minus_exp413": -0.00613372757334929
+    },
+    "fold_metrics": [
+      {"outer_fold": 0, "rows": 757738, "exp413_rmse": 7.919988324359447, "sg61_p3_rmse": 7.914334781078534, "delta_ft": -0.005653543280913276},
+      {"outer_fold": 1, "rows": 756650, "exp413_rmse": 8.37738133284066, "sg61_p3_rmse": 8.369169935882772, "delta_ft": -0.008211396957888084},
+      {"outer_fold": 2, "rows": 756255, "exp413_rmse": 7.539713352260811, "sg61_p3_rmse": 7.534915364043869, "delta_ft": -0.004797988216941995},
+      {"outer_fold": 3, "rows": 757101, "exp413_rmse": 7.574331166543342, "sg61_p3_rmse": 7.568178438528447, "delta_ft": -0.006152728014894748},
+      {"outer_fold": 4, "rows": 756245, "exp413_rmse": 7.982868392834478, "sg61_p3_rmse": 7.977172131442281, "delta_ft": -0.005696261392196256}
+    ],
+    "scope_metrics": [
+      {"scope": "md_0_250", "rows": 193250, "wells": 773, "exp413_rmse": 1.472437864808617, "sg61_p3_rmse": 1.4674045938111715, "delta_ft": -0.005033270997445438},
+      {"scope": "md_250_1000", "rows": 578297, "wells": 773, "exp413_rmse": 3.8908576704969935, "sg61_p3_rmse": 3.886690658369156, "delta_ft": -0.004167012127837655},
+      {"scope": "md_1000_plus", "rows": 3012442, "wells": 771, "exp413_rmse": 8.663017155972323, "sg61_p3_rmse": 8.656418673413516, "delta_ft": -0.006598482558807461},
+      {"scope": "hidden_like_spatial", "rows": 972463, "wells": 200, "exp413_rmse": 8.364712529921954, "sg61_p3_rmse": 8.355932225115325, "delta_ft": -0.008780304806629502},
+      {"scope": "hidden_like_typewell_purged", "rows": 976449, "wells": 200, "exp413_rmse": 8.307714847328658, "sg61_p3_rmse": 8.299038892485168, "delta_ft": -0.00867595484348982}
+    ],
+    "tail": {
+      "delta_median_ft": -0.0047501367541968875,
+      "delta_p90_ft": -0.0018287792548345992,
+      "delta_p95_ft": -0.0013444914686354893,
+      "delta_p99_ft": -0.0007800485087611986,
+      "worst_well": "62569ae3",
+      "worst_delta_ft": -0.0004179664964425456,
+      "worsened_wells_plus_0p25ft": 0,
+      "worsened_wells_plus_1ft": 0,
+      "worsened_wells_plus_3ft": 0,
+      "worsened_wells_plus_5ft": 0
+    },
+    "prediction_start": {
+      "wells": 773,
+      "abs_correction_p50_ft": 0.07087662371850456,
+      "abs_correction_p90_ft": 0.2142322469360807,
+      "abs_correction_p95_ft": 0.289606690868095,
+      "abs_correction_p99_ft": 0.45271112345682896,
+      "abs_correction_max_ft": 0.8106944039191148
+    },
+    "trajectory": {
+      "correction_abs_ft": {"mean": 0.14142000417061784, "p50": 0.074866574468615, "p90": 0.31131204867015194, "p95": 0.47166973048770133, "p99": 1.081366255491303, "max": 21.359079714646214},
+      "second_difference_rms_ft": {"control": 0.5303978242182508, "primary": 0.011204509157597718}
+    }
+  },
+  "promotion_gate": {
+    "passed": false,
+    "decision": "FAIL_CLOSE_WITHOUT_SG_GRID_WARMUP_ROUTER_OR_GATE_RESCUE",
+    "checks": {
+      "technical_all_pass": true,
+      "pooled_gain_at_least_0p01_ft": false,
+      "nonworse_folds_at_least_4_of_5": true,
+      "all_fixed_scopes_within_plus_0p02_ft": true,
+      "by_well_p95_within_plus_0p25_ft": true,
+      "worst_well_within_plus_0p25_ft": true,
+      "first_score_row_p95_within_0p50_ft": true,
+      "first_score_row_max_within_2p00_ft": true
+    },
+    "technical_checks": {
+      "static_contract": true,
+      "parent_evidence_sha": true,
+      "fold_manifest_sha": true,
+      "truth_free_input_allowlist": true,
+      "key_and_row_order_frozen": true,
+      "prediction_freeze_before_truth": true,
+      "prediction_truth_columns_absent": true,
+      "prediction_finite": true,
+      "control_rmse_parity": true,
+      "actual_target_parity": true,
+      "no_model_or_physics_rerun": true
+    },
+    "inference_automatically_approved": false,
+    "report_only_may_rescue_primary": false
+  },
+  "report_only": {
+    "status": "scored_after_primary_decision_freeze",
+    "primary_decision_sha256": "26ca67d56c58e942528faf471572d12d481475b00d7dd62e5e709e1c4dfea8c3",
+    "selection_or_rescue_performed": false,
+    "candidates": {
+      "tau85_warmup_final_delta": {"selectable": false, "may_rescue_primary": false, "pooled_rmse": 7.886111093377577},
+      "tau85_warmup_then_sg61_p3": {"selectable": false, "may_rescue_primary": false, "pooled_rmse": 7.880001331601432}
+    }
+  },
+  "artifacts": {
+    "primary_prediction_content_sha256": "5caf53f17c52729198eec412cdf7ce46e25f199a24ca842e4efb117e91a67f56",
+    "prediction_file_sha256": "cf6135f20196ab319218b130ccf7682fb1c094684ded8f930b5c7079a1d53203",
+    "prediction_logical_sha256": "846fa7e6adc3e399141959c02eff2c0be0ab8479911d76be1dfa2a06b9df2bb9",
+    "promotion_gate_sha256": "d7e21a243e53f2d5af4e192faf3246e307f4ce92cb2f063bf5e0086582466d1b",
+    "primary_fold_metrics_sha256": "d450e0691238a661c3564c4dd221894fcd05f51fb9f907d81deaf691d83f2e2c",
+    "primary_scope_metrics_sha256": "39e6c45dff321a1f7a48fffab9abea315842262f1276681daf6cf77cbae298cd",
+    "reproducibility_manifest_sha256": "1e68714488b1d7dd938dfe140ab67b00e7f93deb68efb6c520273afbe970b81a",
+    "deterministic_anchor": false
+  },
+  "notes": "All technical and safety checks passed, but the fixed SG61/p3 pooled gain was 0.00613372757334929 ft and missed the preregistered 0.01 ft minimum. The branch is closed without report-only rescue, routing, inference, or submission."
+}

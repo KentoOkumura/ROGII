@@ -1,0 +1,93 @@
+{
+  "experiment": "exp501_exp490_mean_reverting_hmm_fixed13_selector_on_exp264",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "ensemble",
+  "cv": {
+    "hard_primary_oof_rmse": 8.264890208588357,
+    "parent_fixed12_hard_oof_rmse": 8.652531955610227,
+    "delta_vs_parent_ft": -0.38764174702187004,
+    "fixed_fallback_oof_rmse": 8.238331546485645,
+    "improved_folds": 5
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "design": {
+    "selector_parent": "exp264_exp263_candidate_confidence_dual_selector",
+    "candidate_parent": "exp490_geometry_centered_mean_reverting_offset_hmm",
+    "added_candidate": "exp490_geometry_mean_reverting_hmm",
+    "score_candidates": 13,
+    "primary_candidates": 12,
+    "fixed_fallback_candidates": 7,
+    "outer_folds": 5,
+    "inner_folds": 4,
+    "objectives": 2,
+    "planned_cpu_selector_boosters": 40,
+    "parent_control_retraining": 0,
+    "hmm_pf_beam_reruns": 0,
+    "gpu_boosters": 0,
+    "inference": false,
+    "submission": false
+  },
+  "implementation": {
+    "approved": true,
+    "canonical_train_notebook_adopted": true,
+    "canonical_inference_notebook_is_placeholder": true,
+    "kaggle_package_created": true,
+    "dedicated_contract_tests_passed": 10,
+    "related_regression_tests_passed": 20,
+    "jupytext_roundtrip": true,
+    "strict_experiment_validation": true
+  },
+  "run_approved": true,
+  "kaggle_kernel": {
+    "id": "kentookumura/exp501-exp490-fixed13-selector-train",
+    "version": 2,
+    "id_no": 129379922,
+    "status": "COMPLETE",
+    "runtime_seconds": 7082.11297319,
+    "failed_input_source_version": 1
+  },
+  "result": {
+    "decision": "FAIL_CLOSE_EXP490_MEAN_REVERTING_HMM_FIXED13_SELECTOR",
+    "technical_gate_passed": true,
+    "leakage_gate_passed": true,
+    "selector_score_guard_passed": true,
+    "scientific_gate_passed": false,
+    "trained_cpu_selector_boosters": 40,
+    "compact_partitions": 25,
+    "compact_rows": 18919945,
+    "outer_valid_score_long_rows": 49191857,
+    "exp490_top1_fraction": 0.5533533527713743,
+    "exp490_positive_usage_folds": 5,
+    "required_scope_checks_passed": 7,
+    "required_scope_checks_total": 7,
+    "improved_wells": 493,
+    "regressed_wells": 280,
+    "by_well_p95_delta_rmse_ft": 2.9045939263028773,
+    "worst_well": "896d15b9",
+    "worst_well_delta_rmse_ft": 18.394664149202487,
+    "fixed_fallback_error_parity_max_abs_ft": 0.0,
+    "same_oof_rescue_allowed": false,
+    "inference": false,
+    "submission": false
+  },
+  "diagnostic": {
+    "h512_addone_oracle_improvement_ft": 0.2728045273909454,
+    "whole_well_addone_oracle_improvement_ft": 0.35575585805126053,
+    "incumbent_change_fraction_when_exp490_not_top1": 0.3500715339747921,
+    "usage_delta_pearson": -0.1726491562446785,
+    "usage_delta_spearman": -0.20388127288751307,
+    "zero_usage_wells": 2
+  },
+  "artifact_sha256": {
+    "logs": "815c77ec8ead9bbec4de077c04f8a54f41577402f36c738a75e8f680e7f214c8",
+    "feature_schema": "2eb780b95aa896973c6f753634af8a34f82a41f8091d6261a4f2e7d34463e96e",
+    "model_manifest": "3adb894df634b929020693e7435852b646a99b8dafc2eab4fb88fc1c231cabbc",
+    "compact_manifest": "32317a715997c7a7e145d7122a8ac37733adb30710e571ccbf11a81c2d79c257",
+    "outer_valid_candidate_score": "1641b9cb9d29aa65759d5a3cd637cef62f84ac50dd39999955b5c2aa1bd1599e",
+    "scientific_gate": "5e6100ff20ec7e07dff0dbd5b72a35588635145e7a7c6403c44d9d34bb01e9d1",
+    "summary": "d267a308b1bfe06b2b007081bb0a3d78e1afde360950dec1b4a065a444a0e442"
+  },
+  "notes": "Version 2 completed all 40 CPU selector boosters and improved pooled RMSE, all five folds, and all seven fixed scopes, but failed both preregistered by-well tail guards. Close without same-OOF rescue, downstream TVT, current-test generation, inference, or submission."
+}

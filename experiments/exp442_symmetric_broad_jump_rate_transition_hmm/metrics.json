@@ -1,0 +1,155 @@
+{
+  "experiment": "exp442_symmetric_broad_jump_rate_transition_hmm",
+  "status": "stage0_fail_closed",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "created_at": "2026-07-29",
+  "completed_at": "2026-07-30",
+  "key_idea": "Mix a fixed one-percent symmetric broad rate branch into the unchanged exp209 local kernel.",
+  "kaggle": {
+    "kernel_id": "kentookumura/exp442-symmetric-broad-jump-rate-trans-hmm-train",
+    "version": 1,
+    "id_no": 129101211,
+    "runtime": "private_cpu",
+    "internet": false,
+    "worker_status": "COMPLETE",
+    "downloaded_metrics_sha256": "92d09d57c9afc0ff7397a54d231424ddfbe172478c1e91381ddab946e3ed53c7"
+  },
+  "execution_contract": {
+    "scientific_variants": 1,
+    "stage0_candidate_hmm_well_runs": 32,
+    "stage1_candidate_hmm_well_runs": 773,
+    "parent_control_hmm_well_runs": 0,
+    "reporting_folds": 5,
+    "lightgbm_configs": 0,
+    "trained_ml_folds": 0,
+    "boosters": 0,
+    "fitted_models": 0,
+    "pf_runs": 0,
+    "beam_runs": 0,
+    "gpu_runs": 0
+  },
+  "validation": {
+    "stage": "stage0_fixed32",
+    "fixed32_is_mechanism_only_not_cv_or_promotion_evidence": true,
+    "wells": 32,
+    "rows": 156088,
+    "transition_rows": 156056,
+    "cv": null,
+    "lb": null
+  },
+  "runtime": {
+    "elapsed_seconds": 9190.989643756002,
+    "projected_stage1_seconds": 222019.8435819809,
+    "projected_stage1_limit_seconds": 30600,
+    "peak_rss_gb": 1.1910285949707031
+  },
+  "technical_gates": {
+    "passed": 14,
+    "total": 15,
+    "all_passed": false,
+    "broad_in_support_mass": true,
+    "brute_force_branch_responsibility": true,
+    "diagnostic_readback_sha": true,
+    "expected_rows": true,
+    "expected_wells": true,
+    "finite_coverage": true,
+    "fixed32_roles_and_folds": true,
+    "local_branch_parent_parity": true,
+    "mixture_decomposition": true,
+    "peak_rss": true,
+    "posterior_normalization": true,
+    "prediction_readback_sha": true,
+    "runtime_projection": false,
+    "transition_readback_sha": true,
+    "truth_role_fold_episode_reads_before_freeze": true
+  },
+  "mechanism_gates": {
+    "passed": 4,
+    "total": 9,
+    "all_passed": false,
+    "nonadjacent_posterior_edge_mass": {
+      "passed": true,
+      "value": 0.006845573173083929,
+      "minimum": 0.001
+    },
+    "jump_edge_future_rate_direction_agreement": {
+      "passed": false,
+      "value": 0.5297316333422821,
+      "minimum": 0.6
+    },
+    "jump_edge_direction_positive_folds": {
+      "passed": true,
+      "value": 5,
+      "minimum": 4
+    },
+    "forward_cause_episode_sse_reduction": {
+      "passed": false,
+      "value": 0.002430605686574464,
+      "minimum": 0.1
+    },
+    "persistent_episode_sse_reduction": {
+      "passed": false,
+      "value": -0.04438493233899539,
+      "minimum": 0.05
+    },
+    "persistent_improved_wells": {
+      "passed": false,
+      "value": 9,
+      "minimum": 10
+    },
+    "persistent_improving_folds": {
+      "passed": false,
+      "value": 2,
+      "minimum": 4
+    },
+    "matched_control_pooled_rmse_delta_ft": {
+      "passed": true,
+      "value": -0.1554138479222722,
+      "maximum": 0.02
+    },
+    "matched_control_by_well_delta_p95_ft": {
+      "passed": true,
+      "value": 0.0693642494198562,
+      "maximum": 0.25
+    }
+  },
+  "readout": {
+    "pooled_branch_responsibility": 0.009766954299939278,
+    "actual_broad_in_support_mass_max_abs_error": 1.2212453270876722e-15,
+    "actual_mixture_decomposition_max_abs_error": 0.0,
+    "maximum_normalization_error": 3.3084646133829665e-14,
+    "persistent_episode_sse_reduction_by_fold": [
+      -0.1476280369175311,
+      0.0037854499015581382,
+      -0.01215623595099686,
+      -1.1845062328014833,
+      0.13188628094733054
+    ],
+    "jump_edge_direction_agreement_by_fold": [
+      0.5228439825557089,
+      0.5324022605630466,
+      0.5267543723739491,
+      0.5587433273595215,
+      0.5031773179180227
+    ]
+  },
+  "artifacts": {
+    "predictions_logical_sha256": "01fb64c820f4f68d8a0c8d7a8891f5ceedad7c8a12d647b79206fb0f2acfe59e",
+    "target_free_diagnostics_logical_sha256": "cd6809a1bbaa07fa30f2989f5bf317a2d8be1fad8ec6f29b07a43b65b72330fd",
+    "transition_diagnostics_logical_sha256": "2439708574644cc73f7f7647d04686a61566e67f3cf2726d144350c12c19bf5f",
+    "well_metrics_sha256": "608819968361d380d11091eb7f90e39dfc94aa2b6c9324d17e346de8ab34bae0",
+    "episode_truth_late_readout_sha256": "abdf815cf787f95a7be95b185369c8ffd8ec3bb3e5983d55b3aad7846fa3de6e",
+    "jump_direction_truth_late_readout_logical_sha256": "9c4209f7eb0a2d5496cd6a6b6a733b2a156ff213ed4ee7d1a51981173f693cbf",
+    "input_manifest_sha256": "d0b814975678954032c5ecd58cf4a80084e5b29d06159087a1505461a1470900",
+    "summary_sha256": "8a5a0ac16675c05ce0391406671084be3b2e584cfc0470f9e9e45c69cb3db3f2"
+  },
+  "scientific_contract_sha256": "cd97572dc08d68e4a2018b27e0309cde3e129c3e35814953ec0f237048c60752",
+  "stage1_eligible": false,
+  "decision": "stage0_fail_closed",
+  "next_action": "Close without rerun, Stage 1, inference, submission, or jump-weight/sigma/trigger/emission/grid/gate rescue.",
+  "notes": "The broad branch was used and aggregate matched-control safety passed, but direction, persistent recovery, and runtime gates failed. Stage 0 is mechanism-only and provides no CV or LB evidence."
+}

@@ -1,0 +1,469 @@
+experiment:
+  name: exp485_stratified_initial_rate_bank_pf
+  description: >-
+    Stratify 500 likelihood-PF particles equally across five exp268
+    initial-rate window centers. Stage 1 completed at CV 11.092618091 versus
+    saved exp404 control 10.914522073. Technical checks passed, but only one of
+    five folds improved and the primary and fixed-blend scientific gates
+    failed, so the branch is terminally closed without inference or submission.
+  hypothesis: >-
+    Preserving multiple plausible initial rate modes inside every seed can
+    reduce early PF mode loss without target-aware rate-window selection.
+  route: pf_beam
+  status: stage1_gate_failed_terminal_close
+  created_at: "2026-07-30"
+  updated_at: "2026-07-30"
+
+lineage:
+  parent: exp417_scale5_seed_aggregation_promotion_audit
+  exact_pf_implementation_reference: exp404_scale5_sigma_gr_likelihood_pf_ablation
+  hmm_evidence_source: exp268_multi_scale_initial_rate_candidates
+  steering: ../../.steering/20260730-exp485-stratified-initial-rate-bank-pf
+  diff_summary: >-
+    Replace exp404's single tail30 initial-rate center with one equal-strata
+    five-center particle prior using tail30/32/64/128/256 prefix windows.
+    Interleave exactly 100 of 500 particles per center and retain the original
+    0.01 within-center spread. Keep every later PF and seed aggregation setting
+    fixed; do not run five PF candidates or select a window post hoc.
+
+implementation:
+  enabled: true
+  design_approval_received: true
+  design_approval_source: user_message_2026_07_30_freeze_pf_transfer_designs
+  implementation_approval_received: true
+  implementation_approval_source: user_message_2026_07_30_implement_exp485
+  scaffold_created: true
+  canonical_notebooks_are_markdown_placeholders: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  jupytext_source_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  train_execution_enabled: false
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: fixed32_technical_then_all_well_stratified_initial_rate_bank_pf
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: tvt_input_missing_evaluation_suffix
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  primary_control: exp404_exp417_likpf_scale5_x1p0_tail30
+  primary_control_rmse_ft: 10.914522073
+  fixed_hmm_pf_50_50_control_rmse_ft: 10.084909679560383
+  primary_candidate: likpf_scale5_equal_strata_initial_rate_bank5
+  truth_attachment: after_rate_bank_ledger_prediction_and_all_content_sha_freeze
+  leakage_policy:
+    - Initial-rate centers use only finite visible-prefix TVT_input, MD, and Z steps.
+    - Unknown-suffix truth, error, fold, and hidden-like role are attached after prediction freeze.
+    - exp268 outcomes fix the five predeclared windows but cannot select a well-specific winner.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  observed_log_column: GR
+  id_column: id
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  fixed32_manifest:
+    filename: stage0_fixed32_manifest.csv
+    local: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+    expected_sha256: fbbc62b7cb79e16a7fb436f3a9d11f8975e935ad2475a17e2dec4fd7b142e4d6
+    expected_suffix_rows: 156088
+    prefreeze_columns: [well]
+    postfreeze_columns: []
+  saved_control:
+    source: exp404_scale5_sigma_gr_likelihood_pf_ablation
+    filename: exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin
+    prediction_column: likpf_scale_5_x1p0
+    expected_rmse_ft: 10.914522073
+    expected_logical_sha256: 5f4b6e715081b598b0a34607ad0c81339d0ecd5882ea3a45dd79f33123959a00
+    expected_raw_sha256: b3699432a691229da5a6562ce74e0b84f1bee3021bd80d650526906f5aa390f8
+    expected_decompressed_sha256: 00fe1b90fce84bd601b4b91442d9fc698200aafadd48658f7d8c26ec1fbe0d00
+    candidates:
+      - /kaggle/input/exp404-v1-frozen-predictions
+      - /kaggle/input/datasets/kentookumura/exp404-v1-frozen-predictions
+      - /tmp/exp404-v1-frozen-predictions-dataset
+      - /tmp/exp404-reference
+    patterns:
+      - "**/exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin"
+    rerun: false
+  exp209_hmm_control:
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    prediction_column: hmm_mean_tvt
+    expected_decompressed_sha256: 8e2f42367b7b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    expected_selected_columns: [id, hmm_mean_tvt]
+    expected_selected_columns_rows: 3783989
+    expected_selected_columns_sha256: 41957dff094daddc7c9f73ac52baf6bbc22332e8ec8534aedb73fdc0e84b649c
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+    patterns:
+      - "**/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz"
+    rerun: false
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    kernel_source: kentookumura/exp226-k16-kappa-repro-train
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    forbidden_decoder_columns: [tvt_geop, tvt_pred, gr_delta, tvt_true, error, abs_error]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    patterns:
+      - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    kernel_source: kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_role_counts:
+      hidden_like_spatial:
+        train: 573
+        valid: 200
+      hidden_like_typewell_purged:
+        train: 557
+        valid: 200
+        purged_train_excluded: 16
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    patterns:
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+  stage1_resume:
+    enabled: true
+    source: exp485_stage1_v2_frozen_target_free
+    source_kernel_id: kentookumura/exp485-stratified-initial-rate-bank-pf-train
+    source_kernel_version: 2
+    source_kernel_id_no: 129169067
+    source_kernel_status: ERROR
+    source_runtime_seconds_to_error: 9825.627376635
+    failure_stage: after_target_free_prediction_freeze_during_truth_late_readout_at_hmm_integrity_check
+    failure_reason: saved_exp209_hmm_decompressed_sha_mismatch
+    truth_control_fold_hidden_reads_before_freeze: 0
+    dataset_source: kentookumura/exp485-stage1-v2-frozen-target-free
+    candidates:
+      - /kaggle/input/exp485-stage1-v2-frozen-target-free
+      - /kaggle/input/datasets/kentookumura/exp485-stage1-v2-frozen-target-free
+    expected_rows: 3783989
+    expected_wells: 773
+    prediction:
+      filename: exp485_stratified_initial_rate_bank_pf_stage1_predictions.csv.gz
+      raw_sha256: 265962880a0eaa172880f874840e988dfdf9aa5386a5d0cbe12630c2f70decbd
+      decompressed_sha256: 7cb11d339d92ca0ae3fef2de243e9754b83f2ec74211707b898f7ff7a2e77750
+      logical_sha256: 246e7473289bc19743fc3957b319b95a8b72543fb1f5748e0f34f390e980ea46
+    rate_bank:
+      filename: exp485_stratified_initial_rate_bank_pf_stage1_rate_bank.csv.gz
+      raw_sha256: 7f3c69ea96f46c3e509007da0df92ba2d04658a2891f20fabe4910dc4b8f4a2a
+      decompressed_sha256: c1d9d4b9acdafc2d02115de0d848e22cdb9d67586ff816debf297f1fa29efc38
+    component_ancestry:
+      filename: exp485_stratified_initial_rate_bank_pf_stage1_component_ancestry.csv.gz
+      raw_sha256: 383d0564060f8f6a49c8ac3ad8bccb3b34553bf81c1fc451e4c78e8055d50e47
+      decompressed_sha256: d81b1b93ff0c47947ee27a9cc18e24fe8ed0686347fd4394f8e6a46fec018f80
+    well_audit:
+      filename: exp485_stratified_initial_rate_bank_pf_stage1_well_audit.csv
+      raw_sha256: 22e529880ead9c56cd9742d4710c4ec172db15e5a66846920f113e830453b371
+    source_manifest:
+      filename: source-manifest.json
+      raw_sha256: 350a89350e2877e38362fe158a6ec96a6f7f99de24fab7aeae0d33173dc23452
+
+model:
+  name: equal_strata_five_center_initial_rate_likelihood_pf
+  estimator: stochastic_likelihood_weighted_particle_filter
+  active_variants: [equal_strata_rate_bank5]
+  changed_factor:
+    initial_rate_formula: median_of_delta_tvt_input_plus_delta_z_divided_by_delta_md
+    windows_rows: [30, 32, 64, 128, 256]
+    component_order: [tail30, w32, w64, w128, w256]
+    minimum_valid_steps: 3
+    fallback_rate: 0.0
+    particles_per_component: 100
+    component_assignment: particle_index_modulo_5
+    within_component_rate_spread: 0.01
+    duplicate_center_policy: retain_all_equal_strata_without_deduplication
+    component_label_use: diagnostic_only
+  fixed_from_exp404:
+    particles: 500
+    seeds: 128
+    primary_seed_weighting_temperature: 5.0
+    gr_emission: capped_gaussian
+    gr_emission_clip_z2: 600.0
+    gr_scale_multiplier: 1.0
+    base_scale_clip: [10.0, 60.0]
+    initial_position_spread_ft: 4.5
+    momentum: 0.998
+    rate_noise: 0.002
+    position_noise: 0.005
+    rough_position: 0.1
+    rough_rate: 0.001
+    resample_threshold_fraction: 0.5
+    typewell_grid_step_ft: 0.2
+    typewell_tvt_pad_ft: 100.0
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    output_dtype: float32
+
+mechanism_readout:
+  rate_bank:
+    - center_value
+    - unique_center_count
+    - center_range
+    - fallback_count
+  component_ancestry_rows: [0, 32, 128, 512, final]
+  component_metrics:
+    - posterior_mass
+    - surviving_particle_count
+    - first_extinction_row
+    - ess_before_first_resample
+  target_free_only: true
+
+stages:
+  stage_0:
+    purpose: technical_and_mechanism_preflight_not_cv
+    well_set: exp411_sha_fixed_fixed32
+    scientific_variants: 1
+    candidate_pf_well_runs: 32
+    seed_well_trajectories: 4096
+    particle_starts: 2048000
+    control_pf_well_runs: 0
+  stage_1:
+    enabled_only_after_stage_0_pass_and_separate_user_approval: true
+    scientific_variants: 1
+    candidate_pf_well_runs: 773
+    seed_well_trajectories: 98944
+    particle_starts: 49472000
+    control_pf_well_runs: 0
+
+guards:
+  technical:
+    require_initial_component_counts: [100, 100, 100, 100, 100]
+    require_particle_component_interleave_contract: true
+    require_rate_formula_and_fallback_contract: true
+    fail_if_all_five_centers_identical_for_all_fixed32_wells: true
+    require_finite_prediction_coverage: 1.0
+    require_stable_seed_identity: true
+    require_execution_count_match: true
+    maximum_truth_error_fold_hidden_reads_before_freeze: 0
+    maximum_seconds_full_projection: 30600
+    maximum_peak_rss_gb: 25
+    require_saved_control_rmse_parity_atol_ft: 0.00001
+    require_fixed_hmm_pf_50_50_parity_atol_ft: 0.00001
+  scientific:
+    minimum_pooled_rmse_gain_vs_control_ft: 0.05
+    minimum_improved_folds: 4
+    minimum_raw_gr_observed_gain_ft: 0.05
+    maximum_raw_gr_missing_regression_ft: 0.0
+    maximum_high_missing_well_regression_ft: 0.0
+    maximum_long_tail_1000_plus_regression_ft: 0.0
+    maximum_hidden_like_spatial_regression_ft: 0.0
+    maximum_hidden_like_typewell_purged_regression_ft: 0.0
+    maximum_by_well_delta_p95_ft: 0.0
+    maximum_worst_well_regression_ft: 0.25
+    maximum_fixed_hmm_pf_50_50_regression_ft: 0.0
+    require_all_checks: true
+  forbidden:
+    - window_or_component_weight_search
+    - center_deduplication_after_result_review
+    - five_separate_pf_candidates
+    - target_aware_window_selector_or_oracle
+    - initial_spread_particle_seed_or_temperature_change
+    - well_or_row_gate
+    - blend_or_selector_rescue
+    - same_oof_rescue
+
+runtime:
+  device: cpu
+  use_gpu: false
+  num_workers: 8
+  maximum_seconds: 30600
+  maximum_peak_rss_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    planned_train_kernel_id: kentookumura/exp485-stratified-initial-rate-bank-pf-train
+    planned_train_title: exp485 stratified initial rate bank pf train
+    kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    dataset_sources:
+      - kentookumura/exp404-v1-frozen-predictions
+      - kentookumura/exp485-stage1-v2-frozen-target-free
+    bootstrap_dependency_files:
+      - source: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+        destination: assets/stage0_fixed32_manifest.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: >-
+    seed_base=sha256_first16("likpf::train::<well_id>")
+    modulo_2147483647_plus_1; seed=seed_base+seed_index_0_to_127;
+    component assignment is deterministic particle_index modulo 5.
+  stochastic_components:
+    - within_component_particle_initialization
+    - rate_and_position_process_noise
+    - systematic_resampling
+    - post_resampling_roughening
+  parallel_rng_policy: explicit_per_well_seed_stream_independent_of_thread_schedule
+  stable_order: well_id_then_original_row_then_seed_index_then_particle_index
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    rate_bank_sha: true
+    component_ancestry_sha: true
+    scientific_contract_sha: true
+    prediction_schema_sha: true
+    prediction_content_sha: true
+    submission_sha: false
+
+execution:
+  implementation_approved: true
+  implementation_approval_source: user_message_2026_07_30_implement_exp485
+  kaggle_push_approved: true
+  kaggle_push_approval_source: user_message_2026_07_30_execute_exp485
+  stage_0_execution_approved: true
+  stage_0_execution_approval_source: user_message_2026_07_30_execute_exp485
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+  stage_0_completed: true
+  stage_0_result: stage0_fail_closed
+  stage_0_all_gates_pass: false
+  stage_0_all_non_runtime_gates_pass: true
+  stage_0_runtime_exception_approved: true
+  stage_0_runtime_exception_approval_source: user_message_2026_07_30_runtime_is_acceptable
+  stage_1_execution_approved: true
+  stage_1_execution_approval_source: user_message_2026_07_30_execute_stage_1
+  stage_1_resume_from_version_2_approved: true
+  stage_1_resume_approval_basis: >-
+    Normal in-scope recovery of the same approved Stage 1 after all target-free
+    candidate outputs froze with zero truth/control/fold/hidden-like reads before
+    freeze. Version 2 later stopped during truth-late readout at the saved-HMM
+    integrity check. Reuses SHA-pinned outputs and does not rerun the PF candidate.
+  stage_1_eligible_pending_separate_user_approval: false
+  stage_1_completed: true
+  stage_1_result: stage1_gate_failed_terminal_close
+  next_action: close_without_parameter_gate_blend_selector_or_same_oof_rescue
+  active_variants: 1
+  stage_0_candidate_pf_well_runs: 32
+  stage_0_seed_well_trajectories: 4096
+  stage_0_particle_starts: 2048000
+  stage_1_candidate_pf_well_runs: 773
+  stage_1_seed_well_trajectories: 98944
+  stage_1_particle_starts: 49472000
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  control_pf_well_runs: 0
+  hmm_well_runs: 0
+  beam_well_runs: 0
+  gpu_runs: 0
+
+stage_0_result:
+  status_under_original_gate: stage0_fail_closed
+  checks_total: 14
+  checks_passed: 13
+  all_non_runtime_gates_passed: true
+  original_runtime_gate_passed: false
+  candidate_seconds: 1278.9420568943024
+  projected_full_seconds: 30894.44406185299
+  original_limit_seconds: 30600
+  excess_seconds: 294.4440618529915
+  runtime_exception:
+    approved: true
+    approval_source: user_message_2026_07_30_runtime_is_acceptable
+    policy: >-
+      Preserve the original failed gate for audit, but allow Stage 1 because
+      the user explicitly accepted this projected runtime. This does not
+      reclassify the original Stage 0 gate as PASS.
+  decision:
+    stage_1_run: true
+    stage_1_approved: true
+    approval_source: user_message_2026_07_30_execute_stage_1
+
+stage_1_result:
+  status: stage1_gate_failed_terminal_close
+  candidate_rmse_ft: 11.092618091249959
+  saved_exp404_control_rmse_ft: 10.914522073423171
+  improvement_ft: -0.1780960178267872
+  improved_folds: 1
+  required_improved_folds: 4
+  fixed_exp209_hmm_pf_50_50_candidate_rmse_ft: 10.117590984878806
+  fixed_exp209_hmm_pf_50_50_control_rmse_ft: 10.084909848760013
+  fixed_exp209_hmm_pf_50_50_delta_ft: 0.032681136118792864
+  by_well_delta_p95_ft: 0.4223886315290676
+  worst_well_regression_ft: 33.05351511716487
+  technical_gate_passed: true
+  primary_scientific_gate_passed: false
+  fixed_hmm_pf_50_50_guard_passed: false
+  promotion_gate_passed: false
+  decision: terminal_close_without_rate_bank_or_pf_rescue
+  inference_approved: false
+  submission_approved: false
+
+kaggle_stage1_runs:
+  version_2:
+    status: ERROR
+    runtime_seconds_to_error: 9825.627376635
+    target_free_outputs_frozen: true
+    failure: saved_exp209_hmm_decompressed_sha_mismatch
+  version_3:
+    status: COMPLETE
+    completed_at_utc: "2026-07-30T22:22:59.250298+00:00"
+    runtime_seconds_current_stage: 109.85744595527649
+    runtime_seconds_aggregate_stage1: 9935.484822590277
+    peak_rss_gb: 3.4704132080078125
+    candidate_pf_well_runs_current_kernel: 0
+    package_notebook_sha256: 7d8a3b76eae65b2dcc0e9a80de618289f69ee8d78c4a69e6eaba4e4476237ad8
+    package_metadata_sha256: 128f6654960a8337ed09945ad8524aa0a86eb9a11c97993fc2f69798ad919e0e
+    executed_config_sha256: c9c0cd78871557a72d4655a642199cc01931339c5d5afa76a53385d19a3c6bd1
+    terminal_log_sha256: a8a68a23ab123fa0e0fcff2cfcf494d444e8ef28b5a43daed6a825adf1f5d3fb
+
+kaggle_run:
+    kernel_id: kentookumura/exp485-stratified-initial-rate-bank-pf-train
+    id_no: 129169067
+    kernel_version: 1
+    url: https://www.kaggle.com/code/kentookumura/exp485-stratified-initial-rate-bank-pf-train
+    status: COMPLETE
+    runtime: private_cpu
+    gpu: false
+    internet: false
+    completed_at_utc: "2026-07-30T12:40:53.929312+00:00"
+    candidate_seconds: 1278.9420568943024
+    total_seconds: 1290.8742699623108
+    projected_full_seconds: 30894.44406185299
+    peak_rss_gb: 0.364715576171875
+    package_notebook_sha256: d199c1895a42229d63e5f6dd06425cc4a3f33c1b0374c6b26992ae1a38c07cf6
+    package_metadata_sha256: dae4074a7c54407119589a24cdbedfbee664dda8e8d05cb27c67ad18eaa8f302
+    executed_config_sha256: 19752305fa2d907f7e323cef9600592a830b0f21add2d4845eb8fb630b11b55f
+    terminal_log_sha256: 2b3643b9a22e172b4fe85024a3e2e79c9c1566838c49c0839a284a5103219d07
+
+notes:
+  - Stage 0 code, contract tests, and canonical train Notebook were implemented on 2026-07-30.
+  - Fixed32 Stage 0 Kaggle push/run was authorized on 2026-07-30.
+  - Canonical Kaggle kernel version 1 failed only the original runtime projection gate.
+  - The original gate result remains immutable; a user-approved runtime exception permits Stage 1.
+  - Stage 1 is approved. Inference and submission remain unapproved and disabled.
+  - Stage 1 version 2 froze all target-free outputs, then failed during truth-late readout at the saved exp209 HMM compressed-content check.
+  - Version 3 resumes only the same truth-late CV from the private SHA-pinned version 2 outputs; candidate PF rerun remains zero.
+  - Stage 1 version 3 completed. The technical gate passed, but the primary scientific gate and fixed HMM+PF guard failed.
+  - The branch is terminally closed without inference, submission, or same-OOF rescue.

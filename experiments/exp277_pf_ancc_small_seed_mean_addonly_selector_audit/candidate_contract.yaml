@@ -1,0 +1,149 @@
+schema_version: 1.1.0
+source_of_truth: exp263_core12_pf_ancc_replaced_by_exp271_seed_means
+expected_rows: 3783989
+expected_wells: 773
+base_candidate_count: 12
+external_candidate_ids: [pf_ancc_seed_mean_4, pf_ancc_seed_mean_8]
+replacement_target_id: pf_ancc
+replacement_position_policy: preserve_exp263_pf_ancc_slot
+
+score_candidates:
+  - id: exp226_k16
+    kind: primitive
+    family: geometry
+  - id: selfgr_hmm_a070
+    kind: primitive
+    family: self_gr_hmm
+  - id: likpf_mean
+    kind: primitive
+    family: likelihood_pf
+  - id: exact_hmm
+    kind: primitive
+    family: exact_hmm
+  - id: pf_ancc
+    kind: primitive
+    family: particle_filter
+  - id: beam_mean
+    kind: primitive
+    family: beam
+  - id: exp226_k16__selfgr_hmm_a070
+    kind: pair_mean_50
+    family: geometry_self_gr_hmm_pair
+    parents: [exp226_k16, selfgr_hmm_a070]
+    weights: [0.5, 0.5]
+  - id: exp226_k16__exact_hmm
+    kind: pair_mean_50
+    family: geometry_exact_hmm_pair
+    parents: [exp226_k16, exact_hmm]
+    weights: [0.5, 0.5]
+  - id: exp226_k16__likpf_mean
+    kind: pair_mean_50
+    family: geometry_likelihood_pf_pair
+    parents: [exp226_k16, likpf_mean]
+    weights: [0.5, 0.5]
+  - id: selfgr_hmm_a070__likpf_mean
+    kind: pair_mean_50
+    family: self_gr_hmm_likelihood_pf_pair
+    parents: [selfgr_hmm_a070, likpf_mean]
+    weights: [0.5, 0.5]
+  - id: likpf_mean__exact_hmm
+    kind: pair_mean_50
+    family: likelihood_pf_exact_hmm_pair
+    parents: [likpf_mean, exact_hmm]
+    weights: [0.5, 0.5]
+  - id: exp226_w500_50_50
+    kind: named_fixed
+    family: geometry_likelihood_pf_exact_hmm_fixed
+    parents: [exp226_k16, likpf_mean, exact_hmm]
+    weights: [0.5, 0.25, 0.25]
+  - id: pf_ancc_seed_mean_4
+    kind: external_pf_seed_mean
+    family: particle_filter_ancc_seed_mean
+    source_column: pf_ancc_seed_mean_4
+  - id: pf_ancc_seed_mean_8
+    kind: external_pf_seed_mean
+    family: particle_filter_ancc_seed_mean
+    source_column: pf_ancc_seed_mean_8
+
+legal_domains:
+  primitive_pair_bank:
+    role: primary_meta_domain
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_k16__selfgr_hmm_a070
+      - exp226_k16__exact_hmm
+      - exp226_k16__likpf_mean
+      - selfgr_hmm_a070__likpf_mean
+      - likpf_mean__exact_hmm
+      - pf_ancc_seed_mean_4
+      - pf_ancc_seed_mean_8
+  primitive_fixed_bank:
+    role: fixed_fallback_comparison_domain
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_w500_50_50
+
+variants:
+  mean4_only:
+    external_candidates: [pf_ancc_seed_mean_4]
+    disagreement_enabled: false
+    expected_candidate_count: 12
+  mean8_only:
+    external_candidates: [pf_ancc_seed_mean_8]
+    disagreement_enabled: false
+    expected_candidate_count: 12
+  mean4_mean8_disagreement:
+    external_candidates: [pf_ancc_seed_mean_4, pf_ancc_seed_mean_8]
+    disagreement_enabled: true
+    expected_candidate_count: 13
+    disagreement_source_columns:
+      - pf_ancc_seed_std_4
+      - pf_ancc_seed_std_8
+      - pf_ancc_particle_std_mean_4
+      - pf_ancc_particle_std_mean_8
+      - pf_ancc_mean8_minus_mean4
+
+candidate_id_model_encoding:
+  type: one_hot
+  order_source: score_candidates_declared_order
+  max_width: 13
+  keep_string_id_in_artifacts: true
+  ordinal_index_as_model_feature: false
+
+confidence_contract:
+  native_confidence_required_for_every_candidate: false
+  external_single_candidate_disagreement_enabled: false
+  external_both_candidate_disagreement_enabled: true
+  external_both_fields:
+    - pf_ancc_seed_std_4
+    - pf_ancc_seed_std_8
+    - pf_ancc_particle_std_mean_4
+    - pf_ancc_particle_std_mean_8
+    - pf_ancc_mean8_minus_mean4
+    - pf_ancc_mean8_minus_mean4_abs
+  universal_proxy_groups:
+    - candidate_availability_and_coverage
+    - candidate_anchor_distance
+    - candidate_local_shape
+    - candidate_bank_disagreement
+    - formula_parent_disagreement_and_validity
+  common_learned_scale: [pred_abs_error, p_within10]
+
+forbidden_behaviors:
+  - use_target_error_or_oracle_as_feature_gate_or_candidate_selection
+  - hard_top1_prediction
+  - softmax_or_plain_candidate_average
+  - raw_test_pf_regeneration
+  - control_retraining
+  - inference
+  - submission

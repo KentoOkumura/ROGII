@@ -1,0 +1,505 @@
+experiment:
+  name: exp430_huber_seed_evidence_reaggregation
+  description: >-
+    Replay one fixed exp404-compatible 128-seed PF trajectory bank and
+    reaggregate the frozen trajectories with matched Gaussian versus Huber
+    evidence.
+  hypothesis: >-
+    Huber seed evidence with delta 1.345 preserves the average improvement of
+    fixed temperature-5 aggregation while removing the per-well tail
+    regressions observed in exp417.
+  route: pf_beam
+  status: completed_train_side_gate_failed_terminal_close
+  created_at: "2026-07-28"
+  updated_at: "2026-07-29"
+
+lineage:
+  parent: exp404_scale5_sigma_gr_likelihood_pf_ablation
+  scientific_control: exp417_scale5_seed_aggregation_promotion_audit
+  evidence:
+    - exp389_exp209_huber_exact_hmm_emission
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - docs/06_reproducibility.md
+  steering: ../../.steering/20260728-exp430-huber-seed-evidence-reaggregation
+  diff_summary: >-
+    PF generation, Gaussian particle filtering, resampling, transition,
+    particles, seeds, and x1.0 GR scale are unchanged. The only scientific
+    factor is the post-freeze seed evidence: trajectory-residual Gaussian
+    versus Huber(delta=1.345), both aggregated with temperature 5.
+
+implementation:
+  enabled: true
+  design_approval_received: true
+  implementation_approval_received: true
+  implementation_approval_source: user_message_2026_07_28_implement_exp430
+  scope: train_side_preflight_full_shards_and_truth_late_merge
+  jupytext_source_created: true
+  compact_selfcontained_notebook_created: true
+  canonical_notebook_adopted: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  kaggle_push_completed: true
+  preflight_completed: true
+  full_shards_completed: 4
+  merge_completed: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: exp226_oof_fixed_trajectory_huber_seed_evidence_audit
+  metric: rmse
+  metric_weighting: unweighted_suffix_rows
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  primary_control: gaussian_matched
+  primary_candidate: huber_delta_1p345
+  saved_parent_reference: saved_exp404_temperature5
+  arithmetic_control: arithmetic_mean
+  gain_definition: rmse_control_minus_huber
+  truth_attachment: after_trajectory_prediction_evidence_and_logical_sha_freeze
+  scope_contract:
+    shallow_md_since_lt_ft: 1000.0
+    deep_md_since_ge_ft: 1000.0
+    high_missing_fraction_ge: 0.30
+    roughness_definition: >-
+      well-level RMS second difference of the frozen arithmetic-mean
+      trajectory, split at the all-well median after all four shards are
+      frozen and before truth attachment
+    roughness_split_quantile: 0.50
+  batch_inference_semantics: >-
+    Evidence may use the complete unknown-suffix GR sequence but never suffix
+    TVT. This is non-causal in sequence time and is valid only for batch
+    inference where the complete horizontal GR log is available.
+  leakage_policy:
+    - Raw horizontal TVT is read only through TVT_input during PF generation.
+    - Suffix TVT, fold, hidden-like role, error, and Public LB are forbidden before freeze.
+    - Gaussian and Huber readouts must reference the same float64 trajectory bank SHA.
+    - Full-suffix GR may score seeds after trajectory freeze but cannot alter the PF paths.
+    - Delta and temperature are fixed and are not selected from OOF truth.
+
+data:
+  exp072_control:
+    source: exp072_exp063_full_replay_feature_cache
+    kernel_source: kentookumura/exp072-exp063-full-replay-feature-cache-train
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts
+      - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts
+      - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v2_stream/artifacts
+    anchor_column: last_known_tvt
+    delta_column: likpf_mean_d
+    expected_rmse_ft: 11.594897672217703
+    expected_decompressed_sha256: 99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350
+  exp404_saved_prediction:
+    source: exp404_scale5_sigma_gr_likelihood_pf_ablation
+    kernel_source: kentookumura/exp404-scale5-sigma-gr-likpf-ablation-train
+    source_kernel_version: 1
+    filename: exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin
+    candidates:
+      - /kaggle/input/exp404-v1-frozen-predictions
+      - /tmp/exp404-failed-v1-output/artifacts
+    prediction_column: likpf_scale_5_x1p0
+    arithmetic_column: likpf_mean_x1p0
+    expected_raw_sha256: b3699432a691229da5a6562ce74e0b84f1bee3021bd80d650526906f5aa390f8
+    expected_decompressed_sha256: 00fe1b90fce84bd601b4b91442d9fc698200aafadd48658f7d8c26ec1fbe0d00
+    expected_logical_sha256: 5f4b6e715081b598b0a34607ad0c81339d0ecd5882ea3a45dd79f33123959a00
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    kernel_source: kentookumura/exp226-k16-kappa-repro-train
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    truth_columns: [well_id, row_idx, tvt_true]
+    forbidden_decoder_columns: [tvt_geop, tvt_pred, gr_delta, error, abs_error]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_role_counts:
+      hidden_like_spatial:
+        train: 573
+        valid: 200
+      hidden_like_typewell_purged:
+        train: 557
+        valid: 200
+        purged_train_excluded: 16
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  preflight_wells:
+    filename: exp430_huber_seed_evidence_reaggregation_preflight_wells.csv
+    candidates:
+      - assets
+      - experiments/exp430_huber_seed_evidence_reaggregation/assets
+    expected_sha256: f06e14df380b3213be01cdc8a2613d0e929313858171529e8e397eaa82c5aea0
+  preflight_result:
+    filename: exp430_huber_seed_evidence_reaggregation_preflight_summary.json
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp430-huber-seed-evidence-reaggregation-train/artifacts
+      - /kaggle/input/exp430-huber-seed-evidence-reaggregation-train/artifacts
+      - /tmp/exp430-v2-output/artifacts
+    expected_sha256: 3a34add3b77abc08add3fb8c37c4fadb8a4f249577c13ca0116552e417c6eddc
+  full_shards:
+    expected_count: 4
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp430-huber-seed-evidence-reaggregation-shard0
+      - /kaggle/input/notebooks/kentookumura/exp430-huber-seed-evidence-reaggregation-shard1
+      - /kaggle/input/notebooks/kentookumura/exp430-huber-seed-evidence-reaggregation-shard2
+      - /kaggle/input/notebooks/kentookumura/exp430-huber-seed-evidence-reaggregation-shard3
+    expected_summary_sha256:
+      - aac60fd98cc98d242e15cb1e288241ce948a99ea64eef0362a391feb34288a74
+      - d8176eafaa04ddc86f569778aa7dbd5697bb01e71d9deff185e09975a4a604d9
+      - 60a5ea2043d35c6f9241357c4791b6c92839051a9dbe8ab540cf8dfd3fe4bff0
+      - 66d78b737952f922c7de71c02b4bccafab901293dab1453d5706c7d877ad074c
+  merge_result:
+    kernel_id: kentookumura/exp430-huber-seed-evidence-reaggregation-merge
+    kernel_version: 1
+    kernel_id_no: 129051025
+    status: train_side_huber_seed_evidence_gate_failed_closed
+    technical_gate_passed: true
+    scientific_gate_passed: false
+    candidate_rmse_ft: 12.992939553297264
+    matched_gaussian_rmse_ft: 12.999103256822222
+    matched_gaussian_gain_ft: 0.006163703524958208
+    saved_exp404_temperature5_rmse_ft: 10.914522073423171
+    arithmetic_mean_rmse_ft: 11.59489788373621
+    summary_sha256: 1e2bbc0b52f0de8b12a9c49d9177883e92cb95c97f01cd68b646d9f00e9e2870
+    promotion_gate_sha256: ce2993d20b599fa7203aa28e86f13ddce64a418d334f86678460011e6cff25ad
+    artifact_manifest_sha256: ae07934cc75a34034ee8c53b5a89f0c85b46db4d7824e484de291a16efab460e
+
+model:
+  name: exp072_likelihood_pf_frozen_trajectory_seed_evidence_readout
+  estimator: none_physical_pf_only
+  fitted_model: false
+  active_scientific_variants:
+    - huber_delta_1p345
+  typewell_gr_emission:
+    family: exp072_capped_gaussian
+    gr_sigma_policy: known_prefix_residual_std_clip_10_60
+    multiplier: 1.0
+    post_multiplier_clip: null
+    z2_clip: 600.0
+  pf:
+    particles: 500
+    seeds: 128
+    seed_indices: [0, 127]
+    stable_seed_namespace: [likpf, train, well_id]
+    typewell_grid_step_ft: 0.2
+    typewell_tvt_pad_ft: 100.0
+    initial_position_spread_ft: 4.5
+    initial_rate_spread: 0.01
+    momentum: 0.998
+    rate_noise: 0.002
+    position_noise: 0.005
+    rough_position: 0.1
+    rough_rate: 0.001
+    resample_threshold_fraction: 0.5
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    filtering_particle_likelihood: exp072_gaussian_unchanged
+    trajectory_storage_dtype: float64
+  evidence:
+    support: exp404_full_suffix_finite_observations
+    temperature: 5.0
+    aggregation: centered_softmax_weighted_seed_mean
+    gaussian_matched:
+      formula: sum_t_minus_0p5_times_min_z_squared_600
+      role: matched_trajectory_control
+    huber_delta_1p345:
+      delta: 1.345
+      extra_clip: null
+      formula: sum_t_negative_huber_z_delta_1p345
+      role: sole_scientific_candidate
+    audit_readouts:
+      - arithmetic_mean
+      - parent_gaussian_marginal_replay
+      - saved_exp404_temperature5
+    require_shared_trajectory_sha: true
+  execution_count:
+    technical_preflight_scientific_variants: 1
+    technical_preflight_wells: 4
+    technical_preflight_pf_well_runs: 4
+    technical_preflight_seed_well_trajectories: 512
+    technical_preflight_particle_starts: 256000
+    scientific_variants: 1
+    full_pf_well_runs: 773
+    full_seed_well_trajectories: 98944
+    full_particle_starts: 49472000
+    full_shards: 4
+    parent_independent_full_reruns: 0
+    reporting_folds: 5
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    models: 0
+    hmm_well_runs: 0
+    beam_well_runs: 0
+    gpu_runs: 0
+
+guards:
+  technical:
+    require_all_input_sha_matches: true
+    require_expected_rows: 3783989
+    require_expected_wells: 773
+    require_expected_folds: [0, 1, 2, 3, 4]
+    require_preflight_pass_before_full: true
+    require_shared_trajectory_bank_sha: true
+    require_float64_trajectory_bank: true
+    require_parent_kernel_prediction_parity_atol_ft: 1.0e-5
+    require_arithmetic_mean_parity_vs_saved_exp404_atol_ft: 1.0e-5
+    parent_parity_storage_dtype: float32
+    parent_parity_csv_reload_normalization: true
+    require_partition_prediction_sha_parity: true
+    require_partition_evidence_sha_parity: true
+    require_weight_sum_atol: 1.0e-12
+    require_finite_prediction_coverage: 1.0
+    maximum_truth_error_fold_hidden_reads_before_freeze: 0
+  scientific:
+    minimum_overall_rmse_gain_ft: 0.10
+    minimum_nonworse_reporting_folds: 4
+    require_all_fixed_scopes_nonworse: true
+    maximum_scope_regression_ft: 0.0
+    maximum_paired_well_squared_error_delta_p95: 0.0
+    maximum_worst_paired_well_rmse_delta_ft: 0.25
+    require_better_than_arithmetic_mean: true
+    require_better_than_saved_exp404_temperature5: true
+    require_all_checks: true
+  decision:
+    pass_action: eligible_for_separately_approved_same_experiment_inference_design
+    fail_action: huber_seed_evidence_reaggregation_rejected_close_without_rescue
+  forbidden:
+    - huber_delta_search
+    - temperature_search
+    - clip_search
+    - scale_search
+    - particle_or_seed_count_change
+    - filtering_particle_likelihood_huberization
+    - gaussian_and_huber_separate_pf_runs
+    - affine_ar1_self_gr_or_reinjection_combination
+    - target_late_row_or_well_gate
+    - same_oof_rescue
+    - inference_or_submission_without_separate_approval
+
+execution:
+  stage: completed_train_side_gate_failed_terminal_close
+  selected_stage: null
+  shard_index: null
+  design_approved: true
+  implementation_approved: true
+  kaggle_package_approved: true
+  kaggle_push_approved: true
+  stage_run_approved: true
+  technical_preflight_approved: true
+  full_run_approved: true
+  full_run_approval_source: user_message_2026_07_29_execute_exp430_full_3plus1
+  full_schedule: >-
+    Push shards 0..2 first while reserving one CPU slot for the already
+    approved exp429 strict merge; push shard 3 after that merge releases its
+    slot.
+  preflight_completed: true
+  full_shards_completed: 4
+  merge_completed: true
+  merge_approved: true
+  merge_approval_source: user_message_2026_07_29_execute_exp430_merge
+  merge_attempts:
+    - kernel_version: 1
+      kernel_id_no: 129051025
+      status: complete_technical_pass_scientific_fail_terminal_close
+      package_config_sha256: 07a67bea0b04362da5738a8e605b92858fb653c614ceab2dbe5d5fcc8304899c
+      execution_code_sha256: 0dff10b802d091777a4590a59e450337e7b2542ca6472874e92e6077774cd42f
+      notebook_sha256: b0be49f9a1b3760ad6e8a5edb1579e1302630bc42374c37cb1cb8eef2c514759
+      runtime_seconds: 397.41868472099304
+      technical_gate_passed: true
+      scientific_gate_passed: false
+      summary_sha256: 1e2bbc0b52f0de8b12a9c49d9177883e92cb95c97f01cd68b646d9f00e9e2870
+      promotion_gate_sha256: ce2993d20b599fa7203aa28e86f13ddce64a418d334f86678460011e6cff25ad
+      artifact_manifest_sha256: ae07934cc75a34034ee8c53b5a89f0c85b46db4d7824e484de291a16efab460e
+      prediction_logical_sha256: 39cb4f03561e75eefd5047fdaaeede4361cd95697b3ab297dcf5716eb4021213
+      evidence_logical_sha256: 10199e3be8a80d1a6b7b6e4f6b81e068244f3c5f2ed3338c7b970e63b2c0daee
+      global_trajectory_manifest_sha256: ff6712863caf189f4dbaeaf730d57f6c0210fbe9fcd957e2f10f4e202fc05bde
+  inference_approved: false
+  submission_approved: false
+  preflight_attempts:
+    - kernel_version: 1
+      kernel_id_no: 128974735
+      status: technical_fail_comparator_dtype_mismatch
+      runtime_seconds: 174.30111718177795
+      technical_checks_passed: 10
+      technical_checks_total: 12
+      full_run_started: false
+  full_shard_attempts:
+    - shard_index: 0
+      kernel_version: 1
+      kernel_id_no: 129042140
+      status: complete_truth_unread
+      package_config_sha256: 93ad6fcb91899acc60a7ec0f8b5e38e975fd6b9753e2bdbc3df9d57bd6ee8bab
+      runtime_seconds: 2428.811673641205
+      rows: 946128
+      wells: 193
+      summary_sha256: aac60fd98cc98d242e15cb1e288241ce948a99ea64eef0362a391feb34288a74
+      trajectory_logical_sha256: ec557c363e8010b175ff1035e1949f5262f00f62b0e8f0c0bf3248c01d1d1049
+      prediction_logical_sha256: ea9b7527d6a81cc5be9b1398c2f8361ca1c6d80201afda45b64fece2e783e602
+      evidence_logical_sha256: e704648a80121f2454bc88eb4b98a66f3cc40f652d7caea4991874c982202be1
+    - shard_index: 1
+      kernel_version: 1
+      kernel_id_no: 129042150
+      status: complete_truth_unread
+      package_config_sha256: 66644d8aca2a689201cee185a9bf727c2506d927d1a50423f51971073c14280d
+      runtime_seconds: 2655.7402517795563
+      rows: 946017
+      wells: 193
+      summary_sha256: d8176eafaa04ddc86f569778aa7dbd5697bb01e71d9deff185e09975a4a604d9
+      trajectory_logical_sha256: 846db8bba5d489127c1b49d41cd41e04ec6a5a06c438f7fe3a0c3e3e890ba734
+      prediction_logical_sha256: f18db2124a1515d67e465f896f670edce886fd2edc76da313fd5ab602cca9931
+      evidence_logical_sha256: 9e514b6d833e33f69ec3f70f2c1f34319e6b10ac66d3eb682892abb4d162a649
+    - shard_index: 2
+      kernel_version: 1
+      kernel_id_no: 129042163
+      status: complete_truth_unread
+      package_config_sha256: f33c54556b6782d12c16e692b9a5d3a6987ebdd0ae4aa5cd4d7db2f578608a53
+      runtime_seconds: 2690.1596372127533
+      rows: 946112
+      wells: 193
+      summary_sha256: 60a5ea2043d35c6f9241357c4791b6c92839051a9dbe8ab540cf8dfd3fe4bff0
+      trajectory_logical_sha256: 6c831e1f15b196431532337281b97796af4c45510749286437b9499046fd6141
+      prediction_logical_sha256: b545bc0d3d12b8e790da84120057ef45b45327b6e7888ee68d190f985b16b466
+      evidence_logical_sha256: ab4ad08fc047e6369724edda48e15416070f380d2819f8424d3bf64d07f937c3
+    - shard_index: 3
+      kernel_version: 1
+      kernel_id_no: 129046380
+      status: complete_truth_unread
+      package_config_sha256: a05df57acfc8589981b11b82f1b6994b1d4a44ad00bd61647ba4175424841129
+      runtime_seconds: 2592.9766318798065
+      rows: 945732
+      wells: 194
+      summary_sha256: 66d78b737952f922c7de71c02b4bccafab901293dab1453d5706c7d877ad074c
+      trajectory_logical_sha256: 9e4d1033fe6aebd17ba2da604b6f180a92d107d1fb5ea8fdb12115b8813c43fe
+      prediction_logical_sha256: f87ce98a1b98f72306235285be04489608a2edbea9d70b938ea8097646f25bce
+      evidence_logical_sha256: 095999bef12639858b5e6afd12fd7c391dbe65d55e123f531d629279d7097b6c
+    - kernel_version: 2
+      kernel_id_no: 128974735
+      status: technical_preflight_passed
+      runtime_seconds: 311.1591536998749
+      technical_checks_passed: 12
+      technical_checks_total: 12
+      full_run_started: false
+
+runtime:
+  device: cpu
+  use_amp: false
+  num_workers: 4
+  cpu_shards: 4
+  maximum_peak_rss_gb: 30
+  preflight_expected_seconds_upper_bound: 3600
+  full_shard_expected_seconds_upper_bound: 32000
+  merge_expected_seconds_upper_bound: 3600
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    run_on_push: false
+    kernel_id: kentookumura/exp430-huber-seed-evidence-reaggregation-train
+    kernel_title: exp430 huber seed evidence reaggregation train
+    full_shard_kernels:
+      - kentookumura/exp430-huber-seed-evidence-reaggregation-shard0
+      - kentookumura/exp430-huber-seed-evidence-reaggregation-shard1
+      - kentookumura/exp430-huber-seed-evidence-reaggregation-shard2
+      - kentookumura/exp430-huber-seed-evidence-reaggregation-shard3
+    merge_kernel: kentookumura/exp430-huber-seed-evidence-reaggregation-merge
+    bootstrap_files:
+      - assets/exp430_huber_seed_evidence_reaggregation_preflight_wells.csv
+    train_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    train_dataset_sources:
+      - kentookumura/exp404-v1-frozen-predictions
+
+reproducibility:
+  deterministic_anchor: true
+  deterministic_anchor_scope: fixed4_preflight_v1_v2
+  seed_policy: >-
+    seed_base=sha256_first16("likpf::train::<well_id>")
+    modulo_2147483647_plus_1; seed=seed_base+seed_index_0_to_127
+  seed_indices: "0..127"
+  stochastic_components:
+    - particle_initialization
+    - rate_and_position_process_noise
+    - systematic_resampling
+    - post_resampling_roughening
+  parallel_rng_policy: >-
+    Each well receives an explicit stable seed base and each Numba PF call
+    owns its local seed streams; well execution and shard order cannot change
+    the seed labels.
+  stable_order: well_id_lexicographic_then_row_idx_then_seed_index
+  trajectory_freeze_before_readout: true
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    package_versions: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    trajectory_sha: true
+    evidence_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Fixed4 v1/v2 trajectory, prediction, and evidence raw SHAs match exactly.
+    - Full shard packages 0..3 share scientific contract SHA a7bf622ea2357804896a62ba0adb2143b4aa39164ae2751c1146e284d9fe6e10.
+    - Full shard packages 0..3 share execution code SHA 0dff10b802d091777a4590a59e450337e7b2542ca6472874e92e6077774cd42f.
+    - Full shard 0..3 summaries are SHA-pinned in shard-index order for the separately approved merge.
+    - Merge version 1 technical gate passed, but the fixed scientific AND gate failed and the branch is terminally closed.
+    - Full-shard determinism is not yet established.
+    - The parent marginal-Gaussian readout is a technical replay check, not a third scientific candidate.
+
+artifacts:
+  output_prefix: exp430_huber_seed_evidence_reaggregation
+  planned:
+    - scientific_contract.json
+    - input_manifest.csv
+    - raw_well_manifest.csv
+    - trajectory_bank.npy
+    - trajectory_index.csv
+    - trajectory_manifest.json
+    - seed_evidence.csv.gz
+    - aggregated_predictions.csv.gz
+    - well_evidence_audit.csv
+    - preflight_summary.json
+    - shard_summary.json
+    - combined_prediction_identity.json
+    - overall_fold_scope_metrics.csv
+    - by_well_metrics.csv
+    - promotion_gate.json
+    - artifact_manifest.csv
+    - summary.json
+
+inference:
+  enabled: false
+  mode: disabled_until_train_side_all_gates_pass_and_separate_approval
+  selected_candidate: null
+
+notes:
+  - The saved exp404 aggregate has no per-seed paths, so one x1.0 trajectory replay is necessary.
+  - The four fixed preflight wells are the first raw-train well IDs under SHA-256 ordering.
+  - Float64 trajectory storage preserves the parent PF output before any evidence readout.
+  - The roughness scope is target-free and is operationalized at implementation time because the design froze the scope family but not a numerical formula.
+  - This experiment does not reclassify the terminal tail-gate failures of exp389 or exp417.
+  - The user approved the fixed four-well technical preflight on 2026-07-29.
+  - Full shards were approved on 2026-07-29 with a 3+1 CPU schedule.
+  - Merge, inference, and submission remain unapproved.

@@ -1,0 +1,63 @@
+{
+  "experiment": "exp142_trajectory_aware_pf_transition_prior",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "pf_beam",
+  "cv": 11.594897672217703,
+  "public_lb": null,
+  "private_lb": null,
+  "kaggle": {
+    "kernel_id": "kentookumura/exp142-traj-pf-trans-prior-train",
+    "version": 3,
+    "url": "https://www.kaggle.com/code/kentookumura/exp142-traj-pf-trans-prior-train",
+    "local_output_dir": "experiments/exp142_trajectory_aware_pf_transition_prior/kaggle/output/train_v3"
+  },
+  "summary": {
+    "rows": 3783989,
+    "wells": 773,
+    "runtime_sec": 13936.071506977081,
+    "parity_pass": true,
+    "parity_summary": {
+      "rows": 3783989,
+      "wells": 773,
+      "max_abs_diff": 0.0,
+      "mean_abs_diff": 0.0,
+      "p95_abs_diff": 0.0,
+      "rmse_diff": 0.0
+    },
+    "best_candidate": {
+      "candidate": "exp072_likpf_mean",
+      "rmse": 11.594897672217703,
+      "mae": 7.067632584311985,
+      "within_10ft": 0.772807479091509,
+      "bias": -1.0994231121947302
+    },
+    "trajectory_pf_z_best_candidate": {
+      "candidate": "traj_pf_zmean_s006_noise025_scale_3",
+      "rmse": 23.132450295092724,
+      "mae": 12.927040469323924,
+      "within_10ft": 0.6146828122386191,
+      "bias": -2.1357045427643455
+    },
+    "strict_pf_z_multiseed_best_candidate": {
+      "candidate": "pf_z_ms_scale_8",
+      "rmse": 16.871842167188063,
+      "mae": 9.708058917010677,
+      "within_10ft": 0.6931436640011375,
+      "bias": -0.9397227187140509
+    },
+    "delta_trajectory_best_minus_likpf_mean_rmse": 11.53755262287502,
+    "delta_trajectory_best_minus_exp072_pf_z_rmse": 5.3442791235755855,
+    "recommendation": "reject_trajectory_transition_prior_no_inference_no_submit"
+  },
+  "output_sha256": {
+    "candidate_metrics": "16bb228e903924e0954dc3abca75162aa59a55eac4a851ea2603eb144ebb84d9",
+    "bucket_metrics": "3bc1d723e2db6b12f2e49a20cf070b60491ca57fd57a7c3e64000ca2580cf7fa",
+    "by_well": "daad291f06c9b5cab63d7ccb6f2540d538b160c2f4d75239b33922015e9998bd",
+    "strict_pf_z_quality": "a634965509352de7f50bcf18b3fe039a4deaae1b5e782175a5b2b3152cb34d2b",
+    "trajectory_pf_z_quality": "b5dddfcf8934e1e4fdd8a93dfb6730f700a4c1e9fab3306276677607dce09bac",
+    "parity_diff": "84ae45ef3a4c5270fb8d222c6a0e54558cc9613d2c426914d9ab01a7f060ce4c",
+    "parity_diff_decompressed": "8d783fe2a12ac5e8151cb4a13809ec81ce33f3741e2512d7c5b921b142e9cd3e",
+    "candidate_wide": "592348d3371709e83a8adf889c5ba03d72fd876d099861a1e2776455b9055763",
+    "candidate_wide_decompressed": "99778d2c4ea1e85e9c3c9ea7cbac2cf698da1647de3a62b1b46698200ab96f9d"
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "experiment": "exp415_fold_safe_rmse_prior_bounded_nudge_on_exp264",
+  "route": "ensemble",
+  "status": "complete_saved_oof_method_confirmed",
+  "updated_at": "2026-07-27",
+  "key_idea": "候補別RMSEをsample weightではなくfold-safeな候補方向priorとして使い、TVT補正を各行0.25 ft以内に制限する保存OOF診断。",
+  "parent": "exp264_exp263_candidate_confidence_dual_selector",
+  "root_cause_experiment": "exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264",
+  "root_cause_readout": "exp414_fold_safe_candidate_rmse_offset_selector_on_exp264",
+  "cv": 8.563473931791524,
+  "public_lb": null,
+  "private_lb": null,
+  "decision": "rmse_prior_bounded_nudge_method_confirmed_on_saved_oof",
+  "root_cause": {
+    "parent_hard_rmse": 8.587004386703422,
+    "exp407_hard_rmse": 8.66814102464331,
+    "global_shift_only_hard_rmse": 8.580476914703985,
+    "global_shift_only_nonworse_folds": 4,
+    "row_local_only_hard_rmse": 8.673599263270791,
+    "row_local_only_nonworse_folds": 1,
+    "final_weight_delta_pred_std_spearman": -0.5933870519588776,
+    "final_weight_delta_score_mae_spearman": -0.4116699083078634,
+    "final_weight_delta_logloss_spearman": -0.6037788274520701,
+    "final_weight_delta_pred_mean_spearman": -0.07324256737982773,
+    "interpretation": "inverse_rmse_task_importance_caused_distributed_row_local_score_surface_drift_not_candidate_constant_bias"
+  },
+  "method": {
+    "name": "fold_safe_rmse_prior_bounded_tvt_nudge",
+    "candidate_rmse_coefficient": 1.0,
+    "blend_parent_weight": 0.5,
+    "blend_prior_weight": 0.5,
+    "max_abs_correction_ft": 0.25,
+    "sample_weight": "none",
+    "fitted_models": 0,
+    "boosters": 0
+  },
+  "kaggle_confirmation": {
+    "kernel_id": "kentookumura/exp415-fold-safe-rmse-prior-bounded-nudge-train",
+    "kernel_version": 1,
+    "kernel_id_no": 128717911,
+    "worker_status": "COMPLETE",
+    "elapsed_seconds": 126.338,
+    "technical_checks_passed": 15,
+    "technical_checks_total": 15,
+    "scientific_checks_passed": 6,
+    "scientific_checks_total": 6,
+    "base_rows": 3783989,
+    "wells": 773,
+    "parent_oof_rmse": 8.587004386703422,
+    "bounded_nudge_oof_rmse": 8.563473931791524,
+    "improvement_ft": 0.023530454911897536,
+    "nonworse_folds": 5,
+    "nonworse_distance_buckets": 4,
+    "nonworse_hidden_like_scopes": 2,
+    "nonworse_wells": 544,
+    "changed_rows": 2685663,
+    "clipped_rows": 2012310,
+    "correction_rms_ft": 0.18978710718863193,
+    "maximum_abs_correction_ft": 0.25,
+    "worst_well": "cc08aa63",
+    "observed_worst_well_regression_ft": 0.17137908743683994,
+    "fold_delta_rmse": {
+      "0": -0.024591346972476558,
+      "1": -0.03169194252178542,
+      "2": -0.015476060472336073,
+      "3": -0.026021032328335636,
+      "4": -0.020061029054295076
+    },
+    "distance_bucket_delta_rmse": {
+      "near_0_250": -0.038126959457051024,
+      "250_500": -0.039280516919145025,
+      "500_1000": -0.03625690118958236,
+      "1000_plus": -0.023321390369549277
+    },
+    "hidden_like_delta_rmse": {
+      "hidden_like_spatial": -0.024994653730171734,
+      "hidden_like_typewell_purged": -0.02328676467795532
+    }
+  },
+  "implementation": {
+    "reusable_helper": true,
+    "jupytext_candidate": true,
+    "canonical_notebook_adopted": true,
+    "kaggle_execution_performed": true,
+    "dedicated_tests_passed": 8,
+    "related_tests_passed": 40,
+    "related_test_execution": "31 exp264_exp414_exp415 tests from repo root plus 9 exp407 tests from its experiment cwd",
+    "py_compile": "passed",
+    "ruff": "passed",
+    "jupytext_roundtrip": "passed",
+    "downloaded_small_artifact_hash_audit": "passed",
+    "full_test_suite": {
+      "status": "unrelated_collection_error",
+      "collected_tests": 1225,
+      "error": "exp408 numba stub has __spec__ none before exp411 find_spec"
+    },
+    "combined_related_root_run": {
+      "status": "unrelated_exp407_config_path_failure",
+      "passed": 39,
+      "failed": 1,
+      "error": "unchanged exp407 support-file resolver selected the repo-root config for another experiment"
+    },
+    "notebook_cells": {
+      "total": 18,
+      "markdown": 10,
+      "code": 8
+    }
+  },
+  "reproducibility": {
+    "deterministic_anchor": true,
+    "package_sha256": "2ef5f85dea2c8b538fa981fc72641adbce69806d8b41bb2246f2c25667832539",
+    "executed_config_sha256": "21450bcff8569dd4a2ed84c872af13a01aed488634f61466a130d8c5d22bca90",
+    "jupytext_source_sha256": "8494936082f72c1e7e959b87b61890961acb7cbcfa780d95bf10e8b103c13326",
+    "canonical_notebook_sha256": "00a95cb16856c47fc2929c2f37411169f26edb938a6fe5135c835988815daa3f",
+    "truth_free_freeze_sha256": "0dd3f55991969da433d65391d5f94efaeff61a615608635767962866a0971aec",
+    "bounded_nudge_oof_predictions_sha256": "cb820ae7c499db8cc6aad37d5665b08e517c88d503a5176b27b03c1b45035f61",
+    "metrics_all_scopes_sha256": "469e3985a4217e0621eb3d5386395aad0b262f7386909fbad442362f723177a8",
+    "confirmation_gate_sha256": "30bc689e5e4fe178735c150adac1879226541ee68560aeb5bfb5bff51d8054a0",
+    "risk_certificate_sha256": "25ed51b33bfb2123316075b655e43bc832682448abb152de771f8570fbc148ad"
+  },
+  "input_sha256": {
+    "parent_candidate_score_oof": "9a91b62599278d4e56d57074df4725d4a09391460458b8eccc02dd50af34d48a",
+    "candidate_rmse_table": "ecf3e93b161e2a173ed3cadbf69cc369d367f38d939d8463be1624e4c851922b",
+    "hidden_like_assignment": "5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597"
+  },
+  "notes": "Saved-OOF diagnostic method confirmed. No current-test inference, route-anchor update, or submission is authorized."
+}

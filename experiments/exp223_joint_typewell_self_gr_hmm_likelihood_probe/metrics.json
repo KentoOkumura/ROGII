@@ -1,0 +1,91 @@
+{
+  "experiment": "exp223_joint_typewell_self_gr_hmm_likelihood_probe",
+  "status": "completed_train_side_supported_vs_exp072_not_direct_port",
+  "route": "ensemble",
+  "metric": "train_side_oof_rmse_tvt",
+  "cv": 11.349950650072172,
+  "public_lb": null,
+  "private_lb": null,
+  "rows": 3783989,
+  "wells": 773,
+  "active_variants": 2,
+  "lightgbm_config_count": 0,
+  "fold_count": 0,
+  "total_boosters": 0,
+  "submitted": false,
+  "kernel": "kentookumura/exp223-selfgr-hmm-train",
+  "kernel_version": 1,
+  "kaggle_url": "https://www.kaggle.com/code/kentookumura/exp223-selfgr-hmm-train",
+  "kaggle_id_no": 126365791,
+  "elapsed_seconds": 39029.366,
+  "elapsed_hours": 10.841490555555556,
+  "best_self_gr_hmm_candidate": {
+    "candidate": "hmm_selfgr_boost_only_a070_c100",
+    "rmse": 11.349950650072172,
+    "mae": 6.471271592305078,
+    "bias": -1.1280825798259098,
+    "within10": 0.794830006112597,
+    "delta_rmse_vs_exp072_likpf_mean": -0.24494701836881916,
+    "delta_mae_vs_exp072_likpf_mean": -0.5963609908031193,
+    "delta_within10_vs_exp072_likpf_mean": 0.022027812448714768
+  },
+  "overall_metrics": [
+    {
+      "candidate": "hmm_selfgr_boost_only_a070_c100",
+      "rmse": 11.349950650072172,
+      "mae": 6.471271592305078,
+      "within10": 0.794830006112597
+    },
+    {
+      "candidate": "hmm_selfgr_boost_only_a150_c100",
+      "rmse": 11.559594480633642,
+      "mae": 6.545949220591914,
+      "within10": 0.7916801555184225
+    },
+    {
+      "candidate": "exp072_likpf_mean",
+      "rmse": 11.594897668440991,
+      "mae": 7.067632583108197,
+      "within10": 0.7728021936638823
+    }
+  ],
+  "distance_bucket_delta_rmse_vs_exp072_likpf_mean": {
+    "000_050": -0.283719,
+    "050_100": -0.412821,
+    "100_250": -0.196443,
+    "250_500": -0.179257,
+    "500_1000": -0.396934,
+    "1000_plus": -0.247524
+  },
+  "hidden_like_delta_rmse_vs_exp072_likpf_mean": {
+    "verification_like_spatial": -1.180418,
+    "verification_like_typewell_purged": -1.240497
+  },
+  "by_well_delta_vs_exp072_likpf_mean": {
+    "improved_wells": 461,
+    "worsened_wells": 312,
+    "mean_delta_rmse": -0.5343906195979273,
+    "median_delta_rmse": -0.5493812336556623,
+    "max_improvement_delta_rmse": -53.7068140076265,
+    "max_regression_delta_rmse": 46.954682737853744,
+    "max_regression_well": "b19b0395"
+  },
+  "runtime_notes": {
+    "hmm_outer_workers": 2,
+    "numba_num_threads": 2,
+    "ok_wells": 773,
+    "skipped_wells": 0,
+    "mean_elapsed_seconds_per_ok_well": 99.91939068564038
+  },
+  "sha256": {
+    "hmm_train_features_decompressed": "0eb48b5516276b0ab7b2191a52a39ebb89d9997363cc7839ede519c7863baa0c",
+    "hmm_train_features_gzip": "daa72332d38f0d78a5957807a494b7d5389e44037cd8547257c4e0e519c48813",
+    "joint_summary": "e7a3b4502a3ee4296b219be8af018568056a6c6c4319f745d848a36589ab893e",
+    "overall_metrics": "0854897b036bdf8a46d378cc07b78d2831cdd05fb26849fd59fb69b2c17d25bd",
+    "distance_bucket_metrics": "21d05f47e5c2301772e491d6e13462d07f3ddf6a9f4065e9702dfc7fd657548e",
+    "hidden_like_metrics": "39ca29199d27623c2486fcf69e49a2502243085589f1859bec3ea60646b2f7e2",
+    "by_well_delta": "abe7da889e71359c395c90e8e3d5f2924a4e8c976a67fe9d40b992724a652b7a"
+  },
+  "local_output_path": "/tmp/kaggle-output/exp223-selfgr-hmm-train-v1",
+  "decision": "train_side_positive_vs_exp072_likpf_but_not_direct_raw_test_port_due_to_exp209_blend_gap_and_large_worst_well_regression"
+}

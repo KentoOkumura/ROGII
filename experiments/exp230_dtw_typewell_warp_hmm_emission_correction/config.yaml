@@ -1,0 +1,231 @@
+experiment:
+  name: "exp230_dtw_typewell_warp_hmm_emission_correction"
+  description: Use constrained full-GR DTW/typewell warp only as a weak auxiliary emission inside the exp209 exact HMM smoother.
+  route: pf_beam
+  status: completed_train_side_rejected_no_inference_no_submit
+  created_at: "2026-07-09"
+  updated_at: "2026-07-11"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.strategy
+    - validation.score_rows
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  references:
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+    - exp017_deterministic_dtw_addonly
+    - exp132_multi_scale_gr_observation_likelihood
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - KAGGLE_DIRECTION.md dtw_typewell_warp_hmm_emission_correction
+  implementation_source:
+    - exact_hmm_smoother.py
+    - feature_cache.py
+    - direct_hmm_comparison.py
+    - joint_cache_generation.py
+  diff_summary: >
+    Starts from exp209, not exp221. The exp209 exact HMM transition model,
+    GR/typewell raw emission, grid, and runtime settings are kept. The only
+    modeling change is a weak auxiliary emission from constrained full-GR DTW
+    between the horizontal GR unknown suffix and the typewell GR grid. The DTW
+    path is not emitted as a direct prediction candidate, is not blended into
+    PF weights, and is used only as `emission_ll += alpha * dtw_ll` for two
+    small-alpha HMM variants. Saved exp072 cache is used only as comparison
+    baseline; exp072 PF replay is not regenerated.
+
+validation:
+  strategy: train_side_dtw_auxiliary_emission_hmm_audit
+  metric: rmse
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  success_criteria:
+    - Best DTW-emission HMM candidate improves over exp072 likPF and is competitive with exp209 HMM/blend references.
+    - Distance buckets, especially near and 1000_plus rows, do not show material regression.
+    - exp115 hidden-like spatial and typewell-purged valid subgroups are recorded and do not show material regression.
+    - By-well worst regression and step-delta spikes are checked before any follow-up raw-test work.
+    - DTW confidence, anchor error, cost, and stochastic-jitter stability are recorded for diagnostics.
+  leakage_policy:
+    - HMM generation uses raw train horizontal/typewell files, observed TVT_input prefix, GR, MD, Z, and typewell GR/TVT.
+    - DTW uses horizontal GR on unknown suffix and typewell GR on the HMM grid, matching raw-test-available inputs.
+    - Unknown-suffix train TVT is used only as target and for metrics, never to build the DTW warp or tune row weights.
+    - The DTW path TVT is never written as a selectable prediction, direct replacement, softmax average, or hard gate.
+    - No LB weight search, oracle best, true-error rank, PF weight change, model training, inference, or submission is performed.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: dtw_typewell_warp_hmm_emission_correction
+  estimator: none
+  target: target
+  base_prediction: last_known_tvt
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+  dtw_emission:
+    enabled: true
+    active_variants:
+      - name: hmm_dtw_a005_s1200
+        alpha: 0.05
+        sigma_base: 12.0
+      - name: hmm_dtw_a010_s1200
+        alpha: 0.10
+        sigma_base: 12.0
+    max_variants: 2
+    max_points: 384
+    band_fraction: 0.16
+    min_band: 12
+    stochastic_k: 3
+    sigma_floor: 6.0
+    sigma_cap: 35.0
+    stochastic_sigma_scale: 1.0
+    emission_clip: 120.0
+    confidence_cost_scale: 1.5
+    confidence_anchor_scale: 30.0
+    confidence_stochastic_scale: 20.0
+  notes:
+    - HMM defaults match exp209.
+    - DTW correction is deliberately weak and diagnostic-only.
+
+feature_cache:
+  exp072:
+    variant: pixiux_likpf_public_replay
+    deterministic_pf: true
+    seed_policy: stable_sha256_per_well
+    expected_feature_count: 196
+    output_prefix: exp063_full_replay_feature_cache
+    n_jobs: 8
+    pf_seeds: 128
+    pf_particles: 500
+    fast: false
+    max_wells: null
+    keep_frame_for_comparison: false
+  hmm:
+    variant: dtw_typewell_warp_hmm_emission_correction
+    output_prefix: exp230_dtw_typewell_warp_hmm_emission_correction
+    expected_feature_count: 25
+    fast: false
+    max_wells: null
+    outer_workers: 2
+    expected_artifacts:
+      - exp230_dtw_typewell_warp_hmm_emission_correction_dtw_typewell_warp_hmm_emission_correction_train_features.csv.gz
+      - exp230_dtw_typewell_warp_hmm_emission_correction_feature_schema.csv
+      - exp230_dtw_typewell_warp_hmm_emission_correction_by_well_generation_summary.csv
+      - exp230_dtw_typewell_warp_hmm_emission_correction_summary.json
+
+execution:
+  run_exp072_full_cache: false
+  run_hmm_cache: true
+  run_direct_comparison: true
+  direct_comparison_use_in_memory_exp072: false
+  run_reference_parity_checks: false
+  write_joint_summary: true
+  notes:
+    - Uses saved exp072 cache from Kaggle input or local artifact candidates.
+    - Runs two DTW-emission HMM variants, zero LightGBM configs, zero folds, zero boosters.
+    - Does not regenerate exp072, run inference, or submit.
+
+comparison:
+  baseline_experiment: exp072_exp063_full_replay_feature_cache
+  output_prefix: exp230_dtw_hmm_vs_exp072
+  baseline_feature_cache:
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  hmm_feature_cache:
+    - /kaggle/working/artifacts/exp230_dtw_typewell_warp_hmm_emission_correction_dtw_typewell_warp_hmm_emission_correction_train_features.csv.gz
+    - experiments/exp230_dtw_typewell_warp_hmm_emission_correction/artifacts/exp230_dtw_typewell_warp_hmm_emission_correction_dtw_typewell_warp_hmm_emission_correction_train_features.csv.gz
+  baseline_candidate_columns:
+    - likpf_mean
+    - pf_ancc
+    - pf_z
+    - beam_mean
+  blend_hmm_weights: []
+  expected_exp072_likpf_mean_rmse_tvt: 11.594897668440991
+  exp209_reference_best_candidate: blend_likpf_hmm_w500
+  exp209_reference_best_rmse_tvt: 10.269696146642758
+  uncertainty_bins: 10
+  write_enriched_cache: false
+  step_delta_thresholds:
+    - 5.0
+    - 10.0
+    - 25.0
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+  result_artifacts:
+    - exp230_dtw_hmm_vs_exp072_overall_metrics.csv
+    - exp230_dtw_hmm_vs_exp072_distance_bucket_metrics.csv
+    - exp230_dtw_hmm_vs_exp072_hidden_like_metrics.csv
+    - exp230_dtw_hmm_vs_exp072_by_well_delta.csv
+    - exp230_dtw_hmm_vs_exp072_hmm_std_calibration.csv
+    - exp230_dtw_hmm_vs_exp072_step_delta_rates.csv
+    - exp230_dtw_hmm_vs_exp072_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: hmm_no_rng_dtw_stable_sha256_per_well_jitter
+  stochastic_components:
+    - DTW stochastic-jitter stability uses stable SHA256 seeds per well and jitter index.
+  parallel_rng_policy: HMM consumes no RNG; DTW jitter seeds are deterministic per well, independent of outer job scheduling.
+  feature_sha_policy: decompressed_content_sha_for_gzip plus raw gzip SHA recorded separately
+  record:
+    kernel_version: true
+    input_sha: false
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This experiment is a train-side diagnostic feature-cache audit, not a deterministic submission anchor.
+    - Numba parallel floating arithmetic may vary at tiny precision; compare metrics and decompressed feature content SHA with documented tolerances.
+
+inference:
+  mode: not_applicable_train_feature_cache_only
+  selected_candidate: null
+  notes:
+    - This experiment intentionally does not create raw-test features, predictions, or submission.csv.
+    - If train-side readout is strong, raw-test-safe port remains a separate user-confirmed follow-up in the same experiment.

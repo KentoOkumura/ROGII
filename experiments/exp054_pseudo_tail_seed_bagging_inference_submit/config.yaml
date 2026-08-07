@@ -1,0 +1,144 @@
+experiment:
+  name: exp054_pseudo_tail_seed_bagging_inference_submit
+  description: Port exp053 3-seed LightGBM capacity pseudo-tail bagging to Kaggle inference and submit
+  route: ml_model
+  status: completed
+  created_at: "2026-06-10"
+  updated_at: "2026-06-10"
+
+lineage:
+  parent: exp053_pseudo_tail_seed_bagging
+  diff_summary: Reuse exp052 inference flow but fit three exp051-style LightGBM capacity pseudo-tail models with different pseudo-tail sampling and model seeds, average raw predictions, and keep exp025-selected fixed bucket-shrink postprocess.
+
+validation:
+  leakage_policy:
+    - Final inference fit uses only official train wells.
+    - Pseudo cutoffs are generated only inside train wells.
+    - Test predictions use only each test well's known TVT_input prefix.
+    - Train-only formation columns are not used.
+    - Fixed bucket shrink parameters are selected by exp025 held-out OOF audit, not by public LB.
+    - Seed bagging changes only pseudo-tail sampling RNG and LightGBM random_state per member.
+
+data: {}
+
+model:
+  name: lgbm_capacity_pseudo_tail_seed_bagging_bucket_shrink_inference
+  primary_strategy: drift_model
+  drift_strategy: drift_model
+  feature_set: no_gr_signal
+  strategies:
+    - last_anchor
+    - recent_linear
+    - drift_model
+  params:
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+    gr_slope_window: 200
+    max_abs_gr_slope: 2.0
+    gr_roll_short: 25
+    gr_roll_long: 100
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  drift_model:
+    estimator: LGBMRegressor
+    params:
+      n_estimators: 800
+      learning_rate: 0.03
+      num_leaves: 47
+      min_child_samples: 60
+      subsample: 0.9
+      colsample_bytree: 0.9
+      reg_lambda: 0.1
+      n_jobs: 2
+  training:
+    max_train_rows_per_fold: 300000
+    max_train_rows_final: 450000
+    max_train_rows_per_well: 800
+
+audit:
+  parent_seed_bagging_experiment: exp053_pseudo_tail_seed_bagging
+  parent_seed_bagging_variant: lgbm_capacity_seed_bag3_exp014_bucket_shrink_params
+  parent_seed_bagging_cv: 12.633797
+  parent_capacity_inference_experiment: exp052_lgbm_capacity_pseudotail_inference_submit
+  parent_capacity_public_lb: 12.076
+  parent_capacity_submission_ref: 53524340
+  parent_micro_tune_experiment: exp051_pseudo_tail_lgbm_param_micro_tune
+  parent_micro_tune_cv: 12.634392
+  parent_train_experiment: exp023_pseudo_tail_distance_augmentation
+  parent_inference_experiment: exp026_pseudo_tail_bucket_shrink_inference_submit
+  parent_postprocess_audit: exp025_pseudo_tail_postprocess_cv_audit
+  lightgbm_fixed_bucket_shrink_public_lb: 12.102
+  xgboost_fixed_bucket_shrink_public_lb: 12.083
+  selected_postprocess: exp014_bucket_shrink_params
+  selected_postprocess_cv: 12.633797
+  seed_bagging_delta_vs_same_run_control: -0.100754
+  seed_bagging_delta_vs_exp051_cv: -0.000595
+  training_variants:
+    enabled: true
+    selected_variant: lgbm_capacity_seed_bag3
+    variants:
+      - name: lgbm_capacity_seed_bag3
+        kind: seed_bagging
+        member_seeds: [42, 314, 2027]
+        cutoffs_per_well: 3
+        cutoff_quantiles: [0.45, 0.65, 0.82]
+        distance_balanced: true
+        max_rows_per_pseudo_tail: 260
+        balanced_rows_per_bucket: 60000
+  pseudo_tail:
+    min_prefix_rows: 200
+    min_pseudo_eval_rows: 250
+    cutoff_strategy: quantile
+  distance_buckets:
+    - name: rows_0_49
+      max_step: 49
+    - name: rows_50_249
+      max_step: 249
+    - name: rows_250_999
+      max_step: 999
+    - name: rows_1000_2499
+      max_step: 2499
+    - name: rows_2500_plus
+      max_step: 1000000000
+
+postprocess:
+  selected_method: distance_bucket_shrink
+  candidate_methods:
+    - raw
+    - distance_bucket_shrink
+  methods:
+    raw: {}
+    distance_bucket_shrink:
+      name: exp014_bucket_shrink_params
+      buckets:
+        - name: rows_0_49
+          max_step: 49
+          alpha: 0.20
+        - name: rows_50_249
+          max_step: 249
+          alpha: 0.5917180252647632
+        - name: rows_250_999
+          max_step: 999
+          alpha: 1.15
+        - name: rows_1000_2499
+          max_step: 2499
+          alpha: 1.15
+        - name: rows_2500_plus
+          max_step: 1000000000
+          alpha: 1.0490770312511664
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: 30
+  kaggle:
+    kernel_sources: []
+
+notes:
+  - exp053 seed bag3 fixed bucket-shrink CV was 12.633797.
+  - exp052 single-seed capacity Public LB was 12.076.
+  - This experiment is requested to check the LB impact of seed changes early.
+  - Final inference averages raw predictions from member seeds 42, 314, and 2027 before fixed bucket shrink.

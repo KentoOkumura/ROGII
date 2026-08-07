@@ -1,0 +1,448 @@
+experiment:
+  name: exp342_exp226_student_t_residual_offset_emission_audit
+  description: >-
+    Stage 0 target-free rank audit and an explicitly approved exploratory
+    Stage 1 exact-HMM evaluation of a fixed df=4 Student-t GR emission.
+    Stage 1 replaced only the exp281 Gaussian emission and failed its frozen
+    scientific and direct-promotion gates.
+  route: pf_beam
+  status: stage_1_override_completed_guard_failed_closed
+  created_at: "2026-07-22"
+  updated_at: "2026-07-24"
+
+lineage:
+  parent: exp281_exp226_residual_offset_exact_hmm_transition_probe
+  steering: ../../.steering/20260722-exp342-exp226-student-t-residual-offset-emission-audit
+  stage_0_source: exp280_exp226_shift_likelihood_separability_readout
+  references:
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp232_adaptive_robust_likelihood_pf
+    - exp307_finite_only_robust_sigma_gr
+  diff_summary: >-
+    Replaces only the Gaussian residual family with df=4 Student-t while
+    retaining the exp280 512-row/13-shift bank, exp281 known-prefix residual
+    sigma, GR missing policy, exp226 geometry path, fold assignment, and
+    truth-late rank readout. The Gaussian control is loaded from the
+    SHA-pinned exp280 score artifact and is not regenerated.
+
+implementation:
+  enabled: true
+  scope: stage_0_rank_audit_and_stage_1_exact_hmm_override
+  train_notebook_state: compact_selfcontained_canonical_adopted
+  canonical_notebook_replacement_authorized_by_request: true
+  canonical_notebook_adopted: true
+  stage_1_implemented: true
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: frozen_student_t_and_saved_gaussian_shift_rank_audit
+  metric: mrr_top3_gain_vs_saved_gaussian
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  expected_blocks: 7787
+  expected_folds: [0, 1, 2, 3, 4]
+  score_rows: train_unknown_suffix_rows_aggregated_to_fixed_512_row_blocks
+  truth_attachment: after_student_t_and_control_score_content_sha_freeze
+  leakage_policy:
+    - Student-t scores and extreme-residual counts are frozen before truth-nearest shifts are joined.
+    - The saved Gaussian score table is verified by compressed-content and declared content SHA before use.
+    - exp226 tvt_pred, gr_delta, tvt_true, error, and abs_error are rejected by target-free scoring APIs.
+    - Raw horizontal TVT is not read until Student-t and Gaussian score bundles are frozen.
+  stage_0_pass_requires_all:
+    required_score_finite_coverage: 1.0
+    required_row_identity_coverage: 1.0
+    required_control_rank_parity: 1.0
+    minimum_pooled_mrr_gain: 0.01
+    minimum_pooled_top3_gain: 0.01
+    minimum_improved_folds_mrr: 4
+    minimum_improved_folds_top3: 4
+    stress_scopes:
+      - long_tail_1000_plus
+      - hidden_like_spatial
+      - hidden_like_typewell_purged
+      - persistent_offset
+    require_stress_mrr_non_regression: true
+    require_stress_top3_non_regression: true
+    require_real_shuffle_mrr_gap_not_worse: true
+    require_real_shuffle_top3_gap_not_worse: true
+    extreme_residual:
+      absolute_z_threshold: 3.0
+      block_definition: truth_nearest_shift_has_at_least_one_extreme_row
+      minimum_extreme_rows_per_block: 1
+      require_top3_improvement: true
+      require_mean_regret_improvement: true
+  stage_1_pass_requires_all:
+    parent_candidate: gaussian_residual_offset_hmm
+    candidate: student_t_residual_offset_hmm
+    minimum_rmse_gain_vs_exp281_ft: 0.05
+    minimum_improved_folds: 4
+    maximum_scope_rmse_regression_ft: 0.0
+    required_scopes:
+      - long_tail_1000_plus
+      - hidden_like_spatial
+      - hidden_like_typewell_purged
+    maximum_by_well_p95_delta_rmse_ft: 0.0
+    maximum_worst_well_regression_ft: 0.25
+    required_parent_rmse_parity_atol_ft: 0.00001
+    required_finite_coverage: 1.0
+    required_row_identity_coverage: 1.0
+    maximum_direct_rmse_for_promotion: 9.427109596582213
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  exp280_source:
+    experiment: exp280_exp226_shift_likelihood_separability_readout
+    score_filename: exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+    score_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+      - /kaggle/input/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+      - /tmp/exp280-output-v1/artifacts/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+      - "**/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz"
+    score_decompressed_sha256: c6e9e39a5fd3944f7516e68bdd6b9d27430a47f0bfbe3c50d39f5369791d99c3
+    score_content_sha256: 4a546cfe5f9291168bdb4dcb912182b079e0343af845f76005f6a7100ac3aa46
+    contract_filename: exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+    contract_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+      - /kaggle/input/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+      - /tmp/exp280-output-v1/artifacts/exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+      - "**/exp280_exp226_shift_likelihood_separability_readout_score_contract.json"
+    scientific_contract_sha256: 60d32ba96e0f71fc1f02f53d9e274e97d96516549ee27c87ea40bbb666af7978
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    safe_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    forbidden_score_columns: [tvt_pred, gr_delta, tvt_true, error, abs_error]
+    truth_columns: [well_id, row_idx, tvt_true]
+  exp281_control:
+    experiment: exp281_exp226_residual_offset_exact_hmm_transition_probe
+    filename: exp281_exp226_residual_offset_exact_hmm_transition_probe_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp281-exp226-residual-offset-exact-hmm-train/artifacts/exp281_exp226_residual_offset_exact_hmm_transition_probe_oof_predictions.csv.gz
+      - /kaggle/input/exp281-exp226-residual-offset-exact-hmm-train/artifacts/exp281_exp226_residual_offset_exact_hmm_transition_probe_oof_predictions.csv.gz
+      - /tmp/exp281-output-v1/artifacts/exp281_exp226_residual_offset_exact_hmm_transition_probe_oof_predictions.csv.gz
+    expected_decompressed_sha256: 3a99b1d9604da27952ef029f56a9eec42c477f3d78d1fdf3763301df03867386
+    expected_content_sha256: d7f902b856a78bb040a2fa0cfe3ed94daad5caf26449459b40d0b150eb65e440
+    expected_parent_rmse: 9.827419940583813
+    expected_exp226_rmse: 9.427109596582222
+    safe_post_freeze_columns:
+      - id
+      - well
+      - row_idx
+      - fold
+      - tvt_geop
+      - residual_offset_delta_mean
+      - residual_offset_hmm
+      - residual_offset_hmm_std
+      - exp226_pred
+      - exp263_fixed
+      - md_since
+      - true_tvt_readout_only
+  hidden_like:
+    enabled: true
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+model:
+  name: exp226_student_t_residual_offset_emission_audit
+  estimator: none_deterministic_diagnostic
+  student_t:
+    degrees_of_freedom: 4.0
+    formula: minus_half_df_plus_one_log1p_z2_over_df
+    zscore_scale: exact_exp281_known_prefix_residual_std
+    additional_clip: none
+  stage_0:
+    active_variants: [student_t_df4]
+    active_variant_count: 1
+    block_size: 512
+    shifts_ft: [-80.0, -40.0, -20.0, -10.0, -5.0, -2.0, 0.0, 2.0, 5.0, 10.0, 20.0, 40.0, 80.0]
+    gaussian_control: sha_pinned_saved_exp280
+    negative_control: stable_sha256_nonzero_circular_shift_bank_rotation
+  stage_1:
+    implemented: true
+    enabled_condition: explicit_user_override_after_stage_0_fail
+    active_variants: [student_t_df4]
+    hmm_well_runs: 773
+  hmm:
+    delta_min_ft: -80.0
+    delta_max_ft: 80.0
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    emission: student_t_df4
+    student_t_degrees_of_freedom: 4.0
+    lam: 1.0
+    sigma_mode: std
+    start_delta_ft: 0.0
+    start_sig: 0.75
+    initial_offset_rate: 0.0
+    r0_sig: 0.01
+    mom: 0.998
+    rate_center: zero
+    additional_likelihood_clip: none
+    typewell_extension_ft: 40.0
+    transition_center: exp226_tvt_geop_row_delta
+    active_variants: [student_t_df4_residual_offset_delta80_step035_rate41]
+    forbid_columns: [tvt_pred, gr_delta, tvt_true, abs_error, error]
+  fixed_parent:
+    shape: exp226_tvt_geop
+    coordinate: residual_offset
+    sigma_mode: known_prefix_residual_std
+    sigma_clip: [10.0, 60.0]
+    missing_gr_policy: interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+    state_grammar_transition_prior_output: exact_exp281
+  forbidden:
+    - df_grid
+    - sigma_rescaling
+    - likelihood_temperature
+    - huber_or_log_cap
+    - missing_uncertainty
+    - acf_tempering
+    - blend
+
+audit:
+  output_prefix: exp342_exp226_student_t_residual_offset_emission_audit
+  shift_bank_ft: [-80.0, -40.0, -20.0, -10.0, -5.0, -2.0, 0.0, 2.0, 5.0, 10.0, 20.0, 40.0, 80.0]
+  block_rows: 512
+  block_policy: non_overlapping_from_suffix_start_keep_short_tail
+  score_aggregation: mean_row_log_likelihood
+  tie_policy: config_shift_bank_order
+  typewell_extension_ft: 40.0
+  student_t_emission:
+    kind: student_t_df4_raw_gr
+    degrees_of_freedom: 4.0
+    sigma_mode: known_prefix_residual_std
+    sigma_clip: [10.0, 60.0]
+    additional_clip: none
+    missing_gr_policy: interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+  circular_control:
+    enabled: true
+    seed: 42
+    policy: stable_sha256_nonzero_rotation_per_well_block
+  scopes:
+    near_max_md_since_ft: 250.0
+    long_tail_min_md_since_ft: 1000.0
+  coverage:
+    maximum_quantization_error_ft: 20.0
+  persistent_offset:
+    base_path: tvt_geop
+    error_threshold_ft: 10.0
+    minimum_consecutive_rows: 128
+  expected_artifacts:
+    - exp342_exp226_student_t_residual_offset_emission_audit_score_contract.json
+    - exp342_exp226_student_t_residual_offset_emission_audit_target_free_score_bundle.csv.gz
+    - exp342_exp226_student_t_residual_offset_emission_audit_block_readout.csv.gz
+    - exp342_exp226_student_t_residual_offset_emission_audit_scope_metrics.csv
+    - exp342_exp226_student_t_residual_offset_emission_audit_fold_metrics.csv
+    - exp342_exp226_student_t_residual_offset_emission_audit_gate.json
+    - exp342_exp226_student_t_residual_offset_emission_audit_well_manifest.csv
+    - exp342_exp226_student_t_residual_offset_emission_audit_input_manifest.csv
+    - exp342_exp226_student_t_residual_offset_emission_audit_summary.json
+  stage_1_expected_artifacts:
+    - exp342_exp226_student_t_residual_offset_emission_audit_stage1_oof_predictions.csv.gz
+    - exp342_exp226_student_t_residual_offset_emission_audit_stage1_candidate_metrics.csv
+    - exp342_exp226_student_t_residual_offset_emission_audit_stage1_fold_metrics.csv
+    - exp342_exp226_student_t_residual_offset_emission_audit_stage1_scope_metrics.csv
+    - exp342_exp226_student_t_residual_offset_emission_audit_stage1_by_well_metrics.csv
+    - exp342_exp226_student_t_residual_offset_emission_audit_stage1_well_manifest.csv
+    - exp342_exp226_student_t_residual_offset_emission_audit_stage1_input_manifest.csv
+    - exp342_exp226_student_t_residual_offset_emission_audit_stage1_decoder_manifest.json
+    - exp342_exp226_student_t_residual_offset_emission_audit_stage1_gate.json
+    - exp342_exp226_student_t_residual_offset_emission_audit_stage1_summary.json
+
+execution_contract:
+  stage_0:
+    scientific_scores: 1
+    control_scores: 1
+    hmm_well_runs: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+  stage_1_if_pass:
+    scientific_variants: 1
+    hmm_well_runs: 773
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+  stage_1_override:
+    scientific_variants: 1
+    hmm_well_runs: 773
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+  parent_control_retraining: false
+
+execution:
+  implementation_approved: true
+  implementation_approved_at: "2026-07-23"
+  stage_1_override_approved: true
+  stage_1_override_approved_at: "2026-07-23"
+  kaggle_push_approved: false
+  kaggle_push_approved_at: "2026-07-23"
+  active_stage: stage_1_override_completed_guard_failed_closed
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  numba_num_threads: 4
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    train_run_on_push: false
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp281-exp226-residual-offset-exact-hmm-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_real_scores_stable_sha256_nonzero_circular_rotation
+  stochastic_components: []
+  parallel_rng_policy: no_rng_single_process_fixed_well_block_shift_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+
+inference:
+  enabled: false
+  create_submission: false
+
+kaggle_result:
+  kernel: kentookumura/exp342-student-t-residual-offset-emission-train
+  kernel_version: 1
+  kernel_id_no: 128356155
+  runtime_seconds: 468.1274166107178
+  completed_at_utc: "2026-07-23T12:21:25.092017+00:00"
+  status: stage_0_completed_guard_failed
+  promotion_gate_passed: false
+  decision: stage_0_failed_close_without_rescue
+  failed_checks:
+    - pooled_mrr_gain
+    - pooled_top3_gain
+    - stress_mrr_non_regression
+    - stress_top3_non_regression
+  stage_1_eligible: false
+  exp344_dependency_pattern_matched: false
+  flattening_signal: false
+  improved_folds: {mrr: 5, top3: 4}
+  overall:
+    wells: 773
+    rows: 3783989
+    blocks: 7787
+    student_t_mrr: 0.390292295849635
+    gaussian_mrr: 0.3896259847910034
+    student_t_minus_gaussian_mrr: 0.0006663110586315746
+    student_t_top3_rate: 0.4535764736098626
+    gaussian_top3_rate: 0.4524207011686144
+    student_t_minus_gaussian_top3_rate: 0.001155772441248204
+    student_t_minus_gaussian_top1_regret_rmse_mean: -0.12210767012917856
+  extreme_residual:
+    blocks: 174
+    block_share: 0.02234493386413253
+    top3_gain: 0.022988505747126436
+    regret_delta_ft: -0.6927007547175457
+  artifacts:
+    target_free_score_content_sha256: 37ef297488d87d732c634ee31dd3d463e2760d22631f8d757e7a735d4d4a941f
+    target_free_score_decompressed_sha256: 759e4f60bae7153127b056a817735754d84354a15e766f6800afe84c0c8a0911
+    block_readout_content_sha256: 79d40fec3163163822a8210b8313ecfa17a457b7d93ad4512a2bb1b34006f0c7
+    block_readout_decompressed_sha256: 05eb1aebfc622baffef9ea23bbcb4a003c72e79d7a6bb66e8f84e4254efa8433
+    gate_sha256: adbe2476841a2b361f8aff4593283196c9700d8de4d83c8e9723a0aae6cdd95a
+    summary_generated_from_kaggle_log: true
+
+kaggle_stage_1_result:
+  kernel: kentookumura/exp342-student-t-residual-offset-emission-train
+  kernel_version: 2
+  kernel_id_no: 128356155
+  runtime_seconds: 14789.392991542816
+  completed_at_utc: "2026-07-23T17:01:51.609982+00:00"
+  status: stage_1_completed_guard_failed
+  execution_basis: explicit_user_override_after_stage_0_fail
+  promotion_gate_passed: false
+  direct_promotion_passed: false
+  decision: stage_1_failed_close_without_rescue
+  active_variants: 1
+  hmm_well_runs: 773
+  model_configs: 0
+  trained_folds: 0
+  boosters: 0
+  parent_control_retraining: false
+  overall:
+    wells: 773
+    rows: 3783989
+    student_t_rmse: 9.779771695236851
+    gaussian_parent_rmse: 9.827419940583813
+    gain_vs_exp281_ft: 0.047648245346961104
+    exp226_rmse: 9.427109596582222
+    delta_vs_exp226_ft: 0.35266209865462983
+    student_t_mae: 5.261317430953917
+    gaussian_parent_mae: 5.290694173726774
+    improved_folds: 3
+  scope_delta_rmse_vs_exp281:
+    long_tail_1000_plus: -0.049642958020283956
+    hidden_like_spatial: 0.014173988931201364
+    hidden_like_typewell_purged: 0.22013604804345377
+  tail_risk:
+    by_well_p95_delta_rmse_vs_exp281: 1.0637928594142707
+    worst_well: 77b0d905
+    worst_well_delta_rmse_vs_exp281: 12.89360164555763
+  failed_checks:
+    - overall_gain_vs_exp281
+    - improved_folds
+    - required_scopes_non_regression
+    - by_well_p95_non_regression
+    - worst_well_regression
+    - direct_promotion_maximum_rmse
+  artifacts:
+    candidate_content_sha256: 9af93eecb7bfcf0b43bbfbe9a0d759abf6031b0744da637147b05cbac72c38b7
+    decoder_manifest_content_sha256: 17453228ad41ede225ff2b6b51e35c2908d20fbf4a58ef78d0b31cfb6246ff4f
+    predictions_decompressed_sha256: 767bf0726e696fc291923438ae2f87fafc1642b857f5c26bfaa9361505e9820b
+    gate_sha256: fe217ee638993ed3f7977ee5b479f56909520c22cb9eb0077bfadc70a3aaa790
+    summary_generated_from_kaggle_log: true
+
+notes:
+  - Stage 0 implementation and the one approved Kaggle private CPU run completed on 2026-07-23.
+  - Stage 1 ran only because the user explicitly overrode the failed Stage 0 prerequisite.
+  - The saved exp280 Gaussian score control is reused; no parent control is regenerated.
+  - FAIL cannot be rescued with df, scale, temperature, grid, Huber, cap, missing, or ACF tuning.
+  - Stage 1 modestly improved overall RMSE versus exp281 but failed the frozen gain, fold, hidden-like, and well-tail gates.
+  - Inference and submission remain disabled; exp344 remains closed.

@@ -1,0 +1,194 @@
+experiment:
+  name: exp307_finite_only_robust_sigma_gr
+  description: >-
+    Design-frozen exact-HMM audit that removes zero-filled horizontal GR from
+    prefix sigma estimation and compares finite-only std with a preregistered
+    finite-only MAD primary while keeping the decoder unchanged.
+  route: pf_beam
+  status: completed_train_side_gate_failed_closed
+  created_at: "2026-07-21"
+  updated_at: "2026-07-22"
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260721-exp307-finite-only-robust-sigma-gr
+  diff_summary: >-
+    Changes only known-prefix GR residual scale estimation. Evaluation GR
+    interpolation, typewell processing, Gaussian emission center, HMM state
+    grammar, transition, prior, and posterior mean remain exp209-compatible.
+
+overrides:
+  project_defaults: [validation.strategy, validation.metric, validation.n_folds, validation.score_rows]
+
+validation:
+  strategy: grouped_train_side_exact_hmm_candidate_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: tvt_input_unknown_suffix_only_after_prediction_freeze
+  expected_wells: 773
+  expected_rows: 3783989
+  expected_folds: [0, 1, 2, 3, 4]
+  truth_attachment: after_scale_and_prediction_content_sha_are_frozen
+  leakage_policy:
+    - Unknown-suffix TVT, error, abs_error, and oracle labels are forbidden before scale and prediction freeze.
+    - Known TVT_input is allowed only for prefix residual scale, initial state, and initial rate.
+    - Typewell TVT and GR are reference-coordinate inputs available at inference.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  saved_controls:
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    hmm_cache_filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    exp072_cache_filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+    raw_hmm_prediction_column: hmm_mean_tvt
+    likpf_anchor_column: last_known_tvt
+    likpf_delta_column: likpf_mean_d
+  fold_assignment:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    safe_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    truth_columns: [well_id, row_idx, tvt_true]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  hidden_like_assignment:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+model:
+  name: finite_only_sigma_exact_hmm_audit
+  estimator: none
+  target: TVT
+  active_variants: [finite_std_diagnostic, finite_mad_primary]
+  promotion_candidate: finite_mad_primary
+  finite_std:
+    pair_policy: finite_horizontal_gr_and_finite_typewell_interp_only
+    estimator: population_standard_deviation
+  finite_mad:
+    pair_policy: finite_horizontal_gr_and_finite_typewell_interp_only
+    estimator: 1.4826_times_median_absolute_deviation_about_median
+  common_scale:
+    minimum_pairs: 20
+    insufficient_pair_fallback: 30.0
+    clip: [10.0, 60.0]
+    affine_a: 1.0
+    affine_b: 0.0
+  fixed_hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    lam: 1.0
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    momentum: 0.998
+    emission: gaussian
+    emission_clip_z2: 600.0
+    rate_center: zero
+    evaluation_gr_policy: interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp
+    output: posterior_mean
+  execution_counts:
+    variants: 2
+    hmm_well_runs: 1546
+    lightgbm_configs: 0
+    trained_folds: 0
+    pf_well_runs: 0
+    beam_well_runs: 0
+    boosters: 0
+    parent_control_retraining: false
+
+references:
+  exact_hmm_rmse: 11.9382872349
+  exact_hmm_prediction_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+  likpf_rmse: 11.5948976722
+  exact_hmm_likpf_50_50_rmse: 10.2696961466
+  exp209_feature_cache_decompressed_sha256: 0503de0512302b06309d26e09fc06ba5095db0ef4d610b1508afe8c8d07ca536
+
+gate:
+  primary_min_rmse_improvement: 0.05
+  primary_min_improved_folds: 4
+  require_1000_plus_non_regression: true
+  require_hidden_like_spatial_non_regression: true
+  require_hidden_like_typewell_purged_non_regression: true
+  require_by_well_p95_delta_max: 0.0
+  maximum_worst_well_regression: 0.25
+  require_fixed_likpf_blend_non_regression: true
+  diagnostic_can_promote: false
+  non_regression_tolerance_ft: 1.0e-6
+  baseline_metric_absolute_tolerance: 1.0e-6
+
+execution:
+  implementation_approved: true
+  kaggle_push_approved: true
+  active_stage: completed_train_side_gate_failed_closed
+  run_scale_audit: true
+  run_hmm: true
+  run_inference: false
+  create_submission: false
+  kaggle_kernel_id: kentookumura/exp307-finite-only-robust-sigma-gr-train
+  kaggle_kernel_title: exp307 finite only robust sigma gr train
+  kaggle_kernel_version: 2
+  kaggle_kernel_id_no: 128085112
+  kaggle_kernel_url: https://www.kaggle.com/code/kentookumura/exp307-finite-only-robust-sigma-gr-train
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_sorted_well_and_fixed_variant_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_outer_workers_and_numba_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+
+inference:
+  enabled: false
+  mode: disabled_train_side_finite_sigma_audit_only
+  create_submission: false
+
+notes:
+  - Design frozen and implementation completed on 2026-07-21.
+  - The user explicitly approved Kaggle CPU package/push/run on 2026-07-21 for exactly 2 variants, 1546 HMM well-runs, zero control reruns, and zero boosters.
+  - Kaggle v1 completed all 773 well loops but failed in late readout because the saved exp072 cache stores last_known_tvt plus likpf_mean_d rather than an absolute likpf_mean column; v2 fixes only this saved-control materialization contract and adds an early schema preflight.
+  - Kaggle v2 completed in 27402.239 seconds. Finite std and finite MAD both degraded direct and fixed-likPF blend RMSE, so the preregistered gate failed closed without rescue, inference, or submission.
+  - LikPF port, imputed-GR weighting, transition-noise adaptation, and effective-sample-size shrinkage require separate experiments.

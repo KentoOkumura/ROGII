@@ -1,0 +1,385 @@
+experiment:
+  name: exp458_acceleration_state_exact_runtime_engine_audit
+  description: >-
+    Independently test whether the frozen exp444 acceleration-state exact HMM
+    posterior can be reproduced within the Kaggle CPU runtime limit by one
+    exact-equivalent scaled probability-space, factorized, cached and
+    four-well-parallel execution engine.
+  route: pf_beam
+  status: stage0a_fail_closed_parent_numerical_parity
+  created_at: "2026-07-30"
+  updated_at: "2026-07-30"
+  inference_enabled: false
+
+lineage:
+  parent: exp444_acceleration_state_exact_hmm
+  structural_parent: exp444_acceleration_state_exact_hmm
+  root_parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  references:
+    - exp399_soft_sticky_fused_exact_runtime_audit
+    - exp441_full_support_ou_rate_transition_hmm
+    - docs/06_reproducibility.md
+  steering: ../../.steering/20260730-exp458-acceleration-state-exact-runtime-engine-audit
+  diff_summary: >-
+    Preserve the complete exp444 scientific contract and change only its
+    execution engine: scaled float64 probability-space forward-backward,
+    factorized/fused acceleration-rate-position transitions, exact-bit
+    delta_MD OU-kernel reuse, and four independent well workers. This is an
+    independent runtime hypothesis and does not rescue or reclassify exp444.
+
+design:
+  priority: P3_runtime_infrastructure
+  design_frozen: true
+  implementation_authorized: true
+  implementation_approval_source: user_message_implement_exp458_2026_07_30
+  canonical_notebook_adoption_authorized: true
+  canonical_notebook_adoption_approval_source: user_message_execute_exp458_2026_07_30
+  kaggle_package_authorized: true
+  kaggle_package_approval_source: user_message_execute_exp458_2026_07_30
+  stage0a_run_authorized: false
+  stage0a_execution_approval_source: user_message_execute_exp458_2026_07_30
+  completed_kernel_id: kentookumura/exp458-accel-state-exact-runtime-eng-audit-train
+  completed_kernel_version: 2
+  completed_kernel_id_no: 129168013
+  stage0a_result: fail_closed_parent_numerical_parity
+  stage0b_run_authorized: false
+  stage1_run_authorized: false
+  inference_authorized: false
+  submission_authorized: false
+  independent_runtime_hypothesis: true
+  exp444_terminal_status_preserved: true
+  same_run_rescue_allowed: false
+  prerequisite: >-
+    No positive exp441, exp442 or exp444 scientific result is required.
+    Implementation may begin only after separate user approval. Stage 0A uses
+    saved exp444 fixed4 output as a load-only parity and runtime reference.
+
+validation:
+  strategy: >-
+    fixed4_saved_parent_exact_equivalence_two_repeat_runtime_audit_then
+    _separately_authorized_fixed32_mechanism_and_full_oof
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  leakage_policy:
+    - Reuse the exact exp444 fixed4 well ledger without reading target, role, fold, episode or cause.
+    - Freeze each repeat's prediction, posterior and diagnostic artifacts before any truth-bearing join.
+    - Treat Stage 0A only as a runtime and numerical-equivalence audit.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  fixed32_manifest:
+    filename: stage0_fixed32_manifest.csv
+    local: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+    expected_sha256: fbbc62b7cb79e16a7fb436f3a9d11f8975e935ad2475a17e2dec4fd7b142e4d6
+    persistent_wells: 16
+    matched_control_wells: 16
+    total_wells: 32
+    expected_suffix_rows: 156088
+  fixed4_selection:
+    count: 4
+    source: exp444_fixed4_identity_ledger
+    sort_key: sha256_exp444_runtime_preflight_plus_well_id
+    expected_rows: 21962
+    prohibited_before_freeze: [truth, role, fold, episode, cause]
+  exp444_saved_fixed4:
+    source_experiment: exp444_acceleration_state_exact_hmm
+    kaggle_kernel_id: kentookumura/exp444-acceleration-state-exact-hmm-train
+    kaggle_kernel_version: 1
+    prediction_filename: exp444_acceleration_state_exact_hmm_stage0a_predictions.csv.gz
+    acceleration_posterior_filename: exp444_acceleration_state_exact_hmm_stage0a_acceleration_posterior.csv.gz
+    diagnostic_filename: exp444_acceleration_state_exact_hmm_stage0a_target_free_diagnostics.csv.gz
+    expected_prediction_decompressed_sha256: 4927083191857ebf03dfd3ec755d2852afeb6125b4190e86796bc67552a2cfb1
+    expected_acceleration_posterior_decompressed_sha256: 8d9f3b657e0904d79af7bfc07fa4b08ac71fbbfaed28338cf38ee2526a6498e3
+    expected_diagnostic_decompressed_sha256: b538e024c4f904fc210314929266b7be7b8cb73d375cbb01a2e4d30580d519d7
+    expected_scientific_contract_sha256: f4a0bbbcc8b9cb44a55cff29e07f49ed251e11a896b3e877b4e2d6f9d08f4972
+    candidate_hmm_seconds: 746.353694
+    notebook_elapsed_seconds: 767.339096
+    peak_rss_gb: 2.282776
+    projected_fixed32_seconds: 5970.829552
+    projected_full_seconds: 144232.851372
+    regenerate: false
+    comparison_policy: load_only_never_used_in_candidate_state_or_branch
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp444-acceleration-state-exact-hmm-train/artifacts
+      - /kaggle/input/exp444-acceleration-state-exact-hmm-train/artifacts
+      - experiments/exp444_acceleration_state_exact_hmm/artifacts
+
+scientific_contract:
+  expected_sha256: f4a0bbbcc8b9cb44a55cff29e07f49ed251e11a896b3e877b4e2d6f9d08f4972
+  source: exp444_acceleration_state_exact_hmm
+  state: [tvt_position, u_rate, u_acceleration]
+  position_grid_step_ft: 0.35
+  rate_states: 41
+  rate_span: 0.10
+  rate_transition_family: exact_ornstein_uhlenbeck_full_support_bin_integral
+  rate_momentum: 0.998
+  sig_r: 0.002
+  sig_p: 0.02
+  acceleration_values: [-0.0005, 0.0, 0.0005]
+  acceleration_initial_probability: [0.0, 1.0, 0.0]
+  acceleration_transition:
+    interior_to_lower: 0.08
+    interior_stay: 0.84
+    interior_to_upper: 0.08
+    boundary_outward_policy: add_outward_probability_to_boundary_stay
+  emission_family: gaussian_typewell_gr
+  emission_lambda: 1.0
+  start_sigma_ft: 0.75
+  initial_rate_sigma: 0.01
+  band_pad_ft: 100.0
+  output: smoothed_posterior_mean_and_std
+  forbidden_changes:
+    - acceleration_state_value_count_span_transition_or_initial_prior
+    - rate_state_count_span_transition_parameter_or_boundary_semantics
+    - tvt_grid_position_kernel_noise_emission_prior_or_readout
+    - pruning_threshold_banding_state_removal_or_float_precision_reduction
+    - trigger_selector_blend_viterbi_map_or_truth_direction
+
+model:
+  name: acceleration_state_full_support_ou_exact_hmm_runtime_equivalent
+  estimator: deterministic_exact_forward_backward
+  fitted_model_artifact: false
+  state: [tvt_position, u_rate, u_acceleration]
+  fixed_from_exp441:
+    position_grid_step_ft: 0.35
+    rate_grid: per_well_zero_centered_41_state_parent_grid
+    n_rates: 41
+    rate_span: 0.10
+    rate_span_min: 0.10
+    rate_transition_family: exact_ornstein_uhlenbeck_full_support_bin_integral
+    sig_r: 0.002
+    rate_momentum: 0.998
+    sig_p: 0.02
+    emission_family: gaussian_typewell_gr
+    emission_lambda: 1.0
+    sigma_mode: known_prefix_zero_fill_population_std
+    sigma_clip: [10.0, 60.0]
+    start_sigma_ft: 0.75
+    initial_rate_sigma: 0.01
+    band_pad_ft: 100.0
+    rate_boundary_semantics: preserve_parent_substochastic_outward_mass
+    position_boundary_semantics: preserve_parent_truncation
+    position_mean_formula: r_destination*delta_MD-delta_Z
+    output: smoothed_posterior_mean_and_std
+  active_scientific_variants:
+    - three_state_persistent_acceleration
+  acceleration_state:
+    units: u_rate_per_md_ft
+    values: [-0.0005, 0.0, 0.0005]
+    initial_probability: [0.0, 1.0, 0.0]
+    transition:
+      interior_to_lower: 0.08
+      interior_stay: 0.84
+      interior_to_upper: 0.08
+      boundary_outward_policy: add_outward_probability_to_boundary_stay
+      derivation_note: nominal_exp209_one_ft_rate_move_probability_per_direction
+    destination_rate_mean_formula: exp(-kappa*delta_MD)*r_source+a_destination*delta_MD
+    destination_rate_variance_formula: sig_r^2*(1-exp(-2*kappa*delta_MD))/(2*kappa)
+    position_update_uses: destination_rate
+  forbidden:
+    - acceleration_value_count_span_transition_or_initial_prior_grid
+    - acceleration_trigger_reset_reanchor_or_truth_direction
+    - exp441_rate_kernel_position_grid_noise_emission_prior_or_readout_change
+    - viterbi_map_selector_blend_or_same_oof_rescue
+
+runtime_engine:
+  candidates:
+    - scaled_probability_factorized_cached_outer4
+  candidate_count: 1
+  dtype: float64
+  forward:
+    - acceleration_3x3_matrix
+    - destination_acceleration_conditioned_rate_41x41_matrix
+    - exact_parent_position_five_offset_stencil
+    - exact_parent_gr_emission
+    - per_row_scale_normalization_and_log_scale_record
+  backward: use_saved_forward_scale_with_reverse_factorized_operator
+  joint_dense_transition_materialized: false
+  delta_md_ou_cache:
+    enabled: true
+    key: exact_float64_bit_pattern_within_well
+    rounding_or_quantization: false
+  parallel:
+    outer_well_workers: 4
+    process_isolation: true
+    numba_threads_per_worker: 1
+    omp_threads_per_worker: 1
+    mkl_threads_per_worker: 1
+    openblas_threads_per_worker: 1
+    shared_reduction_across_wells: false
+    output_order: stable_well_id_then_row_idx
+  accelerator: cpu_only
+  gpu: false
+  use_amp: false
+
+gates:
+  stage0a_fixed4_runtime_equivalence:
+    role: target_free_exact_equivalence_repeatability_and_runtime_preflight
+    scientific_variants: 1
+    runtime_engine_candidates: 1
+    repeat_count: 2
+    candidate_hmm_well_runs_per_repeat: 4
+    total_candidate_hmm_well_runs: 8
+    parent_hmm_well_runs: 0
+    runtime_reference:
+      exp444_fixed4_candidate_hmm_seconds: 746.353694
+      minimum_speedup_using_slower_repeat: 4.75
+      fixed32_batches: 8
+      full_773_well_batches: 194
+      projected_fixed32_seconds_max: 3600
+      projected_full_seconds_max: 30600
+      peak_rss_gb_max: 25
+    identity:
+      expected_wells: 4
+      expected_rows: 21962
+      expected_acceleration_states: 3
+      expected_rate_states: 41
+      scientific_contract_sha_exact: true
+    numerical:
+      parent_prediction_mean_max_abs_error_ft: 1.0e-5
+      parent_prediction_std_max_abs_error_ft: 1.0e-5
+      parent_acceleration_posterior_max_abs_error: 1.0e-7
+      parent_rate_diagnostic_max_abs_error: 5.0e-6
+      acceleration_transition_row_sum_max_error: 1.0e-12
+      ou_rate_kernel_parent_max_abs_error: 1.0e-12
+      position_kernel_parent_max_abs_error: 1.0e-12
+      small_dense_prediction_max_abs_error_ft: 1.0e-6
+      small_dense_posterior_max_abs_error: 1.0e-7
+      posterior_normalization_max_error: 1.0e-8
+      finite_coverage_min: 1.0
+    repeatability:
+      decompressed_prediction_sha_identical: true
+      posterior_bundle_sha_identical: true
+      diagnostic_sha_identical: true
+      runtime_gate_uses: slower_repeat
+    leakage:
+      truth_role_fold_episode_cause_reads_before_freeze_max: 0
+    fail_action: >-
+      close_exp458_without_worker_thread_cache_precision_state_parameter
+      _gate_or_favorable_rerun_rescue
+  stage0b_fixed32:
+    prerequisite: stage0a_all_gates_pass_and_separate_user_approval
+    role: mechanism_preflight_only_not_cv_or_promotion
+    scientific_variants: 1
+    selected_runtime_engines: 1
+    total_unique_candidate_hmm_wells: 32
+    reused_stage0a_candidate_wells: 4
+    additional_candidate_hmm_well_runs: 28
+    total_physical_candidate_hmm_well_runs_through_stage0b: 36
+    parent_hmm_well_runs: 0
+    inherit_scientific_gates_from: exp444_acceleration_state_exact_hmm.gates.stage0b_fixed32
+    same_gate_values_required: true
+    fail_action: close_without_runtime_or_scientific_gate_rescue
+  stage1_full_oof:
+    prerequisite: stage0a_and_stage0b_all_gates_pass_and_separate_user_approval
+    scientific_variants: 1
+    selected_runtime_engines: 1
+    candidate_hmm_well_runs: 773
+    parent_hmm_well_runs: 0
+    inherit_scientific_gates_from: exp444_acceleration_state_exact_hmm.gates.stage1_full_oof
+    same_gate_values_required: true
+    fail_action: close_without_blend_selector_or_same_oof_rescue
+
+execution:
+  selected_stage: stage0a_fixed4_runtime_equivalence_completed_fail_closed
+  implementation_authorized: true
+  implementation_approval_source: user_message_implement_exp458_2026_07_30
+  canonical_notebook_adoption_authorized: true
+  canonical_notebook_adoption_approval_source: user_message_execute_exp458_2026_07_30
+  kaggle_package_authorized: true
+  kaggle_package_approval_source: user_message_execute_exp458_2026_07_30
+  stage0a_run_authorized: false
+  stage0a_execution_approval_source: user_message_execute_exp458_2026_07_30
+  stage0b_run_authorized: false
+  stage1_run_authorized: false
+  inference_authorized: false
+  submission_authorized: false
+  run_hmm: false
+  create_prediction: false
+  create_submission: false
+  run_local_notebook: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_remains_unmodified_template_scaffold: true
+  scientific_variants: 1
+  runtime_engine_candidates: 1
+  stage0a_repeat_count: 2
+  stage0a_candidate_hmm_well_runs_per_repeat: 4
+  stage0a_total_candidate_hmm_well_runs: 8
+  parent_control_hmm_well_runs: 0
+  lightgbm_configs: 0
+  trained_ml_folds: 0
+  boosters: 0
+  fitted_models: 0
+  pf_runs: 0
+  beam_runs: 0
+  gpu_runs: 0
+  completed_kernel_id: kentookumura/exp458-accel-state-exact-runtime-eng-audit-train
+  completed_kernel_version: 2
+  completed_kernel_id_no: 129168013
+  stage0a_result: fail_closed_parent_numerical_parity
+
+runtime:
+  use_amp: false
+  num_workers: 4
+  numba_num_threads_per_worker: 1
+  target: kaggle_private_cpu
+  hard_runtime_limit_seconds: 3600
+  peak_rss_limit_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    planned_kernel_id: kentookumura/exp458-accel-state-exact-runtime-eng-audit-train
+    planned_title: exp458 accel state exact runtime eng audit train
+    bootstrap_dependency_files:
+      - source: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+        destination: assets/stage0_fixed32_manifest.csv
+    kernel_sources:
+      - kentookumura/exp444-acceleration-state-exact-hmm-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng
+  stochastic_components: []
+  parallel_rng_policy: no_rng_and_no_cross_well_shared_reduction
+  output_order: stable_well_id_then_row_idx
+  gzip_sha_policy: decompressed_content_sha_primary
+  record:
+    kernel_version: true
+    input_sha: true
+    source_sha: true
+    scientific_contract_sha: true
+    exact_delta_md_key_ledger_sha: true
+    prediction_sha: true
+    posterior_sha: true
+    diagnostic_sha: true
+    runtime_manifest_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - A single successful run is not a deterministic anchor.
+    - Candidate repeat SHAs must match inside the same Stage 0A run.
+    - Model and submission SHA are not applicable because neither artifact is generated.
+
+notes:
+  - Implementation completed as a compact self-contained candidate on 2026-07-30.
+  - The compact train candidate was adopted as the canonical train notebook for the separately authorized Stage 0A run on 2026-07-30.
+  - The inference notebook remains an untouched template scaffold and inference is unauthorized.
+  - Kaggle version 2 completed Stage 0A, but fixed4 parent mean, std and acceleration-posterior parity gates failed; exp458 is terminally closed without rerun or gate rescue.
+  - exp444 remains terminally closed on its original runtime projection.
+  - exp399 v4 is implementation precedent only; its scientific result is not evidence for exp458.
+
+inference:
+  mode: disabled_stage0a_fail_closed
+  selected_variant: null
+  notes:
+    - Stage 0A is runtime-only; hidden-test regeneration and submission remain prohibited.

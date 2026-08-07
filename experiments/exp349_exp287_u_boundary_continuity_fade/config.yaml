@@ -1,0 +1,308 @@
+experiment:
+  name: exp349_exp287_u_boundary_continuity_fade
+  description: >-
+    Audit one fixed target-free U=TVT+Z boundary correction on the saved exp287
+    OOF prediction: clip the first-hidden U gap at 8 ft and exponentially fade
+    the opposite correction over 240 ft of measured depth.
+  route: ml_model
+  status: kaggle_cpu_v2_complete_fail_close_no_rescue
+  created_at: "2026-07-22"
+  updated_at: "2026-07-23"
+
+lineage:
+  parent: exp287_fold_safe_formation_74_addonly_on_exp264
+  steering: ../../.steering/20260722-exp349-exp287-u-boundary-continuity-fade
+  references:
+    - exp125_confidence_gate_continuity_rawtest_parity
+    - exp158_segment_continuity_selector_on_exp157
+    - exp191_typewell_continuity_selector_confidence_replacement_only_on_exp148
+    - exp299_base_posterior_self_gr_boundary_handoff
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md
+  external_reference:
+    kaggle_notebook: phuongncn/kdrill-f594-ucont8
+    kaggle_id_no: 128179543
+    fetched_at: "2026-07-22"
+    fetched_notebook_sha256: a98e718dc8cc3b8e94b74bf76b9d91d3e5af50b59b917d0fef31eb636f46f8ab
+  diff_summary: >-
+    Keeps the saved exp287 OOF prediction, folds, models, raw prefix/suffix,
+    and evaluation scopes fixed. Adds only one deterministic post-composition
+    move based on the current well's first-hidden U gap with cap=8 ft and
+    tau=240 MD-ft. It does not replay the public notebook's contact, overlap,
+    PF/Beam, visible-prefix, model-package, or branch-hedge layers.
+
+implementation:
+  enabled: true
+  scope: compact_selfcontained_candidate_and_contract_tests
+  template_scaffold_created: true
+  scientific_code_created: true
+  compact_source_created: true
+  dedicated_tests_created: true
+  canonical_notebook_scientific_logic_created: true
+  kaggle_package_created: true
+  approvals:
+    implementation: true
+    canonical_notebook_adoption: true
+    kaggle_stage0_run: true
+    inference: false
+    submission: false
+
+validation:
+  strategy: saved_exp287_outer5_group_oof_target_free_postprocess_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  parent_oof_cv: 8.136708220359452
+  parent_oof_rows: 3783989
+  parent_oof_wells: 773
+  parent_oof_sha256: 8f026c5c5f6508fb142981832994c6ba9cded4940168c648a9df9f3e698c3913
+  parent_model_manifest_sha256: 419dbdf83dd6bc343f0265aca56dd690ba1f231ee419e7cf0ff456ffdb797590
+  hidden_like_assignment_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  parent_prediction_column: fold_safe_formation_74_addonly__lgb_mean__pred_tvt
+  truth_column_late_join_only: actual_tvt
+  distance_buckets_md_ft:
+    - [0.0, 64.0]
+    - [64.0, 128.0]
+    - [128.0, 240.0]
+    - [240.0, 480.0]
+    - [480.0, 1000.0]
+    - [1000.0, null]
+  absolute_gap_buckets_ft:
+    - [0.0, 1.0]
+    - [1.0, 2.0]
+    - [2.0, 4.0]
+    - [4.0, 8.0]
+    - [8.0, null]
+  hidden_like_scopes:
+    - verification_like_spatial_role
+    - verification_like_typewell_purged_role
+  leakage_policy:
+    - Build candidate and diagnostics from parent prediction plus current-well MD/Z/TVT_input only.
+    - Do not load target, actual TVT, error, oracle, or hidden-like assignment before prediction and diagnostic SHA freeze.
+    - Do not inspect a same-name training well or training-only formation columns during current-test generation.
+    - Late-join truth only by frozen unique ID after candidate SHA readback succeeds.
+
+data:
+  parent_oof_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp287-foldsafe-form74-addonly-exp264-train/artifacts/fold_safe_formation_oof_predictions.parquet
+    - experiments/exp287_fold_safe_formation_74_addonly_on_exp264/kaggle/output/train_v5/artifacts/fold_safe_formation_oof_predictions.parquet
+  parent_model_manifest_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp287-foldsafe-form74-addonly-exp264-train/artifacts/model_manifest.json
+    - experiments/exp287_fold_safe_formation_74_addonly_on_exp264/kaggle/output/train_v5/artifacts/model_manifest.json
+  hidden_like_assignment_patterns:
+    - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  raw_train_dir_patterns:
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+    - data/raw/train
+  raw_horizontal_columns:
+    - MD
+    - Z
+    - TVT_input
+  id_contract: "{well}_{raw_row_index}"
+  required_prefix_suffix_contract: finite_tvt_input_prefix_followed_by_contiguous_nan_suffix
+
+method:
+  name: fixed_u_boundary_continuity_fade
+  coordinate: U=TVT+Z
+  cap_ft: 8.0
+  tau_md_ft: 240.0
+  application: always_on_all_eligible_wells
+  gap_threshold: null
+  gap_formula: parent_first_hidden_plus_z_first_hidden_minus_last_visible_tvt_input_plus_z_last_visible
+  move_formula: minus_clipped_gap_times_exp_minus_md_distance_over_tau
+  compute_dtype: float64
+  intermediate_reestimation: false
+  additional_prediction_clip: false
+  parameter_search: false
+
+audit:
+  stages:
+    stage_a: target_free_candidate_generation_and_sha_freeze
+    stage_b: late_truth_fold_and_hidden_like_evaluation
+  expected_outputs:
+    - scientific_contract.json
+    - stage_a_input_manifest.json
+    - input_schema_manifest.json
+    - raw_horizontal_ordered_manifest.csv
+    - target_free_candidate.parquet
+    - u_boundary_diagnostics_pretruth.csv
+    - target_free_freeze_manifest.json
+    - pooled_metrics.csv
+    - fold_metrics.csv
+    - distance_bucket_metrics.csv
+    - gap_bucket_metrics.csv
+    - gap_sign_metrics.csv
+    - hidden_like_metrics.csv
+    - by_well_metrics.csv
+    - decision.json
+    - metrics.json
+    - evaluation_input_manifest.json
+    - reproducibility_manifest.json
+
+result:
+  status: FAIL_CLOSE_NO_RESCUE
+  technical_pass: true
+  scientific_pass: false
+  scientific_checks_passed: 11
+  scientific_checks_total: 12
+  failed_scientific_checks:
+    - minimum_pooled_rmse_gain_ft
+  parent_cv: 8.136708220359452
+  candidate_cv: 8.135096925090597
+  pooled_gain_parent_minus_candidate_ft: 0.001611295268855173
+  improving_folds: 5
+  boundary_0_240_gain_ft: 0.1100037776943949
+  by_well_delta_median_ft: -0.00036339573855004303
+  by_well_delta_p95_ft: 0.010450855628319287
+  worst_well_delta_ft: 0.06365134120902072
+  hidden_like_spatial_delta_ft: -0.0020987459012804
+  hidden_like_typewell_purged_delta_ft: -0.0022397025519893
+  maximum_abs_move_tvt_ft: 6.28279052968721
+  stage_a_freeze_manifest_sha256: a1070b4a7f9bcaaa1d973bd10719ee2fe9daf29dce74899e0c67e5f0f2a64d99
+  target_free_candidate_sha256: adf51375d0d9b676dd9b7610528da43a862801632eed3afd61f340b3639fcbce
+  metrics_sha256: 9217bac22f5cb053a1e343402dffe8af1cb6e1eb20e4ba2891737f65e3a920b8
+  closes_direct_u_boundary_fade_branch: true
+  authorizes_inference_or_submission: false
+  kaggle:
+    kernel: kentookumura/exp349-exp287-u-boundary-continuity-fade-train
+    kernel_id_no: 128239658
+    completed_version: 2
+    core_result_seconds: 156.134
+    notebook_total_seconds: 165.895
+    version_1_status: technical_error_before_target_free_freeze
+    version_1_failure: pandas_categorical_astype_return_type_compatibility
+  generated_model: false
+  generated_hidden_test_prediction: false
+  generated_submission: false
+
+execution:
+  active_stage: implementation_complete_no_run
+  allowed_stages:
+    - implementation_complete_no_run
+    - stage0_saved_oof_audit
+  run_approved: false
+  kaggle_push_approved: false
+  run_stage_a_generation: false
+  run_stage_b_evaluation: false
+  run_model_training: false
+  run_inference: false
+  create_submission: false
+  submit_to_kaggle: false
+  active_postprocess_variants: 1
+  reporting_folds: 5
+  trained_folds: 0
+  model_configs: 0
+  trained_models: 0
+  lightgbm_boosters: 0
+  pf_well_runs: 0
+  beam_well_runs: 0
+  hmm_well_runs: 0
+  parent_control_retraining: false
+  enable_gpu: false
+  inference: false
+  submission: false
+
+guards:
+  technical:
+    require_parent_sha_match: true
+    require_parent_row_well_id_cv_parity: true
+    parent_cv_atol: 1.0e-6
+    require_all_wells_prefix_suffix_contract: true
+    require_raw_suffix_oof_exact_alignment: true
+    require_truth_access_before_freeze_zero: true
+    require_finite_output: true
+    max_abs_move_ft: 8.0
+    formula_atol: 1.0e-10
+    require_abs_move_nonincreasing_per_well: true
+    require_first_hidden_abs_u_gap_nonincrease: true
+    require_prediction_diagnostic_sha_readback: true
+  scientific:
+    minimum_pooled_rmse_gain_ft: 0.020
+    minimum_improving_folds: 4
+    minimum_boundary_0_240_rmse_gain_ft: 0.050
+    maximum_240_480_rmse_delta_ft: 0.020
+    maximum_480_1000_rmse_delta_ft: 0.010
+    maximum_1000_plus_rmse_delta_ft: 0.005
+    maximum_hidden_like_spatial_rmse_delta_ft: 0.020
+    maximum_hidden_like_typewell_purged_rmse_delta_ft: 0.020
+    maximum_by_well_median_rmse_delta_ft: 0.0
+    maximum_by_well_p95_rmse_delta_ft: 0.10
+    maximum_worst_well_rmse_delta_ft: 0.50
+    require_large_worsened_well_count_not_above_large_improved_count: true
+    large_well_delta_threshold_ft: 0.25
+  pass_policy: all_technical_and_scientific_checks
+  fail_action: fail_close_no_rescue
+  forbidden:
+    - cap or tau grid search
+    - gap threshold or per-well gate
+    - sign, decay, distance-range, or blend-weight rescue
+    - parent selection between exp287, exp264, exp334, or a public anchor
+    - target, error, oracle, or well-ID-based application
+    - same-name train-well overlap or training-only formation input
+    - public leaderboard parameter tuning
+    - inference or submission before all gates pass and separate approval
+
+model:
+  name: deterministic_postprocess_no_model
+  params:
+    trained_model_count: 0
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  blas_threads: 1
+  batch_size: 0
+  target_platform: kaggle_private_cpu
+  enable_internet: false
+  enable_gpu: false
+  maximum_runtime_minutes: 30
+  maximum_peak_rss_gb: 6
+  actual_core_result_seconds: 156.134
+  actual_notebook_total_seconds: 165.895
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp287-foldsafe-form74-addonly-exp264-train
+    inference_kernel_sources: []
+    bootstrap_dependency_files:
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  deterministic_transform_given_fixed_inputs: true
+  seed_policy: no_rng_fixed_saved_oof_postprocess
+  stochastic_components: []
+  parallel_rng_policy: no_rng_and_single_worker
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  truth_join_policy: after_target_free_prediction_and_diagnostic_sha_freeze
+  record:
+    public_reference_identity: true
+    parent_oof_sha: true
+    parent_model_manifest_sha: true
+    raw_horizontal_ordered_manifest_sha: true
+    input_schema_sha: true
+    config_sha: true
+    target_free_prediction_sha: true
+    target_free_diagnostic_sha: true
+    metrics_sha: true
+    kernel_version: true
+    package_sha: true
+    submission_sha: false
+  notes:
+    - The transformation is deterministic, but exp287 GPU rerun bitwise parity was not established.
+    - A future inference candidate must record test prediction and submission SHA separately.
+    - See docs/06_reproducibility.md.
+
+notes:
+  - The user authorized canonical train Notebook adoption and one Kaggle private CPU Stage 0 run on 2026-07-22.
+  - The approved run contains one deterministic postprocess variant, five reporting folds, zero trained folds/configs/models/boosters, no parent/control retraining, no GPU, and no inference or submission.
+  - The external notebook's 495-well selection and 773-well re-audit are unverified context, not evidence for promotion.
+  - Stage 0 PASS only authorizes an inference review; inference and submission still require separate approval.
+  - Kaggle CPU version 2 completed on 2026-07-22 UTC with all technical gates and 11/12 scientific gates passing.
+  - Pooled gain was only 0.001611295 ft versus the preregistered 0.020 ft minimum, so the direct fixed U-boundary fade is closed without rescue, inference, or submission.

@@ -1,0 +1,230 @@
+experiment:
+  name: exp453_huber_exact_hmm_direct_public_lb_audit
+  description: >-
+    Design-frozen direct Public-LB audit of the exp389 absolute-TVT exact HMM
+    with fixed delta=1.345 Huber row emission. The frozen physical candidate is
+    exposed as a standalone submission without retraining, control replay,
+    blending, selection, gating, or postprocess.
+  hypothesis: >-
+    The small but fold-consistent 0.085546105 ft OOF gain from Huber emission
+    may transfer to Public LB despite failing by-well p95 and worst-well guards.
+  route: pf_beam
+  status: design_frozen_implementation_not_started
+  created_at: "2026-07-30"
+  updated_at: "2026-07-30"
+
+lineage:
+  parent: exp389_exp209_huber_exact_hmm_emission
+  scientific_control: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  public_lb_control: exp434_physics_candidate_public_lb_audit
+  sibling_reference: exp374_exp209_student_t_exact_hmm_emission
+  steering: ../../.steering/20260730-exp453-huber-exact-hmm-direct-public-lb-audit
+  references:
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp374_exp209_student_t_exact_hmm_emission
+    - exp389_exp209_huber_exact_hmm_emission
+    - exp434_physics_candidate_public_lb_audit
+    - docs/06_reproducibility.md
+  diff_summary: >-
+    Do not create or tune a new HMM. Port exactly the frozen exp389
+    delta=1.345 Huber emission candidate to dynamic current/hidden-test
+    inference and expose its posterior-mean TVT directly. The exp209
+    coordinate, lattice, rate process, transitions, prior, sigma, GR
+    preprocessing, and readout remain unchanged. No Gaussian or Student-t
+    control, blend, selector, gate, model, or postprocess is executed.
+
+implementation:
+  design_approval_received: true
+  design_approval_source: user_message_2026_07_30_create_three_backlogs_experiments_steering_design_only
+  implementation_approval_received: false
+  scaffold_created: true
+  notebook_placeholders_only: true
+  code_created: false
+  tests_created: false
+  kaggle_package_created: false
+  kaggle_run_started: false
+  submission_file_created: false
+  competition_submission_started: false
+  training_enabled: false
+  inference_enabled: false
+  submission_enabled: false
+
+notebook_contract:
+  physical_model_count: 1
+  future_executable_evaluation_notebook_count: 1
+  canonical_evaluation_notebook: exp453_huber_exact_hmm_direct_public_lb_audit_inference.ipynb
+  train_notebook_role: template_scaffold_only_not_executable
+  implementation_source_format: jupytext_percent_compact_selfcontained
+  canonical_notebook_adoption_requires_separate_approval: true
+
+validation:
+  strategy: frozen_train_side_candidate_to_direct_public_lb_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  public_lb_display_precision: 3
+  no_new_train_side_scoring: true
+  train_side_evidence:
+    control_id: exp209_gaussian_exact_hmm
+    control_rmse: 11.938287234887435
+    candidate_id: huber_delta1p345_on_exp209_absolute_tvt
+    candidate_rmse: 11.852741129500146
+    improvement_ft: 0.08554610538728902
+    improved_folds: 5
+    total_folds: 5
+    by_well_delta_p95_ft: 0.0022343508818599006
+    worst_well_delta_ft: 1.7502482022987582
+    improved_wells: 411
+    regressed_wells: 362
+  public_lb_audit:
+    candidate_id: huber_delta1p345_on_exp209_absolute_tvt
+    parent_control_id: exp434_exact_hmm
+    order_within_three_candidate_backlog: 2
+    descriptive_only: true
+    lower_is_better: true
+    tie_policy: displayed_three_decimal_tie_is_inconclusive
+    forbid_adaptation_after_any_lb: true
+  leakage_policy:
+    - Decoder may read raw horizontal MD, Z, GR, TVT_input and Type Well TVT/GR but never horizontal suffix TVT or error.
+    - Fold and hidden-like assignments are reporting-only train evidence and are absent from current-test inference.
+    - Candidate identity, schema, and logical content SHA are frozen before submission construction.
+    - Public LB cannot change delta, scale, clip, sigma, grid, transition, prior, readout, gate, or candidate formula.
+
+data:
+  raw_dir: data/raw
+  test_dir: data/raw/test
+  target_column: TVT
+  id_column: id
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  pinned_source:
+    train_path: experiments/exp389_exp209_huber_exact_hmm_emission/exp389_exp209_huber_exact_hmm_emission_compact_selfcontained_train.py
+    train_sha256: 107b528e0ddd5feb5b69171df7226b2112ab804a0436ceeae814bd9cb2b38c85
+    inference_path: experiments/exp389_exp209_huber_exact_hmm_emission/exp389_exp209_huber_exact_hmm_emission_compact_selfcontained_inference.py
+    inference_sha256: dfb3f2c95e504370d9b0ede5995075bfe924aea51e1a58ca641a93127871f68b
+    config_path: experiments/exp389_exp209_huber_exact_hmm_emission/config.yaml
+    config_sha256: 0b3ad847435ea90049bd825adea5b4a0936a73f2bebbf65ad4416b38e65917e1
+  hidden_runtime_contract:
+    row_and_id_source: sample_submission
+    well_count_policy: dynamic_nonempty
+    forbid_public_fixed_row_count: true
+    forbid_public_fixed_well_count: true
+  forbidden_inference_inputs:
+    - horizontal_suffix_tvt
+    - error
+    - abs_error
+    - fold
+    - hidden_like_role
+    - exp226_tvt_geop
+
+model:
+  name: frozen_exp389_huber_delta1p345_exact_hmm_direct
+  estimator: deterministic_exact_forward_backward
+  active_variants: [huber_delta1p345_on_exp209_absolute_tvt]
+  emission:
+    family: huber
+    delta: 1.345
+    formula: "-0.5*z^2 if abs(z)<=delta else -(delta*abs(z)-0.5*delta^2)"
+    normalization_constant: omitted_as_state_independent
+    additional_clip: none
+    temperature: 1.0
+    likelihood_weight: 1.0
+  fixed_hmm:
+    coordinate: absolute_tvt
+    grid_step_ft: 0.35
+    band_pad_ft: 100.0
+    rate_states: 41
+    rate_center: zero
+    rate_span_contract: max_0p10_abs_prefix_initial_rate_plus_0p04
+    sig_r: 0.002
+    sig_p: 0.02
+    lam: 1.0
+    start_sig: 0.75
+    r0_sig: 0.01
+    momentum: 0.998
+    sigma_mode: known_prefix_zero_fill_population_std
+    sigma_clip: [10.0, 60.0]
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+    output: posterior_mean
+  execution_count:
+    scientific_variants: 1
+    train_runs: 0
+    gaussian_control_reruns: 0
+    student_t_runs: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+    pf_runs: 0
+    beam_runs: 0
+
+guards:
+  technical:
+    require_pinned_source_sha: true
+    require_sample_submission_id_set: true
+    require_unique_ids: true
+    require_finite_coverage: 1.0
+    require_posterior_normalization: true
+    require_all_well_status_pass: true
+    require_fallback_rows: 0
+    require_fallback_wells: 0
+    require_hmm_runs_equal_test_wells: true
+    require_control_runs_zero: true
+    require_prediction_sha: true
+    require_submission_sha: true
+    require_submit_check: true
+  forbidden:
+    - delta_scale_temperature_or_clip_search
+    - sigma_grid_transition_prior_or_readout_change
+    - gaussian_student_t_or_exp357_control_run
+    - blend_selector_gate_or_postprocess
+    - ml_training_or_parent_control_rerun
+    - public_fixed_cardinality_assert
+    - lb_adaptive_candidate_change
+
+submission_plan:
+  candidate_count: 1
+  candidate_id: huber_delta1p345_on_exp209_absolute_tvt
+  order_within_three_candidate_backlog: 2
+  generate_submission_file_approved: false
+  competition_submission_approved: false
+  monitoring_approved: false
+  automatic_promotion: false
+
+runtime:
+  device: cpu
+  use_amp: false
+  num_workers: 1
+  numba_num_threads: 2
+  batch_size: 1
+  enable_internet: false
+  enable_gpu: false
+  maximum_seconds: 30600
+  train_reference_runtime_seconds_773_wells: 19417.245940208435
+  kernel_id: kentookumura/exp453-huber-exact-hmm-direct-lb-audit-inference
+  kernel_title: exp453 huber exact hmm direct lb audit inference
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_fixed_sorted_well_row_grid_rate_and_variant_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_numba_threads_and_stable_well_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Deterministic anchor may be claimed only after an independent rerun establishes identical prediction and submission SHA.
+    - No inference output exists yet; source SHA and exact configuration are the design anchors.
+
+notes:
+  - Design only. No implementation, Kaggle execution, output generation, or external submission has been authorized.
+  - The exp434 exact_hmm Public LB is the sole direct control and cannot tune this candidate.

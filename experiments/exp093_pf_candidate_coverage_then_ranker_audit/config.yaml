@@ -1,0 +1,179 @@
+experiment:
+  name: "exp093_pf_candidate_coverage_then_ranker_audit"
+  description: Measure whether PF/Beam/likelihood-PF candidate sets contain near-truth TVT trajectories before training any candidate ranker.
+  route: pf_beam
+  status: planned
+  created_at: "2026-06-20"
+  updated_at: "2026-06-20"
+
+lineage:
+  parent: exp091_self_gr_likelihood_pf_beam_probe
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  diagnostic_parents:
+    - exp056_public_sel15_pf_oof_multicutoff_artifact
+    - exp083_pf_beam_true_tvt_2d_well_eda
+    - exp087_prefix_backtest_tvt_confidence
+    - exp091_self_gr_likelihood_pf_beam_probe
+  implementation_source: pf_candidate_coverage_then_ranker_audit.py
+  diff_summary: Keeps the exp072 deterministic PF/Beam/likelihood-PF train cache fixed, compares baseline PF/Beam candidates against baseline+self-GR candidate sets, and reports oracle coverage, target-free rank-score coverage, weak buckets, and the next branch decision before any supervised ranker.
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation:
+  strategy: train_well_pseudotail_candidate_coverage_audit
+  metric: rmse
+  secondary_metrics:
+    - topk_within_1ft
+    - topk_within_2ft
+    - topk_within_5ft
+    - topk_within_10ft
+    - oracle_rank_headroom
+    - weak_bucket_coverage
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Existing PF/Beam/likelihood-PF candidates are read from exp072's raw-train-only deterministic feature cache.
+    - Same-horizontal-well self-GR candidates use raw horizontal GR, row index, and finite prefix TVT_input only.
+    - Evaluation-zone true TVT is materialized as last_known_tvt + target only for coverage, oracle headroom, and miss-rate diagnostics.
+    - Candidate ranking scores use target-free diagnostics only; supervised ranker training is intentionally out of scope.
+    - This experiment does not create an inference notebook candidate or submission.
+
+# Common paths and submission columns come from project.yml.
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp056_well_summary_local: experiments/exp056_public_sel15_pf_oof_multicutoff_artifact/artifacts/public_sel15_pf_oof_well_summary.csv
+  exp083_well_summary_local: experiments/exp083_pf_beam_true_tvt_2d_well_eda/artifacts/pf_beam_true_tvt_2d_well_eda_clean_all_well_summary.csv
+
+model:
+  name: none_candidate_coverage_audit_only
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  target: true_tvt_for_scoring_only
+  base_prediction: last_known_tvt
+  estimator: none
+  self_gr_candidate:
+    half_windows: [8, 15, 25]
+    stride: 3
+    prefix_tail_rows: 2048
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_candidate_audit
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+  parallel_rng_policy: no_parallel_rng_in_exp093
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - This is a train-side audit, not a deterministic submission anchor.
+    - Source gzip cache decompressed content SHA is recorded in the summary JSON.
+
+audit:
+  mode: pf_candidate_coverage_then_ranker_readiness
+  output_prefix: exp093_pf_candidate_coverage_then_ranker_audit
+  max_rows: null
+  save_candidate_long: true
+  thresholds_ft: [1, 2, 5, 10]
+  topk_values: [1, 2, 3, 5, 10]
+  primary_threshold_ft: 10
+  min_topk_coverage: 0.90
+  min_oracle_rmse_gain: 1.0
+  extra_source_columns:
+    - md_since
+    - eval_len
+    - pf_ancc_std
+    - likpf_mean_d
+  candidates:
+    - name: last_anchor_tvt
+      role: anchor
+      source_column: last_known_tvt
+      transform: absolute
+      enabled: true
+    - name: pf_ancc
+      role: selected_pf
+      source_column: pf_ancc
+      transform: absolute
+      enabled: true
+    - name: beam_mean
+      role: selected_beam
+      source_column: beam_mean_d
+      transform: base_plus_delta
+      enabled: true
+    - name: likpf_mean
+      role: likelihood_pf
+      source_column: likpf_mean_d
+      transform: base_plus_delta
+      enabled: true
+    - name: sc_ens
+      role: ncc_scale_ensemble
+      source_column: sc_ens_d
+      transform: base_plus_delta
+      enabled: true
+    - name: hyb
+      role: public_hybrid
+      source_column: hyb_d
+      transform: base_plus_delta
+      enabled: true
+  candidate_sets:
+    - name: baseline_primary
+      candidates: [pf_ancc, beam_mean, likpf_mean, sc_ens, hyb]
+    - name: baseline_plus_self_gr
+      candidates:
+        - pf_ancc
+        - beam_mean
+        - likpf_mean
+        - sc_ens
+        - hyb
+        - self_gr_ens
+        - self_gr_best
+        - self_gr_sc8
+        - self_gr_sc15
+        - self_gr_sc25
+  expected_train_artifacts:
+    - exp093_pf_candidate_coverage_then_ranker_audit_candidate_metrics.csv
+    - exp093_pf_candidate_coverage_then_ranker_audit_rank_metrics.csv
+    - exp093_pf_candidate_coverage_then_ranker_audit_bucket_metrics.csv
+    - exp093_pf_candidate_coverage_then_ranker_audit_candidate_set_bucket_metrics.csv
+    - exp093_pf_candidate_coverage_then_ranker_audit_by_well.csv
+    - exp093_pf_candidate_coverage_then_ranker_audit_self_gr_well_summary.csv
+    - exp093_pf_candidate_coverage_then_ranker_audit_row_context.csv.gz
+    - exp093_pf_candidate_coverage_then_ranker_audit_candidate_long.csv.gz
+    - exp093_pf_candidate_coverage_then_ranker_audit_feature_schema.csv
+    - exp093_pf_candidate_coverage_then_ranker_audit_summary.json
+
+inference:
+  mode: not_selected_candidate_audit_only
+  selected_variant: null
+  notes:
+    - This experiment is train-side diagnostic only.
+    - If candidate coverage is strong in targeted buckets, create a follow-up supervised ranker or N-way classifier before any inference port.
+
+notes:
+  - Implements the backlog item pf_candidate_coverage_then_ranker_audit.
+  - Does not directly replace TVT predictions, train a hidden branch, or submit.
+  - Coverage failure should be treated as candidate-generation failure, not as a reason to tune a learned ranker.

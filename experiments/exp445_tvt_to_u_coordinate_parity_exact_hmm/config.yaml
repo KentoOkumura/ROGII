@@ -1,0 +1,253 @@
+experiment:
+  name: exp445_tvt_to_u_coordinate_parity_exact_hmm
+  description: >-
+    Re-express exp209's fixed TVT position state as the row-shifted coordinate
+    U_t,j=parent_TVT_grid_j+Z_t without changing any state-index transition,
+    emission, prior, posterior, or TVT readout, and verify exact numerical
+    parity rather than predictive improvement.
+  route: pf_beam
+  status: coordinate_parity_verified_v2
+  created_at: "2026-07-29"
+  updated_at: "2026-07-30"
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  comparison_reference: exp438_u_state_fixed_lattice_exact_hmm
+  steering: ../../.steering/20260729-exp445-tvt-to-u-coordinate-parity-exact-hmm
+  diff_summary: >-
+    Apply no scientific model change. Keep the parent's fixed TVT index lattice
+    P_j and represent each row's candidate state value as U_t,j=P_j+Z_t. This
+    preserves the parent index-space transition mean r_current*delta_MD-delta_Z,
+    all probabilities and posterior indices, and the TVT readout. Unlike exp438,
+    no fixed absolute-U lattice is introduced.
+
+design:
+  scope: canonical_selfcontained_fixed32_coordinate_parity_execution
+  design_confirmed: true
+  implementation_authorized: true
+  implementation_approval_source: user_message_implement_exp445_2026_07_29
+  canonical_notebook_adoption_authorized: true
+  canonical_notebook_adoption_source: user_message_execute_exp445_2026_07_30
+  kaggle_package_authorized: true
+  kaggle_package_approval_source: user_message_execute_exp445_2026_07_30
+  kaggle_run_authorized: true
+  kaggle_run_approval_source: user_message_execute_exp445_2026_07_30
+  inference_authorized: false
+  submission_authorized: false
+  role: technical_coordinate_parity_audit_not_cv_or_promotion
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  id_column: id
+  target_column: TVT
+  submission_target_column: tvt
+  fixed32_manifest:
+    filename: stage0_fixed32_manifest.csv
+    local: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+    expected_sha256: fbbc62b7cb79e16a7fb436f3a9d11f8975e935ad2475a17e2dec4fd7b142e4d6
+    wells: 32
+    truth_fold_role_columns_read: false
+
+model:
+  name: row_shifted_u_coordinate_parity_exact_hmm
+  estimator: deterministic_exact_forward_backward
+  parent_state: [tvt_position, u_rate]
+  candidate_state: [row_shifted_u_position, u_rate]
+  coordinate:
+    formula: U=TVT+Z
+    parent_tvt_grid_formula: P_j
+    candidate_u_grid_formula: U_t_j=P_j+Z_t
+    candidate_tvt_view_formula: U_t_j-Z_t=P_j
+    candidate_grid_is_fixed_absolute_u: false
+    candidate_grid_translation_source: known_row_Z_only
+    cell_index_identity: parent_j_equals_candidate_j
+    continuous_equivalence: exact
+    discrete_equivalence: exact
+    scientific_difference: none_coordinate_relabel_only
+  transition:
+    rate_definition: r_U=d(TVT+Z)/dMD
+    parent_index_mean_formula: r_current*delta_MD-delta_Z
+    candidate_physical_u_edge_formula: (P_k-P_j)+delta_Z
+    candidate_index_mean_formula: r_current*delta_MD-delta_Z
+    physical_edge_residual_identity: >-
+      ((P_k-P_j)+delta_Z)-r_current*delta_MD
+      ==(P_k-P_j)-(r_current*delta_MD-delta_Z)
+    integration: arrival_rate
+  emission:
+    parent_formula: GR_typewell(P_j)
+    candidate_formula: GR_typewell(U_t_j-Z_t)
+    identity: GR_typewell(U_t_j-Z_t)==GR_typewell(P_j)
+  readout:
+    parent_tvt: E_P
+    candidate_u: E_U
+    candidate_tvt: E_U-Z_t
+    identity: E_U-Z_t==E_P
+    posterior_normalization: explicit_before_coordinate_expectation
+    parent_exp209_raw_matrix_product: report_only_numerical_ledger
+  fixed_from_exp209:
+    position_grid_step_ft: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    effective_position_sigma_ft: 0.1225
+    position_kernel_cells: 5
+    momentum: 0.998
+    emission: gaussian_typewell_gr
+    emission_lambda: 1.0
+    start_sigma_ft: 0.75
+    initial_rate_sigma: 0.01
+    band_pad_ft: 100.0
+    rate_center: zero
+    output: smoothed_posterior_mean_and_std
+  forbidden:
+    - fixed_absolute_u_grid
+    - last_known_z_anchored_u_grid
+    - candidate_index_mean_r_times_delta_md_without_minus_delta_z
+    - row_adaptive_cell_addition_or_removal
+    - interpolation_transport
+    - reanchor_or_reset
+    - grid_step_phase_band_or_state_count_change
+    - rate_noise_emission_prior_or_readout_change
+    - truth_error_fold_role_or_episode_selection
+    - blend_selector_pf_beam_ml_inference_or_submission
+
+validation:
+  strategy: fixed32_truth_free_coordinate_parity
+  seed: 42
+  reporting_folds: 0
+  score_rows: none
+  suffix_truth_reads: 0
+  fold_reads: 0
+  role_reads: 0
+  episode_reads: 0
+  expected_manifest_wells: 32
+  paired_parent_candidate_runs: true
+  gates:
+    coordinate_tvt_equals_u_minus_z_max_abs_ft: 1.0e-12
+    physical_edge_residual_identity_max_abs_ft: 1.0e-12
+    emission_max_abs: 1.0e-12
+    initial_prior_max_abs: 1.0e-12
+    rate_kernel_max_abs: 1.0e-12
+    position_kernel_max_abs: 1.0e-12
+    brute_force_loglik_posterior_max_abs: 1.0e-6
+    real_log_likelihood_max_abs: 1.0e-6
+    smoothed_position_posterior_max_abs: 1.0e-8
+    smoothed_rate_posterior_max_abs: 1.0e-8
+    tvt_mean_std_max_abs_ft: 1.0e-6
+    candidate_u_minus_z_readout_max_abs_ft: 1.0e-6
+    finite_coverage_min: 1.0
+    readback_sha_match_required: true
+  pass_action: complete_as_coordinate_parity_verified_without_cv_or_candidate_promotion
+  fail_action: technical_parity_failed_no_parameter_rescue_cv_inference_or_submission
+
+execution:
+  selected_stage: stage_0_fixed32
+  run_hmm: false
+  create_prediction: false
+  create_submission: false
+  coordinate_candidates: 1
+  manifest_wells: 32
+  candidate_hmm_well_runs: 32
+  paired_parent_hmm_well_runs: 32
+  total_hmm_well_runs: 64
+  reporting_folds: 0
+  lightgbm_configs: 0
+  trained_ml_folds: 0
+  boosters: 0
+  fitted_models: 0
+  pf_runs: 0
+  beam_runs: 0
+  gpu_runs: 0
+  full_oof_stage: none
+
+runtime:
+  target: kaggle_private_cpu
+  accelerator: cpu
+  internet: false
+  use_amp: false
+  num_workers: 1
+  numba_threads_per_worker: 1
+  implementation_approved: true
+  run_approved: false
+  inference_enabled: false
+  submission_enabled: false
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp445-tvt-to-u-coordinate-parity-exact-hmm-train
+    train_title: exp445 tvt to u coordinate parity exact hmm train
+    bootstrap_dependency_files:
+      - source: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+        destination: assets/stage0_fixed32_manifest.csv
+    train_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_fixed_well_row_position_rate_edge_and_message_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_cpu_one_worker_numba_one_thread
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    coordinate_ledger_sha: true
+    transition_emission_sha: true
+    posterior_sha: true
+    prediction_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - The first run is not a deterministic parity anchor.
+    - Require an independent rerun with matching input, posterior, and prediction SHAs.
+    - Model and submission SHAs are not applicable because no model is fitted and no submission is created.
+
+implementation:
+  compact_train_candidate: exp445_tvt_to_u_coordinate_parity_exact_hmm_compact_selfcontained_train.py
+  compact_train_notebook_candidate: exp445_tvt_to_u_coordinate_parity_exact_hmm_compact_selfcontained_train.ipynb
+  compact_inference_guard_candidate: exp445_tvt_to_u_coordinate_parity_exact_hmm_compact_selfcontained_inference.py
+  compact_inference_guard_notebook_candidate: exp445_tvt_to_u_coordinate_parity_exact_hmm_compact_selfcontained_inference.ipynb
+  dedicated_test: ../../tests/test_exp445_tvt_to_u_coordinate_parity_exact_hmm.py
+  dedicated_tests_passed: 17
+  related_exp438_exp445_tests_passed: 29
+  jupytext_test: passed
+  py_compile: passed
+  ruff_f821: passed
+  strict_experiment_validation: passed
+  project_template_validation: passed
+  project_strict_config_validation: passed
+  full_test_suite: collection_blocked_by_5_unrelated_existing_contract_errors
+  full_test_collection_errors: [exp297, exp301, exp333, exp336, exp349]
+  canonical_notebooks_modified: true
+  kaggle_package_created: true
+  kaggle_push_completed: true
+  kaggle_run_completed: true
+  parity_result_available: true
+
+artifacts:
+  status: coordinate_parity_verified_v2
+  local_output: artifacts/kaggle_v2
+  kaggle_kernel_id: kentookumura/exp445-tvt-to-u-coordinate-parity-exact-hmm-train
+  kaggle_kernel_id_no: 129095337
+  kaggle_kernel_version: 2
+  kaggle_status: complete
+  metrics_sha256: 51786ac378eaf9366eeee62e3d9466c7584a0667fd9d32bc1d9fc7d690a3d783
+  stage0_report_sha256: acfa67077273adb911e6f9bf56da0479d804ca30dacb9534dd524690a4b695e1
+  prediction_raw_sha256: 28ef89ea955f644ebda14e92d05acc8c72c63c6288d3ce0f0fd840b06567f889
+  prediction_decompressed_sha256: 88c642571023dc2560ad57a59580df74977e4fe021fb0c5faa41455acc7a240c
+  posterior_ledger_decompressed_sha256: a3fdf9ceae971f1df47dda862a344cd000977d4c4a472d3605633bca89c00898
+  transition_ledger_decompressed_sha256: 8c698a7d501cc94d9fca76680fce9ea0a1f35db7d84924a9ddcdb21b13872824
+
+notes:
+  - Passing parity does not improve or promote exp209 and does not rehabilitate exp438.
+  - User execution approval on 2026-07-30 authorizes canonical notebook adoption, Kaggle packaging, and one fixed32 Stage 0 run.
+  - Inference and submission remain permanently disabled.
+  - Version 1 failed before any HMM well-run because NUMBA_NUM_THREADS was changed after Numba initialization.
+  - Version 2 completed with all 16 technical gates passing; run flags were relocked afterward.
+  - Version 2 is the first successful run and is not a deterministic parity anchor without an independent rerun.

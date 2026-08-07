@@ -1,0 +1,83 @@
+{
+  "experiment": "exp363_sticky_gr_reliability_exact_hmm",
+  "route": "pf_beam",
+  "status": "stage_0_failed_close_without_rescue",
+  "created_at": "2026-07-23",
+  "updated_at": "2026-07-24",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "bad10_auc",
+  "key_idea": "saved exp209 path上のsticky GR reliability識別力をtruth-late-joinで先行監査する",
+  "kaggle": {
+    "kernel_id": "kentookumura/exp363-sticky-gr-reliability-exact-hmm-train",
+    "kernel_version": 1,
+    "kernel_id_no": 128370770,
+    "url": "https://www.kaggle.com/code/kentookumura/exp363-sticky-gr-reliability-exact-hmm-train",
+    "status": "COMPLETE",
+    "cpu_only": true,
+    "internet_enabled": false,
+    "runtime_seconds": 497.0825231075287
+  },
+  "execution_contract": {
+    "diagnostic_variants": 1,
+    "reporting_folds": 5,
+    "hmm_well_runs": 0,
+    "model_configs": 0,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "parent_control_reruns": 0
+  },
+  "stage_0": {
+    "decision": "stage_0_failed_close_without_rescue",
+    "technical_pass": true,
+    "scientific_pass": false,
+    "stage_1_eligible": false,
+    "rows": 3783989,
+    "wells": 773,
+    "blocks": 15174,
+    "bad_blocks": 3532,
+    "good_blocks": 11642,
+    "bad_block_rate": 0.23276657440358509,
+    "real_bad10_auc": 0.6075519952264062,
+    "circular_bad10_auc": 0.5839957758286425,
+    "real_minus_circular_auc": 0.023556219397763756,
+    "q1_mean_block_rmse_ft": 5.240148160093756,
+    "q4_mean_block_rmse_ft": 10.056454486127965,
+    "q4_minus_q1_mean_block_rmse_ft": 4.816306326034209,
+    "passing_folds_auc_gt_0p50": 5,
+    "hidden_like_spatial_auc": 0.5460579716716817,
+    "hidden_like_typewell_purged_auc": 0.5521945394145014,
+    "row_weighted_weak_mass": 0.5894409974648201,
+    "failed_scientific_checks": [
+      "hidden_like_spatial_auc_below_0p55",
+      "row_weighted_weak_mass_above_0p50"
+    ],
+    "fold_bad10_auc": {
+      "fold_0": 0.6087117277320985,
+      "fold_1": 0.6192575557572257,
+      "fold_2": 0.5415167925212471,
+      "fold_3": 0.6271913510762214,
+      "fold_4": 0.6368792592366226
+    }
+  },
+  "reproducibility": {
+    "artifact_directory": "kaggle/output/train_v1/artifacts",
+    "scientific_contract_content_sha256": "bd0ed5b8d0c916fcda75cd791786da82b597d89a2fe2186760dc24131aecdbe2",
+    "block_ledger_content_sha256": "967c495f91a6c4ff1aa5f897207c0bf0437a48cb201d82f8f3680981b4434843",
+    "weak_posterior_content_sha256": "38e1fdaca08513143e281b53f43c6c4d64a621392fca4e47f2f5a3e682a83337",
+    "late_truth_block_readout_content_sha256": "672ab37aa3b94984e67c842a6c282bbd680cc1018407c6bf86e1fec2df5ed89c",
+    "stage0_gate_raw_sha256": "0a00934e1b3b3b1175fbe4ff5b7bf1c8a94bce67f4093eb6c32612fa018bb3a5",
+    "downloaded_summary_raw_sha256": "248ca4197c29459989eea263ed5123445d1c5d3c0ef980427ce10da43b8834ce",
+    "downloaded_metrics_raw_sha256": "b40db305d4780847b7be74b01ff55330286032dad5c8fd2b884eadf657df512c",
+    "kernel_log_raw_sha256": "10fbdc812486944a20cab6660e6c0bd3dc3be26836ca04f05642c7446ab453c9",
+    "deterministic_anchor": false,
+    "rerun_parity_checked": false
+  },
+  "canonical_notebook_adopted": true,
+  "stage_1_implemented": false,
+  "inference_enabled": false,
+  "submission_enabled": false,
+  "notes": "Kaggle CPU version 1 completed. Technical checks passed, but hidden-like spatial AUC was 0.546058 against the >=0.55 gate and row-weighted weak mass was 0.589441 against the <=0.50 gate. Stage 1 is ineligible; no rescue, inference, or submission is performed."
+}

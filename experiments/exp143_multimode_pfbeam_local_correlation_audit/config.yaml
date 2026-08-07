@@ -1,0 +1,207 @@
+experiment:
+  name: "exp143_multimode_pfbeam_local_correlation_audit"
+  description: "Scoped train-side diagnostic audit for PF/Beam mode collapse and local GR-correlation diversity on representative exp072 pseudo-tail wells."
+  route: pf_beam
+  status: completed_scoped_train_side_diagnostic_no_submit
+  created_at: "2026-06-27"
+  updated_at: "2026-06-28"
+
+lineage:
+  parent: exp142_trajectory_aware_pf_transition_prior
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  secondary_parents:
+    - exp083_pf_beam_true_tvt_2d_well_eda
+    - exp106_strict_exp072_pf_z_multiseed_scale_cache
+    - exp141_z_driven_pf_z_candidate_gate
+  implementation_source: multimode_pfbeam_local_correlation_audit.py
+  diff_summary: >
+    Implements the KAGGLE_DIRECTION backlog item multimode_pfbeam_local_correlation_audit.
+    It keeps the exp072 strict PF-Z parity and exp142-style multiseed PF-Z variants as
+    candidate controls, but the new evidence is diagnostic: seed/path mode count,
+    p90-p10 TVT spread, local GR-correlation topK spread, local-correlation entropy,
+    effective sample size, resampling count, and particle collapse rate. This experiment
+    does not train a model, port inference, or submit.
+
+validation:
+  strategy: train_well_pseudotail_pfbeam_mode_collapse_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_1ft
+    - within_2ft
+    - within_5ft
+    - within_10ft
+    - seed_mode_count_by_row
+    - seed_mode_entropy_by_row
+    - topk_tvt_spread_by_local_gr_correlation
+    - local_gr_correlation_mean
+    - local_gr_correlation_max
+    - effective_sample_size
+    - resample_count
+    - collapse_rate
+    - bucket_rmse_by_md_since
+    - bucket_rmse_by_row_idx
+    - bucket_rmse_by_abs_dzdmd
+    - bucket_rmse_by_abs_d2zdmd2
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp072_rows
+  leakage_policy:
+    - Existing exp072 pf_z, pf_ancc, beam, and likpf candidates are read from the raw-train-only exp072 feature cache.
+    - Strict PF-Z parity and multimode PF candidates use raw horizontal/typewell files, finite prefix TVT_input rows, GR, MD, and Z only.
+    - Local GR correlation uses target-free eval-zone GR windows and typewell GR windows centered at candidate TVT.
+    - Evaluation-zone true TVT is reconstructed only as last_known_tvt + target for scoring and oracle diagnostics.
+    - This is train-side diagnostic only; true TVT is never used to choose an inference rule.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+model:
+  name: multimode_pfbeam_local_correlation_audit
+  estimator: none_particle_filter_candidate_audit
+  target: true_tvt_for_scoring_only
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  strict_pf_z:
+    n_particles: 300
+    n_seeds: 8
+    scales: [3.0, 5.0, 8.0, 12.0]
+    gr_grid_step: 0.2
+    momentum: 0.993
+    velocity_noise: 0.005
+    position_noise: 0.01
+    gr_smooth_window: 5
+    gr_smooth_weight: 0.3
+    rough_position: 0.2
+    rough_velocity: 0.003
+    resample_threshold: 0.5
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+    parity_abs_max_tolerance: 1.0e-4
+    parity_rmse_tolerance: 1.0e-5
+    require_parity_for_full: true
+  multimode_pf_z:
+    n_particles: 300
+    n_seeds: 8
+    scales: [3.0, 8.0]
+    prefix_tail_rows: 50
+    momentum: 0.993
+    velocity_noise: 0.005
+    position_noise: 0.01
+    gr_smooth_weight: 0.3
+    rough_position: 0.2
+    rough_velocity: 0.003
+    resample_threshold: 0.5
+    collapse_std_threshold: 0.25
+    mode_bin_width_ft: 5.0
+    topk_mode_paths: 5
+    local_corr_window_rows: 5
+    transition_variants:
+      - name: zmean_s006_noise025
+        transition_strength: 0.06
+        z_accel_gain: 0.0
+        prefix_slope_strength: 0.02
+        velocity_noise_gain: 0.25
+        position_noise_gain: 0.10
+        likelihood_sigma_gain: 0.10
+        curve_clip: 3.0
+      - name: zacc_s010_a020_noise050
+        transition_strength: 0.10
+        z_accel_gain: 0.20
+        prefix_slope_strength: 0.02
+        velocity_noise_gain: 0.50
+        position_noise_gain: 0.20
+        likelihood_sigma_gain: 0.20
+        curve_clip: 4.0
+
+runtime:
+  use_amp: false
+  num_workers: 4
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  parity_seed_policy: exp072_stable_seed_pf_z_well
+  seed_policy: stable_sha256_seed_from_experiment_multimode_pfbeam_local_correlation_well_variant_seed_index
+  stochastic_components:
+    - strict_pf_z_particle_initialization
+    - strict_pf_z_process_noise
+    - strict_pf_z_resampling
+    - multimode_pf_z_particle_initialization
+    - multimode_pf_z_process_noise
+    - multimode_pf_z_resampling
+    - upstream_exp072_pf_beam_likpf_cache
+  parallel_rng_policy: well_level_thread_parallel_with_per_well_per_variant_seed_vector
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_file_sha: true
+    exp072_cache_sha: true
+    candidate_wide_sha: true
+    candidate_long_sha: true
+    metrics_sha: true
+    parity_diff_sha: true
+    multimode_quality_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it is a train-side diagnostic audit.
+    - Source gzip cache decompressed content SHA is recorded in summary JSON.
+    - Each well and variant receives deterministic seed vectors before entering the Numba kernel.
+
+audit:
+  mode: multimode_pfbeam_local_correlation_audit
+  output_prefix: exp143_multimode_pfbeam_local_correlation_audit
+  max_rows: null
+  max_wells: null
+  scope: targeted_timeout_recovery_v2
+  focus_wells:
+    - 1b1eba53
+    - 86454a6f
+    - fb03ae90
+    - 91b301ce
+    - ba48188d
+    - fef8af96
+  max_rows_per_well: 2000
+  save_candidate_long: false
+  thresholds_ft: [1, 2, 5, 10]
+  bucket_edges_md_since: [0, 50, 100, 250, 500, 1000]
+  bucket_edges_row_idx: [0, 100, 250, 500, 1000]
+  bucket_edges_abs_dzdmd: [0, 0.1, 0.25, 0.5, 1.0]
+  bucket_edges_abs_d2zdmd2: [0, 0.001, 0.003, 0.01, 0.03]
+  expected_train_artifacts:
+    - exp143_multimode_pfbeam_local_correlation_audit_candidate_metrics.csv
+    - exp143_multimode_pfbeam_local_correlation_audit_bucket_metrics.csv
+    - exp143_multimode_pfbeam_local_correlation_audit_by_well.csv
+    - exp143_multimode_pfbeam_local_correlation_audit_strict_pf_z_quality.csv
+    - exp143_multimode_pfbeam_local_correlation_audit_multimode_pf_z_quality.csv
+    - exp143_multimode_pfbeam_local_correlation_audit_parity_diff.csv.gz
+    - exp143_multimode_pfbeam_local_correlation_audit_candidate_wide.csv.gz
+    - exp143_multimode_pfbeam_local_correlation_audit_summary.json
+
+inference:
+  mode: disabled_train_side_diagnostic_only
+  selected_candidate: null
+  notes:
+    - No inference notebook candidate is selected in this implementation.
+    - If the audit shows true-neighbor topK coverage exists but resampling/pruning collapses modes, diversity-preserving PF/Beam changes should be implemented in this same experiment before any submission.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog multimode_pfbeam_local_correlation_audit.
+  - Directly beating likpf_mean is not the first pass condition; mode retention and local-correlation topK coverage are the first audit targets.
+  - Kaggle v1 full 773-well audit timed out before artifacts; v2 is scoped to six representative/failure wells with lower seed and particle counts to obtain actionable diagnostics inside the notebook limit.

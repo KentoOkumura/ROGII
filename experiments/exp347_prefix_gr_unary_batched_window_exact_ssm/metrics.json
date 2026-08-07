@@ -1,0 +1,88 @@
+{
+  "experiment": "exp347_prefix_gr_unary_batched_window_exact_ssm",
+  "status": "stage0_technical_parity_failed_branch_closed",
+  "route": "ensemble",
+  "stage": "stage0_fixed16_t4_microbenchmark",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "inference": false,
+  "submission": false,
+  "kernel": {
+    "id": "kentookumura/exp347-prefix-gr-batched-window-ssm-stage0",
+    "version": 1,
+    "id_no": 128239400,
+    "status": "COMPLETE",
+    "accelerator": "NvidiaTeslaT4",
+    "generated_at_utc": "2026-07-22T14:13:03.524337+00:00"
+  },
+  "execution_contract": {
+    "active_benchmark_variants": 1,
+    "fixed_windows": 16,
+    "temporary_neural_models": 1,
+    "persisted_models": 0,
+    "trained_folds": 0,
+    "lightgbm_configs": 0,
+    "boosters": 0,
+    "pf_beam_runs": 0,
+    "parent_or_control_retraining": 0
+  },
+  "stage0": {
+    "gate": {
+      "passed": false,
+      "decision": "close_without_batch_or_science_rescue",
+      "technical_parity_pass": false,
+      "runtime_pass": true,
+      "memory_pass": true,
+      "speedup_pass": true
+    },
+    "scalar_batch_parity": {
+      "window_count": 4,
+      "passed": false,
+      "loss_max_abs_error": 0.0,
+      "partition_max_abs_error": 0.0,
+      "posterior_max_abs_error": 0.000014662742614746094,
+      "posterior_tolerance": 0.000001,
+      "gradient_max_abs_error": 0.000000014319084584712982,
+      "gradient_tolerance": 0.00001,
+      "optimizer_step_max_abs_error": 0.0,
+      "invalid_gradient_max_abs": 0.0,
+      "invalid_posterior_max_abs": 0.0,
+      "finite_rate": 1.0,
+      "checks": {
+        "loss": true,
+        "partition": true,
+        "posterior": false,
+        "gradient": true,
+        "optimizer_step": true,
+        "padding_mask": true,
+        "finite": true
+      }
+    },
+    "projected_fold_runtime_hours_p50": 4.7419820491402715,
+    "projected_fold_runtime_hours_conservative": 5.10873732226012,
+    "maximum_projected_fold_runtime_hours": 8.5,
+    "speedup_vs_exp332": 2.5742441713784605,
+    "minimum_speedup_vs_exp332": 1.55,
+    "peak_gpu_memory_gb": 5.928168296813965,
+    "maximum_peak_gpu_memory_gb": 14.0,
+    "measurement_row_count": 52,
+    "batch_padding_manifest_row_count": 68,
+    "outer_valid_truth_access_count": 0,
+    "trained_stage_a_model_count": 0
+  },
+  "sha256": {
+    "package_notebook": "1c3e2d554c4b6964d3075bf13aaac6c28478dd3b48bac2d2236ee9968519aa4c",
+    "package_metadata": "1e85b94b91d06f1a3d390a4dae6e71405c2467bbf2a287249878ea448a7cf098",
+    "package_config": "376c03da9b6e122cd9fe32c95f3edf079fca5e7126e13aa72700307809bbb51f",
+    "selection_manifest": "b78ed92dc24ee2db4aad985a5ae14ecd3cfc8d6e620bb89072666b8296511e89",
+    "teacher_boundary_manifest": "664b3fc724ede4272120bc8ca1c260463bf5fca12aa8cbc20f16d7c5314cd1d1",
+    "batch_padding_manifest": "28f30e4ecfe1ac6cb77dc0fd12aabec3c76c9ab25fc3274c97456d4a8c6749b1",
+    "scalar_batch_parity": "3822eddc5dc9f1939f6c22302076e48b97fc1a22be2181f38c427e20fd99051e",
+    "measurement": "5c3f89eb5070bb1e77b251dfcfaccf3511d5cb1210fd655461a91994b05fe4a8",
+    "benchmark_report": "e8a706ba9a75dff54b30b97f289255b002333cb76d2b2dfcac000cfdf56fe454",
+    "log": "533108873f35ae8981bcb3cfa7922b2516a449b01640e077d9ca55b3f9ee3ed6"
+  },
+  "artifacts_generated": true,
+  "local_output_dir": "kaggle/output/stage0_v1"
+}

@@ -1,0 +1,240 @@
+experiment:
+  name: "exp135_tvt_dense_high_drift_confidence_gate_on_exp092"
+  description: "Train-side posthoc audit for low-frequency tvt_dense gates on the exp092 ML anchor in high-drift / high-disagreement regimes."
+  route: ml_model
+  status: completed_train_side_rejected_no_submit
+  created_at: "2026-06-26"
+  updated_at: "2026-06-26"
+
+lineage:
+  parent: exp092_u_projection_correction_disagreement_fullrun
+  secondary_parents:
+    - exp073_gpu_reproducibility_guard_for_exp063_full_replay
+    - exp072_exp063_full_replay_feature_cache
+    - exp126_exp073_exp092_pf_beam_pseudotail_failure_map
+  implementation_source: tvt_dense_high_drift_confidence_gate_on_exp092.py
+  diff_summary: >
+    Implements the KAGGLE_DIRECTION backlog item tvt_dense_high_drift_confidence_gate_on_exp092
+    as a no-training posthoc audit. The experiment joins exp092 lgb1 OOF predictions,
+    exp073 lgb_mean reference OOF predictions, and exp072 full replay PF/Beam/dense feature
+    cache. It first rechecks dense candidate oracle/topK headroom, then evaluates a small
+    target-free well/segment-level low-switch gate grid that applies tvt_dense-family candidates
+    only in high tail-rank, high PF-dense disagreement, high dense-std/drift regimes.
+
+validation:
+  strategy: exp092_train_pseudotail_posthoc_dense_gate
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - gate_rate
+    - gated_wells
+    - max_well_regression_vs_exp092
+    - common_pf_ml_worst26_rmse
+    - pf_likpf_worst50_rmse
+    - distance_bucket_rmse
+    - tail_rank_bucket_rmse
+    - path_step_ge10
+    - path_step_ge25
+  seed: 42
+  group_column: well
+  score_rows: exp072_full_replay_train_pseudotail_rows
+  leakage_policy:
+    - Input predictions are saved train-side OOF predictions from exp092 and exp073.
+    - PF/Beam/dense candidates are read from exp072 train pseudo-tail feature cache.
+    - Gate masks use only target-free columns available from raw-test-compatible candidate generation.
+    - target_tvt is used only for scoring, oracle coverage diagnostics, and posthoc readouts.
+    - No LightGBM or other model is trained in this experiment.
+    - Any submission candidate requires a later raw-test-compatible inference port in the same experiment before submit-check.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_feature_cache:
+    - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v1/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema:
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp073_predictions:
+    - /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/train_v2/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp073-full-replay-repro-guard-train/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+  exp092_predictions:
+    - /tmp/exp092_train_output_check/artifacts/exp092_u_projection_correction_disagreement_fullrun_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp092-uproj-corr-disagree-train/artifacts/exp092_u_projection_correction_disagreement_fullrun_predictions.csv.gz
+
+model:
+  name: no_new_model_tvt_dense_posthoc_gate
+  estimator: none
+  exp073_model: lgb_mean
+  exp092_model: lgb1
+  base_prediction: pred_exp092_lgb1
+  dense_candidates:
+    - pred_tvt_dense
+    - pred_tvt_densew
+    - pred_tvt_dense50
+    - pred_tvtF_ANCC
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp073-full-replay-repro-guard-train
+      - kentookumura/exp092-uproj-corr-disagree-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_posthoc_saved_oof_audit
+  stochastic_components:
+    - upstream_exp073_lightgbm_oof_predictions
+    - upstream_exp092_lightgbm_oof_predictions
+    - upstream_exp072_pf_beam_dense_feature_cache
+  parallel_rng_policy: no_parallel_rng_in_exp135
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - docs/06_reproducibility.md applies through saved OOF/cache SHA recording and Kaggle bootstrap metadata.
+    - exp135 performs no stochastic computation and no model training.
+    - This experiment is diagnostic only and is not a deterministic submission anchor.
+
+audit:
+  mode: tvt_dense_high_drift_confidence_gate_on_exp092
+  output_prefix: exp135_tvt_dense_high_drift_confidence_gate_on_exp092
+  max_prediction_rows: null
+  max_feature_rows: null
+  prediction_sample_rows: 200000
+  required_rawtest_compatible_columns:
+    - pf_ancc
+    - pf_ancc_std
+    - pf_z
+    - beam_mean_d
+    - beam_std_d
+    - likpf_mean_d
+    - tvt_dense_d
+    - tvt_densew_d
+    - tvt_dense50_d
+    - tvtF_ANCC
+    - dense_std
+    - dense_dist
+    - dense_nb_std
+    - pf_vs_dense
+    - spatial_vs_dense
+  gate_variants:
+    - name: seg_dense_q75_tail500_min25_switch
+      candidate: pred_tvt_dense
+      scope: segment
+      dense_q: 0.75
+      pf_dense_q: 0.75
+      pf_beam_q: 0.75
+      min_tail_rank: 500
+      min_conditions: 2
+      min_segment_rows: 25
+      alpha: 1.0
+      clip_abs: null
+    - name: seg_dense_q90_tail1000_min25_switch
+      candidate: pred_tvt_dense
+      scope: segment
+      dense_q: 0.90
+      pf_dense_q: 0.90
+      pf_beam_q: 0.75
+      min_tail_rank: 1000
+      min_conditions: 2
+      min_segment_rows: 25
+      alpha: 1.0
+      clip_abs: null
+    - name: seg_dense_q75_tail1000_min100_clip20_a050
+      candidate: pred_tvt_dense
+      scope: segment
+      dense_q: 0.75
+      pf_dense_q: 0.75
+      pf_beam_q: 0.75
+      min_tail_rank: 1000
+      min_conditions: 2
+      min_segment_rows: 100
+      alpha: 0.5
+      clip_abs: 20.0
+    - name: seg_densew_q75_tail1000_min100_clip20_a050
+      candidate: pred_tvt_densew
+      scope: segment
+      dense_q: 0.75
+      pf_dense_q: 0.75
+      pf_beam_q: 0.75
+      min_tail_rank: 1000
+      min_conditions: 2
+      min_segment_rows: 100
+      alpha: 0.5
+      clip_abs: 20.0
+    - name: seg_dense50_q75_tail1000_min100_clip20_a050
+      candidate: pred_tvt_dense50
+      scope: segment
+      dense_q: 0.75
+      pf_dense_q: 0.75
+      pf_beam_q: 0.75
+      min_tail_rank: 1000
+      min_conditions: 2
+      min_segment_rows: 100
+      alpha: 0.5
+      clip_abs: 20.0
+    - name: well_dense_q90_tail1000_rate05_switch
+      candidate: pred_tvt_dense
+      scope: well
+      dense_q: 0.90
+      pf_dense_q: 0.90
+      pf_beam_q: 0.75
+      min_tail_rank: 1000
+      min_conditions: 2
+      min_segment_rows: 25
+      min_well_high_rate: 0.05
+      alpha: 1.0
+      clip_abs: null
+    - name: well_dense_q90_tail1000_rate10_clip20_a050
+      candidate: pred_tvt_dense
+      scope: well
+      dense_q: 0.90
+      pf_dense_q: 0.90
+      pf_beam_q: 0.75
+      min_tail_rank: 1000
+      min_conditions: 2
+      min_segment_rows: 25
+      min_well_high_rate: 0.10
+      alpha: 0.5
+      clip_abs: 20.0
+  expected_train_artifacts:
+    - exp135_tvt_dense_high_drift_confidence_gate_on_exp092_metrics.csv
+    - exp135_tvt_dense_high_drift_confidence_gate_on_exp092_gate_variants.csv
+    - exp135_tvt_dense_high_drift_confidence_gate_on_exp092_by_well.csv
+    - exp135_tvt_dense_high_drift_confidence_gate_on_exp092_bucket_metrics.csv
+    - exp135_tvt_dense_high_drift_confidence_gate_on_exp092_common_worst_metrics.csv
+    - exp135_tvt_dense_high_drift_confidence_gate_on_exp092_rawtest_parity_checklist.csv
+    - exp135_tvt_dense_high_drift_confidence_gate_on_exp092_prediction_sample.csv.gz
+    - exp135_tvt_dense_high_drift_confidence_gate_on_exp092_summary.json
+    - README.md
+
+inference:
+  mode: disabled_diagnostic_only
+  selected_variant: null
+  notes:
+    - No submission.csv is created.
+    - If a gate passes OOF, common-worst, near-row, continuity, and raw-test parity checks, implement an inference port in this same experiment before submission work.
+
+notes:
+  - Implements backlog item tvt_dense_high_drift_confidence_gate_on_exp092.
+  - The first pass is LightGBM-free posthoc audit only.
+  - Global OOF improvement alone is not enough for submission candidacy.

@@ -1,0 +1,123 @@
+{
+  "experiment": "exp220_row_neighbor_input_context_features_on_exp148",
+  "status": "kaggle_split_train_completed_no_submit",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "variant": "row_neighbor_input_context_addonly",
+  "mode": "cpu_deterministic_threads8",
+  "kaggle_train": {
+    "status": "COMPLETE",
+    "kernel_version": 1,
+    "kernels": {
+      "lgb0": "kentookumura/exp220-row-neighbor-exp148-lgb0",
+      "lgb1": "kentookumura/exp220-row-neighbor-exp148-lgb1",
+      "lgb2": "kentookumura/exp220-row-neighbor-exp148-lgb2"
+    },
+    "outputs": {
+      "lgb0": "kaggle/output/train_lgb0_v1",
+      "lgb1": "kaggle/output/train_lgb1_v1",
+      "lgb2": "kaggle/output/train_lgb2_v1"
+    }
+  },
+  "runtime": {
+    "train_split": ["lgb0", "lgb1", "lgb2"],
+    "active_modes": ["cpu_deterministic_threads8"],
+    "folds": 5,
+    "boosters_total": 15,
+    "boosters_per_split": 5,
+    "control_retraining": false,
+    "gpu": false
+  },
+  "train_data": {
+    "rows": 3783989,
+    "wells": 773,
+    "features": 350,
+    "feature_groups": [
+      "projection_correction",
+      "u_disagreement",
+      "learned_likelihood_confidence",
+      "row_neighbor_input_context"
+    ],
+    "feature_join_coverage_pass": true,
+    "dropped_base_rows": 0,
+    "dropped_base_wells": 0
+  },
+  "cv": {
+    "status": "completed",
+    "row_order_checks": {
+      "lgb0": true,
+      "lgb1": true,
+      "lgb2": true
+    },
+    "models": {
+      "lgb0": {
+        "pooled_rmse_tvt": 8.577046760280096,
+        "pooled_rmse_target": 8.577046997877055,
+        "prediction_sha256": "f96b7932dda27fc60542aadbcee40906e89209ac2e6dfede2264e2410091f29f"
+      },
+      "lgb1": {
+        "pooled_rmse_tvt": 8.53216602057029,
+        "pooled_rmse_target": 8.532166024355579,
+        "prediction_sha256": "ea39574d56476ae2559b19f0178ffe44349a91de9c55f42a7566d92b87dcca8e"
+      },
+      "lgb2": {
+        "pooled_rmse_tvt": 8.539115349239179,
+        "pooled_rmse_target": 8.53911566668381,
+        "prediction_sha256": "aced87ccb87a001cbd2ee824ae2dab0b0b0e4b5f1345d724a68b21f485d87912"
+      },
+      "lgb_mean": {
+        "pooled_rmse_tvt": 8.496282588259351,
+        "pooled_rmse_target": 8.496282412186394,
+        "prediction_sha256": "5be47377f9ffcf0ddd3023c3e93e57764316588a9a6c94693ea5ee6666bc4e21",
+        "source": "local streaming aggregate from Kaggle split OOF predictions",
+        "combined_prediction_csv_materialized": false
+      }
+    },
+    "best_model": "lgb_mean",
+    "best_pooled_rmse_tvt": 8.496282588259351,
+    "delta_vs_exp148_gpu_lgb_mean": -0.004998593636468485,
+    "delta_vs_exp148_cpu_runtime_lgb_mean": -0.03241552593285846,
+    "delta_vs_exp193_lgb_mean": 0.03961714971657315,
+    "delta_vs_exp198_lgb_mean": 0.03835893545836555,
+    "delta_vs_exp218_lgb_mean": 0.020488836602726934
+  },
+  "distance_bucket_lgb_mean": {
+    "000_050": {"rows": 38650, "rmse_tvt": 0.9864871145876216, "error_abs_mean": 0.7329424512855749},
+    "050_100": {"rows": 38650, "rmse_tvt": 1.3342397876906344, "error_abs_mean": 0.999653303889068},
+    "100_250": {"rows": 115950, "rmse_tvt": 2.0976038640660186, "error_abs_mean": 1.5028357781506023},
+    "250_500": {"rows": 193157, "rmse_tvt": 3.3098116672975872, "error_abs_mean": 2.3212929030853156},
+    "500_1000": {"rows": 385911, "rmse_tvt": 4.826862063356422, "error_abs_mean": 3.373526443151723},
+    "1000_plus": {"rows": 3011671, "rmse_tvt": 9.316960033103987, "error_abs_mean": 6.052676696095892}
+  },
+  "top_rnic_feature_importance": [
+    {"feature": "rnic_likpf_mean_d_lead5_minus_cur", "mean_importance": 340.53333333333336, "fold_model_records": 15},
+    {"feature": "rnic_likpf_mean_d_cur_minus_lag5", "mean_importance": 310.46666666666664, "fold_model_records": 15},
+    {"feature": "rnic_uproj_source_u_std_lead5_minus_cur", "mean_importance": 188.6, "fold_model_records": 15},
+    {"feature": "rnic_uproj_source_u_std_cur_minus_lag5", "mean_importance": 175.53333333333333, "fold_model_records": 15},
+    {"feature": "rnic_likpf_mean_d_roll5_std", "mean_importance": 152.46666666666667, "fold_model_records": 15}
+  ],
+  "artifacts": {
+    "split_lgb_mean_summary": "artifacts/exp220_row_neighbor_input_context_features_on_exp148_split_lgb_mean_summary.json",
+    "split_lgb_mean_metrics": "artifacts/exp220_row_neighbor_input_context_features_on_exp148_split_lgb_mean_metrics.csv",
+    "split_lgb_mean_bucket_metrics": "artifacts/exp220_row_neighbor_input_context_features_on_exp148_split_lgb_mean_bucket_metrics.csv",
+    "split_lgb_mean_by_well": "artifacts/exp220_row_neighbor_input_context_features_on_exp148_split_lgb_mean_by_well.csv",
+    "split_lgb_mean_feature_importance": "artifacts/exp220_row_neighbor_input_context_features_on_exp148_split_lgb_mean_feature_importance_mean.csv"
+  },
+  "references": {
+    "exp148_gpu_lgb_mean_pooled_rmse": 8.50128118189582,
+    "exp148_gpu_public_lb": 7.96,
+    "exp148_cpu_runtime_lgb_mean_pooled_rmse": 8.52869811419221,
+    "exp148_cpu_public_lb": 7.921,
+    "exp193_lgb_mean_pooled_rmse": 8.456665438542778,
+    "exp193_public_lb": 7.946,
+    "exp198_lgb_mean_pooled_rmse": 8.457923652800986,
+    "exp198_public_lb": 7.93,
+    "exp218_lgb_mean_pooled_rmse": 8.475793751656624,
+    "exp218_public_lb": 7.843
+  },
+  "decision": {
+    "inference": false,
+    "submit": false,
+    "reason": "The row-neighbor add-only features slightly improve exp148 GPU OOF, but they are worse than exp193, exp198, and the current ML route submitted anchor exp218. No inference or competition submission is planned from this run."
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "experiment": "exp306_robust_rts_l1_convergence_calibration_audit",
+  "status": "stage0_completed_l1_full_eligible_rts_ineligible_awaiting_decision",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "solver_technical_coverage",
+  "hypothesis": "Preregistered iteration and RTS tolerance changes can restore full solver convergence without changing objectives or reading scientific scores.",
+  "execution_plan": {
+    "stage0_sample_wells": 64,
+    "stage0_series_per_candidate": 128,
+    "stage0_core_series_runs_maximum": 384,
+    "stage0_parity_series_runs_maximum": 32,
+    "full_series_runs_per_branch": 1546,
+    "full_eligible_branches_maximum": 2,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "hmm_well_runs": 0,
+    "pf_well_runs": 0,
+    "beam_well_runs": 0,
+    "boosters": 0
+  },
+  "fixed_design": {
+    "rts_candidate_a": "max_irls_32_tol_1e-6",
+    "rts_candidate_b": "conditional_max_irls_32_tol_1e-4",
+    "l1_candidate": "max_admm_2000_rho_1_tol_1e-4",
+    "scientific_score_enabled": false
+  },
+  "implementation_approved": true,
+  "kaggle_push_approved": true,
+  "kaggle_kernel": {
+    "id": "kentookumura/exp306-rts-l1-convergence-calibration-audit-train",
+    "version": 1,
+    "id_no": 128231380,
+    "status": "complete",
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "stage0_result": {
+    "sample_wells": 64,
+    "series_per_branch": 128,
+    "executed_core_series_runs": 384,
+    "executed_parity_series_runs": 16,
+    "notebook_summary_elapsed_seconds": 1774.422,
+    "preparation_elapsed_seconds": 1.5511331840000366,
+    "selected_rts_branch": "rts_iter32_tol1e4",
+    "rts_b_executed": true,
+    "full_eligible_branches": [
+      "l1_iter2000_rho1_tol1e4"
+    ],
+    "full_audit_executed": false,
+    "truth_or_scientific_score_loaded": false,
+    "prediction_created": false,
+    "submission_created": false,
+    "branches": {
+      "l1_iter2000_rho1_tol1e4": {
+        "converged": 128,
+        "technical_pass": 128,
+        "total": 128,
+        "iterations_min": 264,
+        "iterations_mean": 656.758,
+        "iterations_max": 1993,
+        "stage0_elapsed_seconds": 25.16088893899996,
+        "projected_full_runtime_seconds": 303.8963617163589,
+        "parity_exact_identity": true,
+        "full_eligible": true,
+        "output_content_sha256": "186d9682147563fe4cf1609a067004460f2e3b250a8026b7611dd712db0cbf42",
+        "status_content_sha256": "7b3a292ff99f8cb12abfd5917893f7d0f7b3a99109d312c0b66ae3b5966edd89"
+      },
+      "rts_iter32_tol1e6": {
+        "converged": 7,
+        "technical_pass": 7,
+        "total": 128,
+        "failures_horizontal": 59,
+        "failures_typewell": 62,
+        "iterations_min": 24,
+        "iterations_mean": 31.844,
+        "iterations_max": 32,
+        "stage0_elapsed_seconds": 999.0438799899999,
+        "projected_full_runtime_seconds": 12066.576863004218,
+        "parity_exact_identity": null,
+        "full_eligible": false,
+        "output_content_sha256": "f2cdadc10739d0eb92e6bff3f92abbeab30b92318a3e5aa85d53c03535a81abd",
+        "status_content_sha256": "8b102c1c722e513d0f93f93e6f02bed360bf86eadc811f3f2691a9faa958aee3"
+      },
+      "rts_iter32_tol1e4": {
+        "converged": 108,
+        "technical_pass": 108,
+        "total": 128,
+        "failures_horizontal": 7,
+        "failures_typewell": 13,
+        "iterations_min": 9,
+        "iterations_mean": 23.219,
+        "iterations_max": 32,
+        "stage0_elapsed_seconds": 695.6148443090001,
+        "projected_full_runtime_seconds": 8401.723041419642,
+        "parity_exact_identity": null,
+        "full_eligible": false,
+        "output_content_sha256": "307b3f48458cac8b7070119c65a5fda3d196395383b8f388d5c6462f9fa82ab6",
+        "status_content_sha256": "c573314f82dbaf20c2f55ed431b41ea5bf496b3174c9eded7fbd2c1511fc149f"
+      }
+    },
+    "parity": {
+      "all_required_exact": true,
+      "branch": "l1_iter2000_rho1_tol1e4",
+      "wells": 8,
+      "series_runs": 16,
+      "rerun_elapsed_seconds": 2.5192203540000264,
+      "output_content_sha256": "d0b4a19788e7a13df9603b566eca35dba998b0063fb7f9e25e64b2b0b4fedec0",
+      "status_content_sha256": "3535381302938a7a467f78d0b2fe45bb8ca587e1db9091a3a730e6262197724f",
+      "iteration_content_sha256": "6488af59de4ad6ac28eb5d68b3407f5a45ea67bb42a23b051834ae3ca834b036"
+    },
+    "artifacts": {
+      "raw_well_identity_content_sha256": "bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32",
+      "sample_manifest_raw_sha256": "67508cba8dab2de14e13d77edec6b8faadab8fdacd44334ca2ce029b6ddcf691",
+      "stage0_input_raw_sha256": "308d09d90dc13ba29db6b0a5e7c5930833fa1d3833ef63fe7376b4ef074126ec",
+      "stage0_input_decompressed_sha256": "ee4b26f34177d3367e4c3e84900727bc115e497bd076268c1e62a1f5276ce50b",
+      "stage0_output_raw_sha256": "649a98cdd5591bdac35582e69ca5c347c7b66809376e0c2a261f441fa1d0284b",
+      "stage0_output_decompressed_sha256": "8a6f7e38bcea659f5ab7d0fd0cf37475c6d5d84bfed1826b5febfcb7ecf67df7",
+      "solver_status_raw_sha256": "fcb2fe6a658cec66be314353475c475b7e19c7335145cda89c49df2850147592",
+      "solver_status_decompressed_sha256": "bef261e1b905dd59e05f91c9966d481ede3fb063566db0f5fca0fe829fb665e9",
+      "scientific_contract_file_sha256": "a13bd5a7ff2119e002bfe6f8bae08207e4b2c45c9e8be0de581c27045921ee54",
+      "stage0_gate_file_sha256": "cdfd1397425d98076d0c4da029b5bac6640f50bff1f935ae46019024077e3887",
+      "parity_manifest_file_sha256": "1a4952023fe006f082af5be6cdcdc95097e996bebb440a37ea6a2060bab05089",
+      "summary_file_sha256": "1217039de7d5db45c6e5d2ab9a207c555c673e662bf7bf74e82825321449e6ea"
+    }
+  },
+  "implementation_validation": {
+    "contract_tests_passed": 10,
+    "jupytext_roundtrip_passed": true,
+    "py_compile_passed": true,
+    "ruff_passed": true,
+    "strict_experiment_validation_passed": true,
+    "template_validation_passed": true,
+    "full_suite_passed": 615,
+    "full_suite_skipped": 3,
+    "full_suite_unrelated_failures": 3
+  },
+  "successor": "exp351_exp306_l1_full_convergence_audit",
+  "next_action": "Keep exp306 frozen as the Stage 0 evidence anchor. After separate approval, implement the design-only exp351 L1 full technical audit; do not rescue RTS or start scientific scoring, inference, or submission.",
+  "notes": "Kaggle CPU Stage 0 version 1 completed. L1 is technically full-eligible and its full audit is designed separately in exp351; both preregistered RTS branches are ineligible. No scientific score, prediction, or submission was produced."
+}

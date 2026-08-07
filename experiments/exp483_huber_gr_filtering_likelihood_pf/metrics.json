@@ -1,0 +1,275 @@
+{
+  "experiment": "exp483_huber_gr_filtering_likelihood_pf",
+  "route": "pf_beam",
+  "status": "stage1_gate_failed_terminal_close",
+  "created_at": "2026-07-30",
+  "updated_at": "2026-07-30",
+  "cv": 11.095404595047105,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "key_idea": "exp389 fixed Huber GR scoreを粒子filtering尤度へ直接移植",
+  "implementation": {
+    "compact_selfcontained_train": true,
+    "canonical_train_adopted": true,
+    "dedicated_tests_passed": 13,
+    "kaggle_package_created": true
+  },
+  "kaggle": {
+    "kernel_id": "kentookumura/exp483-huber-gr-filtering-likelihood-pf-train",
+    "kernel_version": 2,
+    "kernel_id_no": 129169339,
+    "status": "COMPLETE",
+    "started_at_utc": "2026-07-30 12:53:19 UTC",
+    "completed_at_utc": "2026-07-30 16:23:19 UTC",
+    "stage_0_kernel_version": 1,
+    "stage_0_completed_at_utc": "2026-07-30 12:27:50 UTC",
+    "stage_1_started_at_utc": "2026-07-30 12:53:19 UTC",
+    "stage_1_completed_at_utc": "2026-07-30 16:23:19 UTC"
+  },
+  "stage_0": {
+    "status": "stage0_technical_pass_no_automatic_stage1",
+    "scope": "fixed32_technical_preflight_not_cv",
+    "rows": 156088,
+    "wells": 32,
+    "execution_counts": {
+      "scientific_variants": 1,
+      "candidate_pf_well_runs": 32,
+      "seed_well_trajectories": 4096,
+      "particle_starts": 2048000,
+      "control_pf_well_runs": 0,
+      "hmm_well_runs": 0,
+      "beam_well_runs": 0,
+      "lightgbm_configs": 0,
+      "trained_folds": 0,
+      "boosters": 0,
+      "gpu_runs": 0
+    },
+    "technical_gate": {
+      "all_passed": true,
+      "passed": 10,
+      "total": 10,
+      "artifact_sha_readback": true,
+      "execution_count_match": true,
+      "finite_prediction_coverage": true,
+      "formula_unit_contract": true,
+      "full_runtime_projection": true,
+      "huber_equals_gaussian_inside_delta": true,
+      "noop_toy_pf_bitwise_parity": true,
+      "peak_rss": true,
+      "stable_seed_identity": true,
+      "truth_error_fold_hidden_reads_before_freeze_zero": true
+    },
+    "report_only_not_cv_not_promotion": {
+      "candidate_rmse_ft": 9.811671589777898,
+      "saved_exp404_control_rmse_ft": 9.616740808061033,
+      "candidate_minus_control_rmse_ft": 0.19493078171686484,
+      "improved_wells": 18,
+      "total_wells": 32
+    },
+    "runtime": {
+      "fixed32_seconds": 283.78094363212585,
+      "projected_full_773_seconds": 6855.08341961354,
+      "peak_rss_gb": 0.4953575134277344
+    },
+    "truth_access": {
+      "all_frozen": true,
+      "frozen_wells": 32,
+      "truth_reads_before_freeze": 0,
+      "control_reads_before_freeze": 0,
+      "fold_reads_before_freeze": 0,
+      "hidden_role_reads_before_freeze": 0
+    },
+    "reproducibility": {
+      "deterministic_anchor": false,
+      "scientific_contract_sha256": "089765cb14c395c1ff678d93c4a4940481aa7a8b846811287a7168ddda25d3c6",
+      "prediction_logical_sha256": "417397292feb6cbe448b196347a0902dd07a13e3a122376623da671acc5e0371",
+      "prediction_raw_gzip_sha256": "e0104875db6b60e4f7b897fc4b6930e1777e200f18910df960e91d5cb481cc3d",
+      "prediction_decompressed_sha256": "5fcb88ac86c06e1ff86bd2940151bf7b1b13c8311d8cc102162ea4cda113005a",
+      "well_audit_sha256": "5a9374511c7c39eada248f709b8399cafcbbdd10023dad2fc9ed83124caad692"
+    }
+  },
+  "stage_1": {
+    "status": "stage1_gate_failed_terminal_close",
+    "scope": "stage1_all_well_train_side_cv",
+    "rows": 3783989,
+    "wells": 773,
+    "folds": [0, 1, 2, 3, 4],
+    "primary": {
+      "candidate_rmse_ft": 11.095404595047105,
+      "saved_exp404_control_rmse_ft": 10.914522073423171,
+      "improvement_ft": -0.1808825216239338,
+      "candidate_minus_control_rmse_ft": 0.1808825216239338,
+      "candidate_mae_ft": 6.490326774298654,
+      "control_mae_ft": 6.429207269894288,
+      "minimum_required_improvement_ft": 0.05,
+      "improved_folds": 3,
+      "minimum_required_improved_folds": 4,
+      "folds": {
+        "fold_0": {
+          "candidate_rmse_ft": 9.604710257765039,
+          "control_rmse_ft": 9.360014232082705,
+          "improvement_ft": -0.24469602568233384
+        },
+        "fold_1": {
+          "candidate_rmse_ft": 10.88907077191513,
+          "control_rmse_ft": 10.979418533830609,
+          "improvement_ft": 0.09034776191547955
+        },
+        "fold_2": {
+          "candidate_rmse_ft": 10.60692972906009,
+          "control_rmse_ft": 10.694277026924821,
+          "improvement_ft": 0.08734729786473139
+        },
+        "fold_3": {
+          "candidate_rmse_ft": 10.637706694263267,
+          "control_rmse_ft": 10.747502029477594,
+          "improvement_ft": 0.1097953352143275
+        },
+        "fold_4": {
+          "candidate_rmse_ft": 13.293923424673762,
+          "control_rmse_ft": 12.482449116595678,
+          "improvement_ft": -0.8114743080780844
+        }
+      }
+    },
+    "scopes": {
+      "raw_gr_observed": {
+        "candidate_rmse_ft": 11.165877155731964,
+        "control_rmse_ft": 10.912495892684479,
+        "improvement_ft": -0.2533812630474852,
+        "passed": false
+      },
+      "raw_gr_missing": {
+        "candidate_rmse_ft": 10.942271051244873,
+        "control_rmse_ft": 10.918879369685431,
+        "improvement_ft": -0.023391681559441935,
+        "passed": false
+      },
+      "missing_fraction_high": {
+        "candidate_rmse_ft": 10.314712092205596,
+        "control_rmse_ft": 10.32693449043304,
+        "improvement_ft": 0.01222239822744342,
+        "passed": true
+      },
+      "md_since_1000_plus": {
+        "candidate_rmse_ft": 12.147705744533235,
+        "control_rmse_ft": 11.93947768921434,
+        "improvement_ft": -0.20822805531889443,
+        "passed": false
+      },
+      "hidden_like_spatial": {
+        "candidate_rmse_ft": 12.892585038562782,
+        "control_rmse_ft": 13.03836335562771,
+        "improvement_ft": 0.14577831706492894,
+        "passed": true
+      },
+      "hidden_like_typewell_purged": {
+        "candidate_rmse_ft": 12.887542741775414,
+        "control_rmse_ft": 12.777979773575527,
+        "improvement_ft": -0.10956296819988687,
+        "passed": false
+      }
+    },
+    "by_well": {
+      "improved_wells": 369,
+      "worsened_wells": 404,
+      "total_wells": 773,
+      "delta_rmse_p95_ft": 0.5209096346038877,
+      "maximum_allowed_delta_rmse_p95_ft": 0.0,
+      "worst_well_id": "70e1788b",
+      "worst_well_candidate_rmse_ft": 37.58723767350021,
+      "worst_well_control_rmse_ft": 4.128715142240685,
+      "worst_well_regression_ft": 33.458522531259526,
+      "maximum_allowed_worst_well_regression_ft": 0.25
+    },
+    "fixed_exp209_hmm_pf_50_50": {
+      "candidate_rmse_ft": 10.162155357827986,
+      "control_rmse_ft": 10.084909848760013,
+      "candidate_minus_control_rmse_ft": 0.07724550906797312,
+      "passed": false
+    },
+    "technical_gate": {
+      "passed": true,
+      "all_wells_completed": true,
+      "artifact_sha_readback": true,
+      "execution_count_match": true,
+      "finite_prediction_coverage": true,
+      "fixed_hmm_pf_50_50_control_parity": true,
+      "peak_rss": true,
+      "prediction_rows": true,
+      "prediction_wells": true,
+      "raw_input_identity": true,
+      "reporting_folds": true,
+      "runtime": true,
+      "saved_control_rmse_parity": true,
+      "stage0_all_technical_gates_passed": true,
+      "truth_error_fold_hidden_reads_before_freeze_zero": true
+    },
+    "scientific_gate": {
+      "passed": false,
+      "decision": "terminal_close_without_huber_or_pf_rescue",
+      "failed_checks": [
+        "pooled_rmse_gain",
+        "minimum_improved_folds",
+        "raw_gr_observed_gain",
+        "raw_gr_missing_non_regression",
+        "md_since_1000_plus_non_regression",
+        "hidden_like_typewell_purged_non_regression",
+        "by_well_delta_p95",
+        "worst_well_regression",
+        "fixed_exp209_hmm_pf_50_50_non_regression"
+      ]
+    },
+    "execution_counts": {
+      "scientific_variants": 1,
+      "candidate_pf_well_runs": 773,
+      "seed_well_trajectories": 98944,
+      "particle_starts": 49472000,
+      "control_pf_well_runs": 0,
+      "hmm_well_runs": 0,
+      "beam_well_runs": 0,
+      "lightgbm_configs": 0,
+      "trained_folds": 0,
+      "boosters": 0,
+      "gpu_runs": 0
+    },
+    "runtime": {
+      "seconds_to_prediction_freeze": 12361.117475748062,
+      "total_seconds": 12454.353610515594,
+      "peak_rss_gb": 3.5663185119628906
+    },
+    "truth_access": {
+      "all_frozen": true,
+      "frozen_wells": 773,
+      "truth_reads_before_freeze": 0,
+      "control_reads_before_freeze": 0,
+      "fold_reads_before_freeze": 0,
+      "hidden_role_reads_before_freeze": 0
+    },
+    "reproducibility": {
+      "deterministic_anchor": false,
+      "scientific_contract_sha256": "089765cb14c395c1ff678d93c4a4940481aa7a8b846811287a7168ddda25d3c6",
+      "prediction_logical_sha256": "5a3c58aaaa1f9810cacc78836a87dc2ac06a8f2be614253d948b5a76056c3ad2",
+      "prediction_raw_gzip_sha256": "f805d83f4d6cc7e60a24d033333eebf1ddcfcb0e6209870d99c000a0831cad62",
+      "prediction_decompressed_sha256": "c0e2ea557d73eed0b463dfc4c4b17c3621cd3199a9d255e302e5ac35b91a274e",
+      "primary_metrics_sha256": "e68fe26331a92337b0a9fc6c244333fd6bc0f413105f308ca836373b59a500f7",
+      "by_well_metrics_sha256": "c517932ca888dd977ca37b90cdecbe1a8d1a43037818d31f6f30684dfb4173c0",
+      "fixed_hmm_pf_50_50_metrics_sha256": "c82651da42709cb4e170851375ad0d0199169447a26180fe679246a0ccc3532d",
+      "promotion_gate_sha256": "a6caa2259f90c13970313707bd9b10b568273e6b06745cce6d831585250dfe0c",
+      "runtime_ledger_sha256": "1f1d3f34ec03a9d5a294ffeeb1ef282760c9528ffcd6daac9ab331b16b1aaaf6",
+      "summary_sha256": "095f88f44af087145d602f1f0af41fd69ffce6cd5eaccf2047a26a59d9768b71",
+      "well_audit_sha256": "0020e8fc85d8f667370b72f4201309fd99160e500c999f13b5b5d99b8a9b0ed2"
+    }
+  },
+  "decision": {
+    "stage_1_run": true,
+    "stage_1_approved": true,
+    "technical_gate_passed": true,
+    "scientific_gate_passed": false,
+    "outcome": "terminal_close_without_huber_or_pf_rescue",
+    "inference_run": false,
+    "submission_created": false,
+    "notes": "全773 wellsのStage 1は技術契約を満たしたが、pooled RMSEを0.180882522 ft悪化させ、fold/scope/well-tail/fixed HMM-PF guardもFAILした。事前登録どおりsame-OOF救済を行わず閉鎖する。"
+  }
+}

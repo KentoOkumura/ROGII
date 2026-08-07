@@ -1,0 +1,129 @@
+{
+  "experiment": "exp287_fold_safe_formation_74_addonly_on_exp264",
+  "status": "inference_v1_complete_submit_check_pass_public_lb_7p530_train_guard_failed",
+  "route": "ml_model",
+  "cv": 8.136708220359452,
+  "parent_cv": 8.460811237612477,
+  "delta_rmse_new_minus_parent": -0.3241030172530248,
+  "public_lb": 7.53,
+  "private_lb": null,
+  "active_variants": 1,
+  "lightgbm_configs": 3,
+  "folds": 5,
+  "planned_gpu_boosters": 15,
+  "completed_gpu_boosters": 15,
+  "parent_control_retraining_boosters": 0,
+  "model_count": 15,
+  "runtime_seconds": 25282.477,
+  "rows": 3783989,
+  "wells": 773,
+  "feature_counts": {
+    "clean_base": 273,
+    "nested_compact": 74,
+    "fold_safe_formation": 74,
+    "final": 421
+  },
+  "fold_rmse": {
+    "0": {"parent": 8.468093370847626, "new": 8.070368347456087, "delta": -0.3977250233915388},
+    "1": {"parent": 8.30970047983293, "new": 8.25583843158472, "delta": -0.053862048248209504},
+    "2": {"parent": 8.249391248100311, "new": 7.893630010579036, "delta": -0.35576123752127486},
+    "3": {"parent": 8.450573230441684, "new": 8.10656673057163, "delta": -0.34400649987005316},
+    "4": {"parent": 8.814965637286186, "new": 8.349625947273056, "delta": -0.46533969001312947}
+  },
+  "distance_bucket_rmse": {
+    "near_0_250": {"parent": 1.5831509728014295, "new": 1.5476499497074847, "delta": -0.03550102309394476},
+    "mid_250_1000": {"parent": 4.099685888292892, "new": 4.0478164029971015, "delta": -0.05186948529579016},
+    "1000_plus": {"parent": 9.302283118293108, "new": 8.936647821747155, "delta": -0.3656352965459533}
+  },
+  "hidden_like_rmse": {
+    "spatial": {"parent": 9.420314820594974, "new": 8.799767730914455, "delta": -0.6205470896805192},
+    "typewell_purged": {"parent": 9.341391383707808, "new": 8.735403757763525, "delta": -0.6059876259442838}
+  },
+  "guard": {
+    "passed": false,
+    "improved_folds": 5,
+    "worst_well": "fb03ae90",
+    "worst_well_delta_rmse_new_minus_parent": 8.228409822385604,
+    "worsened_well_threshold_counts": {
+      "plus_1ft": {"parent_exp264_vs_clean_count": 135, "new_vs_clean_count": 140, "nonincrease": false},
+      "plus_3ft": {"parent_exp264_vs_clean_count": 39, "new_vs_clean_count": 40, "nonincrease": false},
+      "plus_5ft": {"parent_exp264_vs_clean_count": 14, "new_vs_clean_count": 19, "nonincrease": false}
+    },
+    "checks": {
+      "pooled_rmse_delta": true,
+      "improved_folds": true,
+      "near_non_regression": true,
+      "mid_non_regression": true,
+      "long_tail_non_regression": true,
+      "hidden_like_non_regression": true,
+      "worst_well_regression": false,
+      "worsened_well_threshold_counts_nonincrease": false
+    }
+  },
+  "artifact_sha256": {
+    "oof": "8f026c5c5f6508fb142981832994c6ba9cded4940168c648a9df9f3e698c3913",
+    "fold_metrics": "864eca0452eea578c96baa653d25c4f2ae241c84b8e5d659b277407b5e427141",
+    "bucket_metrics": "60013cacb397cef31ffb92b0027f945304ca9efd5d222138b6672e6aa0931069",
+    "hidden_metrics": "5dde222738bb9267488a8d11e9aea4a5260702a1eb250aa5dcadf2d634ac9008",
+    "by_well": "3562cec13abe3c3df496e57d71b46aeb592ea2022c7bf0b9b5df1e062c21024d",
+    "importance": "8611bebe25518955327c08340d6802ed47699157d497b72237d1c52f3649481d",
+    "model_manifest": "419dbdf83dd6bc343f0265aca56dd690ba1f231ee419e7cf0ff456ffdb797590",
+    "metrics": "435434342494aaa62cee6e627809363ac34f16174973f4b81301d2923f780862"
+  },
+  "formation_fold_manifest_sha256": "25611e281299991d626f1caca48673aee6225a890ad47ecdcd28a117ae827772",
+  "formation_relationship_audit_sha256": "868cc2bc3d8ea57103c70a2c150f240a29cc4d0087595d9fc4d68e864f0c86a3",
+  "raw_schema_audit_sha256": "45d0bf77b1893adfce74921f4427c4ca5ba6d95c69326cbbd35abb766e502a41",
+  "initial_execution_stage": "preflight_only",
+  "execution_approved": false,
+  "inference": true,
+  "submission": true,
+  "inference_run": {
+    "kernel": "kentookumura/exp287-foldsafe-form74-addonly-exp264-infer",
+    "version": 1,
+    "id_no": 127952811,
+    "status": "COMPLETE",
+    "runtime_seconds": 448.386,
+    "notebook_log_completion_seconds": 476.945,
+    "rows": 14151,
+    "wells": 3,
+    "selector_models": 40,
+    "tvt_models": 15,
+    "booster_training_count": 0,
+    "feature_counts": {"clean_base": 273, "nested_compact": 74, "fold_safe_formation": 74, "final": 421},
+    "submit_check_status": "PASS",
+    "submission_sha256": "deb46704998c2365cbdb91c20acd7ffdfefe0614cb5f2deb633eb8efd0ff8ca6",
+    "prediction_decompressed_sha256": "eea88958df27dafe595a8f14bea4df980204143b6d1f7c01e65b98069c0daebc",
+    "formation_parquet_sha256": "d5363041a9a8d48fcca29e6529f3a636e3e2cd0ba2a7d98bbcccc3d53365ab80",
+    "formation_logical_sha256": "cc974f8cc4bd3976b42767fc690a8085389d39d249d73ff3f8e6bdf0c44c9d8c",
+    "feature_schema_sha256": "aa7a36c8341496f893f34c12210d307c599fa556f10b22b39cd4842b79a71293"
+  },
+  "submission_record": {
+    "ref": 54842141,
+    "submitted_at_utc": "2026-07-20 01:09:32.693000",
+    "status": "COMPLETE",
+    "public_lb": 7.53,
+    "private_lb": null,
+    "agent_submit_performed": false,
+    "submission_detected_after_user_completion_notice": true,
+    "delta_vs_exp264_ml_anchor": -0.032,
+    "ml_public_lb_anchor_updated": true,
+    "comparison_ensemble_anchor_experiment": "exp082_public_artifact_replay_followup",
+    "delta_vs_comparison_ensemble_anchor": -0.071
+  },
+  "kaggle_runs": [
+    {"version": 1, "status": "ERROR", "runtime_seconds": 12.03, "trained_gpu_boosters": 0, "cause": "competition_input_mount_path_resolution"},
+    {"version": 2, "status": "ERROR", "runtime_seconds": 475.305, "trained_gpu_boosters": 0, "cause": "saved_corrected_exp264_oof_sha_pin_used_invalidated_stage_d_v2_sha"},
+    {"version": 3, "status": "ERROR", "runtime_seconds": 516.087, "trained_gpu_boosters": 0, "cause": "duplicate_last_known_tvt_projection_from_context_and_clean_273_feature_list"},
+    {"version": 4, "status": "ERROR", "runtime_seconds": 533.925, "trained_gpu_boosters": 0, "cause": "formation_reference_catalog_rejected_wells_without_complete_source_rows"},
+    {
+      "version": 5,
+      "status": "COMPLETE",
+      "started_at": "2026-07-19 18:41:35 JST",
+      "runtime_seconds": 25282.477,
+      "trained_gpu_boosters": 15,
+      "scope": "1_variant_x_3_configs_x_5_folds_15_gpu_boosters_zero_control_retraining",
+      "result": "train_complete_guard_failed"
+    }
+  ],
+  "notes": "Version 5 completed the fixed 15-booster contract and improved pooled, all five folds, all distance buckets, and both hidden-like views. The fixed worst-well and worsened-well-count guards remain failed, so train-side promotion remains rejected. A user-authorized saved-model inference override completed with submit-check PASS; the user-completed submission scored Public LB 7.530 and updates the ML LB anchor from exp264 7.562 by -0.032 without changing the train guard. Route classification was corrected to ml_model because PF/HMM/Beam-derived values are auxiliary compact meta features and the downstream LightGBM generates the final prediction."
+}

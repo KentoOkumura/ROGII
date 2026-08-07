@@ -1,0 +1,265 @@
+experiment:
+  name: exp515_third_place_three_family_hmm_late_submit
+  description: >-
+    Post-competition implementation based on the 3rd-place three-family HMM
+    description in Kaggle discussion 733319. Unpublished state grids,
+    transitions, and Local-DTW details are approximated. One fixed late
+    submission is run without LB-driven retuning.
+  route: pf_beam
+  status: implementing_late_submit_reproduction_audit
+  created_at: "2026-08-07"
+  updated_at: "2026-08-07"
+
+lineage:
+  parent: kaggle_3rd_place_solution_discussion_733319
+  steering: ../../.steering/20260807-exp515-third-place-three-family-hmm-late-submit
+  code_structure_references:
+    - exp374_exp209_student_t_exact_hmm_emission
+    - exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission
+    - exp065_typewell_supertype_cluster_cv_audit
+  comparison_references:
+    exp209_exact_hmm_oof_rmse: 11.938287234887435
+    exp374_student_t_df4_hmm_oof_rmse: 11.720478702142103
+    third_place_reported_base_hmm_oof_rmse: 6.0492
+    third_place_reported_three_family_hmm_oof_rmse: 5.9703
+    third_place_reported_public_lb: 6.207
+    third_place_reported_private_lb: 6.229
+  diff_summary: >-
+    Replace the user exp209 single-typewell absolute-TVT/rate HMM with the
+    public 3rd-place mechanism: joint TVT/rate/GR-bias/reference state,
+    fold-safe sibling horizontal-GR references, self-prefix reference,
+    128-row clamped prefix, 256-row initial rate, Cauchy emission, exact
+    forward-backward, three fixed HMM families, and physical projection.
+    Unreported state-grid and transition values are estimated and fixed before execution.
+
+method_fidelity:
+  classification: proxy
+  primary_source: https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction/discussion/733319
+  source_code_publicly_available: false
+  public_mechanisms_preserved:
+    - joint_tvt_position_formation_rate_gr_bias_reference_family_state
+    - sibling_horizontal_gr_reference
+    - target_known_prefix_self_reference
+    - prefix_128_inside_hmm_with_tvt_clamp
+    - robust_initial_rate_from_last_256_known_rows
+    - student_t_df1_emission
+    - exact_forward_backward_posterior_mean
+    - local_dtw_small_stretch_family
+    - fine_0p0625ft_sibling_bin_family
+    - fixed_three_family_weights_0p50_0p20_0p30
+    - rate_quantile_absolute_rate_and_integrated_correction_projection
+  frozen_reconstruction_defaults:
+    - compact_offset_lattice_plus_or_minus_10ft
+    - nine_rate_states_and_nine_bias_states
+    - reference_switch_probability
+    - self_reference_shrinkage_and_cap
+    - local_dtw_stretch_grid
+  claims_forbidden:
+    - faithful_reproduction
+    - source_code_parity
+    - exact_original_hyperparameter_reproduction
+    - exact_original_cv_split_reproduction
+    - exact_local_dtw_implementation_parity
+
+validation:
+  strategy: deterministic_groupkfold_well_fold_safe_sibling_reference_oof
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  truth_attachment: after_prediction_content_sha_freeze
+  leakage_policy:
+    - Validation-fold wells are excluded in full from every sibling atlas source.
+    - Typewell group discovery uses only typewell GR and no horizontal target TVT.
+    - Validation horizontal TVT is used only for prefix TVT_input and post-freeze scoring.
+    - Public LB is not used to select any family, weight, state grid, transition, or projection value.
+  reporting:
+    - pooled_rmse
+    - fold_rmse
+    - family_rmse
+    - by_well_rmse
+    - boundary_posterior_mass
+    - runtime
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  typewell_group_assignment:
+    filename: common_typewell_cluster_assignments.csv
+    method: native_overlap
+    threshold: "1"
+    minimum_cluster_size: 2
+    candidates:
+      - experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/common_typewell_cluster_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp065-typewell-supertype-cluster-cv-audit-train/artifacts/common_typewell_cluster_assignments.csv
+      - /kaggle/input/exp065-typewell-supertype-cluster-cv-audit-train/artifacts/common_typewell_cluster_assignments.csv
+  test_group_mapping:
+    method: native_quantized_gr_kgram_then_resampled_cosine_fallback
+    kgram_rows: 16
+    train_stride_rows: 8
+    query_stride_rows: 4
+    minimum_matching_kgrams: 2
+    signature_points: 128
+    minimum_fallback_cosine: 0.90
+
+model:
+  name: third_place_three_family_joint_hmm_writeup_reconstruction
+  estimator: deterministic_exact_forward_backward
+  active_variants:
+    - exp417_base_reconstruction
+    - local_dtw_reconstruction
+    - fine_bin_reconstruction
+  family_weights:
+    exp417_base_reconstruction: 0.50
+    local_dtw_reconstruction: 0.20
+    fine_bin_reconstruction: 0.30
+  state:
+    coordinate: tvt_offset_around_last256_rate_baseline
+    offset_min_ft: -10.0
+    offset_max_ft: 10.0
+    offset_step_ft: 0.5
+    rate_delta_min: -0.04
+    rate_delta_max: 0.04
+    rate_states: 9
+    bias_delta_min_gr: -20.0
+    bias_delta_max_gr: 20.0
+    bias_states: 9
+    base_reference_states: 2
+    local_dtw_reference_states: 3
+    fine_bin_reference_states: 1
+  prefix:
+    initial_rate_rows: 256
+    in_model_rows: 128
+    tvt_clamp_sigma_ft: 0.50
+    initial_position_sigma_ft: 0.50
+    initial_rate_sigma: 0.01
+    initial_bias_sigma_gr: 5.0
+  reference:
+    coarse_sibling_bin_ft: 0.25
+    fine_sibling_bin_ft: 0.0625
+    base_typewell_sibling_mixtures:
+      - [0.2, 0.8]
+      - [0.8, 0.2]
+    self_reference_shrinkage_rows: 256
+    self_reference_max_weight: 0.50
+    local_dtw_stretches: [0.985, 1.0, 1.015]
+    minimum_sibling_bin_count: 1
+  emission:
+    family: student_t
+    degrees_of_freedom: 1.0
+    formula: -log1p_squared_standardized_residual
+    sigma_estimator: prefix_typewell_residual_mad
+    sigma_clip_gr: [8.0, 60.0]
+    missing_gr_log_likelihood: 0.0
+  transition:
+    rate_sigma_per_sqrt_ft: 0.002
+    rate_momentum: 0.999
+    position_sigma_ft: 0.175
+    bias_sigma_gr_per_sqrt_ft: 0.35
+    reference_switch_probability: 0.001
+    position_kernel_cells: 5
+  decode:
+    method: exact_forward_backward
+    output: posterior_mean
+    family_mix: fixed_convex_combination
+  projection:
+    prefix_rate_quantiles: [0.01, 0.99]
+    absolute_formation_rate_cap: 0.25
+    integrated_tvt_correction_cap_ft: 10.0
+
+execution_contract:
+  scientific_variants: 3
+  family_hmm_runs_per_well: 3
+  expected_train_wells: 773
+  maximum_train_hmm_well_runs: 2319
+  reporting_folds: 5
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  trained_models: 0
+  pf_runs: 0
+  beam_runs: 0
+  parent_control_reruns: 0
+  gpu: false
+  late_submission_attempts: 1
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  numba_num_threads: 4
+  debug_max_wells: 3
+  kaggle:
+    enable_gpu: false
+    enable_tpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+    inference_kernel_sources:
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+
+late_submission:
+  enabled: true
+  phase: post_competition_late_submission
+  purpose: reproduction_audit_not_competition_selection
+  one_shot_fixed_version: true
+  submit_after_technical_gate_regardless_of_oof_promotion: true
+  allow_lb_retuning: false
+  message: "LATE SUBMIT | exp515 | 3rd-place 3-family HMM writeup reconstruction | fixed v1"
+  kernel_train_slug: exp515-third-place-hmm-late-submit-train
+  kernel_inference_slug: exp515-third-place-hmm-late-submit-inference
+
+guards:
+  technical:
+    require_three_families: true
+    require_family_weight_sum: 1.0
+    require_all_predictions_finite: true
+    require_no_duplicate_ids: true
+    require_sample_id_exact_match: true
+    require_no_extra_ids: true
+    require_no_missing_ids: true
+    require_all_validation_wells_excluded_from_atlas: true
+    require_posterior_normalization_max_abs_error: 0.00001
+    require_boundary_mass_recorded: true
+  scientific:
+    promotion_is_not_a_submission_gate: true
+    reference_only_target_rmse: 5.9703
+    no_same_run_rescue: true
+  forbidden:
+    - public_lb_parameter_selection
+    - post_oof_family_weight_search
+    - post_oof_state_grid_search
+    - validation_well_in_sibling_atlas
+    - current_test_id_or_row_count_branch
+    - visible_test_prediction_copy
+    - second_late_submission_without_new_user_approval
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_sorted_well_fold_family_state_and_reference_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_and_id_sorted_merge
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - No trained model exists; reconstruction manifest SHA replaces model manifest SHA.
+    - Deterministic anchor status is granted only after hidden-test regeneration and submission SHA are recorded.
+
+notes:
+  - This is explicitly a LATE SUBMIT / post-competition reproduction audit.
+  - Reported 3rd-place scores are external references, never this experiment's results.

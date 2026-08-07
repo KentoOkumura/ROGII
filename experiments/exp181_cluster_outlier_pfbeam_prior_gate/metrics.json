@@ -1,0 +1,107 @@
+{
+  "experiment": "exp181_cluster_outlier_pfbeam_prior_gate",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "pf_beam",
+  "parent": "exp109_typewell_neighbor_prior_features",
+  "comparison_parent": "exp114_spatial_neighbor_prior_signal_audit",
+  "metric": "rmse",
+  "cv": {
+    "rows": 11351967,
+    "rows_per_candidate": 3783989,
+    "wells": 773,
+    "policies": 5760,
+    "base_candidates": [
+      "likpf_mean",
+      "pf_ancc",
+      "beam_mean"
+    ],
+    "likpf_mean_baseline": {
+      "rmse": 11.594897672217703,
+      "mae": 7.067632584311985,
+      "within10": 0.772807479091509
+    },
+    "pf_ancc_baseline": {
+      "rmse": 14.493050689549028
+    },
+    "beam_mean_baseline": {
+      "rmse": 15.77432703246548
+    },
+    "reference_exp109_global_best": {
+      "policy": "pfbeam_oof__likpf_mean__reference__exp109_global_best_native_overlap_0p999_likpf_a0p2_c40",
+      "rmse": 11.143359413899551,
+      "delta_rmse_vs_baseline": -0.451538258318152,
+      "mae": 7.025321608318074,
+      "within10": 0.7798714531146893,
+      "max_regression_rmse": 6.5941827073495265,
+      "improved_wells": 413,
+      "worse_wells": 345,
+      "same_wells": 15
+    },
+    "reference_exp114_global_best": {
+      "policy": "pfbeam_oof__likpf_mean__reference__exp114_global_best_xy_plus_trajectory_shape_likpf_a0p2_c40",
+      "rmse": 11.151818277057291,
+      "delta_rmse_vs_baseline": -0.44307939516041195
+    },
+    "best_gated_policy": {
+      "policy": "pfbeam_oof__likpf_mean__typewell_native_overlap_0p999__any_outlier_signal_k8__std_le20__a0p2__c40",
+      "rmse": 11.479140437818206,
+      "delta_rmse_vs_baseline": -0.11575723439949748,
+      "mae": 7.04176347410932,
+      "delta_mae_vs_baseline": -0.025869110202664913,
+      "within10": 0.7754673705446818,
+      "delta_within10_vs_baseline": 0.0026598914531728024,
+      "gate_rows": 908309,
+      "gate_wells": 215,
+      "gate_rate": 0.2400400741122662,
+      "max_regression_rmse": 4.359665989725492,
+      "max_improvement_rmse": -6.324879137309921,
+      "improved_wells": 118,
+      "worse_wells": 97,
+      "same_wells": 558
+    },
+    "regression_guarded_c20_policy": {
+      "policy": "pfbeam_oof__likpf_mean__typewell_native_overlap_0p999__any_outlier_signal_k8__std_le20__a0p2__c20",
+      "rmse": 11.497560716475249,
+      "delta_rmse_vs_baseline": -0.09733695574245438,
+      "mae": 7.038521399869569,
+      "within10": 0.776045860598432,
+      "gate_rows": 908309,
+      "gate_wells": 215,
+      "gate_rate": 0.2400400741122662,
+      "max_regression_rmse": 3.0323877696964523,
+      "max_improvement_rmse": -3.441585801542562,
+      "improved_wells": 120,
+      "worse_wells": 95,
+      "same_wells": 558
+    },
+    "best_gated_stress": {
+      "distance_000_050_rmse": 1.1525695272383354,
+      "distance_1000_plus_rmse": 12.580753080335171,
+      "exp115_verification_like_spatial_valid_rmse": 13.60424306513178,
+      "exp115_verification_like_spatial_valid_delta": -0.039564806022471714,
+      "exp115_verification_like_typewell_purged_valid_rmse": 13.450540494236355,
+      "exp115_verification_like_typewell_purged_valid_delta": -0.05626058636242437
+    },
+    "artifact_sha256": {
+      "gate_metrics": "a0ef29fc7af06f54160358e6a7e54f64e26d5328b2a030b50ab2e4ffb30ffab7",
+      "by_well": "5a4206a676c0f5d0177d101afa8147d86151d97833f25e47b277dc8203604528",
+      "by_well_delta": "dd4f8536b3ab5830a6e1c7d5726b892fb3c44307097eeebdec754fdb06c598cb",
+      "bucket_metrics": "d1d3a7fea9f6a3a2dc5a18a551813b29f73f2e5bbacfebce34c1045d5f2db69d",
+      "subgroup_metrics": "9b853457b3266c4505a667ee657d36f16d73d0ae15520ad9de9cfe64cda9d08e",
+      "path_continuity": "80818c2f0898546ce88814653c3a0e991377271e1f5430fb99fa50f493a54f35",
+      "top_gated_predictions_decompressed": "6e772d3819b7a712c2b8811aeb3546bdb9184f327508d04287b6a689e411325b"
+    }
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "decision": "positive_signal_but_worst_well_regression_no_submit",
+  "kaggle": {
+    "train_kernel": "kentookumura/exp181-cluster-outlier-pfbeam-prior-gate-train",
+    "train_version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp181-cluster-outlier-pfbeam-prior-gate-train",
+    "output_path": "/tmp/kaggle-output/exp181_cluster_outlier_pfbeam_prior_gate/train_v1",
+    "runtime_seconds": 1610.2290246486664
+  },
+  "key_idea": "Train-side no-training audit for applying exp109/114 prior corrections only to cluster-outlier PF/Beam/likPF OOF candidates.",
+  "notes": "Kaggle train v1 completed. Cluster-outlier gating improves likpf_mean OOF globally and reduces reference worst-well regression, but max regression remains +4.36ft (+3.03ft with clip20), so no inference port or submission."
+}

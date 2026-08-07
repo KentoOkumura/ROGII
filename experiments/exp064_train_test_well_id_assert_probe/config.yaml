@@ -1,0 +1,39 @@
+experiment:
+  name: "exp064_train_test_well_id_assert_probe"
+  description: "Assert/status probe for hidden train/test well_id overlap."
+  route: pf_beam  # ml_model or pf_beam
+  status: usable
+  created_at: "2026-06-13"
+
+lineage:
+  parent: "KAGGLE_DIRECTION.md train_test_well_id_assert_probe backlog"
+  diff_summary: "No model training. Adds a Kaggle inference notebook that allows the known public sample overlap but asserts if a non-public test set has any well_id also present in train."
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation: {}
+
+# Common paths and submission columns come from project.yml.
+data: {}
+
+model:
+  name: train_test_well_id_assert_probe
+  params:
+    horizontal_suffix: "__horizontal_well.csv"
+    expected_public_test_wells:
+      - "000d7d20"
+      - "00bbac68"
+      - "00e12e8b"
+    public_sample_policy: "allow_exact_expected_overlap"
+    hidden_policy: "assert_no_train_test_well_id_overlap"
+    assertion_message: "HIDDEN_TRAIN_TEST_WELL_ID_OVERLAP_DETECTED"
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+
+notes:
+  - "Hidden test logs and row-level details are not assumed observable."
+  - "Successful hidden code submission means no exact overlap among exposed train/test horizontal-well filename prefixes was detected by the assert probe."
+  - "Failed hidden code submission with the configured assertion message would indicate at least one exposed train/test filename-prefix overlap, but not the count or ids."
+  - "This probe does not rule out the same physical well appearing under an anonymized or changed filename."

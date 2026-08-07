@@ -1,0 +1,389 @@
+experiment:
+  name: exp400_all_well_1p3_sigma_gr_likelihood_pf
+  description: >-
+    Design-frozen train-side one-factor audit that keeps the deterministic
+    exp072 128-seed likelihood-PF unchanged except for multiplying the
+    already-clipped well-level GR observation scale by 1.3 for every well.
+    The saved exp072 likpf_mean prediction is the control and is not rerun.
+  route: pf_beam
+  status: train_side_all_well_likelihood_pf_gs_x1p3_gate_failed_closed
+  created_at: "2026-07-25"
+  updated_at: "2026-07-26"
+
+overrides:
+  project_defaults:
+    - validation.metric
+    - validation.n_folds
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  steering: ../../.steering/20260725-exp400-all-well-1p3-sigma-gr-likelihood-pf
+  fixed_reporting_reference: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  sibling_negative_reference: exp398_all_well_1p3_sigma_gr_exact_hmm
+  references:
+    - exp069_pixiux_pf_beam_direct_submit_audit
+    - exp091_self_gr_likelihood_pf_beam_probe
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - docs/06_reproducibility.md
+    - https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction/discussion/728712
+    - https://www.kaggle.com/code/hjyact/ultimate-pf-config-strategy-a-reproducible-score
+  diff_summary: >-
+    Change only exp072 lik_pf gs from clip(prefix zero-filled GR residual
+    population std, 10, 60) to 1.3 times that already-clipped value for all
+    773 wells, with no post-multiplier clip. Keep particles, seeds, stable
+    per-well seed policy, dynamics, likelihood, resampling, interpolation,
+    scale readouts, and aggregation exact. This isolates the discussion's
+    lik_pf line and is not a replay of the linked notebook's full selector,
+    Beam, Ridge, projection, or model-package pipeline.
+
+implementation:
+  enabled: true
+  scope: train_side_candidate_audit_only
+  design_approval_received: true
+  design_approval_source: user_message_create_pf_backlog_experiment_steering_2026_07_25
+  implementation_approval_received: true
+  implementation_approval_source: user_message_implement_exp400_2026_07_25
+  scaffold_created: true
+  notebook_placeholders_only: false
+  canonical_notebooks_remain_placeholders: false
+  train_notebook_candidate_state: adopted_as_canonical
+  inference_notebook_state: fail_closed_compact_selfcontained_candidate_not_canonical
+  canonical_notebook_adopted: true
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  jupytext_source_created: true
+  compact_train_notebook_created: true
+  compact_inference_notebook_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  global_gr_scale_multiplier_implemented: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: exp072_saved_control_all_well_likelihood_pf_gs_x1p3
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  primary_candidate: likpf_mean_x1p3
+  primary_control: saved_exp072_likpf_mean
+  control_rmse_ft: 11.594897672217703
+  fixed_hmm_likpf_blend_control_rmse_ft: 10.269696146642758
+  truth_attachment: after_candidate_prediction_and_logical_content_sha_freeze
+  missing_fraction_buckets:
+    low: [0.0, 0.10]
+    mid: [0.10, 0.30]
+    high: [0.30, 1.0]
+    boundary_policy: left_closed_right_open_except_final_closed
+  leakage_policy:
+    - Candidate generation reads horizontal MD, Z, GR, and TVT_input but not horizontal suffix TVT.
+    - Type Well TVT is a reference-curve coordinate and is allowed during candidate generation.
+    - Candidate predictions and logical content SHA are frozen before suffix truth, errors, fold scores, or hidden-like roles are read.
+    - exp226 is used only for well, row, suffix-offset, and fold identity.
+    - Saved exp072 and exp209 predictions are reporting controls and fixed-blend inputs only.
+    - Public LB cannot select the multiplier, clip, particle count, seed count, scale, or rescue.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  observed_log_column: GR
+  id_column: id
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  exp072_control:
+    source: exp072_exp063_full_replay_feature_cache
+    kernel_source: kentookumura/exp072-exp063-full-replay-feature-cache-train
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    prediction_definition: last_known_tvt_plus_likpf_mean_d
+    saved_prediction_columns_available: [last_known_tvt, likpf_mean_d]
+    saved_scale_control_columns_available: false
+    secondary_scale_policy: candidate_only_nonselective_diagnostics_no_parent_pf_rerun
+    scale_prediction_definitions:
+      scale_3: last_known_tvt_plus_likpf_scale_3_d
+      scale_5: last_known_tvt_plus_likpf_scale_5_d
+      scale_8: last_known_tvt_plus_likpf_scale_8_d
+      scale_12: last_known_tvt_plus_likpf_scale_12_d
+    expected_raw_gzip_sha256: 14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18
+    expected_decompressed_sha256: 99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350
+    expected_rmse_ft: 11.594897672217703
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts
+      - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts
+      - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v2_stream/artifacts
+    rerun: false
+  exp209_hmm_control:
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    prediction_column: hmm_mean_tvt
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+    rerun: false
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    kernel_source: kentookumura/exp226-k16-kappa-repro-train
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    forbidden_decoder_columns: [tvt_geop, tvt_pred, gr_delta, tvt_true, error, abs_error]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    allowed_roles:
+      hidden_like_spatial: [train, valid]
+      hidden_like_typewell_purged: [train, valid, purged_train_excluded]
+    expected_role_counts:
+      hidden_like_spatial:
+        train: 573
+        valid: 200
+      hidden_like_typewell_purged:
+        train: 557
+        valid: 200
+        purged_train_excluded: 16
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+
+model:
+  name: deterministic_exp072_likelihood_pf_all_well_gs_x1p3
+  estimator: likelihood_weighted_particle_filter
+  active_variants: [all_well_gs_x1p3]
+  promotion_candidate: likpf_mean_x1p3
+  secondary_diagnostics:
+    - likpf_scale_3_x1p3
+    - likpf_scale_5_x1p3
+    - likpf_scale_8_x1p3
+    - likpf_scale_12_x1p3
+  gr_scale:
+    base_estimator: known_prefix_zero_fill_population_std
+    base_clip: [10.0, 60.0]
+    multiplier: 1.3
+    application_scope: all_wells
+    application_order: clip_base_then_multiply_exactly_once
+    post_multiplier_clip: null
+    effective_range: [13.0, 78.0]
+  pf:
+    particles: 500
+    seeds: 128
+    seed_indices: [0, 127]
+    seed_weighting_scales: [3.0, 5.0, 8.0, 12.0]
+    primary_output: arithmetic_seed_mean
+    typewell_grid_step_ft: 0.2
+    initial_position_spread_ft: 4.5
+    initial_rate_spread: 0.01
+    momentum: 0.998
+    rate_noise: 0.002
+    position_noise: 0.005
+    rough_position: 0.1
+    rough_rate: 0.001
+    resample_threshold_fraction: 0.5
+    emission: capped_gaussian
+    emission_clip_z2: 600.0
+    typewell_tvt_pad_ft: 100.0
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    output_dtype: float32
+  execution_count:
+    scientific_variants: 1
+    candidate_pf_well_runs: 773
+    seeds_per_well: 128
+    seed_well_trajectories: 98944
+    particles_per_seed: 500
+    particle_starts: 49472000
+    prediction_readouts: 5
+    reporting_folds: 5
+    parent_pf_control_reruns: 0
+    hmm_well_runs: 0
+    beam_well_runs: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+
+guards:
+  technical:
+    require_all_input_sha_matches: true
+    require_expected_rows: 3783989
+    require_expected_wells: 773
+    require_expected_folds: [0, 1, 2, 3, 4]
+    require_saved_control_rmse_parity_atol_ft: 0.00001
+    require_id_row_order_fold_identity: true
+    require_all_wells_completed_without_fallback: true
+    require_finite_candidate_coverage: 1.0
+    require_multiplier_all_wells: 1.3
+    multiplier_absolute_tolerance: 1.0e-12
+    require_base_scale_range: [10.0, 60.0]
+    require_candidate_scale_range: [13.0, 78.0]
+    require_post_multiplier_clip_count: 0
+    maximum_truth_error_fold_hidden_reads_before_candidate_freeze: 0
+    require_execution_count_match: true
+  scientific:
+    minimum_direct_rmse_gain_vs_exp072_likpf_mean_ft: 0.05
+    minimum_improved_folds: 4
+    minimum_raw_gr_observed_gain_ft: 0.05
+    maximum_raw_gr_missing_regression_ft: 0.0
+    maximum_high_missing_well_regression_ft: 0.0
+    maximum_long_tail_1000_plus_regression_ft: 0.0
+    maximum_hidden_like_spatial_regression_ft: 0.0
+    maximum_hidden_like_typewell_purged_regression_ft: 0.0
+    maximum_by_well_delta_p95_ft: 0.0
+    maximum_worst_well_regression_ft: 0.25
+    maximum_fixed_hmm_likpf_blend_regression_ft: 0.0
+    require_all_checks: true
+  decision:
+    pass_action: eligible_for_separate_fail_closed_inference_implementation_design
+    fail_action: all_well_likelihood_pf_gs_x1p3_failed_close_without_rescue
+  forbidden:
+    - multiplier_or_clip_search
+    - particle_seed_scale_or_initial_spread_search
+    - post_result_best_scale_primary_selection
+    - well_or_row_adaptive_multiplier
+    - parent_pf_control_rerun
+    - hmm_or_beam_rerun
+    - selector_hold_ridge_projection_contact_or_model_package_replay
+    - blend_weight_search
+    - same_oof_rescue
+    - inference_or_submission_without_separate_approval
+
+execution:
+  stage: train_side_gate_failed_terminal_closed
+  design_approved: true
+  implementation_approved: true
+  implementation_approval_scope: user_message_implement_exp400_2026_07_25
+  canonical_notebook_adoption_approved: true
+  canonical_notebook_adoption_approval_scope: user_message_execute_exp400_2026_07_25
+  kaggle_package_approved: true
+  kaggle_package_approval_scope: user_message_execute_exp400_2026_07_25
+  kaggle_push_approved: true
+  kaggle_push_approval_scope: user_message_execute_exp400_2026_07_25
+  train_run_approved: true
+  train_run_approval_scope: user_message_execute_exp400_2026_07_25
+  inference_approved: false
+  submission_approved: false
+  run_train: true
+  run_inference: false
+  create_submission: false
+  submit_to_kaggle: false
+  planned_scope: one_all_well_gs_x1p3_likelihood_pf_candidate_zero_control_reruns
+  kaggle_package_created_at_utc: "2026-07-25T13:34:16Z"
+  kaggle_train_pushed_at_utc: "2026-07-25T13:39:40Z"
+  kaggle_train_kernel_version: 1
+  kaggle_train_initial_status: KernelWorkerStatus.RUNNING
+  assistant_monitoring_stopped_at_utc: "2026-07-25T14:17:45Z"
+  assistant_monitoring_stop_reason: user_requested_handoff_until_completion
+  kaggle_train_final_status: KernelWorkerStatus.COMPLETE
+  kaggle_train_result_reviewed_at_utc: "2026-07-26"
+  kaggle_train_kernel_id_no: 128585102
+  kaggle_metrics_generated_at_utc: "2026-07-25T16:32:53.664364+00:00"
+  runtime_seconds: 10496.299889087677
+  technical_gate_passed: true
+  scientific_gate_passed: false
+  decision: all_well_likelihood_pf_gs_x1p3_failed_close_without_rescue
+  local_output_dir: kaggle/output/train_v1
+  prediction_logical_content_sha256: 009a1d73e187c4126a70231214f14fbe1ae44edee47d9a166818ab1bd928a3bf
+  artifact_manifest_sha256: 59c877025e81713639c97822e14b6da1f77bee1d99274dc1f8e933d329ce8dfa
+
+runtime:
+  device: cpu
+  use_amp: false
+  num_workers: 8
+  batch_size: 1
+  maximum_seconds: 30600
+  maximum_peak_rss_gb: 25
+  reference:
+    experiment: exp072_exp063_full_replay_feature_cache
+    full_notebook_seconds: 17728.972
+    full_feature_generation_seconds: 15380.262
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_run_on_push: true
+    train_kernel_id: kentookumura/exp400-all-well-1p3-sigma-gr-likelihood-pf-train
+    train_title: exp400 all well 1p3 sigma gr likelihood pf train
+    train_url: https://www.kaggle.com/code/kentookumura/exp400-all-well-1p3-sigma-gr-likelihood-pf-train
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: >-
+    seed_base=sha256_first16("likpf::train::<well_id>")
+    modulo_2147483647_plus_1; per-seed seed=seed_base+seed_index_0_to_127
+  stochastic_components:
+    - particle_initialization
+    - rate_and_position_process_noise
+    - systematic_resampling
+    - post_resampling_roughening
+  parallel_rng_policy: fixed_8_well_threads_each_numba_kernel_receives_explicit_stable_seed
+  stable_order: well_id_lexicographic_then_original_row_then_seed_index
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  freeze_before_truth:
+    - scientific_contract
+    - well_gr_scale_audit
+    - candidate_prediction_table
+    - candidate_prediction_logical_content_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Initial train-side run is recorded as a deterministic candidate, not a deterministic submission anchor.
+    - Raw-test regeneration is out of scope and must receive a separate seed/content-SHA audit before inference.
+
+artifacts:
+  output_prefix: exp400_all_well_1p3_sigma_gr_likelihood_pf
+  planned:
+    - candidate_predictions.csv.gz
+    - well_gr_scale_audit.csv
+    - overall_fold_scope_metrics.csv
+    - by_well_metrics.csv
+    - secondary_scale_metrics.csv
+    - fixed_hmm_likpf_blend_metrics.csv
+    - promotion_gate.json
+    - scientific_contract.json
+    - input_manifest.csv
+    - artifact_manifest.csv
+    - summary.json
+
+inference:
+  enabled: false
+  mode: disabled_until_train_side_all_gates_pass_and_separate_approval
+  selected_candidate: null
+
+notes:
+  - The linked discussion is weak external evidence because it gives no score, CV, version, or active-path proof.
+  - The current linked notebook contains both an x1.3 lik_pf and a separate x1.0 selector particle filter; exp400 targets only the exp072-like lik_pf lineage.
+  - exp398's exact-HMM x1.3 failure remains closed and is not reclassified by this PF-specific design.
+  - Implementation-only approval was received on 2026-07-25; compact self-contained
+    train and fail-closed inference candidates plus contract tests are implemented.
+  - The fixed exp072 cache has likpf_mean_d but no saved scale 3/5/8/12 columns.
+    Candidate scale readouts remain nonselective diagnostics; the parent PF is not rerun.
+  - Canonical train notebook adoption and Kaggle private CPU package/push/run were
+    approved by the user on 2026-07-25. Inference and submission remain unapproved.

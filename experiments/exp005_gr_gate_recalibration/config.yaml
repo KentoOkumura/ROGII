@@ -1,0 +1,177 @@
+experiment:
+  name: exp005_gr_gate_recalibration
+  description: Recalibrate exp004 GR coverage gates with stricter public-visible guard and softer no-GR blends
+  route: ml_model
+  status: completed
+  created_at: "2026-06-01"
+  updated_at: "2026-06-01"
+
+lineage:
+  parent: exp004_gr_gating
+  diff_summary: Keep exp002 all-GR as the default and compare softer or stricter low-GR coverage gates that avoid over-routing visible public-like wells to no-GR
+
+validation:
+  # Shared metric, fold count, seed, group, and score-row defaults come from project.yml.
+  leakage_policy:
+    - Same well is never split across train and validation folds.
+    - Target-derived features use only the known TVT_input prefix.
+    - Evaluation-zone TVT is used only as the residual target during training/CV.
+    - Train-only formation columns are not used.
+
+data: {}
+
+model:
+  name: hgb_last_anchor_residual_gr_gate_recalibrated
+  primary_strategy: drift_hgb
+  drift_strategy: drift_hgb
+  feature_set: all
+  strategies:
+    - last_anchor
+    - drift_hgb
+  params:
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+    gr_slope_window: 200
+    max_abs_gr_slope: 2.0
+    gr_roll_short: 25
+    gr_roll_long: 100
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  drift_model:
+    estimator: HistGradientBoostingRegressor
+    params:
+      max_iter: 180
+      learning_rate: 0.05
+      max_leaf_nodes: 31
+      min_samples_leaf: 80
+      l2_regularization: 0.05
+      max_bins: 255
+  training:
+    max_train_rows_per_fold: 300000
+    max_train_rows_final: 450000
+    max_train_rows_per_well: 800
+  rationale:
+    - exp002 all-GR residual learning is the Public LB control: CV 14.124569, Public LB 12.533.
+    - exp003 no-GR improved CV to 13.882944 but worsened Public LB to 12.852.
+    - exp004 low-GR coverage hard gate improved CV to 13.932968 but still worsened Public LB to 12.730 versus exp002.
+    - Visible duplicate sanity showed `000d7d20` was routed fully to no-GR by `eval_gr_missing_rate >= 0.40` and became worse than exp002.
+    - The next low-risk step is to keep exp002 behavior by default and make low-GR routing either softer or stricter.
+    - Gating rules use only inference-safe well summaries from TVT_input prefix, trajectory, and GR availability.
+
+ablation:
+  baseline_experiment: exp002_drift_minimal
+  baseline_cv: 14.124569
+  baseline_public_lb: 12.533
+  comparison_experiment: exp004_gr_gating
+  comparison_cv: 13.932968
+  comparison_public_lb: 12.730
+  alternate_experiment: exp003_residual_ablation
+  alternate_cv: 13.882944
+  alternate_public_lb: 12.852
+  selected_variant: gate_low_gr_strict_hard
+  variants:
+    - name: control_exp002_all
+      variable: control
+      description: Re-run exp002 all-GR settings as the main control row.
+      overrides: {}
+    - name: control_exp003_no_gr
+      variable: feature_set
+      description: Re-run exp003 selected no-GR feature set as the alternate control row.
+      overrides:
+        model:
+          feature_set: no_gr_signal
+    - name: control_exp004_low_gr_any_hard
+      variable: gr_gating
+      description: "Re-run exp004 selected gate: no-GR hard routing when either prefix or evaluation GR coverage is weak."
+      overrides:
+        model:
+          gr_gating:
+            enabled: true
+            base_feature_set: all
+            alternate_feature_set: no_gr_signal
+            combine: any
+            default_weight: 0.0
+            alternate_weight: 1.0
+            rules:
+              - feature: prefix_gr_missing_rate
+                op: ">="
+                value: 0.35
+              - feature: eval_gr_missing_rate
+                op: ">="
+                value: 0.40
+    - name: gate_low_gr_any_soft_050
+      variable: gr_gating
+      description: Use exp004 low-GR coverage condition, but blend only 50% toward no-GR to reduce public-visible over-routing.
+      overrides:
+        model:
+          gr_gating:
+            enabled: true
+            base_feature_set: all
+            alternate_feature_set: no_gr_signal
+            combine: any
+            default_weight: 0.0
+            alternate_weight: 0.5
+            rules:
+              - feature: prefix_gr_missing_rate
+                op: ">="
+                value: 0.35
+              - feature: eval_gr_missing_rate
+                op: ">="
+                value: 0.40
+    - name: gate_low_gr_strict_hard
+      variable: gr_gating
+      description: Route fully to no-GR only when both prefix and evaluation GR coverage are weak; this keeps `000d7d20` on all-GR in visible sanity.
+      overrides:
+        model:
+          gr_gating:
+            enabled: true
+            base_feature_set: all
+            alternate_feature_set: no_gr_signal
+            combine: all
+            default_weight: 0.0
+            alternate_weight: 1.0
+            rules:
+              - feature: prefix_gr_missing_rate
+                op: ">="
+                value: 0.35
+              - feature: eval_gr_missing_rate
+                op: ">="
+                value: 0.40
+    - name: gate_low_gr_strict_soft_050
+      variable: gr_gating
+      description: Apply the stricter both-coverage condition, but blend only 50% toward no-GR.
+      overrides:
+        model:
+          gr_gating:
+            enabled: true
+            base_feature_set: all
+            alternate_feature_set: no_gr_signal
+            combine: all
+            default_weight: 0.0
+            alternate_weight: 0.5
+            rules:
+              - feature: prefix_gr_missing_rate
+                op: ">="
+                value: 0.35
+              - feature: eval_gr_missing_rate
+                op: ">="
+                value: 0.40
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: 30
+  save_well_metrics: true
+  save_oof_predictions: false
+
+notes:
+  - Submission target column is lowercase tvt, while train target is uppercase TVT.
+  - Do not use train-only formation columns directly at inference.
+  - Train notebook writes ablation_metrics.csv, well_metrics.csv, fold_metrics.csv, and fold_model_training.csv with variant names.
+  - well_metrics.csv includes inference-safe condition tags and the no-GR gate weight for each well.
+  - "Hard-gate estimates from exp004 OOF controls: exp004 any hard CV 13.932968; strict hard estimated CV 13.936732 while avoiding visible `000d7d20` no-GR routing."
+  - Kaggle full CV completed. `control_exp004_low_gr_any_hard` is the best gating row by CV, while `gate_low_gr_strict_hard` remains selected as the public-visible guard candidate.
+  - Inference applies ablation.selected_variant.

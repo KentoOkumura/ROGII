@@ -1,0 +1,92 @@
+{
+  "experiment": "exp304_gr_denoiser_emission_separability_readout",
+  "status": "train_side_readout_completed_quality_passed",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "diagnostic_block_mrr_top3_vs_raw_and_stable_shuffled",
+  "promotion_decision": "passed",
+  "selected_denoiser": "swt_db4_l3",
+  "kaggle": {
+    "kernel_id": "kentookumura/exp304-gr-denoiser-separability-train",
+    "kernel_version": 1,
+    "kernel_id_no": 128011752,
+    "status": "COMPLETE",
+    "url": "https://www.kaggle.com/code/kentookumura/exp304-gr-denoiser-separability-train"
+  },
+  "execution": {
+    "rows": 3783989,
+    "wells": 773,
+    "blocks": 7787,
+    "shift_candidates": 13,
+    "active_audit_variants": 4,
+    "saved_fold_strata": 5,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "hmm_well_runs": 0,
+    "pf_well_runs": 0,
+    "beam_well_runs": 0,
+    "runtime_seconds": 4740.75772690773
+  },
+  "overall": {
+    "raw": {
+      "mrr": 0.3896259847910034,
+      "top1_rate": 0.18954668036471042,
+      "top3_rate": 0.4524207011686144,
+      "mean_rank": 4.653139848465391,
+      "truth_minus_best_decoy_gap_mean": -0.07851791326928728,
+      "shuffled_mrr": 0.24566989522042817
+    },
+    "swt_db4_l3": {
+      "mrr": 0.42472429401285183,
+      "top1_rate": 0.22062411711827404,
+      "top3_rate": 0.5046872993450623,
+      "mean_rank": 4.195582380891229,
+      "truth_minus_best_decoy_gap_mean": -0.04260084881961259,
+      "shuffled_mrr": 0.24560849449766875
+    },
+    "swt_db4_l3_gain_vs_raw": {
+      "mrr": 0.03509830922184842,
+      "top1": 0.031077436753563614,
+      "top3": 0.05226659817644791,
+      "truth_minus_best_decoy_gap": 0.03591706444967469
+    }
+  },
+  "quality_gate": {
+    "passed": true,
+    "passing_variants": ["swt_db4_l3"],
+    "folds_mrr_improved_vs_raw": 5,
+    "folds_top3_improved_vs_raw": 5,
+    "folds_real_mrr_above_shuffled": 5,
+    "folds_real_top3_above_shuffled": 5,
+    "required_scope_checks": {
+      "md_since_1000_plus": true,
+      "hidden_like_spatial": true,
+      "hidden_like_typewell_purged": true,
+      "typewell_gr_abs_gradient_top10pct": true
+    }
+  },
+  "technical_gate": {
+    "common_passed": true,
+    "valid_denoisers": ["swt_db4_l3"],
+    "raw": {"passed": true, "solver_failures": 0, "score_blocks": 7787},
+    "swt_db4_l3": {"passed": true, "solver_failures": 0, "score_blocks": 7787},
+    "robust_rts": {"passed": false, "solver_failures": 1531, "score_blocks": 0},
+    "l1_trend": {"passed": false, "solver_failures": 974, "score_blocks": 768},
+    "silent_fallback_count": 0
+  },
+  "sha256": {
+    "exp226_oof_decompressed": "709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609",
+    "exp115_hidden_like": "5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597",
+    "raw_well_file_identity_content": "bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32",
+    "scientific_contract_content": "8822df968200b74ea9969b0bc023ec127debbff01933bdc89ff3db9844d55064",
+    "denoised_gr_content": "a4acb72d60b833b12b2560db1e5dc3a113ae6ecf4137efbccf78c278582a0988",
+    "target_free_score_content": "6c71bdae030fee04e40988a8abdef4e26b61af733c463b6b0625e2e0cc99fa69",
+    "block_readout_raw": "c312305820c2c8ebf7f5574090b2fb93dc3e8cc769f6c2c60033cae28cf3e9b8",
+    "block_readout_decompressed": "239c990260032d896894d0903ed99e7cbb39796e1e6357218acfe4869a9f6623"
+  },
+  "decision": "permit_one_separate_tempered_exact_hmm_experiment",
+  "notes": "No model, prediction, HMM, PF, Beam, inference, or submission was produced. Robust RTS and L1 trend were technical failures and were not quality-scored."
+}

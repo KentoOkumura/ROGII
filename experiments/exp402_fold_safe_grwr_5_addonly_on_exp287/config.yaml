@@ -1,0 +1,666 @@
+experiment:
+  name: exp402_fold_safe_grwr_5_addonly_on_exp287
+  description: >-
+    Design-frozen add-only experiment that reconstructs the five
+    formation-dependent GRWR candidate-spread features from the saved exp287
+    fold-safe formation roles and the existing target-free clean-273
+    components, then adds only those five columns to the exp287 421-feature
+    downstream LightGBM surface.
+  hypothesis: >-
+    Dispersion across the five target-free PF/Beam candidates and the three
+    fold-safe dense-formation candidates contains useful local uncertainty
+    information that is not fully represented by the eight candidate values
+    and the existing target-free GR/DWT/FFT components separately.
+  route: ml_model
+  status: stage_1_gpu_train_version_4_running
+  created_at: "2026-07-26"
+  updated_at: "2026-07-28"
+
+lineage:
+  parent: exp287_fold_safe_formation_74_addonly_on_exp264
+  clean_tail_control: exp264_exp263_candidate_confidence_dual_selector
+  historical_formula_source: exp218_gr_wavelet_rotation_confidence_features_on_exp148
+  availability_audit_source: exp264_exp263_candidate_confidence_dual_selector
+  steering: ../../.steering/20260726-exp402-fold-safe-grwr-5-addonly-on-exp287
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - docs/06_reproducibility.md
+  diff_summary: >-
+    Keep the exp287 clean-273 plus nested-compact-74 plus
+    fold-safe-formation-74 surface, outer folds, target, LightGBM family, and
+    unweighted evaluation fixed. Recompute exactly five historical GRWR
+    candidate-spread columns from each exp287 fold-role surface. Do not add the
+    sixth exp111-entropy interaction, the exp396 score-27 family, a sample
+    weight, a hard selector, or any direct TVT correction. The final prediction
+    remains a downstream LightGBM output, so the route is ml_model.
+
+implementation:
+  enabled: true
+  scope: stage_0_zero_booster_preflight_implementation_only
+  stage_1_scope: fold_safe_grwr_5_addonly_train_only
+  design_approval_received: true
+  design_approval_source: user_message_create_backlog_experiment_and_steering_2026_07_26
+  implementation_approval_received: true
+  implementation_approval_source: user_message_implement_exp402_2026_07_26
+  implementation_approved_at: "2026-07-26"
+  scaffold_created: true
+  notebook_placeholders_only: false
+  canonical_notebook_placeholders_unchanged: false
+  canonical_notebook_adopted: true
+  compact_selfcontained_candidate_created: true
+  jupytext_source_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  preflight_implemented: true
+  stage_1_compact_selfcontained_candidate_created: true
+  stage_1_canonical_notebook_adopted: true
+  stage_1_source_sha256: 1d7666edfe81e274f1a0db58499dd465b5a5724c80b661a028e4004765774491
+  stage_1_canonical_notebook_sha256: 310e3fd356d8f444761d571a78533c9a83ed2c87304798c281ca147e7874ef55
+  training_implemented: true
+  inference_implemented: false
+  submission_enabled: false
+
+validation:
+  strategy: exp287_outer5_groupfold_with_fold_role_deterministic_grwr5_addonly
+  metric: rmse
+  metric_weighting: unweighted_rows
+  seed: 42
+  n_folds: 5
+  group_column: well
+  id_column: id
+  target_column: TVT
+  score_rows: TVT_input_isna
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_current_test_rows: 14151
+  expected_current_test_wells: 3
+  primary_control:
+    experiment: exp287_fold_safe_formation_74_addonly_on_exp264
+    rmse: 8.136708220359452
+    public_lb: 7.530
+  clean_tail_control:
+    experiment: exp264_exp263_candidate_confidence_dual_selector
+    rmse: 8.460811237612477
+    public_lb: 7.562
+  scopes:
+    - near_0_250
+    - mid_250_1000
+    - 1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  leakage_policy:
+    - Never load the historical exp218 values of the five GRWR columns.
+    - Use the exp287 outer-train self-excluded formation role for model-fit rows.
+    - Use only the matching exp287 outer-train reference for each outer-valid well.
+    - Use all train wells as the formation reference for current-test generation.
+    - Never read target-well formation columns from train or current-test raw files.
+    - Do not use TVT, target residual, OOF error, hidden-like result, or public LB to construct or select a feature.
+    - Freeze candidate order, formulas, dtype, feature order, and content SHA before model fitting.
+    - Do not derive sample weights or row gates from the five features in this experiment.
+
+data:
+  parent_exp287:
+    source: exp287_fold_safe_formation_74_addonly_on_exp264
+    kernel_source: kentookumura/exp287-foldsafe-form74-addonly-exp264-train
+    kernel_version: 5
+    oof_sha256: 8f026c5c5f6508fb142981832994c6ba9cded4940168c648a9df9f3e698c3913
+    model_manifest_sha256: 419dbdf83dd6bc343f0265aca56dd690ba1f231ee419e7cf0ff456ffdb797590
+    metrics_sha256: 435434342494aaa62cee6e627809363ac34f16174973f4b81301d2923f780862
+    fold_metrics_sha256: 864eca0452eea578c96baa653d25c4f2ae241c84b8e5d659b277407b5e427141
+    by_well_sha256: 3562cec13abe3c3df496e57d71b46aeb592ea2022c7bf0b9b5df1e062c21024d
+    formation_fold_manifest_sha256: 25611e281299991d626f1caca48673aee6225a890ad47ecdcd28a117ae827772
+    feature_schema_sha256: c1327324d6e0719eab45b9f8841033dd6cf09dd09228b044e6e8cc85f0fa8413
+    raw_schema_audit_sha256: 45d0bf77b1893adfce74921f4427c4ca5ba6d95c69326cbbd35abb766e502a41
+    artifact_root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp287-foldsafe-form74-addonly-exp264-train/artifacts
+      - experiments/exp287_fold_safe_formation_74_addonly_on_exp264/kaggle/output/train_v5/artifacts
+    expected_clean_feature_count: 273
+    expected_compact_feature_count: 74
+    expected_formation_feature_count: 74
+    expected_parent_feature_count: 421
+  clean_control_exp264:
+    source: exp264_exp263_candidate_confidence_dual_selector
+    oof_sha256: b11c5005ca566f76588f4e1735386c15b8f016b874701a82e1c0741c8b839ae2
+    oof_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-tvt-train/artifacts/stage_d_oof_predictions.parquet
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_d_v3_corrected/artifacts/stage_d_oof_predictions.parquet
+  exp072_candidate_context:
+    cache_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    raw_gzip_sha256: 14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18
+    decompressed_content_sha_policy: freeze_and_record_during_stage_0
+    rawtest_source_patterns:
+      - inputs/exp072_source/public_notebook_replay_audit.py
+      - experiments/exp072_exp063_full_replay_feature_cache/public_notebook_replay_audit.py
+    rawtest_source_sha256: 4af212a8a1c83e36cdcc0bc912942a62df1fbc94ca67fd75789171afaa1a647e
+    rawtest_runtime:
+      n_jobs: 8
+      pf_seeds: 128
+      pf_particles: 500
+      fast: false
+      use_gpu: cpu
+  availability_audit:
+    patterns:
+      - inputs/exp218_feature_availability.csv
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_feature_availability.csv
+    file_sha256: 6f93a502c9b58301e49da6effbf47b36d4635d4045157681749a762f08c89c67
+    clean_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
+    clean_allowlist_patterns:
+      - inputs/exp218_clean_273_allowlist.csv
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+  historical_formula:
+    patterns:
+      - inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+      - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+    use_historical_feature_values: false
+    source_sha256: 6712d5b4261a9c57cc1fd77ebbf835c351976357dd3d8afebada0d3c4c3f7a33
+    config_patterns:
+      - inputs/exp218_source/config.yaml
+      - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+    source_config_sha256: fd547494adcceb7de8781f198757bd9fcfd2240fcfb32fc654d3be04c04fa09d
+  exp145_learned_likelihood:
+    kernel_source: kentookumura/exp145-train
+    artifact_root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp145-train/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp145-train
+      - experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/kaggle/output/train_v2/artifacts
+    required_files:
+      - exp145_learned_likelihood_rawtest_feature_generator_parity_full_train_ml_features.csv.gz
+      - exp145_learned_likelihood_rawtest_feature_generator_parity_feature_schema.csv
+      - exp145_learned_likelihood_rawtest_feature_generator_parity_summary.json
+  current_test_reference:
+    source: exp287_raw_test_regeneration_contract
+    static_public_test_feature_artifact_as_input: false
+    formation_reference_policy: all_train_wells
+    target_formation_columns_read: false
+    reference_result_logical_sha256: cc974f8cc4bd3976b42767fc690a8085389d39d249d73ff3f8e6bdf0c44c9d8c
+    reference_feature_schema_sha256: aa7a36c8341496f893f34c12210d307c599fa556f10b22b39cd4842b79a71293
+  stage_c_artifact_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-train/artifacts
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_c_v6/artifacts
+  stage_c_expected_nested_selector_metrics_sha256: 421376abe55378ac3e0d9c37d2a882a97d6fd4ebf866ec4395e7346c1d4f478b
+  stage_c_expected_nested_selector_model_manifest_sha256: 3f28b04a017f0edadb815be44bf6f6f039dbd115bb72b3401e2681d3002422d2
+  stage_c_expected_nested_compact_manifest_sha256: f4855726de446b8308a8acf80d6ff6cd6a789f18ef90e165b98fa05d12aecf1c
+  stage_c_expected_compact_meta_schema_file_sha256: e3a677610899cb33bf58262f4cf02f650300c8c2207c46b53588d3418162ea74
+  stage_c_expected_compact_meta_schema_logical_sha256: 23614916c99edbbd513bcefee958d26cdfae5b83fb05c232c19736f2708dd725
+  hidden_like_assignment:
+    patterns:
+      - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  stage_0_aggregate:
+    kernel_source: kentookumura/exp402-foldsafe-grwr5-stage0-aggregate
+    kernel_version: 2
+    kernel_id_no: 128831850
+    artifact_root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp402-foldsafe-grwr5-stage0-aggregate/artifacts
+      - experiments/exp402_fold_safe_grwr_5_addonly_on_exp287/kaggle/output/stage0_aggregate_v2/artifacts
+    partition_sha256: 704d8a9163f5a82c9b28f3866e2de6d3a7dfac78a4236b5352436431674f365b
+    preflight_sha256: c8af15ad8502b172031eaa862878ba07f2a94b6eba5913259c3a4ba0e5142de8
+    reproducibility_sha256: 5456cfd9b0d2df3cac5848cb234cf382f9ebd1515439742fcff6afa3f0560fda
+    stage_0_config_sha256: 82bcce7c7d6e0694ffc67a2898068213e68d1b52cb560f89f63f8788f701bce0
+    stage_0_source_sha256: 7098ebe2063faeaee2d0d9b65d910648777da7726f682679ce1f17a8548c4ac4
+    scientific_contract_sha256: 8b2befb44bc22b6e62675edda48c90c0593932b815c00fab0915e817c24e6635
+  stage_0_train_folds:
+    "0":
+      artifact_root_patterns:
+        - /kaggle/input/notebooks/kentookumura/exp402-foldsafe-grwr5-train-fold0/artifacts
+        - experiments/exp402_fold_safe_grwr_5_addonly_on_exp287/kaggle/output/stage0_train_fold0/artifacts
+    "1":
+      artifact_root_patterns:
+        - /kaggle/input/notebooks/kentookumura/exp402-foldsafe-grwr5-train-fold1/artifacts
+        - experiments/exp402_fold_safe_grwr_5_addonly_on_exp287/kaggle/output/stage0_train_fold1/artifacts
+    "2":
+      artifact_root_patterns:
+        - /kaggle/input/notebooks/kentookumura/exp402-foldsafe-grwr5-train-fold2/artifacts
+        - experiments/exp402_fold_safe_grwr_5_addonly_on_exp287/kaggle/output/stage0_train_fold2/artifacts
+    "3":
+      artifact_root_patterns:
+        - /kaggle/input/notebooks/kentookumura/exp402-foldsafe-grwr5-train-fold3/artifacts
+        - experiments/exp402_fold_safe_grwr_5_addonly_on_exp287/kaggle/output/stage0_train_fold3/artifacts
+    "4":
+      artifact_root_patterns:
+        - /kaggle/input/notebooks/kentookumura/exp402-foldsafe-grwr5-train-fold4-v2/artifacts
+        - experiments/exp402_fold_safe_grwr_5_addonly_on_exp287/kaggle/output/stage0_train_fold4_v2/artifacts
+
+formation_generator:
+  family: exp072_public_replay_formation_only
+  formations: [ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+  plane_k: 10
+  dense_samples_per_well: 60
+  dense_k: 20
+  dense_nfetch: 5000
+  query_workers: 1
+  n_jobs: 8
+  current_test_reference_policy: all_train_wells
+  current_test_target_formation_columns_read: false
+
+grwr5:
+  name: fold_safe_candidate_spread_grwr5
+  output_dtype: float32
+  candidate_stack_dtype: float32
+  std_ddof: 0
+  candidate_order:
+    - pf_ancc
+    - beam_mean
+    - likpf_mean
+    - sc_ens
+    - hyb
+    - tvt_dense
+    - tvt_densew
+    - tvt_dense50
+  candidate_tvt_specs:
+    - {name: pf_ancc, column: pf_ancc, kind: absolute}
+    - {name: beam_mean, column: beam_mean_d, kind: delta_from_last_known_tvt}
+    - {name: likpf_mean, column: likpf_mean_d, kind: delta_from_last_known_tvt}
+    - {name: sc_ens, column: sc_ens_d, kind: delta_from_last_known_tvt}
+    - {name: hyb, column: hyb_d, kind: delta_from_last_known_tvt}
+    - {name: tvt_dense, column: tvt_dense_d, kind: delta_from_last_known_tvt}
+    - {name: tvt_densew, column: tvt_densew_d, kind: delta_from_last_known_tvt}
+    - {name: tvt_dense50, column: tvt_dense50_d, kind: delta_from_last_known_tvt}
+  source_components:
+    clean_273:
+      - last_known_tvt
+      - pf_ancc
+      - beam_mean_d
+      - likpf_mean_d
+      - sc_ens_d
+      - hyb_d
+      - grwr_dwt_detail_energy_ratio_w065
+      - grwr_fft_rotation_energy_ratio
+      - grwr_dwt_approx_minus_raw_default_candidate_ncc
+    fold_safe_formation_74:
+      - tvt_dense_d
+      - tvt_densew_d
+      - tvt_dense50_d
+  ordered_features:
+    - name: grwr_candidate_tvt_std
+      formula: numpy_std_float32_over_eight_candidate_tvt_values_ddof0
+    - name: grwr_candidate_tvt_range
+      formula: numpy_max_minus_min_float32_over_eight_candidate_tvt_values
+    - name: grwr_dwt_energy_ratio_w065_x_candidate_std
+      formula: grwr_dwt_detail_energy_ratio_w065_times_grwr_candidate_tvt_std_float32
+    - name: grwr_fft_rotation_ratio_x_candidate_range
+      formula: grwr_fft_rotation_energy_ratio_times_grwr_candidate_tvt_range_float32
+    - name: grwr_dwt_minus_raw_ncc_gap_x_candidate_range
+      formula: grwr_dwt_approx_minus_raw_default_candidate_ncc_times_grwr_candidate_tvt_range_float32
+  expected_feature_count: 5
+  feature_schema_sha_policy: freeze_during_zero_booster_preflight
+  feature_schema_sha256: 56f63025b11d6e1a3d7ff983094ed782db86420976de85586c5316d7813cdcc8
+  feature_content_sha_policy: id_sorted_float32_logical_content_per_outer_role
+  finite_required: true
+  exact_historical_names_required: true
+  duplicate_with_parent_forbidden: true
+  legacy_values_allowed: false
+
+preflight:
+  enabled: true
+  implemented: true
+  implementation_approval_required: true
+  run_approval_required: true
+  booster_count: 0
+  model_count: 0
+  prediction_count: 0
+  submission_count: 0
+  technical_gate_all_required:
+    - Every pinned exp287 and exp264 input SHA matches.
+    - Parent row identity, well identity, outer fold, score-row mask, target, and 421-column order match.
+    - All eight candidate values are finite for every required outer-train and outer-valid role.
+    - The three tvt_dense delta columns come from the matching exp287 fold-safe formation role.
+    - The three GR/DWT/FFT factors come from the clean-273 allowlist and are not regenerated from truth.
+    - The five new columns are finite, unique, ordered exactly as declared, and absent from the parent 421 schema.
+    - Historical exp218 GRWR-5 values, exp111 score-27 values, and the entropy interaction are absent from every input matrix.
+    - Current-test raw regeneration produces 14151 rows and 3 wells with five finite features and target formation reads equal to zero.
+    - Feature schema and id-sorted float32 logical-content SHA are saved for every outer role and current-test.
+    - Planned training resolves to one variant, three configs, five folds, fifteen GPU boosters, and zero control boosters.
+
+model:
+  name: exp287_421_plus_fold_safe_grwr_5_lightgbm
+  downstream_tvt_stage:
+    expected_source_base_feature_count: 380
+    expected_base_feature_count: 273
+    base_feature_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
+  feature_surface:
+    clean_273: 273
+    nested_compact_74: 74
+    fold_safe_formation_74: 74
+    fold_safe_grwr_5: 5
+    final: 426
+  training:
+    enabled: true
+    implementation_approval_required: true
+    run_approval_required: true
+    active_variants:
+      - fold_safe_grwr_5_addonly
+    lightgbm_config_indices: [0, 1, 2]
+    folds: 5
+    planned_gpu_boosters: 15
+    control_retraining: false
+    saved_control: exp287_saved_oof
+    target: target_residual_from_last_known_tvt
+    model_family: exp218_exp063_public_pixiux_lgb0_lgb1_lgb2
+    mode: gpu_repro_guard_dp_threads8
+    early_stopping_rounds: 250
+    log_evaluation_period: 100
+    matrix_copy_chunk_columns: 32
+    feature_importance:
+      save_per_fold: true
+      save_mean_gain_and_split: true
+      plot_top_features: true
+      grwr5_group_usage_reporting_only: true
+
+guards:
+  promotion:
+    all_required: true
+    maximum_pooled_delta_rmse_vs_exp287: -0.02
+    minimum_nonworse_folds_vs_exp287: 4
+    maximum_scope_delta_rmse_vs_exp287: 0.02
+    maximum_by_well_p95_delta_rmse_vs_exp287: 0.0
+    maximum_worst_well_delta_rmse_vs_exp264: 0.25
+    maximum_worsened_well_counts_vs_exp264:
+      plus_1ft: 135
+      plus_3ft: 39
+      plus_5ft: 14
+  on_failure:
+    close_branch: true
+    inference_allowed: false
+    submission_allowed: false
+    same_oof_rescue_allowed: false
+  forbidden:
+    - historical_exp218_grwr_5_values
+    - grwr_ll_entropy_x_dwt_energy_ratio_w065
+    - exp396_score_27_features
+    - exp111_saved_or_nested_score_features
+    - full_train_formation_reference_for_oof
+    - outer_valid_formation_or_tvt_reference
+    - feature_subset_or_formula_grid
+    - candidate_subset_or_spread_definition_grid
+    - correlation_pruning
+    - sample_weight
+    - error_segment_weight_readout
+    - hard_selector_or_row_gate
+    - direct_tvt_correction_or_blend
+    - parent_or_clean_control_retraining
+    - gate_relaxation
+    - inference_or_submission_before_promotion_pass_and_separate_approval
+
+execution:
+  current_stage: fold_safe_grwr_5_addonly_train
+  stage_0_default_phase: train_source
+  stage_0_split_phases:
+    - train_source
+    - train_fold
+    - current_test
+    - aggregate
+  allowed_stages:
+    - implementation_only
+    - zero_booster_preflight
+    - fold_safe_grwr_5_addonly_train
+    - conditional_saved_model_inference
+  implementation_approved: true
+  implementation_approval_source: user_message_implement_exp402_2026_07_26
+  zero_booster_preflight_run_approved: true
+  zero_booster_preflight_run_approval_source: user_message_execute_exp402_2026_07_26
+  run_preflight: false
+  training_implementation_approved: true
+  training_implementation_approval_source: user_message_implementation_and_execution_2026_07_28
+  training_run_approved: true
+  training_run_approval_source: user_message_implementation_and_execution_2026_07_28
+  kaggle_push_approved: true
+  kaggle_push_approval_source: user_message_implementation_and_execution_2026_07_28
+  approved_training_cost:
+    active_variants: 1
+    lightgbm_configs: 3
+    folds: 5
+    gpu_boosters: 15
+    control_retraining_boosters: 0
+    accelerator: NvidiaTeslaT4
+  run_train: true
+  run_inference: false
+  create_submission: false
+  run_approved: true
+  kaggle_push_requires_user_approval: true
+  retry_requires_user_approval: true
+  retry_approved: true
+  retry_approval_source: user_message_design_change_and_rerun_2026_07_26
+  stage_1_retry_approved: true
+  stage_1_retry_approval_source: user_message_implementation_and_execution_2026_07_28
+  retry_design: split_train_source_five_outer_folds_current_test_then_sha_aggregate
+  inference_requires_promotion_pass: true
+  inference_requires_separate_user_approval: true
+  competition_submission_authorized: false
+
+runtime:
+  device: gpu
+  use_amp: false
+  num_workers: 8
+  batch_size: 50000
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    machine_shape: NvidiaTeslaT4
+    gpu_use_dp: true
+    deterministic: true
+    force_col_wise: true
+    num_threads: 8
+    train_run_on_push: true
+    train_kernel_id: kentookumura/exp402-foldsafe-grwr5-on-exp287-train
+    train_title: exp402 foldsafe grwr5 on exp287 train
+    train_url: https://www.kaggle.com/code/kentookumura/exp402-foldsafe-grwr5-on-exp287-train
+    train_kernel_version: 4
+    train_kernel_id_no: 128627922
+    last_known_status: KernelWorkerStatus.RUNNING
+    last_status_checked_at: "2026-07-28T18:41:05+09:00"
+    active_package_config_sha256: 3aa1cdde16141acd2a385b228feefdc4e96e600f999cab036e694060b741df1c
+    active_package_notebook_sha256: a503778e0841f5910a7600b5deb0aec789deb77acb4289d48ef8dadc1e49c29f
+    active_package_metadata_sha256: 816907a0c430621df07c5d69315c7beef771011a41a7f4f35a913980f25a097e
+    input_kernel_count: 11
+    requested_machine_shape: NvidiaTeslaT4
+    runtime_t4_guard_enabled: true
+    post_push_materialized_metadata_caveat:
+      enable_gpu: false
+      machine_shape: None
+      interpretation: previous_materialized_version_metadata_while_version_4_is_running
+    stage_1_version_2_failure: stage_0_aggregate_mount_path_not_discovered_before_sha_resolution
+    stage_1_version_2_runtime_seconds_before_failure: 10.6418
+    stage_1_version_2_boosters_trained: 0
+    stage_1_version_3_failure: exp145_learned_likelihood_train_input_missing
+    stage_1_version_3_runtime_seconds_before_failure: 227.2871
+    stage_1_version_3_boosters_trained: 0
+    stage_1_version_3_t4_verified: true
+    stage_1_version_4_fix: add_exp145_input_and_three_file_fail_fast_contract
+    last_run_time_utc: "2026-07-26T00:06:39.493000"
+    terminal_cause: probable_runtime_limit_but_kaggle_api_does_not_distinguish_manual_cancel
+    terminal_log_last_time_seconds: 15.354064475
+    published_output_file_count: 0
+    stage_0_completed: true
+    monitoring_enabled: false
+    monitoring_paused_at: "2026-07-26"
+    monitoring_pause_source: user_message_stop_monitoring_2026_07_26
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp287-foldsafe-form74-addonly-exp264-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-tvt-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-train
+      - kentookumura/exp145-train
+      - kentookumura/exp402-foldsafe-grwr5-stage0-aggregate
+      - kentookumura/exp402-foldsafe-grwr5-train-fold0
+      - kentookumura/exp402-foldsafe-grwr5-train-fold1
+      - kentookumura/exp402-foldsafe-grwr5-train-fold2
+      - kentookumura/exp402-foldsafe-grwr5-train-fold3
+      - kentookumura/exp402-foldsafe-grwr5-train-fold4-v2
+    train_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp287-foldsafe-form74-addonly-exp264-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-tvt-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-train
+      - kentookumura/exp145-train
+      - kentookumura/exp402-foldsafe-grwr5-stage0-aggregate
+      - kentookumura/exp402-foldsafe-grwr5-train-fold0
+      - kentookumura/exp402-foldsafe-grwr5-train-fold1
+      - kentookumura/exp402-foldsafe-grwr5-train-fold2
+      - kentookumura/exp402-foldsafe-grwr5-train-fold3
+      - kentookumura/exp402-foldsafe-grwr5-train-fold4-v2
+    train_source_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp287-foldsafe-form74-addonly-exp264-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-tvt-train
+    train_fold0_kernel_sources:
+      - kentookumura/exp287-foldsafe-form74-addonly-exp264-train
+      - kentookumura/exp402-foldsafe-grwr5-train-source
+    train_fold1_kernel_sources:
+      - kentookumura/exp287-foldsafe-form74-addonly-exp264-train
+      - kentookumura/exp402-foldsafe-grwr5-train-source
+    train_fold2_kernel_sources:
+      - kentookumura/exp287-foldsafe-form74-addonly-exp264-train
+      - kentookumura/exp402-foldsafe-grwr5-train-source
+    train_fold3_kernel_sources:
+      - kentookumura/exp287-foldsafe-form74-addonly-exp264-train
+      - kentookumura/exp402-foldsafe-grwr5-train-source
+    train_fold4_kernel_sources:
+      - kentookumura/exp287-foldsafe-form74-addonly-exp264-train
+      - kentookumura/exp402-foldsafe-grwr5-train-source
+    train_variant1_kernel_sources: []
+    train_aggregate_kernel_sources:
+      - kentookumura/exp402-foldsafe-grwr5-train-source
+      - kentookumura/exp402-foldsafe-grwr5-train-fold0
+      - kentookumura/exp402-foldsafe-grwr5-train-fold1
+      - kentookumura/exp402-foldsafe-grwr5-train-fold2
+      - kentookumura/exp402-foldsafe-grwr5-train-fold3
+      - kentookumura/exp402-foldsafe-grwr5-train-fold4
+      - kentookumura/exp402-foldsafe-grwr5-current-test
+    split_stage_0:
+      train_source:
+        phase: train_source
+        kernel_id: kentookumura/exp402-foldsafe-grwr5-train-source
+        title: exp402 foldsafe grwr5 train source
+        accelerator: cpu
+        model_count: 0
+        booster_count: 0
+        artifact_root_patterns:
+          - /kaggle/input/notebooks/kentookumura/exp402-foldsafe-grwr5-train-source/artifacts
+          - experiments/exp402_fold_safe_grwr_5_addonly_on_exp287/kaggle/output/stage0_train_source/artifacts
+      train_folds:
+        "0":
+          phase: train_fold
+          outer_fold: 0
+          kernel_id: kentookumura/exp402-foldsafe-grwr5-train-fold0
+          title: exp402 foldsafe grwr5 train fold0
+          artifact_root_patterns:
+            - /kaggle/input/notebooks/kentookumura/exp402-foldsafe-grwr5-train-fold0/artifacts
+            - experiments/exp402_fold_safe_grwr_5_addonly_on_exp287/kaggle/output/stage0_train_fold0/artifacts
+        "1":
+          phase: train_fold
+          outer_fold: 1
+          kernel_id: kentookumura/exp402-foldsafe-grwr5-train-fold1
+          title: exp402 foldsafe grwr5 train fold1
+          artifact_root_patterns:
+            - /kaggle/input/notebooks/kentookumura/exp402-foldsafe-grwr5-train-fold1/artifacts
+            - experiments/exp402_fold_safe_grwr_5_addonly_on_exp287/kaggle/output/stage0_train_fold1/artifacts
+        "2":
+          phase: train_fold
+          outer_fold: 2
+          kernel_id: kentookumura/exp402-foldsafe-grwr5-train-fold2
+          title: exp402 foldsafe grwr5 train fold2
+          artifact_root_patterns:
+            - /kaggle/input/notebooks/kentookumura/exp402-foldsafe-grwr5-train-fold2/artifacts
+            - experiments/exp402_fold_safe_grwr_5_addonly_on_exp287/kaggle/output/stage0_train_fold2/artifacts
+        "3":
+          phase: train_fold
+          outer_fold: 3
+          kernel_id: kentookumura/exp402-foldsafe-grwr5-train-fold3
+          title: exp402 foldsafe grwr5 train fold3
+          artifact_root_patterns:
+            - /kaggle/input/notebooks/kentookumura/exp402-foldsafe-grwr5-train-fold3/artifacts
+            - experiments/exp402_fold_safe_grwr_5_addonly_on_exp287/kaggle/output/stage0_train_fold3/artifacts
+        "4":
+          phase: train_fold
+          outer_fold: 4
+          kernel_id: kentookumura/exp402-foldsafe-grwr5-train-fold4
+          title: exp402 foldsafe grwr5 train fold4
+          artifact_root_patterns:
+            - /kaggle/input/notebooks/kentookumura/exp402-foldsafe-grwr5-train-fold4/artifacts
+            - experiments/exp402_fold_safe_grwr_5_addonly_on_exp287/kaggle/output/stage0_train_fold4/artifacts
+      current_test:
+        phase: current_test
+        kernel_id: kentookumura/exp402-foldsafe-grwr5-current-test
+        title: exp402 foldsafe grwr5 current test
+        accelerator: cpu
+        test_wells: 3
+        pf_ancc_well_runs: 3
+        pf_z_well_runs: 3
+        beam_paths: 21
+        likelihood_pf_well_runs: 3
+        likelihood_pf_seed_well_trajectories: 384
+        likelihood_pf_particle_starts: 192000
+        model_count: 0
+        booster_count: 0
+        artifact_root_patterns:
+          - /kaggle/input/notebooks/kentookumura/exp402-foldsafe-grwr5-current-test/artifacts
+          - experiments/exp402_fold_safe_grwr_5_addonly_on_exp287/kaggle/output/stage0_current_test/artifacts
+      aggregate:
+        phase: aggregate
+        kernel_id: kentookumura/exp402-foldsafe-grwr5-stage0-aggregate
+        title: exp402 foldsafe grwr5 stage0 aggregate
+        accelerator: cpu
+        input_kernel_count: 7
+        model_count: 0
+        booster_count: 0
+    bootstrap_dependency_files:
+      - source: experiments/exp072_exp063_full_replay_feature_cache/public_notebook_replay_audit.py
+        destination: experiments/exp072_exp063_full_replay_feature_cache/public_notebook_replay_audit.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: inputs/exp218_source/config.yaml
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_feature_availability.csv
+        destination: inputs/exp218_feature_availability.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+        destination: inputs/exp218_clean_273_allowlist.csv
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  stage_0:
+    accelerator: cpu
+    model_count: 0
+    booster_count: 0
+    prediction_count: 0
+    submission_count: 0
+  stage_1:
+    accelerator: gpu
+    machine_shape: NvidiaTeslaT4
+    gpu_use_dp: true
+    deterministic: true
+    force_col_wise: true
+    num_threads: 8
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: inherit_exp287_fixed_seed_42_no_new_feature_rng
+  stochastic_components:
+    - current_test_exp072_fixed_per_well_seed_pf_replay_during_stage_0
+    - downstream_lightgbm_gpu_after_separate_approval
+  parallel_rng_policy: >-
+    exp072_stable_sha256_seed_from_feature_family_split_and_well_for_each_pf_task;
+    grwr5_formula_and_formation_generation_use_no_new_rng
+  feature_sha_policy: id_sorted_float32_logical_content_per_outer_role
+  gzip_sha_policy: decompressed_content_sha
+  gpu_policy: record_flags_and_sha_without_claiming_bitwise_determinism
+  record:
+    kernel_version: true
+    input_sha: true
+    row_and_fold_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    oof_prediction_sha: true
+    current_test_feature_sha: true
+    test_prediction_sha: true
+    submission_sha: true
+  notes:
+    - Feature generation is a deterministic float32 transform with no RNG.
+    - Current-test candidate regeneration pins the exp072 source SHA and uses stable per-well PF seeds with 128 likelihood-PF seeds and 500 particles.
+    - Saved exp287 and exp264 controls are compared by pinned OOF artifacts and are not retrained.
+    - Inference and submission evidence become applicable only after promotion and separate approval.

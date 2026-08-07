@@ -1,0 +1,288 @@
+experiment:
+  name: "exp235_fixed_lag_particle_smoother_pf"
+  description: >
+    Full exp072-compatible likelihood-PF audit that retains particle ancestors
+    and emits fixed-lag smoothed TVT estimates using subsequent GR rows.
+  route: pf_beam
+  status: completed_train_side_rejected_lag64_user_stopped_lag128_lag256
+  created_at: "2026-07-12"
+  updated_at: "2026-07-13"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - exp232_adaptive_robust_likelihood_pf
+    - KAGGLE_DIRECTION.md fixed_lag_particle_smoother_pf
+  implementation_source: fixed_lag_particle_smoother_pf.py
+  diff_summary: >
+    Keeps exp072's raw typewell-GR surface state, 500 particles, 128 seeds,
+    transition, likelihood, stable per-well variant seed policy, and ESS
+    resampling threshold fixed. Each row stores pre-resampling particle states
+    and ancestor maps in a bounded ring buffer. At t+lag, the posterior weights
+    trace those ancestors back to t and produce a delayed smoothed estimate.
+    Lag values 64/128/256 are the only variants; the last lag rows use the
+    forward-filter fallback. No target value is used by generation.
+
+validation:
+  strategy: full_train_exp072_pseudotail_fixed_lag_particle_smoother_pf
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within10
+    - particle_interval_coverage_sampled
+    - first_sampled_particle_loss
+    - pf_effective_sample_size
+    - pf_resampling_rate
+    - gate_rate
+    - smoothing_lag
+    - hidden_like_rmse
+    - worst_well_regression_vs_exp072
+    - forward_vs_smoothed_comparison
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  success_criteria:
+    - Lag variants improve or preserve exp072 likpf_mean RMSE without material 1000_plus, hidden-like, or worst-well regression.
+    - Lag variants are compared with the same-row forward PF and report sampled particle coverage and first-loss.
+    - Ancestor trace uses only bounded history; the final lag rows use the exact forward PF fallback.
+  leakage_policy:
+    - The exp072 cache supplies true TVT only for train-side scoring, interval coverage, and first-loss readout.
+    - Gate inputs use only raw evaluation GR, typewell GR, the observed prefix, and pre-update particle state.
+    - The exp209 reconstructed T=1 output is a comparison reference; no Gaussian control cache is regenerated.
+    - Future observations are raw evaluation GR/typewell GR only; future TVT, true error, and other wells are forbidden.
+    - Raw-test regeneration, inference, and submission are not part of this train-side experiment.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp209_enriched_likpf_control_local: experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+  exp209_enriched_likpf_control_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+  exp072_reference_candidates:
+    - likpf_mean
+    - pf_ancc
+    - beam_mean
+    - pf_z
+
+model:
+  name: fixed_lag_particle_smoother_pf
+  estimator: none_pfbeam_generation_audit
+  target: exp072_target_for_scoring_only
+  validation_surface:
+    selection_mode: all_eligible_wells
+    max_target_wells: null
+    well_include: []
+    min_known_prefix_rows: 160
+    min_eval_rows: 64
+  outlier_mixture:
+    component: fixed_lag_ancestor_trace
+    uniform_gr_min: 0.0
+    uniform_gr_max: 500.0
+    variants:
+      - name: lag64
+        lag: 64
+      - name: lag128
+        lag: 128
+      - name: lag256
+        lag: 256
+    notes:
+      - The legacy field name is retained for compatibility with the copied PF audit helpers; no mixture is applied.
+      - Ancestor tracing is bounded to lag+1 rows and has a forward fallback at the tail.
+  runtime:
+    particles: 500
+    seed_count: 128
+    seed_aggregation: mean
+    resample_threshold: 0.5
+    init_spread: 4.5
+    momentum: 0.998
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_pos_noise: 0.10
+    resample_velocity_noise: 0.001
+    grid_step: 0.2
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+  gate:
+    enabled: true
+    innovation_threshold: 2.5
+    change_point_window: 32
+    change_point_threshold: 3.0
+    novelty_short_window: 8
+    novelty_long_window: 64
+    novelty_threshold: 2.5
+    ess_ratio_threshold: 0.25
+    max_weight_threshold: 0.10
+    min_corroborating_signals: 1
+    history_scale_floor: 5.0
+    notes:
+      - This is the exp232 target-free gate with the same thresholds and pre-update inputs.
+      - Innovation is computed from the propagated, pre-update weighted particle GR expectation.
+      - Change point and novelty use only current and previous raw evaluation GR rows.
+      - ESS ratio and max weight are from the pre-update particle posterior.
+      - High innovation plus one other signal is required; no gate persistence or target-derived threshold is used.
+  interval_audit:
+    enabled: true
+    selected_well_count: 64
+    selection_policy: stable_sha256_well_order
+    row_stride: 64
+    include_gate_rows: true
+    quantiles: [0.05, 0.95]
+
+comparison:
+  baseline_candidate: exp072_likpf_mean
+  temperature_experiment:
+    enabled: false
+    required_for_acceptance: false
+    allow_pending_during_parallel_train: false
+    row_candidates_filename: exp232_adaptive_robust_likelihood_pf_row_candidates.csv.gz
+    row_candidates_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp232-adaptive-robust-likelihood-pf-train/artifacts/exp232_adaptive_robust_likelihood_pf_row_candidates.csv.gz
+      - /kaggle/input/exp232-adaptive-robust-likelihood-pf-train/artifacts/exp232_adaptive_robust_likelihood_pf_row_candidates.csv.gz
+      - experiments/exp232_adaptive_robust_likelihood_pf/artifacts/exp232_adaptive_robust_likelihood_pf_row_candidates.csv.gz
+    required_candidate_columns:
+      - pf_temp_t2_mean
+      - pf_temp_t4_mean
+    required_artifacts:
+      - exp232_adaptive_robust_likelihood_pf_candidate_metrics.csv
+      - exp232_adaptive_robust_likelihood_pf_distance_bucket_metrics.csv
+      - exp232_adaptive_robust_likelihood_pf_hidden_like_metrics.csv
+      - exp232_adaptive_robust_likelihood_pf_by_well.csv
+      - exp232_adaptive_robust_likelihood_pf_interval_metrics.csv
+      - exp232_adaptive_robust_likelihood_pf_row_candidates.csv.gz
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+
+audit:
+  mode: fixed_lag_particle_smoother_pf_full_train_audit
+  output_prefix: exp235_fixed_lag_particle_smoother_pf
+  primary_baseline: exp072_likpf_mean
+  path_jump_threshold_ft: 8.0
+  expected_train_artifacts:
+    - exp235_fixed_lag_particle_smoother_pf_candidate_metrics.csv
+    - exp235_fixed_lag_particle_smoother_pf_distance_bucket_metrics.csv
+    - exp235_fixed_lag_particle_smoother_pf_hidden_like_metrics.csv
+    - exp235_fixed_lag_particle_smoother_pf_by_well.csv
+    - exp235_fixed_lag_particle_smoother_pf_pf_diagnostics.csv
+    - exp235_fixed_lag_particle_smoother_pf_gate_diagnostics.csv
+    - exp235_fixed_lag_particle_smoother_pf_interval_metrics.csv
+    - exp235_fixed_lag_particle_smoother_pf_first_sampled_loss_by_well.csv
+    - exp235_fixed_lag_particle_smoother_pf_target_wells.csv
+    - exp235_fixed_lag_particle_smoother_pf_target_wells_full.csv
+    - exp235_fixed_lag_particle_smoother_pf_well_status.csv
+    - exp235_fixed_lag_particle_smoother_pf_row_candidates.csv.gz
+    - exp235_fixed_lag_particle_smoother_pf_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp209-joint-exact-parity-train
+
+execution:
+  split_strategy: exact_fixed_lag_one_variant_four_deterministic_well_shards
+  full_eligible_well_surface_required: true
+  active_outlier_mixture_variants: null
+  well_shard_count: 4
+  well_shard_index: 0
+  well_shard_assignment: stable_sha256_experiment_well_mod_count
+  progress_every_wells: 8
+  variant_runs:
+    - phase: lag64_shard0
+      variant: lag64
+      lag: 64
+      notebook_kind: train_variant0
+      shard_index: 0
+      kernel_id: kentookumura/exp235-fixed-lag-pf-lag64-shard0
+      title: exp235 fixed lag pf lag64 shard0
+    - phase: lag64_shard1
+      variant: lag64
+      lag: 64
+      notebook_kind: train_variant1
+      shard_index: 1
+      kernel_id: kentookumura/exp235-fixed-lag-pf-lag64-shard1
+      title: exp235 fixed lag pf lag64 shard1
+    - phase: lag64_shard2
+      variant: lag64
+      lag: 64
+      notebook_kind: train_variant2
+      shard_index: 2
+      kernel_id: kentookumura/exp235-fixed-lag-pf-lag64-shard2
+      title: exp235 fixed lag pf lag64 shard2
+    - phase: lag64_shard3
+      variant: lag64
+      lag: 64
+      notebook_kind: train_variant3
+      shard_index: 3
+      kernel_id: kentookumura/exp235-fixed-lag-pf-lag64-shard3
+      title: exp235 fixed lag pf lag64 shard3
+  artifact_handling:
+    - Each shard writes standard exp235 artifacts in its own Kaggle output namespace.
+    - Preserve every shard output until well / id / row_idx disjointness and full-union checks pass.
+    - A shard-only metric is diagnostic only and must not be used for acceptance.
+    - Merge all four shards of one lag by ID before comparing it with exp072 likpf_mean.
+  notes:
+    - The base config leaves active variants null; each shard notebook deep-copies it and selects exactly one predeclared lag and one deterministic shard index.
+    - This is a runtime-only partition; it does not alter particles, seeds, gate, transition, likelihood, resampling, control, or per-well rows.
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_well_variant_seed_index_with_numba_single_worker
+  stochastic_components:
+    - likelihood_pf_particle_propagation
+    - likelihood_pf_resampling
+  parallel_rng_policy: numba_kernel_uses_per_well_variant_stable_seed_base_no_thread_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is a CPU-only train-side PF audit; it is not a deterministic submission anchor.
+    - The exp072 ML cache, exp209 reconstructed control, exp115 split, and available exp232 comparison artifacts are recorded when available.
+    - Candidate row output records a decompressed content SHA.
+
+inference:
+  mode: disabled_pending_train_side_guards
+  selected_candidate: null
+  notes:
+    - No inference or submission is generated by this implementation.
+    - A raw-test port requires a separate user decision after train-side results and temperature comparison.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog fixed_lag_particle_smoother_pf.
+  - No LightGBM, folds, boosters, parent control rerun, or Beam variants are included.
+  - The three lag variants are evaluated one lag at a time; each lag is four deterministic well shards and is accepted only after exact row-union validation.
+  - "merge_fixed_lag_shards.py validates shard well / ID disjointness and produces the only merged candidate metrics eligible for comparison."

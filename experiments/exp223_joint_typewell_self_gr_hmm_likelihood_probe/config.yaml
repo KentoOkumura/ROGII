@@ -1,0 +1,244 @@
+experiment:
+  name: "exp223_joint_typewell_self_gr_hmm_likelihood_probe"
+  description: Add a weak self-GR motif likelihood boost to the exp209 exact HMM typewell GR emission.
+  route: ensemble
+  status: completed_train_side_supported_vs_exp072_not_direct_port
+  created_at: "2026-07-08"
+  updated_at: "2026-07-09"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.strategy
+    - validation.score_rows
+
+lineage:
+  parent: joint_typewell_self_gr_hmm_likelihood_probe backlog
+  references:
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp091_self_gr_likelihood_pf_beam_probe
+    - exp128_trajectory_local_typewell_self_gr_switch_audit
+    - exp131_gr_shape_descriptor_matching_ablation
+    - exp134_self_gr_multiscale_longtail_gate
+    - exp178_supervised_gr_window_matcher_from_known_tvt_prefix
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - KAGGLE_DIRECTION.md joint_typewell_self_gr_hmm_likelihood_probe
+  implementation_source: joint_cache_generation.py
+  diff_summary: >
+    Reuses the exp209 exact HMM grid, transition, and typewell GR emission, but
+    adds a weak clipped self-GR motif likelihood term derived only from each
+    horizontal well's visible GR and finite TVT_input prefix. This is not a
+    self-GR candidate, hard switch, direct replacement, row-wise gate, or
+    softmax average. It is a train-side no-training emission readout over all
+    train wells.
+
+validation:
+  strategy: train_side_no_training_hmm_self_gr_emission_readout
+  metric: rmse
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  success_criteria:
+    - Best self-GR HMM variant improves or at least does not materially regress versus exp209 HMM/likPF blend and exp072 likPF overall.
+    - Worst-well regression versus exp072_likpf_mean is controlled.
+    - Near rows 000_050 / 050_100 and longtail 1000_plus do not show pathological regression.
+    - exp115 hidden-like spatial and typewell-purged valid subgroups do not regress materially.
+    - HMM std, posterior smoothness, and self-GR quality/agreement buckets do not show overconfident wrong-depth attraction.
+  leakage_policy:
+    - HMM generation uses raw train horizontal/typewell files, observed TVT_input prefix, GR, MD, Z, and typewell GR/TVT.
+    - Self-GR centers use only finite TVT_input prefix rows from the same horizontal well.
+    - Unknown-suffix train TVT is used only for metrics and summaries.
+    - True TVT, absolute OOF error, oracle best, and true-error rank are never used to tune self-GR surface, quality, alpha, clip, or mode.
+    - No raw test files, inference, submission, or model training are performed in the initial train-side audit.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: joint_typewell_self_gr_hmm_likelihood_probe
+  estimator: none
+  target: target
+  base_prediction: last_known_tvt
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+  notes:
+    - HMM grid, transition, GR emission, and band settings match exp209/exp205.
+    - Only the additional self-GR clipped likelihood term changes the posterior.
+
+self_gr_emission:
+  enabled: true
+  alpha_grid:
+    - 0.07
+    - 0.15
+  clip_grid:
+    - 1.0
+  modes:
+    - boost_only
+  max_variants: 2
+  window_radius_rows: 12
+  descriptor_offsets:
+    - -12
+    - -8
+    - -4
+    - 0
+    - 4
+    - 8
+    - 12
+  top_k: 5
+  prefix_anchor_stride: 3
+  max_prefix_anchors: 128
+  keep_last_prefix_anchors: 32
+  min_prefix_anchors: 12
+  max_window_missing_rate: 0.35
+  gaussian_sigma_tvt: 12.0
+  descriptor_distance_temperature: 1.5
+  typewell_agreement_sigma_tvt: 18.0
+  surface_quadratic_clip: 60.0
+  surface_chunk_size: 256
+  deferred_grid:
+    clip_grid:
+      - 0.5
+      - 1.0
+      - 1.5
+    modes:
+      - symmetric
+    note: Use only if the initial 2-variant boost_only run is stable enough to justify additional CPU time.
+
+feature_cache:
+  exp072:
+    variant: pixiux_likpf_public_replay
+    deterministic_pf: true
+    seed_policy: stable_sha256_per_well
+    output_prefix: exp063_full_replay_feature_cache
+    n_jobs: 8
+    pf_seeds: 128
+    pf_particles: 500
+    fast: false
+    max_wells: null
+    keep_frame_for_comparison: false
+  hmm:
+    variant: joint_typewell_self_gr_hmm_likelihood_probe
+    output_prefix: exp223_joint_typewell_self_gr_hmm_likelihood_probe
+    expected_feature_count: 17
+    fast: false
+    max_wells: null
+    outer_workers: 2
+    expected_artifacts:
+      - exp223_joint_typewell_self_gr_hmm_likelihood_probe_joint_typewell_self_gr_hmm_likelihood_probe_train_features.csv.gz
+      - exp223_joint_typewell_self_gr_hmm_likelihood_probe_feature_schema.csv
+      - exp223_joint_typewell_self_gr_hmm_likelihood_probe_by_well_generation_summary.csv
+      - exp223_joint_typewell_self_gr_hmm_likelihood_probe_summary.json
+
+execution:
+  run_exp072_full_cache: false
+  run_hmm_cache: true
+  run_direct_comparison: true
+  direct_comparison_use_in_memory_exp072: false
+  run_reference_parity_checks: false
+  write_joint_summary: true
+  notes:
+    - Uses saved exp072 likPF cache as comparison baseline; does not regenerate exp072.
+    - Uses exp209 v5 runtime setting outer_workers=2 / numba_num_threads=2.
+    - Initial runtime-limited run uses 2 boost_only variants with alpha 0.07 and 0.15.
+    - No GPU model training, no LightGBM boosters, no control retraining, no submission.
+
+comparison:
+  baseline_experiment: exp072_exp063_full_replay_feature_cache
+  output_prefix: exp223_joint_typewell_self_gr_hmm_likelihood_probe
+  baseline_feature_cache:
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  hmm_feature_cache:
+    - /kaggle/working/artifacts/exp223_joint_typewell_self_gr_hmm_likelihood_probe_joint_typewell_self_gr_hmm_likelihood_probe_train_features.csv.gz
+    - experiments/exp223_joint_typewell_self_gr_hmm_likelihood_probe/artifacts/exp223_joint_typewell_self_gr_hmm_likelihood_probe_joint_typewell_self_gr_hmm_likelihood_probe_train_features.csv.gz
+  baseline_candidate_columns:
+    - likpf_mean
+    - pf_ancc
+    - pf_z
+    - beam_mean
+  primary_baselines:
+    - exp072_likpf_mean
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+  uncertainty_bins: 10
+  self_gr_signal_bins: 5
+  write_enriched_cache: false
+  step_delta_thresholds:
+    - 5.0
+    - 10.0
+    - 25.0
+  result_artifacts:
+    - exp223_joint_typewell_self_gr_hmm_likelihood_probe_overall_metrics.csv
+    - exp223_joint_typewell_self_gr_hmm_likelihood_probe_distance_bucket_metrics.csv
+    - exp223_joint_typewell_self_gr_hmm_likelihood_probe_hidden_like_metrics.csv
+    - exp223_joint_typewell_self_gr_hmm_likelihood_probe_by_well_delta.csv
+    - exp223_joint_typewell_self_gr_hmm_likelihood_probe_hmm_std_calibration.csv
+    - exp223_joint_typewell_self_gr_hmm_likelihood_probe_step_delta_rates.csv
+    - exp223_joint_typewell_self_gr_hmm_likelihood_probe_self_gr_signal_bucket_metrics.csv
+    - exp223_joint_typewell_self_gr_hmm_likelihood_probe_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: hmm_no_rng_self_gr_deterministic_prefix_descriptor_matching
+  stochastic_components: []
+  parallel_rng_policy: HMM and self-GR matching consume no RNG; outer job scheduling can change tiny floating point ordering, so compare RMSE and feature content hashes with documented tolerances.
+  feature_sha_policy: decompressed_content_sha_for_gzip plus raw gzip SHA recorded separately
+  record:
+    kernel_version: true
+    input_sha: false
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This experiment is a train-side no-training ensemble audit, not a deterministic submission anchor.
+    - Self-GR alpha/clip/mode are global grid values, not row-wise error-calibrated parameters.
+
+inference:
+  mode: not_applicable_train_side_readout_only
+  selected_candidate: null
+  notes:
+    - No raw-test features, predictions, or submission.csv are generated until train-side gates pass.
+    - If a candidate passes, raw-test-safe self-GR/HMM regeneration must be implemented in this same experiment.

@@ -1,0 +1,63 @@
+{
+  "experiment": "exp175_cluster_outlier_typewell_prior_gate",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "fallback_parent": "exp092_u_projection_correction_disagreement_fullrun",
+  "metric": "rmse",
+  "cv": {
+    "rows_per_source": 3783989,
+    "wells": 773,
+    "exp148_lgb_mean_baseline": {
+      "rmse": 8.50128118189582,
+      "mae": 5.335650953431683,
+      "within10": 0.8563320347918559
+    },
+    "exp092_lgb1_baseline": {
+      "rmse": 9.322479895503928,
+      "mae": 5.980980324939915,
+      "within10": 0.822047051405276
+    },
+    "best_policy": {
+      "policy": "exp148_lgb_mean__lgb_mean__baseline",
+      "rmse": 8.50128118189582,
+      "delta_rmse_vs_baseline": 0.0
+    },
+    "best_nonbaseline": {
+      "policy": "exp148_lgb_mean__lgb_mean__typewell_native_overlap_0p999__own_z_gt2p0__std_le20__a0p05__c5",
+      "rmse": 8.501592821010115,
+      "delta_rmse_vs_baseline": 0.0003116391142956587,
+      "mae": 5.336485468964616,
+      "delta_mae_vs_baseline": 0.0008345155329330112,
+      "within10": 0.8562802376011135,
+      "delta_within10_vs_baseline": -0.000051797190742441934,
+      "gate_rows": 271090,
+      "gate_wells": 62,
+      "gate_rate": 0.07164132876707623,
+      "max_regression_rmse": 0.18117324601574047,
+      "max_improvement_rmse": -0.21004396329086283,
+      "improved_wells": 29,
+      "worse_wells": 33,
+      "same_wells": 711
+    },
+    "exp092_best_nonbaseline": {
+      "policy": "exp092_lgb1__lgb1__typewell_native_overlap_0p999__own_z_gt2p0__std_le20__a0p05__c5",
+      "rmse": 9.322922870194724,
+      "delta_rmse_vs_baseline": 0.000442974690797,
+      "mae": 5.981522158086215,
+      "delta_mae_vs_baseline": 0.0005418331463,
+      "within10": 0.822002918084593,
+      "delta_within10_vs_baseline": -0.000044133320684
+    }
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "decision": "cluster_outlier_prior_gate_not_supported",
+  "kaggle": {
+    "train_kernel": "kentookumura/exp175-cluster-outlier-typewell-prior-gate-train",
+    "train_version": 2,
+    "output_path": "/tmp/kaggle-output/exp175_cluster_outlier_typewell_prior_gate/train_v2"
+  },
+  "key_idea": "Gate exp109/114 typewell and spatial priors to native typewell cluster outlier wells before applying weak clipped posthoc corrections.",
+  "notes": "Kaggle train v2 completed. Baseline exp148 lgb_mean remains best; all cluster-outlier gated prior posthoc corrections worsen global RMSE. No inference port or submission."
+}

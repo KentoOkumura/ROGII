@@ -1,0 +1,55 @@
+schema_version: 1.0.0
+parent: exp264_corrected_stage_a_v4_raw_test_safe_88
+status: refreeze_required_before_fit
+
+single_change:
+  candidate_count: {from: 12, to: 13}
+  primary_domain_count: {from: 11, to: 12}
+  fixed_fallback_domain_count: {from: 7, to: 7}
+  compact_feature_count: {from: 74, to: 77}
+  added_compact_features:
+    - selector__pred_abs_error__huber_exact_hmm
+    - selector__p_within10__huber_exact_hmm
+    - selector__primary_error_top1__huber_exact_hmm
+
+retained_groups: [ctx, cand, conf, bank, formula, id]
+raw_context_allowlist: [MD, X, Y, Z, GR]
+forbidden_training_only_columns: [ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+forbidden_target_tokens: [TVT, TVT_input, target, true_tvt, error, oracle]
+
+exp389_feature_policy:
+  source_native_confidence:
+    sigma_tvt: huber_delta1p345_on_exp209_absolute_tvt_hmm_std
+    source_loglik: huber_delta1p345_on_exp209_absolute_tvt_hmm_loglik
+    loglik_per_row: source_loglik_divided_by_evaluation_rows_in_well
+  confidence_valid: candidate_and_native_fields_are_finite
+  candidate_generation: target_free_per_well_exact_hmm
+  source_fold_column: null
+  source_fold_role: not_applicable
+  selector_fold_repartition: global_key_join_then_exp263_outer_fold
+  universal_features:
+    - candidate_tvt
+    - candidate_minus_last
+    - candidate_step_slope_curvature_straightness_32_128_512
+    - bank_rank_spread_disagreement
+    - candidate_family_kind_and_id_one_hot
+  forbidden_features:
+    - exp389_source_fold
+    - source_fold_equals_selector_fold
+    - gaussian_control_prediction
+    - likpf_control_prediction
+    - tail_gate_outcome
+    - true_tvt
+
+freeze:
+  before_fit: true
+  remove_all_missing: true
+  remove_constant: true
+  remove_exact_duplicate: true
+  near_duplicate_action: report_only
+  output:
+    - feature_catalog.csv
+    - feature_schema.json
+    - compact_meta_schema.json
+    - feature_duplicate_correlation_audit.csv
+    - confidence_coverage_by_candidate_fold.csv

@@ -1,0 +1,78 @@
+{
+  "experiment": "exp107_selector_topn_candidate_only_features",
+  "status": "completed_train_side_rejected",
+  "updated_at": "2026-06-22",
+  "route": "ml_model",
+  "parent": "exp098_selector_rank_slot_features_on_exp073",
+  "base_surface_parent": "exp073_gpu_reproducibility_guard_for_exp063_full_replay",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "source": "kaggle_train_v1",
+  "kernel": "kentookumura/exp107-selector-topn-candidate-only-features-train",
+  "kernel_version": 1,
+  "output_dir": "experiments/exp107_selector_topn_candidate_only_features/kaggle/output/train_v1",
+  "rows": 3783989,
+  "wells": 773,
+  "model_count": 45,
+  "active_variants": [
+    "top1_candidate_only",
+    "top2_candidate_only",
+    "top3_candidate_only"
+  ],
+  "best": {
+    "variant": "top2_candidate_only",
+    "model": "lgb2",
+    "features": 211,
+    "rmse_tvt": 9.437602822502426,
+    "prediction_sha256": "54b9add271cb95e86b2b2903005e314eff5d09cfc5a3162a61b923d53a6b9776"
+  },
+  "pooled_rmse": {
+    "top1_lgb0": 9.847271,
+    "top1_lgb1": 9.55144,
+    "top1_lgb2": 9.56238,
+    "top1_lgb_mean": 9.577677176573798,
+    "top2_lgb0": 9.753249,
+    "top2_lgb1": 9.437894828490364,
+    "top2_lgb2": 9.437602822502426,
+    "top2_lgb_mean": 9.47909268258092,
+    "top3_lgb0": 9.803601,
+    "top3_lgb1": 9.500311,
+    "top3_lgb2": 9.45899,
+    "top3_lgb_mean": 9.527935588763015
+  },
+  "deltas": {
+    "best_vs_exp073_raw_anchor": -0.088771926888256,
+    "best_vs_exp077_policy": -0.032911978497574,
+    "best_vs_exp092_lgb1": 0.115122926998499,
+    "best_vs_exp098_lgb1": 0.079451770183666,
+    "best_vs_exp098_lgb_mean": 0.010154835112455,
+    "best_vs_exp105_best": -0.003500338588428
+  },
+  "path_continuity_best": {
+    "step_abs_mean": 0.09022825738736541,
+    "step_abs_p95": 0.32599999999911233,
+    "step_abs_p99": 0.7380000000011933,
+    "step_abs_max": 10.718000000000757,
+    "step_ge10": 1,
+    "step_ge25": 0,
+    "step_ge10_per_1000_rows": 0.0002642713813385821
+  },
+  "artifacts": {
+    "summary": "artifacts/exp107_selector_topn_candidate_only_features_summary.json",
+    "metrics": "artifacts/exp107_selector_topn_candidate_only_features_metrics.csv",
+    "by_well": "artifacts/exp107_selector_topn_candidate_only_features_by_well.csv",
+    "bucket_metrics": "artifacts/exp107_selector_topn_candidate_only_features_bucket_metrics.csv",
+    "feature_schema": "artifacts/exp107_selector_topn_candidate_only_features_feature_schema.csv",
+    "feature_importance_mean": "artifacts/exp107_selector_topn_candidate_only_features_feature_importance_mean.csv",
+    "model_manifest": "artifacts/exp107_selector_topn_candidate_only_features_lgb_models/manifest.json",
+    "predictions": "artifacts/exp107_selector_topn_candidate_only_features_predictions.csv.gz"
+  },
+  "sha256": {
+    "summary": "859fa539a92caa0b8199809ea19a99977ea1862b968da885cdfc56e4d28b664a",
+    "metrics": "8e75e8b00fdae7d57e5874428fb249c5a2592eb311a5d07e38b58371d55dbf1f",
+    "feature_schema": "8cf8be55818ec3ea00cf19a82010c6ef185d49320f4d2402ca42ec1b59b88721",
+    "model_manifest": "26d2e5a0c3b5029ec38a1f91ba966849b9a02f96513a78ec6ba8393dabf4b412",
+    "predictions_decompressed": "8f20066736360ab8457dfdfec5cd0a42f860a9ce069bf3236f0698952757f191"
+  },
+  "recommendation": "rejected_keep_exp098_full_rank_slot_baseline",
+  "notes": "Best top2/lgb2 improves exp073 and exp105 slightly, but is worse than exp098 lgb1, exp098 lgb_mean, and exp092 lgb1. Do not submit."
+}

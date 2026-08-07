@@ -1,0 +1,50 @@
+{
+  "experiment": "exp228_direct_residual_correction_on_exp226",
+  "status": "train_completed_rejected_no_inference_no_submit",
+  "cv": 8.94408550082682,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "updated_at": "2026-07-11",
+  "key_idea": "Train a direct residual model on the exp218 feature surface with group-safe exp226 K16 OOF prediction as base; run lgb0/lgb1/lgb2 as separate CPU notebooks.",
+  "train_result": {
+    "variant": "exp218_surface_direct_residual",
+    "mode": "cpu_threads8",
+    "rows": 3783989,
+    "wells": 773,
+    "split_rmse_tvt": {
+      "lgb0": 9.042170562084868,
+      "lgb1": 8.940004291330437,
+      "lgb2": 8.94036689323167
+    },
+    "lgb_mean": {
+      "model": "lgb_mean_from_split_lgb0_lgb1_lgb2",
+      "rmse_tvt": 8.94408550082682,
+      "rmse_residual": 8.944085601265096,
+      "prediction_sha256": "239d53622af7cf3f3b421522de9a1f9cdda0a6ac3b99ba283dc8796032209da8"
+    },
+    "delta_vs_exp226_rmse_tvt": -0.4830240957553931,
+    "delta_vs_exp218_rmse_tvt": 0.4682917491701961,
+    "decision": "reject_no_inference_no_submit"
+  },
+  "planned_train": {
+    "active_variants": 1,
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "total_boosters": 15,
+    "split_notebooks": {
+      "train_lgb0": 5,
+      "train_lgb1": 5,
+      "train_lgb2": 5
+    },
+    "control_or_parent_retraining": false,
+    "gpu": false
+  },
+  "references": {
+    "parent_exp226_cv": 9.427109596582213,
+    "exp218_cv": 8.475793751656624,
+    "parent_exp226_public_lb": 9.837,
+    "exp218_public_lb": 7.843,
+    "ensemble_anchor_public_lb": 7.601
+  }
+}

@@ -1,0 +1,70 @@
+experiment:
+  name: exp002_drift_minimal
+  description: Minimal residual model on top of last-known TVT anchor
+  route: ml_model
+  status: completed
+  created_at: "2026-05-31"
+  updated_at: "2026-05-31"
+
+lineage:
+  parent: exp001_baseline
+  diff_summary: Learn TVT minus last_anchor_tvt using leak-safe trajectory, GR, and prefix features
+
+validation:
+  # Shared metric, fold count, seed, group, and score-row defaults come from project.yml.
+  leakage_policy:
+    - Same well is never split across train and validation folds.
+    - Target-derived features use only the known TVT_input prefix.
+    - Evaluation-zone TVT is used only as the residual target during training/CV.
+    - Train-only formation columns are not used in exp002.
+
+data: {}
+
+model:
+  name: hgb_last_anchor_residual
+  primary_strategy: drift_hgb
+  drift_strategy: drift_hgb
+  strategies:
+    - last_anchor
+    - drift_hgb
+  params:
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+    gr_slope_window: 200
+    max_abs_gr_slope: 2.0
+    gr_roll_short: 25
+    gr_roll_long: 100
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  drift_model:
+    estimator: HistGradientBoostingRegressor
+    params:
+      max_iter: 180
+      learning_rate: 0.05
+      max_leaf_nodes: 31
+      min_samples_leaf: 80
+      l2_regularization: 0.05
+      max_bins: 255
+  training:
+    max_train_rows_per_fold: 300000
+    max_train_rows_final: 450000
+    max_train_rows_per_well: 800
+  rationale:
+    - exp001 last_anchor is a strong baseline and CV/LB aligned.
+    - exp001 recent_linear showed raw slope extrapolation is unstable.
+    - Residual learning can adjust anchor drift while keeping anchor as a fallback reference.
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: 30
+  save_well_metrics: true
+  save_oof_predictions: false
+
+notes:
+  - Submission target column is lowercase tvt, while train target is uppercase TVT.
+  - Do not use train-only formation columns directly at inference.
+  - Drift model fits on train wells inside inference notebook because this is a code competition.

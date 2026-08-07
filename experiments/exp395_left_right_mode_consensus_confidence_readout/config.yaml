@@ -1,0 +1,348 @@
+experiment:
+  name: exp395_left_right_mode_consensus_confidence_readout
+  description: >-
+    Confidence-only train-side readout that scores the same stable exact-HMM
+    mode lineages with disjoint heel-side and toe-side GR evidence, without
+    generating or changing any TVT prediction.
+  route: pf_beam
+  status: closed_unimplemented_exp391_stage_a1_failed
+  created_at: "2026-07-25"
+  updated_at: "2026-07-25"
+
+lineage:
+  parent: exp391_prefix_anchored_mode_persistence_hmm_readout
+  decoder_parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  physical_reference: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  promotion_reference: exp263_last_anchor_better_candidate_confidence_pair_cache
+  steering: ../../.steering/20260725-exp395-left-right-mode-consensus-confidence-readout
+  prerequisites:
+    - exp391_stage_a1_all_technical_and_mechanism_gates_pass
+    - exp391_mode_identity_contract_sha_frozen
+    - separate_user_implementation_approval
+  references:
+    - exp236_exact_hmm_posterior_bimodality_audit
+    - exp270_exact_hmm_posterior_mode_candidate_audit
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe
+    - exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout
+    - exp284_prefix_masked_wrong_mode_branch_recovery_backtest
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam
+    - exp340_exp226_depth_alias_block_confidence_readout_on_exp264
+    - exp386_cycle_consistent_rgt_scenario_bank
+    - exp387_prefix_gr_rgt_scenario_posterior
+    - docs/06_reproducibility.md
+  diff_summary: >-
+    Keep the exp209 HMM grammar and exp391 stable mode identities fixed. Split
+    target GR into non-overlapping left and right windows around each checkpoint,
+    normalize the two evidence distributions over the same mode lineages, and
+    use posterior overlap only as an error-confidence readout. Do not reverse a
+    predictor, alter a path, select a mode, or create a TVT candidate.
+
+implementation:
+  enabled: false
+  scope: design_only
+  approval_received: true
+  approval_source: user_message_implement_exp395_2026_07_25
+  blocked_until_exp391_stage_a1_pass: false
+  closed_by_exp391_stage_a1_failure: true
+  scaffold_created: true
+  notebook_placeholders_only: true
+  jupytext_source_created: false
+  helper_code_created: false
+  tests_created: false
+  kaggle_package_created: false
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: exp391_same_outer5_groupfold_truth_late_directional_confidence_readout
+  metric: rmse
+  primary_diagnostic_metric: bad10_auc
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  score_rows: train_unknown_suffix_rows
+  truth_attachment: after_checkpoint_mode_confidence_null_and_content_sha_freeze
+  primary_scope:
+    source: exp391_stage_a0_decoder_separation_events
+    expected_event_manifest_logical_sha256: 30dae154edf9cb5bdc353378649c3fdd38bf3592000e0feabfbdc2083565cd09
+    expected_events: 1234
+    expected_event_wells: 730
+    checkpoint: event_center
+  secondary_scope:
+    checkpoint_stride_rows: 256
+    purpose: coverage_and_risk_curve_only
+  leakage_policy:
+    - Event and checkpoint identities are fixed without suffix truth or error.
+    - Mode lineage, left/right evidence, confidence, and circular null are frozen before suffix truth, error, or hidden-like roles are read.
+    - Outer-valid/test raw formation columns and suffix true TVT are unavailable before confidence freeze.
+    - exp226 tvt_geop must preserve its saved group-safe outer-fold contract.
+    - Public LB cannot select a window, gap, mode threshold, confidence formula, or gate.
+    - Cross-model consensus is reporting-only and cannot enter the primary confidence score.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  observed_log_column: GR
+  visible_prefix_column: TVT_input
+  exp391:
+    source: exp391_prefix_anchored_mode_persistence_hmm_readout
+    required_stage_a1_status: pass
+    event_manifest_logical_sha256: 30dae154edf9cb5bdc353378649c3fdd38bf3592000e0feabfbdc2083565cd09
+    preflight_manifest_logical_sha256: f02d5cc034b7d313fe9f3d33d1ef516f33e2d382a33679cfa7ad00164b5868ab
+    mode_identity_contract_sha256: null
+  exp209:
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    prediction_file: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    saved_oof_rmse_ft: 11.938287235
+    regenerate_control: false
+  exp226:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    prediction_file: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    geometry_column: tvt_geop
+    final_prediction_column: tvt_pred
+    saved_oof_rmse_ft: 9.427109596
+    public_lb: 9.837
+    regenerate: false
+  exp263:
+    source: exp263_last_anchor_better_candidate_confidence_pair_cache
+    candidate: exp226_w500_50_50
+    formula: exp226_0p50_plus_likpf_0p25_plus_exact_hmm_0p25
+    expected_stage0_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+    saved_oof_rmse_ft: 8.238331546
+    public_lb: 7.800
+    regenerate: false
+  hidden_like:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    late_join_only: true
+
+mode_identity:
+  source: exact_exp391_transition_overlap_lineage
+  anchor: joint_start_prior_lineage
+  display_mass_rank_is_identity: false
+  matching: maximum_transition_transport_overlap
+  unmatched_policy: explicit_low_confidence_no_fallback
+  inherit_exp391_thresholds:
+    min_peak_height: 0.02
+    min_top2_mass: 0.10
+    min_top2_to_top1_mass_ratio: 0.25
+    min_peak_separation_ft: 6.0
+    min_valley_depth: 0.30
+    mean_valley_density_ratio_max: 1.20
+    mode_track_allowance_ft: 6.0
+
+directional_evidence:
+  checkpoint:
+    primary: exp391_event_center
+    secondary_stride_rows: 256
+  left:
+    window_rows: 512
+    ends_before_checkpoint_rows: 64
+  right:
+    window_rows: 512
+    starts_after_checkpoint_rows: 64
+  minimum_observed_rows_per_side: 256
+  shared_conditions:
+    - known_prefix_affine_gr_calibration
+    - exp209_absolute_tvt_grid
+    - exp209_transition_grammar
+    - exp209_emission_contract
+  shared_target_gr_rows_between_sides: false
+  interpretation: disjoint_observation_consistency_conditional_on_shared_physics_and_calibration
+  distribution_support: union_of_stable_mode_lineages_at_checkpoint
+  missing_mode_mass: 0.0
+
+confidence:
+  primary_name: left_right_mode_posterior_overlap
+  formula: sum_over_modes_min_left_probability_right_probability
+  range: [0.0, 1.0]
+  risk_score_name: one_minus_left_right_overlap
+  risk_formula: one_minus_primary_confidence
+  learned_or_tuned_weights: false
+  absolute_high_confidence_threshold: null
+  fixed_reports:
+    - left_right_top_mode_agreement
+    - mode_center_tvt_difference
+    - minimum_top1_top2_log_margin
+    - jensen_shannon_divergence
+    - adjacent_checkpoint_agreement_persistence
+    - confidence_quartile_rmse
+    - coverage_risk_curve
+  cross_model_reporting_only:
+    physical_third_vote: exp226_tvt_geop
+    predictions:
+      - likpf
+      - exact_hmm
+      - exp226_final
+      - exp263_fixed_candidate
+    enters_primary_confidence: false
+
+negative_control:
+  name: fixed_circular_shift_right_gr
+  right_window_circular_shift_rows: 2048
+  short_well_policy: mark_ineligible_no_alternative_shift
+  additional_shift_grid: false
+  mode_label_permutation: false
+
+model:
+  name: deterministic_left_right_mode_consensus_readout
+  estimator: no_fitted_model
+  prediction_output: none_confidence_only
+  fixed_hmm:
+    source: exact_exp209
+    coordinate: absolute_tvt
+    step_ft: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    emission: gaussian
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad_ft: 100.0
+    momentum: 0.998
+  forbidden:
+    - reverse_direction_tvt_predictor
+    - new_tvt_candidate
+    - hard_mode_selection_or_switch
+    - conditional_mode_mean_as_prediction
+    - prediction_replacement
+    - posthoc_blend_or_selector
+    - confidence_weight_tuning
+    - window_gap_or_mode_threshold_grid
+    - same_oof_rescue
+    - exp386_or_exp387_reopening
+    - inference_or_submission
+
+stages:
+  stage0:
+    enabled_only_after_exp391_stage_a1_pass_and_separate_approval: true
+    selected_wells: 16
+    selection_source: exp391_frozen_preflight_manifest
+    diagnostic_variants: 1
+    exact_hmm_well_runs: 16
+    scientific_score_gate: false
+    technical_gates:
+      require_completed_wells: 16
+      require_finite_left_right_evidence_coverage: 1.0
+      maximum_exp209_full_smoother_mean_parity_ft: 0.00001
+      maximum_posterior_normalization_error: 1.0e-8
+      maximum_mode_ledger_duplicates: 0
+      maximum_mode_identity_collisions: 0
+      minimum_eligible_primary_events: 10
+      maximum_truth_error_hidden_reads_before_freeze: 0
+      maximum_projected_runtime_seconds: 30600
+      maximum_projected_peak_rss_gb: 25
+  full_oof:
+    enabled_only_after_stage0_pass_and_separate_user_approval: true
+    diagnostic_variants: 1
+    exact_hmm_well_runs: 773
+    reporting_folds: 5
+    primary_bad_error_threshold_ft: 10.0
+    scientific_gates:
+      minimum_pooled_bad10_auc: 0.60
+      minimum_fold_bad10_auc_exclusive: 0.55
+      minimum_passing_folds: 4
+      minimum_low_minus_high_confidence_quartile_rmse_ft: 2.0
+      minimum_disagree_over_agree_bad10_rate_ratio: 1.5
+      minimum_eligible_events: 500
+      minimum_eligible_wells: 300
+      require_all_folds_covered: true
+      minimum_real_minus_circular_null_auc: 0.03
+      require_positive_risk_direction_scopes:
+        - distance_1000_plus
+        - hidden_like_spatial
+        - hidden_like_typewell_purged
+    fail_action: close_without_threshold_window_gap_mode_formula_or_selector_rescue
+
+execution:
+  implementation_approved: true
+  implementation_approval_source: user_message_implement_exp395_2026_07_25
+  kaggle_package_approved: true
+  kaggle_push_approved: true
+  stage0_run_approved: true
+  stage0_execution_approval_source: user_message_execute_exp395_2026_07_25
+  full_oof_run_approved: false
+  run_stage0: false
+  run_full_oof: false
+  run_inference: false
+  create_submission: false
+  submit_to_kaggle: false
+  planned_counts:
+    scientific_variants: 1
+    stage0_exact_hmm_well_runs: 16
+    full_oof_exact_hmm_well_runs: 773
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    pf_runs: 0
+    beam_runs: 0
+    gpu_runs: 0
+    parent_control_reruns: 0
+
+runtime:
+  device: cpu
+  use_gpu: false
+  use_amp: false
+  num_workers: 1
+  numba_num_threads: 1
+  maximum_seconds: 30600
+  maximum_peak_rss_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_run_on_push: false
+    train_kernel_id: null
+    train_title: null
+    kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_fold_well_row_checkpoint_mode_direction_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_single_worker_fixed_threads_and_stable_reduction_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  freeze_before_truth:
+    - checkpoint_manifest
+    - mode_identity_ledger
+    - left_right_evidence
+    - confidence_table
+    - circular_null_table
+    - logical_content_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    decoder_contract_sha: true
+    prediction_sha: false
+    submission_sha: false
+  deterministic_anchor_requirement: identical_logical_sha_on_same_contract_rerun
+
+artifacts:
+  planned:
+    - exp395_left_right_mode_consensus_confidence_readout_checkpoint_manifest.csv
+    - exp395_left_right_mode_consensus_confidence_readout_mode_ledger.csv.gz
+    - exp395_left_right_mode_consensus_confidence_readout_directional_evidence.csv.gz
+    - exp395_left_right_mode_consensus_confidence_readout_confidence.csv.gz
+    - exp395_left_right_mode_consensus_confidence_readout_circular_null.csv.gz
+    - exp395_left_right_mode_consensus_confidence_readout_cross_model_consensus.csv.gz
+    - exp395_left_right_mode_consensus_confidence_readout_scope_metrics.csv
+    - exp395_left_right_mode_consensus_confidence_readout_by_fold_metrics.csv
+    - exp395_left_right_mode_consensus_confidence_readout_gate.json
+    - exp395_left_right_mode_consensus_confidence_readout_summary.json
+
+notes:
+  - Historical implementation and Stage 0 approvals were not used because exp391 Stage A1 failed its prerequisite gates.
+  - exp395 is closed without implementation, package, or execution.
+  - The confidence score is diagnostic only; no TVT prediction or submission is produced.
+  - Public LB 6.5 is an aspirational objective, not a result implied by this design.

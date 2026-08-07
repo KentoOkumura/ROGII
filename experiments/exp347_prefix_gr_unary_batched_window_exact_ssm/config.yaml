@@ -1,0 +1,461 @@
+experiment:
+  name: exp347_prefix_gr_unary_batched_window_exact_ssm
+  description: >-
+    Preserve the exp332 fixed-window Gaussian structured objective and exact
+    exp209 grammar while batching four windows per GPU forward/backward pass.
+  route: ensemble
+  status: stage0_technical_parity_failed_branch_closed
+  created_at: "2026-07-22"
+  updated_at: "2026-07-23"
+
+lineage:
+  parent: exp332_prefix_gr_unary_fixed_window_structured_ssm
+  steering: ../../.steering/20260722-exp347-prefix-gr-unary-batched-window-exact-ssm
+  references:
+    - exp295_prefix_anchored_wholewell_gr_alignment_ssm
+    - exp331_prefix_gr_unary_local_ce_exact_ssm
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md
+  diff_summary: >-
+    Changes only the compute layout from one well-window with four-step gradient
+    accumulation to four padded and masked well-windows in one exact-DP batch.
+    The exp332 objective, effective optimizer batch, window schedule, teacher
+    boundary, architecture, state grammar, controls, and full-well evaluation
+    remain fixed. The terminal exp332 experiment is not reopened.
+
+implementation:
+  enabled: true
+  scope: implementation_only
+  train_notebook_state: canonical_compact_selfcontained_adopted_for_stage0
+  inference_notebook_state: fail_closed_compact_candidate_created
+  compact_selfcontained_source_created: true
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: complete_well_groupkfold_official_prefix_hidden_suffix
+  metric: pooled_oof_rmse_tvt_posterior_mean
+  seed: 42
+  n_folds: 5
+  group_column: well
+  sample_unit: complete_well
+  score_rows: official_tvt_input_hidden_suffix_rows
+  reuse_fold_map_from: exp202_heatmap_mdn_candidate_generator_probe
+  valid_mask_policy: organizer_equivalent_official_tvt_input_mask
+  baselines:
+    exp332_runtime:
+      experiment: exp332_prefix_gr_unary_fixed_window_structured_ssm
+      projected_fold_runtime_hours_conservative: 13.151137274931717
+      peak_gpu_memory_gb: 1.2032628059387207
+    primary_decoder:
+      experiment: exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+      pooled_oof_rmse: 8.327736951
+    raw_exact_hmm:
+      experiment: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+      pooled_oof_rmse: 11.938287417
+  stage0:
+    accelerator: NvidiaTeslaT4
+    fixed_window_count: 16
+    suffix_length_quartiles: 4
+    windows_per_quartile: 4
+    scalar_parity_window_count: 4
+    conservative_throughput_quantile: 0.10
+    required_checks:
+      - scalar_batch_loss_parity
+      - scalar_batch_posterior_parity
+      - scalar_batch_gradient_parity
+      - scalar_batch_optimizer_step_parity
+      - padding_mask_exclusion
+      - finite_loss_gradient_and_posterior
+      - outer_valid_truth_access_zero
+    maximum_loss_or_posterior_abs_error: 0.000001
+    maximum_gradient_or_update_abs_error: 0.00001
+    minimum_finite_rate: 1.0
+    maximum_projected_fold_runtime_hours: 8.5
+    maximum_peak_gpu_memory_gb: 14.0
+    minimum_speedup_vs_exp332: 1.55
+    failure_action: close_without_batch_or_science_rescue
+    selection: stable_sha256_four_windows_per_suffix_length_quartile
+    include_scalar_batch_parity: true
+    include_normal_and_label_conditioned_forward_backward: true
+    include_backward_and_optimizer: true
+    include_full_well_three_control_batched_decode: true
+  stage_a:
+    prerequisite: stage0_all_pass_and_separate_user_approval
+    folds: [0]
+    architectures: 1
+    seeds: [42]
+    neural_models: 1
+    lightgbm_configs: 0
+    boosters: 0
+    pf_beam_runs: 0
+    parent_or_control_retraining: 0
+  stage_a_pass:
+    minimum_target_in_grid_rate: 0.995
+    maximum_prefix_clamp_abs_error_ft: 0.000001
+    minimum_real_nll_gain_vs_circular_shuffle_nats_per_token: 0.05
+    minimum_real_within10_mass_gain_vs_circular_shuffle: 0.03
+    minimum_real_rmse_gain_vs_geometry_only_ft: 0.25
+    minimum_real_rmse_gain_vs_exp209_ft: 0.25
+    require_well_rmse_p95_non_regression_vs_exp209: true
+    maximum_worst_well_regression_vs_exp209_ft: 10.0
+    maximum_fold_runtime_hours: 8.5
+    maximum_peak_gpu_memory_gb: 14.0
+  stage_b:
+    prerequisite: stage_a_all_pass_and_separate_user_approval
+    reuse_fold0_model_without_retraining: true
+    additional_folds: [1, 2, 3, 4]
+    additional_neural_models: 4
+  stage_c:
+    prerequisite: stage_b_promotion_and_separate_user_approval
+    per_fold_decode: full_well_exact_ssm_posterior_mean
+    fold_aggregation: rowwise_equal_arithmetic_mean_of_five_posterior_means
+
+data:
+  source_contract: exp332_prefix_gr_unary_fixed_window_structured_ssm
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  horizontal_glob: "*__horizontal_well.csv"
+  typewell_glob: "*__typewell.csv"
+  id_column: id
+  visible_target_column: TVT_input
+  target_column: TVT
+  horizontal_file_input_columns: [MD, X, Y, Z, GR, TVT_input]
+  typewell_input_columns: [TVT, GR]
+  exp209_baseline_cache_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+  exp209_baseline_cache:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    prediction_column: hmm_mean_tvt
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5_small/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+  hidden_like_assignment:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+  forbidden_horizontal_input_columns: [TVT, formation, target, error, abs_error, oracle, candidate]
+
+model:
+  name: prefix_gr_unary_batched_fixed_window_structured_exact_ssm
+  estimator: pytorch_batched_window_structured_neural_unary_plus_full_exact_forward_backward
+  architecture_source: exp332_prefix_gr_unary_fixed_window_structured_ssm
+  target: typewell_tvt_state_of_true_horizontal_tvt
+  sample_unit: well_window
+  output: tvt_posterior_mean
+  inference_neighbor_well_data: false
+  candidate_bank: none
+  test_time_gradient_updates: false
+  preprocessing:
+    robust_center: finite_median
+    robust_scale: 1p4826_mad_with_floor_1
+    missing_fill_value_after_normalization: 0.0
+    include_missing_mask: true
+    typewell_extrapolation: false
+    prefix_huber_summary:
+      minimum_pairs: 32
+      fallback: neutral_context
+  inputs:
+    horizontal_emission_channels: [gr_robust_z, gr_missing_mask, dgr_dmd]
+    typewell_emission_channels: [gr_robust_z, gr_missing_mask, dgr_dtvt]
+    transition_only_channels: [MD, X, Y, Z, TVT_input]
+    prefix_context_sources: [horizontal_gr, typewell_gr_at_visible_tvt_input, visible_tvt_input_mask]
+  architecture:
+    horizontal_encoder: multiscale_1d_residual
+    typewell_encoder: multiscale_1d_residual
+    embedding_dim: 64
+    dilations: [1, 2, 4, 8, 16]
+    normalization: group_norm
+    dropout: 0.10
+    prefix_context_aggregator: masked_attention_pool
+    prefix_context_dim: 32
+    conditioning: prefix_context_film_scale_and_bias
+    similarity: normalized_bilinear_cosine
+    temperature: positive_prefix_conditioned_clamped
+    temperature_min: 0.05
+    temperature_max: 2.0
+    temperature_initial: 0.25
+    convolution_kernel_size: 3
+    group_norm_groups: 8
+    prefix_pair_embedding_dim: 64
+    derivative_clip_abs: 8.0
+    unary_row_chunk_size: 256
+    streamed_row_tvt_unary: true
+  training:
+    objective:
+      name: gaussian_soft_label_structured_nll_plus_local_ce
+      structured_label_nll_weight: 1.0
+      label_observation_distribution: gaussian
+      label_observation_sigma_ft: 0.35
+      local_true_state_ce_weight: 0.25
+      exact_dp_sweeps_per_window: 4
+    windows:
+      length_rows: 256
+      scheduled_slots_per_well_per_epoch: 3
+      maximum_active_windows_per_well_per_epoch: 3
+      manifest_epochs: 8
+      schedule_source: exp332_truth_free_stable_sha256_schedule
+      interior_teacher_boundary: gaussian_tvt_observation_plus_quantized_rate_prior_loss_only
+      official_prefix_only_in_encoder_context: true
+      first_window: official_hidden_suffix_start
+      remaining_windows: stable_sha256_nonoverlapping_eligible_suffix_starts
+      interior_window_requires_full_length: true
+      unavailable_slot_policy: inactive_zero_loss_no_duplicate_window
+      maximum_fit_wells_fold0: 556
+      maximum_windows_per_epoch: 1668
+      maximum_scored_positions_per_epoch: 427008
+      selection_uses_truth_or_error: false
+      teacher_boundary_position_sigma_source: model.state_space.start_sig
+    batching:
+      windows_per_batch: 4
+      gradient_accumulation_steps: 1
+      exp332_effective_batch_windows: 4
+      batch_formation: consecutive_frozen_schedule_chunks
+      final_incomplete_batch: inactive_masked_dummy_windows
+      loss_reduction: mean_of_four_per_window_valid_row_normalized_losses
+      padding: negative_infinity_potential_plus_explicit_row_position_rate_masks
+      batch_size_grid_allowed: false
+    optimizer: adamw
+    learning_rate: 0.0003
+    weight_decay: 0.0001
+    max_epochs: 8
+    early_stopping_source: stable_outer_train_holdout_window_objective_only
+    early_stopping_holdout_fraction: 0.10
+    early_stopping_minimum_wells: 16
+    early_stopping_patience_epochs: 2
+    early_stopping_min_delta_nll_per_token: 0.001
+    gradient_clip_norm: 1.0
+    batch_size_well_windows: 4
+    gradient_accumulation_windows: 1
+    amp: true
+    dataloader_shuffle: true
+    dataloader_workers: 0
+    require_cuda: true
+    minimum_cuda_capability_major: 7
+  state_space:
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    training_use: batched_exact_log_space_forward_backward_inside_fixed_windows
+    evaluation_use: batched_exact_log_space_forward_backward_full_official_suffix
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+    known_prefix_policy: hard_clamp_finite_tvt_input
+    solver: batched_exact_log_space_forward_backward
+    primary_readout: posterior_mean_tvt
+    diagnostic_readouts: [marginal_map, global_viterbi, posterior_std, entropy, grid_edge_mass]
+    learn_transition: false
+  controls: [real_gr, stable_within_well_circular_shuffled_typewell_gr_same_trained_model, zero_gr_unary_geometry_only_same_trained_model]
+  forbidden:
+    - reopen_or_modify_exp332
+    - batch_size_or_padding_bucket_grid
+    - change_window_length_count_or_schedule
+    - change_boundary_objective_loss_weight_or_sigma
+    - change_architecture_band_temperature_view_or_epoch
+    - parent_or_control_retraining
+    - concurrent_gpu_comparison_with_exp348
+    - inference_or_submission_before_promotion_and_approval
+
+execution_contract:
+  stage0_active_variants: 1
+  stage0_fixed_windows: 16
+  stage0_temporary_neural_models: 1
+  stage0_persisted_models: 0
+  stage0_trained_folds: 0
+  stage_a_neural_models_if_approved: 1
+  lightgbm_configs: 0
+  boosters: 0
+  pf_beam_runs: 0
+  parent_or_control_retraining: false
+
+execution:
+  implementation: true
+  implementation_approved: true
+  implementation_approved_at: "2026-07-22"
+  implementation_approval_scope: user_message_implement_exp347
+  kaggle_push_approved: false
+  kaggle_push_approved_at: "2026-07-22"
+  kaggle_push_approval_scope: user_message_execute_exp347_fixed16_stage0_only
+  selected_stage: implementation_only
+  stage0_run_completed: true
+  stage_a_gpu_approved: false
+  stage_a_gpu_approval_scope: none
+  inference_approved: false
+  submission_approved: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  current_lightgbm_config_count: 0
+  current_trained_fold_count: 0
+  current_total_boosters: 0
+  current_pf_beam_well_runs: 0
+  control_or_parent_retraining: false
+  stage0_gate:
+    passed: false
+    report_sha256: e8a706ba9a75dff54b30b97f289255b002333cb76d2b2dfcac000cfdf56fe454
+    note: >-
+      Kaggle T4 version 1 passed runtime, memory, speedup, loss, partition,
+      gradient, optimizer-step, padding, and finite checks, but scalar/batched
+      posterior max abs error was 1.4662742614746094e-05 > 1e-06. The fixed
+      AND gate failed, so Stage A/B/C, inference, submission, and in-exp rescue
+      are closed.
+  stage0_run:
+    kernel_id: kentookumura/exp347-prefix-gr-batched-window-ssm-stage0
+    kernel_version: 1
+    kernel_id_no: 128239400
+    kernel_status: COMPLETE
+    accelerator: NvidiaTeslaT4
+    generated_at_utc: "2026-07-22T14:13:03.524337+00:00"
+    fixed_window_count: 16
+    measurement_row_count: 52
+    batch_padding_manifest_row_count: 68
+    projected_fold_runtime_hours_p50: 4.7419820491402715
+    projected_fold_runtime_hours_conservative: 5.10873732226012
+    speedup_vs_exp332: 2.5742441713784605
+    peak_gpu_memory_gb: 5.928168296813965
+    posterior_max_abs_error: 0.000014662742614746094
+    posterior_tolerance: 0.000001
+    gradient_max_abs_error: 0.000000014319084584712982
+    outer_valid_truth_access_count: 0
+    trained_stage_a_model_count: 0
+    package_notebook_sha256: 1c3e2d554c4b6964d3075bf13aaac6c28478dd3b48bac2d2236ee9968519aa4c
+    package_metadata_sha256: 1e85b94b91d06f1a3d390a4dae6e71405c2467bbf2a287249878ea448a7cf098
+    package_config_sha256: 376c03da9b6e122cd9fe32c95f3edf079fca5e7126e13aa72700307809bbb51f
+    selection_manifest_sha256: b78ed92dc24ee2db4aad985a5ae14ecd3cfc8d6e620bb89072666b8296511e89
+    teacher_boundary_manifest_sha256: 664b3fc724ede4272120bc8ca1c260463bf5fca12aa8cbc20f16d7c5314cd1d1
+    batch_padding_manifest_sha256: 28f30e4ecfe1ac6cb77dc0fd12aabec3c76c9ab25fc3274c97456d4a8c6749b1
+    scalar_batch_parity_sha256: 3822eddc5dc9f1939f6c22302076e48b97fc1a22be2181f38c427e20fd99051e
+    measurement_sha256: 5c3f89eb5070bb1e77b251dfcfaccf3511d5cb1210fd655461a91994b05fe4a8
+    report_sha256: e8a706ba9a75dff54b30b97f289255b002333cb76d2b2dfcac000cfdf56fe454
+    log_sha256: 533108873f35ae8981bcb3cfa7922b2516a449b01640e077d9ca55b3f9ee3ed6
+    local_output_dir: kaggle/output/stage0_v1
+  stage0_plan:
+    active_variants: 1
+    fixed_window_count: 16
+    scalar_parity_window_count: 4
+    temporary_benchmark_neural_model_count: 1
+    persisted_stage_a_model_count: 0
+    trained_fold_count: 0
+    lightgbm_config_count: 0
+    total_boosters: 0
+    pf_beam_well_runs: 0
+    control_model_training: 0
+    parent_or_control_retraining: 0
+    requires_separate_gpu_push_approval: true
+  stage_a_plan:
+    prerequisite: stage0_gate_pass_and_separate_user_approval
+    fold_indices: [0]
+    active_architectures: 1
+    seeds: [42]
+    neural_model_count: 1
+    lightgbm_config_count: 0
+    total_boosters: 0
+    control_model_training: 0
+    pf_beam_well_runs: 0
+    parent_or_control_retraining: 0
+    requires_separate_gpu_push_approval: true
+  stage_b_plan:
+    prerequisite: stage_a_all_pass
+    reuse_stage_a_fold0_model: true
+    additional_fold_indices: [1, 2, 3, 4]
+    additional_neural_model_count: 4
+    total_five_fold_neural_model_count: 5
+    lightgbm_config_count: 0
+    total_boosters: 0
+    control_model_training: 0
+    requires_separate_gpu_push_approval: true
+  stage_c_plan:
+    prerequisite: stage_b_lb5x_promotion_pass
+    same_experiment_inference: true
+    per_fold_decode: full_well_exact_ssm_posterior_mean
+    fold_aggregation: rowwise_equal_arithmetic_mean_of_five_posterior_means
+    candidate_or_existing_model_blend: false
+    requires_separate_inference_approval: true
+    requires_separate_submission_approval: true
+  active_stage: stage0_failed_branch_closed
+  run_stage0: false
+  run_stage_a: false
+  run_stage_b: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  accelerator: NvidiaTeslaT4
+  use_amp: true
+  num_workers: 0
+  batch_size_well_windows: 4
+  maximum_fold_runtime_hours: 8.5
+  maximum_peak_gpu_memory_gb: 14.0
+  kaggle:
+    enable_gpu: true
+    machine_shape: NvidiaTeslaT4
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_global_seed_plus_stable_sha256_window_batch_boundary_and_decode_order
+  stochastic_components: [pytorch_cuda_convolution, amp, adamw, dropout, dataloader_order]
+  parallel_rng_policy: worker_zero_no_global_rng_shared_with_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    fold_window_batch_boundary_padding_manifest_sha: true
+    scalar_parity_report_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    posterior_and_prediction_sha: true
+    submission_sha: true
+
+inference:
+  enabled: false
+  create_submission: false
+  prerequisite: stage_b_promotion_and_separate_user_approval
+  reason: Stage 0 technical parity failed; Stage A/B/C and inference are closed.
+
+artifacts:
+  output_prefix: exp347_prefix_gr_unary_batched_window_exact_ssm
+  expected_stage0_outputs:
+    - exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_fixed16_window_manifest.csv
+    - exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_fixed16_boundary_manifest.csv
+    - exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_batch_padding_manifest.csv
+    - exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_scalar_batch_parity.json
+    - exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_measurements.csv
+    - exp347_prefix_gr_unary_batched_window_exact_ssm_stage0_benchmark_report.json
+
+notes:
+  - Implementation was approved on 2026-07-22; the fixed-16-window Stage 0 run and canonical train notebook adoption were separately approved on the same date.
+  - Stage A/B/C, inference, and submission remain unapproved.
+  - Canonical Stage 0 kernel version 1 completed; compute gates passed but scalar/batched posterior parity failed.
+  - The branch is terminally closed without batch, padding, compile, fused-kernel, science-contract, Stage A, inference, or submission rescue.

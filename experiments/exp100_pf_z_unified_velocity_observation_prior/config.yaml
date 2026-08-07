@@ -1,0 +1,168 @@
+experiment:
+  name: "exp100_pf_z_unified_velocity_observation_prior"
+  description: Stage-1 train pseudo-tail ablation for weak XY, prefix-slope, and GR-calibrated priors inside pf_z particle weights.
+  route: pf_beam
+  status: completed_train_side_audit
+  created_at: "2026-06-21"
+  updated_at: "2026-06-21"
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  comparison_parents:
+    - exp073_gpu_reproducibility_guard_for_exp063_full_replay
+    - exp098_selector_rank_slot_features_on_exp073
+    - exp099_pf_multi_observation_likelihood_probe
+  implementation_source: pf_z_unified_velocity_observation_prior.py
+  diff_summary: Reruns pf_z on train pseudo-tail rows and compares the existing Z-aware velocity/GR observation model against weak additions for XY slope, known-prefix TVT slope, and prefix-fitted affine GR calibration. It does not train a supervised model, change the target, generate an inference submission, or touch exp072 feature cache artifacts.
+
+validation:
+  strategy: train_well_pseudotail_pf_z_stage1_ablation
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_1ft
+    - within_2ft
+    - within_5ft
+    - within_10ft
+    - bucket_rmse_by_md_since
+    - bucket_rmse_by_eval_rank
+    - worst_well_rmse
+    - path_switch_count
+    - mean_abs_step
+    - p95_abs_acceleration
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_rows
+  leakage_policy:
+    - Fit velocity and GR-calibration coefficients from finite TVT_input prefix rows only.
+    - Score only evaluation rows where TVT_input is missing and train-side true TVT is available.
+    - Do not use evaluation-zone true TVT for coefficient fitting, candidate generation, particle weighting, or variant selection.
+    - Use one stable per-well/per-variant seed and no parallel RNG.
+    - This experiment is train-side diagnostic only; no inference notebook candidate or submission is created.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: pf_z_unified_velocity_observation_prior_stage1
+  estimator: none_particle_filter_ablation
+  target: raw_train_true_tvt_for_scoring_only
+  pf_z:
+    n_particles: 360
+    gr_grid_step: 0.2
+    gr_rolling_window: 5
+    momentum: 0.993
+    velocity_noise: 0.005
+    position_noise: 0.01
+    gr_smooth_weight: 0.30
+    resample_threshold: 0.50
+    rough_position: 0.20
+    rough_velocity: 0.003
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+    velocity_sigma_multiplier: 2.0
+    xy_velocity_sigma_multiplier: 2.5
+    prefix_velocity_blend_weight: 0.35
+    prefix_tail_rows: 50
+    gr_calibration_sigma_multiplier: 1.30
+    max_wells: null
+  variants:
+    - name: pf_z_control
+      use_xy_velocity: false
+      use_prefix_velocity: false
+      use_gr_calibration: false
+    - name: pf_z_xy_slope
+      use_xy_velocity: true
+      use_prefix_velocity: false
+      use_gr_calibration: false
+    - name: pf_z_prefix_slope
+      use_xy_velocity: false
+      use_prefix_velocity: true
+      use_gr_calibration: false
+    - name: pf_z_gr_calibrated
+      use_xy_velocity: false
+      use_prefix_velocity: false
+      use_gr_calibration: true
+    - name: pf_z_xy_plus_prefix
+      use_xy_velocity: true
+      use_prefix_velocity: true
+      use_gr_calibration: false
+    - name: pf_z_xy_plus_gr_calibrated
+      use_xy_velocity: true
+      use_prefix_velocity: false
+      use_gr_calibration: true
+    - name: pf_z_prefix_plus_gr_calibrated
+      use_xy_velocity: false
+      use_prefix_velocity: true
+      use_gr_calibration: true
+    - name: pf_z_xy_prefix_gr_calibrated
+      use_xy_velocity: true
+      use_prefix_velocity: true
+      use_gr_calibration: true
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_seed_from_experiment_variant_well
+  stochastic_components:
+    - pf_z_particle_initialization
+    - pf_z_particle_process_noise
+    - pf_z_resampling
+  parallel_rng_policy: num_workers_1_no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_file_sha: true
+    candidate_wide_sha: true
+    candidate_long_sha: true
+    metrics_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it is train-side PF ablation only.
+    - A positive variant must be rerun in an inference-port experiment before any submission decision.
+
+audit:
+  mode: pf_z_unified_velocity_observation_prior_stage1
+  output_prefix: exp100_pf_z_unified_velocity_observation_prior
+  max_wells: null
+  save_candidate_long: true
+  thresholds_ft: [1, 2, 5, 10]
+  bucket_edges_md_since: [0, 50, 100, 250, 500, 1000]
+  bucket_edges_eval_rank: [0, 100, 250, 500, 1000]
+  expected_train_artifacts:
+    - exp100_pf_z_unified_velocity_observation_prior_variant_metrics.csv
+    - exp100_pf_z_unified_velocity_observation_prior_bucket_metrics.csv
+    - exp100_pf_z_unified_velocity_observation_prior_by_well.csv
+    - exp100_pf_z_unified_velocity_observation_prior_well_fit_summary.csv
+    - exp100_pf_z_unified_velocity_observation_prior_candidate_wide.csv.gz
+    - exp100_pf_z_unified_velocity_observation_prior_candidate_long.csv.gz
+    - exp100_pf_z_unified_velocity_observation_prior_summary.json
+
+inference:
+  mode: not_selected_train_side_ablation_only
+  selected_variant: null
+  notes:
+    - Stage 1 does not create a submission candidate.
+    - If a variant improves PF-only RMSE and does not regress near-prefix / worst-well buckets, port only that variant to an inference-capable follow-up.
+
+notes:
+  - Implements backlog item pf_z_unified_velocity_observation_prior.
+  - Stage 1 intentionally avoids dense prior, multi-scale GR mixture, and acceleration penalty so the velocity / observation-prior effects are separable.

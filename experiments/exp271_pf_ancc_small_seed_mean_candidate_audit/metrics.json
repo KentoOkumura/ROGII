@@ -1,0 +1,129 @@
+{
+  "experiment": "exp271_pf_ancc_small_seed_mean_candidate_audit",
+  "status": "completed_train_side_candidate_audit",
+  "route": "pf_beam",
+  "kaggle": {
+    "kernel": "kentookumura/exp271-pf-ancc-small-seed-mean-audit-train",
+    "successful_version": 2,
+    "status": "COMPLETE",
+    "created_at": "2026-07-17T13:36:59.934245+00:00",
+    "total_seconds": 1386.569821576,
+    "generation_seconds": 953.0559507539999,
+    "gpu": false
+  },
+  "execution_contract": {
+    "rows": 3783989,
+    "wells": 773,
+    "pf_dynamics_variants": 1,
+    "particles": 600,
+    "generated_seed_count": 8,
+    "aggregate_seed_counts": [4, 8],
+    "lightgbm_configs": 0,
+    "folds": 0,
+    "boosters": 0,
+    "parent_control_retraining": false,
+    "inference": false,
+    "submission": false
+  },
+  "target": {
+    "source": "raw_horizontal_evaluation_TVT_float64_after_candidate_freeze",
+    "rows": 3783989
+  },
+  "parity": {
+    "seed0_max_abs_vs_exp072": 0.0,
+    "mean4_max_abs_per_well_rmse_diff_vs_exp266": 7.105427357601002e-15,
+    "mean8_max_abs_per_well_rmse_diff_vs_exp266": 7.105427357601002e-15,
+    "rows_exact": true,
+    "passed": true
+  },
+  "standalone_overall": {
+    "exp072_pf_ancc_seed0": {
+      "rmse": 14.493050895468867,
+      "mae": 8.921559101335848,
+      "bias": -1.16741913980167,
+      "within10": 0.6917321905534081
+    },
+    "pf_ancc_seed_mean_4": {
+      "rmse": 13.126896158997734,
+      "mae": 8.376809522966374,
+      "bias": -0.9181393363509504,
+      "within10": 0.7079695527656132
+    },
+    "pf_ancc_seed_mean_8": {
+      "rmse": 13.027107212931408,
+      "mae": 8.341032314697786,
+      "bias": -1.0063392675177532,
+      "within10": 0.7085638991022437
+    },
+    "mean8_minus_mean4_rmse": -0.09978894606632593
+  },
+  "oracle_overall_rmse": {
+    "row": {
+      "core12": 2.986501675222152,
+      "core12_plus_mean4": 2.939958194669865,
+      "core12_plus_mean8": 2.9367811804850112,
+      "core12_plus_both": 2.9212497309976944,
+      "both_delta_vs_core12": -0.0652519442244576
+    },
+    "block_128": {
+      "core12": 3.044897002891663,
+      "core12_plus_mean4": 2.999673201390551,
+      "core12_plus_mean8": 2.996804374839376,
+      "core12_plus_both": 2.9816927028735627,
+      "both_delta_vs_core12": -0.0632043000181004
+    },
+    "block_256": {
+      "core12": 3.11979126841599,
+      "core12_plus_mean4": 3.076604952392096,
+      "core12_plus_mean8": 3.0724885619783353,
+      "core12_plus_both": 3.058377177848187,
+      "both_delta_vs_core12": -0.0614140905678031
+    },
+    "block_512": {
+      "core12": 3.264959991322818,
+      "core12_plus_mean4": 3.223488076691924,
+      "core12_plus_mean8": 3.219914037792539,
+      "core12_plus_both": 3.20615256442986,
+      "both_delta_vs_core12": -0.0588074268929581
+    },
+    "whole_well": {
+      "core12": 4.609190308134711,
+      "core12_plus_mean4": 4.580798749731739,
+      "core12_plus_mean8": 4.572217705860189,
+      "core12_plus_both": 4.558439137864258,
+      "both_delta_vs_core12": -0.050751170270453
+    }
+  },
+  "unique_best": {
+    "row_mean4_only_rows": 252772,
+    "row_mean8_only_rows": 251635,
+    "row_both_mean4_rows": 165283,
+    "row_both_mean8_rows": 175404,
+    "row_both_total_rate": 0.09003382409409752,
+    "whole_well_both_improved_wells": 59
+  },
+  "seed_disagreement": {
+    "mean8_minus_mean4_mean_abs": 1.2574379255120225,
+    "mean8_minus_mean4_rmse": 2.4003936971339956,
+    "mean8_minus_mean4_max_abs": 21.1044921875,
+    "seed_std8_spearman_vs_mean8_abs_error": 0.501475320663462
+  },
+  "artifacts": {
+    "candidate_path_raw_sha256": "a01f2082717c17c5c22ef26dc91f7f87cc98cb48e2d4e0c92dc0a9a0b922590a",
+    "candidate_path_decompressed_sha256": "a7c48204d6782e62941e433b5d47ba5e03f6e441b8e601461be1c63ebcdca336",
+    "candidate_path_schema_sha256": "9037c3e40cd7a4ad8535479dcad7ee16885c2214940a6c357915e8ec8b2a5ba9",
+    "input_manifest_sha256": "faea0fdeac2017a4f98456f3f57515442caa2d00e21d2cafd275a394950e2ce4",
+    "artifact_manifest_sha256": "3c697683083cb921250dd2e9a00003c85054be5e05087e13ee6db88b92aa7632",
+    "config_sha256_at_execution": "9b0d28eca9a67dba5f1e0aa454db5b3228f3a1e178383674144d0af7351761f4"
+  },
+  "decision": {
+    "hypothesis_supported": true,
+    "single_candidate_default": "pf_ancc_seed_mean_4",
+    "reason": "mean4 retains nearly the same single-candidate oracle and unique-best headroom as mean8 at half the generated seeds",
+    "preserve_both_for_saved_path_addonly_audit": true,
+    "raw_test_inference": false,
+    "submission": false
+  },
+  "public_lb": null,
+  "private_lb": null
+}

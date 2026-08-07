@@ -1,0 +1,284 @@
+experiment:
+  name: exp289_fault_aware_transductive_geological_potential
+  description: >
+    Reconstruct one fault-aware transductive 2D geological-potential MAP surface
+    from outer-train ANCC and hidden-like known TVT prefixes, then derive TVT
+    directly without candidate banks, selectors, blends, or oracle metrics.
+  route: pf_beam
+  status: stage0_guard_failed_branch_closed
+  phase: stage0_fault_topology_association_readout
+  created_at: "2026-07-19"
+  updated_at: "2026-07-19"
+  target_public_lb: 6.5
+
+lineage:
+  parent: null
+  comparison:
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp138_ancc_surface_predictability_audit
+    - exp280_exp226_shift_likelihood_separability_readout
+    - exp282_longtail_prediction_zone_self_gr_loop_closure_readout
+    - exp285_exp226_prefix_masked_offset_predictability_readout
+  diff_summary: >
+    Starts a new standalone physical-model family. It replaces fixed-direction
+    local donor drift and GR candidate decoding with one integrable 2D scalar
+    formation surface whose robust spatial edges may be cut at faults. Existing
+    predictions are comparison-only and never enter the solver.
+
+validation:
+  scheme: group_kfold_by_well
+  n_splits: 5
+  group_column: well_id
+  fold_source: exp226_saved_oof_fold_assignment
+  evaluation_mask: TVT_input_isna
+  metric: rmse
+  transductive_batch: all_outer_valid_wells_jointly
+  allowed_outer_valid_columns: [MD, X, Y, Z, GR, TVT_input]
+  forbidden_before_freeze:
+    - TVT_on_evaluation_rows
+    - ANCC
+    - ASTNU
+    - ASTNL
+    - EGFDU
+    - EGFDL
+    - BUDA
+    - target_error
+    - oracle_rank
+  truth_join_policy: after_risk_or_prediction_content_sha_freeze
+  report_scopes:
+    - overall
+    - fold
+    - distance_bucket
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+    - by_well
+    - well_bias
+    - fault_risk_bucket
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+
+data:
+  canonical_formation: ANCC
+  auxiliary_formation_audit: [ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+  train_observation_columns: [X, Y, ANCC]
+  hidden_prefix_observation_columns: [X, Y, Z, TVT_input]
+  row_order: MD_ascending_with_original_row_tiebreak
+  anchor: last_finite_TVT_input_row
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  prefix_column: TVT_input
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    fold_columns: [well_id, fold]
+    post_freeze_columns: [well_id, fold, error]
+    forbidden_before_risk_freeze: [tvt_true, tvt_pred, tvt_geop, gr_delta, abs_error, error]
+
+physics:
+  latent_surface: F_XY
+  datum_equation: "F_w(r) = Z_w(r) + TVT_w(r) + c_w"
+  prediction_equation: >
+    TVT_hat(r) = TVT_input(a) + F_hat(r) - F_hat(a) - (Z(r) - Z(a))
+  well_datum: robust_joint_prefix_location_c_w
+  output: one_direct_map_prediction
+  graph:
+    row_stride: 16
+    always_include: [last_known_row, final_row, trajectory_turning_points]
+    turning_point_window_rows: 16
+    turning_point_angle_deg: 15.0
+    turning_point_min_separation_rows: 16
+    spatial_neighbors: 12
+    missing_source_formation_policy: exclude_well_if_all_nonfinite_fail_on_partial
+    initial_cross_well_query_neighbors: 64
+    maximum_cross_well_query_neighbors: 2048
+    query_batch_rows: 2048
+    exclude_self_well_spatial_edges: true
+    stable_tiebreak: [distance, source_well_id, source_row_id]
+    along_well_first_difference: true
+    along_well_second_difference: true
+  objective:
+    data_loss: student_t
+    spatial_edge_loss: truncated_quadratic_gradient_consistency
+    fault_cut_continuity: total_variation
+    scale_estimator: outer_train_median_mad_only
+  solver:
+    method: deterministic_alternating_irls_sparse_map
+    dtype: float64
+    outer_iterations: 8
+    relative_objective_tolerance: 1.0e-6
+    nonconvergence_policy: fail_closed_no_fallback
+    unanchored_component_policy: fail_closed
+    row_interpolation: piecewise_linear_on_md
+
+stages:
+  stage0:
+    name: fault_topology_association_readout
+    implementation_status: completed_guard_failed_branch_closed
+    active_variants: 1
+    ml_configs: 0
+    trained_folds: 0
+    boosters: 0
+    control_retraining: 0
+    target_free_outputs:
+      - fault_risk_by_well
+      - graph_manifest
+      - formation_identity_audit
+    topology_contract:
+      source_surface: outer_train_ancc_only
+      query_space: outer_train_median_mad_standardized_xy
+      surface_estimator: inverse_distance_weighted_median_of_12_cross_well_nodes
+      donor_spread: inverse_distance_weighted_mad
+      prefix_datum: median_of_surface_minus_z_plus_tvt_input
+      risk_components: [donor_spread, trajectory_jump_rate, known_prefix_misfit]
+      component_aggregation: maximum
+      primary_well_risk: suffix_fault_risk_p90
+      robust_scale: median_plus_1p4826_mad
+      risk_transform: one_minus_inverse_one_plus_squared_excess_over_cutoff
+      robust_z_cutoff: 4.0
+      fault_risk_threshold: 0.5
+      scale_floor: 1.0e-9
+    guards:
+      abs_exp226_bias_ge10_auc_min: 0.65
+      pooled_spearman_min: 0.25
+      positive_fold_count_min: 4
+    failure_policy: close_without_edge_threshold_or_aggregation_grid
+  stage1:
+    name: fault_aware_transductive_map_no_gr
+    implementation_status: closed_stage0_guard_failed
+    active_variants: 1
+    ml_configs: 0
+    trained_folds: 0
+    boosters: 0
+    control_retraining: 0
+    comparison_oof:
+      experiment: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+      rmse: 9.427109596582213
+      well_rmse_p95: 17.1052204006702
+      worst_well_rmse: 58.80267476547148
+      fixed_worst_well_count: 66
+      fixed_worst66_mse_share: 0.5254223222656731
+    stage2_entry_guards:
+      direct_oof_rmse_max: 8.0
+      fold_improvement_count_min: 4
+      well_rmse_p95_max: 15.0
+      fixed_exp226_worst66_mse_share_max: 0.45
+    standalone_inference_guards:
+      direct_oof_rmse_max: 7.0
+      fold_improvement_count_min: 5
+      hidden_like_spatial_must_improve: true
+      hidden_like_typewell_purged_must_improve: true
+      well_rmse_p95_max: 13.0
+      worst_well_rmse_max: 40.0
+    failure_policy: no_parameter_rescue_no_inference_no_submission
+  stage2:
+    name: known_prefix_calibrated_ordered_gr_event_factor
+    implementation_status: closed_stage0_guard_failed
+    observation: ordered_multiscale_typewell_gr_events
+    calibration_scope: known_prefix_only
+    nuisance_parameters: [amplitude, blur, noise]
+    forbidden: [pointwise_raw_gr_gaussian, ncc_hard_match, shift_candidate_bank]
+    output: one_joint_map_prediction
+
+model:
+  name: fault_aware_transductive_geological_potential_map
+  family: standalone_physical_sparse_graph_solver
+  implementation_status: stage0_diagnostic_only_stage1_not_implemented
+  trains_ml_model: false
+  params: {}
+
+oracle_policy:
+  enabled: false
+  forbidden_metrics:
+    - row_best_of_n
+    - segment_best_of_n
+    - block_best_of_n
+    - well_best_of_n
+    - truth_nearest_shift
+  forbidden_outputs: [oracle_prediction, oracle_selected_candidate]
+  mse_decomposition_is_achievability_claim: false
+
+runtime:
+  platform: kaggle_notebook
+  device: cpu
+  use_amp: false
+  dtype: float64
+  num_workers: 1
+  blas_threads: 1
+  enable_gpu: false
+  enable_internet: false
+  kaggle_time_limit_hours: 9.0
+  required_runtime_margin_hours: 1.5
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp289-fault-aware-geopotential-stage0-train
+    train_kernel_title: exp289 fault aware geopotential stage0 train
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+    inference_kernel_sources: []
+
+execution:
+  stage: stage0_guard_failed_branch_closed
+  active_audit_variants: 1
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  control_or_parent_retraining: false
+  implementation_approved: true
+  implementation_approval_source: user_message_implement_exp289_2026_07_19
+  kaggle_push_approved: true
+  kaggle_push_approval_source: user_message_run_exp289_2026_07_19
+  inference: false
+  submission: false
+  expected_artifacts:
+    - exp289_fault_aware_transductive_geological_potential_stage0_contract.json
+    - exp289_fault_aware_transductive_geological_potential_input_manifest.csv
+    - exp289_fault_aware_transductive_geological_potential_graph_manifest.csv
+    - exp289_fault_aware_transductive_geological_potential_target_free_node_risk.csv.gz
+    - exp289_fault_aware_transductive_geological_potential_target_free_well_risk.csv
+    - exp289_fault_aware_transductive_geological_potential_exp226_bias_readout.csv
+    - exp289_fault_aware_transductive_geological_potential_fold_metrics.csv
+    - exp289_fault_aware_transductive_geological_potential_formation_identity_audit.csv
+    - exp289_fault_aware_transductive_geological_potential_stage0_summary.json
+
+inference:
+  enabled: false
+  mode: disabled_stage0_guard_failed_branch_closed
+  create_submission: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_fold_well_row_edge_order
+  stochastic_components: []
+  parallel_rng_policy: canonical_single_process_no_rng
+  feature_sha_policy: logical_content_sha_and_decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    fold_map_sha: true
+    graph_node_schema_sha: true
+    graph_node_content_sha: true
+    graph_edge_schema_sha: true
+    graph_edge_content_sha: true
+    fault_risk_content_sha: true
+    fault_weight_content_sha: true
+    solver_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - CPU float64, stable graph ordering, fixed BLAS threads, and sparse solver version are part of the canonical contract.
+    - Deterministic anchor remains false until Kaggle rerun parity and hidden raw-test regeneration parity are demonstrated.
+    - Stage 0 has no prediction, model booster, inference, or submission.
+
+notes:
+  - Stage 0 target-free fault-topology readout is implemented and its Kaggle CPU run is user-approved but not yet pushed.
+  - Stage 1 MAP solver and Stage 2 GR factor remain unimplemented and separately gated.
+  - No Kaggle package has been prepared or pushed.
+  - Stage 1 and Stage 2 require separate approvals after their prerequisite guards pass.

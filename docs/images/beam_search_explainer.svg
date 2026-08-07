@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1050" viewBox="0 0 1800 1050">
+  <rect width="1800" height="1050" fill="#ffffff"/>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#111827"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#f97316"/>
+    </marker>
+    <style>
+      text { font-family: Arial, "Noto Sans CJK JP", "Yu Gothic", sans-serif; fill: #111827; }
+      .title { font-size: 44px; font-weight: 700; }
+      .subtitle { font-size: 24px; fill: #374151; }
+      .h2 { font-size: 30px; font-weight: 700; }
+      .h3 { font-size: 24px; font-weight: 700; }
+      .body { font-size: 20px; fill: #374151; }
+      .small { font-size: 17px; fill: #4b5563; }
+      .axis { stroke: #111827; stroke-width: 3; marker-end: url(#arrow); }
+      .grid { stroke: #e5e7eb; stroke-width: 1; }
+      .dash { stroke-dasharray: 8 8; }
+      .panel { fill: #f8fafc; stroke: #111827; stroke-width: 2; rx: 14; }
+      .orangebox { fill: #fff7ed; stroke: #f97316; stroke-width: 2; rx: 10; }
+      .greenbox { fill: #f0fdf4; stroke: #16a34a; stroke-width: 2; rx: 10; }
+      .graybox { fill: #f9fafb; stroke: #d1d5db; stroke-width: 2; rx: 10; }
+    </style>
+  </defs>
+
+  <text x="900" y="58" text-anchor="middle" class="title">Beam Search: TVT パス候補を「枝分かれ + 枝刈り」で探す</text>
+  <text x="900" y="96" text-anchor="middle" class="subtitle">
+    すべての経路を試すと爆発するので、各 MD step で score 上位 K 本だけを残す。
+  </text>
+
+  <!-- Left explanation -->
+  <rect x="55" y="135" width="395" height="850" class="panel"/>
+  <text x="252" y="178" text-anchor="middle" class="h2">Beam Search の手順</text>
+
+  <rect x="85" y="220" width="335" height="110" class="orangebox"/>
+  <text x="252" y="254" text-anchor="middle" class="h3">1. start from anchor</text>
+  <text x="252" y="285" text-anchor="middle" class="body">既知区間の最後の TVT から</text>
+  <text x="252" y="312" text-anchor="middle" class="body">候補 path を開始</text>
+
+  <rect x="85" y="365" width="335" height="120" class="orangebox"/>
+  <text x="252" y="399" text-anchor="middle" class="h3">2. expand candidates</text>
+  <text x="252" y="430" text-anchor="middle" class="body">次の MD で TVT を</text>
+  <text x="252" y="457" text-anchor="middle" class="body">up / flat / down などに分岐</text>
+
+  <rect x="85" y="520" width="335" height="145" class="orangebox"/>
+  <text x="252" y="554" text-anchor="middle" class="h3">3. score each path</text>
+  <text x="252" y="585" text-anchor="middle" class="body">score = GR mismatch</text>
+  <text x="252" y="612" text-anchor="middle" class="body">+ smoothness penalty</text>
+  <text x="252" y="639" text-anchor="middle" class="body">+ physical / drift constraints</text>
+
+  <rect x="85" y="700" width="335" height="110" class="greenbox"/>
+  <text x="252" y="734" text-anchor="middle" class="h3">4. keep top K</text>
+  <text x="252" y="765" text-anchor="middle" class="body">悪い枝を捨てる</text>
+  <text x="252" y="792" text-anchor="middle" class="body">残った枝だけ次 step へ</text>
+
+  <rect x="85" y="845" width="335" height="90" fill="#fef2f2" stroke="#dc2626" stroke-width="2" rx="10"/>
+  <text x="252" y="879" text-anchor="middle" class="h3" fill="#b91c1c">出力</text>
+  <text x="252" y="910" text-anchor="middle" class="body">best path / top-k paths / margin</text>
+
+  <!-- Main tree/lattice -->
+  <rect x="490" y="135" width="860" height="850" class="panel"/>
+  <text x="920" y="178" text-anchor="middle" class="h2">候補パスの展開と枝刈り</text>
+
+  <line x1="580" y1="890" x2="1265" y2="890" class="axis"/>
+  <line x1="580" y1="835" x2="580" y2="245" class="axis"/>
+  <text x="1284" y="898" class="body">MD step</text>
+  <text x="548" y="246" text-anchor="end" class="body">TVT</text>
+  <text x="544" y="272" text-anchor="end" class="small">increases downward</text>
+
+  <g>
+    <line x1="700" y1="245" x2="700" y2="890" class="grid"/>
+    <line x1="820" y1="245" x2="820" y2="890" class="grid"/>
+    <line x1="940" y1="245" x2="940" y2="890" class="grid"/>
+    <line x1="1060" y1="245" x2="1060" y2="890" class="grid"/>
+    <line x1="1180" y1="245" x2="1180" y2="890" class="grid"/>
+  </g>
+
+  <path d="M580,575 C620,565 665,550 700,535" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="700" cy="535" r="12" fill="#2563eb" stroke="#111827" stroke-width="2"/>
+  <text x="700" y="505" text-anchor="middle" class="small">anchor</text>
+
+  <!-- kept branches -->
+  <path d="M700,535 L820,500 L940,485 L1060,510 L1180,530" fill="none" stroke="#16a34a" stroke-width="8" stroke-linecap="round"/>
+  <path d="M700,535 L820,575 L940,620 L1060,660 L1180,705" fill="none" stroke="#f97316" stroke-width="4" opacity="0.85"/>
+  <path d="M700,535 L820,455 L940,420 L1060,400 L1180,390" fill="none" stroke="#f97316" stroke-width="4" opacity="0.65"/>
+
+  <!-- pruned branches -->
+  <path d="M820,500 L940,360" fill="none" stroke="#9ca3af" stroke-width="3" class="dash"/>
+  <path d="M820,500 L940,550" fill="none" stroke="#9ca3af" stroke-width="3" class="dash"/>
+  <path d="M820,575 L940,760" fill="none" stroke="#9ca3af" stroke-width="3" class="dash"/>
+  <path d="M940,420 L1060,300" fill="none" stroke="#9ca3af" stroke-width="3" class="dash"/>
+  <path d="M940,620 L1060,805" fill="none" stroke="#9ca3af" stroke-width="3" class="dash"/>
+  <path d="M1060,510 L1180,610" fill="none" stroke="#9ca3af" stroke-width="3" class="dash"/>
+
+  <!-- nodes -->
+  <g>
+    <circle cx="820" cy="500" r="10" fill="#16a34a" stroke="#111827" stroke-width="2"/>
+    <circle cx="820" cy="575" r="8" fill="#f97316" stroke="#111827" stroke-width="2"/>
+    <circle cx="820" cy="455" r="8" fill="#f97316" stroke="#111827" stroke-width="2"/>
+    <circle cx="940" cy="485" r="10" fill="#16a34a" stroke="#111827" stroke-width="2"/>
+    <circle cx="940" cy="620" r="8" fill="#f97316" stroke="#111827" stroke-width="2"/>
+    <circle cx="940" cy="420" r="8" fill="#f97316" stroke="#111827" stroke-width="2"/>
+    <circle cx="1060" cy="510" r="10" fill="#16a34a" stroke="#111827" stroke-width="2"/>
+    <circle cx="1060" cy="660" r="8" fill="#f97316" stroke="#111827" stroke-width="2"/>
+    <circle cx="1060" cy="400" r="8" fill="#f97316" stroke="#111827" stroke-width="2"/>
+    <circle cx="1180" cy="530" r="12" fill="#16a34a" stroke="#111827" stroke-width="2"/>
+    <circle cx="1180" cy="705" r="8" fill="#f97316" stroke="#111827" stroke-width="2"/>
+    <circle cx="1180" cy="390" r="8" fill="#f97316" stroke="#111827" stroke-width="2"/>
+  </g>
+
+  <rect x="625" y="755" width="610" height="120" class="graybox"/>
+  <text x="930" y="790" text-anchor="middle" class="body">緑 = 現時点の best path</text>
+  <text x="930" y="820" text-anchor="middle" class="body">橙 = beam 内に残っている alternative path</text>
+  <text x="930" y="850" text-anchor="middle" class="body">灰色破線 = score が悪く枝刈りされた path</text>
+
+  <!-- Right score panel -->
+  <rect x="1390" y="135" width="355" height="850" class="panel"/>
+  <text x="1568" y="178" text-anchor="middle" class="h2">Scoring</text>
+
+  <rect x="1420" y="220" width="295" height="145" class="orangebox"/>
+  <text x="1568" y="254" text-anchor="middle" class="h3">Observation cost</text>
+  <text x="1568" y="288" text-anchor="middle" class="body">GR mismatch</text>
+  <text x="1568" y="316" text-anchor="middle" class="body">horizontal GR vs</text>
+  <text x="1568" y="344" text-anchor="middle" class="body">typewell GR at TVT</text>
+
+  <rect x="1420" y="405" width="295" height="145" class="orangebox"/>
+  <text x="1568" y="439" text-anchor="middle" class="h3">Transition cost</text>
+  <text x="1568" y="473" text-anchor="middle" class="body">TVT が急に飛ばない</text>
+  <text x="1568" y="501" text-anchor="middle" class="body">slope / smoothness</text>
+  <text x="1568" y="529" text-anchor="middle" class="body">trajectory constraints</text>
+
+  <rect x="1420" y="590" width="295" height="145" class="greenbox"/>
+  <text x="1568" y="624" text-anchor="middle" class="h3">Beam output</text>
+  <text x="1568" y="658" text-anchor="middle" class="body">best path</text>
+  <text x="1568" y="686" text-anchor="middle" class="body">top-k paths</text>
+  <text x="1568" y="714" text-anchor="middle" class="body">cost margin / confidence</text>
+
+  <rect x="1420" y="775" width="295" height="120" fill="#fef2f2" stroke="#dc2626" stroke-width="2" rx="10"/>
+  <text x="1568" y="809" text-anchor="middle" class="h3" fill="#b91c1c">PF との違い</text>
+  <text x="1568" y="841" text-anchor="middle" class="body">PF: 確率的な粒子群</text>
+  <text x="1568" y="869" text-anchor="middle" class="body">Beam: 決定的な上位 path 探索</text>
+
+  <line x1="1350" y1="530" x2="1390" y2="530" stroke="#111827" stroke-width="3" marker-end="url(#arrow)"/>
+</svg>

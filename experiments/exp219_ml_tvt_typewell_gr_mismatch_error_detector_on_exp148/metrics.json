@@ -1,0 +1,71 @@
+{
+  "experiment": "exp219_ml_tvt_typewell_gr_mismatch_error_detector_on_exp148",
+  "status": "completed_readout_rejected_no_addonly_no_submit",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "kind": "no_training_oof_error_detector_readout",
+  "planned_train": {
+    "active_variants": 0,
+    "active_modes": 0,
+    "lightgbm_configs": 0,
+    "folds": 0,
+    "planned_boosters": 0,
+    "control_retraining": false,
+    "gpu_enabled": false
+  },
+  "reference_metrics": {
+    "exp148_lgb_mean_pooled_rmse": 8.50128118189582,
+    "exp148_public_lb": 7.96
+  },
+  "kaggle_train": {
+    "kernel": "kentookumura/exp219-ml-tvt-gr-mismatch-exp148-train",
+    "kernel_version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp219-ml-tvt-gr-mismatch-exp148-train",
+    "status": "COMPLETE",
+    "id_no": 126258587,
+    "pushed_at": "2026-07-07",
+    "completed_at_checked": "2026-07-08",
+    "runtime_seconds_approx": 1004,
+    "logs_initial": "empty_while_running",
+    "status_recheck_after_2min": "RUNNING",
+    "logs_recheck_after_2min": "empty_while_running",
+    "source_warning": "Kaggle rejected optional source kentookumura/exp145-learned-likelihood-rawtest-feature-generator-parity-train; exp145 candidate disagreement will fall back to unavailable if no artifact is found."
+  },
+  "readout": {
+    "source": "kaggle_train_v1_logs",
+    "rows": 3783989,
+    "wells": 773,
+    "feature_columns": 35,
+    "feature_schema_rows": 46,
+    "base_exp148_lgb_mean": {
+      "rmse_tvt": 8.50128118189582,
+      "mae_tvt": 5.3356547355651855,
+      "within_10ft": 0.8563320347918559
+    },
+    "primary_signal": "mlgr_mismatch_signal",
+    "primary_auc_abs_error_gt10": 0.5739430032334609,
+    "primary_high_signal_q90": {
+      "cutoff_oriented": 4.651721096038818,
+      "rows": 378399,
+      "wells": 689,
+      "abs_error_mean": 7.608582496643066,
+      "abs_error_lift": 1.4259885381877353,
+      "error_gt_rate": 0.2345196472506534,
+      "error_gt_lift": 1.6323725815346846,
+      "rmse_tvt": 12.139380846679838
+    },
+    "correction_diagnostic_best": {
+      "variant": "base_exp148_lgb_mean",
+      "rmse_tvt": 8.50128118189582,
+      "delta_rmse": 0.0,
+      "mae_tvt": 5.3356547355651855,
+      "within_10ft": 0.8563320347918559
+    },
+    "gate": {
+      "auc_threshold": 0.65,
+      "error_lift_threshold": 1.5,
+      "proceed_to_lgb_addonly": false
+    }
+  },
+  "key_idea": "Use exp148 ML-predicted TVT as a provisional typewell-GR alignment coordinate and evaluate GR mismatch as an error detector before any add-only LightGBM training."
+}

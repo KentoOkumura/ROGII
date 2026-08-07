@@ -1,0 +1,251 @@
+experiment:
+  name: exp499_exp490_cross_fitted_well_application_selector
+  description: >-
+    Test whether target-free well signatures can cross-fittedly choose between
+    the saved exp490 mean-reverting HMM and its saved exp357 parent before
+    suffix truth is known. This is a train-OOF selector readout only.
+  route: ensemble
+  status: completed_fail_closed
+  created_at: "2026-08-01"
+  updated_at: "2026-08-01"
+
+lineage:
+  parent: exp490_geometry_centered_mean_reverting_offset_hmm
+  fallback: exp357_exp226_huber_emission_independent_audit
+  physics_feature_parent: exp498_geometry_mean_reversion_tail_regime_physics_readout
+  steering: ../../.steering/20260801-exp499-exp490-cross-fitted-well-application-selector
+  diff_summary: >-
+    Adds one strict-nested target-free well selector over frozen exp490 and
+    exp357 OOF predictions. It does not regenerate or change either candidate.
+
+implementation:
+  enabled: true
+  scope: saved_full_oof_cross_fitted_well_application_selector_readout
+  train_notebook_state: compact_selfcontained_canonical_adopted
+  inference_notebook_state: guarded_disabled_canonical_adopted
+  canonical_notebook_adopted: true
+  compact_train_candidate: exp499_exp490_cross_fitted_well_application_selector_compact_selfcontained_train.py
+  compact_train_notebook_candidate: exp499_exp490_cross_fitted_well_application_selector_compact_selfcontained_train.ipynb
+  inference_enabled: false
+  submission_enabled: false
+  kaggle_run_completed: true
+  kaggle_kernel_id: kentookumura/exp499-exp490-cross-fitted-well-selector-train
+  kaggle_kernel_id_no: 129362815
+  kaggle_kernel_version: 2
+  technical_passed: true
+  predictability_supported: false
+  safe_router_supported: false
+  deployment_eligible: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+
+validation:
+  strategy: outer5_held_well_with_inner4_policy_selection
+  metric: rmse_tvt
+  seed: 42
+  n_folds: 5
+  group_column: well
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  signed_target: exp357_parent_rmse_squared_minus_exp490_candidate_rmse_squared
+  row_weight: suffix_rows
+  apply_rule: predicted_signed_mse_benefit_gt_zero
+  model_selection_metric: inner_oof_routed_rmse
+  tie_tolerance_ft: 0.01
+  tie_priority: [always_exp490, weighted_ridge, weighted_hist_gradient_boosting]
+  leakage_policy:
+    - Freeze target-free feature content and schema before reading fold or outcome metrics.
+    - Never expose fold, truth, candidate error, parent error, or truth-derived roles to a selector.
+    - Select model family only on the four outer-train folds using inner OOF scores.
+    - Keep the routing threshold fixed at zero; do not tune it on outer-valid outcomes.
+
+data:
+  exp490_merge_source:
+    kernel_id: kentookumura/exp490-mean-revert-full-merge
+    kernel_version: 1
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp490-mean-revert-full-merge/artifacts
+      - /kaggle/input/exp490-mean-revert-full-merge/artifacts
+      - /tmp/kaggle-output/exp490_geometry_centered_mean_reverting_offset_hmm/merge_v1/artifacts
+  exp498_feature_source:
+    kernel_id: kentookumura/exp498-geometry-mean-reversion-tail-regime-train
+    kernel_version: 2
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp498-geometry-mean-reversion-tail-regime-train/artifacts
+      - /kaggle/input/exp498-geometry-mean-reversion-tail-regime-train/artifacts
+      - experiments/exp498_geometry_mean_reversion_tail_regime_physics_readout/kaggle/output/train_v2/artifacts
+      - experiments/exp498_geometry_mean_reversion_tail_regime_physics_readout/artifacts
+  inputs:
+    predictions:
+      filename: exp490_geometry_centered_mean_reverting_offset_hmm_stage1_full_oof_predictions.csv.gz
+      raw_gzip_sha256: 99030b33d493cc5f195f7d1a867f0d812a539143da9e1f59277e53779261b72c
+      decompressed_sha256: e020e82e748a7836085657c4058070ff7853ed285639f2c2555cab721f9e9a07
+      phase_a_safe_columns:
+        - well
+        - row_idx
+        - suffix_offset
+        - tvt_geop
+        - geometry_mean_reverting_hmm
+        - geometry_mean_reverting_delta_mean
+        - geometry_mean_reverting_hmm_std
+        - exp357_parent_prediction
+        - exp226_pred
+      forbidden_before_freeze:
+        - fold
+        - true_tvt_readout_only
+        - candidate_error
+        - parent_error
+        - exp226_error
+    exp490_by_well_metrics:
+      filename: exp490_geometry_centered_mean_reverting_offset_hmm_stage1_full_oof_by_well_metrics.csv
+      sha256: 65abf0131d06473980d71410ae931aa21e4c5b4a90d7975024c32713ecdba076
+      phase: post_feature_freeze_outcome_only
+    exp498_features:
+      filename: exp498_geometry_mean_reversion_tail_regime_physics_readout_target_free_well_features.csv
+      sha256: c1d31113e7247ada9be0d6fd1e183808f7fbc04af256612481363ee900e0f5ad
+      contract_filename: exp498_geometry_mean_reversion_tail_regime_physics_readout_feature_contract.json
+      contract_file_sha256: ccdc3d5d5233546a350385f6f5f8b5d1ac351488bb3c62acd50af20df37d55c1
+      embedded_contract_sha256: 92d1e78a197a9726640ea049891a6081e30784b98f3faa0b8ab113af8eb2416c
+
+features:
+  exp498_columns:
+    - rows
+    - visible_prefix_rows
+    - suffix_horizon_md
+    - k16_median_segment_span_ft
+    - prefix_gr_sigma
+    - prefix_gr_information_ratio
+    - geometry_disagreement_median_ft
+    - early_abs_offset_ft
+    - state_uncertainty_median_ft
+  suffix_aggregates:
+    parent_exp226_abs: [mean, std, q90]
+    parent_geometry_abs: [mean, q90]
+    candidate_parent_abs: [mean, std, q90]
+    candidate_exp226_abs: [mean, q90]
+    candidate_geometry_abs: [mean, q90]
+    delta_abs: [mean, q90]
+    posterior_std: [mean, q90]
+  early128_means:
+    - parent_exp226_abs
+    - candidate_parent_abs
+    - delta_abs
+    - posterior_std
+  roughness_means:
+    - parent_prediction
+    - candidate_prediction
+    - exp226_prediction
+  expected_count: 32
+  transform:
+    nonnegative: log1p
+    scaler: median_imputer_then_standard_scaler_for_ridge
+
+model:
+  name: strict_nested_signed_benefit_router
+  prediction_target: signed_mse_benefit_ft2_per_row
+  configs:
+    weighted_ridge:
+      alpha: 100.0
+      fit_intercept: true
+    weighted_hist_gradient_boosting:
+      learning_rate: 0.03
+      max_iter: 120
+      max_leaf_nodes: 7
+      min_samples_leaf: 40
+      l2_regularization: 25.0
+      early_stopping: false
+      random_state: 42
+  sample_weight: rows_divided_by_training_mean_rows
+
+gates:
+  technical_requires_all:
+    input_sha_match: true
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_folds: 5
+    feature_count: 32
+    finite_feature_coverage: 1.0
+    feature_outcome_phase_violations: 0
+    outer_prediction_coverage: 1.0
+  predictability_requires_all:
+    pooled_auc_minimum: 0.60
+    folds_auc_ge_0_55_minimum: 4
+    folds_positive_spearman_minimum: 4
+  safe_router_requires_all:
+    gain_vs_always_exp490_minimum_ft: 0.05
+    nonworse_folds_minimum: 4
+    fold_nonworse_tolerance_ft: 0.0
+    apply_fraction_minimum: 0.20
+    apply_fraction_maximum: 0.95
+    selected_minus_parent_by_well_rmse_p95_max_ft: 0.25
+    selected_minus_parent_by_well_rmse_worst_max_ft: 5.0
+  pass_action: permit_separate_inference_port_design_only_after_user_approval
+  fail_action: close_safe_target_free_exp490_router_without_same_oof_rescue
+
+execution_contract:
+  variants: 1
+  learned_model_configs: 2
+  outer_folds: 5
+  inner_folds_per_outer: 4
+  planned_inner_model_fits: 40
+  maximum_outer_refits: 5
+  maximum_total_cpu_model_fits: 45
+  lightgbm_configs: 0
+  lightgbm_boosters: 0
+  parent_control_retraining: 0
+  new_hmm_well_runs: 0
+  new_candidate_predictions: 0
+  pf_runs: 0
+  beam_runs: 0
+  gpu_runs: 0
+
+artifacts:
+  directory: artifacts
+  files:
+    feature_contract: exp499_exp490_cross_fitted_well_application_selector_feature_contract.json
+    feature_table: exp499_exp490_cross_fitted_well_application_selector_target_free_well_features.csv
+    selector_oof: exp499_exp490_cross_fitted_well_application_selector_selector_oof.csv
+    inner_scores: exp499_exp490_cross_fitted_well_application_selector_inner_policy_scores.csv
+    fold_metrics: exp499_exp490_cross_fitted_well_application_selector_fold_metrics.csv
+    well_metrics: exp499_exp490_cross_fitted_well_application_selector_well_metrics.csv
+    univariate_metrics: exp499_exp490_cross_fitted_well_application_selector_univariate_metrics.csv
+    model_manifest: exp499_exp490_cross_fitted_well_application_selector_model_manifest.json
+    summary: exp499_exp490_cross_fitted_well_application_selector_summary.json
+    plot: exp499_exp490_cross_fitted_well_application_selector_score_vs_benefit.png
+
+runtime:
+  accelerator: cpu
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_tpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp490-mean-revert-full-merge
+      - kentookumura/exp498-geometry-mean-reversion-tail-regime-train
+    train_dataset_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_global_seed_and_fixed_sklearn_random_state
+  stochastic_components: [weighted_hist_gradient_boosting]
+  parallel_rng_policy: single_process_no_joblib_parallelism
+  feature_sha_policy: decompressed_content_sha_for_gzip_and_canonical_csv_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a train OOF diagnostic, not a hidden-test deterministic anchor.
+    - No submission is generated.

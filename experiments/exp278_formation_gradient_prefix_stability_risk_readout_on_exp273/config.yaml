@@ -1,0 +1,239 @@
+experiment:
+  name: exp278_formation_gradient_prefix_stability_risk_readout_on_exp273
+  description: >-
+    Recomputes the exp273 robust formation plane on full, last-512, and last-256
+    known-prefix windows, freezes a target-free prefix-instability risk score,
+    and reads its relationship to the frozen exp273 gradient-candidate well
+    regressions without rerunning HMM paths or fitting a gate.
+  route: pf_beam
+  status: completed_readout_guard_failed_branch_closed
+  created_at: "2026-07-18"
+  inference_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.metric
+
+lineage:
+  parent: exp273_two_dimensional_formation_gradient_transition
+  references:
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md formation_gradient_prefix_stability_risk_readout_on_exp273
+  implementation_source:
+    - exp278_formation_gradient_prefix_stability_risk_readout_on_exp273_train.py
+  diff_summary: >-
+    Keeps the exp273 shard candidate paths, scalar control, five gradient
+    candidates, Huber-plane configuration, and by-well outcomes frozen. Only
+    the same plane diagnostic is recomputed on full/last-512/last-256 known
+    prefixes. A fixed equal-weight instability score is attached to the frozen
+    candidate outcomes for a five-fold report-only readout. HMM generation,
+    geometry/scale tuning, gate fitting, inference, and submission stay disabled.
+
+validation:
+  strategy: stable_sha256_five_fold_full_valid_well_risk_readout
+  metric: fold_and_pooled_spearman_with_fixed_risk_quintile_readout
+  seed: 42
+  n_folds: 5
+  group_column: well
+  primary_cohort: exp273_full_gradient_valid_wells
+  primary_outcome: gradient_bank_mean_delta_rmse_vs_scalar
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_full_valid_wells: 111
+  fold_policy: sha256_exp278_outer_fold_well_modulo_5
+  leakage_policy:
+    - Plane features read only MD, X, Y, Z, and finite known-prefix TVT_input from the same well.
+    - Raw TVT, evaluation-tail target, formation labels, other-well target, candidate error, and oracle values are forbidden risk-feature inputs.
+    - Window sizes, transforms, clips, equal weights, primary cohort, fold hash, quintiles, and guards are fixed before outcomes are joined.
+    - Exp273 candidate error is attached only after the stability feature table and fold assignment are frozen.
+    - Candidate-specific and secondary outcomes are report-only and cannot rescue the primary guard.
+
+data:
+  raw_train_dir_patterns:
+    - data/raw/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+  exp273_aggregate_kernel: kentookumura/exp273-2d-formation-gradient-aggregate
+  plane_diagnostics:
+    filename: exp273_two_dimensional_formation_gradient_transition_plane_diagnostics.csv
+    expected_sha256: 484ced57a3c0a3e19b4e1002747c326f576d98a439a9a6418bf793bac9c1a665
+    candidates:
+      - /tmp/exp273_aggregate_output/artifacts/exp273_two_dimensional_formation_gradient_transition_plane_diagnostics.csv
+      - /kaggle/input/notebooks/kentookumura/exp273-2d-formation-gradient-aggregate/artifacts/exp273_two_dimensional_formation_gradient_transition_plane_diagnostics.csv
+      - /kaggle/input/exp273-2d-formation-gradient-aggregate/artifacts/exp273_two_dimensional_formation_gradient_transition_plane_diagnostics.csv
+  by_well_metrics:
+    filename: exp273_two_dimensional_formation_gradient_transition_by_well.csv
+    expected_sha256: f54d2b6dc321a5c9add65accc9e2bab440c3429c0d80354d85246a6375c7b52d
+    candidates:
+      - /tmp/exp273_aggregate_output/artifacts/exp273_two_dimensional_formation_gradient_transition_by_well.csv
+      - /kaggle/input/notebooks/kentookumura/exp273-2d-formation-gradient-aggregate/artifacts/exp273_two_dimensional_formation_gradient_transition_by_well.csv
+      - /kaggle/input/exp273-2d-formation-gradient-aggregate/artifacts/exp273_two_dimensional_formation_gradient_transition_by_well.csv
+  shards:
+    - shard_index: 0
+      filename: exp273_two_dimensional_formation_gradient_transition_shard0.csv.gz
+      expected_rows: 1910995
+      expected_wells: 396
+      expected_raw_sha256: acb943b7b91e723643dddb2259d492c8af9a81fb35bbd3187319633f473eb2c1
+      expected_decompressed_sha256: 347b87554261cb904bc7f98d6d1eb64ed5aaa46f15720011b94797d814aeac97
+      candidates:
+        - /tmp/exp273_shard0_output/artifacts/exp273_two_dimensional_formation_gradient_transition_shard0.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp273-2d-formation-gradient-shard0/artifacts/exp273_two_dimensional_formation_gradient_transition_shard0.csv.gz
+        - /kaggle/input/exp273-2d-formation-gradient-shard0/artifacts/exp273_two_dimensional_formation_gradient_transition_shard0.csv.gz
+    - shard_index: 1
+      filename: exp273_two_dimensional_formation_gradient_transition_shard1.csv.gz
+      expected_rows: 1872994
+      expected_wells: 377
+      expected_raw_sha256: ae78cfc15e8bb0a1191f0300261723a3b379c0f9d4fb68e0b17b81ddae7d9e48
+      expected_decompressed_sha256: 98939d080e4b5bfa3ab93631601d496946b0e9ddcc8aac4bb10a430eeda7d407
+      candidates:
+        - /tmp/exp273_shard1_output/artifacts/exp273_two_dimensional_formation_gradient_transition_shard1.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp273-2d-formation-gradient-shard1/artifacts/exp273_two_dimensional_formation_gradient_transition_shard1.csv.gz
+        - /kaggle/input/exp273-2d-formation-gradient-shard1/artifacts/exp273_two_dimensional_formation_gradient_transition_shard1.csv.gz
+
+plane:
+  target_formula: surface_S_equals_TVT_input_plus_Z
+  estimator: deterministic_huber_irls
+  diagnostic_fit_policy: fit_if_min_points_and_rank2_even_when_exp273_geometry_guard_fails
+  generation_guard_policy: preserve_exp273_validity_and_zero_gradient_fallback_for_parity
+  windows:
+    - name: full
+      rows: null
+    - name: last512
+      rows: 512
+    - name: last256
+      rows: 256
+  huber_delta: 1.345
+  max_iterations: 25
+  convergence_tolerance: 0.0000000001
+  min_points: 64
+  min_xy_step: 0.000001
+  min_rank_ratio: 0.05
+  max_condition_number: 20.0
+  min_azimuth_coverage: 0.02
+  covariance_rcond: 0.000000000001
+  full_parity:
+    absolute_tolerance: 0.00001
+    relative_tolerance: 0.000001
+
+risk:
+  primary_score: stability_risk_score
+  pair_aggregation: maximum_disagreement_across_three_window_pairs
+  component_aggregation: equal_weight_mean
+  components:
+    - gradient_angle_disagreement
+    - gradient_magnitude_log_ratio
+    - plane_rmse_log_ratio
+    - rank_ratio_absolute_gap
+    - condition_number_log_ratio
+    - validity_flip
+  angle_normalizer_degrees: 180.0
+  log_ratio_clip: 5.0
+  magnitude_epsilon: 0.000000000001
+  rmse_epsilon: 0.000000001
+  quantiles: 5
+  fit_from_outcome: false
+
+candidate_bank:
+  candidates:
+    - hmm_grad_center
+    - hmm_grad_axis1_minus
+    - hmm_grad_axis1_plus
+    - hmm_grad_axis2_minus
+    - hmm_grad_axis2_plus
+  control: hmm_scalar_tail30
+  primary_aggregation: equal_candidate_mean_delta_rmse_vs_scalar
+  secondary_aggregations:
+    - max_candidate_delta_rmse_vs_scalar
+    - candidate_specific_delta_rmse_vs_scalar
+
+model:
+  name: none_zero_booster_prefix_stability_readout
+  trains_new_boosters: false
+  params: {}
+
+execution:
+  stage: formation_gradient_prefix_stability_risk_readout
+  run_approved: false
+  kaggle_push_requires_user_approval: true
+  variants: 0
+  lightgbm_configs: 0
+  folds_trained: 0
+  total_boosters: 0
+  parent_control_retraining: false
+  hmm_paths_generated: 0
+  inference_enabled: false
+  submission_enabled: false
+
+guards:
+  technical:
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_full_valid_wells: 111
+    expected_candidates: 5
+    expected_candidate_well_rows: 3865
+    expected_folds: 5
+    min_full_valid_wells_per_fold: 15
+    by_well_rmse_parity_atol: 0.000001
+  primary:
+    required_positive_folds: 5
+    pooled_spearman_must_be_positive: true
+    highest_quintile_mean_delta_must_exceed_lowest: true
+    sign_epsilon: 0.000000000001
+    secondary_can_rescue: false
+    candidate_specific_can_rescue: false
+
+artifacts:
+  required:
+    - exp278_prefix_plane_diagnostics.csv
+    - exp278_prefix_stability_features.csv
+    - exp278_candidate_outcomes_by_well.csv
+    - exp278_candidate_metric_parity.csv
+    - exp278_stability_correlations.csv
+    - exp278_risk_quintile_metrics.csv
+    - exp278_input_manifest.csv
+    - exp278_prefix_stability_readout.png
+    - exp278_readout_summary.json
+    - exp278_reproducibility_manifest.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  chunk_rows: 250000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp273-2d-formation-gradient-aggregate
+      - kentookumura/exp273-2d-formation-gradient-shard0
+      - kentookumura/exp273-2d-formation-gradient-shard1
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_sha256_well_outer_fold
+  stochastic_components: []
+  parallel_rng_policy: no_rng_single_process_stable_well_sort
+  feature_sha_policy: aggregate_csv_byte_sha_shard_raw_and_decompressed_sha_output_logical_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Huber IRLS and SVD use no RNG; numerical parity uses fixed absolute and relative tolerances.
+    - The readout does not update a CV, LB, PF/Beam, or submission anchor.
+    - A Kaggle rerun is required before calling it a deterministic diagnostic anchor.
+
+inference:
+  enabled: false
+  mode: disabled_train_side_readout_only
+  create_submission: false
+
+notes:
+  - A passing readout only supports designing a separate fold-safe gate audit; it does not approve a gate or inference.
+  - A failing five-fold direction guard closes the exp273 formation-gradient branch without a rescue grid.

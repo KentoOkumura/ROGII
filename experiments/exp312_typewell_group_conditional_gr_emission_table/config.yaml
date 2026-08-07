@@ -1,0 +1,216 @@
+experiment:
+  name: exp312_typewell_group_conditional_gr_emission_table
+  description: Type Well群ごとの条件付きGR残差分布をouter-trainだけで推定する0-booster emission-table監査
+  route: pf_beam
+  status: kaggle_cpu_v1_completed_gate_failed_branch_closed
+  created_at: "2026-07-21"
+
+lineage:
+  parent: exp311_typewell_group_prefix_suffix_gr_calibration_readout
+  references:
+    - exp293_physics_only_candidate_bank_headroom_contract
+    - exp263_last_anchor_better_candidate_confidence_pair_cache
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission
+    - exp115_hidden_like_spatial_holdout_from_ppt
+  diff_summary: exp293で凍結済みのdeployable12候補値を変更・再生成せず、Type Well GR値・局所勾配・欠損状態に条件づけたshrunk Student-t residual tableで候補TVTのGR尤度順位だけをreadoutする。exp311の平均GR gainを根拠にユーザー判断で先行gateを上書きするが、fit-RMSE R2とworst-well FAILは安全上の既知リスクとして保持する。
+
+implementation:
+  enabled: true
+  scope: train_side_zero_booster_candidate_rank_audit
+  inference_enabled: false
+  submission_enabled: false
+  authorization_date: "2026-07-21"
+  authorization_source: user_approved_exp293_deployable12_after_exp311_average_gain
+  run_authorization_date: "2026-07-21"
+  run_authorization_source: user_requested_execution
+
+validation:
+  strategy: sha256_well_grouped_5fold
+  n_folds: 5
+  group_column: well_id
+  fit_scope: outer_train_wells_only
+  row_weighting: equal_well_weight
+  truth_join_policy: freeze_emission_table_and_candidate_scores_before_outer_valid_truth_join
+  required_parent_gate: exp311_all_promotion_gates_pass
+  parent_gate_override:
+    enabled: true
+    reason: user_directed_progress_on_exp311_average_gain
+    retained_failures: [group_loo_fit_rmse_r2, worst_well_delta]
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_candidates: 12
+  hidden_like_roles: [verification_like_spatial_role, verification_like_typewell_purged_role]
+
+data:
+  raw_train_dir_patterns:
+    - data/raw/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+  raw_horizontal_glob: "*__horizontal_well.csv"
+  raw_columns: {truth: TVT, visible_input: TVT_input, gr: GR, md: MD}
+  exp263_manifest:
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+      - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+      - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1/artifacts/cache_manifest.json
+    expected_file_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+    expected_canonical_id_sha256: de07df322a8dc3a981b556ea78c3ddcecb2e708a31e986cfe05873109d4ae9d3
+    small_parity_filename: small_parity_sample.parquet
+  exp311_parent:
+    summary_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp311-typewell-gr-calibration-readout-train/artifacts/exp311_typewell_group_prefix_suffix_gr_calibration_readout_summary.json
+      - /kaggle/input/exp311-typewell-gr-calibration-readout-train/artifacts/exp311_typewell_group_prefix_suffix_gr_calibration_readout_summary.json
+      - /tmp/exp311-kaggle-output.AcBbRe/artifacts/exp311_typewell_group_prefix_suffix_gr_calibration_readout_summary.json
+    fold_manifest_filename: exp311_typewell_group_prefix_suffix_gr_calibration_readout_fold_manifest.csv
+    group_membership_filename: exp311_typewell_group_prefix_suffix_gr_calibration_readout_group_membership.csv
+    expected_summary_sha256: 821499b895a8bdb6ed8202c714ddb95ea8739defe9b4aaa0e13c35b346a1ca29
+    expected_fold_manifest_sha256: bd6a513666d9df4797895ea0e6bc6f6041b4fddc523ce7a61e869c59eeab4afc
+    expected_group_membership_sha256: 246111cbaea4a8170c486eb17e19bad526b28fa41779348c1d9c2d3fe63edda0
+    expected_parent_status: completed_gate_failed
+    expected_primary_scheme: native_overlap_1
+  hidden_like_assignment:
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+candidate_bank:
+  name: exp293_exp263_stage1_deployable12
+  source_contract: exp293_physics_only_candidate_bank_headroom_contract
+  expected_count: 12
+  order:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__exact_hmm
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+    - likpf_mean__exact_hmm
+    - exp226_w500_50_50
+  primitives: [exp226_k16, selfgr_hmm_a070, likpf_mean, exact_hmm, pf_ancc, beam_mean]
+  pairs:
+    exp226_k16__selfgr_hmm_a070: {exp226_k16: 0.5, selfgr_hmm_a070: 0.5}
+    exp226_k16__exact_hmm: {exp226_k16: 0.5, exact_hmm: 0.5}
+    exp226_k16__likpf_mean: {exp226_k16: 0.5, likpf_mean: 0.5}
+    selfgr_hmm_a070__likpf_mean: {selfgr_hmm_a070: 0.5, likpf_mean: 0.5}
+    likpf_mean__exact_hmm: {likpf_mean: 0.5, exact_hmm: 0.5}
+  fixed_formula:
+    exp226_w500_50_50: {exp226_k16: 0.5, likpf_mean: 0.25, exact_hmm: 0.25}
+  formula_float_contract: match_exp263_stage1_float_operation_order
+  formula_parity_max_abs_ft: 0.001
+
+emission_table:
+  typewell_group: native_overlap_1
+  conditioning: [typewell_gr_decile, abs_typewell_gr_gradient_tertile, horizontal_gr_missing_flag]
+  residual: horizontal_gr_minus_typewell_gr
+  family: student_t
+  fixed_df: 5
+  location: weighted_median
+  scale: mad_times_1p4826
+  scale_floor_gr: 1.0
+  shrinkage_support_k: 200
+  fallback_order: [group_conditional, group_unconditional, global_conditional, global_unconditional]
+  min_effective_rows: 32
+  negative_controls: [group_label_shuffle, tvt_shift_matched_count]
+  binning:
+    typewell_gr_quantiles: 10
+    abs_typewell_gr_gradient_quantiles: 3
+    edge_policy: outer_train_equal_well_weighted_quantile
+  horizontal_gr_imputation: linear_row_interpolation_both_then_typewell_mean
+  lookup_tie_policy: candidate_order_stable
+  baseline: global_unconditional_student_t
+
+negative_controls:
+  group_label_shuffle:
+    method: stable_sha256_well_label_rotation
+    preserves: [well_count, group_label_multiset]
+  tvt_shift_matched_count:
+    method: stable_sha256_within_well_candidate_tvt_row_circular_shift
+    minimum_fraction: 0.10
+    maximum_fraction: 0.90
+    truth_free: true
+
+execution_contract: {scientific_variants: 1, diagnostic_controls: 2, model_configs: 0, folds: 5, boosters: 0, decoder_runs: 0}
+
+model: {name: none, params: {}}
+
+promotion_gates:
+  truth_nearest_mrr_gain_min: 0.02
+  truth_nearest_top3_gain_min: 0.03
+  real_minus_shuffled_mrr_min: 0.02
+  folds_improved_min: 4
+  hidden_like_nonregression: true
+  lookup_fallback_rate_max: 0.25
+
+observed_result:
+  status: completed_gate_failed
+  runtime_seconds: 326.622947
+  baseline_mrr: 0.3361118142522171
+  real_mrr: 0.3345193890415412
+  mrr_gain: -0.001592425210675874
+  baseline_top3_rate: 0.3580901001562108
+  real_top3_rate: 0.35564585415021027
+  top3_gain: -0.0024442460060005167
+  folds_improved: 0
+  real_minus_shuffled_mrr: 0.0016114684138360813
+  real_minus_tvt_shift_mrr: 0.06380880421151797
+  lookup_fallback_rate: 0.0182310695582536
+  hidden_like_nonregression: false
+  promotion_passed: false
+  summary_raw_sha256: 5849d389288ec0a0922185b9264dec222e7928c0715f27e820260a3dbd33d477
+
+audit:
+  output_prefix: exp312_typewell_group_conditional_gr_emission_table
+  work_chunk_rows: 100000
+  expected_train_artifacts:
+    - exp312_typewell_group_conditional_gr_emission_table_input_manifest.csv
+    - exp312_typewell_group_conditional_gr_emission_table_candidate_bank_manifest.json
+    - exp312_typewell_group_conditional_gr_emission_table_bin_edges.csv
+    - exp312_typewell_group_conditional_gr_emission_table_emission_table.csv
+    - exp312_typewell_group_conditional_gr_emission_table_lookup_fallback.csv
+    - exp312_typewell_group_conditional_gr_emission_table_rank_metrics.csv
+    - exp312_typewell_group_conditional_gr_emission_table_fold_metrics.csv
+    - exp312_typewell_group_conditional_gr_emission_table_hidden_like_metrics.csv
+    - exp312_typewell_group_conditional_gr_emission_table_feature_schema.csv
+    - exp312_typewell_group_conditional_gr_emission_table_summary.json
+
+runtime:
+  num_workers: 1
+  kaggle:
+    canonical_kernel_id: kentookumura/exp312-typewell-gr-emission-rank-audit-train
+    canonical_title: exp312 typewell gr emission rank audit train
+    kernel_version: 1
+    kernel_id_no: 128090149
+    runtime_seconds: 326.622947
+    completed: true
+    is_private: true
+    run_on_push: true
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp311-typewell-gr-calibration-readout-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+inference: {enabled: false, create_submission: false, reason: train_side_rank_readout_only}
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_well_fold_variant
+  stochastic_components: []
+  parallel_rng_policy: no_global_rng; deterministic bins and reducers
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: false, submission_sha: false}
+
+notes:
+  - No exact-HMM, PF, Beam, selector, inference, or submission is permitted in this experiment.
+  - Binning and shrinkage constants are frozen before any outer-valid truth score is read.
+  - The exp311 all-gates prerequisite is explicitly overridden by the user; exp311 fit-RMSE R2 and worst-well failures remain recorded and are not reclassified as passes.
+  - The deployable12 values, formulas, order, and IDs are inherited from exp293 and are never generated or changed by this experiment.

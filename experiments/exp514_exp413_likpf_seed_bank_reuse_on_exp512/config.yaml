@@ -1,0 +1,1081 @@
+experiment:
+  name: exp514_exp413_likpf_seed_bank_reuse_on_exp512
+  description: >-
+    Design-frozen runtime/scientific audit that generates the exp413 x1.0,
+    500-particle, 128-seed likelihood-PF bank once per dynamic well and reuses
+    it for both exp413 scale-5 features and the SP45 scale-3/5/8/12 selector
+    plus seed-branch summary. The legacy SP45 bank is replaced scientifically,
+    not treated as an exact optimization.
+  hypothesis: >-
+    A single exp413 stable-seed Numba bank can preserve exp413 scale-5 content,
+    remove the duplicate SP45 128-seed PF cost, remain within frozen paired
+    accuracy guards, and produce a Stage D visible-test stagewise runtime
+    estimate whose 200-well upper estimate is within the nine-hour limit.
+  route: ensemble
+  status: completed_stage_b_scientific_fail_stage_d_v4_technical_pass_no_resubmit
+  created_at: "2026-08-05"
+  updated_at: "2026-08-05"
+  train_enabled: false
+  inference_enabled: false
+
+lineage:
+  parent: exp512_hjyact_v2_final_10pct_hedge_on_exp413
+  likelihood_pf_source: exp413_scale5_likpf_full_replacement_on_exp335
+  replay_kernel_source: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  comparison:
+    - exp512_hjyact_v2_final_10pct_hedge_on_exp413
+    - exp513_hjyact_v2_final_standalone_public_lb_audit
+    - exp413_scale5_likpf_full_replacement_on_exp335
+  steering: ../../.steering/20260805-exp514-exp413-likpf-seed-bank-reuse-on-exp512
+  references:
+    - ../exp512_hjyact_v2_final_10pct_hedge_on_exp413/result.md
+    - ../exp512_hjyact_v2_final_10pct_hedge_on_exp413/SESSION_NOTES.md
+    - ../exp413_scale5_likpf_full_replacement_on_exp335/config.yaml
+    - ../../docs/06_reproducibility.md
+  diff_summary: >-
+    Move the exp413 stable-seed x1.0 likelihood-PF producer before SP45, call
+    it exactly once per dynamic well, and derive all four SP45 temperatures,
+    full-length adapters, and seed-branch summaries from the same raw seed
+    paths and log-likelihoods. Feed only scale 5 to the unchanged exp413 model
+    graph. Keep learned x1.3 PF, Gold masked-prefix PF, pf_ancc, pf_z, Beam,
+    saved models, weights, selectors, postprocess, and model-package-disabled
+    parent settings fixed. After Stage A PASS, change only the Stage B paired
+    accuracy sample from 200 wells to the exact target-free Stage A 32-well
+    selection and keep all accuracy thresholds fixed. Stage C is not required
+    by user override; estimate 200-well runtime from Stage D visible-test
+    per-stage timings without treating that estimate as hidden runtime evidence.
+    Stage D v3 changes runtime orchestration only: Gold uses at most four
+    well-level processes and HJYACT reuses SP45 deterministic test features,
+    with five exact Stage D v2 output SHA witnesses required. Stage D v4 keeps
+    the numerical contract fixed while bounding shared-PF payload lifetime,
+    releasing Ridge intermediates, transferring DataFrame ownership, and
+    restricting the five visible SHA witnesses to the visible sample only.
+
+authorization:
+  design_approved: true
+  design_source: user_request_2026_08_05_create_backlog_experiment_steering_design_only
+  implementation_approved: true
+  implementation_source: user_request_2026_08_05_implement_exp514
+  canonical_notebook_adoption_approved: false
+  kaggle_package_approved: true
+  kaggle_package_scope: stage_a_fixed32_only
+  kaggle_package_source: user_request_2026_08_05_execute_stage_a
+  kaggle_run_approved: true
+  kaggle_run_scope: stage_a_fixed32_only
+  kaggle_run_source: user_request_2026_08_05_execute_stage_a
+  output_download_approved: true
+  output_download_scope: stage_a_report_metrics_and_execution_log_only
+  output_download_source: user_request_2026_08_05_execute_stage_a
+  stage_b_design_change_approved: true
+  stage_b_design_change_source: user_request_2026_08_05_reduce_stage_b_from_200_to_32_wells
+  stage_b_implementation_approved: true
+  stage_b_implementation_source: user_request_2026_08_05_execute_stage_b
+  stage_b_package_approved: true
+  stage_b_package_scope: stage_b_fixed32_only
+  stage_b_package_source: user_request_2026_08_05_execute_stage_b
+  stage_b_run_approved: true
+  stage_b_run_scope: stage_b_fixed32_only
+  stage_b_run_source: user_request_2026_08_05_execute_stage_b
+  stage_b_output_download_approved: true
+  stage_b_output_download_scope: stage_b_report_metrics_and_execution_log_only
+  stage_b_output_download_source: user_request_2026_08_05_execute_stage_b
+  stage_b_execution_approved: true
+  stage_b_repair_approved: true
+  stage_b_repair_source: user_request_2026_08_05_fix_and_rerun_stage_b
+  stage_b_rerun_approved: true
+  stage_b_rerun_scope: same_fixed32_scientific_contract_metric_scoring_fix_only
+  stage_b_rerun_source: user_request_2026_08_05_fix_and_rerun_stage_b
+  stage_c_required: false
+  stage_c_resolution_source: user_request_2026_08_05_use_stage_d_visible_runtime_estimate
+  stage_d_runtime_estimate_source_approved: true
+  stage_d_runtime_estimate_source: stage_d_visible_test_stagewise_extrapolation
+  stage_d_implementation_approved: true
+  stage_d_implementation_source: user_request_2026_08_05_run_stage_d_before_stage_b_decision
+  stage_d_package_approved: true
+  stage_d_package_scope: stage_d_submission_ready_visible_test_only
+  stage_d_package_source: user_request_2026_08_05_run_stage_d_before_stage_b_decision
+  stage_d_run_approved: true
+  stage_d_run_scope: stage_d_submission_ready_visible_test_only
+  stage_d_run_source: user_request_2026_08_05_run_stage_d_before_stage_b_decision
+  stage_d_output_download_approved: true
+  stage_d_output_download_scope: submission_metrics_runtime_reproducibility_components_only
+  stage_d_output_download_source: user_request_2026_08_05_run_stage_d_before_stage_b_decision
+  stage_d_v1_partial_runtime_evaluation_approved: true
+  stage_d_v1_partial_runtime_evaluation_source: user_request_2026_08_05_evaluate_200wells_first
+  stage_d_repair_approved: true
+  stage_d_repair_source: user_request_2026_08_05_then_fix_and_rerun_stage_d
+  stage_d_rerun_approved: true
+  stage_d_rerun_scope: candidate_visible_witness_guard_only_same_scientific_pipeline
+  stage_d_rerun_source: user_request_2026_08_05_then_fix_and_rerun_stage_d
+  stage_d_runtime_optimization_approved: true
+  stage_d_runtime_optimization_scope: gold_4process_and_sp45_hjyact_deterministic_feature_reuse
+  stage_d_runtime_optimization_source: user_request_2026_08_05_gold_4process_and_deterministic_feature_sharing
+  stage_d_v3_rerun_approved: true
+  stage_d_v3_rerun_scope: runtime_only_same_scientific_pipeline_exact_v2_output_witness
+  stage_d_v3_rerun_source: user_request_2026_08_05_implement_and_rerun
+  stage_d_v4_oom_repair_approved: true
+  stage_d_v4_oom_repair_scope: >-
+    ridge_release_shared_pf_sp45_bounded_lifetime_dataframe_ownership_transfer_hidden_safe_visible_sha_guard
+  stage_d_v4_oom_repair_source: user_request_2026_08_05_fix_four_oom_and_hidden_sha_items
+  stage_d_v4_package_approved: true
+  stage_d_v4_package_scope: stage_d_visible_v4_technical_memory_runtime_and_output_equivalence_only
+  stage_d_v4_package_source: user_request_2026_08_05_execute_stage_d_v4
+  stage_d_v4_run_approved: true
+  stage_d_v4_run_scope: stage_d_visible_v4_technical_memory_runtime_and_output_equivalence_only
+  stage_d_v4_run_source: user_request_2026_08_05_execute_stage_d_v4
+  stage_d_v4_submission_approved: false
+  competition_submission_approved: false
+
+implementation:
+  scaffold_created: true
+  code_created: true
+  tests_created: true
+  notebook_placeholders_only: false
+  canonical_notebooks_remain_placeholders: true
+  compact_selfcontained_candidate_created: true
+  stage_a_audit_implemented: true
+  stage_a_executed: true
+  stage_b_fixed32_audit_implemented: true
+  stage_b_fixed32_executed: true
+  stage_b_fixed32_execution_attempted: true
+  stage_b_fixed32_status: version_2_complete_scientific_fail
+  stage_c_implemented: false
+  stage_c_executed: false
+  stage_c_status: not_required_by_user_override
+  stage_d_audit_implemented: true
+  stage_d_executed: true
+  stage_d_execution_attempted: true
+  stage_d_status: version_4_complete_estimated_pass_technical_only
+  current_scope: stage_d_v4_visible_technical_validation_no_competition_resubmission
+  generator: ../../scripts/prepare_exp514_shared_likpf_candidate.py
+  generator_sha256: 909485a09c8224a41f9b088452b2c1a7c8f45e66273daaea8871d55b3250ba26
+  candidate_source: exp514_exp413_likpf_seed_bank_reuse_on_exp512_compact_selfcontained_inference.py
+  candidate_source_sha256: 961762731f91bf20de6d43d869aeed44bfa98f60be7f8cccc1c65b37d05dc24c
+  candidate_source_lines: 8155
+  candidate_notebook: exp514_exp413_likpf_seed_bank_reuse_on_exp512_compact_selfcontained_inference.ipynb
+  candidate_notebook_sha256: 8f0889b9d6ad3019dc8cc6d6659c8830acfba4294ff1823dddf0061079619bdc
+  candidate_notebook_cells: 53
+  stage_a_source: exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_a_fixed32.py
+  stage_a_source_sha256: 89129ad85c129145e635633741e08ff5e058a365c344a4a4bdbdc77190ab3873
+  stage_a_source_lines: 746
+  stage_a_notebook: exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_a_fixed32.ipynb
+  stage_a_notebook_sha256: 9916807b69a92431e273a3341ddb648485c9fafc81d2a1dc895745f82bf81fa9
+  stage_a_notebook_cells: 7
+  stage_b_generator: ../../scripts/prepare_exp514_stage_b_fixed32.py
+  stage_b_generator_sha256: adf0116569446945ebb06c5d69a5e2a6b2db3ec257878bffa8a142cd72214eb7
+  stage_b_source: exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_b_fixed32.py
+  stage_b_source_sha256: a510d17b782fd996fbfb9ab74e66e7db39baa9030976f516c76db107558e0748
+  stage_b_source_lines: 1706
+  stage_b_notebook: exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_b_fixed32.ipynb
+  stage_b_notebook_sha256: 4a361ec11f667a5b59c43aa243b47f4039e2bc06cd2fe201ac1f4ba5f85ca261
+  stage_b_notebook_cells: 14
+  stage_b_kaggle_package_created: true
+  stage_b_kaggle_package_kind: stage_b_fixed32
+  stage_b_kaggle_kernel_id: kentookumura/exp514-shared-likpf-fixed32-stage-b
+  stage_b_kaggle_kernel_title: exp514 shared likpf fixed32 stage b
+  stage_b_kaggle_package_notebook_sha256: 63f47433fcdc58d03be49212369a4f45599ff866470e57f55d1bc147df89dc82
+  stage_b_kaggle_package_notebook_bytes: 159310
+  stage_b_kaggle_package_notebook_cells: 15
+  stage_b_kaggle_support_file_count: 2
+  stage_b_kaggle_support_uncompressed_bytes: 121377
+  stage_b_kaggle_metadata_sha256: dd7ebfb34a0a2e4809549097411e4be843634a8a32cdf363c7fa9c56eae3a047
+  stage_b_kaggle_run_started: true
+  stage_b_kaggle_kernel_version: 2
+  stage_b_kaggle_kernel_id_no: 129762632
+  stage_b_kaggle_pushed_at_utc: "2026-08-05 08:31:05 UTC"
+  stage_b_kaggle_remote_cell_source_sha256: c27f317387b7f84c6f808f1f7957fad93b1343ad88f5c7fb3124c45d27ce86a6
+  stage_d_generator: ../../scripts/prepare_exp514_stage_d_visible.py
+  stage_d_generator_sha256: 30a0500cb6e2977db72a5f92a21cefe40aa56b09619ddaee4863dfdeb1fd047f
+  stage_d_source: exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_d_visible.py
+  stage_d_source_sha256: ff668d88e0e2f9a8775943f2b54793049178d82af86a7e5c763eae35bfac542d
+  stage_d_source_lines: 8640
+  stage_d_notebook: exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_d_visible.ipynb
+  stage_d_notebook_sha256: 15d4ebebecb615caed353f62a51a99089ab33b291ff145d33858033cae191316
+  stage_d_notebook_cells: 55
+  stage_d_runtime_revision: 4
+  stage_d_v4_ridge_release_implemented: true
+  stage_d_v4_shared_pf_full_payload_max_inflight: 4
+  stage_d_v4_shared_pf_retained_exp413_columns: [id, likpf_scale_5, likpf_mean]
+  stage_d_v4_dataframe_ownership_transfer: [sp45_to_hjyact, hjyact_to_exp413]
+  stage_d_v4_visible_sha_guard_hidden_policy: skip_hidden_dynamic
+  stage_d_v4_static_validation_pending: false
+  stage_d_v4_contract_tests_passed: 19
+  stage_d_v4_ruff_f821_passed: true
+  stage_d_v4_jupytext_roundtrip_passed: true
+  stage_d_v4_experiment_validation_passed: true
+  stage_d_v4_kaggle_package_created: true
+  stage_d_v4_kaggle_package_notebook_sha256: 4d3696b88f054d9284716ed01990edc3111d9c24b51645e309a8181efaa46018
+  stage_d_v4_kaggle_package_notebook_bytes: 870908
+  stage_d_v4_kaggle_package_notebook_cells: 56
+  stage_d_v4_kaggle_package_source_list_sha256: 49f120da5cf134b37ea252bfaa80a5d682d770327f8e54ea103e0121866fd5eb
+  stage_d_v4_kaggle_support_file_count: 26
+  stage_d_v4_kaggle_support_uncompressed_bytes: 978989
+  stage_d_v4_kaggle_metadata_sha256: b2fae3956831eb2a3d7f685d3bad78b31f6697c097d8d900835683eafbc084b1
+  stage_d_v4_kaggle_run_started: true
+  stage_d_v4_kaggle_kernel_version: 4
+  stage_d_v4_kaggle_kernel_id_no: 129770672
+  stage_d_v4_kaggle_pushed_at_utc: "2026-08-05 11:38:55 UTC"
+  stage_d_v4_kaggle_remote_source_list_sha256: 49f120da5cf134b37ea252bfaa80a5d682d770327f8e54ea103e0121866fd5eb
+  stage_d_v4_kaggle_remote_source_list_exact_match: true
+  stage_d_v4_kaggle_status_at_push: KernelWorkerStatus.RUNNING
+  stage_d_kaggle_package_created: true
+  stage_d_kaggle_package_kind: stage_d_visible
+  stage_d_kaggle_kernel_id: kentookumura/exp514-shared-likpf-stage-d-visible
+  stage_d_kaggle_kernel_title: exp514 shared likpf stage d visible
+  stage_d_kaggle_package_notebook_sha256: 4d3696b88f054d9284716ed01990edc3111d9c24b51645e309a8181efaa46018
+  stage_d_kaggle_package_notebook_bytes: 870908
+  stage_d_kaggle_package_notebook_cells: 56
+  stage_d_kaggle_metadata_sha256: b2fae3956831eb2a3d7f685d3bad78b31f6697c097d8d900835683eafbc084b1
+  stage_d_kaggle_support_file_count: 26
+  stage_d_kaggle_support_uncompressed_bytes: 978989
+  stage_d_kaggle_dataset_source_count: 6
+  stage_d_kaggle_kernel_source_count: 11
+  stage_d_kaggle_run_started: true
+  stage_d_kaggle_kernel_version: 4
+  stage_d_kaggle_kernel_id_no: 129770672
+  stage_d_kaggle_pushed_at_utc: "2026-08-05 11:38:55 UTC"
+  stage_d_kaggle_remote_cell_source_sha256: 49f120da5cf134b37ea252bfaa80a5d682d770327f8e54ea103e0121866fd5eb
+  stage_d_kaggle_status_at_push: KernelWorkerStatus.RUNNING
+  stage_d_kaggle_v2_final_status: KernelWorkerStatus.COMPLETE
+  stage_d_kaggle_v2_status_checked_at_utc: "2026-08-05 09:15:23 UTC"
+  stage_d_kaggle_v1_final_status: KernelWorkerStatus.ERROR
+  stage_d_kaggle_v1_status_checked_at_utc: "2026-08-05 08:38:00 UTC"
+  stage_d_kaggle_v2_status_confirmed_at_utc: "2026-08-05 08:45:43 UTC"
+  stage_d_v2_package_source_list_sha256: 88dc33192b86d0e6351db82547f448974712f55b1aeb528b8bcdb98d43347a9b
+  stage_d_v3_package_source_list_sha256: 52b00894ce151dd9bd99eae70f6d9d2c3cbc5ace03b77d33b640fd97b93ed29f
+  stage_d_v3_remote_source_list_exact_match: true
+  stage_d_v3_status_confirmed_at_utc: "2026-08-05 09:22:07 UTC"
+  stage_d_kaggle_v3_final_status: KernelWorkerStatus.COMPLETE
+  stage_d_kaggle_v3_status_checked_at_utc: "2026-08-05 09:39:09 UTC"
+  stage_d_v3_output_downloaded: true
+  stage_d_v3_submit_check_status: PASS
+  stage_d_kaggle_v4_final_status: KernelWorkerStatus.COMPLETE
+  stage_d_kaggle_v4_status_checked_at_utc: "2026-08-05 11:57:21 UTC"
+  stage_d_v4_output_downloaded: true
+  stage_d_v4_submit_check_status: PASS
+  contract_test: test_exp514_contract.py
+  kaggle_package_created: true
+  kaggle_package_kind: stage_a_fixed32
+  kaggle_kernel_id: kentookumura/exp514-shared-likpf-fixed32-stage-a
+  kaggle_kernel_title: exp514 shared likpf fixed32 stage a
+  initial_rejected_kernel_id: kentookumura/exp514-exp413-likpf-seed-bank-reuse-on-exp512-stage-a-fixed32
+  initial_push_error: savekernel_400_no_remote_kernel_created_probable_slug_length_limit
+  kaggle_package_notebook_sha256: 87c97b4a7c606323e8bc1578c29d9f3960b5df8586f50bee0b3ce737c0267436
+  kaggle_metadata_sha256: 8622bf4fd361f867813958cdf4d8bc7733d1658e503f8cdd8ad87e58207afe3f
+  kaggle_run_started: true
+  kaggle_kernel_version: 1
+  kaggle_kernel_id_no: 129757357
+  kaggle_pushed_at_utc: "2026-08-05 05:34:38 UTC"
+  kaggle_remote_cell_source_sha256: 1cd49e0e91b88a75c4a2ae2bdceca2b5d253979c1eaf639ab1d897e703c9a886
+  output_downloaded: true
+  submission_file_created: false
+  external_submission_performed: false
+  parent_source:
+    path: ../exp512_hjyact_v2_final_10pct_hedge_on_exp413/exp512_hjyact_v2_final_10pct_hedge_on_exp413_compact_selfcontained_inference.py
+    sha256_at_design: 16982879716918811dfa9915c4862d45836bd9360efafbaee41046c3e1b6240f
+  parent_config:
+    path: ../exp512_hjyact_v2_final_10pct_hedge_on_exp413/config.yaml
+    sha256_at_design: 951a665b209880267cd0a8d603006f1ffcd9270fdd4e00348a66b212195e8d15
+  replay_source:
+    path: ../exp073_gpu_reproducibility_guard_for_exp063_full_replay/public_notebook_replay_audit.py
+    sha256_at_design: 4af212a8a1c83e36cdcc0bc912942a62df1fbc94ca67fd75789171afaa1a647e
+  exp413_config:
+    path: ../exp413_scale5_likpf_full_replacement_on_exp335/config.yaml
+    sha256_at_design: d12e6d74a7f567f0873d5513883b3a7d36d0cd5be5231037e7db12f1a74036a7
+
+notebook_contract:
+  candidate_source: exp514_exp413_likpf_seed_bank_reuse_on_exp512_compact_selfcontained_inference.py
+  stage_a_source: exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_a_fixed32.py
+  stage_a_role: target_free_fixed32_technical_determinism_audit_only
+  stage_b_source: exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_b_fixed32.py
+  stage_b_role: fixed32_paired_scientific_screening_only
+  stage_d_source: exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_d_visible.py
+  stage_d_role: submission_ready_visible_test_and_stagewise_runtime_estimate
+  canonical_train_notebook: exp514_exp413_likpf_seed_bank_reuse_on_exp512_train.ipynb
+  canonical_inference_notebook: exp514_exp413_likpf_seed_bank_reuse_on_exp512_inference.ipynb
+  train_notebook_role: template_scaffold_only_not_executable
+  inference_notebook_role: template_scaffold_only_not_executable
+  implementation_source_format: jupytext_percent_compact_selfcontained
+  canonical_notebook_adoption_requires_separate_approval: true
+
+shared_likelihood_pf:
+  producer_id: exp413_x1p0_stable_seed_bank
+  source_family: exp073_exp413_likelihood_pf
+  generation_count_per_eligible_well: 1
+  particles: 500
+  seeds: 128
+  seed_namespace: "SHA256(likpf::<split>::<well>)"
+  seed_index_policy: stable_seed_base_plus_0_to_127
+  gr_scale_estimator: known_prefix_zero_fill_population_std
+  gr_scale_clip: [10.0, 60.0]
+  gr_scale_multiplier: 1.0
+  typewell_grid_step_ft: 0.2
+  initial_position_spread_ft: 4.5
+  momentum: 0.998
+  rate_noise: 0.002
+  position_noise: 0.005
+  rough_position: 0.1
+  rough_rate: 0.001
+  resample_threshold_fraction: 0.5
+  missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+  aggregation_scales: [3.0, 5.0, 8.0, 12.0]
+  branch_weighting_scale: 5.0
+  kernel_dtype: float64
+  consumer_dtype: float32
+  raw_seed_bank_lifetime: per_well_release_after_aggregate_and_branch_summary
+  global_raw_seed_bank_cache_allowed: false
+
+consumer_contract:
+  sp45:
+    inputs:
+      - pf_scale_3
+      - pf_scale_5
+      - pf_scale_8
+      - pf_scale_12
+      - pf_mean
+      - seed_branch_summary
+    full_length_prefix_source: raw_tvt_input_known_rows
+    suffix_source: shared_exp413_seed_bank_aggregates
+    selector_formula_changed: false
+    beam_changed: false
+    hold_changed: false
+    branch_hedge_formula_changed: false
+    producer_semantics_changed_from_legacy: true
+  exp413:
+    inputs:
+      - likpf_scale_5
+      - likpf_scale_5_d
+      - likpf_mean_semantic_alias
+    required_parent_scale5_content_parity: exact
+    allow_other_scales_in_model_schema: false
+    allow_second_likelihood_pf_generation: false
+  explicitly_not_shared:
+    - learned_likelihood_pf_gs_x1p3_seed0
+    - gold_masked_prefix_particle_filter
+    - pf_ancc
+    - pf_z
+    - sp45_fourteen_beam_ensemble
+    - exp413_beam_and_hmm_and_k16
+
+legacy_sp45_semantic_delta:
+  exact_replacement: false
+  rng:
+    control: numpy_default_rng_pcg64
+    candidate: numba_seeded_rng
+  seed_policy:
+    control: common_seed_0_to_127_for_every_well
+    candidate: stable_sha256_per_split_well_plus_seed_index
+  first_md_step:
+    control: actual_first_eval_md_minus_last_known_md_lower_bounded_at_1
+    candidate: exp413_kernel_first_eval_step_fixed_to_1
+  typewell_lookup:
+    control: direct_numpy_interp_on_raw_sorted_typewell
+    candidate: uniform_0p2ft_grid_interp
+  scientific_validation_required: true
+
+visible_hidden_policy:
+  shared_producer_may_read_train_well_membership: false
+  shared_producer_may_read_train_suffix_tvt: false
+  shared_producer_may_branch_on_visible_well_id: false
+  shared_producer_may_branch_on_public_fixed_cardinality: false
+  parent_visible_physical_override_changed: false
+  parent_visible_physical_override_allowed_as_positive_gate_evidence: false
+  scientific_gate_source: stage_a_target_free_fixed32_train_like_suffix_replay
+  runtime_gate_source: stage_d_visible_test_stagewise_extrapolation
+
+validation:
+  metric: rmse
+  seed: 42
+  group_column: well_id
+  n_reporting_folds: 5
+  score_rows: unknown_suffix_rows
+  truth_read_policy: after_control_and_candidate_prediction_content_freeze
+  fixed_well_selection:
+    allowed_features:
+      - evaluation_row_count
+      - raw_gr_missing_fraction
+      - evaluation_z_span
+      - stable_sha256_rank
+    forbidden_features:
+      - suffix_tvt
+      - error
+      - abs_error
+      - candidate_gain
+      - visible_well_id
+  stage_a_fixed32:
+    wells: 32
+    truth_read: false
+    thread_counts: [1, 4]
+    reruns: 2
+    require_exp413_scale5_content_parity: exact
+    require_all_scale_finite_coverage: 1.0
+    require_full_length_known_prefix_parity: exact
+    require_generation_count_per_well: 1
+    require_second_generation_count: 0
+    require_thread_schedule_content_parity: exact
+    require_rerun_content_parity: exact
+  stage_b_fixed32:
+    wells: 32
+    evidence_role: small_screening_not_200well_generalization_proof
+    well_set_source: reuse_stage_a_fixed32_selection_exact
+    well_selection_sha256: 86157959105b896271f53c841b27f5f7246db6c4f199773b0151ed75d36ae58b
+    allow_well_reselection: false
+    truth_read: after_control_and_candidate_prediction_content_freeze
+    control: legacy_sp45_seed_bank_selector_and_branch_hedge
+    candidate: shared_exp413_seed_bank_sp45_selector_and_branch_hedge
+    primary: branch_hedge_applied_sp45_selector_rmse
+    pooled_max_regression_ft: 0.02
+    fold_max_regression_ft_for_nonworse: 0.02
+    required_nonworse_folds: 4
+    require_all_reporting_folds_nonempty: true
+    fixed_scope_max_regression_ft: 0.05
+    fixed_scopes:
+      - raw_gr_observed
+      - raw_gr_missing
+      - high_missing_fraction
+      - suffix_1000_plus
+      - hidden_like_spatial
+      - hidden_like_typewell_purged
+    by_well_delta_p95_max_ft: 0.25
+    worst_well_delta_max_ft: 5.0
+    require_all_fixed_scopes_nonempty: true
+    all_and_gate: true
+
+model:
+  name: frozen_exp512_models_with_shared_exp413_likelihood_pf_bank
+  training_enabled: false
+  saved_parent_models_reused: true
+  new_model_configs: 0
+  new_boosters: 0
+
+runtime:
+  primary_execution: kaggle_notebook
+  enable_internet: false
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    machine_shape: NvidiaTeslaT4
+    bootstrap_dependency_files:
+      - source: experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    stage_a_fixed32:
+      enable_gpu: true
+      machine_shape: NvidiaTeslaT4
+    stage_b_fixed32:
+      enable_gpu: true
+      machine_shape: NvidiaTeslaT4
+      include_experiment_sources: false
+      bootstrap_files:
+        - exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_b_fixed32.py
+    stage_d_visible:
+      enable_gpu: true
+      machine_shape: NvidiaTeslaT4
+      include_experiment_sources: false
+      bootstrap_dependency_files:
+        - source: src/__init__.py
+          destination: src/__init__.py
+        - source: src/candidate_selector_pipeline.py
+          destination: src/candidate_selector_pipeline.py
+        - source: src/signed_residual_meta.py
+          destination: src/signed_residual_meta.py
+        - source: experiments/exp413_scale5_likpf_full_replacement_on_exp335/settings.py
+          destination: exp413_runtime/settings.py
+        - source: experiments/exp413_scale5_likpf_full_replacement_on_exp335/config.yaml
+          destination: exp413_runtime/config.yaml
+        - source: experiments/exp264_exp263_candidate_confidence_dual_selector/config.yaml
+          destination: exp413_runtime/inputs/parent_exp264_config.yaml
+        - source: experiments/exp335_signed_residual_meta_on_exp264/config.yaml
+          destination: exp413_runtime/inputs/parent_exp335_config.yaml
+        - source: experiments/exp264_exp263_candidate_confidence_dual_selector/candidate_contract.yaml
+          destination: exp413_runtime/inputs/exp264_candidate_contract.yaml
+        - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_a_v4/artifacts/feature_catalog.csv
+          destination: exp413_runtime/inputs/exp264_stage_a_feature_catalog.csv
+        - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_a_v4/artifacts/feature_schema.json
+          destination: exp413_runtime/inputs/exp264_stage_a_feature_schema.json
+        - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+          destination: exp413_runtime/inputs/exp218_clean_273_allowlist.csv
+        - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_feature_availability.csv
+          destination: exp413_runtime/inputs/exp218_feature_availability.csv
+        - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+          destination: exp413_runtime/inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+        - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+          destination: exp413_runtime/inputs/exp218_source/config.yaml
+        - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/settings.py
+          destination: exp413_runtime/inputs/exp218_source/settings.py
+        - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/learned_likelihood_rawtest_feature_generator_parity.py
+          destination: exp413_runtime/inputs/exp145_source/learned_likelihood_rawtest_feature_generator_parity.py
+        - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/pf_multi_observation_likelihood_probe.py
+          destination: exp413_runtime/inputs/exp145_source/pf_multi_observation_likelihood_probe.py
+        - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/config.yaml
+          destination: exp413_runtime/inputs/exp145_source/config.yaml
+        - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/settings.py
+          destination: exp413_runtime/inputs/exp145_source/settings.py
+        - source: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+          destination: exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+        - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_builder.py
+          destination: exp413_runtime/inputs/exp263_source/candidate_cache_builder.py
+        - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_contract.py
+          destination: exp413_runtime/inputs/exp263_source/candidate_cache_contract.py
+        - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_loader.py
+          destination: exp413_runtime/inputs/exp263_source/candidate_cache_loader.py
+        - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/config.yaml
+          destination: exp413_runtime/inputs/exp263_source/config.yaml
+        - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+          destination: exp413_runtime/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    stage_d_visible_dataset_sources:
+      - phongnguyn23021656/koolbox-offline
+      - nina2025/rogii-03
+      - thbdh5765/rogii-v10-fresh-artifacts
+      - fleongg/rogii-claude-models-pub
+      - needless090/rogii-tabicl-mirror
+      - ravaghi/wellbore-geology-prediction-artifacts
+    stage_d_visible_kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp073-full-replay-repro-guard-infer
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp226-k16-kappa-repro-inference
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp413-scale5-likpf-replacement-preflight
+      - kentookumura/exp413-scale5-likpf-selector-train
+      - kentookumura/exp413-scale5-likpf-signed-train
+      - kentookumura/exp413-scale5-likpf-downstream-train
+
+runtime_guard:
+  status: stage_d_v4_estimated_pass_not_hidden_runtime_guarantee
+  hard_limit_seconds: 32400
+  target_hidden_wells: 200
+  device: kaggle_gpu_runtime_with_cpu_pf_stages
+  enable_internet: false
+  source: stage_d_visible_test_stagewise_runtime
+  stage_c_required: false
+  stage_c_implemented: false
+  stage_c_execution_allowed: false
+  stage_c_resolution_source: user_request_2026_08_05_use_stage_d_visible_runtime_estimate
+  estimate_only: true
+  hidden_runtime_observed: false
+  visible_runtime_estimation:
+    require_stage_timings: true
+    require_visible_well_count: true
+    require_visible_row_count: true
+    parallel_worker_reference: 4
+    parallel_lower_formula: stage_seconds_times_200_div_4
+    parallel_upper_formula: stage_seconds_times_200_div_visible_wells
+    sequential_formula: stage_seconds_times_200_div_visible_wells
+    fixed_overhead_policy: add_once
+    estimated_upper_seconds_max: 32400
+  estimate_pass_label: estimated_pass_not_hidden_runtime_guarantee
+  estimate_fail_label: estimated_fail
+  require_legacy_sp45_bank_runs: 0
+  require_exp413_second_bank_runs: 0
+  record_per_stage: true
+  record_rows: true
+  record_peak_rss: true
+  uncertainty: high_visible_3well_workload_may_not_match_hidden
+  current_parent_200well_estimate_hours: [11.5, 15.0]
+  arithmetic_estimate_after_duplicate_sp45_removal_hours: [7.3, 9.4]
+  visible_three_well_total_runtime_is_submission_evidence: false
+  visible_three_well_stage_runtime_is_estimation_input: true
+  stage_d_v2_estimate_hours: [8.06815, 9.528814]
+  stage_d_v2_nine_hour_gate_passed: false
+  stage_d_v3_exact_v2_output_witness_required: true
+  stage_d_v3_gold_parallel_processes: 4
+  stage_d_v3_hjyact_deterministic_feature_reuse: true
+  stage_d_v3_estimate_hours: [6.174531, 7.957332]
+  stage_d_v3_nine_hour_gate_passed: true
+  stage_d_v4_estimate_hours: [6.289658, 8.057147]
+  stage_d_v4_nine_hour_gate_passed: true
+
+stage_a_result:
+  status: PASS
+  completed_at_utc: "2026-08-05 06:16:54 UTC"
+  kernel_id: kentookumura/exp514-shared-likpf-fixed32-stage-a
+  kernel_version: 1
+  kernel_id_no: 129757357
+  machine_shape: NvidiaTeslaT4
+  report_path: kaggle/output/stage_a_v1/exp514_stage_a_fixed32_report.json
+  report_sha256: 87387d9aae6179e81220e17989d62a9875df6a58842f450275890d4ba17b8612
+  metrics_path: kaggle/output/stage_a_v1/metrics.json
+  metrics_sha256: 87387d9aae6179e81220e17989d62a9875df6a58842f450275890d4ba17b8612
+  log_path: kaggle/output/stage_a_v1/exp514-shared-likpf-fixed32-stage-a.log
+  log_sha256: 49283a64e33fdf6b647c7ae8f89541a0e3dbfca05ee35907c4f03819647efba9
+  report_metrics_byte_identical: true
+  elapsed_seconds: 2363.410299
+  log_report_time_seconds: 2378.627550507
+  jit_warmup_seconds: 3.014709
+  wells: 32
+  selection_sha256: 86157959105b896271f53c841b27f5f7246db6c4f199773b0151ed75d36ae58b
+  particles: 500
+  seeds: 128
+  thread_counts: [1, 4]
+  reruns_per_thread_count: 2
+  well_bank_generations: 128
+  run_elapsed_seconds:
+    thread1_rerun0: 892.045002
+    thread1_rerun1: 885.80742
+    thread4_rerun0: 282.50916
+    thread4_rerun1: 290.578054
+  aggregate_content_sha256: 68c5dc68cc1d883683914a45b322fbb74aaf0c4b28fb175af830943524c8e74a
+  branch_summary_sha256: 904a3e00e19eaa8747df0b7d0cfcedf108d629287c77046c22ae952bee6d0285
+  generation_ledger_sha256: 5a3a81f83bc5356b217369e37eb2a8b0a6f436533c00659e3414f2b2b6a42942
+  thread_schedule_content_parity: exact
+  rerun_content_parity: exact
+  exp413_scale5_contract: source_identical_exp073_x1p0_stable_seed
+  truth_read: false
+  all_and_gate_passed: false
+  stage_a_all_and_gate_passed: true
+  stage_b_all_and_gate_passed: false
+  new_booster_training_count: 0
+  parent_control_retraining_count: 0
+  submission_file_generated: false
+  external_submission_performed: false
+  deterministic_anchor: false
+  stage_b_c_authorized: false
+
+stage_b_result:
+  status: FAIL
+  latest_attempt_status: version_2_complete_scientific_fail
+  version_1_status: ERROR
+  scientific_gate_evaluated: true
+  kernel_id: kentookumura/exp514-shared-likpf-fixed32-stage-b
+  kernel_version: 2
+  kernel_id_no: 129762632
+  version_1_error_log_seconds: 5083.549175
+  version_1_prediction_freeze_log_seconds: 5081.673128
+  prediction_rows: 129906
+  prediction_columns: 16
+  prediction_content_sha256: 62c78373c15c36d6367ac27330fc05a1a3b0d6f3f94cef5bfdc569627ed8a280
+  predictions_frozen_before_truth: true
+  version_1_failure_stage: pre_branch_metric_scoring_after_truth_join
+  version_1_failure_type: duplicate_metric_column_names_after_rename
+  version_1_failure_message: operands_could_not_be_broadcast_together_shapes_129906x2_and_129906
+  version_1_root_cause: >-
+    metric_bundle renamed control_before_branch_tvt and candidate_before_branch_tvt
+    onto existing control_tvt and candidate_tvt columns, so pandas returned two-column
+    arrays instead of one-dimensional vectors.
+  version_1_output_file_listing_empty: true
+  rerun_performed: true
+  version_2_status_confirmed_at_utc: "2026-08-05 08:31:05 UTC"
+  version_2_remote_cell_source_sha256: c27f317387b7f84c6f808f1f7957fad93b1343ad88f5c7fb3124c45d27ce86a6
+  stage_b_source_modified_after_failure: true
+  repair_scope: metric_bundle_duplicate_column_prevention_only
+  scientific_configuration_changed: false
+  repair_generator_sha256: adf0116569446945ebb06c5d69a5e2a6b2db3ec257878bffa8a142cd72214eb7
+  repaired_source_sha256: a510d17b782fd996fbfb9ab74e66e7db39baa9030976f516c76db107558e0748
+  version_2_final_status: KernelWorkerStatus.COMPLETE
+  version_2_status_confirmed_at_utc: "2026-08-05 09:59:04 UTC"
+  version_2_runtime_seconds: 4845.475189
+  version_2_prediction_freeze_seconds: 4840.710569
+  version_2_prediction_matches_v1: true
+  pooled_control_rmse: 9.010759361209029
+  pooled_candidate_rmse: 9.06043985867224
+  pooled_delta_candidate_minus_control: 0.04968049746321057
+  fold_deltas: [-0.09270015680509047, 0.26795575974406916, 0.08185569155194461, 0.06279004757806028, -0.03217336850201313]
+  nonworse_folds: 2
+  required_nonworse_folds: 4
+  raw_gr_observed_delta: 0.060618254243156144
+  hidden_like_delta: -0.11766492035793252
+  by_well_delta_p95: 0.6478714419495725
+  worst_well_delta: 1.1921635464453395
+  all_and_gate_passed: false
+  terminal_decision: reject_without_rescue_or_submission
+  report_path: kaggle/output/stage_b_v2/exp514_stage_b_fixed32_report.json
+  report_sha256: 906fcdaf8bb3ce6f39e8bfdf6cb2be7496b541d9ebeec6b5da36482aab277ba0
+  log_path: kaggle/output/stage_b_v2/exp514-shared-likpf-fixed32-stage-b.log
+  log_sha256: 005f6bb448d3296528ca6d6a72567e5f69652a4e6cb1091fd5d881b2a948f742
+
+stage_d_result:
+  status: COMPLETE_ESTIMATED_PASS_NOT_HIDDEN_RUNTIME_GUARANTEE
+  latest_attempt_status: version_4_complete_technical_pass
+  version_1_status: ERROR
+  scientific_gate_evaluated: true
+  runtime_estimate_generated: true
+  kernel_id: kentookumura/exp514-shared-likpf-stage-d-visible
+  kernel_version: 4
+  kernel_id_no: 129770672
+  error_log_seconds: 783.969224
+  partial_submission_audit_log_seconds: 780.038029
+  visible_wells_processed: 3
+  partial_hjyact_rows: 14151
+  partial_hjyact_id_order_matches_sample: true
+  partial_hjyact_finite: true
+  partial_hjyact_submission_sha256: 6b3e1c576afc47f065bdcce12a09f4361a6bb97c63667630f4f5ab1e64fa37b3
+  expected_parent_visible_submission_sha256: b192d3f348ae00680dc4df942b95cef5fd708c636a741f77dfb6b6e89b9ded4a
+  failure_stage: inherited_visible_hjyact_parent_parity_guard_before_exp413_component
+  failure_type: stale_exact_parent_output_guard_in_scientifically_changed_candidate
+  root_cause: >-
+    exp514 intentionally replaces the legacy SP45 likelihood-PF bank, but the
+    inherited exp512 visible-only guard still requires the HJYACT component to
+    be byte-identical to the parent visible submission.
+  shared_likelihood_pf_seconds: 49.020107
+  sp45_after_shared_pf_seconds: 1.259
+  learned_hjyact_partial_runtime_seconds_rounded: 84
+  gold_visible_prefix_seconds: 140.638069
+  exp413_component_executed: false
+  final_50_50_submission_generated: false
+  output_file_listing_empty: true
+  external_submission_performed: false
+  interpretation: execution_readiness_error_not_nine_hour_runtime_failure
+  repair_implemented: true
+  repair_scope: replace_parent_exact_sha_guard_with_exp514_candidate_v1_witness
+  scientific_configuration_changed: false
+  candidate_visible_hjyact_witness_sha256: 6b3e1c576afc47f065bdcce12a09f4361a6bb97c63667630f4f5ab1e64fa37b3
+  rerun_performed: true
+  version_2_remote_cell_source_sha256: 88dc33192b86d0e6351db82547f448974712f55b1aeb528b8bcdb98d43347a9b
+  version_2_status_confirmed_at_utc: "2026-08-05 08:45:43 UTC"
+  version_2_completed_at_utc: "2026-08-05 09:15:23 UTC"
+  version_2_final_status: KernelWorkerStatus.COMPLETE
+  version_2_visible_wells: 3
+  version_2_visible_rows: 14151
+  version_2_total_seconds_including_bootstrap: 929.92979
+  version_2_fixed_overhead_seconds: 421.699344
+  version_2_peak_parent_process_rss_mib: 25124.188
+  version_2_stage_seconds:
+    shared_exp413_likelihood_pf: 39.7344
+    sp45_beam_selector_after_shared_pf: 1.085
+    hjyact_learned_trajectory_total: 69.61094951629639
+    gold_visible_prefix_sequential: 123.11609673500061
+    exp413_full_after_shared_pf: 274.684
+  version_2_runtime_estimate:
+    status: estimated_fail
+    lower_seconds: 29045.339094
+    upper_seconds: 34303.729094
+    lower_hours: 8.06815
+    upper_hours: 9.528814
+    hidden_runtime_observed: false
+    uncertainty: high_visible_workload_may_not_match_hidden
+  version_2_content_sha256:
+    gold_balanced: 2b86386f19279e79e7184096f353ccf2b97785de67b268caa56aa5f85405a815
+    hjyact_component: 6b3e1c576afc47f065bdcce12a09f4361a6bb97c63667630f4f5ab1e64fa37b3
+    exp413_component: 04e6da90cee4325fb01bf7ce49bd87b91b16cf675cfb9d4cdaec77904aee5908
+    component_readout: c3a9b217568fdd8d09eea337e9d1d5addb9f6c6b26b138d7865caee1ffe7e1fd
+    final_submission: 9974c3face9004ffb39ead3c6d8955dff5d540559c48cd45bc3fbaebf2e192ad
+  version_3_runtime_only_changes:
+    gold_well_parallel_backend: multiprocessing
+    gold_max_processes: 4
+    gold_child_thread_limit: 1
+    gold_merge_order: fixed_input_well_order
+    hjyact_reuse_sp45_deterministic_features: true
+    hjyact_regenerate_stochastic_features_only: true
+    exact_v2_output_witness_required: true
+  version_3_run_started: true
+  version_3_pushed_at_utc: "2026-08-05 09:22:07 UTC"
+  version_3_status_at_push: KernelWorkerStatus.RUNNING
+  version_3_remote_source_list_sha256: 52b00894ce151dd9bd99eae70f6d9d2c3cbc5ace03b77d33b640fd97b93ed29f
+  version_3_remote_source_list_exact_match: true
+  version_3_final_status: KernelWorkerStatus.COMPLETE
+  version_3_completed_at_utc: "2026-08-05 09:39:09 UTC"
+  version_3_visible_wells: 3
+  version_3_visible_rows: 14151
+  version_3_total_seconds_including_bootstrap: 839.696591
+  version_3_fixed_overhead_seconds: 416.244323
+  version_3_peak_parent_process_rss_mib: 25124.602
+  version_3_stage_seconds:
+    shared_exp413_likelihood_pf: 42.590919
+    sp45_beam_selector_after_shared_pf: 1.072
+    hjyact_learned_trajectory_total: 38.36723184585571
+    gold_visible_prefix_parallel_3_process: 77.08011674880981
+    exp413_full_after_shared_pf: 264.342
+  version_3_runtime_estimate:
+    status: estimated_pass_not_hidden_runtime_guarantee
+    lower_seconds: 22228.311567
+    upper_seconds: 28646.395496
+    lower_hours: 6.174531
+    upper_hours: 7.957332
+    hidden_runtime_observed: false
+    uncertainty: high_visible_workload_may_not_match_hidden
+  version_3_runtime_improvement:
+    visible_total_seconds_saved_vs_v2: 90.233199
+    visible_total_speedup_percent: 9.703
+    gold_seconds_saved_vs_v2: 46.03598
+    gold_speedup_percent: 37.392
+    hjyact_seconds_saved_vs_v2: 31.243718
+    hjyact_speedup_percent: 44.883
+    upper_estimate_hours_saved_vs_v2: 1.571482
+  version_3_gold_parallel:
+    backend: multiprocessing
+    requested_processes: 4
+    effective_processes: 3
+    inner_blas_threads: 1
+    inner_kdtree_workers: 1
+    result_merge_order: input_well_order
+    worker_elapsed_seconds: [51.695108, 75.871324, 62.037029]
+  version_3_hjyact_deterministic_reuse:
+    rows: 14151
+    wells: 3
+    reused_column_count: 176
+    deterministic_generation_count: 1
+    hjyact_full_build_features_calls: 0
+    imputer_instance_reused: true
+    pf_refresh_seconds: 1.844313
+  version_3_output_equivalence:
+    status: PASS
+    exact_targets: 5
+    all_exact: true
+    gold_balanced_sha256: 2b86386f19279e79e7184096f353ccf2b97785de67b268caa56aa5f85405a815
+    hjyact_component_sha256: 6b3e1c576afc47f065bdcce12a09f4361a6bb97c63667630f4f5ab1e64fa37b3
+    exp413_component_sha256: 04e6da90cee4325fb01bf7ce49bd87b91b16cf675cfb9d4cdaec77904aee5908
+    component_readout_sha256: c3a9b217568fdd8d09eea337e9d1d5addb9f6c6b26b138d7865caee1ffe7e1fd
+    final_submission_sha256: 9974c3face9004ffb39ead3c6d8955dff5d540559c48cd45bc3fbaebf2e192ad
+  version_3_artifact_sha256:
+    runtime_report: 97c3cf6bf2cc00e96eacff093ec3d25c302222ef43c069bcc6ad549e532ab738
+    output_equivalence: 7f86f764519dbf83af3f3cdc741310ba1b70a85ab24b6879dfe590f2caee08ef
+    gold_audit: f4754c87da5a885bbe4a70f028383a94c56881547956e0144f83a7bb5df35760
+    metrics: 533a43cfc58321773f532704036ed4cbe44e657a1e8f971987269c1d66ab2314
+    log: ee460088fbf5d2e2591ef34a6078834f95ff793ba3840286d0e80a933eb21dee
+  version_3_submission_check:
+    status: PASS
+    rows: 14151
+    columns: [id, tvt]
+    sample_header_match: true
+    sample_row_count_match: true
+    sample_id_order_exact: true
+    duplicate_ids: 0
+    finite_target: true
+    external_submission_performed: false
+  version_4_oom_repair:
+    status: COMPLETE_ESTIMATED_PASS_TECHNICAL_ONLY
+    source_sha256: ff668d88e0e2f9a8775943f2b54793049178d82af86a7e5c763eae35bfac542d
+    notebook_sha256: 15d4ebebecb615caed353f62a51a99089ab33b291ff145d33858033cae191316
+    ridge_train_intermediates_released_before_shared_pf: true
+    shared_pf_sp45_execution: four_thread_well_streaming
+    max_concurrent_full_shared_pf_payload_wells: 4
+    all_well_full_payload_retained: false
+    retained_until_exp413: [id, likpf_scale_5, likpf_mean]
+    dataframe_ownership_transfer: [sp45_to_hjyact, hjyact_to_exp413]
+    hidden_visible_sha_policy: skip_visible_v2_witness_on_hidden_dynamic_ids
+    scientific_configuration_changed: false
+    visible_output_equivalence_not_yet_executed: false
+    kaggle_package_created: true
+    kaggle_run_started: true
+    final_status: KernelWorkerStatus.COMPLETE
+    completed_status_checked_at_utc: "2026-08-05 11:57:21 UTC"
+    output_dir: kaggle/output/stage_d_v4
+    runtime_report_path: kaggle/output/stage_d_v4/exp514_stage_d_visible_runtime_report.json
+    submission_path: kaggle/output/stage_d_v4/submission.csv
+    log_path: kaggle/output/stage_d_v4/exp514-shared-likpf-stage-d-visible.log
+    visible_wells: 3
+    visible_rows: 14151
+    total_seconds_including_bootstrap: 879.386897
+    fixed_overhead_seconds: 451.066974
+    peak_parent_process_rss_mib: 25123.293
+    peak_rss_scope: parent_process_only_excludes_child_subprocess_peak
+    stage_seconds:
+      shared_likpf_sp45_streaming_pipeline: 40.892078
+      exp413_full_after_shared_pf: 266.454
+      gold_visible_prefix_parallel_3_process: 74.4315094947815
+      hjyact_learned_trajectory_total: 46.542335987091064
+    runtime_estimate:
+      status: estimated_pass_not_hidden_runtime_guarantee
+      lower_seconds: 22642.768748
+      upper_seconds: 29005.728539
+      lower_hours: 6.289658
+      upper_hours: 8.057147
+      hidden_runtime_observed: false
+      uncertainty: high_visible_workload_may_not_match_hidden
+    memory_release:
+      ridge_rss_before_mib: 12979.20703125
+      ridge_rss_after_mib: 791.66796875
+      pre_exp413_rss_before_mib: 953.89453125
+      pre_exp413_rss_after_mib: 865.62109375
+      shared_bank_rss_before_mib: 1359.234375
+      shared_bank_rss_after_mib: 1037.67578125
+      malloc_trim_called_all_three: true
+    shared_pf_streaming:
+      requested_threads: 4
+      effective_threads: 3
+      all_well_full_payload_retained: false
+      visible_max_concurrent_full_payload_wells: 3
+      hidden_configured_max_concurrent_full_payload_wells: 4
+      raw_seed_bank_retained: false
+      retained_for_exp413: [id, likpf_scale_5, likpf_mean]
+    output_equivalence:
+      status: PASS
+      exact_targets: 5
+      all_exact: true
+      final_submission_sha256: 9974c3face9004ffb39ead3c6d8955dff5d540559c48cd45bc3fbaebf2e192ad
+    artifact_sha256:
+      runtime_report: 76b548f1ee97dd6c917a5893f2cb23e56bd15574df0958ecac9bcf3c05925c5f
+      output_equivalence: 7f86f764519dbf83af3f3cdc741310ba1b70a85ab24b6879dfe590f2caee08ef
+      metrics: 16157b80b45aca78e21f503614cbe92b2b84a05132ea59cb4b04f994d6f1a424
+      shared_likpf_manifest: e543142d03a5a8d7ff43ad0bf6d3a8b20522db6622b993d8846e858faf192763
+      reproducibility_manifest: d57925fec5b6f9c7b035f8a4281acedff742108dc26dd80f296a99b698e93810
+      model_manifest: 914eee45523240fb178aebcfd0835d13246e5201d69a3ae46717213ec1b25daf
+      log: ff67f620a43fe2160248c4d51ea3245ad700d8887e6c48eaebe89e4f0015a606
+    submission_check:
+      status: PASS
+      rows: 14151
+      columns: [id, tvt]
+      sample_header_match: true
+      sample_row_count_match: true
+      sample_id_order_exact: true
+      duplicate_ids: 0
+      finite_target: true
+      external_submission_performed: false
+    competition_resubmission_performed: false
+
+stage_d_v1_partial_runtime_estimate:
+  status: estimated_fail
+  formal_stage_d_report_generated: false
+  evidence_role: provisional_partial_v1_plus_parent_exp413_proxy
+  visible_wells: 3
+  target_wells: 200
+  partial_total_seconds: 780.038029
+  fixed_overhead_seconds_estimate: 505.120853
+  measured_stage_seconds:
+    shared_exp413_likelihood_pf: 49.020107
+    sp45_beam_selector_after_shared_pf: 1.259
+    hjyact_learned_trajectory_total_rounded: 84.0
+    gold_visible_prefix: 140.638069
+  missing_exp413_parent_proxy_seconds: 297.388
+  missing_exp413_proxy_after_shared_pf_credit_seconds: 248.367893
+  estimate_with_shared_pf_credit:
+    lower_seconds: 30413.342114
+    upper_seconds: 35390.792114
+    lower_hours: 8.448151
+    upper_hours: 9.830776
+  conservative_without_shared_pf_credit:
+    lower_seconds: 32864.347464
+    upper_seconds: 38658.799247
+    lower_hours: 9.128985
+    upper_hours: 10.738555
+  upper_limit_seconds: 32400
+  nine_hour_gate_passed: false
+  uncertainty: high_exp413_stage_not_executed_in_v1
+
+execution_count:
+  active_scientific_variants: 1
+  lightgbm_configs: 0
+  trained_folds: 0
+  new_boosters: 0
+  parent_control_retraining: 0
+  inference_time_booster_training: 0
+  shared_likelihood_pf_banks_per_well: 1
+  legacy_sp45_likelihood_pf_banks_per_well: 0
+  exp413_duplicate_likelihood_pf_banks_per_well: 0
+
+stage_b_execution_plan:
+  execution_approved: true
+  wells: 32
+  active_scientific_variants: 2
+  variants:
+    - legacy_sp45_control
+    - shared_exp413_bank_candidate
+  legacy_sp45_well_bank_generations: 32
+  shared_candidate_well_bank_generations: 32
+  total_well_bank_generations: 64
+  particles_per_bank: 500
+  seeds_per_bank: 128
+  lightgbm_configs: 0
+  trained_folds: 0
+  new_boosters: 0
+  parent_control_retraining: 0
+  inference_time_booster_training: 0
+  competition_submission: false
+
+stage_d_execution_plan:
+  execution_approved: true
+  version_3_rerun_approved: true
+  evidence_role: submission_ready_visible_test_and_runtime_estimate
+  active_scientific_variants: 1
+  lightgbm_training_configs: 0
+  trained_folds: 0
+  new_boosters: 0
+  parent_control_retraining: 0
+  runtime_ridge_configs: 1
+  runtime_ridge_fits: 5
+  saved_model_files: 83
+  contained_estimators: 103
+  shared_likelihood_pf_banks_per_dynamic_well: 1
+  legacy_sp45_likelihood_pf_banks_per_dynamic_well: 0
+  exp413_duplicate_likelihood_pf_banks_per_dynamic_well: 0
+  gold_parallel_backend: multiprocessing
+  gold_max_processes: 4
+  gold_child_thread_limit: 1
+  hjyact_reuses_sp45_deterministic_test_features: true
+  exact_stage_d_v2_content_sha_targets: 5
+  competition_submission: false
+
+guards:
+  technical:
+    require_source_sha: true
+    require_dynamic_sample_id_set: true
+    require_unique_ids: true
+    require_finite_coverage: 1.0
+    require_exp413_scale5_exact_content_parity: true
+    require_generation_ledger: true
+    require_fallback_rows: 0
+    require_fallback_wells: 0
+    require_raw_seed_bank_release: true
+    require_feature_content_sha: true
+    require_prediction_sha: true
+    require_submission_sha: true
+  forbidden:
+    - visible_or_train_overlap_conditioned_pf_input
+    - static_visible_prediction_sidecar
+    - fixed_14151_row_or_3_well_branch
+    - seed_temperature_scale_particle_or_transition_grid
+    - selector_beam_hold_or_branch_threshold_change
+    - learned_or_gold_pf_sharing
+    - pf_ancc_or_pf_z_replacement
+    - exp413_model_schema_expansion
+    - parent_or_control_retraining
+    - model_package_reenable
+    - blend_weight_or_profile_change
+    - same_stage_b_fixed32_rescue
+    - lb_adaptive_change
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_feature_family_split_well_plus_seed_index
+  stochastic_components:
+    - shared_exp413_likelihood_pf
+    - learned_likelihood_pf
+    - gold_masked_prefix_seed_bank
+    - residual_particle_trackers
+  parallel_rng_policy: private_per_well_numba_seed_state_independent_of_thread_schedule
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    source_sha: true
+    id_order_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    branch_summary_sha: true
+    generation_ledger_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+    rerun_content_parity: true
+  notes:
+    - Visible final parity cannot establish hidden shared-PF correctness because the parent physical override masks SP45 output.
+    - Deterministic-anchor status requires the complete hidden stochastic path, not only the shared likelihood-PF node, to pass rerun checks.
+
+submission_plan:
+  submission_file_generation_approved: false
+  submit_check_approved: false
+  competition_submission_approved: false
+  monitoring_approved: false
+  automatic_promotion: false
+
+code_submission_result:
+  ref: 55266559
+  submitted_at_utc: "2026-08-05 10:05:07.813000 UTC"
+  kernel_id: kentookumura/exp514-shared-likpf-stage-d-visible
+  kernel_version: 3
+  script_version_id: 340328874
+  status: SubmissionStatus.COMPLETE
+  public_score: null
+  private_score: null
+  error: hidden_rerun_unhandled_error
+  api_error_description: >-
+    Your notebook hit an unhandled error while rerunning your code. Note that
+    the hidden dataset can be larger/smaller/different than the public dataset
+  confirmed_hidden_incompatible_defect: unconditional_visible_v2_output_sha_equivalence_guard
+  actual_first_hidden_exception: unknown_hidden_traceback_unavailable
+  user_external_submission_performed: true
+  codex_external_submission_performed: false
+  resubmit: false

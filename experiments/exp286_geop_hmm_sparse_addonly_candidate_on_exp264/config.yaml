@@ -1,0 +1,578 @@
+experiment:
+  name: exp286_geop_hmm_sparse_addonly_candidate_on_exp264
+  description: >-
+    Preserve the corrected exp264 12-candidate selector bank and add the saved
+    exp279 geop_hmm path as a full-coverage thirteenth primitive with the same
+    candidate ID, availability, generic proxy, and native-confidence contract.
+    Retrain only the dual-objective outer-OOF selector and compare it with the
+    frozen corrected exp264 Stage B v5 baseline.
+  route: ensemble
+  status: stage_d_full13_addonly_completed_global_improved_stability_guard_failed
+  created_at: "2026-07-19"
+
+lineage:
+  parent: exp264_exp263_candidate_confidence_dual_selector
+  candidate_generator_parent: exp279_exp226_geop_centered_exact_hmm_redecode
+  candidate_cache_parent: exp263_last_anchor_better_candidate_confidence_pair_cache
+  diff_summary: >-
+    Keep the corrected exp264 core12, formulas, legal domains, raw-test-safe
+    context, outer folds, selector objectives, sampling, and LightGBM settings.
+    Append geop_hmm as primitive candidate 13 in both legal domains with full
+    saved-OOF availability and exp279 posterior confidence. The failed fixed
+    top-25 percent gate remains closed and is not used in selector training.
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.group_column
+    - validation.score_rows
+
+validation:
+  strategy: outer5_groupkfold_dual_objective_candidate_selector_full13
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  outer_folds: 5
+  inner_folds: 4
+  group_column: well
+  score_rows: TVT_input_isna
+  secondary_metrics:
+    - candidate_expected_error_mae
+    - candidate_within10_logloss
+    - candidate_within10_brier
+    - rank_regret
+    - top3_oracle_coverage
+    - hard_primary_oof_rmse
+    - fold_rmse
+    - distance_bucket_rmse
+    - candidate_selection_rate
+  leakage_policy:
+    - exp263/exp279のtarget、true TVT、error、oracle、catalog RMSEをrow featureへ入れない。
+    - exp279から読む列はID、well、row、fold、geop path、posterior std、well loglikだけに限定する。
+    - candidate labelはfeature schemaとouter foldを固定した後にraw train truthから生成する。
+    - outer-valid wellのtarget/errorはselector fit、early stopping、prior作成に使わない。
+    - candidate IDはstring artifactとone-hotだけを使い、ordinal indexをfeatureにしない。
+
+data:
+  exp263_experiment: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache
+  exp263_stage0_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts
+    - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts
+    - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1/artifacts
+    - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1_sample_partitions/artifacts
+  exp263_stage0_manifest_patterns:
+    - "**/cache_manifest.json"
+  exp263_expected_stage0_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+  exp263_expected_catalog_sha256: 7cd748661b719bfcfb1ed21b9fe314366b1c089cc0dd224a9e4cbd4ba7e9e6e0
+  exp279_oof:
+    filename: exp279_exp226_geop_centered_exact_hmm_redecode_oof_predictions.csv.gz
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp279-exp226-geop-exact-hmm-redecode-train/artifacts/exp279_exp226_geop_centered_exact_hmm_redecode_oof_predictions.csv.gz
+      - /kaggle/input/exp279-exp226-geop-exact-hmm-redecode-train/artifacts/exp279_exp226_geop_centered_exact_hmm_redecode_oof_predictions.csv.gz
+      - /tmp/kaggle-output/exp279_exp226_geop_centered_exact_hmm_redecode/train_v1/artifacts/exp279_exp226_geop_centered_exact_hmm_redecode_oof_predictions.csv.gz
+    expected_raw_gzip_sha256: 2f94f4977004d35c3ce443dffe241d3500a250042ece120b05114dc795732d6b
+    expected_decompressed_sha256: 9e29e70783eb13abff5ccbee23acbb274589457f233fdb266094a4db0a24d7c0
+    expected_prediction_content_sha256: 335ba03183d5c18140d237a2d9adf7a39bb5fdb5dd00c56c507dcd59bc9e613c
+    candidate_column: geop_hmm
+    confidence_columns: [geop_hmm_std, geop_hmm_loglik]
+    forbidden_loaded_columns: [true_tvt_readout_only, target, error, oracle]
+  exp251_selected_feature_schema_patterns:
+    - inputs/exp251_v4_selected_feature_schema.csv
+    - experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/kaggle/output/train_v4_selected/artifacts/exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv
+    - "**/exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv"
+  exp251_expected_selected_feature_count: 295
+  parent_stage_b_v5:
+    selector_metrics_patterns:
+      - inputs/exp264_stage_b_v5/selector_metrics.json
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_b_v5/artifacts/selector_metrics.json
+      - "**/exp264_stage_b_v5/selector_metrics.json"
+    selector_candidate_metrics_patterns:
+      - inputs/exp264_stage_b_v5/selector_candidate_metrics.csv
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_b_v5/artifacts/selector_candidate_metrics.csv
+      - "**/exp264_stage_b_v5/selector_candidate_metrics.csv"
+    expected_selector_metrics_sha256: 576120d677bdd76bd7c2d40bf73d96bc37c759d79a8acd9a8a58faee43e4bf54
+    expected_selector_candidate_metrics_sha256: 54a3b160a71a2a1415b7c30c8dd3a3a624a27e00ba990cb0b3bf539001347d3f
+    hard_primary_oof_rmse: 8.587004386703422
+    fixed_fallback_oof_rmse: 8.238331546485645
+    model_count: 10
+    candidate_score_oof_sha256: 9a91b62599278d4e56d57074df4725d4a09391460458b8eccc02dd50af34d48a
+    compact_meta_oof_sha256: 5485ede169dabbe2c5a3b5dd9dd72c15f9004fdc159efe776ea46485f8d7512a
+    model_manifest_sha256: d5159ed142a055865ddd94a66d89e8242cb720b28dddf175d313ee32125ca07d
+  parent_stage_c_v6:
+    nested_selector_metrics_patterns:
+      - inputs/exp264_stage_c_v6/nested_selector_metrics.json
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_c_v6/artifacts/nested_selector_metrics.json
+      - "**/exp264_stage_c_v6/nested_selector_metrics.json"
+    nested_selector_fold_metrics_patterns:
+      - inputs/exp264_stage_c_v6/nested_selector_metrics.csv
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_c_v6/artifacts/nested_selector_metrics.csv
+      - "**/exp264_stage_c_v6/nested_selector_metrics.csv"
+    expected_nested_selector_metrics_sha256: 421376abe55378ac3e0d9c37d2a882a97d6fd4ebf866ec4395e7346c1d4f478b
+    expected_nested_selector_fold_metrics_sha256: 6e913f0b38e79b0c287802c6f47fbe58a5f54270b35d320a9fed1e1b297132be
+    hard_primary_oof_rmse: 8.652531955610227
+    model_count: 40
+  stage_c_artifact_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp286-geop-hmm-sparse-addonly-exp264-train/artifacts
+    - /tmp/kaggle-output/exp286_geop_hmm_sparse_addonly_candidate_on_exp264/stage_c/artifacts
+  stage_c_expected_nested_selector_metrics_sha256: 8f69a1a45ad467007c4fba22b0470e216c1864ac41834e579f8fe88b88381d61
+  stage_c_expected_nested_selector_model_manifest_sha256: c22b98eb83688508971000591b5deb2a057e35e43c09d8b9d9a16195aac19b0e
+  stage_c_expected_nested_compact_manifest_sha256: cddfe5c666aa2cd7ca61b7279618e47f1408a6fb9fecacb0ae67119573f3c7b5
+  stage_c_expected_compact_meta_schema_file_sha256: 68335b9f7dbabfb305d433ea41fcc1fad361f3a48fd1d1447bb123265233d35e
+  stage_c_expected_compact_meta_schema_logical_sha256: 73e7efd53b8823ace6e35e8caf0e2f7cd214213e142888f6576ba89a774310ec
+  exp218_source_patterns:
+    - inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+    - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+  exp218_config_patterns:
+    - inputs/exp218_source/config.yaml
+    - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+  exp218_clean_273_allowlist_patterns:
+    - inputs/exp218_clean_273_allowlist.csv
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+  hidden_like_assignment_patterns:
+    - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  parent_stage_d_v3:
+    metrics_patterns:
+      - inputs/exp264_stage_d_v3/stage_d_metrics.json
+    fold_metrics_patterns:
+      - inputs/exp264_stage_d_v3/stage_d_fold_metrics.csv
+    bucket_metrics_patterns:
+      - inputs/exp264_stage_d_v3/stage_d_bucket_metrics.csv
+    hidden_like_metrics_patterns:
+      - inputs/exp264_stage_d_v3/stage_d_hidden_like_metrics.csv
+    by_well_patterns:
+      - inputs/exp264_stage_d_v3/stage_d_by_well.csv
+    expected_metrics_sha256: 29cecbf758196ee8d9d877545f7f959ce44a138568edabde86526bbf70940acb
+    expected_fold_metrics_sha256: e6add9ae5b063b84590de1e36b3cb2522df627d0b2c96f35af4d45680c088419
+    expected_bucket_metrics_sha256: 8dfab03a7f6d02147d4c63f7fdb2838f3059ad4a0e2b462114b6f12e3891d584
+    expected_hidden_like_metrics_sha256: f81b27382812ebc7d8b24b4126d1e04478daaf54f731c4b5113074a209aa2c84
+    expected_by_well_sha256: 651a16233d7903255d397d272fe6c62ca5fbf2331062b532f6de056a574a5cb6
+    matched_control_lgb_mean_rmse: 10.476169179272501
+    selector_compact_addonly_lgb_mean_rmse: 8.460811237612477
+  candidate_contract: candidate_contract.yaml
+
+candidate_bank:
+  existing_candidate_count: 12
+  selector_candidate_count: 13
+  added_candidate:
+    id: geop_hmm
+    kind: primitive
+    family: geop_centered_exact_hmm
+    availability: full_saved_oof
+    confidence_source: exp279_geop_centered_exact_hmm_posterior
+    native_confidence_fields:
+      - sigma_tvt
+      - source_loglik
+      - loglik_per_row
+      - candidate_finite_source
+  legal_domains:
+    primitive_pair_bank:
+      parent_count: 11
+      new_count: 12
+    primitive_fixed_bank:
+      parent_count: 7
+      new_count: 8
+  candidate_id_encoding: one_hot_width_13_plus_string_artifact_no_ordinal
+  fixed_fallback: exp226_w500_50_50
+  fixed_gate_enabled: false
+  sparse_gate_branch_closed: true
+  sparse_gate_close_reason: fixed_top25_whole_well_sse_gain_retention_0.277110_below_0.50
+
+features:
+  parent_surface: exp264_corrected_stage_a_v4_raw_test_safe
+  schema_mode: audit_transform_then_sha_freeze_for_13_candidates
+  groups: [ctx, cand, conf, bank, formula, id]
+  missing_policy: native_nan_plus_validity_flags
+  exact_duplicate_policy: drop_after_deterministic_audit
+  constant_policy: drop_after_deterministic_audit
+  correlation_policy: report_only_for_abs_pearson_or_spearman_ge_0p999
+  raw_context:
+    horizontal_numeric_allowlist: [MD, X, Y, Z, GR]
+    add_delta_from_last_known_row: true
+    add_typewell_summary: true
+    forbidden_columns: [TVT, TVT_input, target, true_tvt]
+    forbidden_training_only_columns: [ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+  audit:
+    base_rows_per_fold: 10000
+    correlation_long_rows: 50000
+    pearson_abs_threshold: 0.999
+    spearman_abs_threshold: 0.999
+  shape_windows: [32, 128, 512]
+
+model:
+  name: exp264_dual_objective_candidate_long_lightgbm_with_geop_hmm
+  trains_new_boosters: true
+  objectives:
+    - name: pred_abs_error
+      estimator: lightgbm_regression_l1
+      label: candidate_abs_error
+    - name: p_within10
+      estimator: lightgbm_binary
+      label: candidate_within10
+  active_selector_config: standard_lightgbm_exp264_stage_b_v5
+  training:
+    max_train_base_rows_per_outer_fold: 60000
+    max_valid_base_rows_for_early_stopping: 30000
+    predict_base_row_chunk_size: 20000
+    num_boost_round: 1200
+    early_stopping_rounds: 80
+    log_evaluation_period: 100
+  lightgbm_common:
+    learning_rate: 0.035
+    num_leaves: 63
+    min_child_samples: 80
+    subsample: 0.85
+    subsample_freq: 1
+    colsample_bytree: 0.85
+    reg_alpha: 0.1
+    reg_lambda: 1.0
+    n_jobs: 8
+    deterministic: true
+    force_col_wise: true
+    verbosity: -1
+  nested_downstream_stage:
+    current_status: full13_stage_c_v6_complete_guards_passed
+    corrected_run_approval_received_at: "2026-07-19"
+    corrected_run_approval_scope: one_variant_two_objectives_five_outer_four_inner_40_cpu_boosters
+    enabled: true
+    approval_required: true
+    outer_folds: 5
+    inner_folds: 4
+    objectives: 2
+    planned_cpu_selector_boosters: 40
+    inner_split: deterministic_well_row_balanced_groupfold_within_outer_train
+    compact_layout: downstream_outer_fold_role_source_outer_fold
+    expected_compact_partitions: 25
+    expected_compact_rows: 18919945
+    expected_outer_valid_score_long_rows: 49191857
+    actual_hard_primary_oof_rmse: 8.448682152842172
+    parent12_hard_primary_oof_rmse: 8.652531955610227
+    delta_new13_minus_parent12: -0.20384980276805464
+    improved_folds_vs_parent12: 4
+    score_guard_passed: true
+    leakage_audit_passed: true
+  downstream_tvt_stage:
+    current_status: full13_addonly_stage_d_completed_global_improved_stability_guard_failed
+    enabled: true
+    approval_required: true
+    approval_received_at: "2026-07-19"
+    approval_scope: full13_compact350_addonly15_three_configs_five_folds_15_gpu_boosters
+    feature_surface: exp218_clean_273_drop_107_plus_full13_compact77
+    source_base_feature_count: 380
+    dropped_non_fold_safe_feature_count: 107
+    base_feature_allowlist: inputs/exp218_clean_273_allowlist.csv
+    base_feature_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
+    variants: [selector_compact_addonly]
+    lightgbm_configs_per_variant: 3
+    lightgbm_config_indices: [0, 1, 2]
+    folds: 5
+    planned_gpu_boosters: 15
+    control_retraining: false
+    comparison_baselines:
+      - saved_exp264_clean273_matched_control
+      - saved_exp264_parent12_compact347_addonly
+    expected_source_base_feature_count: 380
+    expected_base_feature_count: 273
+    expected_compact_feature_count: 77
+    selector_compact_addonly_feature_count: 350
+    actual_gpu_boosters: 15
+    parent12_selector_compact_addonly_rmse: 8.460811237612477
+    new13_selector_compact_addonly_rmse: 8.403783913622066
+    delta_new13_minus_parent12: -0.057027323990411105
+    improved_folds_vs_parent12: 2
+    improved_wells_vs_parent12: 373
+    worsened_wells_vs_parent12: 400
+    median_well_delta_new13_minus_parent12: 0.025208902917286835
+    worst_well_delta_new13_minus_parent12: 5.8628331283307435
+    promotion_guard_passed: false
+    target: target_residual_from_last_known_tvt
+    model_family: exp218_exp063_public_pixiux_lgb0_lgb1_lgb2
+    mode: gpu_repro_guard_dp_threads8
+    early_stopping_rounds: 250
+    log_evaluation_period: 100
+    matrix_copy_chunk_columns: 32
+    output_oof_format: parquet
+
+guards:
+  technical:
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_score_candidates: 13
+    expected_geop_availability: 1.0
+    expected_geop_confidence_coverage: 1.0
+    required_geop_id_feature: id__candidate__geop_hmm
+    required_geop_confidence_fields:
+      - sigma_tvt
+      - source_loglik
+      - loglik_per_row
+      - candidate_finite_source
+    duplicate_candidate_ids: 0
+    forbidden_feature_hits: 0
+  selector_score:
+    expected_error_mae_vs_outer_train_candidate_prior: improve_pooled_and_at_least_4_of_5_folds
+    within10_logloss_vs_outer_train_candidate_prior: improve_pooled_and_at_least_4_of_5_folds
+    within10_brier_vs_outer_train_candidate_prior: improve_pooled_and_at_least_4_of_5_folds
+  selector_addition_vs_parent12:
+    require_hard_primary_oof_rmse_improvement: true
+    minimum_improved_folds: 3
+    require_geop_pred_abs_error_selection_rows_positive: true
+    require_new13_score_guard: true
+    require_fixed_fallback_parity_tolerance: 1.0e-9
+  hard_readout_diagnostic:
+    fallback_candidate: exp226_w500_50_50
+    fallback_oof_rmse: 8.238331546485645
+    min_overall_rmse_improvement: 0.02
+    min_improved_folds: 3
+    max_near_delta_rmse: 0.02
+    max_1000_plus_delta_rmse: 0.02
+    max_hidden_like_delta_rmse: 0.02
+    max_worst_well_regression: 0.25
+    note: hard readout is diagnostic; no inference/submission is enabled by this Stage B run.
+  stage_d_vs_parent12:
+    require_pooled_rmse_improvement: true
+    min_improved_folds: 3
+    max_near_delta_rmse: 0.02
+    max_1000_plus_delta_rmse: 0.02
+    max_hidden_like_delta_rmse: 0.02
+    max_worst_well_regression: 0.25
+
+audit:
+  output_prefix: exp286_geop_hmm_sparse_addonly_candidate_on_exp264
+  expected_artifacts:
+    - stage_d_metrics.json
+    - stage_d_fold_metrics.csv
+    - stage_d_parent_fold_comparison.csv
+    - stage_d_oof_predictions.parquet
+    - stage_d_feature_importance.csv
+    - stage_d_by_well_comparison.csv
+    - stage_d_bucket_comparison.csv
+    - stage_d_hidden_like_comparison.csv
+    - stage_d_model_manifest.json
+    - exp286_stage_d_reproducibility_manifest.json
+
+execution:
+  stage: downstream_tvt_addonly_full13
+  active_variants: 1
+  lightgbm_config_count: 3
+  objectives: 1
+  trained_fold_count: 5
+  total_boosters: 15
+  hmm_well_runs: 0
+  pf_well_runs: 0
+  parent_control_retraining: false
+  stage_a_feature_audit_enabled: false
+  stage_b_enabled: false
+  stage_c_enabled: false
+  stage_c_planned_cpu_models: 40
+  stage_d_enabled: true
+  stage_d_planned_gpu_models: 15
+  gpu: true
+  inference: false
+  submission: false
+  run_approved: false
+  kaggle_push_approved: false
+  kaggle_push_approved_at: "2026-07-19"
+  kaggle_push_approval_scope: user_approved_stage_c_40_cpu_then_stage_d_addonly_15_gpu
+  approval_interpretation: >-
+    After Stage B improved the original selector, the user explicitly approved
+    executing Stage C and then Stage D. Stage C is exactly 40 CPU selector models;
+    Stage D is exactly 15 new add-only GPU models with no parent/control retraining.
+  kaggle_kernel: kentookumura/exp286-geop-hmm-sparse-addonly-exp264-tvt-train
+  stage_c_kaggle_kernel: kentookumura/exp286-geop-hmm-sparse-addonly-exp264-train
+  previous_kaggle_kernel_version: 1
+  target_kaggle_kernel_version: 1
+  previous_kaggle_kernel_id_no: 127856113
+  kaggle_kernel_version: 4
+  kaggle_kernel_id_no: 127856113
+  kaggle_pushed_at: "2026-07-19 17:32:01 JST"
+  kaggle_status: complete
+  stage_c_kaggle_kernel_version: 5
+  stage_c_kaggle_pushed_at: "2026-07-19 18:33:29 JST"
+  stage_c_kaggle_status: complete
+  stage_c_retry_kernel_version: 6
+  stage_c_retry_reason: normalize_parent_fold_column_before_training
+  stage_c_retry_pushed_at: "2026-07-19 20:36:46 JST"
+  stage_c_actual_model_count: 40
+  stage_c_runtime_seconds_to_summary: 4108.033
+  stage_c_hard_primary_oof_rmse: 8.448682152842172
+  stage_c_parent12_hard_primary_oof_rmse: 8.652531955610227
+  stage_c_delta_new13_minus_parent12: -0.20384980276805464
+  stage_c_improved_folds: 4
+  stage_c_score_guard_passed: true
+  stage_c_leakage_audit_passed: true
+  stage_d_kaggle_status: complete
+  stage_d_kaggle_kernel_version: 1
+  stage_d_kaggle_kernel_id_no: 127886849
+  stage_d_kaggle_pushed_at: "2026-07-19 21:56:44 JST"
+  stage_d_completed_at: "2026-07-20 user-confirmed; Kaggle status COMPLETE"
+  stage_d_runtime_seconds_to_summary: 9600.936
+  stage_d_actual_model_count: 15
+  stage_d_parent12_rmse: 8.460811237612477
+  stage_d_new13_rmse: 8.403783913622066
+  stage_d_delta_new13_minus_parent12: -0.057027323990411105
+  stage_d_improved_folds: 2
+  stage_d_promotion_guard_passed: false
+  stage_d_guard_failures:
+    - improved_folds_2_below_3
+    - worst_well_delta_5p862833_above_0p25
+  kaggle_completed_at: "2026-07-19 17:59:43 JST"
+  kaggle_runtime_seconds_to_summary: 1518.253
+  actual_model_count: 10
+  selector_addition_guard_passed: true
+  eligible_for_stage_c_scientifically: true
+  eligible_for_stage_c_execution: true
+  stage_c_block_reason: null
+  technical_retry:
+    failed_kernel_version: 2
+    failed_at_stage: pre_training_raw_train_test_path_resolution
+    models_trained_before_failure: 0
+    scientific_contract_changed: false
+    retry_kernel_version: 3
+    fix: recursively_resolve_competition_root_from_sample_submission_train_test_siblings
+  technical_retry_v4:
+    failed_kernel_version: 3
+    failed_at_stage: stage_a_first_fold_before_feature_build
+    failure: exp279_source_fold_ids_do_not_equal_exp263_outer_fold_partition_ids
+    models_trained_before_failure: 0
+    scientific_contract_changed: false
+    retry_kernel_version: 4
+    fix: materialize_exp279_rows_by_exp263_reference_well_outer_fold
+  technical_retry_stage_c_v6:
+    failed_kernel_version: 5
+    failed_at_stage: post_training_parent_stage_c_fold_comparison
+    models_trained_before_failure: 40
+    reusable_kaggle_artifacts: false
+    scientific_contract_changed: false
+    retry_kernel_version: 6
+    fix: normalize_saved_parent_fold_to_outer_fold_and_preflight_before_training
+  selector_branch_closed: true
+  selector_branch_close_reason: stage_d_fold_and_worst_well_stability_guard_failed
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  batch_size: 50000
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    machine_shape: NvidiaTeslaT4
+    train_kernel_sources:
+      - kentookumura/exp286-geop-hmm-sparse-addonly-exp264-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp145-train
+    inference_kernel_sources: []
+    bootstrap_dependency_files:
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: inputs/exp218_source/config.yaml
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+        destination: inputs/exp218_clean_273_allowlist.csv
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_d_v3_corrected/artifacts/stage_d_metrics.json
+        destination: inputs/exp264_stage_d_v3/stage_d_metrics.json
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_d_v3_corrected/artifacts/stage_d_fold_metrics.csv
+        destination: inputs/exp264_stage_d_v3/stage_d_fold_metrics.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_d_v3_corrected/artifacts/stage_d_bucket_metrics.csv
+        destination: inputs/exp264_stage_d_v3/stage_d_bucket_metrics.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_d_v3_corrected/artifacts/stage_d_hidden_like_metrics.csv
+        destination: inputs/exp264_stage_d_v3/stage_d_hidden_like_metrics.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_d_v3_corrected/artifacts/stage_d_by_well.csv
+        destination: inputs/exp264_stage_d_v3/stage_d_by_well.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: exp218_fixed_random_state_per_lightgbm_config_and_outer_fold
+  stochastic_components:
+    - lightgbm_gpu_row_sampling
+    - lightgbm_gpu_column_sampling
+  parallel_rng_policy: fixed_random_state_per_config_with_gpu_dp_deterministic_threads8
+  feature_sha_policy: frozen_exp072_exp145_inputs_plus_stage_c_partition_and_schema_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    model_manifest_sha: true
+    candidate_score_oof_sha: true
+    compact_meta_oof_sha: true
+    submission_sha: false
+  stage0_history:
+    kaggle_kernel_version: 1
+    completed: true
+    full_union_oracle_improved_all_three_granularities_and_5_of_5_folds: true
+    fixed_gate_gain_retention: 0.277110
+    sparse_gate_guard_passed: false
+    interpretation: only_the_sparse_fixed_gate_branch_is_closed
+
+inference:
+  enabled: false
+  mode: disabled_stage_b_oof_diagnostic_only
+  create_submission: false
+  selected_candidate: null
+
+notes:
+  - All-13 pooled candidate-score metrics have a different long-row population from parent12 and are auxiliary.
+  - Hard path, fold path, and shared-12 candidate/fold comparisons are directly comparable with parent Stage B v5.
+  - Stage C 40 CPU models and the subsequent Stage D add-only 15 GPU models were explicitly approved on 2026-07-19.
+  - Parent/control retraining remains disabled; saved exp264 Stage D results are the comparison baseline.
+  - Stage B improved the parent12 hard selector from 8.5870043867 to 8.4777396073 in 3/5 folds.
+  - Stage C improved the parent12 nested hard selector from 8.6525319556 to 8.4486821528 in 4/5 folds.
+  - Stage D improved pooled parent12 add-only RMSE from 8.4608112376 to 8.4037839136, but only 2/5 folds improved and worst-well delta was +5.8628331283 ft.
+  - Stage D promotion guard failed; the models are retained as experiment artifacts but inference and submission remain disabled.
+  - The new hard selector remains worse than the fixed fallback 8.2383315465, so inference stays disabled.
+
+result:
+  selector_addition_guard_passed: true
+  feature_count: 89
+  parent_hard_primary_oof_rmse: 8.587004386703422
+  new_hard_primary_oof_rmse: 8.477739607279393
+  delta_hard_rmse_new13_minus_parent12: -0.1092647794240289
+  improved_folds_vs_parent12: 3
+  fixed_fallback_oof_rmse: 8.238331546485645
+  hard_delta_new13_minus_fixed: 0.23940806079374788
+  geop_selection_rows:
+    pred_abs_error: 737876
+    p_within10: 206557
+  geop_selection_share:
+    pred_abs_error: 0.19499950977658762
+    p_within10: 0.054587103715153504
+  geop_native_confidence_coverage: 1.0
+  score_guard_passed: true
+  score_guard_improved_folds:
+    expected_error_mae: 5
+    within10_logloss: 5
+    within10_brier: 5
+  candidate_score_oof_sha256: 0baef3198cd562d7423e0ba5415c83de2a6924939895d664bdc3ba512986e678
+  compact_meta_oof_sha256: 78fcca2db900494bfb3a75db3045eae0b44a4f21a54d900b983516b1ff4dcf27
+  selector_model_manifest_sha256: fb1415c2614f4bc5a89809b9a4479de6f69fd74d6acffe11dc8c47baa836018a
+  feature_schema_logical_sha256: 187200b981da17cd4daadc2528cca12c948f0f3acbfb190c9b9acf3983273281
+  selector_parent_comparison_file_sha256: 86a5d74ca46289dbe8d4a29509e7d51de13c4550ab6caf4fc63e99890b641c1d
+  stage_c:
+    parent12_hard_primary_oof_rmse: 8.652531955610227
+    new13_hard_primary_oof_rmse: 8.448682152842172
+    delta_new13_minus_parent12: -0.20384980276805464
+    improved_folds: 4
+    score_guard_passed: true
+    leakage_audit_passed: true
+    compact_feature_count: 77
+  stage_d:
+    parent12_selector_compact_addonly_rmse: 8.460811237612477
+    new13_selector_compact_addonly_rmse: 8.403783913622066
+    delta_new13_minus_parent12: -0.057027323990411105
+    improved_folds: 2
+    improved_wells: 373
+    worsened_wells: 400
+    median_well_delta: 0.025208902917286835
+    worst_well_delta: 5.8628331283307435
+    near_delta: -0.03025877873056171
+    distance_1000_plus_delta: -0.060865284428118116
+    hidden_like_spatial_delta: -0.1711905127501936
+    hidden_like_typewell_purged_delta: -0.16371330092175995
+    model_count: 15
+    promotion_guard_passed: false
+    metrics_sha256: 1c4dfcd1eee2e70e447d425fd74e3a6672d60b1545bd4c4c814d175e1e4d2421
+    model_manifest_sha256: 1ad06b7ea724dd473c9c694907a281e4b07da6a23a073e8f474994a5be10a22e

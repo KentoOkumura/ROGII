@@ -1,0 +1,159 @@
+experiment:
+  name: "exp112_learned_pf_likelihood_weight_or_feature_followup"
+  description: Posthoc train-side follow-up that uses exp111 learned PF likelihood as weak PF weight, conservative verifier gate, and ML add-only feature cache.
+  route: pf_beam
+  status: implemented
+  created_at: "2026-06-22"
+  updated_at: "2026-06-22"
+
+lineage:
+  parent: exp111_learned_pf_observation_likelihood_probe
+  cache_parent: exp099_pf_multi_observation_likelihood_probe
+  diagnostic_parents:
+    - exp099_pf_multi_observation_likelihood_probe
+    - exp101_pf_candidate_ranker_or_nway_classifier
+    - exp102_confidence_gated_likpf_fallback_on_exp101
+    - exp111_learned_pf_observation_likelihood_probe
+  implementation_source: learned_pf_likelihood_weight_or_feature_followup.py
+  diff_summary: Reuses exp111 OOF candidate-long learned likelihood without retraining, evaluates small alpha PF-weight additions and conservative likPF fallback verifier gates, and exports target-free row-level learned-likelihood features for a later exp092-family ML add-only audit. It does not use learned top1 as a submission candidate.
+
+validation:
+  strategy: exp111_oof_posthoc_pf_weight_and_feature_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - switch_rate
+    - selection_distribution
+    - worst_well_rmse
+    - bucket_rmse
+    - feature_cache_schema
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: exp111_first_fold_oof_rows
+  leakage_policy:
+    - exp111 learned probabilities and expected errors are OOF predictions for held-out wells only.
+    - exp099 wide cache is used to reconstruct true TVT for evaluation only; true TVT is not written into the ML feature artifact.
+    - PF-weight alpha variants use only target-free multiobs scores plus exp111 learned OOF likelihood values.
+    - Verifier gates use only learned probability/error margins, candidate deltas, and likPF fallback rules.
+    - This is train-side posthoc evidence only. Raw-test parity is required before any inference or submission candidate.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp111_artifact_dir_local: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts
+  exp111_oof_likelihood_long: exp111_learned_pf_observation_likelihood_probe_oof_likelihood_long.csv.gz
+  exp111_summary: exp111_learned_pf_observation_likelihood_probe_summary.json
+
+model:
+  name: no_new_model_posthoc_likelihood_followup
+  target: posthoc_candidate_weighting_and_feature_cache
+  base_prediction: likpf_mean
+  estimator: none
+
+followup:
+  mode: learned_pf_likelihood_weight_or_feature_followup
+  max_groups: null
+  default_candidate: likpf_mean
+  candidates:
+    - pf_ancc
+    - beam_mean
+    - likpf_mean
+    - sc_ens
+    - hyb
+  pf_weight_alphas:
+    - 0.05
+    - 0.1
+    - 0.2
+    - 0.4
+  verifier:
+    probability_min:
+      - 0.65
+      - 0.75
+      - 0.85
+    probability_margin_min:
+      - 0.05
+      - 0.1
+      - 0.2
+    error_margin_min:
+      - 2.0
+      - 5.0
+      - 10.0
+    max_abs_delta_vs_likpf:
+      - 20.0
+      - 35.0
+      - 60.0
+  feature_cache:
+    include_candidate_tvt: true
+    include_multiobs_scores: true
+    include_probability_features: true
+    include_expected_error_features: true
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_posthoc_oof_audit
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - upstream_exp111_lightgbm_training
+  parallel_rng_policy: no_new_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    exp111_oof_likelihood_sha: true
+    feature_cache_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - No new model is trained in exp112.
+    - All scoring policies are deterministic functions of exp111 OOF likelihood and exp099 fixed candidate cache.
+    - The exported ML feature cache excludes true TVT, absolute error, and within-threshold labels.
+
+audit:
+  mode: learned_pf_likelihood_weight_or_feature_followup
+  output_prefix: exp112_learned_pf_likelihood_weight_or_feature_followup
+  baselines:
+    - likpf_mean_single
+    - learned_prob_top1
+    - learned_error_top1
+    - multiobs_score_top1
+    - exp102_best_gate_reference
+  expected_train_artifacts:
+    - exp112_learned_pf_likelihood_weight_or_feature_followup_metrics.csv
+    - exp112_learned_pf_likelihood_weight_or_feature_followup_by_well.csv
+    - exp112_learned_pf_likelihood_weight_or_feature_followup_bucket_metrics.csv
+    - exp112_learned_pf_likelihood_weight_or_feature_followup_selection_distribution.csv
+    - exp112_learned_pf_likelihood_weight_or_feature_followup_oof_predictions.csv.gz
+    - exp112_learned_pf_likelihood_weight_or_feature_followup_ml_features.csv.gz
+    - exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+    - exp112_learned_pf_likelihood_weight_or_feature_followup_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - No inference notebook candidate is selected by this implementation.
+    - If the feature artifact is useful, port it to an exp092-family ML add-only experiment only after raw-test feature parity is available.
+    - If a PF-weight alpha or verifier gate is selected, create a separate raw-test parity audit before submission work.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog learned_pf_likelihood_weight_or_feature_followup.
+  - Does not submit, does not use learned top1 as a direct replacement, and does not train a new selector.

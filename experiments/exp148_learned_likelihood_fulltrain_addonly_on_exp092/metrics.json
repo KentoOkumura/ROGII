@@ -1,0 +1,119 @@
+{
+  "experiment": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "status": "ml_route_anchor_public_lb_7p921_cpu_runtime",
+  "route": "ml_model",
+  "parent": "exp092_u_projection_correction_disagreement_fullrun",
+  "learned_likelihood_parent": "exp145_learned_likelihood_rawtest_feature_generator_parity",
+  "cv": {
+    "status": "train_completed",
+    "kernel": "kentookumura/exp148-train",
+    "kernel_version": 1,
+    "variant": "learned_likelihood_confidence_addonly",
+    "mode": "gpu_repro_guard_dp_threads8",
+    "rows": 3783989,
+    "wells": 773,
+    "features": 294,
+    "feature_join_coverage_pass": true,
+    "dropped_base_rows": 0,
+    "dropped_base_wells": 0,
+    "models": {
+      "lgb0": {
+        "pooled_rmse_tvt": 8.59978585937889
+      },
+      "lgb1": {
+        "pooled_rmse_tvt": 8.563971121229669
+      },
+      "lgb2": {
+        "pooled_rmse_tvt": 8.509819718794075
+      },
+      "lgb_mean": {
+        "pooled_rmse_tvt": 8.50128118189582,
+        "prediction_sha256": "6d6e109e5d8c391538331e2b7b603e298a60dd837cd5aad04490eca9925c4ead"
+      }
+    },
+    "best_model": "lgb_mean",
+    "best_pooled_rmse_tvt": 8.50128118189582,
+    "historical_delta_vs_exp092_lgb1": -0.821198713608107
+  },
+  "inference": {
+    "status": "inference_completed",
+    "kernel": "kentookumura/exp148-inference",
+    "kernel_version": 7,
+    "selected_model": "lgb_mean",
+    "model_count": 15,
+    "feature_count": 294,
+    "test_rows": 14151,
+    "submission_rows": 14151,
+    "predicted_rows": 14151,
+    "fallback_rows": 0,
+    "prediction_min": 11590.2021484375,
+    "prediction_max": 12240.267578125,
+    "prediction_mean": 11905.555289061396,
+    "prediction_std": 278.8927386018049,
+    "prediction_sha256": "9a5f5d1030c357d8059c3c9ee2ba3a0578563ce11b9d02fe07906aa8b235d50b",
+    "submission_sha256": "45a8b1787fd80213c158d9af04fb596750d8025802d1328ab9d075432bcb6e4b",
+    "current_test_learned_likelihood_feature_decompressed_sha256": "8d1146ac1e68da67a2c8d2d00788c1593fc99654b949e0a5ac065cf781344e13",
+    "submit_check": "pass"
+  },
+  "cpu_runtime": {
+    "status": "complete",
+    "train_kernel": "kentookumura/exp148-cpu-runtime-train",
+    "train_kernel_version": 1,
+    "inference_kernel": "kentookumura/exp148-cpu-runtime-inference",
+    "inference_kernel_version": 1,
+    "mode": "cpu_deterministic_threads8",
+    "selected_model": "lgb_mean",
+    "model_count": 15,
+    "best_pooled_rmse_tvt": 8.52869811419221,
+    "test_rows": 14151,
+    "submission_rows": 14151,
+    "fallback_rows": 0,
+    "prediction_sha256": "681412ec547dfdccc555045170b59f51221440086b4109d10f9a56e980e0a8db",
+    "submission_sha256": "3cc51eab422b9e7b83864e601733136523247a1198e67caba3264dd10ea64fa5",
+    "submit_check": "pass"
+  },
+  "lb": {
+    "public": 7.921,
+    "private": null,
+    "submission_ref": 54183122,
+    "submitted_at": "2026-06-29 23:35:57.090000",
+    "status": "SubmissionStatus.COMPLETE",
+    "kernel": "kentookumura/exp148-cpu-runtime-inference",
+    "kernel_version": 1,
+    "source": "user_confirmed_attribution_and_kaggle_submissions_table"
+  },
+  "gpu_inference_v7_lb": {
+    "public": 7.96,
+    "private": null,
+    "submission_ref": 54124882,
+    "submitted_at": "2026-06-28 01:39:08.267000",
+    "status": "SubmissionStatus.COMPLETE",
+    "kernel": "kentookumura/exp148-inference",
+    "kernel_version": 7
+  },
+  "submitted": true,
+  "planned_train": {
+    "active_variants": [
+      "learned_likelihood_confidence_addonly"
+    ],
+    "disabled_variants": [
+      "exp092_fulltrain_control"
+    ],
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "active_modes": [
+      "gpu_repro_guard_dp_threads8"
+    ],
+    "total_boosters": 15,
+    "control_retraining": false
+  },
+  "reference_metrics": {
+    "exp092_full_lgb1_pooled_rmse": 9.322479895503927,
+    "exp092_full_public_lb": 8.35,
+    "exp127_subset_lgb_mean_delta_vs_control": -0.119735177
+  },
+  "decision": {
+    "ml_route_anchor": true,
+    "reason": "GPU inference v7 improved the previous ML route submitted anchor exp092 from 8.350 to 7.960. User later confirmed the exp148 CPU runtime inference submission ref=54183122 scored Public LB 7.921, which is better than both exp148 GPU v7 7.960 and exp193 7.946, so exp148 CPU runtime is treated as the ML route submitted anchor."
+  }
+}

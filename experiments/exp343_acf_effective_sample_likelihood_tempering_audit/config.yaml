@@ -1,0 +1,200 @@
+experiment:
+  name: exp343_acf_effective_sample_likelihood_tempering_audit
+  description: >-
+    Implemented Stage 0 target-free audit that estimates well-level integrated
+    autocorrelation time from known-prefix GR residuals. Stage 1 would temper
+    exp281 emissions, but remains unimplemented and separately gated.
+  route: pf_beam
+  status: stage_0_completed_guard_failed_closed
+  created_at: "2026-07-22"
+  updated_at: "2026-07-23"
+
+lineage:
+  parent: exp281_exp226_residual_offset_exact_hmm_transition_probe
+  steering: ../../.steering/20260722-exp343-acf-effective-sample-likelihood-tempering-audit
+  references:
+    - exp232_adaptive_robust_likelihood_pf
+    - exp305_tempered_raw_smoothed_exact_hmm_emission
+    - exp310_effective_sample_size_shrunk_sigma_gr
+  diff_summary: >-
+    Keeps Gaussian shape and every decoder parameter fixed. The only conditional
+    Stage 1 change is multiplying each well's emission by one prefix-derived 1/tau_eff.
+
+implementation:
+  enabled: true
+  scope: stage_0_compact_selfcontained_acf_stability_audit
+  train_notebook_state: compact_selfcontained_canonical_adopted
+  canonical_notebook_replacement_authorized_by_request: true
+  canonical_notebook_adopted: true
+  stage_1_implemented: false
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: known_prefix_acf_stability_then_grouped_exact_hmm_audit
+  metric: tau_stability_then_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  expected_folds: [0, 1, 2, 3, 4]
+  truth_attachment: after_tau_schedule_or_prediction_content_sha_freeze
+  leakage_policy:
+    - Tau uses only raw finite known-prefix residual pairs inside contiguous runs.
+    - The exp226 OOF source contributes only group-safe well/fold assignments.
+    - Horizontal TVT, suffix truth, error, and abs_error are never read by Stage 0.
+    - Unknown-suffix TVT and error are joined after Stage 1 prediction freeze only.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  raw_train_candidates:
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+    - data/raw/train
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    safe_columns: [well_id, fold]
+    forbidden_stage_0_columns: [tvt_pred, tvt_geop, gr_delta, tvt_true, error, abs_error]
+
+model:
+  name: acf_effective_sample_likelihood_tempering_audit
+  estimator: none
+  acf:
+    lags: [1, 20]
+    positive_only_sum: true
+    minimum_finite_residuals: 128
+    minimum_pairs_each_lag: 20
+    forbid_cross_missing_pairs: true
+    rho_estimator: pairwise_pearson_within_contiguous_finite_runs
+    tau_raw: one_plus_two_sum_positive_acf
+    shrinkage_support_k: 200
+    shrinkage_space: log
+    shrinkage_prior: outer_train_fold_median
+    tau_clip: [1.0, 4.0]
+    insufficient_fallback: outer_train_fold_median
+  stage_0:
+    windows: [full_known_prefix, last_512_known_prefix_rows]
+    pass_requires_all:
+      minimum_evaluable_well_fraction: 0.90
+      maximum_fallback_well_fraction: 0.10
+      minimum_pooled_spearman_full_vs_tail: 0.70
+      maximum_median_absolute_log_ratio: 0.4054651081081644
+      minimum_folds_stable: 4
+      minimum_pooled_median_tau: 1.25
+      maximum_upper_clip_fraction: 0.25
+      maximum_fold_median_tau_ratio: 1.50
+  stage_1:
+    enabled_condition: stage_0_all_gates_pass_and_separate_user_approval
+    active_variants: [acf_tau_tempered_gaussian]
+    emission_multiplier: one_over_tau_eff
+    hmm_well_runs: 773
+    pass_requires_all:
+      minimum_rmse_gain_vs_exp281_ft: 0.05
+      minimum_improved_folds: 4
+      require_1000_plus_non_regression: true
+      require_hidden_like_spatial_non_regression: true
+      require_hidden_like_typewell_purged_non_regression: true
+      require_by_well_p95_non_regression: true
+      maximum_worst_well_regression_ft: 0.25
+      maximum_direct_rmse_for_promotion: 9.427109596582213
+  fixed_parent:
+    shape: exp226_tvt_geop
+    coordinate: residual_offset
+    emission_family: gaussian
+    sigma_missing_state_grammar_transition_prior_output: exact_exp281
+  forbidden:
+    - lag_grid
+    - support_grid
+    - tau_clip_grid
+    - downsampling
+    - student_t_or_huber
+    - missing_weight
+    - transition_change
+
+audit:
+  output_prefix: exp343_acf_effective_sample_likelihood_tempering_audit
+  stability_population: both_windows_raw_evaluable_only
+  coverage_population: all_773_wells
+  conservative_multiwindow_gate: worst_of_full_and_last_512
+  expected_artifacts:
+    - exp343_acf_effective_sample_likelihood_tempering_audit_known_prefix_residuals.csv.gz
+    - exp343_acf_effective_sample_likelihood_tempering_audit_acf_lag_readout.csv.gz
+    - exp343_acf_effective_sample_likelihood_tempering_audit_tau_schedule.csv.gz
+    - exp343_acf_effective_sample_likelihood_tempering_audit_fold_priors.csv
+    - exp343_acf_effective_sample_likelihood_tempering_audit_stability_readout.csv
+    - exp343_acf_effective_sample_likelihood_tempering_audit_fold_metrics.csv
+    - exp343_acf_effective_sample_likelihood_tempering_audit_gate.json
+    - exp343_acf_effective_sample_likelihood_tempering_audit_well_manifest.csv
+    - exp343_acf_effective_sample_likelihood_tempering_audit_input_manifest.json
+    - exp343_acf_effective_sample_likelihood_tempering_audit_scientific_contract.json
+    - exp343_acf_effective_sample_likelihood_tempering_audit_summary.json
+
+execution_contract:
+  stage_0: {diagnostic_variants: 1, hmm_well_runs: 0, model_configs: 0, trained_folds: 0, boosters: 0}
+  stage_1_if_pass: {scientific_variants: 1, hmm_well_runs: 773, model_configs: 0, trained_folds: 0, boosters: 0}
+  parent_control_retraining: false
+
+execution:
+  implementation_approved: true
+  implementation_approved_at: "2026-07-23"
+  kaggle_push_approved: false
+  kaggle_push_approved_at: "2026-07-23"
+  active_stage: stage_0_completed_guard_failed_closed
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+  kaggle_kernel_id: kentookumura/exp343-acf-effective-sample-tempering-train
+  kaggle_kernel_id_no: 128358348
+  kaggle_kernel_version: 1
+  kaggle_kernel_status: COMPLETE
+  stage_0_runtime_seconds: 273.66704466799996
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    train_run_on_push: false
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_fixed_run_lag_fold_well_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: true, submission_sha: false}
+
+inference: {enabled: false, create_submission: false}
+
+notes:
+  - Stage 0 implementation completed on 2026-07-23.
+  - The user approved the Stage 0 Kaggle CPU package/push/run on 2026-07-23.
+  - Kaggle CPU version 1 completed and failed the frozen Stage 0 gate on 2026-07-23.
+  - The branch is closed and all package/run flags are disabled to prevent an accidental rerun.
+  - Stage 1 HMM is not implemented and never runs automatically after Stage 0.
+  - The exp226 cache is loaded only for SHA-pinned group-safe fold assignment.
+  - FAIL closes the branch without lag, support, clip, temperature, or downsampling rescue.
+  - Existing temperature negatives make this a P3 experiment despite the clear residual autocorrelation.

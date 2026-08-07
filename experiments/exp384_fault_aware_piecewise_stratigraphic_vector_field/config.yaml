@@ -1,0 +1,224 @@
+experiment:
+  name: exp384_fault_aware_piecewise_stratigraphic_vector_field
+  description: >-
+    Split the successful exp383 smooth vector field into deterministic
+    fault-aware geological components and marginalize component paths.
+  route: pf_beam
+  status: closed_by_exp383_stage0_resource_fail
+  created_at: "2026-07-24"
+  updated_at: "2026-07-24"
+
+lineage:
+  parent: exp383_all_tvt_stratigraphic_vector_drift_field
+  prerequisite:
+    - exp383_stage0_target_free_pass
+    - exp383_stage1_direct_pass
+  diff_summary: >-
+    Keep every exp383 surface, all-TVT catalog, prefix calibration, fallback,
+    and path setting fixed; add only an outer-train fault graph, piecewise
+    component fields, and a soft target domain posterior with a smooth-base floor.
+
+validation:
+  strategy: exp383_same_outer_5fold_well_split
+  metric: rmse
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  control:
+    experiment: exp383_all_tvt_stratigraphic_vector_drift_field
+    regenerate: false
+    requires_saved_sha: true
+  leakage_policy:
+    - Outer-valid truth and formation columns never enter the fault graph.
+    - Target domain posterior uses outer-train components and known prefix only.
+    - Visible sample test never selects graph or posterior settings.
+
+data:
+  parent_artifacts:
+    # Must be replaced by the actual exp383 Stage 0/1 PASS manifest SHA before
+    # any Kaggle execution is authorized.
+    expected_manifest_logical_sha256: null
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp383-all-tvt-stratigraphic-vector-drift-field-train/artifacts
+      - /kaggle/input/exp383-all-tvt-stratigraphic-vector-drift-field-train/artifacts
+      - /tmp/kaggle-output/exp383_all_tvt_stratigraphic_vector_drift_field/train_v1/artifacts
+    files:
+      manifest: exp383_all_tvt_stratigraphic_vector_drift_field_manifest.json
+      donor_nodes_256: exp383_all_tvt_stratigraphic_vector_drift_field_donor_nodes_256.parquet
+      query_fields: exp383_all_tvt_stratigraphic_vector_drift_field_query_fields.parquet
+      oof_keys_without_truth: exp383_all_tvt_stratigraphic_vector_drift_field_oof_keys_without_truth.parquet
+      oof_with_truth: exp383_all_tvt_stratigraphic_vector_drift_field_oof_with_truth.parquet
+    contract:
+      donor_role: outer_train
+      train_query_roles: [outer_valid]
+      inference_query_roles: [test]
+      signature_columns: signature_00_through_signature_28
+      surface_columns:
+        - surface_ANCC
+        - surface_ASTNU
+        - surface_ASTNL
+        - surface_EGFDU
+        - surface_EGFDL
+        - surface_BUDA
+      target_raw_allowed_columns: [MD, X, Y, Z, TVT_input]
+      raw_target_formation_columns_forbidden: true
+      truth_join: after_target_free_sha_freeze
+
+method:
+  graph:
+    node_scale_ft: 256
+    nearest_unique_wells: 12
+    max_edge_distance_ft: 4000
+    initial_neighbor_query: 128
+    maximum_neighbor_query: 2048
+    query_batch_rows: 2048
+    robust_scale_floor: 1.0e-9
+    same_source_well_edges: false
+    formation_jump_squared_mean_min: 9.0
+    structural_jump_abs_z_min: 3.0
+    cut_rule: formation_and_structural
+    min_component_unique_wells: 8
+    component_eligibility_requires_fault_boundary_edge: true
+  component_field:
+    reuse_exp383_contract: true
+    query_component_limit: 8
+    min_query_component_unique_wells: 12
+    unique_wells: 32
+    max_nodes_per_well: 4
+    max_nodes: 128
+    ridge_trace_ratio: 1.0e-4
+  posterior:
+    features: [formation_signature_distance, xy_distance, known_prefix_huber_rmse]
+    temperature: 1.0
+    smooth_base_mass_floor: 0.25
+    max_components: 8
+    component_bandwidth_definition: component_node_xy_radius_p75
+    component_bandwidth_clip_ft: [500, 4000]
+    signature_covariance_ridge_ratio: 1.0e-6
+    surface_uncertainty_log_penalty: negative_half_log1p_variance_ratio
+    prefix_scale: outer_train_loo_prefix_rmse_p50
+    hard_domain_selection: false
+  path:
+    reuse_exp383_prefix_calibration: true
+    reuse_exp383_exp226_shrink: true
+    reuse_exp383_banded_solver: true
+    no_eligible_component_fallback: exact_exp383
+    support_ess_full: 32
+    support_unique_wells_full: 24
+    condition_reference: 1.0e4
+    curvature_weight: 1.0e-3
+
+model:
+  name: deterministic_fault_aware_piecewise_vector_field
+  fitted_model: false
+
+gates:
+  stage0_target_free:
+    eligible_query_coverage_min: 0.80
+    component_unique_wells_p05_min: 12
+    finite_coverage_min: 1.0
+    posterior_sum_max_abs_error: 1.0e-12
+    smooth_base_mass_min: 0.25
+    exp383_fallback_parity_max_abs_ft: 1.0e-8
+    valid_graph_rows_max: 0
+    valid_formation_reads_max: 0
+    valid_suffix_truth_reads_max: 0
+    resource_audit_wells: 16
+    projected_runtime_seconds_max: 30600
+    projected_peak_rss_gb_max: 25
+  stage1_direct:
+    pooled_rmse_gain_vs_exp383_ft_min: 0.50
+    positive_folds_min: 4
+    long_1000_plus_gain_ft_min: 0.50
+    hidden_like_spatial_gain_ft_min: 0.25
+    hidden_like_typewell_purged_gain_ft_min: 0.25
+    near_0_250_regression_max_ft: 0.05
+    eligible_row_gain_ft_min: 0.75
+    by_well_tail: report_only_for_initial_identifiability
+
+runtime:
+  accelerator: cpu
+  internet: false
+  use_amp: false
+  scientific_candidates: 1
+  reporting_folds: 5
+  fitted_models: 0
+  hmm_runs: 0
+  pf_runs: 0
+  beam_runs: 0
+  lightgbm_boosters: 0
+  replay_parent_control: false
+  resource_preflight_wells: 16
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp384-fault-aware-piecewise-stratigraphic-vector-field-train
+    train_kernel_title: exp384 fault aware piecewise stratigraphic vector field train
+    train_kernel_sources:
+      - kentookumura/exp383-all-tvt-stratigraphic-vector-drift-field-train
+
+execution:
+  implementation_authorized: true
+  implementation_approval_source: user_message_implement_exp384_2026_07_24
+  canonical_train_notebook_adopted: true
+  parent_stage_pass_required: true
+  parent_artifact_sha_required: true
+  kaggle_package_authorized: true
+  kaggle_push_authorized: false
+  kaggle_execution_authorized: false
+  kaggle_execution_approval_source: user_message_execute_exp384_2026_07_24
+  authorization_effective_after:
+    - exp383_stage0_target_free_pass
+    - exp383_stage1_direct_pass
+    - exp383_parent_manifest_sha_pin
+  prerequisite_audit:
+    checked_at: "2026-07-24"
+    local_parent_artifacts_found: false
+    kaggle_parent_kernel_found: false
+    kaggle_exp384_kernel_found: false
+    package_created: false
+    push_started: false
+    run_started: false
+    blocker: exp383_stage0_resource_fail_closed
+  inference_enabled: false
+  submission_enabled: false
+  current_mode: closed_by_parent_resource_gate
+
+closure:
+  confirmed: true
+  confirmed_at: "2026-07-25"
+  source: user_message_close_exp383_and_downstream
+  parent_decision: exp383_stage0_resource_fail_closed
+  allow_execution: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_node_edge_component_query_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_and_stable_component_result_sort
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Pin every exp383 input by logical content SHA.
+    - Record graph, components, posterior, path, and prediction logical SHA.
+    - Kaggle package, push, and execution are disabled because exp383 failed its Stage 0 resource gate.
+
+dependencies:
+  requires_pass:
+    - exp383_all_tvt_stratigraphic_vector_drift_field
+  unlocks_on_pass:
+    - exp385_gr_typewell_likelihood_on_vector_drift_paths
+
+notes:
+  - Compact self-contained train and fail-closed inference notebooks are implemented.
+  - Closed without execution because exp383 cannot provide Stage 0/1 PASS artifacts or a pinned parent SHA.
+  - The user explicitly confirmed closure of exp383 and downstream experiments.
+  - The implementation adds no fitted model, HMM, PF, Beam, or booster.

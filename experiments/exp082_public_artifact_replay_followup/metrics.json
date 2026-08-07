@@ -1,0 +1,243 @@
+{
+  "cv": null,
+  "experiment": "exp082_public_artifact_replay_followup",
+  "metric": "public_lb",
+  "notes": {
+    "candidate_submission_count": 19,
+    "direct_submit_allowed": false,
+    "kernel": "kentookumura/exp082-artifact-followup-train",
+    "kernel_version": 2,
+    "missing_required_source_count": 0,
+    "notebook_inspection_count": 7,
+    "output_dir": "/tmp/kaggle-output/exp082_public_artifact_replay_followup/train_v2",
+    "pairwise_distance_count": 153,
+    "rauff_direct_output_reference": {
+      "source": "rauffauzanrambe/rogii-sp45-wellbore-for-blend-prediction",
+      "addability": "direct_output_available_not_mountable_as_kernel_source",
+      "submission_sha256": "2b86386f19279e79e7184096f353ccf2b97785de67b268caa56aa5f85405a815",
+      "sp45_projection_sha256": "4e2bfc43b4b2202a5a9fc8808f3a42d408d86cee9c401f1eae4a1fcaa2c5edb9",
+      "w0_60_sha256": "fa95d6906d5aa2aa29bc99843dded981f6f366d9ea8a463a87fe8a6597250c42"
+    },
+    "sp45_projection_guard": {
+      "status": "guard_completed",
+      "submit_check": "pass",
+      "artifact_dir": "experiments/exp082_public_artifact_replay_followup/artifacts",
+      "recommended_submit_candidate": "candidate_fle3n_sp45_projection",
+      "reason": "mountable code-submit reproducible candidate with lower ridge-sp drift than jaemin",
+      "candidates": {
+        "candidate_fle3n_sp45_projection": {
+          "sha256": "9aa8a5d0f6ea3ef60dcad11983d40fd42884c0d9e0031956e22f40aeda7c3d0b",
+          "ridge_sp_rmse": 1.3842328570526523,
+          "pilkwang_raw_projection_rmse": 1.2568026134200825
+        },
+        "candidate_jaemin_sp45_projection": {
+          "sha256": "ca09d625aef8e23440bdc1710d7a58282f2e0a00766e141c918cb1b314914f9d",
+          "ridge_sp_rmse": 1.4133468398591007,
+          "pilkwang_raw_projection_rmse": 1.1921348392854494
+        },
+        "reference_rauff_sp45_projection_direct_output": {
+          "sha256": "4e2bfc43b4b2202a5a9fc8808f3a42d408d86cee9c401f1eae4a1fcaa2c5edb9",
+          "ridge_sp_rmse": 1.303650505082916,
+          "pilkwang_raw_projection_rmse": 1.208265532961998,
+          "addability": "direct_output_available_not_mountable_as_kernel_source"
+        }
+      },
+      "candidate_pairwise": {
+        "fle3n_vs_jaemin_rmse": 0.32498162567269323,
+        "fle3n_vs_rauff_rmse": 0.32571214858397723,
+        "jaemin_vs_rauff_rmse": 0.2303303142159804
+      }
+    },
+    "submission": {
+      "ref": "53885305",
+      "status": "complete",
+      "date_utc": "2026-06-20 14:32:10.007000",
+      "kernel": "kentookumura/exp082-fle3n-final-source-infer",
+      "kernel_version": 1,
+      "description": "",
+      "output_dir": "/tmp/kaggle-output/exp082_public_artifact_replay_followup/fle3n_final_source_inference_v1",
+      "submission_path": "/tmp/kaggle-output/exp082_public_artifact_replay_followup/fle3n_final_source_inference_v1/submission.csv",
+      "submission_sha256": "40ffcd3daf554fc6b79f472bc5da8d0e4f7d0cb88f8a464a87bbb826c5a15ceb",
+      "rows": 14151,
+      "public_score": 7.601,
+      "private_score": null,
+      "no_public_output_copy": true,
+      "source_notebook": "fleongg/fle3n-rogii-v4",
+      "stopped_after_source_cell": 61,
+      "submit_check": "pass",
+      "route": "ensemble",
+      "monitor_status": "complete",
+      "improvement_vs_previous_exp082_sp45_source_port_lb": -0.256
+    },
+    "read_error_count": 1,
+    "valid_submission_count": 18,
+    "failed_copy_wrapper_submission": {
+      "ref": "53853237",
+      "status": "complete_with_hidden_rerun_error",
+      "date_utc": "2026-06-19 15:14:56.860000",
+      "kernel": "kentookumura/exp082-fle3n-sp45-infer",
+      "kernel_version": 2,
+      "description": "exp082 fle3n SP45 projection notebook v2 sha 9aa8a5d0",
+      "error_description": "Your notebook hit an unhandled error while rerunning your code. Note that the hidden dataset can be larger/smaller/different than the public dataset",
+      "output_dir": "/tmp/kaggle-output/exp082_public_artifact_replay_followup/inference_v2",
+      "submission_path": "/tmp/kaggle-output/exp082_public_artifact_replay_followup/inference_v2/submission.csv",
+      "submission_sha256": "9aa8a5d0f6ea3ef60dcad11983d40fd42884c0d9e0031956e22f40aeda7c3d0b",
+      "direct_csv_submit": "rejected_400_notebook_only_competition",
+      "public_score": null
+    },
+    "source_port_submission": {
+      "ref": "53854058",
+      "status": "complete",
+      "date_utc": "2026-06-19 15:46:07.987000",
+      "kernel": "kentookumura/exp082-fle3n-sp45-source-infer",
+      "kernel_version": 1,
+      "script_version_id": "328675253",
+      "description": "exp082 fle3n SP45 source-port v1 sha 9fb152e8",
+      "error_description": null,
+      "output_dir": "/tmp/kaggle-output/exp082_public_artifact_replay_followup/source_inference_v1",
+      "submission_path": "/tmp/kaggle-output/exp082_public_artifact_replay_followup/source_inference_v1/submission.csv",
+      "submission_sha256": "9fb152e8ecc045b602597d8bdf87578d1f3ec4aa34eff0e857aceccfb2e75eb1",
+      "sp45_projection_file_sha256": "63bdefba748ffc2153c0dd7cb33dd2ddf7b66eefce8ff15b12ff50d34880ac34",
+      "rows": 14151,
+      "public_score": 7.857,
+      "no_public_output_copy": true,
+      "source_notebook": "fleongg/fle3n-rogii-v4",
+      "stopped_after_source_cell": 37,
+      "submit_check": "pass",
+      "direct_csv_submit": "rejected_400_notebook_only_competition",
+      "distance_to_public_fle3n_sp45_rmse": 0.5129483707023045,
+      "distance_to_ridge_anchor_rmse": 1.2660652111873258,
+      "route": "ensemble"
+    },
+    "sp45_fleongg_source_port_next_candidates": {
+      "status": "next_candidate_guard_completed",
+      "artifact_prefix": "experiments/exp082_public_artifact_replay_followup/artifacts/sp45_fleongg_source_port_next_candidates",
+      "recommended_next_action": "fle3n_final_blend source-port run is complete; decide whether to submit kentookumura/exp082-fle3n-final-source-infer v1",
+      "candidates": {
+        "fle3n_final_blend": {
+          "decision": "ready_for_one_hidden_compatible_source_port_run",
+          "sha256": "359b3e779d360ac8117a7da8040ef780905381aec160d385b72e354ef710279b",
+          "rmse_vs_exp082_submitted_source_port": 1.5174540517516086,
+          "source_blocking_risks": {}
+        },
+        "jaemin_sp45_fleongg_final": {
+          "decision": "ready_for_one_hidden_compatible_source_port_run",
+          "sha256": "d8b0af2cc9b3d7f299dd63a6cf6333918c222c6790eba8a69eab40de3e8fef45",
+          "rmse_vs_exp082_submitted_source_port": 1.5019562456695856,
+          "source_blocking_risks": {}
+        },
+        "pilkwang_raw_projection": {
+          "decision": "blocked_missing_archived_source",
+          "sha256": "2caccb1019fec9f1cb07961d1dfe68af33e84b3843a656ab51f9bbebef138b8f",
+          "rmse_vs_exp082_submitted_source_port": 1.352145079171692,
+          "source_blocking_risks": {
+            "missing_archived_source": 1
+          }
+        },
+        "pilkwang_w0_60_blend": {
+          "decision": "blocked_missing_archived_source",
+          "sha256": "320a08151fb29ace415c6a6e88c5ecd5fc565ba24526eabe0eb83826242b6981",
+          "rmse_vs_exp082_submitted_source_port": 1.5281993303261707,
+          "source_blocking_risks": {
+            "missing_archived_source": 1
+          }
+        }
+      },
+      "pairwise": {
+        "fle3n_final_vs_jaemin_final_rmse": 0.27572990384207474,
+        "pilkwang_raw_vs_w0_60_rmse": 1.3477514729448277
+      }
+    },
+    "fle3n_final_blend_source_port_run": {
+      "status": "kaggle_commit_completed_submit_check_pass",
+      "kernel": "kentookumura/exp082-fle3n-final-source-infer",
+      "kernel_version": 1,
+      "output_dir": "/tmp/kaggle-output/exp082_public_artifact_replay_followup/fle3n_final_source_inference_v1",
+      "submission_path": "/tmp/kaggle-output/exp082_public_artifact_replay_followup/fle3n_final_source_inference_v1/submission.csv",
+      "rows": 14151,
+      "submission_sha256": "40ffcd3daf554fc6b79f472bc5da8d0e4f7d0cb88f8a464a87bbb826c5a15ceb",
+      "sp45_projection_sha256": "6cf719da66759e023873a277ef491fd1ce6c11395d6ec0932ca59e6f2d40a329",
+      "fleongg_pretrained_sha256": "5c161e22d3e7c2cabb7f4cd26eb11502a64ac7b4702e49df2e2d5afcbcc640db",
+      "blend_report_sha256": "9ff7368bba91d2ac9b06d45ee683a1e27b0744e905324b6275a4c9de5c872b86",
+      "submit_check": "pass",
+      "validate_submission": "pass",
+      "no_public_output_copy": true,
+      "runtime_seconds_to_metrics": 770.8,
+      "submitted": true,
+      "distance_to_public_fle3n_final_rmse": 0.2927602670750088,
+      "distance_to_public_jaemin_final_rmse": 0.37271427341011687,
+      "distance_to_previous_exp082_sp45_source_port_rmse": 1.6658824811394433,
+      "distance_to_ridge_sp_rmse": 2.042215414662201,
+      "submission_vs_sp45_distance": {
+        "rmse": 1.2288618859795053,
+        "p95_abs": 2.634026025463754,
+        "max_abs": 4.237593928652132
+      },
+      "sp45_vs_fleongg_distance": {
+        "rmse": 2.730804191065523,
+        "p95_abs": 5.853391167698646,
+        "max_abs": 9.416875397002514
+      },
+      "submission_ref": "53885305",
+      "public_score": 7.601,
+      "submission_date_utc": "2026-06-20 14:32:10.007000",
+      "monitor_status": "complete",
+      "private_score": null
+    },
+    "jaemin_final_source_port_run": {
+      "status": "submitted_public_lb_7_602_not_adopted",
+      "kernel": "kentookumura/exp082-jaemin-final-source-infer",
+      "kernel_version": 1,
+      "output_dir": "/tmp/kaggle-output/exp082_public_artifact_replay_followup/jaemin_final_source_inference_v1",
+      "submission_path": "/tmp/kaggle-output/exp082_public_artifact_replay_followup/jaemin_final_source_inference_v1/submission.csv",
+      "rows": 14151,
+      "submission_sha256": "f789960d9a2e9f8bdaa107dd56f723d35035f1b0fe82673d148cc77f5071c5b9",
+      "sp45_projection_sha256": "30ba6b0b238b9e2a95e9c70949085c39224022d051f323c4fddbd3aa3d2bc506",
+      "fleongg_pretrained_sha256": "4bfa4d16051049db173499367ddb70e6a9fdfeb614826a122bc337d486fdee90",
+      "blend_report_sha256": "0ac0d9bb21365676176122cbf2b79f31f797ffdde32c4e2277cf3119a490f953",
+      "submit_check": "pass",
+      "validate_submission": "pass",
+      "no_public_output_copy": true,
+      "no_kaggle_input_notebooks_dependency": true,
+      "runtime_seconds_to_metrics": 735.8,
+      "submitted": true,
+      "observed_refs": [
+        "53896556",
+        "53896658"
+      ],
+      "scored_ref": "53896556",
+      "scored_ref_status": "complete",
+      "latest_observed_ref": "53896658",
+      "latest_observed_status": "complete_no_public_score",
+      "public_score": 7.602,
+      "private_score": null,
+      "prediction_min": 11592.354866195146,
+      "prediction_max": 12239.478352003349,
+      "prediction_mean": 11904.457569629783,
+      "prediction_std": 278.55495262937006,
+      "distance_to_fle3n_final_source_port_rmse": 0.3344138668222285,
+      "distance_to_public_jaemin_final_rmse": 0.40251781071025056,
+      "distance_to_public_fle3n_final_rmse": 0.47873489820346365,
+      "distance_to_ridge_sp_rmse": 2.046233717654264,
+      "submission_vs_sp45_distance": {
+        "rmse": 1.3041901522433978,
+        "p95_abs": 2.554989858753288,
+        "max_abs": 3.512800817914467
+      },
+      "submission_vs_fleongg_distance": {
+        "rmse": 1.594010186075258,
+        "p95_abs": 3.122765382920079,
+        "max_abs": 4.293423221897683
+      },
+      "sp45_vs_fleongg_distance": {
+        "rmse": 2.898200338318656,
+        "p95_abs": 5.677755241673367,
+        "max_abs": 7.80622403981215
+      }
+    },
+    "route_note": "Source-port submissions are SP45 + fleongg public-notebook final blends; they are tracked as ensemble route, not as ml_model or pf_beam alone. Current scored anchor remains fle3n final ref=53885305 / Public LB 7.601 until jaemin scoring completes."
+  },
+  "private_lb": null,
+  "public_lb": 7.601,
+  "status": "submitted_jaemin_final_source_port_public_lb_7_602_not_adopted"
+}

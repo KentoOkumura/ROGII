@@ -1,0 +1,515 @@
+experiment:
+  name: exp419_exp226_guided_defensive_mixture_pf
+  description: >-
+    Use only the fold-safe exp226 geometry-only local surface rate as an
+    importance-corrected defensive-mixture proposal for the exp404 x1.0
+    temperature-5 likelihood-PF. The exp226 absolute path is never used as a
+    state, offset, emission, output, or blend term.
+  hypothesis: >-
+    Reallocating finite particles toward multiple neighborhoods of the exp226
+    geometry rate, while retaining 50 percent of the original transition
+    proposal and correcting by p0/q, reduces the support-loss mechanism found
+    in exp410 without changing the infinite-particle target posterior.
+  route: pf_beam
+  status: completed_train_side_gate_failed_closed
+  created_at: "2026-07-27"
+  updated_at: "2026-07-29"
+  inference_enabled: false
+
+lineage:
+  parent: exp404_scale5_sigma_gr_likelihood_pf_ablation
+  geometry_parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  mechanism_evidence:
+    - exp410_likpf_particle_resampling_basin_audit
+  negative_reference:
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - docs/06_reproducibility.md
+  steering: ../../.steering/20260727-exp419-exp226-guided-defensive-mixture-pf
+  diff_summary: >-
+    Keep the exp072 target transition, position conditional, x1.0 GR emission,
+    initialization, ESS resampling, roughening, 500 particles, 128 seeds, and
+    exp404 temperature-5 seed aggregation fixed. Change only the finite-particle
+    rate proposal to a defensive mixture centered on the original transition
+    and the fold-safe exp226 geometry rate, with exact p0/q importance
+    correction. Reuse the saved exp404 scale5 prediction as control and rerun
+    no control PF, exp226, HMM, Beam, or model.
+
+implementation:
+  enabled: true
+  scope: train_side_candidate_implementation_only
+  design_approval_received: true
+  design_approval_source: user_message_2026_07_27_create_backlog_experiment_steering_design_only
+  implementation_approval_received: true
+  implementation_approval_source: user_message_2026_07_27_implement_exp419
+  scaffold_created: true
+  notebook_placeholders_only: false
+  canonical_notebook_is_placeholder: false
+  canonical_notebooks_remain_placeholders: false
+  train_notebook_candidate_state: adopted_as_canonical_train_notebook
+  canonical_notebook_adopted: true
+  jupytext_source_created: true
+  compact_train_notebook_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  training_enabled: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: full_train_single_variant_fold_safe_exp226_guided_importance_pf
+  metric: rmse
+  metric_weighting: unweighted_suffix_rows
+  n_reporting_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  primary_control: likpf_scale_5_x1p0
+  primary_candidate: exp226_guided_defensive_mixture_scale5
+  standalone_reference: exp226_final_oof
+  gain_definition: rmse_reference_minus_rmse_candidate
+  saved_control_rmse_ft: 10.914522073423171
+  saved_exp226_final_rmse_ft: 9.427109596582213
+  truth_attachment: after_candidate_prediction_target_free_diagnostics_and_logical_sha_freeze
+  leakage_policy:
+    - >-
+      Proposal generation may read MD, Z, raw GR, Type Well inputs, last-known
+      state, and the fold-safe exp226 tvt_geop column only.
+    - >-
+      The exp226 final prediction, gr_delta, U projection, suffix TVT, error,
+      fold, hidden-like role, and Public LB are forbidden before candidate
+      freeze.
+    - >-
+      Candidate identity, prediction bytes, logical SHA, proposal diagnostics,
+      and resource ledger are frozen before evaluation fields are attached.
+    - >-
+      exp410 cause labels, truth-best seed, episode membership, and errors never
+      activate or alter proposal generation.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  observed_log_column: GR
+  id_column: id
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  exp226_fold_safe_geometry:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    kernel_source: kentookumura/exp226-k16-kappa-repro-train
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    proposal_columns: [well_id, row_idx, suffix_offset, tvt_geop]
+    evaluation_only_columns: [tvt_pred, fold]
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    forbidden_before_freeze:
+      - tvt_pred
+      - gr_delta
+      - tvt_true
+      - fold
+      - error
+      - abs_error
+  exp404_frozen_predictions:
+    source: exp404_scale5_sigma_gr_likelihood_pf_ablation
+    kernel_source: kentookumura/exp404-scale5-sigma-gr-likpf-ablation-train
+    source_kernel_version: 1
+    dataset_source: kentookumura/exp404-v1-frozen-predictions
+    filename: exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin
+    control_column: likpf_scale_5_x1p0
+    expected_raw_sha256: b3699432a691229da5a6562ce74e0b84f1bee3021bd80d650526906f5aa390f8
+    expected_decompressed_sha256: 00fe1b90fce84bd601b4b91442d9fc698200aafadd48658f7d8c26ec1fbe0d00
+    expected_logical_sha256: 5f4b6e715081b598b0a34607ad0c81339d0ecd5882ea3a45dd79f33123959a00
+    expected_schema_sha256: 2372de95ab154ddd2b1bfe545923233bc41f96104e66c32ab93e6f0fa99bee88
+    candidates:
+      - /kaggle/input/exp404-v1-frozen-predictions
+      - /kaggle/input/datasets/kentookumura/exp404-v1-frozen-predictions
+      - /tmp/exp404-v1-frozen-predictions-dataset
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_role_counts:
+      hidden_like_spatial:
+        train: 573
+        valid: 200
+      hidden_like_typewell_purged:
+        train: 557
+        valid: 200
+        purged_train_excluded: 16
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+  exp410_target_wells:
+    source: exp410_likpf_particle_resampling_basin_audit
+    filename: pf_target_wells.csv
+    expected_sha256: ae9d4fd7429ad2b51f8d620a0413e74cb55efccefbb30cce0e2031230548f30e
+    expected_wells: 496
+    use: evaluation_only_after_candidate_freeze
+    candidates:
+      - assets
+      - experiments/exp410_likpf_particle_resampling_basin_audit/assets
+      - /kaggle/input/notebooks/kentookumura/exp410-likpf-particle-resampling-basin-audit-train/assets
+      - /kaggle/input/exp410-likpf-particle-resampling-basin-audit-train/assets
+  exp410_persistent_episodes:
+    source: exp410_likpf_particle_resampling_basin_audit
+    filename: pf_persistent_offset_episodes.csv
+    expected_sha256: 0bffbc6bd6d89fdbfa11aa86419df8dbd84b1819af717413f0ae3bfa82799804
+    expected_episodes: 839
+    expected_episode_rows: 819288
+    use: evaluation_only_after_candidate_freeze
+    candidates:
+      - assets
+      - experiments/exp410_likpf_particle_resampling_basin_audit/assets
+      - /kaggle/input/notebooks/kentookumura/exp410-likpf-particle-resampling-basin-audit-train/assets
+      - /kaggle/input/exp410-likpf-particle-resampling-basin-audit-train/assets
+  exp410_baseline_row_ledgers:
+    source: exp410_likpf_particle_resampling_basin_audit
+    use: evaluation_only_after_candidate_and_target_free_support_freeze
+    baseline_support_outside_rate: 0.642853
+    shards:
+      - filename: exp410_likpf_particle_resampling_basin_audit_row_ledger.csv.gz
+        expected_raw_sha256: e76bbc0a02d8b398c6736cada0839a16eec2699a6d1f554eb343ad9cf4ccdc43
+        expected_decompressed_sha256: e81e4653879a0651c1bd0b24f383e191cf063759186ebff364e74f6d72a37804
+        candidates:
+          - experiments/exp410_likpf_particle_resampling_basin_audit/kaggle/output/full_shard0_v1/artifacts
+          - /kaggle/input/notebooks/kentookumura/exp410-likpf-particle-audit-shard0/artifacts
+      - filename: exp410_likpf_particle_resampling_basin_audit_row_ledger.csv.gz
+        expected_raw_sha256: 95f6b614cd54af78e62243dd77eee335b71608a505cc1f819358fc1bedb5bad8
+        expected_decompressed_sha256: 5e83557e41e451155275194e493c9d859faf12d0fba3af745286fc2b357c87f6
+        candidates:
+          - experiments/exp410_likpf_particle_resampling_basin_audit/kaggle/output/full_shard1_v1/artifacts
+          - /kaggle/input/notebooks/kentookumura/exp410-likpf-particle-audit-shard1/artifacts
+      - filename: exp410_likpf_particle_resampling_basin_audit_row_ledger.csv.gz
+        expected_raw_sha256: 225d6806cef56c39a94514d6c7971d73aa0fd71783a6b7ae5e425751b8584638
+        expected_decompressed_sha256: 49793a4bc6b3ce5925f202575aa61f78e5e682ac0d8b72fd2f996be531f22b77
+        candidates:
+          - experiments/exp410_likpf_particle_resampling_basin_audit/kaggle/output/full_shard2_v1/artifacts
+          - /kaggle/input/notebooks/kentookumura/exp410-likpf-particle-audit-shard2/artifacts
+      - filename: exp410_likpf_particle_resampling_basin_audit_row_ledger.csv.gz
+        expected_raw_sha256: a892a4fe3fdfab1001d88336865c8363513c7e2fad35693c22e4c0b58a6caaee
+        expected_decompressed_sha256: 8565d6d6554196dde552c08ba529398ecbaec40d9b9a8f380b97d067dd10f988
+        candidates:
+          - experiments/exp410_likpf_particle_resampling_basin_audit/kaggle/output/full_shard3_v1/artifacts
+          - /kaggle/input/notebooks/kentookumura/exp410-likpf-particle-audit-shard3/artifacts
+
+model:
+  name: exp226_guided_defensive_mixture_scale5
+  estimator: likelihood_weighted_particle_filter
+  fitted_model: false
+  active_variants:
+    - exp226_guided_defensive_mixture_scale5
+  state:
+    position: surface_tvt_plus_z
+    rate: surface_rate_per_md
+  target_transition:
+    momentum: 0.998
+    rate_noise: 0.002
+    position_noise: 0.005
+    minimum_md_delta: 1.0
+    rate_mean_formula: momentum_times_previous_particle_rate
+    position_mean_formula: previous_position_plus_sampled_rate_times_md_delta
+  geometry_rate:
+    geometry_surface_formula: tvt_geop_plus_z
+    formula: geometry_surface_difference_divided_by_md_delta
+    first_suffix_previous_surface: last_known_tvt_input_plus_z
+    uses_gr_correction: false
+    uses_absolute_geometry_as_state: false
+  rate_proposal:
+    family: importance_corrected_defensive_gaussian_mixture
+    target_component:
+      weight: 0.5
+      center: target_transition_rate_mean
+      sigma_multiplier: 1.0
+    geometry_components:
+      weights: [0.16666666666666666, 0.16666666666666666, 0.16666666666666666]
+      center: fold_safe_exp226_geometry_rate
+      sigma_multipliers: [1.0, 4.0, 16.0]
+    weight_sum: 1.0
+    importance_ratio: target_rate_density_divided_by_mixture_rate_density
+    maximum_importance_ratio_by_construction: 2.0
+    importance_clipping: false
+  replay:
+    split_key: train
+    observation_likelihood: raw_gr_gaussian_exp072_x1p0
+    position_conditional: classic_exp072_surface_state
+    seed_aggregation: full_suffix_temperature_5_log_marginal_likelihood_weighted_mean
+    aggregation_mode: batch_noncausal
+  pf:
+    particles: 500
+    seeds: 128
+    seed_index_first: 0
+    seed_index_last: 127
+    typewell_grid_step_ft: 0.2
+    initial_position_spread_ft: 4.5
+    initial_rate_spread: 0.01
+    resample_threshold_fraction: 0.5
+    resampling: systematic
+    rough_position: 0.10
+    rough_rate: 0.001
+    emission: capped_gaussian
+    emission_clip_z2: 600.0
+    gr_sigma_multiplier: 1.0
+    gr_sigma_clip: [10.0, 60.0]
+    typewell_tvt_pad_ft: 100.0
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    output_dtype: float32
+  aggregation:
+    temperature: 5.0
+    evidence_source: importance_corrected_incremental_normalizer
+    formula: softmax_centered_total_log_marginal_likelihood_divided_by_temperature
+
+guards:
+  technical:
+    require_all_input_sha_matches: true
+    require_expected_rows: 3783989
+    require_expected_wells: 773
+    require_expected_folds: [0, 1, 2, 3, 4]
+    require_id_row_order_fold_identity: true
+    require_all_wells_completed_without_fallback: true
+    require_finite_candidate_coverage: 1.0
+    require_proposal_allowlist_exact_match: true
+    require_mixture_weight_sum: 1.0
+    mixture_weight_sum_absolute_tolerance: 1.0e-15
+    require_positive_finite_proposal_density: true
+    maximum_importance_ratio: 2.000000000001
+    require_no_importance_clipping: true
+    require_geometry_weight_zero_exp404_parity_atol_ft_after_float32: 0.000001
+    require_saved_control_rmse_parity_atol_ft: 0.00001
+    maximum_truth_error_fold_hidden_reads_before_candidate_freeze: 0
+    require_execution_count_match: true
+  mechanism:
+    minimum_direct_rmse_gain_vs_scale5_ft: 0.10
+    minimum_improved_folds_vs_scale5: 4
+    minimum_raw_gr_observed_gain_ft: 0.10
+    maximum_raw_gr_missing_regression_ft: 0.02
+    maximum_high_missing_regression_ft: 0.02
+    maximum_long_tail_1000_plus_regression_ft: 0.02
+    maximum_hidden_like_spatial_regression_ft: 0.02
+    maximum_hidden_like_typewell_purged_regression_ft: 0.02
+    minimum_exp410_majority_seed_predictive_support_outside_rate_reduction_percentage_points: 5.0
+    minimum_exp410_fixed_episode_sse_reduction_fraction: 0.10
+    maximum_by_well_delta_rmse_p95_ft: 0.25
+    maximum_worst_well_regression_ft: 2.0
+    require_all_checks: true
+  standalone_adoption:
+    minimum_direct_rmse_gain_vs_exp226_final_ft: 0.03
+    minimum_improved_folds_vs_exp226_final: 3
+    require_mechanism_gate_pass: true
+    require_all_checks: true
+  decision:
+    mechanism_and_adoption_pass_action: eligible_for_separate_same_exp_inference_design_approval
+    mechanism_only_pass_action: record_positive_proposal_mechanism_no_inference_promotion
+    fail_action: proposal_rejected_close_without_same_oof_rescue
+  forbidden:
+    - prediction_blend
+    - hmm_or_fixed_offset_state
+    - exp226_absolute_path_prior_or_output
+    - exp226_final_or_gr_delta_or_u_projection
+    - adaptive_proposal_or_particle_allocation
+    - mixture_weight_or_width_search
+    - importance_clipping
+    - gr_sigma_or_process_noise_or_roughening_change
+    - particle_or_seed_count_change
+    - donor_distance_or_well_or_row_gate
+    - parent_pf_control_rerun
+    - same_oof_rescue
+    - inference_or_submission_without_separate_approval
+
+execution:
+  stage: merge_v1_complete_gate_failed_closed
+  design_approved: true
+  implementation_approved: true
+  canonical_notebook_adoption_approved: true
+  kaggle_package_approved: true
+  kaggle_push_approved: true
+  train_run_approved: true
+  inference_approved: false
+  submission_approved: false
+  scientific_variants: 1
+  candidate_pf_well_runs: 773
+  parent_pf_control_reruns: 0
+  exp226_reruns: 0
+  seeds_per_well: 128
+  seed_well_trajectories: 98944
+  particles_per_seed: 500
+  particle_starts: 49472000
+  reporting_folds: 5
+  well_shard_count: 4
+  shard_policy: deterministic_lpt_suffix_rows
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  hmm_well_runs: 0
+  beam_well_runs: 0
+  gpu_runs: 0
+  selected_stage: merge
+  selected_shard_index: 0
+  merge_shard_dirs:
+    - /kaggle/input/notebooks/kentookumura/exp419-exp226-guided-defensive-mixture-shard0
+    - /kaggle/input/notebooks/kentookumura/exp419-exp226-guided-defensive-mixture-shard1
+    - /kaggle/input/notebooks/kentookumura/exp419-exp226-guided-defensive-mixture-shard2
+    - /kaggle/input/notebooks/kentookumura/exp419-exp226-guided-defensive-mixture-shard3
+  preflight_probe_run_approved: true
+  preflight_probe_well_runs: 1
+  technical_control_probe_well_runs: 1
+  probe_run_approved: true
+  shard_runs:
+    - shard_index: 0
+      kernel_id: kentookumura/exp419-exp226-guided-defensive-mixture-shard0
+      kernel_id_no: 128832582
+      kernel_version: 1
+      status: complete
+      package: kaggle/shard0_v1
+    - shard_index: 1
+      kernel_id: kentookumura/exp419-exp226-guided-defensive-mixture-shard1
+      kernel_id_no: 128832726
+      kernel_version: 1
+      status: complete
+      package: kaggle/shard1_v1
+    - shard_index: 2
+      kernel_id: kentookumura/exp419-exp226-guided-defensive-mixture-shard2
+      kernel_id_no: 128912231
+      kernel_version: 1
+      status: complete
+      package: kaggle/shard2_v1
+    - shard_index: 3
+      kernel_id: kentookumura/exp419-exp226-guided-defensive-mixture-shard3
+      kernel_id_no: 128912324
+      kernel_version: 1
+      status: complete
+      package: kaggle/shard3_v1
+
+runtime:
+  device: cpu
+  use_amp: false
+  num_workers: 1
+  numba_num_threads: 1
+  conservative_seconds_per_shard: 21600
+  hard_seconds_per_shard: 32400
+  maximum_peak_rss_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    run_on_push: true
+    kernel_id: kentookumura/exp419-exp226-guided-defensive-mixture-merge
+    kernel_id_no: 128974840
+    kernel_version: 1
+    dataset_sources:
+      - kentookumura/exp404-v1-frozen-predictions
+    kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp410-likpf-particle-audit-shard0
+      - kentookumura/exp410-likpf-particle-audit-shard1
+      - kentookumura/exp410-likpf-particle-audit-shard2
+      - kentookumura/exp410-likpf-particle-audit-shard3
+      - kentookumura/exp419-exp226-guided-defensive-mixture-preflight
+      - kentookumura/exp419-exp226-guided-defensive-mixture-shard0
+      - kentookumura/exp419-exp226-guided-defensive-mixture-shard1
+      - kentookumura/exp419-exp226-guided-defensive-mixture-shard2
+      - kentookumura/exp419-exp226-guided-defensive-mixture-shard3
+    bootstrap_dependency_files:
+      - source: experiments/exp410_likpf_particle_resampling_basin_audit/assets/pf_target_wells.csv
+        destination: assets/pf_target_wells.csv
+      - source: experiments/exp410_likpf_particle_resampling_basin_audit/assets/pf_persistent_offset_episodes.csv
+        destination: assets/pf_persistent_offset_episodes.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: sha256_likpf_train_well_modulo_plus_one_then_seed_index
+  seed_formula: 'sha256("likpf::train::<well_id>") % 2147483647 + 1 + seed_index'
+  stochastic_components:
+    - defensive_mixture_component_draw
+    - likelihood_pf_particle_initialization
+    - likelihood_pf_particle_propagation
+    - likelihood_pf_systematic_resampling
+    - likelihood_pf_resampling_roughening
+  parallel_rng_policy: stable_per_well_seed_numba_single_worker_shard_order_independent
+  parity_rng_policy: geometry_weight_zero_disables_component_draw_and_preserves_exp404_rng_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    code_sha: true
+    config_sha: true
+    proposal_contract_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Every shard records well identity, suffix rows, runtime, peak RSS, code/config SHA, and prediction logical SHA.
+    - A fixed probe well must reproduce candidate predictions and diagnostics in a separate run.
+    - A deterministic anchor claim is forbidden until full coverage, all SHAs, and rerun parity pass.
+  probe_well: 01869cd4
+  probe_source:
+    filename: exp419_exp226_guided_defensive_mixture_pf_preflight_probe_candidate_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp419-exp226-guided-defensive-mixture-preflight/artifacts
+      - /kaggle/input/exp419-exp226-guided-defensive-mixture-preflight/artifacts
+      - experiments/exp419_exp226_guided_defensive_mixture_pf/kaggle/output/preflight_v1/artifacts
+  probe_report:
+    filename: exp419_exp226_guided_defensive_mixture_pf_preflight_probe_report.json
+    expected_sha256: d8b5fba85859f17337496fa11cb791152df096f13c7c84fcf585db6e0b05852c
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp419-exp226-guided-defensive-mixture-preflight/artifacts
+      - /kaggle/input/exp419-exp226-guided-defensive-mixture-preflight/artifacts
+      - experiments/exp419_exp226_guided_defensive_mixture_pf/kaggle/output/preflight_v1/artifacts
+
+results:
+  kaggle_merge_kernel: kentookumura/exp419-exp226-guided-defensive-mixture-merge
+  kaggle_merge_kernel_id_no: 128974840
+  kaggle_merge_kernel_version: 1
+  status: train_side_guided_defensive_mixture_gate_failed_closed
+  rows: 3783989
+  wells: 773
+  candidate_rmse_ft: 10.680074152793843
+  saved_control_rmse_ft: 10.914522073423171
+  gain_vs_saved_control_ft: 0.23444792062932862
+  improved_folds_vs_saved_control: 4
+  saved_exp226_final_rmse_ft: 9.427109596582222
+  gain_vs_saved_exp226_final_ft: -1.2529645562116212
+  improved_folds_vs_saved_exp226_final: 1
+  technical_gate_passed: true
+  mechanism_gate_passed: false
+  standalone_adoption_gate_passed: false
+  mechanism_positive: false
+  support_outside_rate_reduction_percentage_points: -33.29122359902744
+  persistent_episode_sse_reduction_fraction: 0.1482130574067695
+  raw_gr_observed_gain_ft: 0.16554386971295187
+  hidden_like_spatial_gain_ft: -0.1158233436125844
+  by_well_rmse_delta_p95_ft: 5.766212571731278
+  worst_well_rmse_regression_ft: 20.570237512061006
+  prediction_logical_content_sha256: 2465d2aae907af57ad16daa0588d3210b8d201bad5f622f4408f5f4d3b701740
+  prediction_raw_gzip_sha256: 0165104cc606c1a5d64f7682f9ae1ad946f8b5e490c0efc15bf8a10c06887789
+  prediction_decompressed_sha256: 8b7e8fc05a4cf529d0f9d4fe1cab8fc041c30eeb88e555e55f0aaf2c4255ea43
+  artifact_manifest_sha256: fa7a2be4d494edf9813c56647fc52f8fba02f7697bcf3e2c14d1967bac66ce0b
+  decision: proposal_rejected_close_without_same_oof_rescue
+
+inference:
+  enabled: false
+  mode: disabled_scientific_gate_failed
+  selected_candidate: null
+  notes:
+    - >-
+      Train-side preflight, four-shard replay, strict merge, and all gates are
+      complete. The mechanism and standalone adoption gates failed, so raw-test
+      regeneration, inference, and submission are scientifically ineligible.
+    - >-
+      Same-OOF rescue by mixture weights, widths, clipping, GR sigma, process
+      noise, roughening, particles, seeds, or well/row gating is forbidden.

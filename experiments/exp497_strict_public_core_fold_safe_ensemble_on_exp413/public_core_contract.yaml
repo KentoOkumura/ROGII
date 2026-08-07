@@ -1,0 +1,67 @@
+contract: strict_public_core_v1
+source:
+  slug: raunakdey07/rogii-stacked-ensemble
+  id_no: 128237178
+  source_sha256: 88c7b99e234fdbd5620c0045df294d9167eac84e56f538ceb3f2449a677a5454
+
+included_structure:
+  - likelihood_pf_scale_bank
+  - beam_mean
+  - last_known_hold
+  - well_shape_selector_concept
+  - sp45_residual_ml_branch
+  - positive_ridge_stack
+  - robust_u_projection
+  - independent_learned_trajectory_branch
+  - md_warmup
+  - savgol_trajectory_smoothing
+  - constant_internal_blends
+
+refit_inside_outer_train:
+  - well_shape_thresholds
+  - well_shape_bin_to_variant_map
+  - residual_ml_to_physics_weight
+  - raw_to_projected_sp45_weight
+  - learned_model_to_likpf_scale5_weight
+  - projected_sp45_to_learned_weight
+
+excluded_public_specific:
+  symbols_and_labels:
+    - Q0522
+    - A27
+    - total_shift_vs_6p809_ft
+    - _EX_EXPECTED_WELL
+    - _A27_EXPECTED_TARGET
+  behaviors:
+    - fixed_well_id_shift_or_overlay
+    - same_well_contact_reconstruction
+    - visible_prefix_candidate_selection
+    - visible_prefix_final_correction
+    - public_tuned_bimodal_branch_hedge
+    - model_package_tiny_correction
+    - precomputed_submission_fallback
+    - public_output_copy
+    - public_cardinality_or_sha_selection
+
+fold_safety:
+  outer_folds: 5
+  inner_folds: 4
+  group: well
+  outer_valid_excluded_from:
+    - base_model_fit
+    - early_stopping
+    - ridge_meta_fit
+    - physical_selector_fit
+    - internal_weight_fit
+    - formation_plane_knn_pool
+    - dense_ancc_pool
+  truth_policy: freeze_outer_valid_prediction_before_truth_attach
+
+implementation_status:
+  stage0_preflight_implemented: true
+  route_execution_implemented: true
+  implementation_scope: stage0_plus_stage_p_m1_m2_e_kaggle_package_and_run
+  executable_notebook: true
+  executable_compact_stage0_candidate: true
+  kaggle_package: true
+  kaggle_run: false

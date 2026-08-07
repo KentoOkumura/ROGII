@@ -1,0 +1,149 @@
+experiment:
+  name: "exp106_strict_exp072_pf_z_multiseed_scale_cache"
+  description: Train-side cache audit that reproduces exp072 pf_z with strict parity, then extends it to multi-seed/scale features; direct replacement is rejected, but pf_z_ms_scale_3 and quality/delta columns remain lower-priority selector candidates and ML add-only feature candidates.
+  route: pf_beam
+  status: completed_train_side_audit_rejected
+  created_at: "2026-06-22"
+  updated_at: "2026-06-23"
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  comparison_parents:
+    - exp104_pf_z_seedbag_scale_cache
+    - exp100_pf_z_unified_velocity_observation_prior
+    - exp072_exp063_full_replay_feature_cache
+  implementation_source: strict_exp072_pf_z_multiseed_scale_cache.py
+  diff_summary: Keeps exp072's original pf_z state, transition, GR likelihood, Z velocity prior, clamp, resampling, and absolute TVT output transform. Adds seed-1 parity regeneration and strict multi-seed/scale cache features without modifying exp072 artifacts.
+
+validation:
+  strategy: train_well_pseudotail_candidate_parity_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_1ft
+    - within_2ft
+    - within_5ft
+    - within_10ft
+    - bucket_rmse_by_md_since
+    - bucket_rmse_by_row_idx
+    - worst_well_rmse
+    - path_switch_count
+    - mean_abs_step
+    - p95_abs_acceleration
+    - parity_abs_diff
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp072_rows
+  leakage_policy:
+    - Existing exp072 pf_z and likpf candidates are read from the raw-train-only feature cache.
+    - strict pf_z regeneration uses raw horizontal/typewell files, finite prefix TVT_input rows, GR, MD, and Z only.
+    - exp072 TVT-state PF fitting uses only prefix rows for beta/intercept/zsig and last prefix rows for initial velocity.
+    - Evaluation-zone true TVT is materialized only as last_known_tvt + target for scoring.
+    - This is train-side diagnostic only; no inference candidate or submission is produced.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+model:
+  name: strict_exp072_pf_z_multiseed_scale_cache
+  estimator: none_particle_filter_candidate_audit
+  target: true_tvt_for_scoring_only
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  strict_pf_z:
+    n_particles: 600
+    n_seeds: 64
+    scales: [3.0, 5.0, 8.0, 12.0]
+    gr_grid_step: 0.2
+    momentum: 0.993
+    velocity_noise: 0.005
+    position_noise: 0.01
+    gr_smooth_window: 5
+    gr_smooth_weight: 0.3
+    rough_position: 0.2
+    rough_velocity: 0.003
+    resample_threshold: 0.5
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+    parity_abs_max_tolerance: 1.0e-4
+    parity_rmse_tolerance: 1.0e-5
+    require_parity_for_full: true
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  parity_seed_policy: exp072_stable_seed_pf_z_well
+  seed_policy: stable_sha256_seed_from_experiment_strict_pf_z_well_seed_index
+  stochastic_components:
+    - strict_pf_z_particle_initialization
+    - strict_pf_z_process_noise
+    - strict_pf_z_resampling
+    - upstream_exp072_pf_beam_likpf_cache
+  parallel_rng_policy: exp072_style_well_level_thread_parallel_with_per_well_seed_vector
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_file_sha: true
+    exp072_cache_sha: true
+    candidate_wide_sha: true
+    candidate_long_sha: true
+    metrics_sha: true
+    parity_diff_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it is a train-side parity audit.
+    - Source gzip cache decompressed content SHA is recorded in summary JSON.
+    - Well-level parallelism uses joblib threads like exp072; each well receives deterministic parity and multiseed seed vectors before entering the Numba kernel.
+
+audit:
+  mode: strict_exp072_pf_z_multiseed_scale_cache
+  output_prefix: exp106_strict_exp072_pf_z_multiseed_scale_cache
+  max_rows: null
+  max_wells: null
+  save_candidate_long: false
+  thresholds_ft: [1, 2, 5, 10]
+  bucket_edges_md_since: [0, 50, 100, 250, 500, 1000]
+  bucket_edges_row_idx: [0, 100, 250, 500, 1000]
+  expected_train_artifacts:
+    - exp106_strict_exp072_pf_z_multiseed_scale_cache_candidate_metrics.csv
+    - exp106_strict_exp072_pf_z_multiseed_scale_cache_bucket_metrics.csv
+    - exp106_strict_exp072_pf_z_multiseed_scale_cache_by_well.csv
+    - exp106_strict_exp072_pf_z_multiseed_scale_cache_strict_pf_z_quality.csv
+    - exp106_strict_exp072_pf_z_multiseed_scale_cache_parity_diff.csv.gz
+    - exp106_strict_exp072_pf_z_multiseed_scale_cache_candidate_wide.csv.gz
+    - exp106_strict_exp072_pf_z_multiseed_scale_cache_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_candidate: null
+  notes:
+    - No inference notebook candidate is selected in this implementation.
+    - Kaggle train v3 passed strict parity and improved exp072_pf_z, but did not beat exp072_likpf_mean, so direct inference/submission is not selected.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog strict_exp072_pf_z_multiseed_scale_cache.
+  - Parity seed must pass before treating multi-seed metrics as meaningful.
+  - Initial full run uses 64 seeds because exp104 128 seeds x 500 particles took about 11.4 hours; rerun with --n-seeds 128 if parity and 64-seed metrics justify it.
+  - v2 enables exp072-style well-level joblib thread parallelism with num_workers=8.
+  - v3 replaces the parity kernel with exact exp072 seeded PF logic, completes with num_workers=8, and passes row-level parity exactly.

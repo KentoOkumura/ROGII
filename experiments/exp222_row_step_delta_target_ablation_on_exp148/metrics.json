@@ -1,0 +1,265 @@
+{
+  "experiment": "exp222_row_step_delta_target_ablation_on_exp148",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "cv": 15.301575123885728,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "primary_metric": "reconstructed_tvt_rmse",
+  "runtime": "cpu",
+  "kernel": {
+    "id": "kentookumura/exp222-stepdelta-lgb0",
+    "url": "https://www.kaggle.com/code/kentookumura/exp222-stepdelta-lgb0",
+    "completed_version": 3,
+    "status": "COMPLETE",
+    "elapsed_seconds": 3397.475
+  },
+  "planned_run": {
+    "enabled_variants": [
+      "step_delta_target_lgb0"
+    ],
+    "active_modes": [
+      "cpu_deterministic_threads8"
+    ],
+    "lgb_config_indices": [
+      0
+    ],
+    "folds": 5,
+    "total_boosters": 5,
+    "control_retraining": false
+  },
+  "target": {
+    "name": "target_step_delta",
+    "first_unknown_row": "TVT_i - last_known_tvt",
+    "later_rows": "TVT_i - TVT_{i-1}",
+    "prediction_reconstruction": "last_known_tvt + wellwise_cumsum(pred_step_delta)",
+    "rows": 3783989,
+    "wells": 773,
+    "first_unknown_rows": 773,
+    "row_number_min": 851,
+    "row_number_max": 12140,
+    "md_order_regressions": 0,
+    "row_order_regressions": 0,
+    "first_step_equals_anchor_delta_abs_max": 0.0,
+    "target_anchor_delta_mean": 1.595986008644104,
+    "target_anchor_delta_std": 15.795145988464355,
+    "target_step_delta_mean": 0.00020113529171794653,
+    "target_step_delta_std": 0.039750970900058746,
+    "target_step_delta_abs_p99": 0.0703125
+  },
+  "pooled_metrics": {
+    "lgb0": {
+      "rmse_tvt": 15.301575123885728,
+      "rmse_step_delta": 0.036165870680591676,
+      "rmse_anchor_delta": 15.301575123885728,
+      "prediction_sha256": "8a1b93ad4b04bf47900e6b2b25240c0d791ba440de9864ea0f6a3b5f83230aa5"
+    },
+    "lgb_mean": {
+      "rmse_tvt": 15.301575123885728,
+      "rmse_step_delta": 0.036165870680591676,
+      "rmse_anchor_delta": 15.301575123885728,
+      "prediction_sha256": "5c807ad31c3ae3604a6c59b2bd130405b62c704b8a41ad6c364e80c7ba1e281e"
+    }
+  },
+  "fold_metrics": [
+    {
+      "fold": 0,
+      "rows": 757738,
+      "best_iteration": 131,
+      "rmse_tvt": 14.576648195503386,
+      "rmse_step_delta": 0.03574783479820767,
+      "model_sha256": "54e2bd1b313639b019e2abc760a822344d8964f446717cb233c33a0c25fdf10c"
+    },
+    {
+      "fold": 1,
+      "rows": 756650,
+      "best_iteration": 116,
+      "rmse_tvt": 15.961224816380408,
+      "rmse_step_delta": 0.03764318540866607,
+      "model_sha256": "556d3244cf58fedb7fd14833454f76c9d47eed9e7addafd918ef9cddd78d7462"
+    },
+    {
+      "fold": 2,
+      "rows": 756255,
+      "best_iteration": 143,
+      "rmse_tvt": 14.807865232931501,
+      "rmse_step_delta": 0.03345459268997987,
+      "model_sha256": "57999593f8288ad252e7885b3047a68cc3b94a8d23548781dc736e86ccb87342"
+    },
+    {
+      "fold": 3,
+      "rows": 757101,
+      "best_iteration": 137,
+      "rmse_tvt": 16.35812490733958,
+      "rmse_step_delta": 0.037659617329465093,
+      "model_sha256": "2e33b8d3cb67f4118166c4b3029640ff6a2999c6193f079d17bb896cf8c71d67"
+    },
+    {
+      "fold": 4,
+      "rows": 756245,
+      "best_iteration": 129,
+      "rmse_tvt": 14.71681228061527,
+      "rmse_step_delta": 0.03615737806950149,
+      "model_sha256": "5ca2f7bc627d8c22bb1d6d02535fcd4cbcbe1d456675a6857af586e1adec993f"
+    }
+  ],
+  "baseline_compare": {
+    "exp148_lgb0_rmse_tvt": 8.59978585937889,
+    "delta_vs_exp148_lgb0": 6.7017892645068375,
+    "exp148_lgb_mean_rmse_tvt": 8.50128118189582,
+    "delta_vs_exp148_lgb_mean": 6.800293941989908
+  },
+  "distance_bucket_compare_vs_exp148_lgb_mean": {
+    "000_050": {
+      "rows": 38650,
+      "rmse_tvt": 0.6014456748962402,
+      "exp148_lgb_mean_rmse_tvt": 0.978726,
+      "delta": -0.37728032510375975
+    },
+    "050_100": {
+      "rows": 38650,
+      "rmse_tvt": 1.3953514099121094,
+      "exp148_lgb_mean_rmse_tvt": 1.316981,
+      "delta": 0.07837040991210942
+    },
+    "100_250": {
+      "rows": 115950,
+      "rmse_tvt": 2.541387796401977,
+      "exp148_lgb_mean_rmse_tvt": 2.084639,
+      "delta": 0.45674879640197696
+    },
+    "250_500": {
+      "rows": 193157,
+      "rmse_tvt": 4.16950798034668,
+      "exp148_lgb_mean_rmse_tvt": 3.298294,
+      "delta": 0.8712139803466799
+    },
+    "500_1000": {
+      "rows": 385911,
+      "rmse_tvt": 6.876345634460449,
+      "exp148_lgb_mean_rmse_tvt": 4.792035,
+      "delta": 2.084310634460449
+    },
+    "1000_plus": {
+      "rows": 3011671,
+      "rmse_tvt": 16.93307113647461,
+      "exp148_lgb_mean_rmse_tvt": 9.325405,
+      "delta": 7.607666136474609
+    }
+  },
+  "worst_wells": [
+    {
+      "well": "1b1eba53",
+      "rows": 4655,
+      "rmse_tvt": 67.72745513916016,
+      "error_mean": -62.05274,
+      "error_abs_mean": 62.0527458190918
+    },
+    {
+      "well": "896d15b9",
+      "rows": 4279,
+      "rmse_tvt": 58.371578216552734,
+      "error_mean": -50.163807,
+      "error_abs_mean": 50.16419982910156
+    },
+    {
+      "well": "81bf5923",
+      "rows": 4543,
+      "rmse_tvt": 51.91246795654297,
+      "error_mean": 44.52121,
+      "error_abs_mean": 44.52121353149414
+    },
+    {
+      "well": "42c538a1",
+      "rows": 3279,
+      "rmse_tvt": 51.65792465209961,
+      "error_mean": -45.036934,
+      "error_abs_mean": 45.03693771362305
+    },
+    {
+      "well": "fb03ae90",
+      "rows": 6431,
+      "rmse_tvt": 46.28654098510742,
+      "error_mean": 44.595963,
+      "error_abs_mean": 44.59595489501953
+    }
+  ],
+  "cumulative_drift_top": [
+    {
+      "well": "1b1eba53",
+      "rows": 4655,
+      "sum_true_step_delta": 70.94921875,
+      "sum_pred_step_delta": 1.4414243698120117,
+      "final_error_tvt": -69.5078125,
+      "rmse_tvt": 67.72745513916016
+    },
+    {
+      "well": "896d15b9",
+      "rows": 4279,
+      "sum_true_step_delta": 19.8193359375,
+      "sum_pred_step_delta": -64.79624938964844,
+      "final_error_tvt": -84.615234375,
+      "rmse_tvt": 58.371578216552734
+    },
+    {
+      "well": "81bf5923",
+      "rows": 4543,
+      "sum_true_step_delta": -40.169921875,
+      "sum_pred_step_delta": 37.945152282714844,
+      "final_error_tvt": 78.115234375,
+      "rmse_tvt": 51.91246795654297
+    }
+  ],
+  "feature_join_coverage": {
+    "base_rows_before_feature_join": 3783989,
+    "base_wells_before_feature_join": 773,
+    "learned_feature_rows": 3783989,
+    "learned_feature_wells": 773,
+    "joined_rows": 3783989,
+    "joined_wells": 773,
+    "dropped_base_rows": 0,
+    "dropped_base_wells": 0,
+    "full_train_coverage_pass": true
+  },
+  "anchor_source": {
+    "anchor_wells": 773,
+    "anchor_t0_vs_last_known_abs_max": 0.0,
+    "anchor_t0_vs_last_known_abs_mean": 0.0,
+    "known_prefix_rows_min": 851,
+    "known_prefix_rows_max": 2392
+  },
+  "runtime_memory": {
+    "peak_rss_mb": 21972.9,
+    "stage_at_peak": "attached_learned_features_or_feature_matrix"
+  },
+  "artifacts": {
+    "output_dir_local_tmp": "/tmp/exp222-stepdelta-lgb0-v3",
+    "metrics": "exp222_row_step_delta_target_ablation_on_exp148_metrics.csv",
+    "by_well": "exp222_row_step_delta_target_ablation_on_exp148_by_well.csv",
+    "bucket_metrics": "exp222_row_step_delta_target_ablation_on_exp148_bucket_metrics.csv",
+    "cumulative_drift": "exp222_row_step_delta_target_ablation_on_exp148_cumulative_drift.csv",
+    "feature_importance": "exp222_row_step_delta_target_ablation_on_exp148_feature_importance.csv",
+    "feature_importance_mean": "exp222_row_step_delta_target_ablation_on_exp148_feature_importance_mean.csv",
+    "feature_importance_plot": "exp222_row_step_delta_target_ablation_on_exp148_feature_importance_mean_top.png",
+    "predictions": "exp222_row_step_delta_target_ablation_on_exp148_predictions.csv.gz",
+    "feature_schema": "exp222_row_step_delta_target_ablation_on_exp148_feature_schema.csv",
+    "model_manifest": "exp222_row_step_delta_target_ablation_on_exp148_lgb_models/manifest.json"
+  },
+  "sha256": {
+    "exp072_feature_source": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18",
+    "prediction_lgb_mean": "5c807ad31c3ae3604a6c59b2bd130405b62c704b8a41ad6c364e80c7ba1e281e",
+    "model_manifest": "a1bb1bbf20c35ffa23ecb8a4811d6314cd2b6e49c8ff57857f4b8181e4974d25",
+    "metrics": "4550862dc3cb3b67f54ea68d2371cae2b8f6d775b913e6b39eb7cb4ff6c661b0",
+    "bucket_metrics": "d6e4bf7333716f04708ce966874184f3a888fc78bb590d487d1b58aa023a67cb",
+    "by_well": "eabd670bc2959a2a248287b8bc407872efa8f365b3ab6f582a968aff8dbeafca",
+    "cumulative_drift": "945e594f30a4823f8e00de25d01f2420b645616d37772b437816bda795385eea"
+  },
+  "decision": {
+    "selected": false,
+    "reason": "TVT reconstruction RMSE regressed sharply versus exp148, especially in long-tail distance bucket and cumulative drift readouts.",
+    "next_action": "Do not expand to lgb1/lgb2, do not port inference, and do not submit. Keep recursive delta ideas only as drift diagnostics or posthoc guard material."
+  },
+  "notes": "Kaggle train versions 1 and 2 failed before LightGBM started. Version 3 completed after assembly memory fixes but the row-step-delta target was rejected train-side."
+}

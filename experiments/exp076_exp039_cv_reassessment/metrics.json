@@ -1,0 +1,136 @@
+{
+  "experiment": "exp076_exp039_cv_reassessment",
+  "status": "submitted_not_adopted",
+  "route": "ml_model",
+  "parent": "exp073_gpu_reproducibility_guard_for_exp063_full_replay",
+  "reference_branch": "exp039_ravaghi_single_lgbm_inference_submit",
+  "metric": "rmse",
+  "updated_at": "2026-06-17",
+  "kaggle_train_kernel": "kentookumura/exp076-exp039-cv-reassessment-train",
+  "kaggle_train_version": 3,
+  "kaggle_inference_kernel": "kentookumura/exp076-exp039-cv-reassessment-infer",
+  "kaggle_inference_version": 1,
+  "cv": 9.696040173882945,
+  "primary_cv": {
+    "audit": "leave_one_original_fold_out",
+    "mode": "gpu_repro_guard_dp_threads8__leave_one_original_fold_out",
+    "model": "lgb_mean",
+    "split": "pooled",
+    "rows": 3783989,
+    "features": 196,
+    "rmse_tvt": 9.696040173882945,
+    "rmse_residual": 9.696040013228247,
+    "prediction_sha256": "afcf0bd9325b7ee7060d299285dfa8aeaf035405902839deb47e2ece8d04c783"
+  },
+  "pooled_metrics": [
+    {
+      "audit": "leave_one_original_fold_out",
+      "model": "lgb0",
+      "rmse_tvt": 9.966644975271121,
+      "prediction_sha256": "728080fd2260792cf060b3f6dd797bdfc36cce7791eab0321198c270666884f5"
+    },
+    {
+      "audit": "leave_one_original_fold_out",
+      "model": "lgb1",
+      "rmse_tvt": 9.651043444227914,
+      "prediction_sha256": "bf10ee463c973ec0a05c5c8c161c165f097ee22c88ee29d344c1451315dec83e"
+    },
+    {
+      "audit": "leave_one_original_fold_out",
+      "model": "lgb2",
+      "rmse_tvt": 9.705470296611832,
+      "prediction_sha256": "4f16fc5150fd359954bbf0b2af0801e48b5d3cb049ab4449d65a1df505fa53fb"
+    },
+    {
+      "audit": "leave_one_original_fold_out",
+      "model": "lgb_mean",
+      "rmse_tvt": 9.696040173882945,
+      "prediction_sha256": "afcf0bd9325b7ee7060d299285dfa8aeaf035405902839deb47e2ece8d04c783"
+    },
+    {
+      "audit": "well_hash_holdout",
+      "model": "lgb0",
+      "rmse_tvt": 9.799962732101141,
+      "prediction_sha256": "2a986ddc47e27061b4e505405718671e519e31d90a85a4f400fad827eaf504ab"
+    },
+    {
+      "audit": "well_hash_holdout",
+      "model": "lgb1",
+      "rmse_tvt": 9.55120942405678,
+      "prediction_sha256": "8314931e832aec29e39599d50d879590f98d1bed0df52bb2b1ee30ca29fe12cf"
+    },
+    {
+      "audit": "well_hash_holdout",
+      "model": "lgb2",
+      "rmse_tvt": 9.539948110569153,
+      "prediction_sha256": "5424ba3ba81742ea167f78815c5a4b95098ec5a3e6ab1598ccb8e32bf3a13606"
+    },
+    {
+      "audit": "well_hash_holdout",
+      "model": "lgb_mean",
+      "rmse_tvt": 9.553554167040426,
+      "prediction_sha256": "9ee31704447a57f2262a689d4b66300b3eb21f14b1de1d0217342c068f0972c2"
+    }
+  ],
+  "join_stats": {
+    "exp039_rows": 1782279,
+    "exp073_cache_rows": 3783989,
+    "overlap_rows_for_target_audit": 1781963,
+    "training_rows": 3783989,
+    "dropped_exp039_rows": 316,
+    "exp073_cache_rows_without_exact_exp039_id": 2002026,
+    "joined_wells": 773,
+    "fold_assignment": "exp039_fold_by_well_id",
+    "feature_count": 196,
+    "feature_schema_match": true,
+    "cache_target_vs_exp039_target_delta_abs_max": 0.0,
+    "cache_target_vs_exp039_target_delta_abs_mean": 0.0,
+    "cache_target_matches_exp039_target_delta": true
+  },
+  "artifacts": {
+    "download_dir": "/tmp/kaggle-output/exp076-train-v3-complete",
+    "summary_sha256": "e62d5aff68b1177f423b1fc1bac437b3ce92ac80bc0334fdea322b5a386f7c2a",
+    "metrics_sha256": "26a3000752d9cc4820753eeb8df28a3857576508f884064dde9f95eace515360",
+    "by_well_sha256": "13e431efdd69200016ec81e680b9b7c36ae2d44812f3ff7577e1b4e5cf4bec53",
+    "feature_schema_sha256": "7b3aedad19dd08b4ed4caac1a91f546a11288407f5789fd99c3d309e825a72eb",
+    "model_manifest_sha256": "d68aac6d5ec5a34f8ead30a0b119daace4823e4f1207428201ba8e47b54db37f",
+    "predictions_raw_sha256": "47a26407ec5c9de186f41cb4e6dbd33e2dcdecb07baf84197c1267d2d5711b5a",
+    "predictions_content_sha256": "2fe04bd2980505ee4fd7dbd0acd61b307e429d45a6baa71a2f11edc3effb21ef",
+    "model_count": 30
+  },
+  "inference": {
+    "status": "inference_completed",
+    "download_dir": "/tmp/kaggle-output/exp076-infer-v1-complete",
+    "elapsed_seconds": 128.305,
+    "mode": "gpu_repro_guard_dp_threads8__leave_one_original_fold_out",
+    "model": "lgb_mean",
+    "model_count": 15,
+    "test_rows": 14151,
+    "submission_rows": 14151,
+    "predicted_rows": 14151,
+    "fallback_rows": 0,
+    "prediction_min": 11594.158203125,
+    "prediction_max": 12241.3212890625,
+    "prediction_mean": 11905.878221255343,
+    "prediction_std": 279.259413014171,
+    "test_feature_raw_sha256": "67afd7343622c6f26128229209b9408e5fbcb36d0da2760c07a1247fa7a01025",
+    "test_feature_content_sha256": "e3567a64807a16c3c4d80fe6bca2611ba3fe8d13b4b20be4540e8d1ac354965c",
+    "test_prediction_raw_sha256": "b128d798d91ec021848ec169e6a6104e621f2d316036cbcc3b1f05e6f5cab43d",
+    "test_prediction_content_sha256": "acb16905dc1cfda2ab8acd9fc9eeb279ca3749d75bbe9c70f1ff4b159dcec481",
+    "prediction_sha256": "bfb21114e7deb98e5880ebd0a1f0b33dfb129531dd4e8fa0908e4c65e01e4938",
+    "submission_sha256": "6afd2296208449ef372e4aef49c41de7636aadc266e09fd5ee41a2a4d36623c1",
+    "summary_sha256": "322c9ad85f43bcdfa754545d0d406a169668b47ac0f02b1aa43aa03089b800b7",
+    "metrics_sha256": "621738fb4f236c5f87a501f0686c3c85186122b41db4190388a2e385c5ed97f1",
+    "submit_check": "PASS"
+  },
+  "submission": {
+    "ref": 53757190,
+    "date": "2026-06-17 00:00:20.047000",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_lb": 8.799,
+    "private_lb": null
+  },
+  "public_lb": 8.799,
+  "private_lb": null,
+  "notes": "Kaggle GPU train v3 and inference v1 completed. Submission ref 53757190 scored Public LB 8.799."
+}

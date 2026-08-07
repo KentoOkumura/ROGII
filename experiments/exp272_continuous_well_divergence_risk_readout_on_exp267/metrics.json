@@ -1,0 +1,110 @@
+{
+  "experiment": "exp272_continuous_well_divergence_risk_readout_on_exp267",
+  "status": "actual_candidate_mae_readout_only_exp264_calibration_invalidated",
+  "selector_calibration_readout_valid": false,
+  "parent_invalidation_reason": "exp264 Stage B feature availability leakage",
+  "route": "ensemble",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "fold_spearman_and_stratified_well_bootstrap_interval",
+  "compute": {
+    "variants": 0,
+    "lightgbm_configs": 0,
+    "folds_trained": 0,
+    "boosters": 0,
+    "parent_control_retraining": false,
+    "inference": false,
+    "submission": false
+  },
+  "technical": {
+    "wells": 773,
+    "folds": 5,
+    "signature_features": 18,
+    "primary_features": 12,
+    "candidates": 6,
+    "score_rows_per_candidate": 3783989,
+    "well_candidate_rows": 4638,
+    "missing_axis_values": 0,
+    "parquet_batches": 91,
+    "parquet_row_groups": 190
+  },
+  "readout": {
+    "primary_axis": "fixed_range_gap_axis",
+    "primary_features": 12,
+    "pca1_report_only": true,
+    "bootstrap_resamples": 5000,
+    "primary_actual_mae": {
+      "fold_spearman": [
+        0.7105700750862042,
+        0.773822951242306,
+        0.8147843301543494,
+        0.8014340498211466,
+        0.826475106171501
+      ],
+      "pooled_spearman": 0.7858177762238119,
+      "bootstrap_lower": 0.7494730007755201,
+      "bootstrap_upper": 0.817828998733301,
+      "positive_fold_count": 5,
+      "guard_pass": true
+    },
+    "primary_calibration_bias": {
+      "fold_spearman": [
+        0.12389545937933036,
+        0.09919113144919597,
+        0.054331879379317716,
+        0.04548354870935516,
+        -0.11221732094597371
+      ],
+      "pooled_spearman": 0.0409683757364949,
+      "bootstrap_lower": -0.03291769207677963,
+      "bootstrap_upper": 0.11582435854860477,
+      "negative_fold_count": 1,
+      "guard_pass": null,
+      "guard_valid": false
+    },
+    "pca1_actual_mae": {
+      "pooled_spearman": 0.7815313191253529,
+      "bootstrap_lower": 0.7448801508830338,
+      "bootstrap_upper": 0.8148059957293666
+    },
+    "pca1_calibration_bias": {
+      "pooled_spearman": 0.05081237414837358,
+      "bootstrap_lower": -0.024265786877830132,
+      "bootstrap_upper": 0.1267817277396806
+    },
+    "continuous_risk_guard_pass": null,
+    "continuous_risk_guard_valid": false,
+    "separate_add_only_candidate_supported": null
+  },
+  "tests": {
+    "targeted": 4,
+    "targeted_status": "passed",
+    "repository": 110,
+    "repository_status": "passed"
+  },
+  "package": {
+    "kernel_id": "kentookumura/exp272-continuous-divergence-risk-readout-train",
+    "kernel_version": 1,
+    "kernel_id_no": 127594096,
+    "runtime_seconds_approx": 90,
+    "run_on_push_for_v1": true,
+    "local_run_approved_after_completion": false,
+    "post_run_package_run_on_push": false,
+    "post_run_package_config_sha256": "5574534d250eeabf3fed94e4d079d27e04b6465360493f53343116372abcba4f",
+    "enable_gpu": false,
+    "enable_internet": false,
+    "bootstrap_entries": 14,
+    "bootstrap_manifest_status": "passed",
+    "downloaded_output": "kaggle/output/train_v1"
+  },
+  "reproducibility": {
+    "input_sha_guard_pass": true,
+    "artifact_sha_guard_pass": true,
+    "deterministic_anchor": false,
+    "rerun": false,
+    "manifest": "kaggle/output/train_v1/artifacts/reproducibility_manifest.json"
+  },
+  "key_idea": "Use exp267's fixed 18-feature well signatures as an outer-train-normalized continuous divergence risk readout against frozen exp264 Stage B OOF candidate scores, without clustering or training.",
+  "notes": "Kaggle CPU train v1 completed with a strong fold-stable relation between candidate-derived divergence and actual candidate MAE; that readout is retained. Calibration-bias values use invalid exp264 predicted-error scores, so the calibration guard, combined primary guard, PCA1 calibration interpretation, and add-only support decision are invalid."
+}

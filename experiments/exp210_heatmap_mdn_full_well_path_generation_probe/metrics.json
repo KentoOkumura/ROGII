@@ -1,0 +1,195 @@
+{
+  "experiment": "exp210_heatmap_mdn_full_well_path_generation_probe",
+  "status": "kaggle_train_v1_complete_diagnostic_only",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "parent": "exp202_heatmap_mdn_candidate_generator_probe",
+  "dense_parent": "exp208_heatmap_mdn_dense_stride_window_path_regeneration_probe",
+  "kernel": "kentookumura/exp210-hmdn-full-well-path-generation-train",
+  "kernel_version": 1,
+  "runtime": {
+    "cpu": true,
+    "gpu": false,
+    "internet": false
+  },
+  "planned_cost": {
+    "cnn_models": 0,
+    "lightgbm_configs": 0,
+    "folds": 0,
+    "boosters": 0,
+    "parent_or_control_retraining": false
+  },
+  "path_inputs": {
+    "samples": 25452,
+    "wells": 773,
+    "topk": 10,
+    "horizon": 128,
+    "path_npz_sha256": "0ad4b4046e8c5b1865684bbab131e5f91ff07c19d225733811524d3037d3f1c2",
+    "path_samples_csv_decompressed_sha256": "52812be9db9eaee830b667bd303f3dfe3c492f895821b4e038b89bfc71ed9238"
+  },
+  "candidate_cache": {
+    "rows": 3783989,
+    "wells": 773,
+    "available_existing_candidates": [
+      "pf_ancc",
+      "beam_mean",
+      "likpf_mean",
+      "sc_ens",
+      "hyb"
+    ],
+    "source_csv_decompressed_sha256": "1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a"
+  },
+  "full_well_contract": {
+    "primary_local_topk": 10,
+    "required_columns_present": true,
+    "missing_required_columns": [],
+    "duplicate_key_rows": 0,
+    "null_required_value_count": 0,
+    "rows": 8137310,
+    "unique_row_ids": 1627462,
+    "wells": 773,
+    "row_coverage_rate_vs_cache": 0.4300916308160515,
+    "path_count": 3865,
+    "rows_by_rank": {
+      "1": 1627462,
+      "2": 1627462,
+      "3": 1627462,
+      "4": 1627462,
+      "5": 1627462
+    }
+  },
+  "physicality": {
+    "source_overlap_wells": 773,
+    "source_overlap_pair_count": 24679,
+    "source_gap_pair_count": 0,
+    "stitched_row_gap_count_total": 0,
+    "stitched_path_step_abs_mean_ft": 0.24851098854292333,
+    "stitched_curvature_abs_mean_ft": 0.4875124523192066,
+    "stitched_overlap_row_rate_mean": 0.9416566973854998
+  },
+  "candidate_union_metrics": [
+    {
+      "candidate_set": "existing_union_on_stitched_rows",
+      "topk": 0,
+      "rows": 1627462,
+      "candidate_count": 5,
+      "oracle_rmse": 5.139413348675699,
+      "oracle_mae": 2.597382185061195,
+      "within10": 0.9475225842446705,
+      "new_best_candidate_rate": null,
+      "oracle_rmse_delta_vs_existing": null,
+      "within_delta_vs_existing": null
+    },
+    {
+      "candidate_set": "stitched_only_top1",
+      "topk": 1,
+      "rows": 1627462,
+      "candidate_count": 1,
+      "oracle_rmse": 47.55311541101418,
+      "oracle_mae": 31.438681493000104,
+      "within10": 0.27447891256447154,
+      "new_best_candidate_rate": 0.066178503706999,
+      "oracle_rmse_delta_vs_existing": 42.41370206233849,
+      "within_delta_vs_existing": -0.673043671680199
+    },
+    {
+      "candidate_set": "existing_plus_stitched_top1",
+      "topk": 1,
+      "rows": 1627462,
+      "candidate_count": 6,
+      "oracle_rmse": 4.449415331172685,
+      "oracle_mae": 2.3154988135379657,
+      "within10": 0.9600893907200291,
+      "new_best_candidate_rate": 0.066178503706999,
+      "oracle_rmse_delta_vs_existing": -0.6899980175030143,
+      "within_delta_vs_existing": 0.012566806475358572
+    },
+    {
+      "candidate_set": "stitched_only_top3",
+      "topk": 3,
+      "rows": 1627462,
+      "candidate_count": 3,
+      "oracle_rmse": 47.18832248907132,
+      "oracle_mae": 30.93614258543364,
+      "within10": 0.2859648950328794,
+      "new_best_candidate_rate": 0.07162686440605065,
+      "oracle_rmse_delta_vs_existing": 42.04890914039562,
+      "within_delta_vs_existing": -0.6615576892117911
+    },
+    {
+      "candidate_set": "existing_plus_stitched_top3",
+      "topk": 3,
+      "rows": 1627462,
+      "candidate_count": 8,
+      "oracle_rmse": 4.420752852890787,
+      "oracle_mae": 2.294243972387105,
+      "within10": 0.9607026154834951,
+      "new_best_candidate_rate": 0.07162686440605065,
+      "oracle_rmse_delta_vs_existing": -0.7186604957849125,
+      "within_delta_vs_existing": 0.013180031238824608
+    },
+    {
+      "candidate_set": "stitched_only_top5",
+      "topk": 5,
+      "rows": 1627462,
+      "candidate_count": 5,
+      "oracle_rmse": 46.95894604882118,
+      "oracle_mae": 30.647350488252567,
+      "within10": 0.2927656682613788,
+      "new_best_candidate_rate": 0.07508378075801463,
+      "oracle_rmse_delta_vs_existing": 41.81953270014549,
+      "within_delta_vs_existing": -0.6547569159832918
+    },
+    {
+      "candidate_set": "existing_plus_stitched_top5",
+      "topk": 5,
+      "rows": 1627462,
+      "candidate_count": 10,
+      "oracle_rmse": 4.407737500103614,
+      "oracle_mae": 2.2845115728892593,
+      "within10": 0.9608648312525884,
+      "new_best_candidate_rate": 0.07508378075801463,
+      "oracle_rmse_delta_vs_existing": -0.7316758485720856,
+      "within_delta_vs_existing": 0.013342247007917862
+    }
+  ],
+  "distance_bucket_primary": {
+    "1000_plus_existing_oracle_rmse": 6.352450934,
+    "1000_plus_union_oracle_rmse": 5.403899359,
+    "1000_plus_delta": -0.948551575
+  },
+  "by_well": {
+    "improved": 524,
+    "same": 249,
+    "worse": 0,
+    "best_well": "1b1eba53",
+    "best_well_existing_oracle_rmse": 37.5347308526953,
+    "best_well_union_oracle_rmse": 21.331056019270253,
+    "best_well_rmse_delta": -16.20367483342505
+  },
+  "output_paths": {
+    "train_v1": "experiments/exp210_heatmap_mdn_full_well_path_generation_probe/kaggle/output/train_v1",
+    "primary_full_well_candidate_paths": "experiments/exp210_heatmap_mdn_full_well_path_generation_probe/kaggle/output/train_v1/artifacts/exp210_heatmap_mdn_full_well_path_generation_probe_localtopk10_full_well_candidate_paths.csv.gz",
+    "summary": "experiments/exp210_heatmap_mdn_full_well_path_generation_probe/kaggle/output/train_v1/artifacts/exp210_heatmap_mdn_full_well_path_generation_probe_summary.json"
+  },
+  "output_sha256": {
+    "full_well_candidate_paths_csv_decompressed_sha256": "f22808f0c0af8cc8a2953680284db9d8564fcecfa401a8921c6130e29f8509f0",
+    "full_well_candidate_paths_csv_gz_sha256": "e09eec34cf16ce8b5850dd5fa6f4bc3393735fa5e76dcea3bb003a4748527d4c",
+    "full_well_contract_metrics_csv_sha256": "6018882a2927c4a02b11fb1e767ce92356d2831c98ab9d9047b1629a37e21e50",
+    "full_well_path_schema_csv_sha256": "f2341a02293e0c14e337b813406d7d51bdc42730e3a2c438c03c4ace5496f743",
+    "candidate_union_metrics_csv_sha256": "0120644c3930dcbc7d5e6c5f0de9270db6535c336015546001f696d7217f97ba",
+    "candidate_union_distance_bucket_metrics_csv_sha256": "35414b4fa13921663c1af109537cbe59b2426fc3b71446598dff6336c20213e5",
+    "candidate_union_by_well_csv_sha256": "4081677dc522ec0eea82886c18664eaa43b07cc314cb47b5eeb781b6521613ee"
+  },
+  "decision": "contract_supported_diagnostic_only_no_submit",
+  "key_idea": "Create a selector-facing full-well heatmap MDN candidate path artifact from exp208 dense local paths before using the paths as selectable candidates.",
+  "notes": [
+    "Backlog completed as a train-side artifact-contract diagnostic.",
+    "Stitched-only paths remain too weak for direct replacement.",
+    "No direct TVT replacement, softmax averaging, PF weight replacement, inference, or submission.",
+        "Do not use this artifact as a normal full-grid selector candidate; full-grid selector candidates are deferred to exp212."
+    ]
+}

@@ -1,0 +1,196 @@
+experiment:
+  name: "exp125_confidence_gate_continuity_rawtest_parity"
+  description: "Posthoc continuity and raw-test parity audit for exp102/exp112 confidence gates, with optional dense high-drift gate comparison."
+  route: pf_beam
+  status: completed_train_side_audit_no_submit
+  created_at: "2026-06-25"
+  updated_at: "2026-06-25"
+
+lineage:
+  parent: exp102_confidence_gated_likpf_fallback_on_exp101
+  diagnostic_parents:
+    - exp101_pf_candidate_ranker_or_nway_classifier
+    - exp102_confidence_gated_likpf_fallback_on_exp101
+    - exp112_learned_pf_likelihood_weight_or_feature_followup
+    - exp124_projection_confidence_error_map
+  implementation_source: confidence_gate_continuity_rawtest_parity.py
+  diff_summary: Compare saved exp102 and exp112 low-switch confidence gates on the fair shared OOF surface, audit path continuity and worst-well regression, and record raw-test regeneration prerequisites before any inference port. Dense/high-drift gate predictions are optional and incorporated only if a prior experiment has produced them.
+
+validation:
+  strategy: saved_oof_confidence_gate_continuity_and_rawtest_parity_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - switch_rate_vs_likpf
+    - changed_segment_count
+    - prediction_step_ge25
+    - worst_well_delta_rmse
+    - distance_bucket_rmse
+    - tail_rank_bucket_rmse
+    - rawtest_parity_checklist
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: shared_exp102_exp112_oof_rows
+  leakage_policy:
+    - Saved OOF predictions are used for scoring only; no new model is trained.
+    - exp112 covers a 155-well subset, so fair comparison uses only ids present for all configured exp102 and exp112 variants.
+    - Gate conditions are not re-fit against target_tvt in this experiment.
+    - target_tvt is used only for evaluation, bucket summaries, and regression guards.
+    - Raw-test parity is a checklist of regeneration prerequisites; this implementation does not claim hidden-test parity or deterministic submission status.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp102_oof_predictions:
+    - experiments/exp102_confidence_gated_likpf_fallback_on_exp101/kaggle/output/train_v2/artifacts/exp102_confidence_gated_likpf_fallback_on_exp101_oof_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp102-likpf-fallback-train/artifacts/exp102_confidence_gated_likpf_fallback_on_exp101_oof_predictions.csv.gz
+  exp112_oof_predictions:
+    - experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_oof_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp112-learned-pf-likelihood-followup-train/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_oof_predictions.csv.gz
+  optional_dense_gate_predictions_filename: exp124_projection_confidence_error_map_gate_predictions.csv.gz
+  optional_dense_gate_predictions:
+    - experiments/exp124_projection_confidence_error_map/kaggle/output/train_v1/artifacts/exp124_projection_confidence_error_map_gate_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp124-projection-confidence-error-map-train/artifacts/exp124_projection_confidence_error_map_gate_predictions.csv.gz
+
+model:
+  name: no_new_model_confidence_gate_posthoc_audit
+  base_prediction: likpf_mean
+  estimator: none
+  candidates:
+    - likpf_mean
+    - pf_ancc
+    - beam_mean
+    - sc_ens
+    - hyb
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: null
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp102-likpf-fallback-train
+      - kentookumura/exp112-learned-pf-likelihood-followup-train
+      - kentookumura/exp101-pf-candidate-ranker-train
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_posthoc_saved_oof_audit
+  stochastic_components:
+    - upstream_exp099_pf_beam_cache
+    - upstream_exp101_lightgbm_ranker
+    - upstream_exp111_lightgbm_likelihood
+  parallel_rng_policy: no_parallel_rng_in_exp125
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - docs/06_reproducibility.md was reviewed before implementation.
+    - This experiment uses saved train-side OOF predictions and does not regenerate hidden-test PF/Beam features.
+    - It cannot be treated as a deterministic submission anchor.
+    - Kaggle rejected the long default kernel id/title pair, so train v1 used the shorter canonical id kentookumura/exp125-cg-continuity-train.
+    - Kaggle could not attach kentookumura/exp101-pf-candidate-ranker-train as a kernel source, and the exp101 manifest/schema checks are missing_required in v1 output.
+
+audit:
+  mode: confidence_gate_continuity_rawtest_parity
+  output_prefix: exp125_confidence_gate_continuity_rawtest_parity
+  exp102_variants:
+    - likpf_mean_single
+    - exp101_error_ranker_rowwise
+    - gate_error_margin_sr050_d020_std000020
+    - gate_error_margin_sr010_d020_std000020
+    - gate_error_margin_sr005_d020_std000020
+  exp112_variants:
+    - likpf_mean_single
+    - learned_error_top1
+    - gate_expected_error_m2p0_d20p0
+  required_shared_variants:
+    - {surface: exp102, variant: likpf_mean_single}
+    - {surface: exp102, variant: gate_error_margin_sr050_d020_std000020}
+    - {surface: exp112, variant: likpf_mean_single}
+    - {surface: exp112, variant: gate_expected_error_m2p0_d20p0}
+  surface_baseline_variants:
+    exp102: likpf_mean_single
+    exp112: likpf_mean_single
+    dense_high_drift_optional: likpf_mean_single
+  common_worst_reference:
+    surface: exp102
+    variant: likpf_mean_single
+  common_worst_top_n:
+    - 26
+    - 50
+  prediction_sample_rows: 200000
+  guardrails:
+    max_prediction_step_ge25: 0
+    max_well_regression_ft: 2.0
+  rawtest_parity_checks:
+    - name: exp101_model_manifest
+      filename: exp101_pf_candidate_ranker_or_nway_classifier_model_manifest.json
+      required: true
+      paths:
+        - experiments/exp101_pf_candidate_ranker_or_nway_classifier/kaggle/output/train_v1/artifacts/exp101_pf_candidate_ranker_or_nway_classifier_model_manifest.json
+        - /kaggle/input/notebooks/kentookumura/exp101-pf-candidate-ranker-train/artifacts/exp101_pf_candidate_ranker_or_nway_classifier_model_manifest.json
+    - name: exp101_feature_schema
+      filename: exp101_pf_candidate_ranker_or_nway_classifier_feature_schema.csv
+      required: true
+      paths:
+        - experiments/exp101_pf_candidate_ranker_or_nway_classifier/kaggle/output/train_v1/artifacts/exp101_pf_candidate_ranker_or_nway_classifier_feature_schema.csv
+        - /kaggle/input/notebooks/kentookumura/exp101-pf-candidate-ranker-train/artifacts/exp101_pf_candidate_ranker_or_nway_classifier_feature_schema.csv
+    - name: exp099_train_feature_cache
+      filename: exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+      required: true
+      paths:
+        - experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp099-pf-multiobs-likelihood-train/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+    - name: exp112_feature_schema
+      filename: exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+      required: true
+      paths:
+        - experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+        - /kaggle/input/notebooks/kentookumura/exp112-learned-pf-likelihood-followup-train/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+    - name: optional_dense_high_drift_gate_predictions
+      filename: exp124_projection_confidence_error_map_gate_predictions.csv.gz
+      required: false
+      paths:
+        - experiments/exp124_projection_confidence_error_map/kaggle/output/train_v1/artifacts/exp124_projection_confidence_error_map_gate_predictions.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp124-projection-confidence-error-map-train/artifacts/exp124_projection_confidence_error_map_gate_predictions.csv.gz
+  expected_train_artifacts:
+    - exp125_confidence_gate_continuity_rawtest_parity_metrics.csv
+    - exp125_confidence_gate_continuity_rawtest_parity_by_well.csv
+    - exp125_confidence_gate_continuity_rawtest_parity_bucket_metrics.csv
+    - exp125_confidence_gate_continuity_rawtest_parity_continuity_by_well.csv
+    - exp125_confidence_gate_continuity_rawtest_parity_continuity_summary.csv
+    - exp125_confidence_gate_continuity_rawtest_parity_common_worst_metrics.csv
+    - exp125_confidence_gate_continuity_rawtest_parity_rawtest_parity_checklist.csv
+    - exp125_confidence_gate_continuity_rawtest_parity_prediction_sample.csv.gz
+    - exp125_confidence_gate_continuity_rawtest_parity_summary.json
+    - README.md
+
+inference:
+  mode: disabled_diagnostic_only
+  selected_variant: null
+  notes:
+    - No submission.csv candidate is created.
+    - If a gate passes train-side continuity and raw-test parity, implement an explicit inference port in the same experiment before submission work.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog confidence_gate_continuity_rawtest_parity.
+  - The fair comparison surface is limited by exp112 saved OOF coverage.
+  - Dense/high-drift comparison is optional until the required gate prediction artifact exists.

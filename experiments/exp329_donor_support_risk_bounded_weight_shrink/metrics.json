@@ -1,0 +1,73 @@
+{
+  "experiment": "exp329_donor_support_risk_bounded_weight_shrink",
+  "status": "stage0_scientific_gate_failed_branch_closed",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "kaggle": {
+    "kernel_id": "kentookumura/exp329-donor-support-risk-shrink-train",
+    "kernel_id_no": 128104811,
+    "successful_version": 2,
+    "status": "COMPLETE",
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "stage0": {
+    "decision": "FAIL",
+    "next_action": "close branch without rescue grid",
+    "stage1_available": false,
+    "pooled_real_auc": 0.5620905180091612,
+    "pooled_control_auc": 0.5567808930539144,
+    "real_minus_control_auc": 0.005309624955246783,
+    "folds_auc_above_half": 5,
+    "top_risk_segment_mean_benefit_ft": -0.6742590075139099,
+    "bottom_risk_segment_mean_benefit_ft": -1.3437111937018456,
+    "top_minus_bottom_segment_benefit_ft": 0.6694521861879357,
+    "activated_rows": 762529,
+    "activated_row_fraction": 0.20151459214072767,
+    "activated_wells": 433,
+    "activated_folds": 5,
+    "rows": 3783989,
+    "wells": 773,
+    "segments": 12368,
+    "runtime_seconds": 209.82885074615479,
+    "technical_hard_checks_all_passed": true,
+    "coverage_checks_all_passed": true,
+    "scientific_checks": {
+      "pooled_auc": false,
+      "folds_auc_above_half": true,
+      "real_minus_control_auc": false,
+      "top_risk_mean_benefit": false,
+      "top_minus_bottom_benefit": true,
+      "long_tail_direction_non_regression": false,
+      "hidden_like_spatial_direction_non_regression": false,
+      "hidden_like_typewell_purged_direction_non_regression": false
+    }
+  },
+  "execution": {
+    "stage0_risk_scores": 1,
+    "stage0_controls": 1,
+    "stage0_support_well_runs": 773,
+    "prediction_candidates": 0,
+    "hmm_pf_beam_runs": 0,
+    "models": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "parent_prediction_regeneration": false
+  },
+  "reproducibility": {
+    "target_free_contract_sha256": "03049211fdf9c394ff7c34426e0cbb0ab424da3ae440ab92136c106b805f3000",
+    "donor_ledger_decompressed_sha256": "99c668986af8e5857f772be513e9a89a95e20a216db6a39425cf2cdbf258053e",
+    "support_primitives_decompressed_sha256": "1c03ac22d39b20380a42b392d65017268633390b2d1371b895fba8977ad15bd2",
+    "segment_risk_decompressed_sha256": "9392018315617b0974162c7edbb20b7b75602572b2d3e0c70b4ae3af77de71b5",
+    "target_free_rows_decompressed_sha256": "a0a577876adc482203509c314eb16dc73bdbab31a0ab2644fc145d90c7bd967d",
+    "stage0_decision_raw_sha256": "9c25c68c12527002fd1171dd5dea39448f8eb1928d495a88b48513c65cf0f8a2"
+  },
+  "implementation_approved": true,
+  "stage0_implemented": true,
+  "stage1_implemented": false,
+  "kaggle_push_approved": true,
+  "notes": "Stage 0 completed with all technical and coverage checks passing, but failed the scientific gates. Stage 1 and rescue grids are closed."
+}

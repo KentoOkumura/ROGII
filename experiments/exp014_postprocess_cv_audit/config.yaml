@@ -1,0 +1,72 @@
+experiment:
+  name: "exp014_postprocess_cv_audit"
+  description: Audit exp013 distance-bucket postprocess with held-out alpha fits
+  route: ml_model
+  status: completed
+  created_at: "2026-06-04"
+  updated_at: "2026-06-04"
+
+lineage:
+  parent: exp013_model_diversity_or_postprocess
+  diff_summary: Re-score exp013 LightGBM no-GR OOF postprocess with leave-one-fold-out and well-holdout bucket alpha fits
+
+validation:
+  leakage_policy:
+    - Same well OOF predictions come from exp013 GroupKFold by well.
+    - This experiment does not train a new model and does not create new inference features.
+    - Evaluation-zone TVT is used only to audit fixed bucket alpha selection.
+    - Raw clean CV and OOF-fit postprocess score are recorded separately.
+
+data: {}
+
+model:
+  name: postprocess_cv_audit
+  source_experiment: exp013_model_diversity_or_postprocess
+  source_variant: lightgbm_no_gr
+  raw_clean_cv: 13.549257
+  exp013_oof_fit_cv: 13.501824
+
+audit:
+  source_oof_predictions: data/external/kaggle-output/exp013_model_diversity_or_postprocess/train/artifacts/row_oof_predictions.csv
+  source_variant: lightgbm_no_gr
+  chunk_rows: 250000
+  well_holdout_folds: 5
+  alpha_clip:
+    min: 0.20
+    max: 1.15
+  distance_buckets:
+    - name: rows_0_49
+      max_step: 49
+    - name: rows_50_249
+      max_step: 249
+    - name: rows_250_999
+      max_step: 999
+    - name: rows_1000_2499
+      max_step: 2499
+    - name: rows_2500_plus
+      max_step: 1000000000
+  exp013_fixed_buckets:
+    - name: rows_0_49
+      max_step: 49
+      alpha: 0.20
+    - name: rows_50_249
+      max_step: 249
+      alpha: 0.5917180252647632
+    - name: rows_250_999
+      max_step: 999
+      alpha: 1.15
+    - name: rows_1000_2499
+      max_step: 2499
+      alpha: 1.15
+    - name: rows_2500_plus
+      max_step: 1000000000
+      alpha: 1.0490770312511664
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+
+notes:
+  - This experiment is an OOF artifact audit; it is not intended for Kaggle submission.
+  - Keep exp013 Public LB 12.271 as a submitted LB anchor, but keep raw 13.549257 as the clean CV anchor unless held-out alpha improves.

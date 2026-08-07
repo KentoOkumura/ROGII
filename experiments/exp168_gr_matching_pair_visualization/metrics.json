@@ -1,0 +1,68 @@
+{
+  "experiment": "exp168_gr_matching_pair_visualization",
+  "status": "completed_visualization_diagnostic_v5",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "visualization_diagnostic",
+  "route": "pf_beam",
+  "kaggle_kernel": {
+    "id": "kentookumura/exp168-gr-matching-pair-visualization-train",
+    "version": 5,
+    "url": "https://www.kaggle.com/code/kentookumura/exp168-gr-matching-pair-visualization-train",
+    "status": "COMPLETE"
+  },
+  "summary": {
+    "rows_scored": 4096,
+    "wells_scored": 16,
+    "figures": 48,
+    "global_local_figures": 48,
+    "legacy_four_panel_figures": 32,
+    "simple_overlay_figures": 32,
+    "oof_join_unique_ids": 512,
+    "eval_regions": [
+      "hidden_tail",
+      "prefix_backtest"
+    ],
+    "filters": [
+      "fft_notch_top2",
+      "raw",
+      "rolling_median_11",
+      "savgol_31_p2"
+    ],
+    "runtime_sec": 171.86376857757568
+  },
+  "artifacts": {
+    "local_output_dir": "experiments/exp168_gr_matching_pair_visualization/kaggle/output/train_v5",
+    "index_html": "experiments/exp168_gr_matching_pair_visualization/kaggle/output/train_v5/artifacts/exp168_gr_matching_pair_visualization_index.html",
+    "good_bad_oof_index_html": "experiments/exp168_gr_matching_pair_visualization/kaggle/output/train_v5/artifacts/exp168_gr_matching_pair_visualization_good_bad_oof_index.html",
+    "global_local_index_html": "experiments/exp168_gr_matching_pair_visualization/kaggle/output/train_v5/artifacts/exp168_gr_matching_pair_visualization_global_local_index.html",
+    "wrong_depth_index_html": "experiments/exp168_gr_matching_pair_visualization/kaggle/output/train_v5/artifacts/exp168_gr_matching_pair_visualization_wrong_depth_index.html",
+    "oof_bucket_summary": "experiments/exp168_gr_matching_pair_visualization/kaggle/output/train_v5/artifacts/exp168_gr_matching_pair_visualization_oof_bucket_summary.csv",
+    "figures_dir": "experiments/exp168_gr_matching_pair_visualization/kaggle/output/train_v5/artifacts/figures",
+    "simple_overlay_dir": "experiments/exp168_gr_matching_pair_visualization/kaggle/output/train_v5/artifacts/simple_overlay",
+    "global_local_dir": "experiments/exp168_gr_matching_pair_visualization/kaggle/output/train_v5/artifacts/global_local",
+    "scored_pairs": "experiments/exp168_gr_matching_pair_visualization/kaggle/output/train_v5/artifacts/exp168_gr_matching_pair_visualization_scored_pairs.csv.gz",
+    "selected_pairs": "experiments/exp168_gr_matching_pair_visualization/kaggle/output/train_v5/artifacts/exp168_gr_matching_pair_visualization_selected_pairs.csv",
+    "summary_json": "experiments/exp168_gr_matching_pair_visualization/kaggle/output/train_v5/artifacts/exp168_gr_matching_pair_visualization_summary.json"
+  },
+  "artifact_sha256": {
+    "scored_pairs_decompressed": "0e86bbf8b3433acf18a72bbe11950626e2425c8ab863cf1784218c17da4af69a",
+    "scored_pairs_gzip": "f7c192549738dbd0202a50f0888c0fdacf5b6e875c51b0c2d91011f1c6fdcccd",
+    "selected_pairs": "51e3a74317a7980874c1329c8c23a3a8b36836fe5dd4194b155157eceb795c40",
+    "index_html": "6b8a2418d999f7ad048bdf22c3ee98ffb548006b1d70feba141a5cebfda0e4c6",
+    "good_bad_oof_index_html": "738d2bd621eb6d21521649da2803705e89ebc4499d03bbd40738cdc3e9b4bee2",
+    "global_local_index_html": "9df873479dfa6e979f81fa470eebfd058191546da2ce57fb2c82132b1e0031a5",
+    "wrong_depth_index_html": "d1bf822853f50e039cdb78cb59c4fecd2d35a766456bb2f41ba42b692de4f866",
+    "oof_bucket_summary": "5b553761f42d45d833b1fd10b1770e76e6433c701ad49f534435619814e66d42",
+    "input_summary": "fd620fa65d9ae3203b6bc6b5c04bdafa04288b58068329f07cea435677992155"
+  },
+  "oof_join": {
+    "source": "kentookumura/exp098-selector-rank-slot-features-on-exp073-train",
+    "model": "lgb1",
+    "total_rows_scanned": 15135956,
+    "matched_rows": 512,
+    "unique_ids_matched": 512
+  },
+  "notes": "Kaggle v5 completed. Generated wrong-depth/top-k local-minimum diagnostics with shift-cost curves, global/local GR context, selected-pair metadata, and OOF bucket summary. No model, prediction, or submission."
+}

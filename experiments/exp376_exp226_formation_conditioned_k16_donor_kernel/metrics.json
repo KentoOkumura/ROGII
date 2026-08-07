@@ -1,0 +1,171 @@
+{
+  "experiment": "exp376_exp226_formation_conditioned_k16_donor_kernel",
+  "status": "kaggle_cpu_v2_completed_technical_pass_direct_fail_novelty_fail",
+  "route": "pf_beam",
+  "parent": "exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction",
+  "cv": 9.443257189578157,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "created_at": "2026-07-24",
+  "key_idea": "Keep exp226 K16 true-TVT donor slopes fixed and softly reweight the same XY donor kernel with fold-safe multiformation relative coordinates.",
+  "planned_execution": {
+    "scientific_variants": 1,
+    "model_configs": 0,
+    "reporting_folds": 5,
+    "trained_folds": 0,
+    "boosters": 0,
+    "parent_control_retraining": 0
+  },
+  "implementation": {
+    "compact_selfcontained_train": true,
+    "canonical_train_notebook_adopted": true,
+    "chapters": 9,
+    "notebook_cells": 19,
+    "source_lines": 4007,
+    "dedicated_tests_passed": 4,
+    "py_compile_passed": true,
+    "ruff_f821_passed": true,
+    "jupytext_roundtrip_passed": true,
+    "strict_experiment_validation_passed": true
+  },
+  "kaggle_execution_authorized": true,
+  "kaggle_execution_authorized_at": "2026-07-24",
+  "kernel": {
+    "id": "kentookumura/exp376-formation-k16-donor-train",
+    "id_no": 128436621,
+    "version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp376-formation-k16-donor-train",
+    "started_at": "2026-07-24T05:00:14Z",
+    "status": "ERROR",
+    "error_at_seconds": 1237.61779093,
+    "log_last_timestamp_seconds": 1248.8460576,
+    "config_sha256": "a67d6f65307434fd3b8f1df8e0a7dca7ed9f0db51c5dad18dfee8fd2157b86e6",
+    "source_sha256": "625f05620785687a9cc8d6154d8eb63a30a4350b83ab7ad44a57c92915a5d8e5"
+  },
+  "v1_outcome": {
+    "completed_variant_folds": 5,
+    "truth_loaded": false,
+    "stage0_evaluated": false,
+    "stage1_direct_evaluated": false,
+    "stage2_novelty_evaluated": false,
+    "error_type": "TypeError",
+    "error_message": "unhashable type: 'list'",
+    "error_location": "freeze_target_free_bundle.reference_content_sha256"
+  },
+  "retry_fix": {
+    "implemented": true,
+    "scope": "Canonicalize only container-valued object cells before pandas logical hashing.",
+    "source_sha256": "aaaa75a4378b858d6dc180010e9f7cdaf2a72107e644287ae6ccdbcb0a822bea",
+    "canonical_notebook_sha256": "9bf891557b59c5409b04db42bc432bd09de83b44f96c136360523f1e019f7980",
+    "dedicated_tests_passed": 4,
+    "kaggle_v2_execution_authorized": true,
+    "kaggle_v2_target_version": 2
+  },
+  "v2_package": {
+    "config_sha256": "b6ea3eaa05a9179d259e66a2bbf3b4ceda460d0647af9610bb7a6653bec77358",
+    "source_sha256": "aaaa75a4378b858d6dc180010e9f7cdaf2a72107e644287ae6ccdbcb0a822bea",
+    "notebook_sha256": "3d60cc2b6aa1f7c4f502ce8156333b47ae832e9c62fca8b806933ed8d3b23b7a",
+    "gpu": false,
+    "internet": false,
+    "kernel_sources": 3
+  },
+  "v2_kernel": {
+    "id": "kentookumura/exp376-formation-k16-donor-train",
+    "id_no": 128436621,
+    "version": 2,
+    "url": "https://www.kaggle.com/code/kentookumura/exp376-formation-k16-donor-train",
+    "started_at": "2026-07-24T06:06:24Z",
+    "status": "COMPLETE",
+    "completed_at": "2026-07-24T06:32:35.271078+00:00",
+    "audit_completed_at_seconds": 1574.961352157,
+    "log_last_timestamp_seconds": 1585.333364737
+  },
+  "decision": {
+    "technical_passed": true,
+    "stage0_target_free_passed": true,
+    "direct_passed": false,
+    "candidate_novelty_passed": false,
+    "scientific_support": false,
+    "next_action": "close_formation_conditioned_donor_branch_without_rescue_grid"
+  },
+  "stage0_target_free": {
+    "passed": true,
+    "rows": 3783989,
+    "wells": 773,
+    "segments": 12368,
+    "finite_coverage": 1.0,
+    "fallback_fraction": 0.0,
+    "formation_factor_minimum": 0.5115013214728052,
+    "formation_factor_maximum": 0.9999999996913933,
+    "ess_ratio_p05": 0.9271732755542383,
+    "validation_reference_count": 0,
+    "validation_truth_read_count": 0
+  },
+  "direct": {
+    "control_rmse": 9.427109596582216,
+    "variant_rmse": 9.443257189578157,
+    "pooled_delta_ft": 0.016147592995940485,
+    "pooled_gain_ft": -0.016147592995940485,
+    "fold_deltas_ft": [
+      0.02344040886542409,
+      0.041883305608108046,
+      -0.02034780975637318,
+      0.029009493894177396,
+      0.010357627170074934
+    ],
+    "nonworse_folds": 1,
+    "scope_deltas_ft": {
+      "near_0_250": -0.010632796225125363,
+      "mid_250_1000": 0.009193833748783575,
+      "1000_plus": 0.01779927174877116,
+      "hidden_like_spatial": 0.01853813298066065,
+      "hidden_like_typewell_purged": 0.019237282219876306
+    },
+    "improved_wells": 376,
+    "worse_wells": 397,
+    "by_well_median_delta_ft": 0.002754782600000283,
+    "by_well_p95_delta_ft": 0.3766793361158377,
+    "worst_well": "a3518960",
+    "worst_well_delta_ft": 1.8915599301919501,
+    "correlation_with_exp226_k16": 0.999999782066,
+    "passed": false
+  },
+  "candidate_novelty": {
+    "h512_base_oracle_rmse": 3.683762664246268,
+    "h512_add_one_oracle_rmse": 3.664359132181051,
+    "h512_oracle_improvement_ft": 0.019403532065216833,
+    "whole_well_base_oracle_rmse": 4.78490388136,
+    "whole_well_add_one_oracle_rmse": 4.76936186279,
+    "whole_well_oracle_improvement_ft": 0.015542018571365723,
+    "h512_strict_unique_best_fraction": 0.09387440606138436,
+    "h512_fold_improvements_ft": [
+      0.013931848641587585,
+      0.02271188267883817,
+      0.021749835121464223,
+      0.014598981052106552,
+      0.023914830493674266
+    ],
+    "improved_folds": 5,
+    "passed": false
+  },
+  "reproducibility": {
+    "deterministic_anchor": false,
+    "config_sha256": "b6ea3eaa05a9179d259e66a2bbf3b4ceda460d0647af9610bb7a6653bec77358",
+    "source_sha256": "aaaa75a4378b858d6dc180010e9f7cdaf2a72107e644287ae6ccdbcb0a822bea",
+    "input_manifest_file_sha256": "a4a4a99ce3edab30aa52c41079aebdd47d7bc9f2fb93c9c44b84b98a5e81fbad",
+    "input_manifest_logical_sha256": "fee6dfc3d33656b087d55890597ebad0cd84e8476160c74b0c0bcd535bd0e279",
+    "raw_input_manifest_logical_sha256": "30e6f88c396a5b447969e8e10968894db7c6eacc3fe4555e568ddfa52ceaf82a",
+    "formation_schema_file_sha256": "1f9dec7ac0025213629f45685d772e27fa067169cf3ee610a0c59cd04bcc1470",
+    "formation_support_logical_sha256": "1b14e696817dded0ec81d357c9529fdee263b6a7dc6fa432c8427ad57dc19258",
+    "reference_manifest_logical_sha256": "92dd0be43ac74c1210a5babdea256eec271ee430cf5c2659bb8ce69b923137a8",
+    "prediction_logical_sha256": "5205c67f6cad8d549863f122ab989bf2874587c574494b59b639a1bc5d66fb25",
+    "prediction_decompressed_sha256": "49621fb7838bb5234553d507d9e6fe38a55127b25e82621ee655091fe6b340a0",
+    "truth_logical_sha256": "e9067327058431278a0fd994e8e6005b76ab99acbd3942118974599afb69a8d0",
+    "candidate_bank_content_sha256": "29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474",
+    "block_assignment_decompressed_sha256": "b0755c22aa8d791012d3f605e2f1b66063ce9bb6ba46ddd4b48dca77cce032d7",
+    "control_decompressed_sha256": "709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609",
+    "control_bank_parity_max_abs_ft": 0.0004882811608695192
+  },
+  "notes": "Kaggle CPU v2 completed. Technical and target-free guards passed, but direct and candidate-novelty gates failed. The branch is closed without rescue grid, inference, or submission."
+}

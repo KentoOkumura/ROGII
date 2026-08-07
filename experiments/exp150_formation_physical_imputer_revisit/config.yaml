@@ -1,0 +1,98 @@
+experiment:
+  name: exp150_formation_physical_imputer_revisit
+  description: Rebuild Sunny-style formation contact physical branch as a hidden-safe fold-safe imputer and confidence feature audit
+  route: ml_model
+  status: completed
+  created_at: "2026-06-27"
+  updated_at: "2026-06-27"
+
+lineage:
+  parent: exp138_ancc_surface_predictability_audit
+  backlog: formation_physical_imputer_revisit
+  diff_summary: >
+    Extend the exp138 ANCC-only surface predictability audit to all six train-only
+    formation contacts. Instead of using formation columns directly or replacing
+    TVT, infer contact surfaces from train-fold wells, calibrate Sunny-style
+    physical TVT candidates using only each validation well's known TVT_input
+    prefix, and score the candidates plus uncertainty/confidence diagnostics.
+
+validation:
+  leakage_policy:
+    - Same well is never split across train and validation folds.
+    - Validation-fold formation columns are used only for scoring surface error.
+    - Validation-fold true TVT is used only for scoring physical candidate error.
+    - Surface models are fit only from train-fold wells.
+    - Candidate calibration uses only validation well known-prefix TVT_input rows.
+    - Hidden-test-incompatible formation columns and future/eval TVT are never required as prediction inputs.
+  n_folds: 5
+
+# Common paths and submission columns come from project.yml.
+data: {}
+
+model:
+  name: fold_safe_formation_physical_imputer_revisit
+  uses_lightgbm: false
+  uses_gpu: false
+  methods:
+    - global_median
+    - row_knn_xy
+    - well_plane_knn
+  formation_columns:
+    - ANCC
+    - ASTNU
+    - ASTNL
+    - EGFDU
+    - EGFDL
+    - BUDA
+  candidates:
+    - contact_median
+    - contact_prefix_weighted
+    - contact_best_prefix
+  feature_policy:
+    - Train-fold formation columns are teacher targets only.
+    - Prediction-time inputs are X, Y, Z, and known-prefix TVT_input.
+    - Outputs are audit candidates and add-only confidence features, not direct TVT replacements.
+
+surface:
+  row_knn:
+    n_neighbors: 32
+    weights: distance
+    max_rows_per_well: 250
+    max_rows_total: 150000
+  well_plane_knn:
+    n_neighbors: 16
+    chunk_size: 50000
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: 40
+  save_oof_predictions: true
+  save_confidence_bucket_summary: true
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_global_seed_plus_fold_offset_for_row_sampling
+  stochastic_components:
+    - deterministic row subsampling for row_knn_xy
+  parallel_rng_policy: no parallel RNG; KNN predictions are deterministic after sampled rows are fixed
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: false
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - No GPU, PF/Beam, seed bagging, or LightGBM is used.
+    - This audit is not a deterministic ML route anchor.
+    - Kaggle Notebook output metrics and CSV SHA are the evidence after full run.
+
+notes:
+  - Train push has 0 LightGBM configs, 0 folds with boosters, and 0 total boosters.
+  - Output files are formation_physical_oof_features.csv, candidate_metrics.csv, distance_bucket_metrics.csv, confidence_bucket_metrics.csv, surface_proxy_metrics.csv, and formation_prefix_calibration.csv.
+  - Passing this audit only permits later add-only confidence features; it does not create a submission candidate.

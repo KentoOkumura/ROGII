@@ -1,0 +1,330 @@
+experiment:
+  name: exp452_scale5_likpf_direct_public_lb_audit
+  description: >-
+    Design-frozen direct Public-LB audit of the exp417 likelihood-PF
+    temperature-5 seed aggregation candidate. The exact exp404/exp413
+    gs-x1.0 500-particle, 128-seed physical surface is exposed as a standalone
+    submission without training, blending, selection, gating, or postprocess.
+  hypothesis: >-
+    The 0.680375810 ft pooled OOF improvement of fixed temperature-5 seed
+    aggregation may transfer to Public LB even though the candidate failed
+    preregistered by-well p95 and worst-well tail guards.
+  route: pf_beam
+  status: public_lb_8p797_complete_user_submitted_ref55149125_no_agent_submit
+  created_at: "2026-07-30"
+  updated_at: "2026-08-01"
+
+lineage:
+  parent: exp417_scale5_seed_aggregation_promotion_audit
+  generator_source: exp413_scale5_likpf_full_replacement_on_exp335
+  kernel_parent: exp072_exp063_full_replay_feature_cache
+  public_lb_control: exp434_physics_candidate_public_lb_audit
+  steering: ../../.steering/20260730-exp452-scale5-likpf-direct-public-lb-audit
+  references:
+    - exp404_scale5_sigma_gr_likelihood_pf_ablation
+    - exp410_likpf_particle_resampling_basin_audit
+    - exp413_scale5_likpf_full_replacement_on_exp335
+    - exp417_scale5_seed_aggregation_promotion_audit
+    - exp434_physics_candidate_public_lb_audit
+    - docs/06_reproducibility.md
+  diff_summary: >-
+    Do not create or tune a new physical model. Reuse exactly the frozen
+    likpf_scale_5_x1p0 semantics from exp417 and the hidden-compatible raw-test
+    generator from exp413 v4, then expose that one primitive directly as
+    submission tvt. No arithmetic-mean control, alternative temperature,
+    blend, selector, gate, model, or postprocess is executed.
+
+implementation:
+  design_approval_received: true
+  design_approval_source: user_message_2026_07_30_create_three_backlogs_experiments_steering_design_only
+  implementation_approval_received: true
+  implementation_approval_source: user_message_2026_07_31_implement_exp452
+  scaffold_created: true
+  notebook_placeholders_only: false
+  code_created: true
+  tests_created: true
+  kaggle_package_created: true
+  kaggle_run_started: true
+  kaggle_run_complete: true
+  submission_file_created: true
+  competition_submission_started: false
+  external_competition_submission_started: true
+  competition_submission_by_agent: false
+  competition_submission_source: user_manual_external_submission
+  training_enabled: false
+  inference_enabled: true
+  submission_enabled: true
+
+notebook_contract:
+  physical_model_count: 1
+  future_executable_evaluation_notebook_count: 1
+  canonical_evaluation_notebook: exp452_scale5_likpf_direct_public_lb_audit_inference.ipynb
+  train_notebook_role: template_scaffold_only_not_executable
+  implementation_source_format: jupytext_percent_compact_selfcontained
+  canonical_notebook_adoption_requires_separate_approval: true
+  canonical_notebook_adoption_approval_received: true
+  canonical_notebook_adopted: true
+  implementation_source: exp452_scale5_likpf_direct_public_lb_audit_compact_selfcontained_inference.py
+
+validation:
+  strategy: frozen_train_side_candidate_to_direct_public_lb_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  public_lb_display_precision: 3
+  no_new_train_side_scoring: true
+  train_side_evidence:
+    control_id: likpf_mean_x1p0
+    control_rmse: 11.59489788373621
+    candidate_id: likpf_scale_5_x1p0
+    candidate_rmse: 10.914522073423171
+    improvement_ft: 0.6803758103130395
+    improved_folds: 5
+    total_folds: 5
+    by_well_delta_p95_ft: 2.9416884826255085
+    worst_well_delta_ft: 25.311274575082955
+    improved_wells: 516
+    regressed_wells: 257
+  public_lb_audit:
+    candidate_id: likpf_scale_5_x1p0
+    parent_control_id: exp434_sha256_seed_likpf_mean
+    exclude_control_submission_ref: 53706005
+    exclude_control_reason: exp069_uses_different_blake2b_per_well_monte_carlo_realization
+    order_within_three_candidate_backlog: 1
+    descriptive_only: true
+    lower_is_better: true
+    tie_policy: displayed_three_decimal_tie_is_inconclusive
+    forbid_adaptation_after_any_lb: true
+  leakage_policy:
+    - Raw-test generation may read complete horizontal GR but never suffix TVT, error, fold, hidden-like role, or Public LB.
+    - Type Well TVT is a permitted reference-curve coordinate.
+    - Candidate identity, schema, and logical content SHA are frozen before submission construction.
+    - Public LB cannot change temperature, seed, particle, sigma, dynamics, aggregation, gate, or candidate formula.
+
+data:
+  raw_dir: data/raw
+  test_dir: data/raw/test
+  target_column: TVT
+  id_column: id
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  public_reference:
+    source_experiment: exp413_scale5_likpf_full_replacement_on_exp335
+    source_kernel: kentookumura/exp413-scale5-likpf-current-test-inference
+    source_kernel_version: 4
+    source_path_token: exp413-scale5-likpf-current-test-inference
+    filename: exp263_replay_for_exp145.csv.gz
+    local_path: experiments/exp413_scale5_likpf_full_replacement_on_exp335/kaggle/output/inference_v4_hidden_compatible/artifacts/exp263_replay_for_exp145.csv.gz
+    candidate_column: likpf_scale_5
+    candidate_delta_column: likpf_scale_5_d
+    expected_file_sha256: 51ec4d4a5c8f48c99497b6d2f9031dc6ce16c19cf16f565423a144575ef2e832
+    expected_decompressed_sha256: 51be555c9e787703f93731a42c82ab4b35d5d7823528625eb2b06b7d226200cc
+    expected_candidate_content_sha256: b713ade7adb5b185dacc941edf19aec324bcd7e075a8e903d33a23f59eb809f3
+    float32_max_abs_parity_ft: 0.0
+  pinned_source:
+    path: experiments/exp413_scale5_likpf_full_replacement_on_exp335/exp413_scale5_likpf_full_replacement_on_exp335_current_test_inference.py
+    sha256: 0f6fc81e56556aa6db828584ab2a2e58dde9db9cc4b54d6c12fa60e1c68f1388
+    config_path: experiments/exp413_scale5_likpf_full_replacement_on_exp335/config.yaml
+    config_sha256: d12e6d74a7f567f0873d5513883b3a7d36d0cd5be5231037e7db12f1a74036a7
+    pf_source_path: experiments/exp073_gpu_reproducibility_guard_for_exp063_full_replay/public_notebook_replay_audit.py
+    pf_source_sha256: 4af212a8a1c83e36cdcc0bc912942a62df1fbc94ca67fd75789171afaa1a647e
+  hidden_runtime_contract:
+    row_and_id_source: sample_submission
+    well_count_policy: dynamic_nonempty
+    forbid_public_fixed_row_count: true
+    forbid_public_fixed_well_count: true
+
+model:
+  name: frozen_exp417_likpf_scale5_x1p0_direct
+  estimator: likelihood_weighted_particle_filter
+  active_variants: [likpf_scale_5_x1p0]
+  gr_scale:
+    estimator: known_prefix_zero_fill_population_std
+    clip: [10.0, 60.0]
+    multiplier: 1.0
+    post_multiplier_clip: null
+  pf:
+    particles: 500
+    seeds: 128
+    seed_indices: [0, 127]
+    typewell_grid_step_ft: 0.2
+    initial_position_spread_ft: 4.5
+    initial_rate_spread: 0.01
+    momentum: 0.998
+    rate_noise: 0.002
+    position_noise: 0.005
+    rough_position: 0.1
+    rough_rate: 0.001
+    resample_threshold_fraction: 0.5
+    emission: capped_gaussian
+    emission_clip_z2: 600.0
+    typewell_tvt_pad_ft: 100.0
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+  aggregation:
+    family: full_suffix_seed_loglik_softmax
+    temperature: 5.0
+    formula: exp((loglik-max(loglik))/5)_normalized_weighted_tvt_mean
+    output_dtype: float32
+  execution_count:
+    scientific_variants: 1
+    train_runs: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+    hmm_runs: 0
+    beam_runs: 0
+    parent_control_reruns: 0
+
+guards:
+  technical:
+    require_pinned_source_sha: true
+    require_sample_submission_id_set: true
+    require_unique_ids: true
+    require_finite_coverage: 1.0
+    require_fallback_rows: 0
+    require_fallback_wells: 0
+    require_public_reference_float32_max_abs_ft: 0.0
+    require_execution_count_match: true
+    require_prediction_sha: true
+    require_submission_sha: true
+    require_submit_check: true
+  forbidden:
+    - arithmetic_mean_or_scale_3_8_12_submission
+    - gs_x1p3_or_sigma_change
+    - temperature_seed_particle_or_weight_search
+    - best_seed_median_mode_or_medoid
+    - blend_selector_gate_or_postprocess
+    - ml_training_or_parent_control_rerun
+    - public_fixed_cardinality_assert
+    - lb_adaptive_candidate_change
+
+submission_plan:
+  candidate_count: 1
+  candidate_id: likpf_scale_5_x1p0
+  order_within_three_candidate_backlog: 1
+  generate_submission_file_approved: true
+  competition_submission_approved: false
+  monitoring_approved: true
+  monitoring_approval_source: user_message_2026_08_01_scoring_complete_confirmed_ref55149125
+  external_user_submission_confirmed: true
+  external_submission_ref: 55149125
+  automatic_promotion: false
+
+execution:
+  stage: public_lb_8p797_complete_user_submitted_ref55149125_no_agent_submit
+  implementation_approved: true
+  implementation_approved_at: "2026-07-31"
+  canonical_notebook_adoption_approved: true
+  kaggle_package_approved: true
+  kaggle_push_approved: true
+  kaggle_run_approved: true
+  run_train: false
+  run_inference: true
+  create_submission_file: true
+  competition_submission_approved: false
+  competition_submission_by_agent: false
+  external_user_submission_confirmed: true
+  external_submission_ref: 55149125
+  selected_candidate: likpf_scale_5_x1p0
+  counts:
+    train_variants: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+    parent_control_reruns: 0
+    physical_candidates: 1
+
+runtime:
+  device: cpu
+  use_amp: false
+  num_workers: 8
+  batch_size: 1
+  enable_internet: false
+  enable_gpu: false
+  maximum_seconds: 30600
+  kernel_id: kentookumura/exp452-scale5-likpf-public-audit-inference
+  kernel_title: exp452 scale5 likpf public audit inference
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    run_on_push: true
+    kernel_id: kentookumura/exp452-scale5-likpf-public-audit-inference
+    kernel_title: exp452 scale5 likpf public audit inference
+    kernel_sources:
+      - kentookumura/exp413-scale5-likpf-current-test-inference
+    kernel_version: 1
+    id_no: 129271895
+    status: complete
+    machine_shape: None
+    docker_image: gcr.io/kaggle-images/python@sha256:dafd4ce5668bbf1ad422e4c109e0f18c9623c3a7c7f48b0235f13142755c40b9
+
+kaggle_inference_result:
+  completed_at: "2026-07-31"
+  runtime_seconds: 58.784
+  notebook_artifacts_logged_at_seconds: 74.298
+  rows: 14151
+  wells: 3
+  fallback_rows: 0
+  fallback_wells: 0
+  public_reference_float32_max_abs_ft: 0.0
+  run_config_sha256: 9ecd61cf980cc8d4574e0acd55e382b4de07fec520ef660445e3d3246f7b1f12
+  source_sha256: f8777d583c9de2a5706e5c5981b418c2b51bc771d554b51b4c4ffd62122b3cf7
+  prediction_file_sha256: e87ad2e8fb219e658b99701c2e0232dbb94f4e395fa67d8045f3b5e9bf376eb5
+  prediction_decompressed_sha256: 085567c7212d00c28d3859190a25572e2de3a10f0b0df893b126f485c13679b7
+  prediction_content_sha256: b713ade7adb5b185dacc941edf19aec324bcd7e075a8e903d33a23f59eb809f3
+  submission_sha256: 4ace1476ac4777fd7fc17742f3d3786ae05f1c436e35e37ae3f4348350f51217
+  submit_check: pass
+  competition_submission: user_submitted_complete
+  public_lb: 8.797
+
+competition_submission_result:
+  ref: 55149125
+  submitted_at_utc: "2026-08-01T00:00:36.783Z"
+  submitted_by: kentookumura
+  team_name: SORA2
+  status: complete
+  public_lb: 8.797
+  private_lb: null
+  file_name: submission.csv
+  kernel_id: kentookumura/exp452-scale5-likpf-public-audit-inference
+  kernel_version: 1
+  submission_sha256: 4ace1476ac4777fd7fc17742f3d3786ae05f1c436e35e37ae3f4348350f51217
+  attribution_confirmed_by_user: true
+  attribution_confirmation_source: user_message_2026_08_01_ref55149125_matches_exp452
+  submitted_by_agent: false
+  scoring_elapsed_seconds: null
+  scoring_elapsed_note: monitoring_started_after_completion_so_elapsed_time_is_unavailable
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_well_feature_family_and_seed_index
+  implementation_seed_formula: stable_seed_likpf_test_well_plus_seed_index_0_to_127
+  stochastic_components:
+    - particle_initialization
+    - particle_transition_noise
+    - resampling_roughening
+  parallel_rng_policy: independent_local_rng_per_well_and_seed_no_global_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Deterministic anchor may be claimed only after public parity and an independent rerun establish identical content SHA.
+    - The public exp413 v4 surface is parity evidence, not a hidden-test input.
+
+notes:
+  - Implementation and canonical notebook adoption were authorized on 2026-07-31.
+  - Kaggle package creation, push, CPU execution, output generation, and local submit-check were authorized on 2026-07-31.
+  - Competition submission by Codex was explicitly forbidden by user_message_2026_07_31_run_never_submit and Codex did not submit.
+  - The first 52-character canonical kernel slug was rejected by Kaggle SaveKernel 400 before execution; the scientific contract is unchanged and the runtime slug was shortened to a meaningful 42-character canonical name.
+  - Kaggle private CPU inference version 1 completed and the downloaded submission passed local submit-check.
+  - The user later submitted externally, confirmed ref 55149125 as exp452, and Kaggle reported Public LB 8.797; no rerun or LB-adaptive change was made.
+  - This experiment records a direct primitive LB and cannot use exp413 final ML Public LB 7.201 as the primitive score.

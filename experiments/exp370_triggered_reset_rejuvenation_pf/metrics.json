@@ -1,0 +1,98 @@
+{
+  "experiment": "exp370_triggered_reset_rejuvenation_pf",
+  "route": "pf_beam",
+  "status": "completed_stage0_failed_close_without_rejuvenation_pf",
+  "created_at": "2026-07-23",
+  "updated_at": "2026-07-25",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "trigger_auc_and_atlas_top3_coverage",
+  "key_idea": "GR changeとESS collapse時だけfold-safe atlas top3へ10%粒子再注入",
+  "kaggle": {
+    "kernel": "kentookumura/exp370-triggered-reset-rejuvenation-pf-train",
+    "kernel_id_no": 128591535,
+    "kernel_version": 2,
+    "status": "COMPLETE",
+    "is_private": true,
+    "device": "cpu",
+    "internet": false,
+    "runtime_seconds": 671.3419711589813,
+    "remote_source_sha256": "a43a0a4c1157f4f11fef8ff83b1148dc9d7822ee80e8da40b1afdb7c9998ba82"
+  },
+  "stage0": {
+    "implemented": true,
+    "executed": true,
+    "passed": false,
+    "technical_gate_passed": true,
+    "scientific_gate_passed": false,
+    "stage1_eligible": false,
+    "decision": "stage0_failed_close_without_rejuvenation_pf",
+    "particles": 500,
+    "seed_count": 1,
+    "wells": 773,
+    "seed_well_runs": 773,
+    "rows": 3783989,
+    "eligible_trigger_rows": 3685818,
+    "accepted_triggers": 13,
+    "proposal_rows": 39,
+    "passing_folds": 0,
+    "required_passing_folds": 4,
+    "reporting_folds": 5,
+    "overall": {
+      "bad_event_fraction": 0.22822125237871213,
+      "trigger_row_fraction": 0.000003527032533890713,
+      "trigger_bad_event_auc": 0.49999848516664125,
+      "circular_bad_event_auc": 0.49999848517040246,
+      "auc_gain_over_circular": -3.761213562825105e-12,
+      "atlas_top3_within10_coverage": 0.07692307692307693,
+      "base_likpf_within10_coverage": 0.8461538461538461,
+      "coverage_gain_over_base_likpf": -0.7692307692307692,
+      "mean_best_atlas_abs_error_ft": 263.1115534855769,
+      "mean_base_abs_error_ft": 5.726230685527508
+    },
+    "hidden_like": {
+      "spatial": {
+        "events": 1,
+        "trigger_row_fraction": 0.0000010558959646823919,
+        "trigger_bad_event_auc": 0.4999992575389495,
+        "auc_gain_over_circular": 0.0,
+        "atlas_top3_within10_coverage": 0.0,
+        "coverage_gain_over_base_likpf": -1.0
+      },
+      "typewell_purged": {
+        "events": 1,
+        "trigger_row_fraction": 0.0000010514705341154873,
+        "trigger_bad_event_auc": 0.4999992674325415,
+        "auc_gain_over_circular": 0.0,
+        "atlas_top3_within10_coverage": 0.0,
+        "coverage_gain_over_base_likpf": -1.0
+      }
+    },
+    "execution_counts": {
+      "scientific_variants": 0,
+      "diagnostic_pf_replays": 1,
+      "full_parent_pf_control_replays": 0,
+      "lightgbm_configs": 0,
+      "trained_folds": 0,
+      "boosters": 0
+    },
+    "truth_access": {
+      "target_truth_rows_before_freeze": 0,
+      "hidden_role_rows_before_freeze": 0,
+      "donor_fold_leakage_violations": 0,
+      "target_truth_rows_after_freeze": 5092255,
+      "hidden_role_rows_after_freeze": 773
+    },
+    "scientific_contract_sha256": "4546b84c6ca6c3fa71fee3378d46b38101ece3bac1da94f817ea87712abcf875",
+    "summary_sha256": "3ce97d6b11d8bec962b67df600b0e67f17f8cb82d2a465b48ee343517d652075",
+    "gate_report_sha256": "941564dfb9b596111982a47f7b33d1d1c9308c93a3995ae2c7bd61b02fe00821",
+    "dedicated_tests": "13 passed"
+  },
+  "version_1": {
+    "status": "technical_failed_before_scientific_stage",
+    "diagnostic_pf_seed_well_runs": 0,
+    "issue": "competition_mount_resolver_selected_test_directory"
+  },
+  "notes": "Stage 0 technical gate passed but all scientific gates failed. Stage 1, inference, and submission are disabled."
+}

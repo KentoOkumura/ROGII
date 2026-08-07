@@ -1,0 +1,419 @@
+experiment:
+  name: exp502_exp501_fixed13_selector_replacement_on_exp413
+  description: >-
+    Design-frozen train-side ML ablation on exp413. Remove the existing exp413
+    Stage C nested selector compact 74-column block and insert the saved exp501
+    fixed13 selector compact 77-column block in the same slot. Retain exp413
+    clean273 and signed23 unchanged, producing final373. This is replacement-only,
+    not add-only. Train-side implementation and contract tests are complete. The
+    user approved canonical train notebook adoption, Kaggle packaging, and the
+    frozen 15-booster train run on 2026-08-02. Kaggle version 1 completed all 15
+    models but failed the pooled-gain and scope gates, so the branch is closed
+    without inference or submission.
+  hypothesis: >-
+    The exp501 fixed13 selector improved hard OOF versus the corrected exp264
+    fixed12 selector by 0.387642 ft across 5/5 folds and all seven scopes. Even
+    though its selector-level by-well tail gate failed, replacing exp413's nested
+    selector representation with its saved fold-safe compact77 may improve the
+    downstream TVT LightGBM OOF while all other exp413 feature blocks and model
+    settings remain fixed.
+  route: ml_model
+  status: kaggle_train_complete_fail
+  created_at: "2026-08-02"
+  updated_at: "2026-08-02"
+  inference_enabled: false
+
+lineage:
+  parent: exp413_scale5_likpf_full_replacement_on_exp335
+  selector_source: exp501_exp490_mean_reverting_hmm_fixed13_selector_on_exp264
+  selector_candidate_parent: exp490_geometry_centered_mean_reverting_offset_hmm
+  clean_and_signed_source: exp413_scale5_likpf_full_replacement_on_exp335
+  steering: ../../.steering/20260802-exp502-exp501-fixed13-selector-replacement-on-exp413
+  references:
+    - experiments/exp413_scale5_likpf_full_replacement_on_exp335/config.yaml
+    - experiments/exp413_scale5_likpf_full_replacement_on_exp335/metrics.json
+    - experiments/exp501_exp490_mean_reverting_hmm_fixed13_selector_on_exp264/config.yaml
+    - experiments/exp501_exp490_mean_reverting_hmm_fixed13_selector_on_exp264/metrics.json
+    - docs/06_reproducibility.md
+  diff_summary: >-
+    Freeze exp413 clean273, signed23, target, outer folds, three downstream
+    LightGBM configs, seeds, GPU mode, early stopping, postprocess, and evaluation
+    scopes. Exclude the exp413 Stage C nested compact74 block completely and put
+    exp501 saved compact77 in that slot, changing final width only from 370 to
+    373. Do not concatenate, blend, gate, or jointly retain both selector blocks.
+    Reuse saved exp501 selector outputs and saved exp413 control; the only future
+    training is 15 treatment TVT GPU boosters.
+
+authorization:
+  design_approved: true
+  design_approval_source: user_message_create_backlog_experiment_and_steering_design_only_2026_08_02
+  implementation_approved: true
+  implementation_approval_source: user_message_implement_exp502_2026_08_02
+  canonical_notebook_adoption_approved: true
+  canonical_notebook_adoption_approval_source: user_message_execute_exp502_2026_08_02
+  kaggle_package_approved: true
+  kaggle_package_approval_source: user_message_execute_exp502_2026_08_02
+  kaggle_train_approved: true
+  kaggle_train_approval_source: user_message_execute_exp502_2026_08_02
+  inference_implementation_approved: false
+  inference_run_approved: false
+  submission_file_generation_approved: false
+  external_submission_approved: false
+  note: >-
+    The user approved train-side implementation, then explicitly requested
+    execution on 2026-08-02 after the 1 treatment x 3 configs x 5 folds = 15
+    booster cost and zero control/selector retraining scope were presented.
+    Inference implementation/run and submission remain outside this approval.
+
+implementation:
+  enabled: true
+  scaffold_created: true
+  canonical_notebooks_placeholder_only: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_placeholder_only: true
+  jupytext_source_created: true
+  helper_code_created: true
+  tests_created: true
+  kaggle_package_created: true
+  train_enabled: false
+  train_executed: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: exp413_outer5_exp501_fixed13_selector_block_replacement
+  metric: rmse
+  metric_weighting: unweighted_suffix_rows
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  target: target_residual_from_last_known_tvt
+  primary_control:
+    experiment: exp413_scale5_likpf_full_replacement_on_exp335
+    prediction: saved_stage_d_lgb_mean_oof
+    rmse: 7.884802794404715
+    public_lb_reference: 7.201
+    public_lb_ref: 55080377
+    oof_sha256: 9bd2d17778b3b27d771b12cbff72def8b87e6cdf14062e1c0ba192434cef4a9d
+    retraining_boosters: 0
+  primary_candidate: exp501_fixed13_selector_replacement_on_exp413
+  gain_definition: saved_exp413_rmse_minus_exp502_rmse
+  leakage_policy:
+    - Load exp501 compact rows only under their frozen outer-train inner-OOF or outer-valid four-model-ensemble role.
+    - Require exact exp413/exp501 nested fold manifest SHA parity before feature assembly.
+    - Join by frozen row and fold keys and require missing, duplicate, and mismatched rows to be zero.
+    - Outer-valid target and error never enter feature selection, schema selection, model fitting, or early stopping.
+    - Public LB and exp501 post-freeze tail/error readouts cannot select features, weights, gates, or model configs.
+  decision_policy: exp413_late_stage_ml_selector_block_replacement
+  promotion:
+    minimum_pooled_rmse_gain_ft: 0.03
+    minimum_nonworse_folds: 3
+    maximum_scope_delta_rmse_ft: 0.02
+    required_scopes:
+      - md_since_0_250
+      - md_since_250_1000
+      - md_since_1000_plus
+      - hidden_like_spatial
+      - hidden_like_typewell_purged
+    require_all_technical_checks: true
+    by_well_tail_policy: report_only_not_automatic_stop
+    required_tail_readouts:
+      - by_well_delta_p95
+      - worst_well_delta_rmse
+      - worsened_well_count_plus_1ft
+      - worsened_well_count_plus_3ft
+      - worsened_well_count_plus_5ft
+    pass_action: qualify_same_exp_inference_implementation_for_separate_approval
+    fail_action: close_without_same_oof_rescue
+  exp501_selector_evidence:
+    hard_primary_oof_rmse: 8.264890208588357
+    parent_fixed12_hard_oof_rmse: 8.652531955610227
+    gain_ft: 0.38764174702187004
+    improved_folds: 5
+    improved_scopes: 7
+    total_scopes: 7
+    by_well_delta_p95_ft: 2.9045939263028773
+    worst_well_delta_rmse_ft: 18.394664149202487
+    decision: FAIL_CLOSE_EXP490_MEAN_REVERTING_HMM_FIXED13_SELECTOR
+    decision_remains_unchanged: true
+
+data:
+  raw_dir: data/raw
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  id_column: id
+  fold_contract:
+    source: exp263_row_count_balanced_outer_fold
+    expected_manifest_sha256: fa41084c5fcb4adffb88d44211b4cc5d2d2f46b5bd4d65828b6af941184b2a6d
+    exp413_manifest_sha256: fa41084c5fcb4adffb88d44211b4cc5d2d2f46b5bd4d65828b6af941184b2a6d
+    exp501_manifest_sha256: fa41084c5fcb4adffb88d44211b4cc5d2d2f46b5bd4d65828b6af941184b2a6d
+    require_exact_file_sha_parity: true
+    require_row_and_role_parity: true
+  exp413_source:
+    source_kernel_id: kentookumura/exp413-scale5-likpf-downstream-train
+    source_kernel_version: 2
+    expected_rows: 3783989
+    expected_wells: 773
+    clean_feature_count: 273
+    removed_nested_feature_count: 74
+    retained_signed_feature_count: 23
+    removed_nested_compact_manifest_sha256: 507429faa4fbc336dbc00e8edfee5a45788b8a58dbc2e15a440d5e7780d5f07f
+    retained_signed_compact_manifest_sha256: 7a4282a25d7e7887e314cd3d01b8a09c81ff91ba3c1b1cf62e3197079ac93323
+    stage_d_model_manifest_sha256: 4b4f988154468ba6697cdd57c0a0c6bf7cc631e7b2bbe1f15fa8f51fdeb7c3df
+    stage_d_metrics_sha256: 3ea2229b6174a1bc37960e425e05994645cfbedd3636f0d33a856aacf0f579e7
+    stage_d_prediction_column: scale5_x1p0_full_replacement__lgb_mean__pred_tvt
+    stage_c_metrics_sha256: 4642e1b22662d830fcd601f5d46452657e51546f1d741b1e0ae4a8e1c836168d
+    stage_c_model_manifest_sha256: 7badcf45bccab0e2b0535ab7e7171e4c6cb7bf81e0bb115d5e283b1486b7b875
+    stage_c_compact_schema_file_sha256: e3a677610899cb33bf58262f4cf02f650300c8c2207c46b53588d3418162ea74
+    stage_c_compact_schema_logical_sha256: 23614916c99edbbd513bcefee958d26cdfae5b83fb05c232c19736f2708dd725
+    stage_c_lineage_sha256: 2e0a36a7383d45a2f2aae7bba21c8160abff4a9d47e47a4d814300e729774aa1
+    stage_s_metrics_sha256: ce540b392f23e3becd0b65bceb01589424dac0b0593646c93043d75f81525410
+    stage_s_model_manifest_sha256: 84a0047667ce9209ce63e3b9e935ff6c379d2d38b1ae4262318db94a47aaca9f
+    stage_s_compact_schema_file_sha256: e57c6d5fde307eb26193a1c5efdb31accde94a6836df75de03100189d232021a
+    stage_s_compact_schema_logical_sha256: 74abf31f057dfe29177221895e3e26c5a261e5b51defc04f081d6b140f2be44c
+    stage_s_reproducibility_manifest_sha256: 6acebb4461ac2df6f94c6edf1068a0ba9e42bc8c8877d83b4b3ccfa586a3e7c1
+    stage_s_lineage_sha256: d0e279e2c844d557c731107a0925f2d1c27de77eb64cfad9a498ab0b10ea0c13
+    stage_c_root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp413-scale5-likpf-selector-train/artifacts
+      - /kaggle/input/exp413-scale5-likpf-selector-train/artifacts
+      - experiments/exp413_scale5_likpf_full_replacement_on_exp335/kaggle/output/stage_c/artifacts
+    stage_s_root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp413-scale5-likpf-signed-train/artifacts
+      - /kaggle/input/exp413-scale5-likpf-signed-train/artifacts
+      - experiments/exp413_scale5_likpf_full_replacement_on_exp335/kaggle/output/stage_s/artifacts
+    stage_d_root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp413-scale5-likpf-downstream-train/artifacts
+      - /kaggle/input/exp413-scale5-likpf-downstream-train/artifacts
+      - experiments/exp413_scale5_likpf_full_replacement_on_exp335/kaggle/output/stage_d/artifacts
+  exp501_selector_source:
+    source_kernel_id: kentookumura/exp501-exp490-fixed13-selector-train
+    source_kernel_version: 2
+    expected_rows: 3783989
+    expected_wells: 773
+    selected_input_feature_count: 92
+    compact_feature_count: 77
+    compact_partition_count: 25
+    compact_rows: 18919945
+    outer_valid_score_long_rows: 49191857
+    feature_schema_sha256: 2eb780b95aa896973c6f753634af8a34f82a41f8091d6261a4f2e7d34463e96e
+    selector_model_manifest_sha256: 3adb894df634b929020693e7435852b646a99b8dafc2eab4fb88fc1c231cabbc
+    compact_manifest_sha256: 32317a715997c7a7e145d7122a8ac37733adb30710e571ccbf11a81c2d79c257
+    outer_valid_candidate_score_sha256: 1641b9cb9d29aa65759d5a3cd637cef62f84ac50dd39999955b5c2aa1bd1599e
+    nested_selector_metrics_sha256: 7c29c103c6240367fc5491605d9241710e0e7dbdd499285a5020ca6ded421a53
+    root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp501-exp490-fixed13-selector-train/artifacts
+      - /kaggle/input/exp501-exp490-fixed13-selector-train/artifacts
+      - experiments/exp501_exp490_mean_reverting_hmm_fixed13_selector_on_exp264/kaggle/output/train_v2_selected/artifacts
+  parent_configs:
+    exp413:
+      patterns:
+        - inputs/parent_exp413_config.yaml
+        - experiments/exp413_scale5_likpf_full_replacement_on_exp335/config.yaml
+      sha256: d12e6d74a7f567f0873d5513883b3a7d36d0cd5be5231037e7db12f1a74036a7
+    exp501:
+      patterns:
+        - inputs/parent_exp501_config.yaml
+        - experiments/exp501_exp490_mean_reverting_hmm_fixed13_selector_on_exp264/config.yaml
+      sha256: eeef3daa8d903e9ec95f7cd44ed6c6457aef3c1f10cde26d27fe7b0c7549e953
+  exp501_candidate_contract:
+    patterns:
+      - inputs/exp501_candidate_contract.yaml
+      - experiments/exp501_exp490_mean_reverting_hmm_fixed13_selector_on_exp264/candidate_contract.yaml
+    sha256: be388f152b421c0ab306b5b99dd1a1d6f80d59cf387a6426213c221fe6012b7a
+
+feature_surface:
+  policy: replace_only_no_addonly
+  ordered_blocks:
+    - {name: exp413_clean_base, source: exp413, feature_count: 273, action: retain}
+    - {name: nested_selector_compact, source: exp501, feature_count: 77, action: replace_exp413_nested74}
+    - {name: exp413_signed_selector_compact, source: exp413, feature_count: 23, action: retain}
+  removed_blocks:
+    - {name: exp413_nested_selector_compact, feature_count: 74}
+  forbidden_blocks:
+    - exp413_nested74_plus_exp501_compact77
+    - selector_block_concat
+    - selector_block_blend
+    - selector_output_gate
+  expected_final_feature_count: 373
+  expected_old_selector_columns_in_final: 0
+  expected_new_selector_columns_in_final: 77
+  require_unique_feature_names: true
+  require_fixed_column_order: true
+
+model:
+  name: exp413_tvt_lightgbm_with_exp501_selector_block_replacement
+  active_variants: [exp501_fixed13_selector_replacement]
+  downstream_tvt:
+    source: exp413_stage_d_v2
+    model_family: exp218_exp063_public_pixiux_lgb0_lgb1_lgb2
+    final_feature_count: 373
+    lightgbm_config_indices: [0, 1, 2]
+    folds: 5
+    planned_gpu_boosters: 15
+    control_retraining_boosters: 0
+    exp501_selector_retraining_boosters: 0
+    exp413_signed_selector_retraining_boosters: 0
+    mode: gpu_repro_guard_dp_threads8
+    early_stopping_rounds: 250
+    log_evaluation_period: 100
+    matrix_copy_chunk_columns: 32
+  execution_count:
+    treatment_variants: 1
+    lightgbm_configs: 3
+    outer_folds: 5
+    planned_gpu_downstream_boosters: 15
+    planned_total_new_boosters: 15
+    exp413_control_retraining_boosters: 0
+    exp501_selector_retraining_boosters: 0
+    exp413_signed_selector_retraining_boosters: 0
+    hmm_well_runs: 0
+    pf_well_runs: 0
+    beam_well_runs: 0
+
+execution:
+  stage: train_complete_gate_failed_closed
+  approval_required: true
+  implementation_approved: true
+  kaggle_package_approved: true
+  run_approved: false
+  run_flags:
+    train: false
+  active_variants_if_approved: 1
+  lightgbm_configs_if_approved: 3
+  outer_folds_if_approved: 5
+  planned_gpu_boosters_if_approved: 15
+  control_retraining: false
+  selector_retraining: false
+  candidate_regeneration: false
+  inference: false
+  submission: false
+  forbidden:
+    - addonly_or_dual_selector_surface
+    - exp413_control_retraining
+    - exp501_selector_retraining
+    - exp413_signed_selector_retraining
+    - exp490_hmm_or_pf_or_beam_rerun
+    - feature_subset_weight_threshold_or_gate_tuning
+    - same_oof_rescue
+    - current_test_inference_or_submission_without_separate_approval
+
+runtime:
+  accelerator: kaggle_t4_gpu
+  use_amp: false
+  num_workers: 8
+  batch_size: 32
+  kaggle:
+    enable_gpu: true
+    enable_tpu: false
+    enable_internet: false
+    machine_shape: NvidiaTeslaT4
+    planned_kernel_id: kentookumura/exp502-exp501-fixed13-replace-exp413-train
+    planned_kernel_title: exp502 exp501 fixed13 replace exp413 train
+    kernel_id: kentookumura/exp502-exp501-fixed13-replace-exp413-train
+    kernel_id_no: 129459588
+    kernel_version: 1
+    kernel_url: https://www.kaggle.com/code/kentookumura/exp502-exp501-fixed13-replace-exp413-train
+    pushed_at_utc: "2026-08-02 08:30:13 UTC"
+    pushed_package_config_sha256: 25d05d62b8656e983e45e9f439b8cc41fb42035d8d0d8705a983fe25a1767f58
+    completed_at_utc: "2026-08-02 14:16:36 UTC"
+    notebook_metrics_time_seconds: 20702.430524
+    notebook_max_log_time_seconds: 20715.350925
+    dataset_sources:
+      - kentookumura/exp404-v1-frozen-predictions
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp413-scale5-likpf-selector-train
+      - kentookumura/exp413-scale5-likpf-signed-train
+      - kentookumura/exp413-scale5-likpf-downstream-train
+      - kentookumura/exp501-exp490-fixed13-selector-train
+    bootstrap_dependency_files:
+      - source: experiments/exp413_scale5_likpf_full_replacement_on_exp335/config.yaml
+        destination: inputs/parent_exp413_config.yaml
+      - source: experiments/exp501_exp490_mean_reverting_hmm_fixed13_selector_on_exp264/config.yaml
+        destination: inputs/parent_exp501_config.yaml
+      - source: experiments/exp501_exp490_mean_reverting_hmm_fixed13_selector_on_exp264/candidate_contract.yaml
+        destination: inputs/exp501_candidate_contract.yaml
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: inputs/exp218_source/config.yaml
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/settings.py
+        destination: inputs/exp218_source/settings.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/learned_likelihood_rawtest_feature_generator_parity.py
+        destination: inputs/exp145_source/learned_likelihood_rawtest_feature_generator_parity.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/pf_multi_observation_likelihood_probe.py
+        destination: inputs/exp145_source/pf_multi_observation_likelihood_probe.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/config.yaml
+        destination: inputs/exp145_source/config.yaml
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/settings.py
+        destination: inputs/exp145_source/settings.py
+      - source: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+        destination: exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+        destination: inputs/exp218_clean_273_allowlist.csv
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+artifacts:
+  output_prefix: exp502_exp501_fixed13_selector_replacement_on_exp413
+  planned:
+    - exp502_input_contract.json
+    - exp502_selector_block_replacement_manifest.json
+    - exp502_final_feature_schema.csv
+    - exp502_final_feature_manifest.json
+    - exp502_fold_metrics.csv
+    - exp502_scope_metrics.csv
+    - exp502_hidden_scope_metrics.csv
+    - exp502_by_well_metrics.csv
+    - exp502_feature_importance.csv
+    - exp502_model_manifest.json
+    - exp502_oof_predictions.parquet
+    - exp502_metrics.json
+    - reproducibility_manifest.json
+
+outcome:
+  decision: FAIL_CLOSE_EXP501_FIXED13_SELECTOR_REPLACEMENT_ON_EXP413
+  status: train_complete_gate_failed_closed
+  saved_exp413_rmse: 7.884802794404715
+  exp502_rmse: 7.882143903310376
+  gain_ft: 0.002658891094339033
+  required_gain_ft: 0.03
+  nonworse_folds: 3
+  maximum_scope_delta_rmse_ft: 0.1409439978762137
+  maximum_allowed_scope_delta_rmse_ft: 0.02
+  technical_checks_passed: true
+  model_count: 15
+  inference_executed: false
+  submission_generated: false
+  same_oof_rescue_allowed: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: inherit_exp413_fixed_global_and_per_config_lightgbm_seeds
+  stochastic_components: [gpu_lightgbm_training_if_later_approved]
+  parallel_rng_policy: inherit_exp413_deterministic_force_col_wise_fixed_threads_no_global_rng
+  feature_sha_policy: canonical_table_sha_and_decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Saved exp501 selector compact and exp413 clean/signed blocks are not regenerated during selector training.
+    - Record separate SHA values for removed74, inserted77, retained273/23, and final373 surfaces.
+    - GPU LightGBM is not assumed bitwise deterministic; kernel config, model manifest, and OOF SHA define the run.
+    - Inference and submission reproducibility are out of scope until separately approved.
+
+notes:
+  - This experiment does not reclassify exp501's Stage C scientific FAIL or terminal decision.
+  - This experiment asks only whether replacing the downstream selector representation improves TVT prediction.

@@ -1,0 +1,332 @@
+experiment:
+  name: "exp366_fault_reset_duration_semimarkov_hmm"
+  description: >-
+    Add target-free triggered, fixed-jump, explicit-duration reset branches to
+    exp209 without an atlas, after a trigger and branch-coverage preflight.
+  route: pf_beam
+  status: completed_stage0_gate_failed_closed
+  created_at: "2026-07-23"
+  updated_at: "2026-07-25"
+
+implementation:
+  enabled: true
+  scope: stage0_trigger_and_fixed_branch_preflight_only
+  stage_0_implemented: true
+  stage_1_implemented: false
+  compact_selfcontained_source_created: true
+  canonical_notebook_adopted: true
+  canonical_notebook_adoption_approval_source: user_message_execute_exp366
+  regular_notebook_preserved_as_placeholder: false
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  inference_enabled: false
+  submission_enabled: false
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260723-exp366-fault-reset-duration-semimarkov-hmm
+  references:
+    - exp289_fault_risk
+    - exp290_piecewise_datum_semimarkov
+    - exp231_peer_atlas_emission
+  diff_summary: >-
+    At a fixed target-free GR change plus exp209 emission-surprise trigger,
+    retain the base branch and create twelve branches from four bounded TVT
+    jumps and three fixed durations. Within each branch exp209 is unchanged.
+    No atlas, rate predictor, global branch spawning, or oracle commit is used.
+
+validation:
+  strategy: trigger_and_fixed_branch_preflight_then_semimarkov_hmm
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  expected_rows: 3783989
+  expected_wells: 773
+  group_column: well_id
+  score_rows: unknown_suffix_only
+  truth_attachment: after_trigger_branch_path_and_score_sha_freeze
+  stage_0:
+    name: saved_exp209_trigger_and_branch_coverage_readout
+    hmm_well_runs: 0
+    evaluation_horizon_rows: 512
+    incomplete_horizon_policy: exclude
+    fold_assignment: sklearn_group_kfold_on_fixed_eligible_row_ledger
+    trigger:
+      gr_change_transform: absolute_first_difference_then_median_1p4826mad_z
+      gr_change_robust_z_quantile_from_known_prefix: 0.995
+      emission_surprise: exp209_gaussian_negative_log_emission
+      exp209_emission_surprise_quantile_from_known_prefix: 0.995
+      combine: logical_and
+      refractory_rows: 512
+      negative_control_shift_rows: 512
+    branches:
+      position_jumps_ft: [-12.6, -6.3, 6.3, 12.6]
+      horizons_rows: [128, 256, 512]
+      order: base_then_abs_jump_then_sign_then_duration
+      path_contract: >-
+        Use the saved exp209 posterior-mean path over one fixed 512-row
+        evaluation horizon. A reset branch adds its fixed jump, clips it to the
+        unchanged exp209 position grid, holds it for exactly its configured
+        duration, and then returns to the saved base path.
+      score: cumulative_exp209_gaussian_gr_log_emission_over_fixed_512_row_horizon
+      selected_branch: maximum_score_with_frozen_branch_order_tie_break
+      truth_rank_after_freeze: minimum_fixed_512_row_tvt_rmse
+    freeze_before_truth:
+      - trigger_rows
+      - branch_paths
+      - branch_gr_scores
+      - selected_branch
+      - reporting_fold_assignment
+    bad_event_label_after_freeze: exp209_fixed_512_row_horizon_rmse_ge_10ft
+    negative_control: within_well_circular_shift_of_accepted_trigger_score_by_512_rows
+    hidden_like_direction_metric: selected_branch_rmse_gain_vs_base_ft
+    all_required:
+      minimum_trigger_bad_event_auc: 0.60
+      minimum_auc_gain_over_circular: 0.05
+      trigger_row_fraction_range: [0.001, 0.10]
+      minimum_alternative_branch_within10_coverage: 0.60
+      minimum_selected_branch_mrr_gain_vs_base_first: 0.01
+      minimum_passing_folds: 4
+      require_positive_both_hidden_like_directions: true
+  stage_1:
+    enabled_only_after_stage_0_pass_and_separate_user_approval: true
+    semimarkov_hmm_well_runs: 773
+    all_required:
+      minimum_rmse_gain_vs_exp209_ft: 0.05
+      minimum_improved_folds: 4
+      maximum_1000_plus_regression_ft: 0.02
+      maximum_hidden_like_spatial_regression_ft: 0.02
+      maximum_hidden_like_typewell_purged_regression_ft: 0.02
+      maximum_by_well_p95_regression_ft: 0.02
+      maximum_worst_well_regression_ft: 0.25
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  horizontal_required_prefreeze_columns: [MD, Z, GR, TVT_input]
+  horizontal_truth_columns: [TVT]
+  typewell_required_columns: [TVT, GR]
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  saved_exp209:
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    safe_columns: [id, well, hmm_mean_tvt, hmm_prefix_sigma]
+    prediction_column: hmm_mean_tvt
+    prefix_sigma_column: hmm_prefix_sigma
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    candidates:
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5_small/artifacts
+    patterns:
+      - "**/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz"
+  hidden_like:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    late_join_only: true
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    patterns:
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+  parent_control:
+    candidate: hmm_mean_tvt
+    direct_rmse_ft: 11.938287234887435
+    usage: saved_prediction_only_no_control_rerun
+
+model:
+  name: fault_reset_duration_semimarkov_hmm
+  estimator: deterministic_fixed_branch_semimarkov_hmm
+  state: [position, rate, reset_jump, remaining_duration]
+  trigger: fixed_from_stage_0
+  reset:
+    position_jumps_ft: [-12.6, -6.3, 6.3, 12.6]
+    position_grid_step_ft: 0.35
+    position_grid_jump_cells: [-36, -18, 18, 36]
+    horizons_rows: [128, 256, 512]
+    rate_state_at_entry: copy_base_branch_rate_distribution
+    base_branch_always_retained: true
+    commit_log_evidence_margin: 5.0
+    overlapping_trigger_policy: ignore_until_refractory_end
+  fixed_from_exp209:
+    - within_branch_position_and_rate_transition
+    - grids_and_momentum
+    - gaussian_emission_and_sigma
+    - posterior_mean_output
+  fixed_emission:
+    family: gaussian
+    squared_z_clip: 600.0
+    likelihood_weight: 1.0
+    sigma_mode: known_prefix_zero_fill_population_std
+    sigma_clip: [10.0, 60.0]
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+  fixed_grid:
+    position_grid_step_ft: 0.35
+    band_pad_ft: 100.0
+    typewell_outer_pad_ft: 40.0
+  forbidden:
+    - horizontal_gr_atlas
+    - true_error_or_oracle_trigger
+    - rate_prediction_from_prefix_or_geometry
+    - global_or_overlapping_branch_spawn
+    - unlimited_beam
+    - jump_horizon_margin_or_trigger_grid
+    - softmax_branch_average
+    - blend_or_selector
+    - parent_control_rerun
+
+runtime:
+  device: cpu
+  use_gpu: false
+  use_amp: false
+  num_workers: 1
+  maximum_seconds: 30600
+  maximum_peak_rss_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_run_on_push: false
+    train_kernel_id: kentookumura/exp366-fault-reset-duration-semimarkov-hmm-train
+    train_title: exp366 fault reset duration semimarkov hmm train
+    train_package_created_at_utc: "2026-07-25 04:21:10 UTC"
+    train_kernel_version: 2
+    train_kernel_id_no: 128543224
+    train_kernel_url: https://www.kaggle.com/code/kentookumura/exp366-fault-reset-duration-semimarkov-hmm-train
+    stage_0_v1_runtime_seconds_approx: 61.04
+    stage_0_v2_runtime_seconds: 666.7988321781158
+    stage_0_v2_kernel_runtime_seconds: 695.920789076
+    kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: true
+  seed_policy: no_rng_stable_well_row_branch_order
+  stochastic_components: []
+  parallel_rng_policy: single_worker_no_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Trigger, branches, scores, and selection are frozen before suffix truth.
+    - Branch order is base then jump magnitude then duration.
+
+execution:
+  implementation_approved: true
+  implementation_approval_source: user_message_implement_exp366
+  implementation_scope: stage0_only
+  kaggle_push_approved: true
+  kaggle_execution_approved: true
+  kaggle_execution_approved_at: "2026-07-25 13:17:43 JST"
+  kaggle_execution_approval_source: user_message_execute_exp366
+  active_stage: completed_stage0_gate_failed_closed
+  kaggle_kernel_status: COMPLETE
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+  stage_0_counts:
+    diagnostic_variants: 1
+    fixed_branches: 13
+    reporting_folds: 5
+    semimarkov_hmm_well_runs: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    parent_control_reruns: 0
+  stage_1_counts:
+    scientific_variants: 1
+    reporting_folds: 5
+    semimarkov_hmm_well_runs: 773
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    parent_control_reruns: 0
+
+results:
+  version_1:
+    status: technical_failed_before_scientific_stage
+    technical_pass: false
+    scientific_pass: null
+    runtime_seconds_approx: 61.04
+    issue: exp366_used_csv_serialization_sha_for_parent_logical_raw_identity_contract
+    semimarkov_hmm_well_runs: 0
+    boosters: 0
+  version_2:
+    status: stage0_failed_close_without_semimarkov_hmm
+    technical_pass: true
+    scientific_pass: false
+    stage0_pass: false
+    stage1_eligible: false
+    runtime_seconds: 666.7988321781158
+    rows: 3783989
+    wells: 773
+    eligible_trigger_rows: 3389090
+    accepted_triggers: 40
+    trigger_row_fraction: 0.000011802578273223785
+    trigger_bad_event_auc: 0.5000036354851807
+    circular_bad_event_auc: 0.5000001905222005
+    auc_gain_over_circular: 0.000003444962980214683
+    alternative_branch_within10_coverage: 0.9
+    mrr_gain_vs_base_first: -0.12335643523143536
+    base_rmse_ft: 17.89203071520513
+    selected_rmse_ft: 18.897337738866064
+    selected_branch_rmse_gain_vs_base_ft: -1.005307023660933
+    oracle_rmse_ft: 12.50013661150243
+    hidden_like_spatial_gain_ft: -0.3445367519382714
+    hidden_like_typewell_purged_gain_ft: -0.6663570339380129
+    passing_folds: 0
+    semimarkov_hmm_well_runs: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    parent_control_reruns: 0
+    contract_sha256: f59ad2d8ac0b084c23461805c4f393c6938cd17e953c3a922fd4fe531905c604
+    summary_sha256: cc048adc957ab8e71148c3dd68c3767157b9fdaba754c40c874f71643d99e7e6
+    decision: stage0_failed_close_without_semimarkov_hmm
+
+inference:
+  enabled: false
+  mode: disabled_stage0_failed_closed
+  create_submission: false
+
+audit:
+  output_prefix: exp366_fault_reset_duration_semimarkov_hmm_stage0
+  expected_artifacts:
+    - exp366_fault_reset_duration_semimarkov_hmm_stage0_input_manifest.csv
+    - exp366_fault_reset_duration_semimarkov_hmm_stage0_trigger_ledger.csv.gz
+    - exp366_fault_reset_duration_semimarkov_hmm_stage0_branch_ledger.csv.gz
+    - exp366_fault_reset_duration_semimarkov_hmm_stage0_freeze_manifest.json
+    - exp366_fault_reset_duration_semimarkov_hmm_stage0_trigger_readout.csv.gz
+    - exp366_fault_reset_duration_semimarkov_hmm_stage0_event_readout.csv.gz
+    - exp366_fault_reset_duration_semimarkov_hmm_stage0_scope_metrics.csv
+    - exp366_fault_reset_duration_semimarkov_hmm_stage0_fold_metrics.csv
+    - exp366_fault_reset_duration_semimarkov_hmm_stage0_gate_report.json
+    - exp366_fault_reset_duration_semimarkov_hmm_stage0_summary.json
+
+notes:
+  - Design frozen on 2026-07-23.
+  - User approved Stage 0 implementation on 2026-07-25.
+  - The fixed 512-row Stage 0 horizon makes all 13 branch scores and truth RMSE values directly comparable.
+  - User approved canonical train adoption and private Kaggle CPU Stage 0 package/push/run on 2026-07-25.
+  - Kaggle CPU version 1 stopped before scientific evaluation because exp366 used the wrong raw-identity SHA serialization; version 2 corrected only that contract adapter.
+  - Version 2 passed the technical gate and failed the frozen scientific gate with zero passing folds.
+  - Stage 1 semi-Markov HMM is ineligible; inference and submission remain disabled.

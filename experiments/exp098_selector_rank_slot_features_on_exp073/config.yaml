@@ -1,0 +1,209 @@
+experiment:
+  name: "exp098_selector_rank_slot_features_on_exp073"
+  description: Add target-free selector rank-slot structured features to the fixed exp073 full replay LightGBM surface.
+  route: ml_model
+  status: submitted_complete_public_lb_8_441
+  created_at: "2026-06-21"
+  updated_at: "2026-06-22"
+
+lineage:
+  parent: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  comparison_parents:
+    - exp077_full_replay_postprocess_guard
+    - exp092_u_projection_correction_disagreement_fullrun
+    - exp093_pf_candidate_coverage_then_ranker_audit
+  implementation_source: selector_rank_slot_features_on_exp073.py
+  diff_summary: Keeps the exp073/exp072 deterministic 196-feature full replay surface and original TVT-minus-last-anchor target, then adds target-free PF/Beam/likelihood-PF selector rank-slot delta, identity/score, and U-space disagreement features without directly selecting or blending candidate TVT paths.
+
+validation:
+  strategy: groupkfold_by_well_rank_slot_feature_ablation_on_exp073_surface
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Train features are read from exp072's raw-train-only deterministic feature cache.
+    - Candidate rank scores use only target-free PF/Beam/likelihood-PF diagnostics and candidate disagreements.
+    - Evaluation-zone true TVT is used only as the supervised LightGBM target and OOF metric, never to create rank slots or rank scores.
+    - Candidate TVT paths are not used as a direct selector, soft average, or postprocess replacement.
+    - GroupKFold is grouped by well; a well never appears in train and validation in the same fold.
+    - Inference is out of scope until pooled OOF, worst-well, path continuity, and raw-test feature parity are reviewed.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_summary_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_summary.json
+
+model:
+  name: exp098_selector_rank_slot_features_lgbm
+  source_experiment: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  feature_source: exp072_exp063_full_replay_train_feature_cache
+  expected_base_feature_count: 196
+  target: target
+  base_prediction: last_known_tvt
+  estimator: lightgbm
+  lgb_config_family: exp063_public_pixiux_lgb0_lgb1_lgb2
+  rank_slot:
+    top_k: 3
+    degree: 3
+    robust_iters: 3
+    clip_sigma: 4.0
+    include_lgb_oof_features: false
+    candidates:
+      - name: pf_ancc
+        source_column: pf_ancc
+        transform: absolute
+        family: pf
+        enabled: true
+      - name: beam_mean
+        source_column: beam_mean_d
+        transform: base_plus_delta
+        family: beam
+        enabled: true
+      - name: likpf_mean
+        source_column: likpf_mean_d
+        transform: base_plus_delta
+        family: likelihood_pf
+        enabled: true
+      - name: sc_ens
+        source_column: sc_ens_d
+        transform: base_plus_delta
+        family: ncc_scale_ensemble
+        enabled: true
+      - name: hyb
+        source_column: hyb_d
+        transform: base_plus_delta
+        family: public_hybrid
+        enabled: true
+  feature_ablation:
+    selected_variant: rank_slot_u_disagreement
+    active_variants:
+      - name: rank_slot_u_disagreement
+        description: Adds rank-slot deltas, source identity/score, per-slot U-space projection residual/correction features, and rank-to-rank U disagreement. This single selected pattern fully contains the smaller rank-slot delta and identity/score groups.
+        feature_groups:
+          - rank_slot_delta
+          - rank_slot_identity_score
+          - rank_slot_u_projection
+          - rank_slot_u_disagreement
+        enabled: true
+  training:
+    early_stopping_rounds: 250
+    max_train_rows: null
+    max_rows: null
+    save_models: true
+    save_predictions: true
+    top_n_importance: 50
+    active_modes:
+      - gpu_repro_guard_dp_threads8
+    modes:
+      gpu_repro_guard_dp_threads8:
+        description: GPU double precision plus fixed thread count and deterministic flags.
+        use_gpu: true
+        common_overrides:
+          gpu_use_dp: true
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+      cpu_deterministic_threads8:
+        description: CPU deterministic LightGBM control with fixed thread count.
+        use_gpu: false
+        common_overrides:
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+    inference_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp098-selector-rank-slot-features-on-exp073-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_groupkfold_seed_no_new_pf_rng
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - gpu_lightgbm_training
+  parallel_rng_policy: LightGBM deterministic flags plus fixed n_jobs and num_threads; rank-slot feature generation itself has no RNG.
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - This is a train-side feature audit, not a deterministic submission anchor.
+    - Source gzip cache decompressed content SHA is recorded by the train summary when available.
+
+audit:
+  mode: selector_rank_slot_features_on_exp073
+  output_prefix: exp098_selector_rank_slot_features_on_exp073
+  fast: false
+  reference_metrics:
+    exp073_raw_anchor_pooled_rmse: 9.526374749390682
+    exp077_policy_pooled_rmse: 9.470514801
+    exp092_best_lgb1_pooled_rmse: 9.322479895503927
+  expected_train_artifacts:
+    - exp098_selector_rank_slot_features_on_exp073_metrics.csv
+    - exp098_selector_rank_slot_features_on_exp073_by_well.csv
+    - exp098_selector_rank_slot_features_on_exp073_bucket_metrics.csv
+    - exp098_selector_rank_slot_features_on_exp073_rank_slot_feature_summary.csv
+    - exp098_selector_rank_slot_features_on_exp073_feature_importance.csv
+    - exp098_selector_rank_slot_features_on_exp073_feature_importance_mean.csv
+    - exp098_selector_rank_slot_features_on_exp073_feature_importance_mean_top.png
+    - exp098_selector_rank_slot_features_on_exp073_predictions.csv.gz
+    - exp098_selector_rank_slot_features_on_exp073_feature_schema.csv
+    - exp098_selector_rank_slot_features_on_exp073_lgb_models/manifest.json
+    - exp098_selector_rank_slot_features_on_exp073_summary.json
+
+inference:
+  mode: saved_lgb1_booster_inference_with_raw_test_feature_replay
+  selected_variant: rank_slot_u_disagreement
+  selected_mode: gpu_repro_guard_dp_threads8
+  selected_model: lgb1
+  deterministic_pf: true
+  seed_policy: stable_sha256_per_well
+  notes:
+    - User requested inference despite train-side exp098 being weaker than exp092.
+    - Regenerates raw-test full replay features and computes target-free rank-slot features.
+    - Uses saved lgb1 fold boosters from Kaggle train v1.
+
+submission:
+  status: submitted_complete
+  submitted_at: "2026-06-22 00:01:47 UTC"
+  attribution: ref 53927490 is attributed to exp098 after user correction that ref 53927479 / Public LB 8.350 belongs to exp092.
+  primary_ref: 53927490
+  public_lb: 8.441
+  private_lb: null
+  submission_sha256: 1d32582f3f5984eeb9dd0bc5798b12cdc2e7aa863e0334691028901f0325125f
+  notes:
+    - Public LB improves exp077 8.611, but ref 53927479 / 8.350 belongs to exp092.
+    - Kaggle description is blank, so ref 53927490 attribution is based on user correction and submission timing.
+
+notes:
+  - Implements backlog item selector_rank_slot_features_on_exp073.
+  - PF/Beam candidates remain target-free structured features under route ml_model.
+  - Direct candidate selector and soft average are intentionally out of scope.
+  - User-requested inference was submitted after submit-check PASS.

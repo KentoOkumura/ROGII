@@ -1,0 +1,381 @@
+experiment:
+  name: exp422_roughening_x10_failure_regime_attribution_readout
+  description: >-
+    Design-frozen saved-output attribution readout for the exp416 roughening-x10
+    failure. It tests one target-free two-axis well-regime hypothesis explaining
+    the split between persistent-offset recovery and global OOF damage.
+  hypothesis: >-
+    Roughening x10 helps wells with high particle-recovery pressure but harms
+    wells with high missing-GR and long-suffix damage exposure; one fold-safe
+    target-free regime therefore explains both the local persistent-episode gain
+    and the global regression.
+  route: pf_beam
+  status: no_reproducible_target_free_regime_close_attribution_branch
+  created_at: "2026-07-28"
+  implementation_enabled: true
+  inference_enabled: false
+
+lineage:
+  parent: exp416_roughening_x10_likpf_full_oof_ablation
+  scientific_control: exp072_exp063_full_replay_feature_cache
+  reporting_source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  references:
+    - exp410_likpf_particle_resampling_basin_audit
+    - docs/06_reproducibility.md
+  steering: ../../.steering/20260728-exp422-roughening-x10-failure-regime-attribution-readout
+  diff_summary: >-
+    Generate no PF path, model, or prediction. Reuse the SHA-frozen exp416
+    roughening-x10 candidate, well audit, by-well metrics, and persistent-episode
+    metrics together with the saved exp072 control and exp226 reporting data.
+    Before outcome attachment, freeze one equal-weight recovery-pressure score,
+    one equal-weight damage-exposure score, fold-safe median splits, and one
+    high-recovery/low-exposure target cell. This is attribution only and does not
+    implement adaptive roughening or reclassify exp416.
+
+implementation:
+  enabled: true
+  scope: saved_output_failure_regime_attribution_readout
+  design_approval_received: true
+  design_approval_source: user_message_2026_07_28_create_exp_directory_steering_finalize_design
+  implementation_approval_received: true
+  implementation_approval_source: user_message_2026_07_28_implement_exp422
+  scaffold_created: true
+  notebook_placeholders_only: false
+  canonical_train_notebook_is_placeholder: false
+  canonical_inference_notebook_is_placeholder: true
+  jupytext_source_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  training_enabled: false
+  audit_execution_enabled: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: saved_output_target_free_two_axis_failure_regime_attribution
+  metric: rmse
+  primary_gain_definition: rmse_exp072_control_minus_rmse_exp416_roughening_x10
+  secondary_well_gain_definition: control_rmse_minus_candidate_rmse
+  episode_gain_definition: control_sse_minus_candidate_sse
+  metric_weighting:
+    row_primary: unweighted_suffix_rows
+    well_association: equal_weight_per_well
+    episode: raw_sse
+  n_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  group_column: well_id
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_persistent_episode_wells: 12
+  expected_persistent_episodes: 16
+  expected_persistent_episode_rows: 55104
+  expected_candidate_rmse_ft: 13.617717557749454
+  expected_control_rmse_ft: 11.594894395642696
+  expected_candidate_minus_control_rmse_ft: 2.022823162106759
+  metric_parity_absolute_tolerance_ft: 1.0e-6
+  outcome_attachment: >-
+    after well-regime feature, score, assignment, row-scope, schema, and logical
+    content SHA freeze
+  leakage_policy:
+    - Regime features use only the exp416 well audit and reporting-fold identity.
+    - Candidate prediction values are excluded from every score and regime formula.
+    - Truth-derived by-well and episode metrics are not opened before regime freeze.
+    - exp072 control and exp226 suffix truth are attached only after regime freeze.
+    - Individual diagnostic results cannot replace either primary score or the fixed target cell.
+
+data:
+  exp416_merge_output:
+    source: exp416_roughening_x10_likpf_full_oof_ablation
+    kernel_source: kentookumura/exp416-rough-x10-merge
+    source_kernel_id_no: 128912230
+    source_kernel_version: 2
+    source_kernel_status: COMPLETE
+    artifact_manifest_filename: exp416_roughening_x10_likpf_full_oof_ablation_artifact_manifest.csv
+    expected_artifact_manifest_raw_sha256: 708bb257e3ab360f09821823d5413fa9e1c5c32ef4ddb4917b41573943dffb86
+    scientific_contract_filename: exp416_roughening_x10_likpf_full_oof_ablation_scientific_contract.json
+    expected_scientific_contract_sha256: 9c9bdaa93f0e64aa2ea54a46ae8fbb2a4f1f4f05a34b0d98e734e2b3c8ac398a
+    scientific_gate_filename: exp416_roughening_x10_likpf_full_oof_ablation_scientific_gate.json
+    summary_filename: exp416_roughening_x10_likpf_full_oof_ablation_summary.json
+    merged_prediction_filename: exp416_roughening_x10_likpf_full_oof_ablation_merged_candidate_predictions.csv.gz
+    merged_well_audit_filename: exp416_roughening_x10_likpf_full_oof_ablation_merged_well_audit.csv
+    by_well_metrics_filename: exp416_roughening_x10_likpf_full_oof_ablation_by_well_metrics.csv
+    persistent_episode_metrics_filename: exp416_roughening_x10_likpf_full_oof_ablation_persistent_episode_metrics.csv
+    expected_prediction_raw_gzip_sha256: 4a956c5625659305bcb3b3d0c51e6bee0fed9a52447397f87bc2b32f4f9deafe
+    expected_prediction_decompressed_sha256: 83247dad59d9d0d1a4705f3b4ad118cf33253347f00e8da4166374ac1f931add
+    expected_prediction_logical_content_sha256: 6088e3cc3c94f45aa475094e4df51b3dd9247f04acabb6e3921b89fbffbe693c
+    expected_prediction_schema_sha256: 61c38c607a29ebb009ace2364f15553c4adb821cca04d17b06c12bc5011dd54f
+    per_file_sha_policy: require_exact_match_to_verified_artifact_manifest
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp416-rough-x10-merge/artifacts
+      - /kaggle/input/exp416-rough-x10-merge/artifacts
+  exp416_terminal_contract:
+    status: train_side_roughening_x10_full_oof_gate_failed_closed
+    decision: roughening_x10_rejected_close_without_rescue
+    scientific_gate_passed: false
+    technical_gate_passed: false
+    improved_folds: 0
+    persistent_episode_sse_reduction_fraction: 0.24700364257934881
+    exp209_row_parity_max_abs_ft: 0.000471875000584987
+    may_reclassify_parent: false
+  exp072_control:
+    source: exp072_exp063_full_replay_feature_cache
+    kernel_source: kentookumura/exp072-exp063-full-replay-feature-cache-train
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    reconstruction_columns: [last_known_tvt, likpf_mean_d]
+    reconstruction: last_known_tvt_plus_likpf_mean_d
+    expected_raw_gzip_sha256: 14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18
+    expected_decompressed_sha256: 99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts
+      - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts
+  exp226_reporting:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    kernel_source: kentookumura/exp226-k16-kappa-repro-train
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    prefreeze_safe_columns: [well_id, row_idx, suffix_offset, fold]
+    postfreeze_truth_columns: [well_id, row_idx, tvt_true]
+    forbidden_decoder_columns: [tvt_geop, tvt_pred, gr_delta, error, abs_error]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+
+readout:
+  unit: well
+  outer_reference_policy: other_four_reporting_folds_only
+  empirical_cdf_formula: count_reference_values_less_than_or_equal_to_x_divided_by_reference_count
+  raw_diagnostics:
+    resampling_rate:
+      formula: resampling_count_total_divided_by_seeds_times_eval_rows
+      score_direction: higher_recovery_pressure
+    ess_collapse:
+      formula: one_minus_clip_minimum_ess_mean_divided_by_particles_zero_one
+      score_direction: higher_recovery_pressure
+    seed_prediction_dispersion:
+      formula: log1p_seed_prediction_std_mean
+      score_direction: higher_recovery_pressure
+    seed_likelihood_gap:
+      formula: log1p_max_seed_loglik_best_per_row_minus_seed_loglik_mean_per_row_zero
+      score_direction: higher_recovery_pressure
+    eval_missing_fraction:
+      formula: eval_raw_gr_missing_rows_divided_by_eval_rows
+      score_direction: higher_damage_exposure
+    suffix_horizon:
+      formula: log1p_eval_rows
+      score_direction: higher_damage_exposure
+  scores:
+    recovery_pressure:
+      components:
+        - resampling_rate
+        - ess_collapse
+        - seed_prediction_dispersion
+        - seed_likelihood_gap
+      aggregation: equal_weight_mean_of_outer_fold_empirical_cdf_percentiles
+      high_rule: score_strictly_greater_than_outer_reference_median
+    damage_exposure:
+      components:
+        - eval_missing_fraction
+        - suffix_horizon
+      aggregation: equal_weight_mean_of_outer_fold_empirical_cdf_percentiles
+      low_rule: score_less_than_or_equal_to_outer_reference_median
+  primary_target_cell: high_recovery_pressure__low_damage_exposure
+  secondary_mediators:
+    position_clip_rate: position_clip_count_total_divided_by_seeds_times_eval_rows
+    prefix_missing_fraction: prefix_gr_missing_rows_divided_by_prefix_rows
+    gr_scale_clipped: identity
+  fixed_row_scopes:
+    normalized_suffix_progress_edges: [0.0, 0.25, 0.5, 0.75, 1.0]
+    singleton_suffix_progress: 0.0
+    raw_gr_status: [observed, missing]
+    md_since_1000_ft: [below, at_or_above]
+  individual_diagnostics_are_secondary_only: true
+
+model:
+  name: none_saved_output_attribution_readout
+  estimator: none
+  fitted_model: false
+  params: {}
+
+guards:
+  technical:
+    require_all_input_sha_matches: true
+    require_source_kernel_version: 2
+    require_source_kernel_id_no: 128912230
+    require_parent_terminal_fail_unchanged: true
+    require_expected_rows: 3783989
+    require_expected_wells: 773
+    require_expected_folds: [0, 1, 2, 3, 4]
+    require_well_audit_rows: 773
+    require_by_well_metric_rows: 773
+    require_persistent_episode_count: 16
+    require_persistent_episode_wells: 12
+    require_persistent_episode_rows: 55104
+    require_unique_id_and_well_row_identity: true
+    require_finite_diagnostic_and_prediction_coverage: 1.0
+    require_candidate_control_metric_parity_atol_ft: 1.0e-6
+    maximum_outcome_rows_opened_before_regime_freeze: 0
+    require_feature_schema_and_logical_content_sha: true
+    require_execution_count_match: true
+  scientific:
+    recovery_pressure_minimum_pooled_spearman_rho: 0.10
+    recovery_pressure_minimum_positive_folds: 4
+    recovery_pressure_maximum_one_sided_permutation_p: 0.025
+    damage_exposure_maximum_pooled_spearman_rho: -0.10
+    damage_exposure_minimum_negative_folds: 4
+    damage_exposure_maximum_one_sided_permutation_p: 0.025
+    permutation_count: 4096
+    permutation_scope: within_reporting_fold
+    minimum_target_cell_row_rmse_gain_ft: 0.05
+    minimum_target_cell_improved_folds: 4
+    minimum_target_cell_minus_rest_equal_well_mean_gain_ft: 0.25
+    minimum_target_cell_improved_well_fraction: 0.50
+    minimum_target_cell_persistent_episodes: 4
+    minimum_target_cell_persistent_episode_wells: 3
+    minimum_target_cell_persistent_episode_sse_reduction_fraction: 0.05
+    minimum_target_cell_share_of_positive_episode_sse_reduction: 0.50
+    require_all_checks: true
+  decision:
+    pass_action: target_free_regime_attribution_supported_separate_policy_experiment_required
+    fail_action: no_reproducible_target_free_regime_close_attribution_branch
+    parent_decision_remains_unchanged: true
+    policy_ready_if_passed: false
+  forbidden:
+    - roughening_multiplier_search
+    - separate_position_or_rate_roughening_ablation
+    - process_noise_or_ess_threshold_change
+    - target_or_error_guided_feature_bucket_threshold_or_cell_selection
+    - alternate_score_weight_or_transform_after_outcome_attachment
+    - adaptive_well_or_row_roughening
+    - parent_control_or_candidate_pf_rerun
+    - model_selector_router_or_blend
+    - same_oof_rescue
+    - exp416_pass_reclassification
+    - inference_or_submission
+
+execution:
+  stage: kaggle_cpu_audit_v2_complete_scientific_fail_closed
+  design_approved: true
+  implementation_approved: true
+  canonical_notebook_adoption_approved: true
+  kaggle_package_approved: true
+  kaggle_push_approved: true
+  audit_run_approved: true
+  execution_approval_source: user_message_2026_07_28_execute_exp422
+  inference_approved: false
+  submission_approved: false
+  run_train: true
+  run_inference: false
+  create_submission: false
+  submit_to_kaggle: false
+  saved_output_readout_contracts: 1
+  new_prediction_rows: 0
+  scientific_pf_variants: 0
+  candidate_pf_well_runs: 0
+  parent_pf_control_reruns: 0
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  hmm_well_runs: 0
+  beam_well_runs: 0
+  gpu_runs: 0
+  reporting_folds: 5
+
+runtime:
+  device: cpu
+  use_amp: false
+  num_workers: 1
+  expected_upper_bound_seconds: 900
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    run_on_push: true
+    kernel_id: kentookumura/exp422-rough-x10-regime-attribution-train
+    kernel_id_no: 128921651
+    kernel_version: 2
+    kernel_status: COMPLETE
+    kernel_url: https://www.kaggle.com/code/kentookumura/exp422-rough-x10-regime-attribution-train
+    completed_at_utc: "2026-07-28T11:13:45.776106+00:00"
+    runtime_seconds: 362.8773446083069
+    peak_rss_gb: 3.298248291015625
+    failed_versions:
+      - version: 1
+        status: ERROR
+        runtime_seconds: 108.5
+        reason: exp416_prediction_logical_content_sha_column_contract_too_broad
+        boosters: 0
+        pf_well_runs: 0
+    train_kernel_sources:
+      - kentookumura/exp416-rough-x10-merge
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp226-k16-kappa-repro-train
+
+audit_result:
+  technical_gate_passed: true
+  scientific_gate_passed: false
+  decision: no_reproducible_target_free_regime_close_attribution_branch
+  parent_decision_remains_unchanged: true
+  policy_ready: false
+  rows: 3783989
+  wells: 773
+  candidate_rmse_ft: 13.617717557749454
+  control_rmse_ft: 11.594894395642696
+  candidate_minus_control_rmse_ft: 2.022823162106759
+  recovery_pressure:
+    pooled_spearman_rho: -0.1666976968486455
+    positive_folds: 0
+    one_sided_permutation_p: 1.0
+  damage_exposure:
+    pooled_spearman_rho: -0.04148475322735844
+    negative_folds: 4
+    one_sided_permutation_p: 0.11130095191603612
+  target_cell:
+    wells: 242
+    row_weighted_rmse_gain_ft: -1.8524495837257913
+    improved_folds: 1
+    target_minus_rest_equal_well_mean_gain_ft: -0.5189655682091523
+    improved_well_fraction: 0.3140495867768595
+    persistent_episode_wells: 4
+    persistent_episodes: 4
+    persistent_episode_sse_reduction_fraction: 0.45801967481203054
+    share_of_all_positive_episode_sse_reduction: 0.39400616698540375
+  scientific_contract_sha256: 20d2644085334ed0028ff8ca0caa38d6379073980f3547c6d05b1f7eee410426
+  artifact_manifest_sha256: c2fe9339994e8785bf33dc0585f985d5a819e1ff6bf653262bad46e108c04f16
+  feature_logical_content_sha256: 0fed1d9ed954f6e585f6b8bcdd60c966bc58c67efd6660f7adadb5bbd97dccf4
+  assignment_logical_content_sha256: e459e3a438511710e48c8646ea1f283f54b1310729cd5e99aee9addd8e7b2fb2
+  row_scope_logical_content_sha256: 242562b0d7a05fef042db29ad41b736991548825aebe26b773e759cc29fd194c
+
+inference:
+  enabled: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_fold_for_permutation_only
+  stochastic_components:
+    - fixed_4096_within_fold_outcome_permutations
+  parallel_rng_policy: independent_sha256_derived_pcg64_seed_per_reporting_fold
+  input_sha_policy: exact_kernel_version_plus_verified_artifact_manifest
+  feature_sha_policy: logical_content_sha_before_outcome_attachment
+  gzip_policy: record_raw_and_decompressed_sha_use_decompressed_as_primary_content_evidence
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+    output_manifest_sha: true
+  notes:
+    - This is a deterministic saved-OOF readout, not an inference or submission anchor.
+    - A PASS supports only a separately preregistered policy experiment.
+
+notes:
+  - Design finalized on 2026-07-28.
+  - Compact self-contained implementation and contract tests were approved on 2026-07-28.
+  - Canonical train notebook adoption, Kaggle packaging, push, and CPU audit execution were approved on 2026-07-28.
+  - Inference and submission remain unapproved.
+  - The word location means a target-free well regime here, not a row-level PF trigger.
+  - Kaggle CPU audit version 2 completed with technical PASS and scientific FAIL.
+  - The attribution branch is terminally closed without score, threshold, cell, or roughening rescue.

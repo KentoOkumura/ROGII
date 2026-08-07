@@ -1,0 +1,171 @@
+{
+  "experiment": "exp266_pf_ancc_pf_z_multiseed_stability_audit",
+  "status": "completed_train_side_multiseed_stability_audit",
+  "route": "pf_beam",
+  "created_at": "2026-07-17T05:49:15.700138+00:00",
+  "execution": {
+    "rows": 3783989,
+    "wells": 773,
+    "strict_original_phenotype_wells": 108,
+    "strong_original_phenotype_wells": 53,
+    "algorithms": ["pf_ancc", "pf_z"],
+    "particles": 600,
+    "seed_count": 64,
+    "new_seed_count": 63,
+    "active_variants": 2,
+    "lightgbm_configs": 0,
+    "folds": 0,
+    "boosters": 0,
+    "parent_control_retraining": false,
+    "gpu": false,
+    "inference": false,
+    "submission": false
+  },
+  "runtime": {
+    "total_seconds": 12482.143772363663,
+    "parity_seconds": 218.5788471698761,
+    "multiseed_seconds": 11958.577557563782,
+    "num_workers": 8
+  },
+  "kaggle_train_history": [
+    {
+      "version": 1,
+      "kernel_id_no": 127531300,
+      "status": "error",
+      "failure_stage": "reference_surface_before_pf",
+      "runtime_to_error_seconds": 314.160486022,
+      "cause": "pandas_low_memory_mixed_dtype_corrupted_numeric_looking_well_ids"
+    },
+    {
+      "version": 2,
+      "kernel_id_no": 127531300,
+      "status": "error",
+      "failure_stage": "original_seed_parity_before_multiseed",
+      "runtime_to_error_seconds": 508.342438015,
+      "cause": "exp072_float32_pf_csv_values_were_compared_as_float64_decimal_text"
+    },
+    {
+      "version": 3,
+      "kernel_id_no": 127531300,
+      "kernel": "kentookumura/exp266-pf-ancc-pf-z-multiseed-stability-train",
+      "status": "complete",
+      "config_sha256": "11e4b8e588c7b431d854695a43bb9f1266a976ee16c136cc080b59f643ee1b0c"
+    }
+  ],
+  "original_seed_exact_parity": {
+    "pf_ancc": {"rows": 3783989, "max_abs_diff": 0.0, "nonzero_rows": 0, "exact": true},
+    "pf_z": {"rows": 3783989, "max_abs_diff": 0.0, "nonzero_rows": 0, "exact": true}
+  },
+  "focus_well": {
+    "well": "11d0f5ac",
+    "rows": 4883,
+    "references": {
+      "pf_ancc_rmse": 2.3821901010344866,
+      "pf_z_rmse": 3.3863123044445875,
+      "exp226_rmse": 2.874875273905845,
+      "hmm_rmse": 21.161155854537235,
+      "likpf_rmse": 24.43810039195126
+    },
+    "pf_ancc": {
+      "original_rmse": 2.3821152755243538,
+      "original_rmse_lower_tail_percentile": 0.5079365079365079,
+      "new_seed_rmse_mean": 2.509246723071802,
+      "new_seed_rmse_std": 0.719885753027842,
+      "new_seed_rmse_q10": 2.333787641832261,
+      "new_seed_rmse_median": 2.3790207179473413,
+      "new_seed_rmse_q90": 2.4751437687784454,
+      "new_seed_rmse_le_5_rate": 0.9841269841269841,
+      "new_seed_rmse_le_5_wilson_low": 0.915414745405616,
+      "new_seed_beats_exp226_rate": 0.9523809523809523,
+      "new_seed_beats_hmm_rate": 1.0,
+      "new_seed_beats_likpf_rate": 1.0,
+      "new_seed_strong_margin_reproduction_rate": 1.0,
+      "endpoint_sign_agreement_rate": 0.9841269841269841,
+      "mean_path_vs_original_rmse": 0.5309869996519012
+    },
+    "pf_z": {
+      "original_rmse": 3.3863867251646003,
+      "original_rmse_lower_tail_percentile": 0.9523809523809523,
+      "new_seed_rmse_mean": 2.5228100960752675,
+      "new_seed_rmse_std": 0.6257275314410452,
+      "new_seed_rmse_q10": 1.7856963242435573,
+      "new_seed_rmse_median": 2.7258700992974507,
+      "new_seed_rmse_q90": 3.3166593104960485,
+      "new_seed_rmse_le_5_rate": 1.0,
+      "new_seed_rmse_le_5_wilson_low": 0.9425288004111484,
+      "new_seed_beats_exp226_rate": 0.6825396825396826,
+      "new_seed_beats_hmm_rate": 1.0,
+      "new_seed_beats_likpf_rate": 1.0,
+      "new_seed_strong_margin_reproduction_rate": 1.0,
+      "endpoint_sign_agreement_rate": 1.0,
+      "mean_path_vs_original_rmse": 1.7603814224063434
+    },
+    "decision": "robust_not_single_seed_luck"
+  },
+  "strong_well_robustness": {
+    "original_strong_wells": 53,
+    "pf_ancc": {
+      "median_seed_strong_wells": 38,
+      "reproduction_ge_0p8_wells": 20,
+      "reproduction_ge_0p9_wells": 17,
+      "reproduction_eq_1_wells": 10,
+      "original_seed_lucky_percentile_le_0p10_wells": 10
+    },
+    "pf_z": {
+      "median_seed_strong_wells": 27,
+      "reproduction_ge_0p8_wells": 23,
+      "reproduction_ge_0p9_wells": 20,
+      "reproduction_eq_1_wells": 13,
+      "original_seed_lucky_percentile_le_0p10_wells": 8
+    },
+    "both_algorithms": {
+      "median_seed_strong_wells": 21,
+      "reproduction_ge_0p8_wells": 11,
+      "reproduction_ge_0p9_wells": 9,
+      "reproduction_eq_1_wells": ["11d0f5ac", "bb682ebd", "f0188a48", "fb0904bd"],
+      "rmse_le_5_rate_ge_0p8_wells": ["11d0f5ac", "fb0904bd"],
+      "rmse_le_10_rate_ge_0p8_wells": ["11d0f5ac", "1fee2b62", "521a7819", "647f2a41", "833af382", "94467f50", "dd6bc5b2", "dd7d638e", "fb0904bd"]
+    }
+  },
+  "global_seed_mean_convergence_rmse": {
+    "pf_ancc": {"1": 14.493050895468873, "4": 13.126896158997736, "8": 13.027107212931408, "16": 12.924442918302839, "32": 12.885644114840863, "64": 12.830319479360938},
+    "pf_z": {"1": 17.788171172633582, "4": 17.178861106858662, "8": 17.201464879566554, "16": 17.153355572983877, "32": 17.124414305962688, "64": 17.074522155498524}
+  },
+  "global_64_seed_aggregation_rmse": {
+    "pf_ancc": {"mean": 12.830319479360938, "median": 13.46155964637082, "trimmed_mean_10pct": 12.963930553722525},
+    "pf_z": {"mean": 17.074522155498524, "median": 17.39963410325525, "trimmed_mean_10pct": 17.17854564251666}
+  },
+  "occurrence_conditions": {
+    "raw_feature_conclusion": "no_single_clean_raw_trigger",
+    "eval_rows_spearman_with_new_seed_rmse_mean": {"pf_ancc": 0.218980, "pf_z": 0.225526},
+    "eval_rows_spearman_with_strong_reproduction": {"pf_ancc": -0.061907, "pf_z": -0.102533},
+    "likpf_rmse_spearman_with_strong_reproduction": {"pf_ancc": 0.471318, "pf_z": 0.409675},
+    "hmm_rmse_spearman_with_strong_reproduction": {"pf_ancc": 0.549116, "pf_z": 0.460048},
+    "longest_tail_quintile": {
+      "pf_ancc_new_seed_rmse_median_mean": 12.952476691319465,
+      "pf_ancc_seed_rmse_std_mean": 4.039611407721586,
+      "pf_z_new_seed_rmse_median_mean": 16.684236312163762,
+      "pf_z_seed_rmse_std_mean": 2.4763135813809005
+    },
+    "interpretation": "longer evaluation tails increase error and seed dispersion, while strong membership is mainly a relative-method regime where HMM and likelihood-PF fail; raw geometry and PF initialization summaries do not provide a clean threshold"
+  },
+  "artifact_validation": {
+    "required_artifacts": 12,
+    "raw_sha_pass": 12,
+    "decompressed_sha_pass": 12,
+    "seed_by_well_rows": 98944,
+    "aggregate_by_well_rows": 27828,
+    "well_stability_rows": 1546,
+    "detailed_strong_path_rows": 494204,
+    "input_manifest_sha256": "7ae1df7457b9ef0bd454d1a0a3620a62a1d363ecb5b45bc255fcf594ddc323d0",
+    "artifact_manifest_sha256": "440a5e474b19290d667562c242ff7aec73420f6340e712d34d01a89bf45cd69c"
+  },
+  "decision": {
+    "focus_well": "supported_robust",
+    "all_well_original_strong_group": "heterogeneous_with_seed_selection_bias",
+    "best_fixed_aggregation": "mean",
+    "inference": false,
+    "submission": false,
+    "next": "audit_fixed_4_or_8_seed_pf_ancc_mean_as_low_cost_candidate_before_any_selector_or_inference_port"
+  }
+}

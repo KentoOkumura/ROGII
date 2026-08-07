@@ -1,0 +1,97 @@
+{
+  "experiment": "exp164_spatial_prior_confidence_features_on_exp092_kaggle",
+  "status": "kaggle_cpu_train_complete_negative",
+  "route": "ml_model",
+  "parent": "exp092_u_projection_correction_disagreement_fullrun",
+  "active_variants": [
+    "spatial_prior_confidence_addonly"
+  ],
+  "active_modes": [
+    "cpu_deterministic_threads8"
+  ],
+  "active_lgb_configs": [
+    "lgb0",
+    "lgb1",
+    "lgb2"
+  ],
+  "planned_boosters": 15,
+  "control_retraining": false,
+  "kaggle_train_kernels": {
+    "lgb0": {
+      "id": "kentookumura/exp164-spatial-prior-conf-exp092-lgb0-train",
+      "version": 2,
+      "status": "COMPLETE",
+      "url": "https://www.kaggle.com/code/kentookumura/exp164-spatial-prior-conf-exp092-lgb0-train"
+    },
+    "lgb1": {
+      "id": "kentookumura/exp164-spatial-prior-conf-exp092-lgb1-train",
+      "version": 2,
+      "status": "COMPLETE",
+      "url": "https://www.kaggle.com/code/kentookumura/exp164-spatial-prior-conf-exp092-lgb1-train"
+    },
+    "lgb2": {
+      "id": "kentookumura/exp164-spatial-prior-conf-exp092-lgb2-train",
+      "version": 2,
+      "status": "COMPLETE",
+      "url": "https://www.kaggle.com/code/kentookumura/exp164-spatial-prior-conf-exp092-lgb2-train"
+    }
+  },
+  "baseline": {
+    "exp092_lgb1_cv_rmse": 9.322479895503927,
+    "exp092_public_lb": 8.35
+  },
+  "best_lgb_mean_by_rmse_tvt": {
+    "variant": "spatial_prior_confidence_addonly",
+    "mode": "cpu_deterministic_threads8",
+    "model": "lgb2",
+    "fold": "pooled",
+    "rows": 3783989,
+    "features": 281,
+    "rmse_tvt": 9.415444307800229,
+    "rmse_target": 9.41544441672537,
+    "delta_vs_exp092_lgb1": 0.09296441229630226,
+    "source": "kaggle logs"
+  },
+  "pooled_metrics": [
+    {
+      "variant": "spatial_prior_confidence_addonly",
+      "mode": "cpu_deterministic_threads8",
+      "model": "lgb0",
+      "fold": "pooled",
+      "rows": 3783989,
+      "features": 281,
+      "rmse_tvt": 9.660879007770555,
+      "rmse_target": 9.660879031619956,
+      "delta_vs_exp092_lgb1": 0.3383991122666288,
+      "prediction_sha256": "cd8cc2ddb7cd3bb82f678b99bcd1fb34b9a76f72e96ab3aa3c14350333b74a13",
+      "source": "kaggle logs"
+    },
+    {
+      "variant": "spatial_prior_confidence_addonly",
+      "mode": "cpu_deterministic_threads8",
+      "model": "lgb1",
+      "fold": "pooled",
+      "rows": 3783989,
+      "features": 281,
+      "rmse_tvt": 9.429441975624941,
+      "rmse_target": 9.429442173769498,
+      "delta_vs_exp092_lgb1": 0.10696208012101494,
+      "prediction_sha256": "677dd0c56601bb247c30b4ca55f6ab50530cec301ab909344efe470a93228b86",
+      "source": "kaggle logs"
+    },
+    {
+      "variant": "spatial_prior_confidence_addonly",
+      "mode": "cpu_deterministic_threads8",
+      "model": "lgb2",
+      "fold": "pooled",
+      "rows": 3783989,
+      "features": 281,
+      "rmse_tvt": 9.415444307800229,
+      "rmse_target": 9.41544441672537,
+      "delta_vs_exp092_lgb1": 0.09296441229630226,
+      "prediction_sha256": "59a647ff3c17316ae8145438b80133f9847660743d1841e3bb1fac7a40f3fa8f",
+      "source": "kaggle logs"
+    }
+  ],
+  "artifacts": {}
+}

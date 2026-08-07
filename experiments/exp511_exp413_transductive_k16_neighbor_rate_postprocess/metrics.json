@@ -1,0 +1,95 @@
+{
+  "experiment": "exp511_exp413_transductive_k16_neighbor_rate_postprocess",
+  "status": "stage_a_complete_fail_closed",
+  "route": "ensemble",
+  "parent": "exp413_scale5_likpf_full_replacement_on_exp335",
+  "metric": "rmse",
+  "cv": 7.883964795205812,
+  "public_lb": null,
+  "private_lb": null,
+  "reference": {
+    "experiment": "exp413_scale5_likpf_full_replacement_on_exp335",
+    "cv": 7.884802794404715,
+    "public_lb": 7.201
+  },
+  "primary": "transductive_k16_neighbor_rate_a005_cap025",
+  "pooled_gain_ft": 0.0008379991989029278,
+  "folds": [
+    {"fold": 0, "cv": 7.921350854543163, "gain_ft": -0.0013625301837159043},
+    {"fold": 1, "cv": 8.377623038422753, "gain_ft": -0.00024170558209313242},
+    {"fold": 2, "cv": 7.536331800683891, "gain_ft": 0.0033815515769193283},
+    {"fold": 3, "cv": 7.574793668872904, "gain_ft": -0.0004625023295625752},
+    {"fold": 4, "cv": 7.979871941814469, "gain_ft": 0.0029964510200084504}
+  ],
+  "promotion_gate": {
+    "passed": false,
+    "decision": "FAIL_CLOSE_WITHOUT_ALPHA_CLIP_K_BANDWIDTH_RHO_THETA_SUPPORT_FADE_SCOPE_OR_GATE_RESCUE",
+    "technical_all_pass": true,
+    "pooled_gain_at_least_0p01_ft": false,
+    "nonworse_folds": 2,
+    "nonworse_folds_at_least_4_of_5": false,
+    "maximum_fixed_scope_delta_ft": 0.000416092824926384,
+    "all_fixed_scopes_within_plus_0p02_ft": true,
+    "by_well_delta_p95_ft": 0.0032299246942677855,
+    "worst_well_delta_ft": 0.20419145756869028,
+    "tail_checks_passed": true,
+    "continuity_checks_passed": true,
+    "same_oof_rescue_performed": false,
+    "inference_automatically_approved": false
+  },
+  "mechanism": {
+    "segments": 12368,
+    "supported_segments": 350,
+    "supported_segment_rate": 0.028298835705045277,
+    "unique_donor_wells_p50": 5.0,
+    "median_selected_distance_p50_ft": 4291.484674906635,
+    "correction_cap_hit_rows": 73263
+  },
+  "continuity": {
+    "first_score_row_abs_correction_max_ft": 0.0,
+    "all_row_abs_correction_max_ft": 0.25,
+    "row_order_change_count": 0,
+    "nonfinite_prediction_count": 0
+  },
+  "execution_contract": {
+    "scientific_variants": 1,
+    "report_only_variants": 0,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "pf_hmm_beam_runs": 0,
+    "gpu_runs": 0,
+    "parent_retraining": 0
+  },
+  "kaggle": {
+    "kernel_id": "kentookumura/exp511-exp413-k16-neighbor-rate-postprocess-train",
+    "kernel_version": 4,
+    "status": "complete",
+    "private": true,
+    "gpu": false,
+    "internet": false,
+    "scientific_summary_time_seconds": 111.71
+  },
+  "sha256": {
+    "input_manifest": "15e223ec87be256d54b0c9503cd47b2fe4eb272af430082bfab6f44bc2454298",
+    "raw_geometry_logical": "6c199052a573be334d6334e3e0dddcb7a194e898b13b45e87dc90ae4fc3287cd",
+    "coefficient_field_logical": "7776e69610920dfb66f83123429b8882cb872efbef8fdbb56bca1b5e7c0a7e1a",
+    "support_ledger_logical": "de9c5a9510c615ea048522f449c673867aafa65348e57a321b465160eeeff15d",
+    "prediction_logical": "5415c24c388ffeee857b2a070d9f2f83db34d5a85ad738f9ee3e57dc17652264",
+    "prediction_content": "8320ba95188652749861b7a9ace901def8a6faa0b5e41764b3c87c5bbe0b6fbf",
+    "prediction_freeze": "986e0654d83946ac36a247960638e4bf5002a6f9a98ecb89c63824dc9a806e6e",
+    "summary": "7eda9d56afc79da3de832e8a5ba0383d5895362a5ff813416ea31a632d1bf9c7"
+  },
+  "implementation_validation": {
+    "dedicated_contract_tests": 12,
+    "dedicated_contract_tests_passed": 12,
+    "py_compile": "pass",
+    "ruff": "pass",
+    "jupytext_roundtrip": "pass",
+    "strict_experiment_validation": "pass",
+    "canonical_notebook_adopted": true,
+    "kaggle_run_completed": true
+  },
+  "inference_implemented": false,
+  "submission_created": false
+}

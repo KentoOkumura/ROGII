@@ -1,0 +1,66 @@
+experiment:
+  name: "exp031_public_sel15_pf_hold_blend_inference_audit"
+  description: Audit fixed 90% public sel15 selector and 10% hold blend in the public inference flow.
+  route: pf_beam
+  status: completed
+  created_at: "2026-06-07"
+  updated_at: "2026-06-07"
+
+lineage:
+  parent: exp027_public_replay_needless090_sel15_spread3
+  diff_summary: Apply exp030 fixed pf090_hold010 audit result to the exp027 public sel15 inference flow and record submission diffs before any LB submit.
+
+source_notebook:
+  ref: needless090/lb8-781-rogii-sel15-spread3
+  title: "[LB8.781]rogii-sel15-spread3"
+  archived_path: docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_latest/needless090__lb8-781-rogii-sel15-spread3/lb8-781-rogii-sel15-spread3.ipynb
+  archived_metadata: docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_latest/needless090__lb8-781-rogii-sel15-spread3/kernel-metadata.json
+  known_public_lb_from_title: 8.781
+  replay_policy: preserve_public_flow_except_fixed_pf_hold_blend_and_audit_outputs
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation: {}
+
+# Common paths and submission columns come from project.yml.
+data: {}
+
+model:
+  name: public_sel15_pf_hold_blend_inference_audit
+  params:
+    n_particles: 500
+    n_seeds: 128
+    selector_scales: [3.0, 5.0, 8.0, 12.0]
+    beam_configs: 14
+    base_prediction: public_sel15_selector
+    hold_anchor: last_known_TVT_input
+    blend:
+      pf_pred_weight: 0.90
+      hold_weight: 0.10
+      apply_to: hidden_wells_only
+
+postprocess:
+  output_file: submission.csv
+  submit_check_required: true
+  audit_files:
+    - public_sel15_original_selector_submission.csv
+    - public_sel15_pf090_hold010_diff.csv
+    - public_sel15_pf090_hold010_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    expected_sources:
+      dataset_sources: []
+      kernel_sources: []
+      model_sources: []
+
+notes:
+  - CV is not computed in this inference audit experiment.
+  - The fixed blend is supported by exp030 train well の途中以降を隠した疑似 test OOF-like diagnostics, but Public LB 8.781 can still regress.
+  - Kaggle inference version 1 completed and submit-check passed.
+  - Public sample output is identical to exp027 because all public test wells are visible train wells and the physical-model branch is unchanged.
+  - No new submission is needed for the public sample output; 見えない test well 用処理の code-submit could still differ because 見えない test wells use the modified PF/hold branch.

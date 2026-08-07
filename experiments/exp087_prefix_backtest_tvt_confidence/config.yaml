@@ -1,0 +1,193 @@
+experiment:
+  name: "exp087_prefix_backtest_tvt_confidence"
+  description: Fold-safe confidence calibration for PF/Beam/likelihood-PF TVT errors using near-prefix pseudo-tail backtests.
+  route: pf_beam
+  status: diagnostic_completed_supported
+  created_at: "2026-06-20"
+  updated_at: "2026-06-20"
+
+lineage:
+  parent: exp083_pf_beam_true_tvt_2d_well_eda
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  anchor: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  related:
+    - exp084_pf_confidence_residual_clip
+    - pf_beam_disagreement_error_map
+  diff_summary: >
+    Uses the exp072 deterministic full-replay train feature cache already consumed
+    by exp073, splits each pseudo-hidden train tail into near-prefix calibration
+    rows and farther holdout rows, and fits fold-safe row-level TVT error
+    confidence from PF/Beam/likelihood-PF diagnostic columns. This is diagnostic
+    only; no prediction replacement, routing, or submission file is produced.
+
+validation:
+  strategy: well_hash_fold_prefix_backtest_confidence
+  metric: rmse
+  leakage_policy:
+    - The source cache contains train-well pseudo-hidden rows generated from known prefixes; true TVT is used only to score diagnostic confidence.
+    - Within each well, early pseudo-tail rows are tagged as calibration phase and farther rows are tagged as holdout phase.
+    - Fold-safe expected error is fit using calibration rows from training wells only, then evaluated on held-out wells and holdout-phase rows.
+    - Hidden test TVT is never used, and this experiment does not generate a submission.
+    - GR waveforms are not reintroduced; only target-free scalar confidence and disagreement diagnostics from the existing cache are used.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  pfbeam_sources:
+    - name: exp072_full_replay_feature_cache_for_exp073
+      source_experiment: exp072_exp063_full_replay_feature_cache
+      local_path: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      kaggle_source_slug: exp072-exp063-full-replay-feature-cache-train
+      relative_paths:
+        - artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+        - exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      well_column: well
+      target_column: true_tvt
+      target_delta_column: target
+      base_column: last_known_tvt
+      x_column: md_since
+      cutoff_column: null
+      selected_cutoff: null
+      candidate_columns:
+        - name: last_anchor_tvt
+          label: last anchor
+          role: anchor
+          source_column: last_known_tvt
+          transform: absolute
+        - name: pf_ancc
+          label: PF ANCC
+          role: selected_pf
+          source_column: pf_ancc
+          transform: absolute
+        - name: pf_z
+          label: PF Z
+          role: pf_candidate
+          source_column: pf_z
+          transform: absolute
+        - name: beam_mean
+          label: Beam mean
+          role: selected_beam
+          source_column: beam_mean_d
+          transform: base_plus_delta
+        - name: beam_med
+          label: Beam median
+          role: beam_candidate
+          source_column: beam_med_d
+          transform: base_plus_delta
+        - name: sc_ens
+          label: NCC ensemble
+          role: ncc_candidate
+          source_column: sc_ens_d
+          transform: base_plus_delta
+        - name: hyb
+          label: Hybrid PF/Beam/NCC
+          role: hybrid_candidate
+          source_column: hyb_d
+          transform: base_plus_delta
+        - name: likpf_mean
+          label: Likelihood PF mean
+          role: likelihood_pf_candidate
+          source_column: likpf_mean_d
+          transform: base_plus_delta
+        - name: tvt_dense
+          label: Dense ANCC
+          role: dense_candidate
+          source_column: tvt_dense_d
+          transform: base_plus_delta
+      confidence_columns:
+        - pf_ancc_std
+        - beam_std_d
+        - sig_std
+        - sc_trust
+        - pfx_rmse
+        - known_len
+        - eval_len
+        - likpf_mean_d
+        - dense_rmse
+        - dense_std
+      disagreement_columns:
+        pf_beam_abs: pf_ancc_vs_beam_mean_abs
+        pf_beam_signed: pf_ancc_vs_beam_mean
+
+model:
+  name: prefix_backtest_tvt_confidence
+  params:
+    primary_candidate: pf_ancc
+    calibration_fraction: 0.35
+    well_hash_folds: 5
+    ridge_lambda: 1.0
+    expected_error_clip: 250.0
+    high_error_quantile: 0.80
+    confidence_bins: 5
+    min_train_rows: 2000
+    min_holdout_rows: 200
+    feature_columns:
+      - pfx_rmse
+      - pf_ancc_std
+      - beam_std_abs
+      - sig_std
+      - sc_trust
+      - known_len
+      - eval_len
+      - eval_to_known_ratio
+      - md_since
+      - pf_beam_abs
+      - pf_likpf_abs
+      - beam_likpf_abs
+      - likpf_delta_abs
+      - dense_rmse
+      - dense_std
+    distance_buckets:
+      - name: md_0_250
+        max_value: 250
+      - name: md_250_1000
+        max_value: 1000
+      - name: md_1000_2500
+        max_value: 2500
+      - name: md_2500_plus
+        max_value: 1000000000
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_used
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This experiment reads an existing deterministic feature cache and fits a deterministic ridge confidence model.
+    - It is not a deterministic submission anchor because it produces diagnostics only.
+
+audit:
+  mode: prefix_backtest_tvt_confidence
+  source_name: exp072_full_replay_feature_cache_for_exp073
+  output_prefix: prefix_backtest_tvt_confidence
+  debug_max_wells: 12
+  write_row_predictions: true
+
+notes:
+  - Implements the prefix_backtest_tvt_confidence backlog item from KAGGLE_DIRECTION.md.
+  - The first success condition is whether high TVT error rows/buckets are identifiable fold-safely from confidence diagnostics.
+  - This source-cache implementation does not rerun PF/Beam at a shorter synthetic cutoff; it calibrates error confidence from existing exp072 PF/Beam/likelihood-PF diagnostics.

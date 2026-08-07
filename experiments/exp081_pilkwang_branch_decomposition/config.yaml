@@ -1,0 +1,110 @@
+experiment:
+  name: "exp081_pilkwang_branch_decomposition"
+  description: Decompose Pilkwang public replay final prediction into projected ridge/PF, pretrained LGBM, model-package, blend-weight, and tiny-gate branches using exp079 v4 audit outputs.
+  route: pf_beam
+  status: implemented_pending_kaggle_optional
+  created_at: "2026-06-19"
+  updated_at: "2026-06-19"
+
+lineage:
+  parent: exp079_public_artifact_replay_integrity_audit
+  deterministic_anchor: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  pf_route_anchor: exp027_public_replay_needless090_sel15_spread3
+  diff_summary: Target-free decomposition of Pilkwang final and branch candidate distances from exp079 v4; no new prediction generation, training, or submit.
+
+overrides:
+  project_defaults:
+    - validation.metric
+    - validation.n_folds
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation:
+  strategy: target_free_branch_decomposition
+  metric: pairwise_rmse
+  seed: 42
+  n_folds: 0
+  group_column: well_id
+  score_rows: TVT_input_isna
+
+# Common paths and submission columns come from project.yml.
+data: {}
+
+model:
+  name: pilkwang_branch_decomposition
+  estimator: none
+  params: {}
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 0
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_used
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: false
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - This is a target-free second-stage audit over exp079 v4 outputs, not a deterministic prediction anchor.
+    - Candidate prediction SHA values are inherited from exp079 submission_summary.csv.
+
+audit:
+  mode: pilkwang_branch_decomposition
+  output_prefix: exp081_pilkwang_branch_decomposition
+  exp079_output_dir: /tmp/kaggle-output/exp079_public_artifact_replay_integrity_audit/train_v4/artifacts
+  exp079_summary_file: exp079_public_artifact_replay_integrity_audit_summary.json
+  exp079_submission_summary_file: exp079_public_artifact_replay_integrity_audit_submission_summary.csv
+  exp079_pairwise_file: exp079_public_artifact_replay_integrity_audit_pairwise_distances.jsonl
+  source_name: pilkwang_target_free_tvt_geosteering
+  final_label: submission.csv
+  branch_roles:
+    final:
+      - submission.csv
+      - submission_projected_ridge_pf_pretrained_lgbm_base.csv
+      - submission_projected_ridge_pf_pretrained_lgbm_w0.55.csv
+    projected_ridge_pf:
+      - projected_ridge_pf_projection_submission.csv
+      - submission_projected_ridge_pf_projection_d4_b075.csv
+      - submission_projected_ridge_pf_projection_d4_b075_projected.csv
+      - submission_projected_ridge_pf_projection_d4_b075_raw.csv
+    pretrained_lgbm:
+      - pretrained_lgbm_pretrained_submission.csv
+    model_package_only:
+      - submission_model_package_only.csv
+    blend_weight:
+      - submission_projected_ridge_pf_pretrained_lgbm_w0.50.csv
+      - submission_projected_ridge_pf_pretrained_lgbm_w0.52.csv
+      - submission_projected_ridge_pf_pretrained_lgbm_w0.55.csv
+      - submission_projected_ridge_pf_pretrained_lgbm_w0.58.csv
+      - submission_projected_ridge_pf_pretrained_lgbm_w0.60.csv
+    modelpkg_tiny_gate:
+      - submission_projected_ridge_pf_pretrained_lgbm_modelpkg_gated_003.csv
+      - submission_projected_ridge_pf_pretrained_lgbm_modelpkg_gated_005.csv
+      - submission_projected_ridge_pf_pretrained_lgbm_modelpkg_gated_010.csv
+  anchor_labels:
+    - exp027_public_replay_anchor
+    - exp073_deterministic_ml_anchor
+    - exp063_old_ml_public_anchor
+    - ridge_sp_lb_7776::submission.csv
+  candidate_policy:
+    no_direct_submit: true
+    prefer_low_risk_branches: true
+    max_submit_candidates: 2
+    require_valid_submission_contract: true
+    mark_public_only_evidence: true
+
+notes:
+  - Row-level segment guards require the original candidate CSVs; exp079 v4 only saved summaries and pairwise distances locally.

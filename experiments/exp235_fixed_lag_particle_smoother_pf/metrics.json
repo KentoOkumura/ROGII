@@ -1,0 +1,89 @@
+{
+  "experiment": "exp235_fixed_lag_particle_smoother_pf",
+  "status": "completed_train_side_rejected_lag64_user_stopped_lag128_lag256",
+  "route": "pf_beam",
+  "metric": "train_side_rmse",
+  "cv": 13.495447532555145,
+  "public_lb": null,
+  "private_lb": null,
+  "updated_at": "2026-07-13",
+  "variants": ["lag64", "lag128", "lag256"],
+  "lightgbm_configs": 0,
+  "folds": 0,
+  "boosters": 0,
+  "inference": false,
+  "submission": false,
+  "execution": {
+    "split_strategy": "exact_fixed_lag_one_variant_four_deterministic_well_shards",
+    "completed_variant": "lag64",
+    "completed_lag": 64,
+    "logical_shards": [
+      {
+        "index": 0,
+        "kernel": "kentookumura/exp235-fixed-lag-pf-lag64-shard1",
+        "version": 2,
+        "notebook_source": "train_variant0",
+        "wells": 215,
+        "rows": 1038647,
+        "runtime_seconds": 15374.035349369049
+      },
+      {
+        "index": 1,
+        "kernel": "kentookumura/exp235-fixed-lag-pf-lag64-shard1",
+        "version": 1,
+        "notebook_source": "train_variant1",
+        "wells": 189,
+        "rows": 914147,
+        "runtime_seconds": 12139.835573911667
+      },
+      {
+        "index": 2,
+        "kernel": "kentookumura/exp235-fixed-lag-pf-lag64-shard3",
+        "version": 2,
+        "notebook_source": "train_variant2",
+        "wells": 192,
+        "rows": 931532,
+        "runtime_seconds": 12782.884734392166
+      },
+      {
+        "index": 3,
+        "kernel": "kentookumura/exp235-fixed-lag-pf-lag64-shard3",
+        "version": 1,
+        "notebook_source": "train_variant3",
+        "wells": 177,
+        "rows": 899663,
+        "runtime_seconds": 13266.104725599289
+      }
+    ],
+    "total_runtime_seconds": 53562.86038327217,
+    "merge": {
+      "status": "strict_id_and_well_union_passed",
+      "rows": 3783989,
+      "wells": 773,
+      "merged_row_candidates_decompressed_sha256": "6376acff1762b438c0bf173da3fc8c3fc6feebad692d1e3b4eb2628b0c0ae0e5",
+      "path": "artifacts/lag64_merged_v3/exp235_fixed_lag_particle_smoother_pf_merged_row_candidates.csv.gz"
+    }
+  },
+  "results": {
+    "decision": "lag64_rejected_train_side",
+    "baseline_candidate": "exp072_likpf_mean",
+    "baseline_rmse": 11.594897883736197,
+    "baseline_mae": 7.067632614946811,
+    "baseline_within10": 0.772807479091509,
+    "lag64_candidate": "pf_lag64_mean",
+    "lag64_rmse": 13.495447532555145,
+    "lag64_mae": 9.067266907356238,
+    "lag64_within10": 0.6737548655664697,
+    "lag64_delta_rmse_vs_baseline": 1.9005496488189482,
+    "lag64_delta_mae_vs_baseline": 1.999634292409427,
+    "lag64_delta_within10_vs_baseline": -0.0990526135250393,
+    "acceptance_guard": "failed_overall_rmse_and_within10"
+  },
+  "closure": {
+    "user_decision": "do_not_continue_lag128_or_lag256",
+    "cancelled_variants": ["lag128", "lag256"],
+    "reason": "lag64 is materially worse after the exact full-surface merge. No additional fixed-lag PF train, inference, or submission is authorized."
+  },
+  "causal_interpretation_limit": "exp235 uses stable_seed(EXPERIMENT_NAME, well, variant, public_likpf), whereas the frozen exp072 reference uses stable_seed(likpf, train, well). The last 64 forward-fallback rows already differ from exp072, so the candidate score rejects the implemented path but is not a seed-paired estimate of smoothing alone.",
+  "notes": "The four deterministic well shards preserve the per-well PF semantics. Shard labels in kernel titles are not used as evidence for reused v2 kernels; summary.execution.well_shard_index, target well manifests, row IDs, and the strict merge manifest are authoritative. No raw-test inference or submission was generated."
+}

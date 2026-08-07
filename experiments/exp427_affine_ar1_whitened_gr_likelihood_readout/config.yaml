@@ -1,0 +1,336 @@
+experiment:
+  name: exp427_affine_ar1_whitened_gr_likelihood_readout
+  description: >-
+    Design-frozen zero-HMM readout comparing raw-finite GR shift likelihoods
+    under a fixed identity/affine by iid/AR1 Gaussian factorial, with the
+    prefix-posterior affine plus fold-safe AR1 posterior-predictive score as
+    the sole primary.
+  route: pf_beam
+  status: stage_0_completed_gate_failed_closed
+  created_at: "2026-07-28"
+
+lineage:
+  parent: exp280_exp226_shift_likelihood_separability_readout
+  steering: ../../.steering/20260728-exp427-affine-ar1-whitened-gr-likelihood-readout
+  references:
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp343_acf_effective_sample_likelihood_tempering_audit
+    - exp345_exp209_time_varying_gr_affine_calibration_hmm
+    - exp359_exp226_window_likelihood_on_exp281
+    - exp360_typewell_reference_shift_zncc_confidence_readout
+    - exp374_exp209_student_t_exact_hmm_emission
+    - exp389_exp209_huber_exact_hmm_emission
+  diff_summary: >-
+    Keeps the exp280 exp226 path, 13 vertical shifts, non-overlapping 512-row
+    blocks, Type Well policy, sigma clip, tie order, folds, and truth-late
+    boundary. The only scientific family change is replacing the matched
+    raw-finite identity-iid row-Gaussian aggregate with an analytic Gaussian
+    block posterior-predictive density that marginalizes current-well
+    known-prefix affine uncertainty and whitens residuals with one
+    outer-train-fold AR(1) coefficient. A fixed 2x2 factorial isolates the
+    affine and AR1 main effects.
+
+implementation:
+  enabled: true
+  scope: stage_0_rank_audit_only
+  train_notebook_state: canonical_compact_selfcontained_adopted
+  inference_notebook_state: fail_closed_compact_candidate_ready
+  canonical_notebook_replacement_authorized: true
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  stage_0_implemented: true
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.group_column
+    - validation.score_rows
+
+validation:
+  strategy: >-
+    fixed_exp280_surface_affine_ar1_factorial_target_free_score_freeze_then_late_shift_rank
+  metric: mrr_top3_factorial_main_effect_and_saved_gaussian_comparison
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_folds: [0, 1, 2, 3, 4]
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_blocks: 7787
+  score_rows: raw_finite_rows_in_nonoverlapping_512_row_unknown_suffix_blocks
+  primary_unit: block
+  truth_attachment: >-
+    after_prefix_posterior_fold_rho_eligibility_four_score_negative_control_and_manifest_content_sha_freeze
+  leakage_policy:
+    - Score-stage horizontal input exposes only row identity, MD, raw GR, and known-prefix TVT_input.
+    - Exp226 score-stage input exposes only well_id, row_idx, suffix_offset, fold, and tvt_geop.
+    - Current-well affine updates use finite known-prefix pairs only.
+    - Fold rho uses outer-train known-prefix residual pairs only; each outer-valid well is excluded from its rho source.
+    - Unknown-suffix TVT, error, abs_error, formation, oracle shift, hidden-like role, and worst-well identity are forbidden before all score artifacts freeze.
+    - Candidate block affine refits, suffix-adaptive rho, and truth-driven support selection are forbidden.
+  technical_gate:
+    required_score_finite_coverage: 1.0
+    required_row_identity_coverage: 1.0
+    required_candidate_count_per_eligible_block: 13
+    minimum_eligible_well_fraction: 0.90
+    minimum_eligible_block_fraction: 0.75
+    minimum_affine_eligible_well_fraction: 0.90
+    require_outer_valid_rho_source_overlap_zero: true
+    require_abs_fold_rho_strictly_below: 0.8
+    maximum_dense_woodbury_score_abs_error: 1.0e-8
+    maximum_runtime_seconds: 30600
+    maximum_peak_rss_gb: 25.0
+  scientific_gate:
+    minimum_mrr_gain_vs_matched_identity_iid: 0.02
+    minimum_top3_gain_vs_matched_identity_iid: 0.02
+    minimum_mrr_gain_vs_saved_exp280: 0.01
+    minimum_top3_gain_vs_saved_exp280: 0.01
+    minimum_improved_folds_vs_each_control_mrr: 4
+    minimum_improved_folds_vs_each_control_top3: 4
+    minimum_mrr_gain_vs_affine_iid: 0.005
+    minimum_mrr_gain_vs_identity_ar1: 0.005
+    minimum_improved_folds_vs_each_single_factor: 3
+    require_real_above_shuffled_folds: 5
+    require_1000_plus_non_regression_vs_both_controls: true
+    require_hidden_like_spatial_non_regression_vs_both_controls: true
+    require_hidden_like_typewell_purged_non_regression_vs_both_controls: true
+    require_top1_regret_p90_non_regression_vs_saved_exp280: true
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  exp226_oof:
+    experiment: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    patterns:
+      - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    safe_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    forbidden_score_columns: [tvt_pred, gr_delta, tvt_true, error, abs_error]
+    truth_columns: [well_id, row_idx, tvt_true]
+  exp280_saved_control:
+    experiment: exp280_exp226_shift_likelihood_separability_readout
+    score_filename: exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+    score_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+      - /kaggle/input/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+      - /tmp/exp280-output-v1/artifacts/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+      - "**/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz"
+    expected_decompressed_sha256: c6e9e39a5fd3944f7516e68bdd6b9d27430a47f0bfbe3c50d39f5369791d99c3
+    expected_content_sha256: 4a546cfe5f9291168bdb4dcb912182b079e0343af845f76005f6a7100ac3aa46
+    contract_filename: exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+    contract_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+      - /kaggle/input/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+      - /tmp/exp280-output-v1/artifacts/exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+      - "**/exp280_exp226_shift_likelihood_separability_readout_score_contract.json"
+    expected_scientific_contract_sha256: 60d32ba96e0f71fc1f02f53d9e274e97d96516549ee27c87ea40bbb666af7978
+    expected_mrr: 0.389626
+    expected_top3: 0.452421
+  hidden_like:
+    enabled: true
+    experiment: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    patterns:
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+model:
+  name: none_affine_ar1_whitened_gr_likelihood_readout
+  estimator: none_deterministic_diagnostic
+  active_primary: affine_ar1
+  factorial:
+    factors:
+      affine: [identity, prefix_posterior]
+      residual_covariance: [iid, fold_safe_ar1]
+    variants:
+      - identity_iid_matched
+      - affine_iid
+      - identity_ar1
+      - affine_ar1
+    matched_control: identity_iid_matched
+    diagnostic_ablations: [affine_iid, identity_ar1]
+    primary: affine_ar1
+  affine:
+    observation: horizontal_gr_equals_intercept_plus_slope_times_typewell_gr
+    prior_mean: [0.0, 1.0]
+    prior_std: [20.0, 0.25]
+    posterior: analytic_fixed_sigma_bayesian_linear_regression
+    source: current_well_known_prefix_finite_pairs_only
+    minimum_prefix_pairs: 64
+    minimum_typewell_gr_std: 5.0
+    require_positive_posterior_mean_slope: true
+    ineligible_policy: no_primary_score_no_identity_fallback
+  sigma:
+    source: current_well_known_prefix_identity_residual_population_std
+    clip: [10.0, 60.0]
+    fixed_across_four_factorial_scores: true
+  ar1:
+    order: 1
+    source: outer_train_fold_known_prefix_affine_posterior_residuals
+    per_well_estimator: yule_walker_lag1_within_contiguous_finite_runs
+    yule_walker_formula: sum_lagged_pair_products_div_sum_lagged_left_squares
+    minimum_lag1_pairs_per_source_well: 64
+    aggregate: median_in_fisher_z_space
+    rho_clip: [-0.8, 0.8]
+    application: stationary_whitening_separately_within_each_contiguous_finite_run
+    outer_valid_well_in_source_forbidden: true
+  predictive_density:
+    family: gaussian
+    covariance: sigma_squared_identity_plus_whitened_design_affine_posterior_covariance
+    aggregation: sum_run_log_density_divide_total_finite_observations
+    numerical_method: rank2_woodbury_and_matrix_determinant_lemma
+    dense_reference: tests_only
+    score_normalization: mean_log_predictive_density_per_finite_observation
+  forbidden:
+    - candidate_block_affine_refit
+    - per_outer_valid_well_rho
+    - ar_order_or_rho_clip_grid
+    - student_t_or_huber_row_emission
+    - pearson_or_zncc_score
+    - swt_dtw_or_spectral_score
+    - typewell_group_prior
+    - imputed_gr_in_ar_innovation
+    - transition_state_or_decoder_change
+    - same_oof_rescue
+
+audit:
+  output_prefix: exp427_affine_ar1_whitened_gr_likelihood_readout
+  shift_bank_ft: [-80.0, -40.0, -20.0, -10.0, -5.0, -2.0, 0.0, 2.0, 5.0, 10.0, 20.0, 40.0, 80.0]
+  block_rows: 512
+  block_policy: non_overlapping_from_suffix_start_keep_short_tail_in_ledger
+  minimum_finite_gr_rows: 128
+  minimum_finite_gr_fraction: 0.50
+  missing_policy: raw_finite_only_break_contiguous_runs_at_original_missing_rows
+  typewell_extension_ft: 40.0
+  typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+  tie_policy: config_shift_bank_order
+  saved_control_alignment: exact_well_block_shift_key
+  negative_control:
+    kind: stable_within_well_block_shift_label_permutation
+    seed: 42
+    local_seed_key: [experiment, fold, well_id, block_index]
+  scopes:
+    long_tail_min_md_since_ft: 1000.0
+    hidden_like: [spatial, typewell_purged]
+  expected_artifacts:
+    - exp427_affine_ar1_whitened_gr_likelihood_readout_scientific_contract.json
+    - exp427_affine_ar1_whitened_gr_likelihood_readout_input_manifest.json
+    - exp427_affine_ar1_whitened_gr_likelihood_readout_prefix_affine_posterior.csv.gz
+    - exp427_affine_ar1_whitened_gr_likelihood_readout_fold_ar1_prior.csv
+    - exp427_affine_ar1_whitened_gr_likelihood_readout_eligibility.csv.gz
+    - exp427_affine_ar1_whitened_gr_likelihood_readout_target_free_scores.csv.gz
+    - exp427_affine_ar1_whitened_gr_likelihood_readout_negative_control_scores.csv.gz
+    - exp427_affine_ar1_whitened_gr_likelihood_readout_block_readout.csv.gz
+    - exp427_affine_ar1_whitened_gr_likelihood_readout_factorial_metrics.csv
+    - exp427_affine_ar1_whitened_gr_likelihood_readout_fold_metrics.csv
+    - exp427_affine_ar1_whitened_gr_likelihood_readout_scope_metrics.csv
+    - exp427_affine_ar1_whitened_gr_likelihood_readout_gate.json
+    - exp427_affine_ar1_whitened_gr_likelihood_readout_summary.json
+
+execution_contract:
+  stage_0:
+    scientific_primary_scores: 1
+    diagnostic_ablation_scores: 2
+    matched_control_scores: 1
+    saved_control_scores: 1
+    reporting_folds: 5
+    hmm_well_runs: 0
+    pf_runs: 0
+    beam_runs: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+    gpu_runs: 0
+  parent_control_regeneration: false
+  pass_followup: separate_experiment_and_new_steering_only
+
+execution:
+  implementation_approved: true
+  kaggle_package_approved: false
+  kaggle_push_approved: false
+  active_stage: closed
+  run_stage_0: false
+  stage_0_completed: true
+  stage_0_decision: stage_0_failed_close_without_rescue
+  run_hmm: false
+  run_pf: false
+  run_beam: false
+  run_inference: false
+  create_prediction: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    train_run_on_push: false
+    train_kernel_id: kentookumura/exp427-affine-ar1-whitened-gr-readout-train
+    train_title: exp427 affine ar1 whitened gr readout train
+    train_kernel_version: 2
+    train_kernel_id_no: 128931242
+    previous_kernel_version: 1
+    previous_kernel_status: error_empty_score_schema
+    train_started_at_utc: "2026-07-28 13:12:38 UTC"
+    train_completed_at_utc: "2026-07-28 14:25:45 UTC"
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp280-exp226-shift-likelihood-readout-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_real_scores_stable_sha256_local_rng_negative_control
+  stochastic_components:
+    - stable_shift_label_permutation_negative_control_only
+  parallel_rng_policy: fixed_order_no_global_rng_local_rng_per_immutable_block_key
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Fixed-input diagnostic scores are content-hashed, but no prediction or submission anchor is created.
+    - Score, eligibility, prefix posterior, fold rho, and negative control freeze before truth attachment.
+    - Raw gzip and decompressed content SHA are recorded separately; decompressed content is primary.
+
+inference:
+  enabled: false
+  mode: disabled_stage_0_zero_hmm_readout
+  selected_candidate: null
+  create_submission: false
+
+notes:
+  - This is an explicit fixed factorial, not a same-OOF parameter search.
+  - Pearson, ZNCC, rowwise Student-t/Huber, exp343 likelihood temperature, and exp359 heuristic window weights are not reused.
+  - A Stage 0 PASS does not authorize HMM/PF implementation, prediction, inference, or submission.

@@ -1,0 +1,211 @@
+experiment:
+  name: "exp132_multi_scale_gr_observation_likelihood"
+  description: Build multi-scale GR observation likelihood features for fixed PF/Beam candidates without direct replacement.
+  route: pf_beam
+  status: completed_train_side_rejected
+  created_at: "2026-06-26"
+  updated_at: "2026-06-26"
+
+lineage:
+  parent: exp099_pf_multi_observation_likelihood_probe
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  diagnostic_parents:
+    - exp093_pf_candidate_coverage_then_ranker_audit
+    - exp099_pf_multi_observation_likelihood_probe
+    - exp111_learned_pf_observation_likelihood_probe
+    - exp112_learned_pf_likelihood_weight_or_feature_followup
+    - exp120_typewell_geology_neighbor_prior_pf_likelihood_probe
+    - exp131_gr_shape_descriptor_matching_ablation
+  implementation_source: multi_scale_gr_observation_likelihood.py
+  diff_summary: Keeps the exp072 deterministic PF/Beam/likelihood-PF candidate surface fixed and re-scores existing candidates with target-free multi-scale GR observation likelihood. It adds smoothed GR, local z-score, derivative, energy, decoy-gap, softmax/blend, and low-switch gate diagnostics, then writes candidate-long metrics and an exp072-style feature cache. It does not rerun PF/Beam, train a hidden model, port inference, or submit.
+
+validation:
+  strategy: train_well_pseudotail_candidate_likelihood_audit
+  metric: rmse
+  secondary_metrics:
+    - topk_coverage
+    - low_switch_gate_rmse
+    - target_free_rank_score_top1
+    - oracle_rank_headroom
+    - bucket_metrics
+    - worst_well_regression
+    - decoy_gap
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Existing PF/Beam/likelihood-PF candidates are read from exp072's raw-train-only deterministic feature cache.
+    - Multi-scale GR likelihood uses raw horizontal GR, row index, finite prefix TVT_input, and candidate TVT values only.
+    - Evaluation-zone true TVT is materialized as last_known_tvt + target only for candidate labels, metrics, oracle topK, and stress summaries.
+    - Validation well true TVT is not used for descriptor normalization, candidate generation, window centering, score thresholds, or decoy mode selection.
+    - Direct top1 and softmax candidates are diagnostic only; success is judged through topK headroom, low-switch verifier gates, and downstream feature-cache usefulness.
+    - This experiment does not create an inference notebook candidate or submission.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+model:
+  name: none_multi_scale_gr_observation_likelihood_audit_only
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  target: true_tvt_for_scoring_only
+  base_prediction: last_known_tvt
+  estimator: none
+  multi_scale_gr_likelihood:
+    score_candidates:
+      - pf_ancc
+      - beam_mean
+      - likpf_mean
+      - sc_ens
+      - hyb
+    observation_offsets: [-48, -24, -12, 0, 12, 24, 48]
+    scale_windows: [5, 11, 21]
+    decoy_shifts: [-24, -18, 18, 24]
+    gr_rolling_window: 5
+    gr_scale: 18.0
+    z_scale: 2.0
+    derivative_scale: 5.0
+    energy_scale: 5.0
+    out_of_range_scale: 80.0
+    softmax_temperatures: [0.20, 0.35]
+    likpf_blend_weights: [0.10, 0.25]
+    primary_threshold_ft: 10
+    gate_configs:
+      - name: m0p03_s0p35_d80
+        min_score_gap: 0.03
+        min_score: 0.35
+        max_abs_delta: 80.0
+      - name: m0p05_s0p40_d60
+        min_score_gap: 0.05
+        min_score: 0.40
+        max_abs_delta: 60.0
+      - name: m0p08_s0p45_d40
+        min_score_gap: 0.08
+        min_score: 0.45
+        max_abs_delta: 40.0
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_multi_scale_gr_audit
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+  parallel_rng_policy: no_parallel_rng_in_exp132
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is a train-side likelihood probe, not a deterministic submission anchor.
+    - Source gzip cache decompressed content SHA is recorded in the summary JSON.
+
+audit:
+  mode: multi_scale_gr_observation_likelihood
+  output_prefix: exp132_multi_scale_gr_observation_likelihood
+  max_rows: null
+  save_candidate_long: true
+  thresholds_ft: [1, 2, 5, 10]
+  topk_values: [1, 2, 3, 5, 10]
+  extra_source_columns:
+    - md_since
+    - eval_len
+    - pf_ancc_std
+    - likpf_mean_d
+  candidates:
+    - name: last_anchor_tvt
+      role: anchor
+      source_column: last_known_tvt
+      transform: absolute
+      enabled: true
+    - name: pf_ancc
+      role: selected_pf
+      source_column: pf_ancc
+      transform: absolute
+      enabled: true
+    - name: beam_mean
+      role: selected_beam
+      source_column: beam_mean_d
+      transform: base_plus_delta
+      enabled: true
+    - name: likpf_mean
+      role: likelihood_pf
+      source_column: likpf_mean_d
+      transform: base_plus_delta
+      enabled: true
+    - name: sc_ens
+      role: ncc_scale_ensemble
+      source_column: sc_ens_d
+      transform: base_plus_delta
+      enabled: true
+    - name: hyb
+      role: public_hybrid
+      source_column: hyb_d
+      transform: base_plus_delta
+      enabled: true
+  candidate_sets:
+    - name: baseline_primary
+      candidates: [pf_ancc, beam_mean, likpf_mean, sc_ens, hyb]
+    - name: baseline_plus_msgr
+      candidates:
+        - pf_ancc
+        - beam_mean
+        - likpf_mean
+        - sc_ens
+        - hyb
+        - msgr_top1
+        - msgr_top2
+        - msgr_softmax_t0p2
+        - msgr_softmax_t0p35
+        - likpf_msgr_blend_w0p1
+        - likpf_msgr_blend_w0p25
+        - msgr_gate_m0p03_s0p35_d80
+        - msgr_gate_m0p05_s0p40_d60
+        - msgr_gate_m0p08_s0p45_d40
+  expected_train_artifacts:
+    - exp132_multi_scale_gr_observation_likelihood_multi_scale_gr_observation_likelihood_train_features.csv.gz
+    - exp132_multi_scale_gr_observation_likelihood_multi_scale_gr_observation_likelihood_feature_schema.csv
+    - exp132_multi_scale_gr_observation_likelihood_candidate_metrics.csv
+    - exp132_multi_scale_gr_observation_likelihood_rank_metrics.csv
+    - exp132_multi_scale_gr_observation_likelihood_bucket_metrics.csv
+    - exp132_multi_scale_gr_observation_likelihood_by_well.csv
+    - exp132_multi_scale_gr_observation_likelihood_msgr_well_summary.csv
+    - exp132_multi_scale_gr_observation_likelihood_row_context.csv.gz
+    - exp132_multi_scale_gr_observation_likelihood_candidate_long.csv.gz
+    - exp132_multi_scale_gr_observation_likelihood_feature_schema.csv
+    - exp132_multi_scale_gr_observation_likelihood_summary.json
+
+inference:
+  mode: not_selected_candidate_audit_only
+  selected_variant: null
+  notes:
+    - This experiment is train-side diagnostic only.
+    - Kaggle train v1 rejected multi-scale GR likelihood as a direct scorer, gate, or inference candidate.
+    - Feature cache is retained only as diagnostic material for a future learned verifier, not as an immediate exp092 add-only follow-up.
+
+notes:
+  - Implements the backlog item multi_scale_gr_observation_likelihood.
+  - Does not directly replace TVT predictions, train a hidden branch, rerun PF/Beam, or submit.
+  - Kaggle train v1 completed on 3,783,989 rows / 773 wells; best candidate remained likpf_mean.
+  - Best low-switch gate worsened RMSE by +0.037780 vs likpf_mean, so no inference port or submission.

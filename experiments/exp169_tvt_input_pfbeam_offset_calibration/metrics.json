@@ -1,0 +1,74 @@
+{
+  "experiment": "exp169_tvt_input_pfbeam_offset_calibration",
+  "status": "completed_train_side_diagnostic_no_submit",
+  "route": "pf_beam",
+  "metric": "rmse",
+  "cv": 11.594897672217703,
+  "public_lb": null,
+  "private_lb": null,
+  "primary_baseline": {
+    "candidate": "likpf_mean",
+    "rmse": 11.594897672217703,
+    "mae": 7.067632584311985,
+    "within10": 0.772807479091509,
+    "bias": -1.0994231121947302
+  },
+  "best_offset_variant": {
+    "candidate": "off_likpf_mean_self_median_a0p5_c10_g50_f250_iqr20_n32_const",
+    "rmse": 11.58045516554896,
+    "mae": 7.097507838908556,
+    "within10": 0.7724409346855924,
+    "bias": -1.1406141777772412,
+    "delta_rmse_vs_primary_baseline": -0.014442506668743249,
+    "max_well_regression_vs_primary": 4.173820316796684
+  },
+  "rows": 3783989,
+  "wells": 773,
+  "runtime_seconds": 26208.918836593628,
+  "variant_count": 96,
+  "prefix_replay": {
+    "ok_wells": 773,
+    "prefix_rows": 197888,
+    "offset_rows": 5411
+  },
+  "artifact_sha256": {
+    "candidate_metrics": "b47c564ade4b8ad52ccc077709faadad7506bb4e1ee55b0de517941bb1abbfef",
+    "bucket_metrics": "8598911184f91c4afc4b6cb919e92a207077de97c9d868e209c207351534442f",
+    "by_well": "13f3fa9bfc643977f4414523b397616c825339bc9fe0819c4734912044e4e850",
+    "group_metrics": "121940df0bb3bd83b8224ff4b5ea910ea50929077ae5e5ff9a70bf8b53eb1bde",
+    "prefix_offsets": "784833c4fcd699562b82a67c7ec264cd1efd2b036d196064377d9d369c1f3c59",
+    "prefix_status": "73877e46fa5b44b29b8eff0d9c38435db98b5ba6157b4a57d8b97938f849df36",
+    "oof_predictions_raw": "91c11c2a58c53110081d8919d284e5f6d5aa92b4fc6d452850ba6af57769bddf",
+    "oof_predictions_decompressed": "c93e152e72c7224a69aee53fb4744e0471d71d3853375ea7d29a169165145219"
+  },
+  "visualization": {
+    "kernel": "kentookumura/exp169-all-interval-pfbeam-visualization-guard",
+    "status": "KernelWorkerStatus.COMPLETE",
+    "output_dir": "experiments/exp169_tvt_input_pfbeam_offset_calibration/kaggle/output/all_interval_viz_v1",
+    "mode": "all_interval_pfbeam_replay_plots",
+    "modes": [
+      "exp169_holdout_tail",
+      "full_known_backtest"
+    ],
+    "wells": [
+      "91b301ce",
+      "ba48188d",
+      "fef8af96",
+      "1b1eba53",
+      "86454a6f",
+      "4e050c92"
+    ],
+    "plot_count": 12,
+    "runtime_seconds": 720.0040454864502,
+    "html_index": "experiments/exp169_tvt_input_pfbeam_offset_calibration/kaggle/output/all_interval_viz_v1/artifacts/exp169_tvt_input_pfbeam_offset_calibration_all_interval_plot_index.html",
+    "manifest": "experiments/exp169_tvt_input_pfbeam_offset_calibration/kaggle/output/all_interval_viz_v1/artifacts/exp169_tvt_input_pfbeam_offset_calibration_all_interval_plot_manifest.csv",
+    "plots_dir": "experiments/exp169_tvt_input_pfbeam_offset_calibration/kaggle/output/all_interval_viz_v1/artifacts/all_interval_pfbeam_plots",
+    "artifact_sha256": {
+      "html_index": "27fd6b56b17eb3b7cdfdc5fec341165ab27a725547b8ef3ef2649399ec10105b",
+      "manifest": "3a5ceb801cca2a4470cd4c5cfb458ef7ae40babea17a0ab693f83f0389af52c8",
+      "plots_zip": null
+    }
+  },
+  "key_idea": "Estimate candidate-specific PF/Beam TVT offset from observed TVT_input prefix holdout replay and audit capped/faded tail corrections.",
+  "notes": "Kaggle train v1 completed. Best offset correction improves global RMSE by -0.014443 versus likpf_mean, but MAE and within10 worsen and max well regression is +4.173820, so no inference port or submission."
+}

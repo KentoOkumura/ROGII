@@ -1,0 +1,278 @@
+experiment:
+  name: exp304_gr_denoiser_emission_separability_readout
+  description: >-
+    Completed 0-booster audit that selected stationary db4 level-3 SWT as the only
+    technically valid denoiser to improve truth-nearest shift separability before
+    any exact-HMM, PF, or Beam decode.
+  route: pf_beam
+  status: train_side_readout_completed_quality_passed
+  created_at: "2026-07-20"
+  updated_at: "2026-07-21"
+
+lineage:
+  parent: null
+  methodology_parent: exp280_exp226_shift_likelihood_separability_readout
+  emission_reference: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  negative_reference: exp189_denoised_gr_pfbeam_generation_audit
+  signal_reference: exp218_gr_wavelet_rotation_confidence_features_on_exp148
+  reserved_followup_contract: reserved_followup_contract.md
+  diff_summary: >-
+    Reuses exp280's fixed exp226 geometry, 13-shift bank, 512-row blocks,
+    fold identities, score freeze, and raw-GR Gaussian calibration. Changes only
+    the GR signal supplied to the emission: raw, robust RTS, stationary db4 level-3
+    wavelet denoising, or second-order L1 trend filtering. The compact self-contained
+    train-side Kaggle CPU v1 selected stationary db4 level-3 SWT as the only
+    technically valid and quality-passing denoiser. Decode, model training,
+    inference, and submission remain excluded; the fixed tempered exact-HMM
+    follow-up must be a separate experiment.
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.group_column
+    - validation.score_rows
+
+validation:
+  strategy: fixed_exp280_shift_bank_gr_denoiser_emission_separability_readout
+  metric: diagnostic_block_mrr_top3_vs_raw_and_stable_shuffled
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows_aggregated_to_fixed_512_row_blocks
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  truth_attachment: after_all_denoised_series_and_target_free_scores_are_frozen
+  forbidden_score_columns: [tvt_pred, gr_delta, tvt_true, error, abs_error, formation]
+  scopes:
+    - overall
+    - fold_0_to_4
+    - md_since_1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+    - original_gr_missing
+    - original_gr_observed
+    - typewell_gr_abs_gradient_top10pct
+  late_phase_scope_enabled: false
+  promotion:
+    primary_metrics: [mrr, top3]
+    minimum_pooled_mrr_absolute_gain_vs_raw: 0.01
+    minimum_pooled_top3_absolute_gain_vs_raw: 0.01
+    require_pooled_top1_non_degradation: true
+    minimum_folds_mrr_improved_vs_raw: 4
+    minimum_folds_top3_improved_vs_raw: 4
+    require_scope_mrr_top3_non_degradation:
+      - md_since_1000_plus
+      - hidden_like_spatial
+      - hidden_like_typewell_purged
+      - typewell_gr_abs_gradient_top10pct
+    minimum_folds_real_mrr_above_shuffled: 5
+    minimum_folds_real_top3_above_shuffled: 5
+    require_truth_minus_best_decoy_gap_improvement: true
+    selection_metric: pooled_mrr_absolute_gain_vs_raw
+    selection_tie_tolerance: 0.0001
+    selection_tie_order: [robust_rts, swt_db4_l3, l1_trend]
+    failure_action: close_reserved_followups_2_3_4_without_rescue_grid
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    safe_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    forbidden_score_columns: [tvt_pred, gr_delta, tvt_true, error, abs_error, formation]
+    truth_columns: [well_id, row_idx, tvt_true]
+  hidden_like:
+    enabled: true
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+model:
+  name: none_gr_denoiser_emission_separability_readout
+  estimator: none_deterministic_diagnostic
+  active_audit_variants: [raw, robust_rts, swt_db4_l3, l1_trend]
+  active_variant_count: 4
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  booster_count: 0
+  hmm_decode_count: 0
+  pf_run_count: 0
+  beam_run_count: 0
+  parent_control_retraining: false
+
+audit:
+  implementation_status: kaggle_cpu_v1_completed_quality_passed
+  selected_denoiser: swt_db4_l3
+  valid_denoisers: [swt_db4_l3]
+  output_prefix: exp304_gr_denoiser_emission_separability_readout
+  shift_bank_ft: [-80.0, -40.0, -20.0, -10.0, -5.0, -2.0, 0.0, 2.0, 5.0, 10.0, 20.0, 40.0, 80.0]
+  block_rows: 512
+  block_policy: non_overlapping_from_suffix_start_keep_short_tail
+  score_aggregation: mean_row_log_likelihood
+  tie_policy: config_shift_bank_order
+  typewell_extension_ft: 40.0
+  common_input:
+    missing_gr_policy: interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+    preserve_original_missing_mask_for_readout: true
+    horizontal_order: within_well_md
+    typewell_order: within_typewell_tvt
+    cross_group_smoothing: forbidden
+  emission:
+    kind: exp209_gaussian_gr
+    sigma_source: known_prefix_raw_gr_residual_std_shared_by_all_variants
+    sigma_clip: [10.0, 60.0]
+    log_likelihood_clip: 600.0
+    recompute_sigma_from_denoised_gr: false
+  denoisers:
+    raw:
+      kind: identity_after_common_missing_policy
+    robust_rts:
+      kind: student_t_iteratively_reweighted_rts_level_slope
+      coordinate_normalization: median_positive_spacing
+      robust_scale: median_absolute_deviation_from_median_div_0.67448975
+      measurement_df: 4.0
+      measurement_scale: robust_scale_first_difference_div_sqrt2
+      process_acceleration_scale: robust_scale_second_divided_difference
+      transition_matrix: constant_velocity_F_dt
+      process_covariance: discrete_white_acceleration_Q_dt
+      initial_mean: first_level_and_median_normalized_slope
+      initial_covariance: diag_R_and_R_plus_acceleration_variance
+      finite_scale_floor: 1.0e-6
+      maximum_iterations: 8
+      relative_mean_tolerance: 1.0e-6
+      hyperparameter_grid: false
+    swt_db4_l3:
+      kind: stationary_wavelet_soft_universal_threshold
+      wavelet: db4
+      level: 3
+      padding: reflection_to_multiple_of_8
+      padding_side: right_preserve_original_row_alignment
+      noise_scale: detail_mad_div_0.67448975
+      threshold: sigma_j_times_sqrt_2_log_n
+      fallback: forbidden_technical_fail
+    l1_trend:
+      kind: second_order_l1_trend_filter
+      objective: 0.5_l2_data_plus_lambda_l1_second_difference
+      lambda: mad_first_difference_div_0.67448975_div_sqrt2_times_sqrt_2_log_n
+      solver: admm
+      rho: 1.0
+      maximum_iterations: 500
+      absolute_tolerance: 1.0e-4
+      relative_tolerance: 1.0e-4
+      hyperparameter_grid: false
+  shuffled_control:
+    enabled: true
+    seed: 42
+    policy: stable_sha256_per_well_block_permutation_of_candidate_scores
+  scopes:
+    long_tail_min_md_since_ft: 1000.0
+    sharp_edge_definition: global_top10pct_raw_typewell_abs_gradient_block_mean_at_tvt_geop
+    original_gr_missing_definition: any_original_missing_row_in_block
+  distortion_metrics:
+    - raw_smoothed_mae
+    - raw_smoothed_correlation
+    - detail_energy_ratio
+    - sharp_edge_attenuation
+    - output_finite_coverage
+  expected_artifacts:
+    - exp304_gr_denoiser_emission_separability_readout_scientific_contract.json
+    - exp304_gr_denoiser_emission_separability_readout_denoised_gr_manifest.json
+    - exp304_gr_denoiser_emission_separability_readout_denoised_gr_series.csv.gz
+    - exp304_gr_denoiser_emission_separability_readout_target_free_shift_scores.csv.gz
+    - exp304_gr_denoiser_emission_separability_readout_block_readout.csv.gz
+    - exp304_gr_denoiser_emission_separability_readout_fold_metrics.csv
+    - exp304_gr_denoiser_emission_separability_readout_scope_metrics.csv
+    - exp304_gr_denoiser_emission_separability_readout_distortion_metrics.csv
+    - exp304_gr_denoiser_emission_separability_readout_solver_status.csv
+    - exp304_gr_denoiser_emission_separability_readout_input_manifest.json
+    - exp304_gr_denoiser_emission_separability_readout_summary.json
+
+execution:
+  stage: train_side_readout_completed_quality_passed
+  active_audit_variants: 4
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  hmm_well_runs: 0
+  pf_well_runs: 0
+  beam_well_runs: 0
+  parent_control_retraining: false
+  gpu: false
+  inference: false
+  submission: false
+  kaggle_push_approved: false
+  kaggle_kernel_id: kentookumura/exp304-gr-denoiser-separability-train
+  kaggle_kernel_version: 1
+  kaggle_kernel_id_no: 128011752
+  runtime_seconds: 4740.75772690773
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_real_denoiser_score_stable_sha256_local_rng_shuffled_only
+  stochastic_components:
+    - stable_shuffled_score_negative_control_only
+  parallel_rng_policy: single_process_reference_well_local_deterministic_sort_before_hash
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    scientific_contract_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Fixed-input diagnostic determinism is recorded, but this is not a prediction or submission anchor.
+    - Denoised-GR and target-free score content SHAs must be frozen before truth attachment.
+    - Library versions, BLAS threads, solver convergence, and silent-fallback count are recorded.
+  actual:
+    exp226_oof_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    exp115_hidden_like_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    raw_well_file_identity_content_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+    scientific_contract_content_sha256: 8822df968200b74ea9969b0bc023ec127debbff01933bdc89ff3db9844d55064
+    denoised_gr_content_sha256: a4acb72d60b833b12b2560db1e5dc3a113ae6ecf4137efbccf78c278582a0988
+    target_free_score_content_sha256: 6c71bdae030fee04e40988a8abdef4e26b61af733c463b6b0625e2e0cc99fa69
+    silent_fallback_count: 0
+
+inference:
+  enabled: false
+  mode: disabled_train_side_separability_readout_only
+  selected_candidate: null
+  create_submission: false
+
+notes:
+  - exp189 rolling median and Savitzky-Golay direct PF/Beam replacement are not rerun.
+  - Late-phase-specific design and metrics are intentionally excluded by user direction.
+  - Follow-ups 2-4 are separate experiments governed by reserved_followup_contract.md.
+  - Passing exp304 permits one exact-HMM confirmation only; it does not permit PF, inference, or submission.

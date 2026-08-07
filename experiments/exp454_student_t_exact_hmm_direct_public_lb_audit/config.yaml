@@ -1,0 +1,236 @@
+experiment:
+  name: exp454_student_t_exact_hmm_direct_public_lb_audit
+  description: >-
+    Design-frozen direct Public-LB audit of the exp374 absolute-TVT exact HMM
+    with fixed df=4 Student-t row emission. The frozen physical candidate is
+    exposed as a standalone submission without retraining, control replay,
+    blending, selection, gating, or postprocess.
+  hypothesis: >-
+    The 0.217808533 ft OOF gain and improvement across all fixed scopes may
+    transfer to Public LB despite failing by-well p95 and worst-well guards.
+  route: pf_beam
+  status: design_frozen_implementation_not_started
+  created_at: "2026-07-30"
+  updated_at: "2026-07-30"
+
+lineage:
+  parent: exp374_exp209_student_t_exact_hmm_emission
+  scientific_control: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  public_lb_control: exp434_physics_candidate_public_lb_audit
+  sibling_reference: exp389_exp209_huber_exact_hmm_emission
+  steering: ../../.steering/20260730-exp454-student-t-exact-hmm-direct-public-lb-audit
+  references:
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp374_exp209_student_t_exact_hmm_emission
+    - exp389_exp209_huber_exact_hmm_emission
+    - exp434_physics_candidate_public_lb_audit
+    - docs/06_reproducibility.md
+  diff_summary: >-
+    Do not create or tune a new HMM. Port exactly the frozen exp374 df=4
+    Student-t emission candidate to dynamic current/hidden-test inference and
+    expose its posterior-mean TVT directly. The exp209 coordinate, lattice,
+    rate process, transitions, prior, sigma, GR preprocessing, and readout
+    remain unchanged. No Gaussian or Huber control, blend, selector, gate,
+    model, or postprocess is executed.
+
+implementation:
+  design_approval_received: true
+  design_approval_source: user_message_2026_07_30_create_three_backlogs_experiments_steering_design_only
+  implementation_approval_received: false
+  scaffold_created: true
+  notebook_placeholders_only: true
+  code_created: false
+  tests_created: false
+  kaggle_package_created: false
+  kaggle_run_started: false
+  submission_file_created: false
+  competition_submission_started: false
+  training_enabled: false
+  inference_enabled: false
+  submission_enabled: false
+
+notebook_contract:
+  physical_model_count: 1
+  future_executable_evaluation_notebook_count: 1
+  canonical_evaluation_notebook: exp454_student_t_exact_hmm_direct_public_lb_audit_inference.ipynb
+  train_notebook_role: template_scaffold_only_not_executable
+  implementation_source_format: jupytext_percent_compact_selfcontained
+  canonical_notebook_adoption_requires_separate_approval: true
+
+validation:
+  strategy: frozen_train_side_candidate_to_direct_public_lb_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  public_lb_display_precision: 3
+  no_new_train_side_scoring: true
+  train_side_evidence:
+    control_id: exp209_gaussian_exact_hmm
+    control_rmse: 11.938287234887435
+    candidate_id: student_t_df4_on_exp209_absolute_tvt
+    candidate_rmse: 11.720478702142103
+    improvement_ft: 0.21780853274533207
+    improved_folds: 4
+    total_folds: 5
+    raw_gr_observed_improvement_ft: 0.131927
+    raw_gr_missing_improvement_ft: 0.404486
+    high_missing_fraction_improvement_ft: 0.503873
+    long_tail_1000_plus_improvement_ft: 0.236105
+    hidden_like_spatial_improvement_ft: 0.488873
+    hidden_like_typewell_purged_improvement_ft: 0.415856
+    improved_wells: 430
+    regressed_wells: 343
+    by_well_delta_p95_ft: 0.9826613435468504
+    worst_well_delta_ft: 35.015963235760445
+  public_lb_audit:
+    candidate_id: student_t_df4_on_exp209_absolute_tvt
+    parent_control_id: exp434_exact_hmm
+    order_within_three_candidate_backlog: 3
+    descriptive_only: true
+    lower_is_better: true
+    tie_policy: displayed_three_decimal_tie_is_inconclusive
+    forbid_adaptation_after_any_lb: true
+  leakage_policy:
+    - Decoder may read raw horizontal MD, Z, GR, TVT_input and Type Well TVT/GR but never horizontal suffix TVT or error.
+    - Fold and hidden-like assignments are reporting-only train evidence and are absent from current-test inference.
+    - Candidate identity, schema, and logical content SHA are frozen before submission construction.
+    - Public LB cannot change df, scale, clip, sigma, grid, transition, prior, readout, gate, or candidate formula.
+
+data:
+  raw_dir: data/raw
+  test_dir: data/raw/test
+  target_column: TVT
+  id_column: id
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  pinned_source:
+    train_path: experiments/exp374_exp209_student_t_exact_hmm_emission/exp374_exp209_student_t_exact_hmm_emission_compact_selfcontained_train.py
+    train_sha256: 0229f4cd25e052f2ce2b07cedb407175f90125b6c76f7157bce242584829c735
+    inference_path: experiments/exp374_exp209_student_t_exact_hmm_emission/exp374_exp209_student_t_exact_hmm_emission_compact_selfcontained_inference.py
+    inference_sha256: 50799484849e17dd388807dea89be49ae2d3a75d255ce5a12b957d7d6b54a572
+    config_path: experiments/exp374_exp209_student_t_exact_hmm_emission/config.yaml
+    config_sha256: f16878e8969b3930637945735950c69e968637c67b274409ade968b8f12f9fbd
+  hidden_runtime_contract:
+    row_and_id_source: sample_submission
+    well_count_policy: dynamic_nonempty
+    forbid_public_fixed_row_count: true
+    forbid_public_fixed_well_count: true
+  forbidden_inference_inputs:
+    - horizontal_suffix_tvt
+    - error
+    - abs_error
+    - fold
+    - hidden_like_role
+    - exp226_tvt_geop
+
+model:
+  name: frozen_exp374_student_t_df4_exact_hmm_direct
+  estimator: deterministic_exact_forward_backward
+  active_variants: [student_t_df4_on_exp209_absolute_tvt]
+  emission:
+    family: student_t
+    degrees_of_freedom: 4.0
+    formula: "-0.5 * (df + 1) * log1p(z^2 / df)"
+    normalization_constant: omitted_as_state_independent
+    additional_clip: none
+    temperature: 1.0
+    likelihood_weight: 1.0
+  fixed_hmm:
+    coordinate: absolute_tvt
+    grid_step_ft: 0.35
+    band_pad_ft: 100.0
+    rate_states: 41
+    rate_center: zero
+    rate_span_contract: max_0p10_abs_prefix_initial_rate_plus_0p04
+    sig_r: 0.002
+    sig_p: 0.02
+    lam: 1.0
+    start_sig: 0.75
+    r0_sig: 0.01
+    momentum: 0.998
+    sigma_mode: known_prefix_zero_fill_population_std
+    sigma_clip: [10.0, 60.0]
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+    output: posterior_mean
+  execution_count:
+    scientific_variants: 1
+    train_runs: 0
+    gaussian_control_reruns: 0
+    huber_runs: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+    pf_runs: 0
+    beam_runs: 0
+
+guards:
+  technical:
+    require_pinned_source_sha: true
+    require_sample_submission_id_set: true
+    require_unique_ids: true
+    require_finite_coverage: 1.0
+    require_posterior_normalization: true
+    require_all_well_status_pass: true
+    require_fallback_rows: 0
+    require_fallback_wells: 0
+    require_hmm_runs_equal_test_wells: true
+    require_control_runs_zero: true
+    require_prediction_sha: true
+    require_submission_sha: true
+    require_submit_check: true
+  forbidden:
+    - df_scale_temperature_or_clip_search
+    - sigma_grid_transition_prior_or_readout_change
+    - gaussian_huber_or_exp342_control_run
+    - blend_selector_gate_or_postprocess
+    - ml_training_or_parent_control_rerun
+    - public_fixed_cardinality_assert
+    - lb_adaptive_candidate_change
+
+submission_plan:
+  candidate_count: 1
+  candidate_id: student_t_df4_on_exp209_absolute_tvt
+  order_within_three_candidate_backlog: 3
+  generate_submission_file_approved: false
+  competition_submission_approved: false
+  monitoring_approved: false
+  automatic_promotion: false
+
+runtime:
+  device: cpu
+  use_amp: false
+  num_workers: 1
+  numba_num_threads: 2
+  batch_size: 1
+  enable_internet: false
+  enable_gpu: false
+  maximum_seconds: 30600
+  train_reference_runtime_seconds_773_wells: 19662.082424402237
+  kernel_id: kentookumura/exp454-student-t-hmm-direct-lb-audit-inference
+  kernel_title: exp454 student t hmm direct lb audit inference
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_fixed_sorted_well_row_grid_rate_and_variant_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_numba_threads_and_stable_well_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Deterministic anchor may be claimed only after an independent rerun establishes identical prediction and submission SHA.
+    - No inference output exists yet; source SHA and exact configuration are the design anchors.
+
+notes:
+  - Design only. No implementation, Kaggle execution, output generation, or external submission has been authorized.
+  - The exp434 exact_hmm Public LB is the sole direct control and cannot tune this candidate.

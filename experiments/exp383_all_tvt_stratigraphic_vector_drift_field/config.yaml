@@ -1,0 +1,278 @@
+experiment:
+  name: exp383_all_tvt_stratigraphic_vector_drift_field
+  description: >-
+    Use all outer-train ground-truth TVT and six train-only formation surfaces
+    to reconstruct a prefix-calibrated stratigraphic absolute/vector drift field.
+  route: pf_beam
+  status: stage0_resource_fail_closed
+  created_at: "2026-07-24"
+  updated_at: "2026-07-25"
+
+lineage:
+  parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  positive_reference:
+    - exp287_fold_safe_formation_74_addonly_on_exp264
+  negative_references:
+    - exp138_ancc_surface_predictability_audit
+    - exp150_formation_physical_imputer_revisit
+    - exp362_segment_local_donor_slope_exact_hmm
+    - exp376_exp226_formation_conditioned_k16_donor_kernel
+  diff_summary: >-
+    Replace exp226's one-pseudo-start K16 scalar donor field with a dense,
+    all-TVT multiscale absolute/vector field conditioned on fold-safe formation
+    surfaces, calibrated by every known-prefix S=TVT_input+Z row, and shrunk
+    continuously to exp226 under low support or high uncertainty.
+
+validation:
+  strategy: exp226_outer_5fold_well_split
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  control:
+    experiment: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    regenerate: false
+    cv_rmse_ft: 9.427109596582213
+    public_lb: 9.837
+    oof_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  report_scopes:
+    - near_0_250
+    - mid_250_1000
+    - 1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  leakage_policy:
+    - Outer-valid wells are absent from surface references and drift donors.
+    - Outer-valid formation columns and suffix true TVT are unread until late scoring.
+    - Donor covariates use leave-one-well-out formation surfaces.
+    - Visible three-well sample test is never used for configuration selection.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  structural_position: "S = TVT + Z"
+  formation_columns: [ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+  target_allowed_columns: [MD, X, Y, Z, TVT_input]
+  target_formation_read_count: 0
+  outer_train_full_truth_tvt: true
+  parent_exp226:
+    expected_oof_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+  hidden_like_assignments:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/rogii-exp115-hidden-like-assignments
+      - /tmp/exp275-output-v2/inputs
+
+method:
+  output_type: deterministic_physical_path
+  donor_catalog:
+    window_lengths_ft: [64, 256, 1024]
+    window_strides_ft: [32, 64, 256]
+    minimum_rows_per_window: 8
+    estimator: fixed_huber_irls
+    huber_delta: 1.345
+    huber_iterations: 5
+  formation_surface:
+    row_decimation_md_ft: 32
+    unique_wells: 24
+    max_points_per_well: 8
+    max_points: 192
+    adaptive_bandwidth_clip_ft: [500, 4000]
+    ridge_trace_ratio: 1.0e-6
+    donor_self_exclusion: true
+    initial_neighbor_query: 256
+    maximum_neighbor_query: 2048
+    query_batch_rows: 128
+  signature:
+    relative_depth_dimensions: 6
+    adjacent_thickness_dimensions: 5
+    surface_gradient_dimensions: 12
+    surface_variance_dimensions: 6
+    total_dimensions: 29
+    robust_center: median
+    robust_scale: 1.4826_mad
+    robust_scale_floor: 1.0e-6
+    standardized_delta_clip: [-3.0, 3.0]
+    target_reference_s: exp226_saved_oof_path_s
+  vector_field:
+    unique_wells: 32
+    max_nodes_per_well: 4
+    max_nodes: 128
+    minimum_unique_wells: 8
+    initial_neighbor_query: 256
+    maximum_neighbor_query: 2048
+    query_batch_rows: 128
+    adaptive_bandwidth_clip_ft: [500, 4000]
+    adaptive_bandwidth_unique_well_rank: 24
+    ridge_trace_ratio: 1.0e-4
+    formation_series: six_surface_relative_residuals
+    primary_aggregation: componentwise_robust_median6
+  prefix_calibration:
+    source: all_finite_TVT_input_plus_Z
+    estimator: huber_location
+    huber_delta: 1.345
+    huber_iterations: 5
+    correction: single_vertical_bias
+  fallback:
+    parent: exp226_saved_oof_rate
+    saved_oof_rate_derivation: gradient_of_exp226_prediction_plus_z_on_raw_md
+    mode: continuous_uncertainty_shrink
+    support_ess_full: 32
+    support_unique_wells_full: 24
+    condition_reference: 1.0e4
+    surface_variance_reference: outer_train_loo_p50
+  path_solver:
+    query_grid_md_ft: 64
+    prefix_constraint: hard_equality
+    absolute_term: inverse_variance
+    derivative_term: inverse_variance
+    curvature_weight: 1.0e-3
+    variance_floor: 1.0e-9
+    solver: deterministic_banded_weighted_least_squares
+    fail_closed: whole_well_exp226
+
+model:
+  name: deterministic_all_tvt_stratigraphic_vector_drift_field
+  fitted_model: false
+
+gates:
+  stage0_target_free:
+    surface_primary_coverage_min: 0.98
+    vector_field_coverage_min: 0.95
+    effective_donors_p05_min: 10
+    unique_donor_wells_p05_min: 16
+    prefix_calibration_coverage_min: 1.0
+    finite_coverage_min: 1.0
+    valid_reference_overlap_max: 0
+    valid_formation_reads_max: 0
+    valid_suffix_truth_reads_max: 0
+    resource_audit_wells: 16
+    projected_runtime_seconds_max: 30600
+    projected_peak_rss_gb_max: 25
+  stage1_direct:
+    pooled_rmse_gain_vs_exp226_ft_min: 1.0
+    pooled_rmse_max_ft: 8.427109596582213
+    positive_folds_min: 4
+    long_1000_plus_gain_ft_min: 0.75
+    hidden_like_spatial_gain_ft_min: 0.50
+    hidden_like_typewell_purged_gain_ft_min: 0.50
+    near_0_250_regression_max_ft: 0.05
+    max_correlation_vs_exp226: 0.999
+    by_well_tail: report_only_for_initial_identifiability
+    strong_signal_cv_max_ft: 8.0
+
+runtime:
+  accelerator: cpu
+  internet: false
+  use_amp: false
+  scientific_candidates: 1
+  reporting_folds: 5
+  fitted_models: 0
+  hmm_runs: 0
+  pf_runs: 0
+  beam_runs: 0
+  lightgbm_boosters: 0
+  replay_parent_control: false
+  resource_preflight_wells: 16
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp383-tvt-vector-drift-field-train
+    train_kernel_title: exp383 tvt vector drift field train
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+execution:
+  implementation_authorized: true
+  implementation_approval_source: user_message_implement_exp383_2026_07_24
+  compact_train_candidate_complete: true
+  compact_inference_candidate_complete: true
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: true
+  canonical_adoption_approval_source: user_message_execute_exp383_2026_07_24
+  kaggle_package_authorized: true
+  kaggle_push_authorized: false
+  kaggle_execution_authorized: false
+  kaggle_execution_approval_source: user_message_execute_exp383_2026_07_24
+  full_run_authorized: true
+  full_run_effective_after: stage0_resource_preflight_pass
+  full_run_effective: false
+  preflight_max_wells: 16
+  inference_enabled: false
+  submission_enabled: false
+  current_mode: stage0_resource_preflight
+  preflight_result:
+    status: failed_code_and_resource_gate
+    kernel_id: kentookumura/exp383-tvt-vector-drift-field-train
+    kernel_id_no: 128459031
+    kernel_version: 1
+    kaggle_status: KernelWorkerStatus.ERROR
+    first_error: pandas_merge_keys_not_unique_without_multiscale_node_id
+    failed_before_truth_join: true
+    observed_processing_seconds_before_error: 22055.465020338
+    donor_windows_by_fold: [209467, 207822, 209218, 209423, 207506]
+    projected_surface_stage_seconds: 109866.7866487867
+    projected_surface_stage_hours: 30.518551846885195
+    runtime_gate_seconds_max: 30600
+    runtime_gate_ratio: 3.5904178643394347
+    decision: stop_without_full_run_or_scientific_rescue
+
+closure:
+  confirmed: true
+  confirmed_at: "2026-07-25"
+  source: user_message_close_exp383_and_downstream
+  scope:
+    - exp383_all_tvt_stratigraphic_vector_drift_field
+    - exp384_fault_aware_piecewise_stratigraphic_vector_field
+    - exp385_gr_typewell_likelihood_on_vector_drift_paths
+  allow_retry: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_fold_well_md_scale_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_worker1_control_and_stable_result_sort
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Do not call the first successful run a deterministic anchor.
+    - Record logical content SHA for surfaces, donor catalog, field, calibration, path, and OOF prediction.
+    - Inference and submission are outside the current design-only scope.
+
+dependencies:
+  unlocks_on_pass:
+    - exp384_fault_aware_piecewise_stratigraphic_vector_field
+  reprioritizes:
+    - exp377_formation_relative_k16_slope_identifiability_readout
+
+notes:
+  - Compact self-contained train and fail-closed inference candidates are implemented.
+  - Canonical train and fail-closed inference notebooks are adopted.
+  - Kaggle CPU version 1 preflight failed before truth join.
+  - The multiscale donor surface join bug is fixed locally with a unique donor node ID.
+  - The measured donor-surface stage projects to 30.52 hours across five folds, above the 8.5-hour gate.
+  - Further Kaggle push and the full run are disabled by the Stage 0 resource gate.
+  - The user explicitly confirmed closure of exp383 and its downstream experiments.
+  - Inference and submission remain disabled.

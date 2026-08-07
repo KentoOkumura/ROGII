@@ -1,0 +1,645 @@
+{
+  "schema_version": "2",
+  "task_summary": "未知suffixの各rowについてtvtを予測するwhole-well sequence task。row-pooled RMSEのため、少数wellの長く持続する大誤差を抑える必要がある。推論時にはhorizontal wellの座標・GR・既知prefixのTVT_input、paired typewell情報、runtime sample IDsが利用でき、train-only formation列とsuffix truthは利用できない。予測単位はrowだが依存単位はwell sequenceとpaired referenceであり、現行point predictionは候補集合・posterior・持続誤差の不確実性を捨てている。hiddenではwell数、長さ、prefix/suffix比、GR/referenceの適合度、candidate availabilityが変わり得るため、whole-well OOF、動的列挙、ID一対一整列、offline九時間以内を固定する。",
+  "evidence_cutoff": "2026-07-12",
+  "allowed_sources": [
+    "studies/kaggle_idea_forge_benchmark/rogii_source_hidden_packet_v1.md"
+  ],
+  "assumptions": [
+    "パケットに明記されていないTVTの単調性、座標との保存則、GR変換への不変性は成立すると仮定せず、train-only cheap EDAで支持された関係だけを使う。",
+    "hidden testでも各wellにpaired typewellと少なくとも一部の既知TVT_input prefixがあると仮定するが、長さ・coverage・品質は可変としてfallbackを必須にする。",
+    "heatmap artifactがhidden入力からofflineで再生成可能か、その追加runtimeはいずれもpacketではmissingであり、利用案のinference smokeで確認する。",
+    "既存candidate artifactの全種類がhidden wellに対して同じcoverageで生成できると仮定せず、availability maskとML/global-reference fallbackを使う。",
+    "九時間制限に対する安全余裕として、候補案の目標wall timeを原則7.5時間以下に置く。"
+  ],
+  "closure_ledger": [
+    {
+      "evidence_id": "E01",
+      "closed_instantiation": "not applicable: E01は失敗案ではなく、deterministic row-feature plus physical/path point pipelineというtrusted anchorである。",
+      "not_closed": "whole-well joint target、distributional output、anchorをfallbackまたはconditionerとして使う構成。",
+      "reason": "CV 9.5264とPublic LB 8.780は強い基準だが、一部wellの長い相関誤差がrepresentation変更の余地を示す。"
+    },
+    {
+      "evidence_id": "E02",
+      "closed_instantiation": "truthを使って五候補から最良を選ぶoracle unionをdeployable selectorとみなすこと。",
+      "not_closed": "候補生成、OOF target-free ranking、soft posterior、abstention付き融合。",
+      "reason": "候補unionのoracle RMSE 7.4340はcoverage headroomだけを示し、truthなしのselectabilityは未解決である。"
+    },
+    {
+      "evidence_id": "E03",
+      "closed_instantiation": "tested local five-channel heatmap outputをそのままdirect replacementとして使うinstantiation。",
+      "not_closed": "heatmap logitsをobservation、candidate proposal、uncertainty、global decoder factorへrole-changeする案。",
+      "reason": "real GRはshuffle/no-GRより明確に高いcoverageを持つ一方、top-10 oracle RMSEとworst-well coverageはdirect predictorには弱い。"
+    },
+    {
+      "evidence_id": "E04",
+      "closed_instantiation": "truth-aware new-best rateやoracle union改善を、そのままdeployable gainと解釈すること。",
+      "not_closed": "coverageとselectabilityを別々に評価するOOF selector、soft fusion、candidate conditioner。",
+      "reason": "既存五候補＋heatmap十候補はoracle RMSE 2.7455まで改善するが、target-free selectorの証拠がない。"
+    },
+    {
+      "evidence_id": "E05",
+      "closed_instantiation": "overlap stitching、right-end extrapolation fill、tested full-tail multi-trajectoryのprobability-weighted point path。",
+      "not_closed": "rankを信用しないset prediction、local factorのglobal decoding、corrupted-intermediate refiner、unionへの限定利用。",
+      "reason": "単体pathは非常に悪いがunion oracleは改善し、rank 1とrank 2の逆転例はcandidate contentとranking failureを分離すべきことを示す。"
+    },
+    {
+      "evidence_id": "E06",
+      "closed_instantiation": "tested raw additive same-well-prefix likelihood、強weight、direct candidate、hard switch、dense gate、および10時間50分のCPU実装。",
+      "not_closed": "prefixをentity-specific reference、learned observation reliability、conditioner、calibratorとして使い、coverage外でglobal anchorへ戻す案。",
+      "reason": "弱weightで全distance bucketが改善したpositive submetricが残る一方、312 wells悪化、worst +46.95 ft、runtime超過があるためrole familyは閉じない。"
+    },
+    {
+      "evidence_id": "E07",
+      "closed_instantiation": "500-particle、128-seed、lag-64 ancestor smootherの特定実装。",
+      "not_closed": "seed-paired causal ablation、lag effectそのもの、exact/deterministic global smoothing、別representationのjoint decoding。",
+      "reason": "last 64 unsmoothed rowsまでcontrolより悪くseed namespaceも異なるため、smoothing mechanism単独の効果は同定されていない。"
+    }
+  ],
+  "idea_cards": [
+    {
+      "id": "I01",
+      "title": "Whole-well increment posterior with joint decoding",
+      "mechanism_family": "representation",
+      "origin_pass": "task_first",
+      "roles": [
+        "joint sequence predictor",
+        "distribution estimator",
+        "boundary-conditioned decoder"
+      ],
+      "information_sources": [
+        "horizontal coordinates and GR",
+        "known TVT_input prefix",
+        "paired typewell GR"
+      ],
+      "hypothesis": "row独立pointではなくsuffix全体のTVT increment/residual分布を同時予測し、prefix境界からjoint decodeすれば、E01の長い相関missを局所化できる。",
+      "evidence_ids": [
+        "E01",
+        "E03"
+      ],
+      "changed_mechanism": "input sequence -> per-step increment/residual bins and transition scores -> suffix joint log-likelihood -> prefix境界付きMAPまたはposterior-mean path、というobject変更であり、既存point predictorとcandidate pathsを入力にしない。",
+      "input_target_decode": "座標・GR・typewell・known prefix -> suffix increment/residualの離散分布とwell-level latent state -> joint negative log-likelihood -> verified transition bounds内のdynamic-programming decode。",
+      "deployment_error_simulated": "train wellを可変prefix位置で切り、長suffix、局所GR mismatch、boundary直後のbias、持続的driftをheld-well上で再現する。",
+      "preserved_invariants": [
+        "row order and measured-depth coordinates are preserved",
+        "known prefix TVT boundary is fixed exactly",
+        "transition bounds are imposed only if train EDA supports them"
+      ],
+      "nearest_prior_attempt": "E01 deterministic point ML anchor、およびE05 full-tail probability-weighted multi-trajectory head。",
+      "exact_difference": "候補pathのrank/weighted averageではなく、suffix全体のincrement posteriorを学習して一度だけjoint decodeする。既存candidateもcurrent point predictionも使わない。",
+      "counterevidence": "E03のlocal heatmapはworst-well coverage zeroで、E05のfull-tail headもpoint RMSE 59.2721だったため、global representationでもGRだけでは識別不能なwellが残り得る。",
+      "cheap_test": "1 held foldでanchorと同じ入力の最小increment-bin modelを学習し、全体RMSEに加えてwell residual lag-correlation、1000-ft-plus bucket、worst-20-well RMSEを比較する。",
+      "full_test": "固定GroupKFold全foldでOOF posteriorとdecoded pathを生成し、anchorとのpaired by-well差、fold variance、tail bucket、determinismを評価後、runtime sample schemaでinference smokeする。",
+      "kill_criterion": "cheap testでanchor比RMSEが0.10以上悪化する、worst-20-wellまたは1000-ft-plus bucketが2%以上悪化する、あるいはposterior entropyが大誤差を識別しない場合はfull OOFへ進めない。",
+      "reopen_criterion": "held-well oracle decodeでは改善するがlearned transitionだけが失敗した場合、transition representationまたはcalibrationを変えて再開する。",
+      "coverage_test": "candidate coverageではなく、posterior supportがtruthから10 ft以内を含むrow率をsuffix距離・well別に測り、support collapseを検査する。",
+      "selectability_test": "truthを使わずposterior entropy/transition scoreでdecodeを選び、OOF上でscore calibrationと大誤差識別AUCを測る。coverage oracle値をselectability成績として使わない。",
+      "hidden_inference_contract": "runtime inputからwellとsample IDsを動的列挙し、train-only列なしでwell単位逐次decode、欠損typewell/短prefixではE01 anchorへfallback、ID一対一整列、offline deterministic、7.5時間以内。",
+      "compute_estimate": "cheap: 1 fold T4で数時間以内を上限。full: 5-fold trainingは実験時のみ、hidden inferenceはwell線形のbounded-state DPで200 wellsを7.5時間以内、peak memoryは1 well分。",
+      "is_parameter_only": false,
+      "novelty_level": "representation_change",
+      "confidence": "C"
+    },
+    {
+      "id": "I02",
+      "title": "Coverage-aware same-well calibration reference",
+      "mechanism_family": "information",
+      "origin_pass": "task_first",
+      "roles": [
+        "entity-specific reference",
+        "observation reliability estimator",
+        "global-reference fallback"
+      ],
+      "information_sources": [
+        "same-well known-prefix GR and TVT_input",
+        "paired typewell GR",
+        "global HMM/ML uncertainty summaries"
+      ],
+      "hypothesis": "same-well prefix signalはraw additive likelihoodではなく、prefix内でhorizontal-to-typewell matchingのcalibration domainと信頼度を学ぶentity-specific referenceに移すと、E06の全distance-bucket gainを保ちながらharmful wellsをfallbackできる。",
+      "evidence_ids": [
+        "E01",
+        "E06"
+      ],
+      "changed_mechanism": "global typewell referenceにprefix-derived calibration mapとcoverage/reliabilityを条件付けし、支持範囲内だけbounded observation correction、範囲外・短prefix・不一致時はglobal anchorへ連続的に戻す。",
+      "input_target_decode": "prefix GR/TVTとtypewell GRのmatching features -> held-well OOFでobservation residualとreliability -> bounded likelihood-ratio conditioner -> HMM/ML posterior decode。",
+      "deployment_error_simulated": "prefix短縮、部分欠損、重複match、GR amplitude shift、prefix support外suffixを作り、reliabilityが低下してfallbackするか確認する。",
+      "preserved_invariants": [
+        "known prefix TVT values remain fixed",
+        "global typewell coordinate system remains the anchor",
+        "prefix corruption changes observation only and recomputes all match/reliability features"
+      ],
+      "nearest_prior_attempt": "E06 weak same-well-prefix additive likelihoodと、そこで棄却されたdirect candidate、hard switch、dense gate。",
+      "exact_difference": "prefix signalのweightを直接足すのではなく、same-entity referenceの適用可能domainとobservation reliabilityをOOFで学び、coverage外のfallbackを設計に組み込む。",
+      "counterevidence": "E06では461 wells改善に対し312 wells悪化しworst regression +46.95 ft、強weightでgainが消失、CPU runtime 10時間50分だった。",
+      "cheap_test": "E06/HMM OOF summariesからprefix length、match ambiguity、anchor uncertainty別にgainを再集計し、truthを特徴に含めないcross-fitted reliability scoreがharmful wellsを識別できるか1 foldで確認する。",
+      "full_test": "全GroupKFoldでcalibration referenceをtrain-foldだけからfitし、held wellsでbounded correctionを適用してRMSE、全distance bucket、worst-well regression、coverage内外、runtimeをpaired比較する。",
+      "kill_criterion": "cross-fitted reliabilityのharmful-well識別がrandom相当、coverage内gainが0.10 RMSE未満、worst-well regressionが+15 ft超、または最適化後runtime見積りが7.5時間超なら棄却する。",
+      "reopen_criterion": "signal gainが特定coverage bucketで再現するがreliability scoreだけが失敗した場合、conditionerではなくcalibrator/uncertainty roleで再開する。",
+      "coverage_test": "prefix長、typewellとのoverlap、match ambiguity、suffix距離ごとにentity-referenceが支持されるrow率を測り、coverage外を明示する。",
+      "selectability_test": "held-well OOFでtruth-free reliability scoreを固定し、score threshold別のgain/harmとcalibrationを測る。oracleで改善wellを選んだ値は報告を分離する。",
+      "hidden_inference_contract": "hiddenの可変prefix/lengthを動的処理し、短prefix・欠損・範囲外・重複matchではE01 global anchorへfallback、runtime ID整列、offline、deterministic、最適化版で7.5時間以内。",
+      "compute_estimate": "cheap aggregationはCPU数時間未満。full OOF conditionerは既存summary再利用を優先し、hidden pathはI05の高速化と組み合わせて200 wellsを7.5時間以内。",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "B"
+    },
+    {
+      "id": "I03",
+      "title": "OOF-shaped corrupted-candidate refiner",
+      "mechanism_family": "data_generation",
+      "origin_pass": "cross_pollination",
+      "roles": [
+        "imperfect-intermediate simulator",
+        "candidate trust refiner",
+        "anchor-correction model"
+      ],
+      "information_sources": [
+        "five existing OOF candidate paths",
+        "heatmap/full-grid candidate artifacts and scores",
+        "horizontal/typewell inputs and ML anchor"
+      ],
+      "hypothesis": "下流refinerをclean truth-conditioned candidateで学習せず、OOFで測った持続bias・自己相関・missing・mode inversionを再現したcorrupted candidate bundleから修正させれば、E05のranking failureに耐えて非相関headroomを利用できる。",
+      "evidence_ids": [
+        "E01",
+        "E04",
+        "E05"
+      ],
+      "changed_mechanism": "OOF candidate error processを測定し、clean target-derived pseudo-candidatesをそのjoint processでcorruptしてpretrainし、real OOF-like bundleで短くfine-tuneして、held-groupだけで評価する閉じたimperfect-intermediate pipeline。",
+      "input_target_decode": "corrupted candidate set＋availability/score＋raw inputs＋anchor -> true suffix residualとcandidate trust -> robust correction distribution -> bounded residualをanchorへ加算。",
+      "deployment_error_simulated": "OOFから推定したwell-level bias amplitude、row autocorrelation、rank inversion、candidate missing、coverage edge、right-end extrapolationをfold外パラメータで生成する。",
+      "preserved_invariants": [
+        "row order, coordinates, raw GR and known prefix remain unchanged",
+        "only model-generated intermediate candidates/scores are intentionally corrupted",
+        "candidate-derived disagreement and rank features are recomputed after corruption"
+      ],
+      "nearest_prior_attempt": "E05 full-tail multi-trajectory probability-weighted point path、およびpacket上未承認の単純residual利用。",
+      "exact_difference": "clean intermediateやself-predictionを入力にするのではなく、deployment OOF errorの振幅・相関・bias・欠損・mode inversionを測定して再現し、pretrain後にreal OOF-like conditioningへfine-tuneする。",
+      "counterevidence": "E05ではlearned paths単体oracle 32.3331、weighted point 59.2721で、corruption mismatchやcandidate copy-throughなら大幅に悪化し得る。",
+      "cheap_test": "OOF candidatesの誤差振幅・lag correlation・bias・missing・rank inversionをfold別に測り、単純corruption generatorがそれらの分布を再現するか確認後、1 foldのsmall refinerでanchorとの差を測る。",
+      "full_test": "outer GroupKFold held wellsに一切fitせず、inner/OOF candidate errorからcorruptionを作り、pretrain＋real OOF-like fine-tune後、全foldでRMSE、tail、copy-through率、calibration、runtimeを評価する。",
+      "kill_criterion": "corruption統計がreal OOFと主要五指標で大きく不一致、refiner出力が80%以上candidate/anchor copy-through、held-fold RMSE改善0.05未満、worst-20-wellが悪化、またはinference overhead 30分超なら棄却する。",
+      "reopen_criterion": "oracle residual correctionは有効だがcorruption mismatchだけが原因なら、well-bucket conditional corruptionへ変更して再開する。",
+      "coverage_test": "各candidate bundleのtruth bracketing、within-10、missing/edge row率を独立集計し、refinerがcoverage外でanchorへ戻ることを測る。",
+      "selectability_test": "truth-free trust outputがheld-wellでcandidate相対誤差とcalibrateするか、rank inversion時に候補をdownweightできるかを測り、oracle best-candidate成績と分離する。",
+      "hidden_inference_contract": "pretrained/fine-tuned stateとmanifestだけを読み、hiddenで再生成したcandidate bundleをwell単位処理し、train truth/formation列なし、candidate欠損時anchor fallback、offline deterministic、追加30分以内。",
+      "compute_estimate": "cheap統計＋1 foldはCPU/T4で半日以内。full trainingは5 outer folds、hiddenは小型refiner一回でpeak memory 1 well bundle、総wallはcandidate生成を含め7.5時間以内。",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "B"
+    },
+    {
+      "id": "I04",
+      "title": "Abstaining soft posterior over diverse candidate union",
+      "mechanism_family": "fusion_uncertainty",
+      "origin_pass": "cross_pollination",
+      "roles": [
+        "soft candidate fusion",
+        "uncertainty calibrator",
+        "anchor fallback gate"
+      ],
+      "information_sources": [
+        "five existing whole-well candidates",
+        "ten local heatmap candidates with logits/ranks/entropy",
+        "HMM/PF uncertainty and deterministic ML anchor"
+      ],
+      "hypothesis": "大きなunion oracle headroomをhard top-1に潰さず、candidate likelihoodとdisagreementからsoft posteriorを作り、低信頼時はanchorへabstainすれば、new-best heatmap candidateの非相関gainを安全に取り込める。",
+      "evidence_ids": [
+        "E01",
+        "E02",
+        "E04",
+        "E05"
+      ],
+      "changed_mechanism": "候補ごとの絶対rankを一点選択に使わず、mechanism source、availability、local score、cross-candidate disagreementを入力にOOF-calibrated mixture distributionを出し、posterior spreadでanchorへの連続fallbackを行う。",
+      "input_target_decode": "candidate values/sources/scores/disagreement＋raw uncertainty -> candidate posterior weightsとabstention probability -> robust soft quantile/mixture mean -> anchor-bounded point prediction。",
+      "deployment_error_simulated": "rank-1/2 inversion、heatmap coverage edge、candidate missing、全候補同方向bias、1000-ft-plus suffixをheld OOFからreplayする。",
+      "preserved_invariants": [
+        "candidate values remain aligned to runtime rows",
+        "availability masks are preserved and never imputed as truth",
+        "known prefix and sample ID order remain fixed"
+      ],
+      "nearest_prior_attempt": "E05 probability-weighted learned point path、E06で棄却されたhard switch/dense gate、E02の未解決candidate selection。",
+      "exact_difference": "single-family path scoreの加重平均やhard top-1ではなく、異なるsourceのunion全体にposteriorを置き、uncertainty-aware abstentionとanchor-bounded soft decodeをnested OOFで学習する。",
+      "counterevidence": "E04の改善はtruth-aware oracleでありtarget-free selector証拠はゼロ、E05ではrank 1が約97 ft誤りrank 2が約1.2 ftの例がありscore calibrationが弱い。",
+      "cheap_test": "既存OOF artifactだけでleave-one-fold-out temperature/abstention calibratorをfitし、hard top-1、uniform soft、anchorとの比較を行う。候補値を見ずscoreだけ、disagreementだけのcausal ablationも置く。",
+      "full_test": "outer GroupKFoldごとにselector/fusionをinner OOFだけでfitし、全773 held wellsでRMSE、worst groups、tail、calibration、source ablation、determinismを評価しhidden-like availability smokeを行う。",
+      "kill_criterion": "nested-OOFでanchor改善0.05未満、fold間で符号が反転、worst-20-wellが1%以上悪化、abstentionなしでしかgainが出ない、またはscore shuffleで同等成績なら棄却する。",
+      "reopen_criterion": "union oracle gainはbucket内で維持されるがscore selectabilityだけが失敗した場合、candidateをconditionerに移しI03またはI07として再開する。",
+      "coverage_test": "source別とunionのwithin-10、oracle RMSE、truth bracketing、新-best率をcoverage flags・suffix距離別に算出し、利用可能候補集合の上限だけを測る。",
+      "selectability_test": "nested OOFのtruth-free posterior/abstentionでNLL、best-candidate rank、RMSE gain、score shuffle、calibrationを測る。oracle best選択値は別表に隔離する。",
+      "hidden_inference_contract": "candidateをhidden rowへ動的整列し、heatmap unavailable rowは既存五候補、全candidate不備はML anchorへfallback。selectorは保存済みOOF-fit stateのみ、offline deterministic、追加20分以内、総wall7.5時間以内。",
+      "compute_estimate": "cheapは既存OOFのCPU再生で数時間。full selector trainingは軽量、主要costはcandidate再生成。推論fusionはO(rows×15)かつwell chunk処理で追加20分以内。",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "B"
+    },
+    {
+      "id": "I05",
+      "title": "Paired-parity batched state-space engine",
+      "mechanism_family": "compute_enabler",
+      "origin_pass": "cross_pollination",
+      "roles": [
+        "runtime enabler",
+        "deterministic causal-ablation harness",
+        "state-space inference engine"
+      ],
+      "information_sources": [
+        "HMM/PF inputs and predictions",
+        "same-well prefix observation from E06",
+        "frozen fold assignments and deterministic seeds"
+      ],
+      "hypothesis": "HMM/prefix-observation recursionsをragged well batchまたはcompiled exact recurrenceへ移し、seed/controlをpairedに保てば、E06の10時間50分をwall内に収めてentity-context variantsとend-to-end accuracyを正しく探索できる。",
+      "evidence_ids": [
+        "E02",
+        "E06",
+        "E07"
+      ],
+      "changed_mechanism": "likelihood semanticsを変えずにprecomputed emission、bounded state band、ragged batching、deterministic reductionを使い、controlとvariantを同じseed namespace/engineで同時計算する。",
+      "input_target_decode": "既存state-space inputs -> parity-checked batched emission/transition recurrence ->同一posterior/path decode。高速化自体ではtargetを変えず、解禁したI02のend-to-end OOF RMSEをaccept条件にする。",
+      "deployment_error_simulated": "短/長well、約200 wells、最大row/state、missing prefix、batch padding、CPU/T4差、repeated-run determinismをsynthetic size sweepで再現する。",
+      "preserved_invariants": [
+        "likelihood and transition semantics remain unchanged",
+        "control and variant use identical seed namespace and inputs",
+        "runtime row order and sample IDs are preserved exactly"
+      ],
+      "nearest_prior_attempt": "E06の10時間50分CPU path、およびE07のseed namespaceが異なる非paired smoother run。",
+      "exact_difference": "近似やparticle数変更ではなく、同一数値recurrenceのbatched/compiled実行とpaired harnessを作り、速度parity後に初めてI02のaccuracy variantを評価する。",
+      "counterevidence": "E06は制限超過であり、E07は14.88 CPU hoursかつseed差による1.7669 RMSE driftがあったため、高速化で数値・乱数semanticsを壊すリスクがある。",
+      "cheap_test": "代表的な短・中央値・長wellで旧engineとposterior/pathを厳密または事前許容誤差内で比較し、wall、peak memory、二回再実行SHAを測る。",
+      "full_test": "全773 wellsのfrozen controlをpaired再計算しRMSE/parityを確認後、I02の弱bounded context variantを同engineで全OOF評価し、200-well hidden-size smokeを実施する。",
+      "kill_criterion": "path差が許容誤差を超える、frozen control RMSE差0.01超、deterministic SHA不一致、peak memory超過、200-well見積り7.5時間超、または解禁したI02がend-to-end OOFで改善しない場合は採用しない。",
+      "reopen_criterion": "数値parityを満たすがGPU overheadだけで速度が出ない場合、well-length bucketingまたはCPU compiled recurrenceで再開する。",
+      "coverage_test": "全well長・state幅・prefix availability bucketがparity/runtime benchmarkに含まれる率を測り、短い公開三wellだけで結論しない。",
+      "selectability_test": "not applicable: candidate selectorではない。速度だけを採用理由にせず、paired OOFで解禁variantのaccuracyとfallback decisionがtruth-freeで再現することを別途確認する。",
+      "hidden_inference_contract": "runtime wellsをlength-bucket化しつつsample ID順を復元し、offline CPU/T4、bounded memory、deterministic reductions、約200 wellsで7.5時間以内、欠損contextはcontrol pathを返す。",
+      "compute_estimate": "cheap parity benchmarkは数十wellで数時間。full 773-well benchmarkは一回。accept目標はE06比1.45倍以上のend-to-end speedupかつhidden-size7.5時間以内。",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "B"
+    },
+    {
+      "id": "I06",
+      "title": "Pairwise candidate outranking with listwise abstention",
+      "mechanism_family": "candidate_generation",
+      "origin_pass": "evidence_inversion",
+      "roles": [
+        "candidate ranker",
+        "pairwise utility estimator",
+        "abstaining decoder"
+      ],
+      "information_sources": [
+        "existing and heatmap OOF candidates",
+        "candidate scores and source identities",
+        "raw GR/typewell compatibility features"
+      ],
+      "hypothesis": "絶対TVTまたはcandidate scoreを直接calibrateするより、candidate AがBより局所的に良いというpairwise relationを学びlistwise集約すれば、E05のrank inversionを扱いやすい。",
+      "evidence_ids": [
+        "E02",
+        "E04",
+        "E05"
+      ],
+      "changed_mechanism": "各候補の独立scoreからtop-1を選ばず、source-pairごとの相対compatibilityを予測し、循環/低margin時はanchorへabstainする。",
+      "input_target_decode": "candidate pair差分、GR/reference fit、uncertainty -> pairwise outrank labels -> listwise posterior -> margin十分ならsoft top-set、低marginならanchor。",
+      "deployment_error_simulated": "rank inversion、source-specific bias、candidate missing、近接候補tie、全候補badをOOF replayする。",
+      "preserved_invariants": [
+        "candidate row alignment is fixed",
+        "pair order is antisymmetrically augmented",
+        "availability changes recompute the listwise normalization"
+      ],
+      "nearest_prior_attempt": "E05 path scores/probability weightingとE06 rejected hard switch。",
+      "exact_difference": "absolute scoreやdense hard gateではなく相対pair labelをinner OOFで学び、循環とmarginを明示的uncertaintyとしてabstentionに使う。",
+      "counterevidence": "target-free selector成功例はなく、oracle coverageが高くてもraw compatibility featureにselection signalがない可能性がある。",
+      "cheap_test": "既存OOFでsource-pair別のoutcome predictabilityをleave-fold-out測定し、score-only/shuffled-GR/null pair baselinesを比較する。",
+      "full_test": "nested whole-well OOFでpairwise modelとlistwise aggregationをfitし、selection accuracy、RMSE、worst wells、cycle rate、abstention coverageを評価する。",
+      "kill_criterion": "pairwise balanced accuracyが0.55未満、score shuffleと同等、cycle/low-marginが50%以上、またはanchor RMSEを0.05以上改善しなければ棄却する。",
+      "reopen_criterion": "特定source pairだけpredictableなら、全候補selectorを閉じ、そのpairをI04のsoft featureとして限定再開する。",
+      "coverage_test": "pair/source別に両候補available率、union truth bracketing、oracle advantageをsuffix bucketごとに測る。",
+      "selectability_test": "inner OOF fitのpair probability calibration、held-well pair accuracy、cycle率、abstention後RMSEを測り、oracle pair label利用はtraining fold内だけに限定する。",
+      "hidden_inference_contract": "利用可能candidate pairだけを列挙し、未知sourceや低marginはanchor fallback、offline deterministic、row chunk、追加30分以内、sample ID一対一整列。",
+      "compute_estimate": "既存artifact上のcheap/full selectorはCPU半日以内、hidden O(rows×candidate pairs)で15候補ならbounded、追加30分以内。",
+      "is_parameter_only": false,
+      "novelty_level": "representation_change",
+      "confidence": "C"
+    },
+    {
+      "id": "I07",
+      "title": "Heatmap logits as local factors in a global decoder",
+      "mechanism_family": "information",
+      "origin_pass": "evidence_inversion",
+      "roles": [
+        "local observation factor",
+        "global state-space conditioner",
+        "coverage-aware fallback"
+      ],
+      "information_sources": [
+        "five-fold heatmap logits/entropy/margins",
+        "typewell and horizontal GR",
+        "global HMM/PF transition structure"
+      ],
+      "hypothesis": "real-GR heatmapの局所signalをpoint pathへstitchせず、global state posteriorのbounded observation factorとして入れれば、rank-2正解例を保持しつつ局所的不連続をtransition contextで解消できる。",
+      "evidence_ids": [
+        "E03",
+        "E04",
+        "E05"
+      ],
+      "changed_mechanism": "heatmap peak/pathを直接選択・extrapolateせず、full local logit surfaceをtemperature-calibrated factorとしてglobal DP/HMMへ入れ、no-coverage rowではfactorをneutralにする。",
+      "input_target_decode": "local logits＋coverage＋global emissions/transitions -> combined state log-posterior -> whole-well MAP/posterior mean -> runtime rowsへdecode。",
+      "deployment_error_simulated": "right-end no-window、rank inversion、entropy spike、geometry shift、long suffixをmaskし、neutral-factor fallbackを確認する。",
+      "preserved_invariants": [
+        "global row order and transition semantics are preserved",
+        "heatmap-uncovered rows contribute a neutral factor",
+        "logit calibration is fit only on training folds"
+      ],
+      "nearest_prior_attempt": "E05 overlapping stitched paths、right-end extrapolation fill、full-tail learned point paths。",
+      "exact_difference": "local outputをtrajectoryへpoint化せずlogit surfaceの候補不確実性をglobal decoderまで保持し、coverage外をextrapolateしない。",
+      "counterevidence": "heatmap top-10 oracle RMSEは13前後、worst-well top-3 coverage zero、larger windowも悪化しており、global factorが誤誘導する可能性がある。",
+      "cheap_test": "既存OOF logitsをfrozen HMM gridへ弱いbounded factorとしてreplayし、factor weight sweepではなくentropy/coverage neutralizationの有無をcausal比較する。",
+      "full_test": "全fold OOF logitsのみでtemperature/reliabilityをfitし、global decodeを全773 wellsで実行、distance/worst/coverage bucketsとruntimeを評価する。",
+      "kill_criterion": "covered rowsのRMSE改善0.10未満、uncovered rowsが0.02超悪化、worst-20-well悪化、またはscore-shuffled logitsでも同等なら棄却する。",
+      "reopen_criterion": "coverage bucketの一部だけgainがあれば、global factorを閉じてI04のcandidate uncertainty featureへ戻す。",
+      "coverage_test": "local-window coverage、top-K truth support、right-end uncovered率をwell/suffix距離別に測り、neutral-factor行を明示する。",
+      "selectability_test": "OOF-fit entropy/margin calibrationがfactorを強めるrowをtruthなしで決め、そのbucket gainとshuffled-logit対照を測る。oracle peak選択とは分離する。",
+      "hidden_inference_contract": "hiddenからheatmapが再生成できる場合のみ使用し、coverageなし・artifact不備はneutral factor/global HMM、dynamic IDs、offline deterministic、I05 engine込み7.5時間以内。",
+      "compute_estimate": "cheap replayは既存logitsでCPU数時間。fullはheatmap生成costがmissingなのでsmokeで測定し、DP追加はI05利用で総wall7.5時間以内をhard gateとする。",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "B"
+    },
+    {
+      "id": "I08",
+      "title": "Persistent-error risk calibrator for conditional anchor blending",
+      "mechanism_family": "fusion_uncertainty",
+      "origin_pass": "evidence_inversion",
+      "roles": [
+        "persistent-error detector",
+        "conditional convex blender",
+        "uncertainty reporter"
+      ],
+      "information_sources": [
+        "ML and physical OOF residual summaries",
+        "candidate disagreement and HMM/PF uncertainty",
+        "heatmap entropy/margins"
+      ],
+      "hypothesis": "候補のbest identityを当てる代わりに、ML anchorが長い相関missに入るriskだけをOOFで予測し、その時だけ非相関physical posteriorへbounded blendすればtail RMSEを下げられる。",
+      "evidence_ids": [
+        "E01",
+        "E02",
+        "E03"
+      ],
+      "changed_mechanism": "candidate top-1 selectorではなくanchor failure-stateのhazard/calibrationを予測し、riskの低いrow/wellではanchorを完全維持、高い区間だけ事前固定幅のsoft blendを行う。",
+      "input_target_decode": "disagreement/entropy/physical uncertainty/sequence context -> future persistent-error risk -> bounded blend weight -> ML anchorとphysical posteriorのconvex prediction。",
+      "deployment_error_simulated": "長い同符号residual、短いspike、uncertainty disagreementなしのfailure、long suffixをheld-well OOFで定義しreplayする。",
+      "preserved_invariants": [
+        "anchor prediction is unchanged below risk threshold",
+        "blend remains within input predictor envelope unless train EDA justifies otherwise",
+        "risk features are recomputed from hidden predictions only"
+      ],
+      "nearest_prior_attempt": "E06 rejected hard switch/dense gateと、E01の固定ML＋physical/path combination。",
+      "exact_difference": "どのcandidateが正しいかを分類せず、persistent anchor errorという別targetをsequence hazardとして学び、hard switchではなくbounded convex blendする。",
+      "counterevidence": "E06のgate系は棄却され、uncertaintyがworst missesを事前に識別できる証拠はpacketにない。",
+      "cheap_test": "OOF residualだけでpersistent-failure labelをfold外定義し、候補disagreement/entropyのrisk calibration、lead time、score shuffleを評価する。",
+      "full_test": "nested GroupKFoldでrisk modelとblend mappingをfitし、row RMSE、worst-well、error run length、tail、fold stabilityをanchor/constant blendと比較する。",
+      "kill_criterion": "risk AUC 0.65未満、lead timeなし、constant blend以下、worst-20-well悪化、またはsame-OOF label leakageを除くとgain消失なら棄却する。",
+      "reopen_criterion": "riskは識別できるがblend先が弱ければ、予測を変えずuncertainty/abstention reportとしてI04へ渡す。",
+      "coverage_test": "各risk featureのavailabilityと、physical/ML prediction envelopeがtruthを含む率をdistance/well別に測る。",
+      "selectability_test": "held-wellでtruth-free risk scoreのcalibration、high-risk precision/recall、実際のconditional blend gainを測り、oracle failure区間選択を別表にする。",
+      "hidden_inference_contract": "保存済みrisk modelのみを使い、必要feature欠損時はML anchor、well順序を維持したonline/batch risk decode、offline deterministic、追加15分以内。",
+      "compute_estimate": "cheap/fullとも既存OOF中心でCPU半日以内。hidden overheadはsequence calibration O(rows)で追加15分以内。",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "C"
+    },
+    {
+      "id": "I09",
+      "title": "Empirical invariant target discovery and projection",
+      "mechanism_family": "representation",
+      "origin_pass": "task_first",
+      "roles": [
+        "invariant discoverer",
+        "transformed-target predictor",
+        "constraint projector"
+      ],
+      "information_sources": [
+        "train TVT and known prefix",
+        "measured-depth/trajectory coordinates",
+        "paired reference coordinates"
+      ],
+      "hypothesis": "TVTそのものより座標とのresidual、first difference、boundary-relative stateのいずれかがwell間で低varianceなら、その支持されたstateを予測しprojectionすることでpersistent level driftを抑えられる。",
+      "evidence_ids": [
+        "E01"
+      ],
+      "changed_mechanism": "modelを選ぶ前にTVTと各known coordinateの組合せ候補をvariance・derivative・boundary errorで検査し、支持された場合だけtarget stateとdecode constraintを変更する。既存point/candidateは使わない。",
+      "input_target_decode": "known coordinates/GR/prefix -> EDA-supported residual or increment state -> state loss -> prefix boundaryからintegrationしsupported constraint setへprojection。",
+      "deployment_error_simulated": "coordinate scale/range、suffix length、boundary locationをheld-wellで変え、観測GRだけのshift corruptionも別に加える。",
+      "preserved_invariants": [
+        "only relations with low held-well variance and low boundary error are preserved",
+        "coordinate and row order are never altered",
+        "GR-only corruption leaves coordinates/TVT fixed and recomputes GR-derived features"
+      ],
+      "nearest_prior_attempt": "E01 row-level TVT point target。packetにはsystematic invariant discovery/projectionの記録がない。",
+      "exact_difference": "暗黙にTVT levelを回帰せず、候補となる物理関係をcheap EDAで反証してから、支持された合成stateをtargetとdecode constraintの両方に使う。",
+      "counterevidence": "packetはTVT単調性や特定保存則を述べておらず、誤ったphysics constraintは大missを持続させる危険がある。",
+      "cheap_test": "train folds内だけで候補transformのwell間variance、derivative tail、prefix boundary errorを算出し、held foldで同じ関係が維持されるか確認する。",
+      "full_test": "支持されたtransformがある場合だけanchor相当capacityのmodelを全GroupKFoldで学習し、raw-TVT targetとのpaired RMSE、tail、worst wells、projection activationを比較する。",
+      "kill_criterion": "全transformがheld-wellでraw TVTより安定しない、constraint violationと誤差が無関係、またはprojectionがworst-20-wellを悪化させればfamilyをこのpacketで閉じる。",
+      "reopen_criterion": "新しいdomain invariantまたはinference-available coordinateが許可sourceで示された場合のみ再開する。",
+      "coverage_test": "支持されたinvariantがwell/suffix rowの何割で定義可能かを測り、undefined/unstable bucketはraw-target fallbackとする。",
+      "selectability_test": "projection適用はtruth-free violation magnitudeだけで決め、held-well calibrationを測る。oracleでprojection有無を選ぶ成績は別扱いにする。",
+      "hidden_inference_contract": "hiddenに存在するcoordinates/prefixだけでtransformとinverse decodeを再現し、unsupported rangeはraw E01 anchor、dynamic IDs、offline deterministic、追加O(rows)。",
+      "compute_estimate": "EDAはCPU数時間、1-fold proxyは既存anchor規模、full OOFは新target一構成のみ。hidden overheadは線形で軽微。",
+      "is_parameter_only": false,
+      "novelty_level": "representation_change",
+      "confidence": "C"
+    },
+    {
+      "id": "I10",
+      "title": "Hidden-contract stress CV and causal acceptance suite",
+      "mechanism_family": "validation",
+      "origin_pass": "task_first",
+      "roles": [
+        "deployment-shift validator",
+        "causal ablation guard",
+        "runtime and memory gate"
+      ],
+      "information_sources": [
+        "whole-well fold assignments",
+        "by-well and distance metrics",
+        "runtime sample schema and reusable predictions"
+      ],
+      "hypothesis": "平均GroupKFoldだけでなくprefix/suffix ratio、well length、reference mismatch、candidate availability、tail riskをpredeclared stress strataで判定すれば、public三wellやoracle-driven案の偽改善をfull experiment前に落とせる。",
+      "evidence_ids": [
+        "E01",
+        "E04",
+        "E06",
+        "E07"
+      ],
+      "changed_mechanism": "model案ではなく、outer whole-well split内にavailability masking、long-tail buckets、paired-seed controls、oracle ceiling、200-well runtime/memory smokeを共通acceptance sequenceとして固定する。",
+      "input_target_decode": "OOF predictions/artifacts＋stress masks -> predeclared row/well/tail metrics and paired differences -> pass/fail decision -> inference smokeの順で評価する。",
+      "deployment_error_simulated": "short prefix、long suffix、large well、missing candidate/context、GR perturbation、reference mismatch proxy、約200-well workloadを個別に作る。",
+      "preserved_invariants": [
+        "whole wells never cross train/validation",
+        "runtime sample ID alignment is unchanged",
+        "paired ablations share fold, input and seed namespace"
+      ],
+      "nearest_prior_attempt": "trusted whole-well GroupKFoldは存在するが、E07はseed非paired、E06はruntime超過、E04はoracle/selectability未分離だった。",
+      "exact_difference": "単一平均RMSEを増やすのでなく、hidden availabilityとcomputeのfailure modeをcausal paired gatesにし、oracle coverageとtarget-free selectionを別stageで強制する。",
+      "counterevidence": "hidden distributionはpacketで完全には分からず、synthetic stressの重み付け自体が本番を誤表現する可能性がある。",
+      "cheap_test": "既存OOF predictionsだけでstress strataとpaired reportingを生成し、E01/E02/E06/E07の既知結論を正しく再現するか確認する。",
+      "full_test": "各新案にouter whole-well OOF、stress bucket、worst-group、fold variance、seed-paired ablation、availability smoke、200-well runtime/peak-memory/determinismを同じ順で適用する。",
+      "kill_criterion": "suiteがE04 oracle gainをdeployable gainと誤認する、E07 seed driftを検出できない、既知E06 runtime超過を再現できない、またはstress maskがheld rowsの主要bucketを空にする場合は再設計する。",
+      "reopen_criterion": "hidden contractの追加情報が許可され、現在のstress axisが不十分と判明した場合にaxis/thresholdを更新する。",
+      "coverage_test": "各stress axisのwell数・row数・candidate/context availabilityを報告し、oracle ceilingはavailable setのみに対して計算する。",
+      "selectability_test": "selector案には必ずnested OOF truth-free decisionとshuffle/null controlを要求し、truth-aware oracleはcoverage stageに限定する。",
+      "hidden_inference_contract": "validation code自体はsubmission pathへ不要だが、全案にdynamic enumeration、runtime sample alignment、offline、nine-hour hard wall、7.5-hour target、bounded memory、determinismをaccept条件として伝播する。",
+      "compute_estimate": "既存artifact上のsuite生成はCPU数時間。各案のfull costは増えるが、cheap oracle/availability gateで到達不能案をtraining前に落とす。",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "A"
+    },
+    {
+      "id": "I11",
+      "title": "Exchangeable diverse trajectory set predictor",
+      "mechanism_family": "candidate_generation",
+      "origin_pass": "task_first",
+      "roles": [
+        "set-valued predictor",
+        "mechanism-diverse candidate generator",
+        "separate candidate scorer"
+      ],
+      "information_sources": [
+        "horizontal and typewell sequences",
+        "known prefix boundary",
+        "heatmap/local alignment signal"
+      ],
+      "hypothesis": "rank付き五pathを直接weighted pointへ潰す代わりに、順序なしtrajectory setをset-matching/diversity objectiveで生成し、observation/reference/decoder軸の多様性を強制すれば、truth bracketingを増やし後段selectorと分離できる。",
+      "evidence_ids": [
+        "E03",
+        "E04",
+        "E05"
+      ],
+      "changed_mechanism": "candidate indexに意味を持たせず、複数のobservation view、global/local reference、decoder familyをset elementsとして学び、coverage objectiveと別OOF scorerを分離する。seed違いだけは多様性と数えない。",
+      "input_target_decode": "raw/typewell/prefixの複数view -> exchangeable trajectory set＋set coverage/diversity loss -> K full-suffix candidates -> 別のOOF scorerまたはI04へ渡す。",
+      "deployment_error_simulated": "view dropout、local coverage loss、long suffix、candidate collapse、decoder disagreementをtrain-timeに生成する。",
+      "preserved_invariants": [
+        "all set members share runtime row coordinates and known prefix boundary",
+        "view corruption changes observation only",
+        "candidate diversity must differ in observation/reference/decoder, not seed alone"
+      ],
+      "nearest_prior_attempt": "E05 learned full-tail five-path headとoverlap-stitched top-5 candidates。",
+      "exact_difference": "rank-ordered path probabilityとpoint weighted averageを学ばず、permutation-invariant set coverageを一次目的にし、candidate scoring/selectabilityを完全に別model/stageへ移す。",
+      "counterevidence": "E05 full-tail setのtop-5-only oracleは32.3331で、union改善があっても単体品質が低く、diversity lossだけで解決しない可能性が高い。",
+      "cheap_test": "既存five-path artifactをsource/view別に再分類し、seed以外のdiversityとoracle union寄与を測る。新規学習前にcandidate collapseを避けた場合のoracle ceilingを簡易perturbationで検査する。",
+      "full_test": "1 fold proxy通過後のみ全GroupKFold set modelを学習し、単体品質、union oracle、new-best率、source diversity、I04 nested-OOF selectability、runtimeを評価する。",
+      "kill_criterion": "1-foldで既存union oracleを0.20以上改善しない、candidate pair相関がほぼ1、new-bestが一部wellだけ、I04 selectorを付けたgainが0.05未満、またはruntime超過なら棄却する。",
+      "reopen_criterion": "新しいinference-available observation/reference sourceが追加され、seed以外の多様性軸が増えた場合に再開する。",
+      "coverage_test": "set単体と既存unionのwithin-10、oracle RMSE、truth bracketing、新-best率をsource/view/well/suffix別に測る。",
+      "selectability_test": "generator scoreを信用せず、outer-held OOFで別scorer/I04のtruth-free rankingとabstentionを評価し、coverage gainだけでは採用しない。",
+      "hidden_inference_contract": "全set memberをhidden入力だけでfull suffix生成し、view欠損はmemberをdrop、既存候補/anchor fallback、well逐次、offline deterministic、総wall7.5時間以内。",
+      "compute_estimate": "cheap artifact EDAはCPU数時間。新規trainingは1 fold gate後のみT4、hidden K pathsはwell線形で候補生成込み7.5時間以内。",
+      "is_parameter_only": false,
+      "novelty_level": "representation_change",
+      "confidence": "C"
+    },
+    {
+      "id": "I12",
+      "title": "Invariant-preserving observation-shift augmentation",
+      "mechanism_family": "data_generation",
+      "origin_pass": "task_first",
+      "roles": [
+        "deployment corruption generator",
+        "observation-model trainer",
+        "availability robustness tester"
+      ],
+      "information_sources": [
+        "horizontal and typewell GR",
+        "known coordinates and TVT prefix",
+        "OOF mismatch/uncertainty summaries"
+      ],
+      "hypothesis": "deploymentで起き得るGR amplitude/offset、local dropout、horizontal-typewell mismatchを観測だけに加え、座標・TVT・prefix境界を保持してobservation reliabilityを学習すれば、E03/E06のsignalを過信せず利用できる。",
+      "evidence_ids": [
+        "E03",
+        "E06"
+      ],
+      "changed_mechanism": "一般的input noiseではなく、OOFで観測されたsignal degradation bucketを再現するcorruption familyを作り、clean/corrupt pairからreliabilityとfallbackを学習する。",
+      "input_target_decode": "clean GR/reference pair -> calibrated amplitude/offset/dropout/mismatch corruption -> same TVT target＋reliability label -> observation model/conditioner -> low reliability時global anchor。",
+      "deployment_error_simulated": "real-vs-shuffled/no-GRの中間強度、prefix短縮、local dropout、typewell/horizontal relative shiftをfold外統計の範囲で生成する。",
+      "preserved_invariants": [
+        "TVT target, coordinates, row order and known prefix boundary are preserved",
+        "only GR/reference observation is intentionally broken",
+        "all GR-derived match and confidence features are recomputed after corruption"
+      ],
+      "nearest_prior_attempt": "E03 shuffled-GR/no-GR diagnosticとE06 raw additive likelihood。",
+      "exact_difference": "shuffleを単なるablationで終えず、real OOF degradationの強度へcalibrateしたclean/corrupt pairを生成し、corruption検出とfallbackをobjectiveとして学習する。",
+      "counterevidence": "E03ではreal signalがあってもworst-well coverage zero、E06では弱signalでも312 wells悪化しており、合成corruptionがreal mismatchを再現しない危険がある。",
+      "cheap_test": "OOFのentropy/margin/match uncertainty分布に対し各corruptionが同じ劣化曲線を作るか、real/shuffled/no-GR endpointsを含めて比較する。",
+      "full_test": "GroupKFold train folds内だけでcorruption calibrationとobservation modelをfitし、clean held wellsとstress held wells双方でRMSE、reliability calibration、worst groupsを評価する。",
+      "kill_criterion": "corruptionがOOF uncertainty/coverage degradationを再現しない、clean held RMSE悪化0.05超、stress gainのみでnatural held gainなし、またはfallbackがharmful wellsを識別しなければ棄却する。",
+      "reopen_criterion": "real hidden-like observation degradationの新しい許可証拠が得られ、corruption familyを同定できる場合に再開する。",
+      "coverage_test": "clean/corrupt強度別にlocal heatmap support、prefix-reference overlap、observation model availabilityを測る。",
+      "selectability_test": "held-wellでtruth-free reliabilityがcorruption levelと実誤差gainをcalibrateするか測り、oracleでcorrupt rowを知る設定とは分ける。",
+      "hidden_inference_contract": "augmentationはtrainingのみ。hiddenでは保存済みobservation/reliability modelを使い、未知range/欠損はglobal anchor、train-only列不要、offline deterministic、追加20分以内。",
+      "compute_estimate": "cheap corruption calibrationはCPU/GPU数時間。fullはI02/I07の一つのobservation modelに限定し、hidden overhead20分以内。",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "C"
+    }
+  ],
+  "portfolio": [
+    {
+      "idea_id": "I01",
+      "slot": "exploration",
+      "why": "candidateもcurrent pointも使わないtask-first representation変更で、長い相関誤差へ直接作用する。confidenceは低いが構造的upsideが大きい。"
+    },
+    {
+      "idea_id": "I02",
+      "slot": "safe",
+      "why": "E06に全distance-bucketのpositive evidenceがあり、role変更、coverage fallback、worst-well kill条件を安価に検証できる。"
+    },
+    {
+      "idea_id": "I03",
+      "slot": "orthogonal",
+      "why": "候補誤差の持続性・rank inversionをtraining distributionへ移し、単純selectorとは異なる経路でoracle headroomを利用する。"
+    },
+    {
+      "idea_id": "I04",
+      "slot": "orthogonal",
+      "why": "五＋十候補の大きなcoverage headroomをpoint化前にsoft保持し、abstentionでanchorを守る。coverageとselectabilityをnested OOFで明確に分離する。"
+    },
+    {
+      "idea_id": "I05",
+      "slot": "compute_enabler",
+      "why": "九時間を超えるsame-entity/HMM案とseed非paired問題を同時に解き、I02のend-to-end accuracy改善までaccept条件に含める。"
+    }
+  ],
+  "rejected": [
+    {
+      "idea": "Heatmap top-1またはprobability-weighted learned pathをそのままpoint predictionにする",
+      "failed_gate": "E03/E05でdirect output、stitched path、weighted pointが弱く、worst-well coverageとranking calibrationも不足する。",
+      "reopen_condition": "independent held-wellで単体oracleとtarget-free rank calibrationが大幅に改善した新しいartifactが得られること。"
+    },
+    {
+      "idea": "Truth-aware oracleでcandidateを選びdeployable gainと報告する",
+      "failed_gate": "leakageかつcoverageとtarget-free selectabilityの混同。E02/E04はoracle ceilingだけを示す。",
+      "reopen_condition": "再開不可。truth-free nested OOF selectorまたはsoft fusionとして再定義する。"
+    },
+    {
+      "idea": "E06 same-well-prefix likelihoodのweightだけを調整して再実行する",
+      "failed_gate": "closest failureとの差がparameterだけで、worst +46.95 ftと10時間50分の両gateを解かない。",
+      "reopen_condition": "I02のrole変更とcoverage fallback、I05のruntime parityを満たす場合のみ別mechanismとして再開する。"
+    },
+    {
+      "idea": "lag-128/256 smoothingをseed非pairedのまま拡大する",
+      "failed_gate": "E07はcontrol seed driftでcausal effect未同定、lag-64は精度・runtimeとも悪化した。",
+      "reopen_condition": "frozen controlと同一seed namespace/engineのpaired cheap ablationでsmoothing-only gainを示すこと。"
+    },
+    {
+      "idea": "公開三wellのID、行数、予測、SHAに基づくgateやfallback",
+      "failed_gate": "hidden cardinalityとruntime sample replacementに反し、public/example固有artifactになる。",
+      "reopen_condition": "再開不可。runtime sample IDsとinput availabilityだけで動的処理する。"
+    },
+    {
+      "idea": "train-only formation columnsをselectorまたはcalibratorへ入れる",
+      "failed_gate": "inference unavailable inputによるtrain/deployment contract違反。",
+      "reopen_condition": "同等情報がhidden inference inputから再現可能と許可packetで確認された場合のみ。"
+    }
+  ]
+}

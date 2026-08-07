@@ -1,0 +1,245 @@
+experiment:
+  name: exp243_pf_seed_medoids
+  description: >
+    Replays the deterministic exp072 likelihood-PF seed bank, clusters all 128
+    seed trajectories with target-free weighted trajectory distance, and retains
+    real seed medoids as diverse candidate paths for train-side audit.
+  route: pf_beam
+  status: completed_v3_exact_parity_candidate_bank_supported_direct_replacement_rejected
+  created_at: "2026-07-13"
+  updated_at: "2026-07-14"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  references:
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp214_public_raw_gr_residual_scale_control
+    - exp232_adaptive_robust_likelihood_pf
+    - exp233_adaptive_outlier_mixture_likelihood_pf
+    - exp237_hmm_exp226_candidate_selector_on_exp183
+    - exp241_adaptive_likelihood_pf_trajectory_containment_audit
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md pf_seed_medoids
+  implementation_source: pf_seed_medoids.py
+  diff_summary: >
+    Keeps the exp072 raw-GR Gaussian observation likelihood, transition,
+    particles, resampling, and stable per-well seed contract fixed. Instead of
+    collapsing 128 seed trajectories immediately to likpf_mean, it applies
+    deterministic BUILD+PAM K-medoids for fixed K=3/5/8 using weighted
+    trajectory RMSE (first half 1.0, second half 1.5) and persists the real
+    medoid trajectories plus cluster diagnostics. No selector is trained.
+
+validation:
+  strategy: full_train_exp072_pseudotail_seed_trajectory_candidate_audit
+  metric: rmse
+  secondary_metrics:
+    - row_oracle_rmse
+    - block_128_oracle_rmse
+    - block_256_oracle_rmse
+    - block_512_oracle_rmse
+    - whole_well_oracle_rmse
+    - unique_best_rate
+    - cluster_mass
+    - normalized_cluster_entropy
+    - rmse_1000_plus
+    - hidden_like_rmse
+    - worst_well_regression
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - PF replay uses raw evaluation GR, raw typewell GR, and observed prefix only.
+    - Trajectory distance, PAM initialization, K, medoid choice, cluster order, and candidate generation never use true TVT, target, error, oracle, or Public LB.
+    - True TVT is used only after all candidate paths are frozen, for diagnostic RMSE and oracle readouts.
+    - K is predeclared as 3/5/8 and is not selected using target-side metrics.
+    - Raw-test regeneration, selector training, inference, and submission are disabled.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_train_feature_cache_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_train_feature_cache_expected_sha256: 14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18
+  exp072_train_feature_cache_expected_decompressed_sha256: 99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_feature_schema_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+    - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_feature_schema_expected_sha256: 700d38149f583c3ab6574ea7b163c3c8709c2514b675bea381d822f82f4809b8
+  exp209_enriched_likpf_control_local: experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+  exp209_enriched_likpf_control_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+  exp209_enriched_likpf_control_expected_sha256: b50b4d1ee483b101d911a3bb3715a047836c028c1b29b9f986be0abeaebcb64b
+  exp209_enriched_likpf_control_expected_decompressed_sha256: ee3b548b0d38f78966742542e86fa31b7e64698d4762b924c924a5895d2ee3f4
+  exp072_reference_candidates:
+    - pf_ancc
+    - beam_mean_d
+    - likpf_mean
+    - sc_ens_d
+    - hyb_d
+    - tvt_dense_d
+    - tvt_densew_d
+    - tvt_dense50_d
+
+model:
+  name: exp072_seed_trajectory_kmedoids_audit
+  estimator: none_pfbeam_candidate_generation_audit
+  target: exp072_target_for_post_generation_scoring_only
+  validation_surface:
+    selection_mode: all_eligible_wells
+    max_target_wells: null
+    well_include: []
+    min_known_prefix_rows: 160
+    min_eval_rows: 64
+  replay:
+    split_key: train
+    replay_count: 1
+    observation_likelihood: raw_gr_gaussian_exp072
+    transition: classic_exp072_surface_state
+    seed_aggregation_fallback: mean
+  runtime:
+    particles: 500
+    seed_count: 128
+    resample_threshold: 0.5
+    init_spread: 4.5
+    momentum: 0.998
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_pos_noise: 0.10
+    resample_velocity_noise: 0.001
+    grid_step: 0.2
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+  clustering:
+    algorithm: deterministic_build_pam
+    k_values: [3, 5, 8]
+    likelihood_mass_temperature: 5.0
+    candidate_order: descending_seed_mass_then_likelihood_mass_then_seed_index
+    distance:
+      name: tail_half_weighted_trajectory_rmse
+      tail_half_start_fraction: 0.5
+      first_half_weight: 1.0
+      second_half_weight: 1.5
+
+comparison:
+  baseline_candidate: pf_base_likpf_mean
+  exp237_base8_candidates:
+    - pf_base_pf_ancc
+    - pf_base_beam_mean
+    - pf_base_likpf_mean
+    - pf_base_sc_ens
+    - pf_base_hyb
+    - pf_base_tvt_dense
+    - pf_base_tvt_densew
+    - pf_base_tvt_dense50
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+
+audit:
+  mode: target_free_pf_seed_trajectory_medoid_candidate_audit
+  output_prefix: exp243_pf_seed_medoids
+  primary_baseline: pf_base_likpf_mean
+  oracle_block_rows: [128, 256, 512]
+  path_jump_threshold_ft: 8.0
+  max_rows: null
+  close_if:
+    - medoid gains exist only for row oracle and disappear at block or whole-well scope
+    - clusters are near-duplicate trajectories with negligible between-medoid distance
+    - useful clusters are singleton Monte Carlo noise without stable mass
+    - exp237 base8 union has no material block or whole-well oracle improvement
+  expected_train_artifacts:
+    - exp243_pf_seed_medoids_candidate_metrics.csv
+    - exp243_pf_seed_medoids_distance_bucket_metrics.csv
+    - exp243_pf_seed_medoids_hidden_like_metrics.csv
+    - exp243_pf_seed_medoids_by_well.csv
+    - exp243_pf_seed_medoids_oracle_scope_metrics.csv
+    - exp243_pf_seed_medoids_unique_best.csv
+    - exp243_pf_seed_medoids_cluster_manifest.csv.gz
+    - exp243_pf_seed_medoids_cluster_summary.csv
+    - exp243_pf_seed_medoids_pf_diagnostics.csv
+    - exp243_pf_seed_medoids_row_candidates.csv.gz
+    - exp243_pf_seed_medoids_target_wells.csv
+    - exp243_pf_seed_medoids_well_status.csv
+    - exp243_pf_seed_medoids_summary.json
+
+execution:
+  parity_probe: false
+  active_variant_count: 1
+  pf_replay_count: 1
+  kmedoids_postprocess_count: 3
+  lightgbm_config_count: 0
+  fold_count: 0
+  total_boosters: 0
+  control_or_parent_retraining: false
+  well_shard_count: 1
+  active_well_shard_index: 0
+  shard_policy: single_notebook_all_eligible_wells
+  progress_every_wells: 8
+  kaggle_push_requires_user_decision: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp209-joint-exact-parity-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: exp072_sha256_modulo_plus_one_then_seed_index_numba_single_worker
+  pf_input_grid_trajectory_dtype_until_replay_mean_and_kmedoids: float64
+  persisted_candidate_dtype: float32
+  stochastic_components:
+    - likelihood_pf_particle_initialization
+    - likelihood_pf_particle_propagation
+    - likelihood_pf_conditional_resampling
+  parallel_rng_policy: no_thread_parallel_rng_numba_single_worker
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - All 128 seed trajectories are transient per well; only medoids and cluster membership summaries are persisted.
+    - Exact replay parity against saved exp072 likpf_mean is measured, not assumed.
+
+inference:
+  mode: disabled_diagnostic_only
+  selected_candidate: null
+  notes:
+    - No raw-test regeneration, selector, inference, or submission is generated.
+
+notes:
+  - One PF replay per well; K=3/5/8 are deterministic postprocessing views of the same 128 trajectories.
+  - No LightGBM, folds, boosters, GPU, control retraining, K tuning, selector, or submission.
+  - The corrected v3 full rerun is explicitly approved as one CPU notebook covering all 773 eligible wells.

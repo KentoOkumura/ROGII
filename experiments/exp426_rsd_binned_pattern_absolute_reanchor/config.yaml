@@ -1,0 +1,407 @@
+experiment:
+  name: exp426_rsd_binned_pattern_absolute_reanchor
+  description: >-
+    Design-frozen staged audit of Wu et al. RSD-binned GR pattern matching as
+    an absolute-datum observation, an exp226 coarse reanchor, and an
+    importance-corrected likelihood-PF absolute-anchor proposal.
+  hypothesis: >-
+    RSD 0.5-ft bin averaging followed by Pearson pattern matching can identify
+    the coarse absolute offset missing from exp226/HMM local-rate models, and
+    its top datum basins can improve finite-particle PF support without
+    double-counting GR evidence.
+  route: pf_beam
+  status: completed_stage_a_technical_failed_closed
+  priority: P3
+  created_at: "2026-07-28"
+  updated_at: "2026-07-28"
+
+lineage:
+  parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  pf_parent: exp404_scale5_sigma_gr_likelihood_pf_ablation
+  steering: ../../.steering/20260728-exp426-rsd-binned-pattern-absolute-reanchor
+  references:
+    - exp408_hmm_message_rate_basin_audit
+    - exp410_likpf_particle_resampling_basin_audit
+    - exp280_exp226_shift_likelihood_separability_readout
+    - exp360_typewell_reference_shift_zncc_confidence_readout
+  paper:
+    citation: >-
+      Wu et al. (2019), Stochastic clustering and pattern matching for
+      real-time geosteering, Geophysics 84(5).
+    doi: 10.1190/geo2018-0781.1
+  diff_summary: >-
+    Keeps the saved fold-safe exp226 final path as the local geometry carrier,
+    adds only a coarse residual-datum candidate bank scored after 0.5-ft RSD
+    bin averaging, then conditionally tests the same frozen score in an
+    exp226 Viterbi reanchor and a defensive PF absolute-anchor proposal.
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+implementation:
+  enabled: true
+  scope: stage_a_implementation_ready
+  train_notebook_state: canonical_compact_selfcontained_stage_a
+  compact_selfcontained_train_source: exp426_rsd_binned_pattern_absolute_reanchor_compact_selfcontained_train.py
+  compact_selfcontained_train_notebook: exp426_rsd_binned_pattern_absolute_reanchor_compact_selfcontained_train.ipynb
+  canonical_train_notebook_adopted: true
+  canonical_train_notebook_adoption_source: user_message_2026_07_28_execute_exp426
+  canonical_inference_notebook_is_placeholder: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: frozen_target_free_score_and_candidate_then_late_truth_attribution
+  metric: rmse_and_mechanism_gates
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  expected_folds: [0, 1, 2, 3, 4]
+  fixed_probe_well: 000d7d20
+  fold_source: exp226_group_safe_fold
+  parent_rmse_atol_ft: 1.0e-6
+  scope_block_assignment: md_since_mid_ft
+  truth_attachment: after_score_candidate_prediction_and_content_sha_freeze
+  report_scopes:
+    - pooled
+    - fold
+    - distance_0_50
+    - distance_50_100
+    - distance_1000_plus
+    - raw_gr_observed
+    - raw_gr_missing
+    - high_missing
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+    - by_well
+  leakage_policy:
+    - Candidate generation may read only well_id, row_idx, suffix_offset, fold, exp226 tvt_pred, MD, GR, TVT_input, Type Well TVT/GR, and Stage-C Z.
+    - Truth, error, oracle offset, persistent episode/cause, and hidden-like roles are late-join only.
+    - Score bank, rank, top-3, candidate prediction, manifests, and logical content SHAs freeze before late join.
+    - No threshold, score family, block, offset, or gate is selected after truth attachment.
+
+data:
+  raw_dir: data/raw
+  train_root_candidates:
+    - data/raw/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+  exp226:
+    experiment: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    oof_filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    safe_columns: [well_id, row_idx, suffix_offset, fold, tvt_pred]
+    expected_rmse: 9.427109596582213
+    regenerate: false
+  hidden_like_assignment:
+    experiment: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+  pf_parent:
+    experiment: exp404_scale5_sigma_gr_likelihood_pf_ablation
+    selected_variant: likpf_scale_5_x1p0
+    expected_rmse: 10.914522073423171
+    regenerate: false
+  physical_anchor_reference:
+    experiment: exp263_exp226_exp209_exp072_fixed_physics_blend
+    expected_rmse: 8.238331
+    gating_stage: classification_only_after_pf_contribution_pass
+  hmm_mechanism:
+    experiment: exp408_hmm_message_rate_basin_audit
+    read_policy: late_join_episode_and_cause_only
+  pf_mechanism:
+    experiment: exp410_likpf_particle_resampling_basin_audit
+    sentinel_wells: 12
+    read_policy: target_free_manifest_before_freeze_truth_episode_after_freeze
+  matched_controls:
+    raw_gaussian_reference: exp280_exp226_shift_likelihood_separability_readout
+    raw_pearson_reference: exp360_typewell_reference_shift_zncc_confidence_readout
+
+model:
+  name: rsd_binned_pattern_absolute_reanchor
+  estimator: none_until_stage_c_likelihood_pf
+  common_candidate_contract:
+    base_path: exp226_final_tvt_pred
+    block_size_rows: 512
+    block_overlap_rows: 0
+    offsets_ft: [-80, -40, -20, -10, -5, -2, 0, 2, 5, 10, 20, 40, 80]
+    tie_order_ft: [0, -2, 2, -5, 5, -10, 10, -20, 20, -40, 40, -80, 80]
+    rsd_bin_width_ft: 0.5
+    rsd_bin_origin_ft: 0.0
+    horizontal_gr_aggregation: finite_mean
+    horizontal_gr_imputation: none
+    typewell_interpolation: finite_linear_no_extrapolation_no_endpoint_hold
+    minimum_raw_finite_gr_points: 32
+    minimum_paired_occupied_bins: 16
+    minimum_std: 1.0e-6
+    primary_correlation: pearson
+    primary_score: half_signed_squared_fisher_z
+    correlation_clip_epsilon: 1.0e-6
+    descriptive_only: [cosine, spearman]
+    matched_controls:
+      - raw_pointwise_pearson
+      - exp280_compatible_raw_gaussian
+      - stable_sha256_shift_label_permutation
+    raw_gaussian_control:
+      kind: exp280_compatible_raw_gr_gaussian
+      sigma_mode: known_prefix_residual_std
+      sigma_clip: [10.0, 60.0]
+      log_likelihood_clip: 600.0
+      horizontal_missing_gr_policy: interpolate_both_directions_then_typewell_mean
+      typewell_policy: sort_tvt_forward_then_backward_fill_linear_interp_endpoint_hold
+    oracle_definition: late_join_discrete_minimum_block_sse_over_fixed_offsets
+
+  stage_a:
+    name: absolute_datum_identifiability
+    enabled: true
+    target_wells: 773
+    model_configs: 0
+    boosters: 0
+    hmm_runs: 0
+    pf_runs: 0
+    beam_runs: 0
+    technical_gate:
+      minimum_supported_block_fraction: 0.95
+      minimum_supported_well_fraction: 0.98
+      require_truth_reads_before_freeze_zero: true
+      require_independent_probe_logical_sha_match: true
+      maximum_runtime_seconds: 1800
+      maximum_peak_rss_gb: 25
+    scientific_gate:
+      minimum_top1_discrete_oracle_exact: 0.25
+      minimum_top3_oracle_coverage: 0.55
+      minimum_nonzero_oracle_direction_accuracy: 0.60
+      minimum_direction_folds_above_half: 4
+      minimum_top1_gain_vs_raw_pearson: 0.03
+      minimum_top1_gain_vs_raw_gaussian: 0.03
+      minimum_top1_gain_vs_permutation: 0.10
+      minimum_control_improvement_folds: 4
+      minimum_independent_top1_rmse_gain_ft: 0.10
+      minimum_independent_top1_improvement_folds: 4
+      scoped_direction_must_exceed_half:
+        - distance_1000_plus
+        - hidden_like_spatial
+        - hidden_like_typewell_purged
+      maximum_scoped_rmse_regression_ft: 0.02
+
+  stage_b:
+    name: exp226_coarse_absolute_reanchor
+    enabled: false
+    prerequisite: stage_a_all_gates_pass_and_separate_authorization
+    datum_decoder:
+      method: viterbi_map_over_512_row_blocks
+      initial_center_ft: 0.0
+      initial_sigma_ft: 5.0
+      transition_sigma_ft: 10.0
+      maximum_initial_step_ft: 20.0
+      maximum_adjacent_step_ft: 40.0
+      unsupported_block_emission: zero_all_states_transition_only_carry
+      partially_invalid_candidate_emission: negative_infinity
+      row_projection: linear_boundary_zero_through_block_centers_then_last_hold
+      maximum_constructive_row_slope_ft: 0.078125
+      prediction: exp226_tvt_pred_plus_interpolated_datum_correction
+    promotion_gate:
+      minimum_rmse_gain_vs_exp226_ft: 0.10
+      minimum_improvement_folds: 4
+      minimum_persistent_episode_sse_reduction: 0.10
+      minimum_persistent_well_improvement_fraction: 0.60
+      minimum_distance_1000_plus_gain_ft: 0.20
+      maximum_scoped_regression_ft: 0.02
+      maximum_new_episode_sse_fraction_of_corrected_total: 0.05
+      maximum_by_well_delta_rmse_p95_ft: 0.25
+      maximum_worst_well_regression_ft: 5.0
+
+  stage_c:
+    name: likelihood_pf_absolute_anchor_proposal
+    enabled: false
+    prerequisite: stage_a_and_stage_b_all_gates_pass_and_separate_authorization
+    pf:
+      parent_variant: exp404_x1p0_temperature5
+      particles: 500
+      seeds: 128
+      seed_aggregation: full_suffix_log_evidence_temperature_5
+      block_boundary_rows: 512
+      anchor_sigma_ft: 1.0
+      target_continuation_weight: 0.90
+      target_uniform_13_anchor_weight: 0.10
+      guided_continuation_weight: 0.90
+      guided_uniform_13_anchor_weight: 0.05
+      guided_equal_top3_anchor_weight: 0.05
+      original_rate_transition_for_all_components: true
+      raw_gr_emission_unchanged: true
+      importance_correction: p_aug_over_q
+      maximum_importance_ratio: 2.0
+      importance_clip: none
+      unsupported_block_fallback: uniform_target_proposal
+    sentinel:
+      wells: 12
+      variants: [uniform_anchor, pattern_guided_anchor]
+      pf_well_runs: 24
+      seed_well_trajectories: 3072
+      particle_starts: 1536000
+      technical_gate:
+        require_zero_anchor_probe_parent_parity: true
+        require_all_13_anchor_support: true
+        require_top3_occupancy_non_degenerate: true
+        require_truth_reads_before_freeze_zero: true
+        maximum_importance_ratio: 2.000000000001
+        maximum_projected_shard_runtime_seconds: 27000
+        maximum_peak_rss_gb: 25
+      mechanism_gate:
+        minimum_episode_sse_reduction_vs_exp404: 0.10
+        minimum_support_outside_reduction_points_vs_exp404: 5.0
+        minimum_truth_near_seed_fraction_gain_points: 5.0
+        minimum_128_row_recapture_rate_gain: 0.10
+        minimum_guided_episode_sse_gain_vs_uniform: 0.05
+        minimum_guided_support_gain_points_vs_uniform: 2.0
+        minimum_improved_wells_out_of_12: 8
+        maximum_worst_well_regression_ft: 2.0
+    full:
+      enabled: false
+      prerequisite: sentinel_all_gates_pass_and_separate_authorization
+      variants: [pattern_guided_anchor]
+      target_wells: 773
+      pf_well_runs: 773
+      seed_well_trajectories: 98944
+      particle_starts: 49472000
+      cpu_shards: 4
+      contribution_gate:
+        minimum_rmse_gain_vs_exp404_ft: 0.10
+        minimum_improvement_folds: 4
+        minimum_episode_sse_reduction: 0.10
+        minimum_support_outside_reduction_points: 5.0
+        minimum_raw_gr_observed_gain_ft: 0.10
+        maximum_scoped_regression_ft: 0.02
+        maximum_by_well_delta_rmse_p95_ft: 0.25
+        maximum_worst_well_regression_ft: 2.0
+      classification_non_primary:
+        standalone_vs_exp226_minimum_gain_ft: 0.03
+        physical_anchor_vs_exp263_minimum_gain_ft: 0.03
+        minimum_improvement_folds: 3
+
+execution_contract:
+  active_stage: completed_stage_a_technical_failed_closed
+  stage_a_score_variants: 1
+  stage_a_descriptive_scores: 2
+  stage_a_controls: 3
+  stage_b_prediction_variants: 1
+  stage_c_sentinel_pf_variants: 2
+  stage_c_full_pf_variants: 1
+  stage_a_b_model_configs: 0
+  stage_a_b_trained_folds: 0
+  stage_a_b_boosters: 0
+  stage_a_b_hmm_runs: 0
+  stage_a_b_pf_runs: 0
+  stage_a_b_beam_runs: 0
+  parent_control_retraining: false
+  gpu_runs: 0
+
+execution:
+  implementation_authorized: true
+  canonical_notebook_replacement_authorized: true
+  kaggle_package_authorized: true
+  kaggle_push_authorized: true
+  kaggle_execution_authorized: true
+  kaggle_run_approval_source: user_message_2026_07_28_execute_exp426
+  run_stage_a: false
+  stage_a_completed: true
+  stage_a_result: technical_failed_closed_without_truth_read
+  kaggle_kernel_id: kentookumura/exp426-rsd-binned-pattern-absolute-reanchor-train
+  kaggle_kernel_version: 1
+  kaggle_kernel_id_no: 128930757
+  run_stage_b: false
+  run_stage_c_sentinel: false
+  run_stage_c_full: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    stage_a_runtime_limit_seconds: 1800
+    stage_c_full_cpu_shards: 4
+    stage_c_maximum_shard_runtime_seconds: 27000
+
+artifacts:
+  output_prefix: exp426_rsd_binned_pattern_absolute_reanchor
+  expected_stage_a_always:
+    - exp426_rsd_binned_pattern_absolute_reanchor_stage_a_target_free_score_bank.csv.gz
+    - exp426_rsd_binned_pattern_absolute_reanchor_stage_a_well_manifest.csv.gz
+    - exp426_rsd_binned_pattern_absolute_reanchor_stage_a_input_manifest.csv.gz
+    - exp426_rsd_binned_pattern_absolute_reanchor_stage_a_summary.json
+  expected_stage_a_after_technical_pass:
+    - exp426_rsd_binned_pattern_absolute_reanchor_stage_a_block_readout.csv.gz
+    - exp426_rsd_binned_pattern_absolute_reanchor_stage_a_scope_metrics.csv
+    - exp426_rsd_binned_pattern_absolute_reanchor_stage_a_fold_metrics.csv
+    - exp426_rsd_binned_pattern_absolute_reanchor_stage_a_by_well_metrics.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: >-
+    stage_a_b_no_rng_then_stage_c_stable_sha256_of_exp426_split_well_variant_plus_seed_index
+  stochastic_components:
+    - stage_c_particle_initialization_and_propagation
+    - stage_c_mixture_component_draw
+    - stage_c_systematic_resampling
+    - stage_c_resampling_roughening
+  parallel_rng_policy: >-
+    local_per_well_per_variant_per_seed_rng_no_global_rng_and_no_shard_order_or_thread_schedule_dependency
+  feature_sha_policy: decompressed_and_logical_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    score_rank_top3_sha: true
+    prediction_sha: true
+    diagnostic_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - Stage A/B require independent logical-content rerun parity.
+    - Stage C requires zero-anchor parent parity and fixed-probe rerun parity.
+    - Model and submission SHA are not applicable because neither is generated.
+    - Full raw-test regeneration is required before any deterministic inference claim.
+
+forbidden:
+  - posthoc_bin_block_offset_support_or_score_family_grid
+  - cosine_or_spearman_primary_rescue
+  - truth_error_oracle_based_activation
+  - exp226_clip_blend_gate_or_topk_mean_rescue
+  - pointwise_hmm_emission_replacement_in_this_experiment
+  - hmm_pf_exp226_prediction_blend
+  - pf_anchor_weight_sigma_topk_particle_seed_gr_sigma_or_roughening_grid
+  - zero_support_outside_guided_top3
+  - importance_ratio_clipping
+  - pattern_score_as_additional_gr_likelihood
+  - parent_control_regeneration
+  - inference_or_submission_before_all_required_gates_and_separate_authorization
+
+notes:
+  - Stage A is a common absolute-datum identifiability prerequisite, not proof that exact HMM accuracy improves.
+  - Stage B tests direct contribution to exp226 while preserving its local path shape.
+  - Stage C separates a uniform physical reanchor target from paper-score-guided finite-particle allocation.

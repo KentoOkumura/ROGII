@@ -1,0 +1,131 @@
+{
+  "experiment": "exp422_roughening_x10_failure_regime_attribution_readout",
+  "status": "no_reproducible_target_free_regime_close_attribution_branch",
+  "route": "pf_beam",
+  "parent": "exp416_roughening_x10_likpf_full_oof_ablation",
+  "hypothesis": "A target-free high-recovery-pressure and low-damage-exposure well regime explains the sign split in the terminal exp416 roughening-x10 failure.",
+  "validation": "exp226 reporting folds 0-4; 773 wells and 3,783,989 suffix rows; exp416 and exp072 pooled/by-well parity required before scientific attribution.",
+  "metric": "saved_output_target_free_failure_regime_attribution",
+  "implementation_started": true,
+  "implementation_complete": true,
+  "contract_tests_passed": 10,
+  "canonical_train_notebook_adopted": true,
+  "kaggle_run_started": true,
+  "kaggle_run_complete": true,
+  "kaggle_kernel": {
+    "id": "kentookumura/exp422-rough-x10-regime-attribution-train",
+    "id_no": 128921651,
+    "version": 2,
+    "status": "COMPLETE",
+    "runtime_seconds": 362.8773446083069,
+    "peak_rss_gb": 3.298248291015625,
+    "generated_at_utc": "2026-07-28T11:13:45.776106+00:00"
+  },
+  "technical_gate_passed": true,
+  "scientific_gate_passed": false,
+  "attribution_gate_passed": false,
+  "decision": "no_reproducible_target_free_regime_close_attribution_branch",
+  "parent_decision_remains_unchanged": true,
+  "policy_ready": false,
+  "rows": 3783989,
+  "wells": 773,
+  "candidate_rmse_ft": 13.617717557749454,
+  "control_rmse_ft": 11.594894395642696,
+  "candidate_minus_control_rmse_ft": 2.022823162106759,
+  "fold_candidate_minus_control_rmse_ft": {
+    "0": 2.47508773025379,
+    "1": 1.8476173404535405,
+    "2": 2.625953738601977,
+    "3": 0.5839107698582993,
+    "4": 2.4123629940534617
+  },
+  "scientific_gate": {
+    "recovery_pressure": {
+      "passed": false,
+      "pooled_spearman_rho": -0.1666976968486455,
+      "positive_folds": 0,
+      "one_sided_permutation_p": 1.0,
+      "permutations": 4096
+    },
+    "damage_exposure": {
+      "passed": false,
+      "pooled_spearman_rho": -0.04148475322735844,
+      "negative_folds": 4,
+      "one_sided_permutation_p": 0.11130095191603612,
+      "permutations": 4096
+    },
+    "target_cell_row_weighted": {
+      "passed": false,
+      "wells": 242,
+      "rmse_gain_ft": -1.8524495837257913,
+      "improved_folds": 1
+    },
+    "target_cell_equal_well": {
+      "passed": false,
+      "rest_wells": 531,
+      "target_minus_rest_equal_well_mean_gain_ft": -0.5189655682091523,
+      "target_improved_well_fraction": 0.3140495867768595
+    },
+    "target_cell_persistent_episode": {
+      "passed": false,
+      "wells": 4,
+      "episodes": 4,
+      "rows": 14827,
+      "sse_reduction_fraction": 0.45801967481203054,
+      "share_of_positive_episode_sse_reduction": 0.39400616698540375
+    }
+  },
+  "execution_counts": {
+    "saved_output_readout_contracts": 1,
+    "new_prediction_rows": 0,
+    "scientific_pf_variants": 0,
+    "candidate_pf_well_runs": 0,
+    "parent_pf_control_reruns": 0,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "hmm_well_runs": 0,
+    "beam_well_runs": 0,
+    "gpu_runs": 0,
+    "reporting_folds": 5
+  },
+  "feature_freeze": {
+    "frozen_before_outcome_attachment": true,
+    "feature_rows": 773,
+    "assignment_rows": 773,
+    "row_scope_rows": 3783989,
+    "target_cell_wells": 242,
+    "feature_schema_sha256": "0c1df1e54359c03267d2cd574803b738026da7e5a0e647b38b9dad571e6fe3a7",
+    "feature_logical_content_sha256": "0fed1d9ed954f6e585f6b8bcdd60c966bc58c67efd6660f7adadb5bbd97dccf4",
+    "assignment_schema_sha256": "c34ac8e6bf246361b6f0e95dff9616a7d7fcb36eb7b5b5ba6c6537bffc61f917",
+    "assignment_logical_content_sha256": "e459e3a438511710e48c8646ea1f283f54b1310729cd5e99aee9addd8e7b2fb2",
+    "row_scope_schema_sha256": "0d7bdda2ccea8b2d6cdc15b76e95d1ab7a2194a5e975e5cb29e3f7375e8721dd",
+    "row_scope_logical_content_sha256": "242562b0d7a05fef042db29ad41b736991548825aebe26b773e759cc29fd194c",
+    "row_scope_raw_gzip_sha256": "b3956df46c37652021d19d9e15b4109def949ade8aa34db9e763aa2421f27e74",
+    "row_scope_decompressed_sha256": "291a8f88873954771a094bb5e4defa84e9f3de8ccdf5f8c4a3afdab1d83c205e",
+    "outcome_rows_before_freeze": {
+      "truth": 0,
+      "control": 0,
+      "by_well": 0,
+      "persistent_episode": 0
+    }
+  },
+  "scientific_contract_sha256": "20d2644085334ed0028ff8ca0caa38d6379073980f3547c6d05b1f7eee410426",
+  "artifact_manifest_sha256": "c2fe9339994e8785bf33dc0585f985d5a819e1ff6bf653262bad46e108c04f16",
+  "new_prediction_sha256": null,
+  "model_sha256": null,
+  "submission_sha256": null,
+  "failed_kaggle_versions": [
+    {
+      "version": 1,
+      "status": "ERROR",
+      "runtime_seconds": 108.5,
+      "reason": "exp416_prediction_logical_content_sha_column_contract_too_broad",
+      "scientific_configuration_changed": false,
+      "pf_well_runs": 0,
+      "boosters": 0
+    }
+  ],
+  "next_action": "No within-exp rescue. Keep exp416 rejected and close the target-free attribution branch; do not run inference or submission.",
+  "notes": "Kaggle private CPU version 2 completed with technical PASS and scientific FAIL. Recovery-pressure association reversed the preregistered direction, and every fixed target-cell scientific check failed."
+}

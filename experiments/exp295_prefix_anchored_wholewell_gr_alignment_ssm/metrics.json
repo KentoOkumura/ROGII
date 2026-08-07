@@ -1,0 +1,88 @@
+{
+  "experiment": "exp295_prefix_anchored_wholewell_gr_alignment_ssm",
+  "status": "stage_a_failed_runtime_timeout_branch_closed",
+  "route": "ensemble",
+  "hypothesis": "A neighbor-free prefix-conditioned complete-well GR unary plus the fixed exact state-space decoder can reach pooled OOF RMSE at or below 6.0 ft.",
+  "lineage": {
+    "primary_parent": "exp202_heatmap_mdn_candidate_generator_probe",
+    "transition_parent": "exp209_exp072_exp205_joint_exact_parity_fast_cache_generation",
+    "decoder_reference": "exp221_lgb_oof_gaussian_emission_hmm_on_exp148"
+  },
+  "diff_summary": "Implement one fold-0 prefix-conditioned complete-well neural GR unary and the fixed exp209 exact state-space posterior, with no neighbor-well source, candidate bank, parent retraining, or inference.",
+  "metric": "pooled_oof_rmse_tvt_posterior_mean",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "current_execution": {
+    "implemented": true,
+    "implementation_approved_at": "2026-07-19",
+    "active_architectures": 1,
+    "trained_folds": 0,
+    "trained_neural_models": 0,
+    "running_neural_models": 0,
+    "lightgbm_configs": 0,
+    "boosters": 0,
+    "pf_beam_well_runs": 0,
+    "parent_control_retraining": false,
+    "kaggle_push_approved": true,
+    "runtime_contract_repair_approved_at": "2026-07-20",
+    "runtime_contract_repair": {
+      "structured_objective": "gaussian_soft_label_structured_nll",
+      "label_observation_sigma_ft": 0.35,
+      "decoder_transition_changed": false,
+      "local_true_state_ce_weight": 0.25
+    },
+    "kernel_id": "kentookumura/exp295-prefix-gr-ssm-fold0-train",
+    "kernel_version": 3,
+    "worker_status": "CANCEL_ACKNOWLEDGED",
+    "run_started_at_utc": "2026-07-20T01:35:47.267Z",
+    "failure": {
+      "kernel_version": 3,
+      "worker_status": "CANCEL_ACKNOWLEDGED",
+      "classification": "kaggle_runtime_timeout_compute_infeasible",
+      "last_log_time_seconds": 18.455680111,
+      "last_log_event": "stage_a_contract_preview",
+      "completed_epochs": 0,
+      "completed_models": 0,
+      "output_files": 0
+    },
+    "previous_failure": {
+      "kernel_version": 2,
+      "worker_status": "ERROR",
+      "message": "1478: true quantized path is infeasible under fixed exp209 grammar",
+      "classification": "training_objective_data_contract",
+      "completed_epochs": 0,
+      "completed_models": 0
+    },
+    "inference_approved": false,
+    "submission_approved": false
+  },
+  "stage_a_cost": {
+    "folds": [0],
+    "architectures": 1,
+    "seeds": [42],
+    "planned_neural_models": 1,
+    "lightgbm_configs": 0,
+    "boosters": 0,
+    "control_models": 0
+  },
+  "runtime_shape_audit": {
+    "fit_wells": 556,
+    "fit_views": 1668,
+    "fit_hidden_rows_total": 8571405,
+    "mean_hidden_rows_per_view": 5138.732014388489,
+    "mean_grid_states": 571.697242206235,
+    "rate_states": 41,
+    "soft_label_dp_sweeps_per_view": 4,
+    "position_rate_cells_per_epoch": 803449626924,
+    "position_rate_cells_for_max_8_epochs": 6427597015392,
+    "early_stop_official_views_per_epoch": 62
+  },
+  "promotion_gate": {
+    "pooled_oof_rmse_at_most": 6.0,
+    "stretch_oof_rmse_at_most": 5.0,
+    "architecture_signal_only_upper_rmse": 6.75
+  },
+  "next_action": "Keep exp295 closed. If the whole-well unary route is revisited, choose a new experiment design between local-CE training with exact decode only at evaluation and fixed-window structured training before implementation.",
+  "notes": "Version 3 timed out before epoch 1 or any output file. The fixed Stage A runtime gate failed, so no version 4, Stage B, inference, or submission is permitted inside exp295."
+}

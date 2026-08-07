@@ -1,0 +1,137 @@
+{
+  "experiment": "exp359_exp226_window_likelihood_on_exp281",
+  "status": "stage_0_completed_guard_failed_closed",
+  "route": "pf_beam",
+  "stage": "stage_0",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "mrr_top3_then_rmse",
+  "kernel": {
+    "id": "kentookumura/exp359-exp226-window-likelihood-on-exp281-train",
+    "version": 1,
+    "id_no": 128528648,
+    "status": "KernelWorkerStatus.COMPLETE",
+    "runtime_seconds": 4523.211266517639
+  },
+  "execution": {
+    "rows": 3783989,
+    "wells": 773,
+    "scientific_scores": 1,
+    "saved_control_scores": 1,
+    "shift_candidates": 13,
+    "reporting_folds": 5,
+    "hmm_well_runs": 0,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "parent_control_reruns": 0,
+    "stage_1_run": false,
+    "inference_run": false,
+    "submission_created": false
+  },
+  "diagnostic": {
+    "candidate_windows": 27561,
+    "eligible_windows": 10628,
+    "eligible_wells": 729,
+    "eligible_window_fraction": 0.38561735786074525,
+    "mean_posterior_sd_ft": 26.5115837579042,
+    "window_lambda": {
+      "mean": 0.075,
+      "minimum": 0.075,
+      "maximum": 0.075,
+      "unique_count": 1
+    },
+    "overall": {
+      "window_mrr": 0.37290353083540895,
+      "control_mrr": 0.3951676655736686,
+      "window_minus_control_mrr": -0.022264134738259667,
+      "window_top3_rate": 0.4144712081294693,
+      "control_top3_rate": 0.44796763266842304,
+      "window_minus_control_top3_rate": -0.03349642453895374,
+      "window_minus_shuffle_mrr": 0.12463593128111386,
+      "window_minus_shuffle_top3_rate": 0.18046669175762137
+    },
+    "folds": [
+      {
+        "fold": 0,
+        "window_minus_control_mrr": -0.014113043370796274,
+        "window_minus_control_top3_rate": -0.014743263853584154
+      },
+      {
+        "fold": 1,
+        "window_minus_control_mrr": -0.02570165815492914,
+        "window_minus_control_top3_rate": -0.04392523364485984
+      },
+      {
+        "fold": 2,
+        "window_minus_control_mrr": -0.005177939992156544,
+        "window_minus_control_top3_rate": -0.014001077005923512
+      },
+      {
+        "fold": 3,
+        "window_minus_control_mrr": -0.031854944273457975,
+        "window_minus_control_top3_rate": -0.0473707083876575
+      },
+      {
+        "fold": 4,
+        "window_minus_control_mrr": -0.030024400295242393,
+        "window_minus_control_top3_rate": -0.04147270418958948
+      }
+    ],
+    "scopes": {
+      "long_tail_1000_plus": {
+        "window_minus_control_mrr": -0.015922152104981047,
+        "window_minus_control_top3_rate": -0.02483014206300188
+      },
+      "hidden_like_spatial": {
+        "window_minus_control_mrr": -0.018404308583851614,
+        "window_minus_control_top3_rate": -0.019949220166848025
+      },
+      "hidden_like_typewell_purged": {
+        "window_minus_control_mrr": -0.017773923002681158,
+        "window_minus_control_top3_rate": -0.015250544662309351
+      }
+    },
+    "guard": {
+      "passed": false,
+      "decision": "stage_0_failed_close_without_rescue",
+      "stage_1_eligible": false,
+      "improved_folds": {
+        "mrr": 0,
+        "top3": 0
+      },
+      "folds_real_above_shuffle": 5,
+      "checks": {
+        "score_finite_coverage": true,
+        "row_identity_coverage": true,
+        "saved_control_rank_parity": true,
+        "eligible_window_fraction": true,
+        "expected_folds": true,
+        "real_above_shuffle_all_folds": true,
+        "pooled_mrr_gain": false,
+        "pooled_top3_gain": false,
+        "mrr_improved_folds": false,
+        "top3_improved_folds": false,
+        "long_tail_1000_plus_positive_direction": false,
+        "hidden_like_spatial_positive_direction": false,
+        "hidden_like_typewell_purged_positive_direction": false
+      },
+      "technical_control": {
+        "score_finite_coverage": 1.0,
+        "row_identity_coverage": 1.0,
+        "saved_control_rank_parity": 1.0,
+        "aligned_control_blocks": 7326
+      }
+    },
+    "target_free_score_content_sha256": "8a4c5623c5836a734dcd6bd44ff5b214546afaa7316ae1fdb882f0ce6f344c4a",
+    "window_readout_content_sha256": "617cfd7ee7239f6df71a6effbf50f8fc1fcf10943ffed495385aef81520dd1d9"
+  },
+  "artifacts": {
+    "gate_file_sha256": "956d194661828ab9766f9d632288130579c39df2e9b1fe8d3cb287bd9b1a9d05",
+    "fold_metrics_file_sha256": "5f3eaa7aee9bab139a21988701a56985a73171647e4520e151902fb2ad747f2e",
+    "scope_metrics_file_sha256": "4f29d2e6c61835767fd9957523b1df52449b30a0f1e81df024b7dbaedb412b30",
+    "summary_file_sha256": "99d9eec7e00773c685dda07997f45742e041399f5f0386b74b545b5cde0c1964"
+  },
+  "notes": "Stage 0 technical checks passed, but the fixed window score was worse than the saved exp280 control in pooled, all five folds, and all three stress scopes. The branch is closed without Stage 1, inference, or submission."
+}

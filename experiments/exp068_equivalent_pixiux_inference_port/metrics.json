@@ -1,0 +1,112 @@
+{
+  "experiment": "exp068_equivalent_pixiux_inference_port",
+  "status": "discarded",
+  "cv": "11.878856 original-fold / 11.994729 well-hash",
+  "public_lb": null,
+  "private_lb": null,
+  "updated_at": "2026-06-16",
+  "discarded_at": "2026-06-16",
+  "discard_reason": "User discarded exp068. The replacement backlog is exp073_exp039_cv_reassessment, which evaluates exp073 under the exp039 CV surface instead of exp063.",
+  "replacement_backlog": "exp073_exp039_cv_reassessment",
+  "route": "ml_model",
+  "parent": "exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit",
+  "reference_branch": "exp039_ravaghi_single_lgbm_inference_submit",
+  "mode": "exp068_full_model_from_exp039_cv_retrain",
+  "branch_candidate": {
+    "source_experiment": "exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit",
+    "variant": "pixiux_likpf_public_replay",
+    "model": "exp063_public_lightgbm_configs",
+    "cv_surface": "experiments/exp029_public_sel15_pf_oof_feature_generation/features/public_sel15_pf_oof_features.csv.gz",
+    "source_tracker_features": "ravaghi_vs_pixiux_public_replay_tracker_features_train.csv.gz",
+    "source_inference_artifact": "deprecated_static_artifact_not_used_for_current_inference"
+  },
+  "comparison_anchors": {
+    "exp063_direct_public_lb": {
+      "experiment": "exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit",
+      "public_lb": 8.811,
+      "ref": 53632725
+    },
+    "overall_pf_route_public_lb": {
+      "experiment": "exp027_public_replay_needless090_sel15_spread3",
+      "public_lb": 8.781,
+      "delta_exp063_direct_vs_anchor": 0.030000000000001137
+    },
+    "old_ml_route_public_lb": {
+      "experiment": "exp039_ravaghi_single_lgbm_inference_submit",
+      "public_lb": 11.74,
+      "delta_exp063_direct_vs_anchor": -2.929
+    }
+  },
+  "kaggle": {
+    "train": {
+      "status": "completed",
+      "kernel": "kentookumura/exp068-equivalent-pixiux-train",
+      "version": 4,
+      "requires_kernel_sources": [
+        "kentookumura/exp029-sel15-pf-oof-train",
+        "kentookumura/exp063-ravaghi-pixiux-strict-replay-train"
+      ],
+      "enable_gpu": true,
+      "enable_internet": false,
+      "run_on_push": true,
+      "output_dir": "/tmp/kaggle-output/exp068_equivalent_pixiux_inference_port/train_v4",
+      "elapsed_seconds": 7801.091,
+      "join_stats": {
+        "exp039_rows": 1782279,
+        "exp063_tracker_rows": 3783989,
+        "joined_rows": 1781963,
+        "dropped_exp039_rows": 316,
+        "joined_wells": 773,
+        "feature_count": 65
+      },
+      "pooled_cv": {
+        "leave_one_original_fold_out_lgb_mean": 11.878855650877698,
+        "well_hash_holdout_lgb_mean": 11.994729383150903
+      },
+      "pooled_model_cv": {
+        "leave_one_original_fold_out": {
+          "lgb0": 12.112706,
+          "lgb1": 11.91817,
+          "lgb2": 11.930688,
+          "lgb_mean": 11.878856
+        },
+        "well_hash_holdout": {
+          "lgb0": 12.207261,
+          "lgb1": 12.023019,
+          "lgb2": 12.017439,
+          "lgb_mean": 11.994729
+        }
+      },
+      "current_revision": {
+        "status": "discarded_before_rerun",
+        "expected_full_model_dir": "exp068_exp039_cv_full_lgb_models",
+        "save_full_models": true,
+        "primary_audit_for_full_model": "leave_one_original_fold_out"
+      }
+    },
+    "inference": {
+      "status": "discarded_before_rerun",
+      "kernel": "kentookumura/exp068-equivalent-pixiux-infer",
+      "version": null,
+      "requires_kernel_sources": [
+        "kentookumura/exp068-equivalent-pixiux-train",
+        "kentookumura/exp063-ravaghi-pixiux-strict-replay-infer"
+      ],
+      "mode": "exp068_full_model_from_exp039_cv_retrain",
+      "feature_mode": "generate_exp063_replay",
+      "uses_static_exp063_prediction_artifact": false,
+      "strict_id_match": true,
+      "submit_check": null,
+      "public_lb": null
+    }
+  },
+  "invalid_submissions": [
+    {
+      "ref": 53654439,
+      "submitted_at": "2026-06-14 00:33:47.950000",
+      "public_lb": 762.715,
+      "reason": "Previous inference used static exp063 public-sample prediction artifact; code-submission hidden scoring likely fell back for missing hidden ids. Do not adopt."
+    }
+  ],
+  "notes": "Discarded by user request on 2026-06-16. Historical CV-only Kaggle train v4 is kept for traceability, and invalid ref 53654439 remains explicitly not adopted. No further exp068 rerun is planned; the same backlog intent is re-created for exp073 as exp073_exp039_cv_reassessment."
+}

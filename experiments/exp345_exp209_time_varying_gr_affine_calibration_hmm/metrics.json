@@ -1,0 +1,194 @@
+{
+  "experiment": "exp345_exp209_time_varying_gr_affine_calibration_hmm",
+  "status": "stage_0_full_failed_closed",
+  "route": "pf_beam",
+  "stage": "stage_0_full",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "kaggle": {
+    "kernel_id": "kentookumura/exp345-gr-affine-hmm-runtime-microbenchmark",
+    "kernel_version": 2,
+    "kernel_status": "COMPLETE",
+    "kernel_url": "https://www.kaggle.com/code/kentookumura/exp345-gr-affine-hmm-runtime-microbenchmark",
+    "generated_at_utc": "2026-07-22T13:38:49.879464+00:00",
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "promotion_gate": {
+    "passed": false,
+    "decision": "stage_failed_close_without_rescue",
+    "evidence_raw_sha256": "39296d1b900463c27f1fd65fbaa265e3c1a3a6b9d42afd9322eb03ac6140525a",
+    "technical_gate": {
+      "passed": true,
+      "prediction_rows": 494720,
+      "expected_prediction_rows": 494720,
+      "prediction_wells": 773,
+      "expected_prediction_wells": 773,
+      "affine_audit_wells": 773,
+      "finite_predictions": true,
+      "hmm_runs": 1546,
+      "expected_hmm_runs": 1546,
+      "hmm_run_counts": {
+        "masked_exp209_parent": 773,
+        "one_pass_causal_affine_schedule_on_exp209": 773
+      },
+      "fallback_fraction": 0.0,
+      "maximum_fallback_fraction": 0.5,
+      "posterior_normalization_max_abs_error": 3.219646771412954e-15,
+      "runtime_gate": {
+        "passed": true,
+        "actual_seconds": 4871.012860536575,
+        "actual_hours": 1.3530591279,
+        "measured_hmm_parallel_seconds": 4618.559774279594,
+        "projected_full_seconds": 4871.012860536575,
+        "maximum_seconds": 30600.0,
+        "maximum_hours": 8.5
+      }
+    },
+    "scientific_gate": {
+      "passed": false,
+      "improvement_ft": 0.16950508606002046,
+      "minimum_improvement_ft": 0.05,
+      "improvement_passed": true,
+      "folds_improved": 4,
+      "minimum_folds_improved": 4,
+      "folds_passed": true,
+      "gr_predictive_nll_identity": 4.6516703356317,
+      "gr_predictive_nll_affine": 4.646152133963695,
+      "gr_nll_improved": true,
+      "boundary_jump_p95_sigma": 0.010089394905331438,
+      "boundary_jump_max_sigma": 3.0,
+      "boundary_passed": true,
+      "hidden_like_checks": {},
+      "expected_hidden_like_checks": 2,
+      "hidden_like_passed": false,
+      "by_well_p95_delta": -0.037120922218251806,
+      "worst_well_delta": 9.354827458796363,
+      "maximum_worst_well_delta": 0.25,
+      "worst_well_passed": false,
+      "failed_reasons": [
+        "hidden_like_spatial and hidden_like_typewell_purged readouts were absent",
+        "worst well delta 9.354827458796363 ft exceeded the 0.25 ft limit"
+      ]
+    }
+  },
+  "overall": {
+    "comparison": "direct",
+    "scope": "overall",
+    "rows": 494720,
+    "wells": 773,
+    "parent_rmse": 14.50104778333667,
+    "candidate_rmse": 14.33154269727665,
+    "improvement_ft": 0.16950508606002046,
+    "delta_rmse_candidate_minus_parent": -0.16950508606002046
+  },
+  "folds": [
+    {
+      "fold": 0,
+      "rows": 99200,
+      "wells": 155,
+      "parent_rmse": 25.03665163499033,
+      "candidate_rmse": 24.968951701654557,
+      "improvement_ft": 0.06769993333577418
+    },
+    {
+      "fold": 1,
+      "rows": 99200,
+      "wells": 155,
+      "parent_rmse": 7.49665908091494,
+      "candidate_rmse": 7.496914857481999,
+      "improvement_ft": -0.00025577656705877416
+    },
+    {
+      "fold": 2,
+      "rows": 99200,
+      "wells": 155,
+      "parent_rmse": 11.246859450595334,
+      "candidate_rmse": 11.234554275297771,
+      "improvement_ft": 0.012305175297562698
+    },
+    {
+      "fold": 3,
+      "rows": 98560,
+      "wells": 154,
+      "parent_rmse": 12.530362818246678,
+      "candidate_rmse": 11.92866763131281,
+      "improvement_ft": 0.6016951869338669
+    },
+    {
+      "fold": 4,
+      "rows": 98560,
+      "wells": 154,
+      "parent_rmse": 9.149097372118451,
+      "candidate_rmse": 8.807567005044513,
+      "improvement_ft": 0.341530367073938
+    }
+  ],
+  "by_well": {
+    "improved_wells": 373,
+    "worsened_wells": 400,
+    "best_well_id": "0dc835f3",
+    "best_delta_rmse_candidate_minus_parent_ft": -17.88088390240066,
+    "worst_well_id": "c03b9305",
+    "worst_delta_rmse_candidate_minus_parent_ft": 9.354827458796363,
+    "p95_candidate_rmse_minus_p95_parent_rmse_ft": -0.037120922218251806
+  },
+  "artifacts": {
+    "promotion_gate_raw_sha256": "39296d1b900463c27f1fd65fbaa265e3c1a3a6b9d42afd9322eb03ac6140525a",
+    "paired_metrics_raw_sha256": "25ac09ed67108a18cc3427beb74b80434528f5ef2cd2547bd4004c099ca910f8",
+    "by_well_metrics_raw_sha256": "ad230342bcb2c950b9c52ec1ed67223ace07fea5047bccb825287ec02853d89a",
+    "summary_raw_sha256": "94bf4f613c31170576506cf51d387ff5f902a784755a8d3cd8c8641defc57fc0",
+    "kaggle_metrics_raw_sha256": "769d7ca8c58b31ffd81be58ff493bac802d17823f21cea4fde9f0ceff1b4f746",
+    "input_manifest_raw_sha256": "fc81201b445b86561c851d4e4c8fc8612d852652f444fb2733d76d507ff31de9",
+    "scientific_contract_declared_sha256": "0814b2b8788204fc3561bbe37c7dc64b46f79bad353865f300272a7d6cc73b47",
+    "scientific_contract_raw_sha256": "dbff6b1c391c4ac5a9b3fbf0669f02c75f83df74d8d7520c4202782ae84adb6a",
+    "freeze_manifest_sha256": "1f4aed295a28a744de92a076ff1c21babf8841f947966a7c98f35d0f854c3509",
+    "identity_content_sha256": "7c1e76c38b542db07890adf3e7cea52f9a8db23d1ee4bb8e63e588741003bb84",
+    "prediction_raw_sha256": "8e038204dc5768dc68c77931f72bddf883f1afe67ed3461119892e80800467d0",
+    "prediction_decompressed_sha256": "f2ff65b78a66c88e9993f2c362fbd9db445061670980cfffccf449ef81d4bfbc",
+    "affine_schedule_raw_sha256": "0470f6ee70d91eb9a7501f5b58c6c4e4de89e1eab0b9b1b6a94eb5342c8c10b9",
+    "affine_schedule_decompressed_sha256": "51827246e6b7154ff39d3d6a8c07d1bd0dd43715090b9f11036b67960d9bf0f0",
+    "affine_audit_raw_sha256": "2ad3f55cb4747cb15f4460fc5c0dd279c02bad7d5fa03916ba450fb4acfbd65d",
+    "mask_manifest_raw_sha256": "c1c33f57e3a0ea521e81dd1c9829a7e1da95e556bcabefd43fa79bfab04a4461",
+    "process_noise_raw_sha256": "70d250d4b2d5bc34543da3feb52e4a6118848fd40d189306f7b73d17a3089321",
+    "runtime_raw_sha256": "0a9bd03492422d8cffbd84323f58736c83d611280ff1ac7131f71aa6886ca4a4",
+    "model_sha256": null,
+    "submission_sha256": null
+  },
+  "microbenchmark_reference": {
+    "kernel_version": 1,
+    "runtime_gate_passed": true,
+    "wells": 32,
+    "hmm_runs": 64,
+    "actual_seconds": 364.48950481414795,
+    "projected_full_seconds": 4632.11964937672,
+    "scientific_preview_improvement_ft": -0.22016966947052063,
+    "scientific_preview_folds_improved": 1,
+    "promotion_gate_raw_sha256": "744e545edeca0864ae1b595bc30062457bf742083bcab908484e1fb53b32aca1"
+  },
+  "execution": {
+    "scientific_variants": 1,
+    "parent_control_reruns": 773,
+    "candidate_hmm_well_runs": 773,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "run_flags_enabled_after_completion": 0,
+    "kaggle_push_approved_after_completion": false,
+    "stage_1_eligible": false,
+    "inference_approved": false,
+    "submission_approved": false
+  },
+  "static_validation": {
+    "jupytext_roundtrip": "passed",
+    "py_compile": "passed",
+    "ruff": "passed",
+    "contract_tests": "7 passed",
+    "combined_related_tests": "18 passed",
+    "strict_experiment_validation": "passed",
+    "identity_schedule_exp209_parity_atol": 1e-10
+  },
+  "notes": "Version 2 completed the preregistered Stage 0 audit. The technical gate passed, but the scientific AND gate failed. The branch is closed without Stage 1, post-hoc rescue, inference, or submission."
+}

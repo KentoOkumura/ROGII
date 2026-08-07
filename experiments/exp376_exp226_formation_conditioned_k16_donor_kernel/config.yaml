@@ -1,0 +1,420 @@
+experiment:
+  name: exp376_exp226_formation_conditioned_k16_donor_kernel
+  description: >-
+    Keep exp226 true-TVT-derived K16 donor slopes and the downstream deterministic
+    geometry path fixed, and softly reweight the same XY-nearest 50 donor segments
+    by fold-safe multiformation relative coordinates.
+  route: pf_beam
+  status: kaggle_cpu_v2_completed_technical_pass_direct_fail_novelty_fail
+  created_at: "2026-07-24"
+  updated_at: "2026-07-24"
+
+lineage:
+  parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  formation_reference_parent: exp287_fold_safe_formation_74_addonly_on_exp264
+  candidate_bank_parent: exp293_physics_only_candidate_bank_headroom_contract
+  negative_references:
+    - exp009_formation_surface_guide
+    - exp150_formation_physical_imputer_revisit
+    - exp329_donor_support_risk_bounded_weight_shrink
+    - exp362_segment_local_donor_slope_exact_hmm
+  diff_summary: >-
+    The only scientific change is a fixed formation soft factor on exp226's
+    existing XY donor weights. K16 segmentation, true-TVT raw and smoothed donor
+    slopes, XY donor selection, adaptive kappa, ANCC local theta, GR correction,
+    U-projection, and the saved parent OOF control remain fixed.
+
+validation:
+  strategy: exp226_outer5_groupfold_with_fold_local_formation_reference
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_k16_segments: 12368
+  expected_folds: [0, 1, 2, 3, 4]
+  control_oof_rmse_ft: 9.427109596582213
+  scopes:
+    - near_0_250
+    - mid_250_1000
+    - 1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  parent_control:
+    experiment: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    regenerate: false
+    cv_rmse: 9.427109596582213
+    oof_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  leakage_policy:
+    - Outer-valid wells are absent from all formation references, donor signatures, donor fields, and weight construction.
+    - Outer-train donor signatures use references from other outer-train wells only.
+    - True TVT is used only for outer-train K16 donor slopes and late scoring.
+    - Current test may use all train-well true TVT and formation columns, but no target-well formation column is read.
+    - Formation settings and thresholds are fixed before OOF error is opened.
+  gates:
+    stage0_target_free:
+      formation_factor_minimum: 0.5
+      formation_factor_maximum: 1.0
+      finite_coverage_minimum: 1.0
+      nonfinite_fallback_fraction_maximum: 0.01
+      segment_p05_new_to_parent_ess_ratio_minimum: 0.75
+      validation_reference_count_maximum: 0
+      validation_truth_read_count_maximum: 0
+    stage1_direct:
+      pooled_rmse_gain_minimum_ft: 0.05
+      nonworse_folds_minimum: 4
+      maximum_scope_delta_rmse_ft: 0.02
+      maximum_by_well_p95_delta_rmse_ft: 0.0
+      maximum_worst_well_delta_rmse_ft: 0.25
+    stage2_fixed12_addone:
+      h512_oracle_rmse_gain_minimum_ft: 0.05
+      whole_well_oracle_rmse_gain_minimum_ft: 0.05
+      h512_strict_unique_best_block_fraction_minimum: 0.05
+      h512_positive_gain_folds_minimum: 5
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  raw_train_dir_patterns:
+    - data/raw/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+  raw_horizontal_glob: "*__horizontal_well.csv"
+  raw_columns:
+    truth: TVT
+    visible_input: TVT_input
+  formation_columns:
+    - ANCC
+    - ASTNU
+    - ASTNL
+    - EGFDU
+    - EGFDL
+    - BUDA
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    patterns:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    pre_freeze_columns: [well_id, row_idx, suffix_offset, tvt_pred, fold]
+    forbidden_pre_freeze_columns: [tvt_true, TVT, error, abs_error, oracle_rank]
+  exp263_manifest:
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+      - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+      - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1/artifacts/cache_manifest.json
+      - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1_sample_partitions/artifacts/cache_manifest.json
+    expected_file_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+    expected_canonical_id_sha256: de07df322a8dc3a981b556ea78c3ddcecb2e708a31e986cfe05873109d4ae9d3
+    small_parity_filename: small_parity_sample.parquet
+  exp293_bank:
+    name: exp263_stage1_deployable12
+    expected_count: 12
+    expected_candidate_content_sha256: 29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474
+    expected_block_assignment_decompressed_sha256: b0755c22aa8d791012d3f605e2f1b66063ce9bb6ba46ddd4b48dca77cce032d7
+  hidden_like_assignment:
+    patterns:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_file_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    well_column: well_id
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+candidate_bank:
+  name: exp263_stage1_deployable12
+  expected_count: 12
+  order:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__exact_hmm
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+    - likpf_mean__exact_hmm
+    - exp226_w500_50_50
+  primitives: [exp226_k16, selfgr_hmm_a070, likpf_mean, exact_hmm, pf_ancc, beam_mean]
+  pairs:
+    exp226_k16__selfgr_hmm_a070: {exp226_k16: 0.5, selfgr_hmm_a070: 0.5}
+    exp226_k16__exact_hmm: {exp226_k16: 0.5, exact_hmm: 0.5}
+    exp226_k16__likpf_mean: {exp226_k16: 0.5, likpf_mean: 0.5}
+    selfgr_hmm_a070__likpf_mean: {selfgr_hmm_a070: 0.5, likpf_mean: 0.5}
+    likpf_mean__exact_hmm: {likpf_mean: 0.5, exact_hmm: 0.5}
+  fixed_formula:
+    exp226_w500_50_50: {exp226_k16: 0.5, likpf_mean: 0.25, exact_hmm: 0.25}
+  formula_float_contract: match_exp263_stage1_float_operation_order
+  formula_parity_max_abs_ft: 0.001
+
+model:
+  name: exp226_k16_formation_conditioned_donor_kernel
+  estimator: deterministic_geometry_pf_beam_style
+  parent_fixed:
+    k_segments: 16
+    local_linear_k: 50
+    local_linear_bandwidth_ft: 500.0
+    local_linear_ridge: 1.0
+    smooth_rho: 10.0
+    expected_kappa_terms: 12
+    raw_and_smoothed_true_tvt_slopes: true
+    near_strike_ancc_local_theta: true
+    gr_correction: true
+    u_projection: true
+  params:
+    variants:
+      - name: formation_conditioned_k16
+        k_segments: 16
+    fixed_from_exp226:
+      theta0: 118.4
+      local_linear_k: 50
+      local_linear_bandwidth: 500.0
+      local_linear_ridge: 1.0
+      smooth_rho: 10.0
+      gate: 0.35
+      field_min_proj: 0.3
+      kbins: [0.0, 750.0, 1500.0, 2500.0, 4000.0, 1000000000000000000.0]
+      kappa_regimes: [0.0, 1000.0, 1500.0, 2000.0]
+      rot_max_deg: 60.0
+      ancc_theta_bandwidth: 1500.0
+      gr_grid_step: 0.5
+      gr_window: 500
+      gr_stride: 125
+      gr_tau: 2.0
+      gr_w_mse: 0.5
+      gr_w_lvl: 0.1
+      gr_sh_a: 1.1
+      gr_sh_b: 0.12
+      gr_sh_lo: 0.3
+      gr_cap: 4.0
+      gr_s0: 0.10
+      gr_extent: 30.0
+      enable_gr_correction: true
+      enable_u_projection: true
+      u_projection_deg: 4
+      u_projection_beta: 0.75
+      u_projection_iters: 4
+  formation_imputer:
+    family: FormationPlaneKNN
+    reference_statistic: well_median
+    plane_k: 10
+    self_exclusion: true
+    outer_train_only: true
+    dense_ancc_imputer: false
+    query_workers: 1
+  formation_signature:
+    dimensions: 11
+    relative_depth_dimensions: 6
+    adjacent_thickness_dimensions: 5
+    robust_center: median
+    robust_scale: 1.4826_mad
+    scale_floor_ft: 1.0
+    standardized_delta_clip: [-3.0, 3.0]
+    distance: mean_squared_standardized_delta
+  donor_weight:
+    selected_variant: fixed_formation_soft_factor
+    formula: "w_new = w_xy * (0.5 + 0.5 * exp(-0.5 * d_form_squared))"
+    nonfinite_fallback: parent_xy_weight
+    variants:
+      - fixed_formation_soft_factor
+  forbidden:
+    - formation_weight_grid
+    - formation_imputer_grid
+    - donor_count_or_bandwidth_grid
+    - direct_prediction_blend
+    - hmm_or_pf_redecode
+    - selector_training
+    - downstream_ml
+
+candidate_novelty_audit:
+  frozen_bank: exp293_stage1_deployable12
+  work_chunk_rows: 100000
+  candidate_order:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__exact_hmm
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+    - likpf_mean__exact_hmm
+    - exp226_w500_50_50
+  added_candidates_evaluated_separately: [formation_conditioned_k16]
+  added_candidate_dtype: float32_matching_exp293_bank
+  objective: minimum_sum_squared_tvt_error
+  block_horizons_rows: [128, 256, 512]
+  primary_horizon_rows: 512
+  tie_atol_squared_ft: 0.000000001
+  persist_oracle_prediction: false
+
+audit:
+  work_chunk_rows: 100000
+
+success_criteria:
+  technical_all_required:
+    required_control_parity_max_abs_ft: 0.001
+  direct_pass_for_at_least_one_variant:
+    pooled_rmse_gain_minimum_ft: 0.05
+    nonworse_folds_minimum: 4
+    maximum_scope_delta_rmse_ft: 0.02
+    maximum_by_well_p95_delta_ft: 0.0
+    maximum_worst_well_delta_ft: 0.25
+  candidate_novelty_pass_for_at_least_one_variant:
+    minimum_h512_oracle_rmse_improvement_ft: 0.05
+    minimum_whole_well_oracle_rmse_improvement_ft: 0.05
+    minimum_h512_strict_unique_best_fraction: 0.05
+    minimum_improved_folds: 5
+
+forbidden_actions:
+  - formation_weight_or_imputer_grid
+  - donor_count_or_bandwidth_grid
+  - parent_control_regeneration
+  - selector_or_model_training
+  - hmm_pf_or_beam_redecode
+  - inference_or_submission
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_run_on_push: false
+    inference_run_on_push: false
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+execution:
+  stage: kaggle_cpu_v2_completed_technical_pass_direct_fail_novelty_fail
+  implementation: true
+  implementation_authorized: true
+  implementation_authorized_at: "2026-07-24"
+  implementation_authorization_source: user_message_implement_exp376
+  kaggle_execution_authorized: true
+  kaggle_execution_authorized_at: "2026-07-24"
+  kaggle_execution_authorization_source: user_message_execute_exp376
+  one_run_authorization_consumed: true
+  kaggle_execution_started: true
+  kaggle_execution_started_at: "2026-07-24T05:00:14Z"
+  kaggle_v1_execution_completed: true
+  kaggle_v1_execution_success: false
+  kaggle_execution_completed: true
+  kaggle_execution_success: true
+  kaggle_execution_status_confirmed_at: "2026-07-24T06:32:35.271078+00:00"
+  kaggle_execution_outcome: technical_pass_direct_fail_candidate_novelty_fail
+  kaggle_error_at_seconds: 1237.61779093
+  kaggle_log_last_timestamp_seconds: 1248.8460576
+  kaggle_kernel_id: kentookumura/exp376-formation-k16-donor-train
+  kaggle_kernel_id_no: 128436621
+  kaggle_kernel_version: 2
+  kaggle_kernel_url: https://www.kaggle.com/code/kentookumura/exp376-formation-k16-donor-train
+  truth_loaded: true
+  stage0_evaluated: true
+  stage1_direct_evaluated: true
+  stage2_novelty_evaluated: true
+  retry_fix_implemented: true
+  retry_fix_scope: canonicalize_container_valued_manifest_cells_before_logical_hash
+  kaggle_v2_execution_authorized: true
+  kaggle_v2_execution_authorized_at: "2026-07-24"
+  kaggle_v2_execution_authorization_source: user_message_execute_fixed_exp376
+  kaggle_v2_run_authorization_consumed: true
+  kaggle_v2_execution_started: true
+  kaggle_v2_execution_started_at: "2026-07-24T06:06:24Z"
+  kaggle_v2_execution_completed: true
+  kaggle_v2_execution_completed_at: "2026-07-24T06:32:35.271078+00:00"
+  kaggle_v2_execution_success: true
+  kaggle_v2_audit_completed_at_seconds: 1574.961352157
+  kaggle_v2_log_last_timestamp_seconds: 1585.333364737
+  technical_passed: true
+  stage0_target_free_passed: true
+  direct_passed: false
+  candidate_novelty_passed: false
+  scientific_support: false
+  decision: close_formation_conditioned_donor_branch_without_rescue_grid
+  kaggle_target_version: 2
+  implementation_enabled: true
+  notebook_scaffold_is_executable_implementation: true
+  kaggle_package_enabled: false
+  kaggle_push_enabled: false
+  kaggle_run_enabled: false
+  inference_enabled: false
+  submission_enabled: false
+  compact_selfcontained_candidate_implemented: true
+  canonical_train_notebook_adopted: true
+  user_approval_required_for_implementation: false
+  active_scientific_variants: 1
+  outer_evaluation_folds: 5
+  total_variant_fold_runs: 5
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  parent_or_control_regeneration: false
+  gpu: false
+  inference: false
+  submission: false
+  planned:
+    scientific_variants: 1
+    model_configs: 0
+    reporting_folds: 5
+    trained_folds: 0
+    boosters: 0
+    parent_control_retraining: 0
+
+artifacts:
+  output_prefix: exp376_exp226_formation_conditioned_k16_donor_kernel
+  planned:
+    - fold_and_reference_manifest.csv
+    - formation_signature_schema.json
+    - formation_signature_support_ledger.csv.gz
+    - stage0_technical_guard.json
+    - stage1_direct_metrics.json
+    - stage2_fixed12_addone_metrics.json
+    - oof_predictions.csv.gz
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_well_id_fold_assignment_no_rng
+  stochastic_components: []
+  parallel_rng_policy: no_rng_and_single_worker_nearest_neighbor_query
+  feature_sha_policy: logical_content_sha_and_decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Stable sorting is required before nearest-neighbor queries, aggregation, solving, and artifact serialization.
+    - No model manifest is expected because this experiment trains no model.
+    - The first run is not a deterministic anchor; a rerun must match logical formation, signature, and prediction SHAs.
+
+inference:
+  status: disabled_not_implemented
+  current_test_generation_enabled: false
+  notes:
+    - A Stage 1 or Stage 2 pass does not authorize current-test generation, selector integration, inference, or submission.
+
+notes:
+  - Design frozen and compact self-contained implementation completed on 2026-07-24.
+  - Canonical train adoption and one Kaggle CPU run were authorized on 2026-07-24.
+  - Inference and submission remain unapproved.

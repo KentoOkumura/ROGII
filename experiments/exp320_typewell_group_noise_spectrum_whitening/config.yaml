@@ -1,0 +1,58 @@
+experiment:
+  name: exp320_typewell_group_noise_spectrum_whitening
+  description: Type Well群共通のGR residual自己相関をouter-trainだけで推定し候補尤度をwhitenする0-booster監査
+  route: pf_beam
+  status: design_frozen_blocked_on_exp311_exp313
+  created_at: "2026-07-21"
+
+lineage:
+  parent: exp311_typewell_group_prefix_suffix_gr_calibration_readout
+  dependencies: [exp313_typewell_group_unseen_transfer_guard]
+  references: [exp167_fft_denoised_gr_matching_audit, exp189_denoised_gr_pfbeam_generation_audit, exp304_gr_denoiser_emission_separability_readout]
+  diff_summary: GR値を平滑化せず、outer-train同一群のcalibration residualから固定AR(1)係数を推定し、候補alignmentのinnovation likelihoodだけを評価する。
+
+implementation: {enabled: false, scope: design_only, inference_enabled: false, submission_enabled: false}
+
+validation:
+  strategy: sha256_well_grouped_5fold_plus_leave_one_typewell_group_out
+  n_folds: 5
+  fit_scope: outer_train_wells_only
+  truth_join_policy: freeze_ar_prior_and_candidate_scores_before_outer_valid_truth_join
+
+whitening:
+  residual_source: exp311_identity_shrunk_calibration_residual
+  primary_model: ar1_yule_walker
+  lag: 1
+  contiguous_finite_runs_only: true
+  min_pairs: 64
+  shrinkage_support_k: 200
+  rho_clip: [-0.8, 0.8]
+  fallback: rho_zero_raw_likelihood
+  diagnostic_ablations: [global_ar1, unpooled_well_ar1]
+  negative_control: group_label_shuffle
+  forbidden: [gr_smoothing, evaluation_truth_fit, ar_order_grid, decoder_change]
+
+execution_contract: {scientific_variants: 1, diagnostic_ablations: 2, negative_controls: 1, model_configs: 0, folds: 5, boosters: 0, decoder_runs: 0}
+
+model: {name: none, params: {}}
+
+promotion_gates:
+  truth_nearest_mrr_gain_min: 0.02
+  top3_gain_min: 0.03
+  folds_improved_min: 4
+  real_minus_shuffled_gain_min: 0.02
+  hidden_like_nonregression: true
+  worst_well_delta_max_ft: 0.25
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_well_fold_variant
+  stochastic_components: []
+  parallel_rng_policy: deterministic run segmentation and reductions
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: false, submission_sha: false}
+
+notes:
+  - This tests correlated-noise likelihood, not denoised GR values.
+  - AR order, clip, shrinkage, and fallback are frozen; any rescue grid requires another design.

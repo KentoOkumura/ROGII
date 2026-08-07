@@ -1,0 +1,167 @@
+experiment:
+  name: "exp055_single_model_pseudotail_training"
+  description: Add exp051-style pseudo-tail training row policy to the exp039 Ravaghi/public sel15 single-model feature surface.
+  route: ml_model
+  status: completed_no_supported_candidate
+  created_at: "2026-06-10"
+  updated_at: "2026-06-10"
+
+lineage:
+  parent: exp039_ravaghi_single_lgbm_inference_submit
+  implementation_parent: exp048_ravaghi_single_model_feature_parity_revisit
+  supporting_artifact: exp029_public_sel15_pf_oof_feature_generation
+  diff_summary: Keep the exp039 single LightGBM feature surface, residual target, estimator, residual clipping, and fixed bucket-shrink postprocess. Compare the same feature surface under the original exp029 cutoff-0.65 training rows versus an exp051-style pseudo-tail training-row policy with cutoff filtering, per pseudo-tail row caps, and distance-balanced sampling.
+
+validation:
+  leakage_policy:
+    - Input rows come from exp029 pseudo-test artifacts where each train well was masked after the cutoff before public sel15 PF/Beam features were generated.
+    - Splits are well-level only; the same well is never in train and validation for a candidate model.
+    - target_tvt is used only as the supervised label and scoring label.
+    - Error diagnostic columns pf_error, last_anchor_error, and beam_error are excluded from features.
+    - exp026_oof and exp026 bridge columns are excluded from model features to keep this a single-model experiment rather than a stack.
+    - Train-only formation columns are not read.
+    - The pseudo-tail training policy only selects rows from training-fold wells; validation-fold wells keep their original exp029 hidden-tail rows for scoring.
+    - If a multi-cutoff exp029 feature artifact is supplied, cutoff filtering uses only the configured cutoff fractions and never validation targets.
+
+data:
+  feature_path: experiments/exp029_public_sel15_pf_oof_feature_generation/features/public_sel15_pf_oof_features.csv.gz
+  source_well_summary_path: experiments/exp029_public_sel15_pf_oof_feature_generation/artifacts/public_sel15_pf_oof_well_summary.csv
+
+model:
+  name: single_model_pseudotail_training
+  target: target_tvt_minus_last_anchor_tvt
+  base_prediction: last_anchor_tvt
+  estimator: LGBMRegressor
+  params:
+    n_estimators: 800
+    learning_rate: 0.03
+    num_leaves: 31
+    min_child_samples: 80
+    subsample: 0.9
+    colsample_bytree: 0.9
+    reg_lambda: 0.1
+    n_jobs: 2
+  prediction:
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  training:
+    max_train_rows_per_split: 300000
+    max_train_rows_per_bucket: 60000
+    seed: 42
+  feature_sets:
+    exp039_single_model_surface:
+      - pseudo_cutoff_fraction
+      - cutoff_row
+      - row_idx
+      - prefix_length
+      - eval_step
+      - eval_fraction
+      - MD
+      - X
+      - Y
+      - Z
+      - gr_isna
+      - gr_prefix_availability
+      - gr_eval_availability
+      - last_anchor_tvt
+      - pf_pred
+      - pf_selected_scale_pred
+      - pf_scale_3
+      - pf_scale_5
+      - pf_scale_8
+      - pf_scale_12
+      - pf_seed_mean
+      - pf_seed_std
+      - pf_pred_minus_last_anchor
+  variants:
+    - name: exp039_same_surface_control
+      feature_families: [exp039_single_model_surface]
+      training_policy:
+        name: exp029_cutoff065_distance_balanced_control
+        cutoff_quantiles: [0.65]
+        strict_cutoff_coverage: false
+        distance_balanced: true
+        balanced_rows_per_bucket: 60000
+        max_train_rows_per_split: 300000
+        seed: 42
+    - name: single_model_pseudotail_training
+      feature_families: [exp039_single_model_surface]
+      training_policy:
+        name: exp051_cutoffs_distance_balanced
+        cutoff_quantiles: [0.45, 0.65, 0.82]
+        strict_cutoff_coverage: false
+        max_rows_per_pseudo_tail: 260
+        distance_balanced: true
+        balanced_rows_per_bucket: 60000
+        max_train_rows_per_split: 300000
+        seed: 42
+
+postprocess:
+  selected_method: audit_selected_by_holdout
+  candidate_methods:
+    - raw
+    - distance_bucket_shrink
+  methods:
+    distance_bucket_shrink:
+      name: exp014_bucket_shrink_params
+      buckets:
+        - {name: rows_0_49, max_step: 49, alpha: 0.20}
+        - {name: rows_50_249, max_step: 249, alpha: 0.5917180252647632}
+        - {name: rows_250_999, max_step: 999, alpha: 1.15}
+        - {name: rows_1000_2499, max_step: 2499, alpha: 1.15}
+        - {name: rows_2500_plus, max_step: 1000000000, alpha: 1.0490770312511664}
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  chunk_rows: 500000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp029-sel15-pf-oof-train
+
+audit:
+  parent_exp039_public_lb: 11.740
+  parent_exp039_selected_candidate: base_plus_pf_prediction_bucket_shrink
+  parent_exp051_cv: 12.634392
+  parent_exp052_public_lb: 12.076
+  parent_exp054_public_lb: 11.856
+  reference_control: exp039_same_surface_control_bucket_shrink
+  required_controls:
+    - exp039_same_surface_control_bucket_shrink
+    - exp039_same_surface_control_raw
+    - public_pf_selector
+    - pf090_hold010
+  success_controls:
+    - exp039_same_surface_control_bucket_shrink
+  require_beat_success_controls: true
+  supported_candidate_markers:
+    - _raw
+    - _bucket_shrink
+  report_controls:
+    - last_anchor
+    - public_pf_selector
+    - pf090_hold010
+    - beam
+  well_holdout_folds: 5
+  include_exp026_regenerated_control: false
+  source_feature_generation:
+    source_experiment: exp029_public_sel15_pf_oof_feature_generation
+    current_local_cutoff_fraction: 0.65
+    desired_pseudotail_cutoff_fractions: [0.45, 0.65, 0.82]
+    expected_rows_cutoff065: 1782279
+    expected_wells: 773
+  distance_buckets:
+    - {name: rows_0_49, max_step: 49}
+    - {name: rows_50_249, max_step: 249}
+    - {name: rows_250_999, max_step: 999}
+    - {name: rows_1000_2499, max_step: 2499}
+    - {name: rows_2500_plus, max_step: 1000000000}
+
+notes:
+  - This experiment is the high-priority backlog item single_model_pseudotail_training.
+  - The feature surface intentionally matches exp039's selected single LightGBM surface instead of adding new public notebook features.
+  - The implementation supports a future multi-cutoff exp029 feature artifact. With the current local cutoff-0.65 artifact, the pseudo-tail policy falls back to available cutoff rows and records the available/missing cutoffs in the training summary.
+  - This is a train-side audit only; inference port or code submission requires stable improvement over the same-surface control on both original-fold and well-hash holdouts.

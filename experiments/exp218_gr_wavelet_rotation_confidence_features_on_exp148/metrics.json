@@ -1,0 +1,221 @@
+{
+  "experiment": "exp218_gr_wavelet_rotation_confidence_features_on_exp148",
+  "status": "ml_route_anchor_public_lb_7p843",
+  "route": "ml_model",
+  "public_lb": 7.843,
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "submitted": true,
+  "updated_at": "2026-07-08",
+  "active_variant": "gr_wavelet_rotation_confidence_addonly",
+  "planned_train": {
+    "active_variants": 1,
+    "active_modes": 1,
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "planned_boosters": 15,
+    "control_retraining": false
+  },
+  "kaggle_train": {
+    "kernel": "kentookumura/exp218-gr-wavelet-rotation-exp148-train",
+    "kernel_version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp218-gr-wavelet-rotation-exp148-train",
+    "status": "COMPLETE",
+    "pushed_at": "2026-07-07",
+    "completed_at": "2026-07-08",
+    "output_dir": "/tmp/kaggle-output/exp218_gr_wavelet_rotation_confidence_features_on_exp148/train_v1",
+    "logs_initial": "empty_while_running"
+  },
+  "kaggle_inference": {
+    "kernel": "kentookumura/exp218-gr-wavelet-rotation-exp148-inference",
+    "kernel_version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp218-gr-wavelet-rotation-exp148-inference",
+    "status": "COMPLETE",
+    "pushed_at": "2026-07-08",
+    "completed_at": "2026-07-08",
+    "output_dir": "/tmp/kaggle-output/exp218_gr_wavelet_rotation_confidence_features_on_exp148/inference_v1",
+    "submit_check": "pass",
+    "submission_path": "/tmp/kaggle-output/exp218_gr_wavelet_rotation_confidence_features_on_exp148/inference_v1/submission.csv"
+  },
+  "submission": {
+    "version": "v059",
+    "ref": 54457577,
+    "file_name": "submission.csv",
+    "status": "SubmissionStatus.COMPLETE",
+    "submitted_at_utc": "2026-07-08 09:47:59.040000",
+    "submitted_at_jst": "2026-07-08 18:47:59.040000",
+    "public_lb": 7.843,
+    "private_lb": null,
+    "submission_path": "/tmp/kaggle-output/exp218_gr_wavelet_rotation_confidence_features_on_exp148/inference_v1/submission.csv",
+    "submission_sha256": "77a2c2804749dc811ba61f43d9d8827c69282e83e116233559da80b6820c0824",
+    "delta_vs_exp148_gpu_public_lb": -0.117,
+    "delta_vs_exp148_cpu_public_lb": -0.078,
+    "delta_vs_exp193_public_lb": -0.103,
+    "delta_vs_exp198_public_lb": -0.087,
+    "delta_vs_exp160_public_lb": -0.218,
+    "delta_vs_exp082_ensemble_public_lb": 0.242,
+    "adopted_as_ml_route_submitted_anchor": true,
+    "adopted_as_overall_anchor": false
+  },
+  "cv": {
+    "status": "train_completed",
+    "variant": "gr_wavelet_rotation_confidence_addonly",
+    "mode": "gpu_repro_guard_dp_threads8",
+    "rows": 3783989,
+    "wells": 773,
+    "features": 380,
+    "grwr_generated_features": 86,
+    "matched_candidate_tvt_specs": 5,
+    "available_candidate_tvt_specs": 8,
+    "feature_groups": "projection_correction,u_disagreement,learned_likelihood_confidence,gr_wavelet_rotation_confidence",
+    "model_count": 15,
+    "elapsed_seconds": 14335.658,
+    "feature_join_coverage": {
+      "base_rows_before_feature_join": 3783989,
+      "base_wells_before_feature_join": 773,
+      "learned_feature_rows": 3783989,
+      "learned_feature_wells": 773,
+      "joined_rows": 3783989,
+      "joined_wells": 773,
+      "dropped_base_rows": 0,
+      "dropped_base_wells": 0,
+      "full_train_coverage_pass": true
+    },
+    "best_model": "lgb_mean",
+    "best_pooled_rmse_tvt": 8.475793751656624,
+    "best_pooled_rmse_target": 8.47579376657332,
+    "delta_vs_exp148_lgb_mean": -0.02548743023919542,
+    "delta_vs_exp160_lgb_mean": 0.012074977873616888,
+    "pooled_metrics": {
+      "lgb0": {
+        "rmse_tvt": 8.55716571185676,
+        "rmse_target": 8.557165689421522,
+        "delta_vs_exp148_same_model": -0.042620147522130836,
+        "prediction_sha256": "93f9862e95a9317dee2194940e0aa895cffbcda9b4a24e6b7dcc16fc20e676de"
+      },
+      "lgb1": {
+        "rmse_tvt": 8.512227651282087,
+        "rmse_target": 8.51222757734053,
+        "delta_vs_exp148_same_model": -0.05174346994758139,
+        "prediction_sha256": "78c794df2b9a7e3996d3843be799b7a574aae94fad70c32180d85f5540b58bfb"
+      },
+      "lgb2": {
+        "rmse_tvt": 8.524447601269644,
+        "rmse_target": 8.52444773634157,
+        "delta_vs_exp148_same_model": 0.01462788247556901,
+        "prediction_sha256": "bf5163840edd883a9a19b7996b29e8c8bc1aa34edbef8e86776e9d52ce74d601"
+      },
+      "lgb_mean": {
+        "rmse_tvt": 8.475793751656624,
+        "rmse_target": 8.47579376657332,
+        "delta_vs_exp148_lgb_mean": -0.02548743023919542,
+        "delta_vs_exp160_lgb_mean": 0.012074977873616888,
+        "prediction_sha256": "6ad4f96c8ed3cb10c301fd17bf02bf2da6363ddc6e0f96649c9738a09c3b11cf"
+      }
+    },
+    "distance_bucket_compare_vs_exp148": {
+      "000_050": {"rows": 38650, "rmse_tvt": 0.957634, "exp148_rmse_tvt": 0.978726, "delta": -0.021092},
+      "050_100": {"rows": 38650, "rmse_tvt": 1.310175, "exp148_rmse_tvt": 1.316981, "delta": -0.006806},
+      "100_250": {"rows": 115950, "rmse_tvt": 2.094431, "exp148_rmse_tvt": 2.084639, "delta": 0.009791},
+      "250_500": {"rows": 193157, "rmse_tvt": 3.315459, "exp148_rmse_tvt": 3.298294, "delta": 0.017165},
+      "500_1000": {"rows": 385911, "rmse_tvt": 4.800747, "exp148_rmse_tvt": 4.792035, "delta": 0.008711},
+      "1000_plus": {"rows": 3011671, "rmse_tvt": 9.295198, "exp148_rmse_tvt": 9.325405, "delta": -0.030207}
+    },
+    "by_well_compare_vs_exp148": {
+      "improved_wells": 413,
+      "worsened_wells": 360,
+      "median_delta_rmse": -0.026294,
+      "mean_delta_rmse": -0.016525,
+      "max_improvement_well": "ac6f01d5",
+      "max_improvement_delta_rmse": -1.890656,
+      "max_worsening_well": "f88ddb26",
+      "max_worsening_delta_rmse": 4.07552,
+      "worst_well_notes": {
+        "86454a6f": {"exp148_rmse_tvt": 48.637616, "rmse_tvt": 47.617548, "delta": -1.020068},
+        "1b1eba53": {"exp148_rmse_tvt": 47.452762, "rmse_tvt": 46.899419, "delta": -0.553343},
+        "fb03ae90": {"exp148_rmse_tvt": 44.231755, "rmse_tvt": 45.214575, "delta": 0.982819},
+        "efe96181": {"exp148_rmse_tvt": 32.002358, "rmse_tvt": 33.43671, "delta": 1.434352},
+        "81bf5923": {"exp148_rmse_tvt": 31.011508, "rmse_tvt": 29.59874, "delta": -1.412768}
+      }
+    },
+    "feature_importance_notes": {
+      "top_grwr_feature": "grwr_fft_rotation_ratio_x_log1p_md_since",
+      "top_grwr_mean_importance": 3654.4,
+      "top_grwr_global_rank": 4,
+      "grwr_features_with_positive_importance": 85,
+      "grwr_features_in_importance": 86,
+      "other_high_grwr_features": [
+        "grwr_gr_missing_rate",
+        "grwr_fft_dominant_frequency_norm",
+        "grwr_fft_high_frequency_ratio",
+        "grwr_fft_dominant_energy_ratio",
+        "grwr_fft_rotation_energy_ratio"
+      ]
+    }
+  },
+  "artifacts": {
+    "metrics": "exp218_gr_wavelet_rotation_confidence_features_on_exp148_metrics.csv",
+    "by_well": "exp218_gr_wavelet_rotation_confidence_features_on_exp148_by_well.csv",
+    "bucket_metrics": "exp218_gr_wavelet_rotation_confidence_features_on_exp148_bucket_metrics.csv",
+    "grwr_feature_summary": "exp218_gr_wavelet_rotation_confidence_features_on_exp148_grwr_feature_summary.csv",
+    "feature_importance": "exp218_gr_wavelet_rotation_confidence_features_on_exp148_feature_importance.csv",
+    "feature_importance_mean": "exp218_gr_wavelet_rotation_confidence_features_on_exp148_feature_importance_mean.csv",
+    "predictions": "exp218_gr_wavelet_rotation_confidence_features_on_exp148_predictions.csv.gz",
+    "feature_schema": "exp218_gr_wavelet_rotation_confidence_features_on_exp148_feature_schema.csv",
+    "model_manifest": "exp218_gr_wavelet_rotation_confidence_features_on_exp148_lgb_models/manifest.json",
+    "summary_sha256": "d904a876d5250ec0eb61fce2ee16ff6d07e612a05dd33c582b56d2c17793b594",
+    "feature_schema_sha256": "aaf5f13f1e7c5236cd332dcebfdbf98e9c08247465833232e79ce3ff56362b49",
+    "model_manifest_sha256": "904570def0d6ad0140f3df95c8bb38f31823295fd191206290e3833b5b2cc237"
+  },
+  "inference": {
+    "status": "inference_completed",
+    "variant": "gr_wavelet_rotation_confidence_addonly",
+    "mode": "gpu_repro_guard_dp_threads8",
+    "model": "lgb_mean",
+    "model_count": 15,
+    "feature_count": 380,
+    "test_rows": 14151,
+    "submission_rows": 14151,
+    "predicted_rows": 14151,
+    "fallback_rows": 0,
+    "prediction_min": 11590.19921875,
+    "prediction_max": 12239.5390625,
+    "prediction_mean": 11905.245071916848,
+    "prediction_std": 278.60856874126875,
+    "prediction_sha256": "483845c8969e99e8d12c9dfcbe43bb8dfc727a1df8905ef045f02e35ebdcbff1",
+    "submission_sha256": "77a2c2804749dc811ba61f43d9d8827c69282e83e116233559da80b6820c0824",
+    "summary_sha256": "4c6cecf940b5793efe3b496d2e668f8d2116fea5299d7663e90d4939da3368c0",
+    "feature_schema_sha256": "e70f65f05b865cc77f426b1671a01714e597a1795c857eef4b7c17323e1344d6",
+    "rawtest_learned_likelihood_decompressed_sha256": "8d1146ac1e68da67a2c8d2d00788c1593fc99654b949e0a5ac065cf781344e13",
+    "rawtest_long_likelihood_decompressed_sha256": "92ae5e9328073ac2727fa18dc2e03025a557e9646b8b9be57fd051d1ae86c612",
+    "anchor_t0_vs_last_known_abs_max": 0.0,
+    "known_prefix_rows_min": 1442,
+    "known_prefix_rows_max": 2083,
+    "grwr_generated_features": 86,
+    "submit_check": {
+      "status": "pass",
+      "rows_match_sample": true,
+      "header_matches_sample": true,
+      "id_order_matches_sample": true,
+      "duplicate_ids": 0,
+      "missing_or_inf_values": 0
+    }
+  },
+  "reference_metrics": {
+    "exp148_lgb_mean_pooled_rmse": 8.50128118189582,
+    "exp148_gpu_public_lb": 7.96,
+    "exp148_cpu_public_lb": 7.921,
+    "exp160_lgb_mean_pooled_rmse": 8.463718773783008,
+    "exp160_public_lb": 8.061,
+    "exp193_public_lb": 7.946,
+    "exp198_public_lb": 7.93,
+    "exp082_ensemble_public_lb": 7.601
+  },
+  "decision": {
+    "train_side_positive_vs_exp148": true,
+    "submitted": true,
+    "adopted_as_ml_route_submitted_anchor": true,
+    "adopted_as_overall_anchor": false,
+    "reason": "Public LB 7.843 improves the prior ML route anchor exp148 CPU runtime 7.921 by -0.078, exp148 GPU 7.960 by -0.117, and exp198 7.930 by -0.087. This updates the ML route submitted anchor, while the ensemble route anchor exp082 7.601 remains overall best."
+  },
+  "key_idea": "Target-free GR wavelet / FFT rotation-denoise confidence features are train-side positive as add-only ML features on exp148, and the submitted inference v1 scored Public LB 7.843, updating the ML route submitted anchor while remaining below the ensemble anchor."
+}

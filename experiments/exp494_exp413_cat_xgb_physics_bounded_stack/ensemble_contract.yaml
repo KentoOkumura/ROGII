@@ -1,0 +1,119 @@
+schema_version: "1.0.0"
+experiment: exp494_exp413_cat_xgb_physics_bounded_stack
+status: train_guard_failed_reference_submission_override_ready
+
+families:
+  order: [lgb, cat, xgb, physics]
+  lgb:
+    source: exp413_saved_stage_d
+    model_count: 15
+    retrain: false
+  cat:
+    config: pixiux_cb0
+    model_count: 5
+    folds: 5
+    seed: 7
+  xgb:
+    config: cdeotte_public_v3
+    model_count: 5
+    folds: 5
+    seed: 42
+  physics:
+    candidate_id: exp226_w500_50_50
+    source: exp413_scale5_replacement_candidate_bank
+    semantic_slot_id: likpf_mean
+    semantic_value_source: likpf_scale_5_x1p0
+    expected_oof_rmse: 8.070218793924594
+    model_count: 0
+    regenerate_train_candidate: false
+
+gpu_cost:
+  active_variants: 2
+  model_configs: 2
+  folds: 5
+  new_models: 10
+  parent_control_retraining: 0
+  selector_retraining: 0
+  new_pf_hmm_beam_runs: 0
+
+stack:
+  objective: unweighted_suffix_row_squared_error
+  solver: scipy_slsqp
+  intercept: false
+  sum_weights: 1.0
+  initial: [0.70, 0.10, 0.05, 0.15]
+  bounds:
+    lgb: [0.60, 1.00]
+    cat: [0.00, 0.25]
+    xgb: [0.00, 0.20]
+    physics: [0.00, 0.20]
+  crossfit: leave_one_outer_fold_out
+  deployment: componentwise_median_then_euclidean_projection_to_same_bounds
+  strict_nested_base_refit: false
+  forbid:
+    - subset_grid
+    - weight_grid
+    - public_lb_refit
+    - full_oof_deployment_refit
+    - negative_weights
+    - intercept
+
+constant_stack_gate:
+  minimum_gain_vs_exp413_ft: 0.03
+  minimum_nonworse_folds: 4
+  maximum_near_0_250_delta_rmse_ft: 0.02
+  maximum_1000_plus_delta_rmse_ft: 0.02
+  maximum_hidden_like_delta_rmse_ft: 0.02
+  maximum_by_well_p95_delta_rmse_ft: 0.0
+  maximum_worst_well_delta_rmse_ft: 0.25
+  require_all: true
+
+conditional_disagreement_gate:
+  enabled_only_if_constant_stack_passes: true
+  candidates: 1
+  learned_models: 0
+  feature: abs_physics_minus_ml_core
+  q50_scale: 1.0
+  q90_scale: 0.5
+  between_q50_q90: linear
+  maximum_abs_change_vs_constant_stack_ft: 0.25
+  minimum_gain_vs_constant_stack_ft: 0.01
+  minimum_nonworse_folds: 4
+  retain_all_constant_stack_guards: true
+  forbidden_inputs: [well_id, coordinates, public_lb, target, truth, error]
+
+hidden_inference:
+  dynamic_contract: sample_submission_ids_rows_and_nonempty_wells
+  public_shape_asserts_forbidden: true
+  training_calls: 0
+  weight_fit_calls: 0
+  expected_loaded_models:
+    selector: 40
+    signed_selector: 20
+    lgb: 15
+    cat: 5
+    xgb: 5
+  soft_runtime_seconds: 27000
+  hard_runtime_seconds: 32400
+  global_fallback:
+    prediction: exp413_saved_lightgbm_anchor
+    rows: all_or_none
+    silent: false
+  output: submission.csv
+
+reference_submission_override:
+  authorized: true
+  source: user_message_submit_current_exp494_2026_07_31
+  scientific_guard_passed: false
+  retained_failed_checks: [by_well_p95, worst_well]
+  selected_prediction: constant_stack
+  deployment_weights:
+    lgb: 0.681702678534061
+    cat: 0.10372958993775055
+    xgb: 0.01456773152818835
+    physics: 0.2
+  forbidden_changes:
+    - conditional_confidence_gate
+    - well_level_routing
+    - trajectory_postprocess
+    - weight_candidate_parameter_bound_or_threshold_rescue

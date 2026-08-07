@@ -1,0 +1,320 @@
+experiment:
+  name: exp506_exp490_mean_reversion_correction_blend_on_exp413
+  description: >-
+    Audit whether the novel mean-reversion correction from exp357 to exp490
+    can be added to the final exp413-family anchor with one nonnegative,
+    tightly bounded, meta-fold-safe scalar weight.
+  route: ensemble
+  status: stage_a_complete_gate_failed_closed
+  created_at: "2026-08-03"
+  updated_at: "2026-08-04"
+  inference_enabled: false
+
+lineage:
+  parent: exp413_scale5_likpf_full_replacement_on_exp335
+  upstream_anchor_candidate: exp497_strict_public_core_fold_safe_ensemble_on_exp413
+  correction_source: exp490_geometry_centered_mean_reverting_offset_hmm
+  correction_parent: exp357_exp226_huber_emission_independent_audit
+  steering: ../../.steering/20260803-exp506-exp490-mean-reversion-correction-blend-on-exp413
+  negative_references:
+    - exp494_exp413_cat_xgb_physics_bounded_stack
+    - exp499_exp490_cross_fitted_well_application_selector
+    - exp501_exp490_mean_reverting_hmm_fixed13_selector_on_exp264
+    - exp502_exp501_fixed13_selector_replacement_on_exp413
+    - exp500_exp490_mean_reversion_residual_likelihood_pf
+    - exp503_exp490_strength_weakness_prefix_policy_readout
+    - exp505_exp490_tau500_fade_fixed13_on_exp413
+  diff_summary: >-
+    Keep every saved source prediction and fold fixed. Isolate the novel
+    correction d = exp490 - exp357 and add only lambda*d to the selected
+    exp413-family final anchor. Fit lambda on the other four outer folds,
+    apply it to the held fold, cap it to [0, 0.10], and prohibit intercepts,
+    gates, fades, depth buckets, component grids, and same-OOF rescue.
+
+implementation:
+  approved: true
+  approval_source: user_message_implement_after_exp497_terminal_2026_08_04
+  approval_scope: stage_a_compact_selfcontained_candidate_and_contract_tests_only
+  execution_approval_source: user_message_execute_2026_08_04
+  execution_approval_scope: canonical_train_notebook_kaggle_package_and_stage_a_private_cpu_run
+  code_created: true
+  jupytext_source_created: true
+  candidate_train_notebook_created: true
+  contract_tests_created: true
+  canonical_train_notebook_is_template_placeholder: false
+  canonical_inference_notebook_is_template_placeholder: true
+  kaggle_package_created: true
+  kaggle_run_approved: true
+  kaggle_train_kernel_id: kentookumura/exp506-exp490-mean-revert-correction-exp413-train
+  kaggle_train_title: exp506 exp490 mean revert correction exp413 train
+  kaggle_train_kernel_version: 2
+  kaggle_train_kernel_id_no: 129631767
+  kaggle_run_started: true
+  kaggle_run_completed: true
+  kaggle_v1_terminal_status: error
+  kaggle_v1_failure_class: final_metrics_display_numpy_bool_serialization
+  kaggle_v2_fix_validated: true
+  kaggle_v2_terminal_status: complete
+  kaggle_v2_elapsed_seconds: 294.943
+  kaggle_output_downloaded: true
+  inference_implemented: false
+  submission_approved: false
+
+prerequisites:
+  exp497_stage_e_terminal_required: true
+  exp497_partial_fold_anchor_allowed: false
+  anchor_resolution:
+    decision_source: exp497_own_preregistered_all_and_gate_only
+    if_exp497_passes_and_selects_non_exp413: exp497_saved_selected_oof
+    otherwise: exp413_saved_stage_d_oof
+    exp506_outcome_dependent_anchor_selection_allowed: false
+    unresolved_anchor_allowed_at_implementation: false
+    resolved_at: "2026-08-04"
+    resolved_anchor: exp413_saved_stage_d_oof
+    resolution_reason: exp497_stage_e_completed_but_preregistered_promotion_gate_failed
+
+validation:
+  strategy: selected_anchor_outer5_meta5_closed_form_additive_correction
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  outer_folds: 5
+  meta_folds: 5
+  group_column: well
+  score_rows: TVT_input_isna
+  expected_rows: 3783989
+  expected_wells: 773
+  fold_source: exp413_saved_outer_fold
+  fold_manifest_sha256: fa41084c5fcb4adffb88d44211b4cc5d2d2f46b5bd4d65828b6af941184b2a6d
+  meta_fit_rows: other_four_outer_folds_only
+  held_fold_truth_in_weight_fit_allowed: false
+  full_oof_weight_refit_allowed: false
+  leakage_policy:
+    - Resolve and freeze the anchor before loading exp506 outcomes.
+    - Load exp490 before prediction freeze through the exact six-column allowlist only.
+    - Join globally by well and row_idx, verify suffix_offset, row role, and exp413 fold parity.
+    - Never use the exp490 source fold as a feature or split source.
+    - Freeze anchor, exp490, exp357, correction, key, and fold logical SHA before reading suffix truth.
+    - Fit each scalar weight on the other four outer folds and apply it only to the held fold.
+    - Freeze primary OOF, metrics, and decision before computing the report-only convex control.
+    - Never use Public LB, public test identity, or submission values for selection.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  id_column: id
+  join_keys: [well, row_idx]
+  parity_columns: [suffix_offset]
+  hidden_like_assignment:
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    patterns:
+      - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  exp413_root_anchor:
+    source_kernel_id: kentookumura/exp413-scale5-likpf-downstream-train
+    source_kernel_version: 2
+    expected_cv: 7.884802794404715
+    public_lb_reference: 7.201
+    oof_file: stage_d_oof_predictions.parquet
+    prediction_column: scale5_x1p0_full_replacement__lgb_mean__pred_tvt
+    expected_oof_sha256: 9bd2d17778b3b27d771b12cbff72def8b87e6cdf14062e1c0ba192434cef4a9d
+    expected_fold_metrics_sha256: 82e70b6674f218f2892d6e5f70e327dfcbbdaf0fa5e431c4e07231009e9e2d8f
+    expected_scope_metrics_sha256: c89add97cd4cae628b79774615a717e4cfbffe7b65a4a68c58b2c2e2737948ed
+    expected_hidden_like_metrics_sha256: eafa3546e4ea5c0d180d380f7fe2c39b5cac970ea4c8097b68b077017da1f1b8
+    expected_by_well_sha256: e82c6908ed2caa9b3e5c1664bc66a3226b3bc6d9284f4863bd4fa941ae32d080
+    root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp413-scale5-likpf-downstream-train/artifacts
+      - experiments/exp413_scale5_likpf_full_replacement_on_exp335/kaggle/output/stage_d/artifacts
+  exp497_conditional_anchor:
+    source_experiment: exp497_strict_public_core_fold_safe_ensemble_on_exp413
+    stage_e_terminal_required: true
+    stage_e_kernel_id: kentookumura/exp497-strict-public-core-stage-e
+    stage_e_kernel_version: 1
+    terminal_status: completed_gate_failed_closed
+    stage_e_status: complete_gate_failed
+    promotion_gate_passed: false
+    selected_prediction: exp413_oof
+    candidate_cv: 7.87448814999802
+    selected_cv: 7.884802794404715
+    promotion_gate_sha256: 95c82331e89171a735f858b0f6be36f6af035b95206aff0dc31a4b73d24c332e
+    reproducibility_manifest_sha256: 65777defb047e2d13e0b20877d2ae682e5a934e1ef61429d8039eb2d46aa6c48
+    selected_oof_logical_sha256: 85fe52ac68b15a7460d1bc19c3852eadc4f92233551e3ae9edddcbd3895e23ee
+    selected_oof_file: null
+    selected_prediction_column: null
+    anchor_resolution: use_exp413_saved_stage_d_oof_not_exp497_component_file
+  exp490_correction_source:
+    source_kernel_id: kentookumura/exp490-mean-revert-full-merge
+    source_kernel_version: 1
+    expected_rows: 3783989
+    expected_wells: 773
+    file: exp490_geometry_centered_mean_reverting_offset_hmm_stage1_full_oof_predictions.csv.gz
+    expected_raw_gzip_sha256: 99030b33d493cc5f195f7d1a867f0d812a539143da9e1f59277e53779261b72c
+    expected_decompressed_sha256: e020e82e748a7836085657c4058070ff7853ed285639f2c2555cab721f9e9a07
+    prediction_column: geometry_mean_reverting_hmm
+    parent_prediction_column: exp357_parent_prediction
+    expected_prediction_rmse: 8.48015525957654
+    expected_parent_rmse: 9.737195157482754
+    public_lb_reference: 9.680
+    pre_freeze_allowlist_columns:
+      - well
+      - row_idx
+      - suffix_offset
+      - md_since
+      - geometry_mean_reverting_hmm
+      - exp357_parent_prediction
+    forbidden_before_primary_prediction_freeze:
+      - fold
+      - true_tvt_readout_only
+      - candidate_error
+      - parent_error
+      - exp226_error
+      - persistent_role
+      - control_role
+      - episode_id
+      - scope
+      - by_well_metrics
+      - scientific_gate
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp490-mean-revert-full-merge/artifacts/exp490_geometry_centered_mean_reverting_offset_hmm_stage1_full_oof_predictions.csv.gz
+      - /kaggle/input/exp490-mean-revert-full-merge/artifacts/exp490_geometry_centered_mean_reverting_offset_hmm_stage1_full_oof_predictions.csv.gz
+      - "**/exp490_geometry_centered_mean_reverting_offset_hmm_stage1_full_oof_predictions.csv.gz"
+
+ensemble:
+  contract_file: ensemble_contract.yaml
+  output_contract: output_contract.md
+  primary:
+    id: selected_anchor_plus_exp490_minus_exp357_correction
+    correction_formula: exp490_prediction_minus_exp357_parent_prediction
+    prediction_formula: anchor_plus_lambda_times_correction
+    intercept: false
+    lambda_fit: closed_form_suffix_row_unweighted_sse
+    lambda_bounds: [0.0, 0.10]
+    deployment_lambda: median_of_five_meta_fold_lambdas
+    selectable: true
+  report_only_control:
+    id: selected_anchor_exp490_small_convex_blend
+    prediction_formula: anchor_plus_w_times_exp490_minus_anchor
+    weight_fit: same_meta5_closed_form
+    weight_bounds: [0.0, 0.10]
+    selectable: false
+    may_rescue_primary: false
+  prohibited:
+    - tau_or_alpha_fade
+    - depth_or_scope_weight
+    - row_or_well_gate
+    - hard_or_conditional_router
+    - intercept
+    - negative_weight
+    - three_way_stack
+    - component_grid
+    - same_oof_global_refit
+    - public_lb_tuning
+
+promotion_gate:
+  all_and: true
+  technical_all_pass: true
+  pooled_gain_min_ft: 0.03
+  nonworse_folds_required: 5
+  fixed_scope_max_delta_ft: 0.0
+  fixed_scopes:
+    - md_0_250
+    - md_250_1000
+    - md_1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  by_well_p95_max_delta_ft: 0.25
+  by_well_worst_max_delta_ft: 0.25
+  lambda_positive_meta_folds_required: 5
+  lambda_strictly_below_upper_bound_meta_folds_required: 5
+  lambda_range_max: 0.05
+  fail_decision: FAIL_CLOSE_WITHOUT_WEIGHT_SCOPE_COMPONENT_OR_GATE_RESCUE
+
+model:
+  name: bounded_closed_form_mean_reversion_correction_meta_blend
+  params:
+    learned_model: false
+    intercept: false
+    weight_bounds: [0.0, 0.10]
+
+execution_contract:
+  scientific_primary_variants: 1
+  report_only_controls: 1
+  trained_models: 0
+  total_boosters: 0
+  hmm_runs: 0
+  pf_runs: 0
+  beam_runs: 0
+  parent_or_control_retraining: 0
+  gpu_runs: 0
+  kaggle_stage_a_runtime: private_cpu_internet_off_if_separately_approved
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 0
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    copy_repository_src: false
+    train_kernel_sources:
+      - kentookumura/exp413-scale5-likpf-downstream-train
+      - kentookumura/exp490-mean-revert-full-merge
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+stage_a_result:
+  terminal_status: stage_a_complete_gate_failed_closed
+  primary_gate_passed: false
+  selected_prediction: exp413_saved_stage_d_oof
+  anchor_cv: 7.884802794404715
+  primary_cv: 7.902068462119896
+  gain_anchor_minus_primary: -0.01726566771518101
+  nonworse_folds: 3
+  fixed_scope_nonworse: 0
+  by_well_p95_delta_ft: 0.054729023000025336
+  by_well_worst_delta_ft: 1.8160495125373188
+  lambda_values:
+    - 0.0
+    - 0.041578388382360124
+    - 0.0
+    - 0.004513713824165949
+    - 0.0
+  deployment_lambda: 0.0
+  report_only_control_cv: 7.7345312772318815
+  report_only_control_selectable: false
+  primary_prediction_sha256: 083f379c787d515a0ca7a606d3655cd22b767630361c82e1259add2bbdda725d
+  primary_oof_file_sha256: d459963d9df00aa4f08e500d15f8824922042763459aa815d2e9f5b11c5e1098
+  primary_gate_sha256: 047c13ac93c59ff7e24fc8869279f8261288899be0bff351a6b7bc9ccaa1f4f6
+  reproducibility_manifest_sha256: 11dde33ab7f0923e7c50900c3ad65373610ad670c0ef85cf45ed0b1dc2955050
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_fixed_fold_stable_key_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_float64_fixed_order_reduction
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    fold_manifest_sha: true
+    anchor_resolution_manifest_sha: true
+    correction_prediction_sha: true
+    weight_sha: true
+    prediction_sha: true
+    metrics_and_gate_sha: true
+    submission_sha: true
+  notes:
+    - Stage A must rerun identically before this experiment is called a deterministic OOF anchor.
+    - Hidden inference, if later approved, must record dynamic test inventory and prediction content SHA.
+
+notes:
+  - Stage A compact self-contained candidate and contract tests are implemented as of 2026-08-04.
+  - The user approved canonical train Notebook adoption, Kaggle package creation, and the Stage A private CPU run on 2026-08-04.
+  - Inference and submission remain unapproved and disabled.
+  - Stage A version 2 completed and failed the frozen primary all-AND gate; no rescue, inference, or submission is allowed.
+  - The direct convex blend is descriptive and cannot replace or rescue the primary correction hypothesis.
+  - Public LB references are context only and may not affect anchor or weight selection.

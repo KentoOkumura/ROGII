@@ -1,0 +1,94 @@
+{
+  "experiment": "exp439_continuous_kinematic_joint_transition_exact_hmm",
+  "route": "pf_beam",
+  "stage": 0,
+  "status": "completed_stage0_technical_failed_closed_moment_projection_infeasible",
+  "decision": "close_without_support_moment_noise_grid_rate_emission_prior_or_gate_rescue",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "created_at": "2026-07-29",
+  "updated_at": "2026-07-29",
+  "implementation": {
+    "scientific_variants": 1,
+    "stage0_candidate_hmm_well_runs_planned": 32,
+    "stage0_candidate_hmm_well_runs_completed": 0,
+    "stage0_wells_attempted": 1,
+    "parent_control_hmm_reruns": 0,
+    "fitted_ml_models": 0,
+    "lightgbm_configs": 0,
+    "trained_ml_folds": 0,
+    "boosters": 0,
+    "pf_runs": 0,
+    "beam_runs": 0,
+    "gpu_runs": 0,
+    "compact_selfcontained_train": true,
+    "compact_selfcontained_inference_guard": true,
+    "canonical_notebooks_replaced": true,
+    "kaggle_package_created": true,
+    "kaggle_run_completed": true
+  },
+  "validation": {
+    "contract_tests": 12,
+    "contract_tests_passed": 12,
+    "py_compile": "passed",
+    "ruff": "passed",
+    "jupytext_train_test": "passed",
+    "jupytext_inference_test": "passed",
+    "strict_experiment_validation": "passed"
+  },
+  "kaggle": {
+    "kernel": "kentookumura/exp439-continuous-kinematic-joint-hmm-train",
+    "kernel_id_no": 129058811,
+    "terminal_version": 1,
+    "terminal_status": "KernelWorkerStatus.ERROR",
+    "failure_time_seconds_approx": 33.181,
+    "kernel_metadata_readback_sha256": "5926e78e303a9526ede8a1534efc6ebb25031dbcba98a48fdb4f40f1c7e8da58",
+    "is_private": true,
+    "accelerator": "cpu",
+    "internet_enabled": false
+  },
+  "technical_gate": {
+    "passed": false,
+    "failed_contract": "nonnegative_lattice_moment_feasibility",
+    "failed_well": "060ab2b8",
+    "failed_row": 0,
+    "source_rate": 0.0,
+    "destination_rate": 0.0,
+    "mean_shift_ft": -0.11000000000021828,
+    "position_grid_step_ft": 0.35,
+    "effective_position_sigma_ft": 0.1225,
+    "target_variance_ft2": 0.015006249999999999,
+    "bracketing_lattice_points_ft": [
+      -0.35,
+      0.0
+    ],
+    "minimum_nonnegative_lattice_variance_ft2": 0.026400000000028373,
+    "variance_shortfall_ft2": 0.011393750000028374,
+    "support_cells_attempted": [
+      5,
+      7,
+      9
+    ],
+    "truth_role_fold_episode_reads_before_freeze": 0
+  },
+  "scientific_gate": {
+    "evaluated": false,
+    "reason": "technical moment-feasibility contract failed before the first HMM well-run"
+  },
+  "reproducibility": {
+    "deterministic_anchor": false,
+    "seed_policy": "no_rng_fixed_well_row_source_rate_destination_rate_position_offset_order",
+    "first_run_is_anchor": false,
+    "joint_edge_table_sha256": null,
+    "prediction_sha256": null,
+    "diagnostic_sha256": null,
+    "reason_artifact_sha_unavailable": "failure occurred before any well prediction or joint-edge table artifact was frozen"
+  },
+  "stage1_eligible": false,
+  "inference_in_scope": false,
+  "submission_in_scope": false,
+  "key_idea": "The exact nonnegative lattice moment contract is infeasible at the first real edge: target variance 0.01500625 ft2 is below the 0.0264 ft2 minimum imposed by the 0.35 ft lattice around mean shift -0.11 ft.",
+  "notes": "Kaggle CPU version 1 reproduced the preregistered infeasibility and failed closed before prediction. This is a scientific/representation-contract rejection, not a packaging or implementation defect. No support, moment, noise, grid, rate, emission, prior, gate, Stage 1, inference, or submission rescue is allowed in exp439."
+}

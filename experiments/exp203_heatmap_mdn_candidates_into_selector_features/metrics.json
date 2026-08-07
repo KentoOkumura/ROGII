@@ -1,0 +1,74 @@
+{
+  "experiment": "exp203_heatmap_mdn_candidates_into_selector_features",
+  "status": "completed_train_side_not_adopted_vs_exp184",
+  "route": "pf_beam",
+  "parent": "exp184_cnn_sdf_mtp_heatmap_path_features_on_exp158",
+  "cv": 10.665741318382915,
+  "public_lb": null,
+  "private_lb": null,
+  "key_idea": "Add exp202 heatmap MDN topK candidate signals as add-only features to the existing exp184 selector without changing the selectable candidate set.",
+  "kernel": {
+    "id": "kentookumura/exp203-hmdn-selector-train",
+    "version": 1,
+    "status": "KernelWorkerStatus.COMPLETE",
+    "url": "https://www.kaggle.com/code/kentookumura/exp203-hmdn-selector-train"
+  },
+  "planned": {
+    "active_selector_variants": 1,
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "boosters": 15,
+    "control_or_parent_retraining": false,
+    "inference_or_submit": false
+  },
+  "run": {
+    "rows": 3783989,
+    "wells": 773,
+    "runtime_seconds": 36287.40184378624,
+    "feature_count": 298,
+    "hmdn_generated_feature_count": 75,
+    "hmdn_source_rows": 10822,
+    "hmdn_source_wells": 773,
+    "hmdn_source_valid_rate": 1.0,
+    "hmdn_nearest_sample_distance_rows_p95": 3522.0,
+    "hmdn_source_decompressed_sha256": "3da094b0530ce1be289617e0d00ec6c667e608a36cf04d44c6a353ab809a2dba"
+  },
+  "best_viterbi": {
+    "variant": "viterbi_sw050_bias000_jw100_jf025_d0150_std999999_md0000_seg001",
+    "rmse_tvt": 10.665741318382915,
+    "mae_tvt": 6.350286734551983,
+    "within_10ft": 0.7979777425357208,
+    "oracle_label_accuracy": 0.2715565505079428,
+    "path_switch_count": 12807.0,
+    "path_switch_per_1000_rows": 3.384523580803221,
+    "max_path_switch_per_1000_rows": 22.604191193783844,
+    "default_candidate_rate": 0.43394470755596803,
+    "pf_ancc_selection_rate": 0.36807585857147046,
+    "switch_penalty": 5.0,
+    "jump_penalty_weight": 1.0,
+    "jump_free_ft": 25.0,
+    "jump_scale_ft": 25.0,
+    "max_abs_delta_vs_default": 150.0,
+    "min_segment_len": 1.0
+  },
+  "deltas": {
+    "rmse_vs_exp158_continuity": -0.12342193461708462,
+    "rmse_vs_exp184_best_viterbi": 0.10509099384961813,
+    "rmse_vs_likpf_mean": -0.929156353834788
+  },
+  "sha256": {
+    "metrics": "cd59937eb3d6ef7c2943009d5f42450b1587d796164b9592bf5f29bf4a4d8c69",
+    "predictions": "751ee27338d36cbbd6a485d413ab6b891c8884322a419be01a19a85c8b231f5f",
+    "predictions_decompressed": "65d1b1c9120f61e8200a723560608344036bd8d4e1e0d426efe5728b505d1cc5",
+    "feature_schema": "104946426942036c2a6f77bf2be2266acdd467f1121d46d353821b5bbb7d32fc",
+    "heatmap_mdn_feature_schema": "471ddda01b71d16150efd7fbf1fc84f32d4a9d855be91c5d64622093f1684543",
+    "heatmap_mdn_feature_summary": "d5be82a3694b2f2cc8852670437f9bdb3ed4580c5d069e012adb565b6ef6c7ff",
+    "model_manifest": "dee02204811ec897564cfd5c3c0dd0192632b1d153a89c3fad21c4ac76b51f26"
+  },
+  "reference_metrics": {
+    "exp184_best_viterbi_rmse": 10.560650324533297,
+    "exp158_continuity_rmse": 10.789163253,
+    "exp202_existing_union_oracle_rmse": 5.068679052719509,
+    "exp202_existing_plus_heatmap_top10_oracle_rmse": 2.745528139819464
+  }
+}

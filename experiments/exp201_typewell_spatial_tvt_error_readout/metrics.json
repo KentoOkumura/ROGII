@@ -1,0 +1,78 @@
+{
+  "experiment": "exp201_typewell_spatial_tvt_error_readout",
+  "route": "ml_model",
+  "status": "diagnostic_readout_complete",
+  "diagnostic_only": true,
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "overall": {
+    "rows": 3783989,
+    "wells": 773,
+    "typewell_groups": 54,
+    "rmse_tvt": 8.50128118189582,
+    "mae_tvt": 5.335651345709515,
+    "bias_mean": -0.007505257679131731,
+    "offset_wells": 66,
+    "offset_well_rate": 0.08538163001293661
+  },
+  "xy_neighbor": {
+    "wells": 773,
+    "neighbor_k": 8,
+    "nearest_bias_abs_diff_mean": 6.2385788348734295,
+    "nearest_bias_abs_diff_median": 4.4885858348238035,
+    "all_pair_bias_abs_diff_mean": 6.260445937459391,
+    "all_pair_bias_abs_diff_median": 4.453275852497601,
+    "nearest_bias_same_sign_rate": 0.4945019404915912,
+    "all_pair_bias_same_sign_rate": 0.500901540998331,
+    "nearest_vs_all_abs_diff_ratio": 0.996507101442228
+  },
+  "shape_similarity": {
+    "all_pair_shape_corr": {
+      "n_pairs": 298378,
+      "mean": -0.0008478141569667728,
+      "median": -0.0019356030127083436,
+      "p25": -0.32774424884898923,
+      "p75": 0.3272792557680601
+    },
+    "same_typewell_shape_corr": {
+      "n_pairs": 10697,
+      "mean": -3.835427255243761e-05,
+      "median": 0.0036514750177674515,
+      "p25": -0.331869535086414,
+      "p75": 0.333698903042911
+    },
+    "xy_neighbor_shape_corr": {
+      "n_pairs": 6184,
+      "mean": -0.002114263797138055,
+      "median": 0.008220275146338465,
+      "p25": -0.32960444660473104,
+      "p75": 0.3224617006935874
+    }
+  },
+  "sharp_tvt_steps": {
+    "sharp_step_quantile": 0.995,
+    "sharp_step_abs_true_threshold": 0.08984375,
+    "all_step_rows": 3783216,
+    "sharp_step_rows": 20764,
+    "sharp_step_row_rate": 0.0054884521528773406,
+    "sharp_step_wells": 481,
+    "sharp_step_damping_mean": 3.3371896743774414,
+    "sharp_step_abs_error_mean": 0.4130215644836426
+  },
+  "offset_wells": 66,
+  "artifacts": {
+    "well_summary": "artifacts/well_error_profile_summary.csv",
+    "typewell_metrics": "artifacts/typewell_group_metrics.csv",
+    "xy_neighbor_metrics": "artifacts/xy_neighbor_bias_similarity.csv",
+    "residual_profiles": "artifacts/well_residual_profiles_100bin.csv",
+    "offset_wells": "artifacts/offset_wells.csv",
+    "high_error_wells": "artifacts/high_error_wells_top30.csv",
+    "sharp_steps": "artifacts/tvt_sharp_step_rows.csv",
+    "sharp_step_wells": "artifacts/tvt_sharp_step_wells.csv",
+    "sharp_step_typewell": "artifacts/tvt_sharp_step_typewell_metrics.csv",
+    "typewell_bar_svg": "artifacts/typewell_group_bias_rmse_top.svg",
+    "xy_bias_svg": "artifacts/xy_bias_map.svg",
+    "offset_profile_svg": "artifacts/offset_residual_profiles.svg",
+    "sharp_step_svg": "artifacts/sharp_step_true_vs_pred.svg",
+    "readout_summary": "artifacts/readout_summary.json"
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "experiment": "exp297_prefix_calibrated_latent_registration_gr_evidence",
+  "status": "completed_fail_stop_no_stage4",
+  "decision": "FAIL_STOP_NO_STAGE4",
+  "route": "pf_beam",
+  "primary_metric": "h256_expected_candidate_sse_headroom_recovery",
+  "primary_metric_value": -0.116475829913173,
+  "cv": -0.116475829913173,
+  "all_checks_passed": false,
+  "checks": {
+    "pooled_h256_recovery": false,
+    "positive_h256_recovery_all_folds": false,
+    "real_better_than_shuffle_pooled": false,
+    "real_better_than_shuffle_all_folds": false,
+    "h512_continuity": true,
+    "md_since_1000_plus_anchor_nonregression": false,
+    "hidden_like_spatial_anchor_nonregression": false,
+    "hidden_like_typewell_purged_anchor_nonregression": false,
+    "truth_access_before_freeze_zero": true
+  },
+  "h256": {
+    "anchor_rmse": 8.23833174548,
+    "oracle_rmse": 3.55282885137,
+    "real_expected_rmse": 8.620041203711732,
+    "real_headroom_recovery": -0.116475829913173,
+    "real_fold_headroom_recovery": [
+      -0.0895893552545,
+      -0.0692218690414,
+      -0.18184754581,
+      -0.158430920411,
+      -0.0920054530736
+    ],
+    "shuffle_expected_rmse": 8.571583194742873,
+    "shuffle_headroom_recovery": -0.101396928037,
+    "shuffle_fold_headroom_recovery": [
+      -0.0730105198711,
+      -0.0607388131691,
+      -0.164502990477,
+      -0.130027501301,
+      -0.0857412147719
+    ]
+  },
+  "h512": {
+    "real_expected_rmse": 8.62159045297,
+    "real_headroom_recovery": -0.11900021515483784,
+    "recovery_drop_from_h256": 0.00252438524166484
+  },
+  "subgroups_h256": {
+    "md_since_1000_plus": {
+      "anchor_rmse": 9.04232410527,
+      "expected_rmse": 9.45966258461,
+      "headroom_recovery": -0.115668451461,
+      "anchor_nonregression": false
+    },
+    "hidden_like_spatial": {
+      "anchor_rmse": 8.74810807355,
+      "expected_rmse": 9.03482025057,
+      "headroom_recovery": -0.0782701621693,
+      "anchor_nonregression": false
+    },
+    "hidden_like_typewell_purged": {
+      "anchor_rmse": 8.69413182489,
+      "expected_rmse": 8.97578719618,
+      "headroom_recovery": -0.0774613445681,
+      "anchor_nonregression": false
+    }
+  },
+  "calibration": {
+    "wells": 773,
+    "valid_wells": 704,
+    "invalid_wells": 69,
+    "invalid_reason": "prefix_typewell_gr_std_below_minimum",
+    "slope_clipped_wells": 34,
+    "residual_scale_median": 10.0,
+    "residual_scale_p90": 12.641856723210003,
+    "prefix_rmse_median": 9.691291902035001
+  },
+  "evidence_h256": {
+    "blocks": 15174,
+    "eligible_positive_fraction": 0.29504415447475946,
+    "reliable_probability_mean": 0.11850946244173936,
+    "reliable_probability_median": 0.0
+  },
+  "audit": {
+    "rows": 3783989,
+    "wells": 773,
+    "block_control_count": 105818,
+    "truth_access_count_before_freeze": 0,
+    "truth_access_count_after_freeze": 773,
+    "forbidden_outputs_absent": true,
+    "elapsed_seconds": 1070.7998006343842
+  },
+  "artifacts": {
+    "local_output": "experiments/exp297_prefix_calibrated_latent_registration_gr_evidence/kaggle/output/train_v2",
+    "verified_file_sha_count": 12,
+    "all_verified_file_sha_match": true,
+    "candidate_content_sha256": "29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474",
+    "truth_content_sha256": "b0a1bebf24ec925728c40a690147d1820b88d0bf3f403333d9452a79ef179c8d",
+    "joint_posterior_file_sha256": "2f4f443a93491e3dd1d5b87ac239d1802dcff1ddef5ad9584aedb982e5376060",
+    "candidate_posterior_file_sha256": "93b4e9cfe0eae25742cb0fbf90a40ff5f76267372cd25ecbcdac3549a77cf54a",
+    "registration_posterior_file_sha256": "e48d6b40878edc50734a5a83e0ee405adda00a7f5da2fa3780868c9b4384d0ca",
+    "readout_metrics_file_sha256": "ff7a0ec39c1f17a1f8e28d404cd07a7d2df3384dd86e7216fde35130b7cdcf37",
+    "summary_file_sha256": "1e599b6b179940f6557dc739b64ee67e907ad12b4efc2addc0f1b9361a631d03"
+  },
+  "contract_tests_passed": 10,
+  "trained_folds": 0,
+  "total_boosters": 0,
+  "hmm_pf_well_runs": 0,
+  "kaggle_run": {
+    "kernel_id": "kentookumura/exp297-latent-registration-gr-audit-train",
+    "kernel_id_no": 127897451,
+    "version": 2,
+    "status": "COMPLETE"
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "notes": "The fixed Stage-2 observation-identifiability audit failed. Stage 3, Stage 4, inference, and submission remain closed."
+}

@@ -1,0 +1,248 @@
+{
+  "experiment": "exp196_typewell_late_range_hard_window_pct40_full_cache_replacement",
+  "route": "pf_beam",
+  "status": "completed_supported_for_downstream_replacement_test_no_submit",
+  "decision": "supported_as_sensitivity_and_downstream_replacement_test_candidate_no_direct_submit",
+  "key_idea": "pct40 hard-window full replay cache reduces pct50 early-range and pf_z regressions, but global likpf_mean is weaker than pct50; no direct submit.",
+  "mode": "typewell_late_hard_window_pct40_full_public_replay_train_feature_cache",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "updated_at": "2026-07-05",
+  "feature_cache": {
+    "variant": "pixiux_likpf_hard_window_pct40_public_replay",
+    "rows": 3783989,
+    "wells": 773,
+    "feature_count": 196,
+    "expected_feature_count": 196,
+    "hard_window": {
+      "name": "pct40",
+      "enabled": true,
+      "min_typewell_pct": 0.4,
+      "max_typewell_pct": 1.0,
+      "min_rows_after_filter": 3,
+      "grid_run": false
+    },
+    "runtime_seconds": 8616.007,
+    "feature_generation_seconds": 7497.889,
+    "raw_gzip_sha256": "7b1f51b1c4de16bbff59c9a0c1bd015fc3b6d6152c32a3a93b2f5a694a37576b",
+    "decompressed_sha256": "106cdfb266f93a0e45f25b281d3238c1fab0a24a84dac4c23187044022b5127e",
+    "decompressed_bytes": 7429469755,
+    "line_count": 3783990,
+    "data_rows": 3783989,
+    "header_columns": 199,
+    "schema_sha256": "b1946bee3db4cec5311f1ffd4a47a4e1db0f0635e153b3882871b7c34ef5e9e5",
+    "summary_sha256": "8b0843b5fc617faf16926bf2f5415b332f0993c0e4890da82f800e093b832eeb",
+    "log_sha256": "38eaed8def8028ab08e680bfa94eec6fc57d2d8e6fa74ec8c71701e21a9b4feb"
+  },
+  "kaggle_train": {
+    "status": "complete",
+    "kernel": "kentookumura/exp196-typewell-hard-window-pct40-train",
+    "version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp196-typewell-hard-window-pct40-train",
+    "id_no": 125944394,
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "cost_guard": {
+    "feature_cache_variants": 1,
+    "lightgbm_configs": 0,
+    "folds": 0,
+    "boosters": 0,
+    "control_or_parent_retrain": false
+  },
+  "direct_comparison": {
+    "rows_checked": 3783989,
+    "unique_wells": 773,
+    "chunks": 19,
+    "id_mismatches": 0,
+    "missing_typewell_range_wells": 0
+  },
+  "direct_comparison_vs_exp072": {
+    "overall_metrics": [
+      {
+        "candidate": "pf_ancc",
+        "exp072_rmse": 14.493061,
+        "exp196_rmse": 14.020904,
+        "delta_rmse": -0.472157,
+        "exp196_mae": 8.382114,
+        "delta_within10": 0.027218
+      },
+      {
+        "candidate": "pf_z",
+        "exp072_rmse": 17.788174,
+        "exp196_rmse": 18.834133,
+        "delta_rmse": 1.045959,
+        "exp196_mae": 11.255989,
+        "delta_within10": -0.008121
+      },
+      {
+        "candidate": "beam_mean",
+        "exp072_rmse": 15.774328,
+        "exp196_rmse": 15.711042,
+        "delta_rmse": -0.063285,
+        "exp196_mae": 10.883766,
+        "delta_within10": 0.000035
+      },
+      {
+        "candidate": "beam_sm5",
+        "exp072_rmse": 16.313542,
+        "exp196_rmse": 16.18519,
+        "delta_rmse": -0.128352,
+        "exp196_mae": 11.272562,
+        "delta_within10": 0.00005
+      },
+      {
+        "candidate": "likpf_mean",
+        "exp072_rmse": 11.594898,
+        "exp196_rmse": 11.576062,
+        "delta_rmse": -0.018835,
+        "exp196_mae": 7.062574,
+        "delta_within10": 0.001023
+      }
+    ],
+    "true_typewell_pct_lt_0p50": {
+      "rows": 10500,
+      "likpf_mean_delta_rmse": -2.635833,
+      "beam_mean_delta_rmse": -1.027486,
+      "pf_ancc_delta_rmse": -11.853791,
+      "pf_z_delta_rmse": 0.303997
+    },
+    "by_well_delta_summary": {
+      "likpf_mean": {
+        "improved_wells": 364,
+        "worsened_wells": 405,
+        "same_wells": 4,
+        "max_regression_rmse": 10.213776,
+        "max_regression_well": "8f201368"
+      },
+      "pf_ancc": {
+        "improved_wells": 396,
+        "worsened_wells": 373,
+        "same_wells": 4,
+        "max_regression_rmse": 49.743448,
+        "max_regression_well": "fef8af96"
+      },
+      "pf_z": {
+        "improved_wells": 347,
+        "worsened_wells": 422,
+        "same_wells": 4,
+        "max_regression_rmse": 40.858756,
+        "max_regression_well": "c1708b88"
+      }
+    }
+  },
+  "direct_comparison_vs_exp192_pct50": {
+    "overall_metrics": [
+      {
+        "candidate": "pf_ancc",
+        "exp192_rmse": 13.821178,
+        "exp196_rmse": 14.020904,
+        "delta_rmse": 0.199726,
+        "exp196_mae": 8.382114,
+        "delta_within10": -0.015511
+      },
+      {
+        "candidate": "pf_z",
+        "exp192_rmse": 19.705112,
+        "exp196_rmse": 18.834133,
+        "delta_rmse": -0.870979,
+        "exp196_mae": 11.255989,
+        "delta_within10": -0.001915
+      },
+      {
+        "candidate": "beam_mean",
+        "exp192_rmse": 15.677016,
+        "exp196_rmse": 15.711042,
+        "delta_rmse": 0.034026,
+        "exp196_mae": 10.883766,
+        "delta_within10": 0.002141
+      },
+      {
+        "candidate": "beam_sm5",
+        "exp192_rmse": 16.15293,
+        "exp196_rmse": 16.18519,
+        "delta_rmse": 0.03226,
+        "exp196_mae": 11.272562,
+        "delta_within10": 0.002191
+      },
+      {
+        "candidate": "likpf_mean",
+        "exp192_rmse": 11.544812,
+        "exp196_rmse": 11.576062,
+        "delta_rmse": 0.031251,
+        "exp196_mae": 7.062574,
+        "delta_within10": -0.000363
+      }
+    ],
+    "true_typewell_pct_lt_0p50": {
+      "rows": 10500,
+      "likpf_mean_delta_rmse": -28.390042,
+      "beam_mean_delta_rmse": -33.530093,
+      "pf_ancc_delta_rmse": -21.781272,
+      "pf_z_delta_rmse": 0.778219
+    },
+    "true_typewell_pct_0p50_0p70": {
+      "rows": 211440,
+      "likpf_mean_delta_rmse": 2.380595,
+      "beam_mean_delta_rmse": 2.50045,
+      "pf_ancc_delta_rmse": 4.023544,
+      "pf_z_delta_rmse": -0.992842
+    },
+    "by_well_delta_summary": {
+      "likpf_mean": {
+        "improved_wells": 370,
+        "worsened_wells": 396,
+        "same_wells": 7,
+        "max_regression_rmse": 19.695207,
+        "max_regression_well": "ba48188d"
+      },
+      "pf_z": {
+        "improved_wells": 409,
+        "worsened_wells": 363,
+        "same_wells": 1,
+        "max_regression_rmse": 40.575671,
+        "max_regression_well": "c1708b88"
+      },
+      "pf_ancc": {
+        "improved_wells": 355,
+        "worsened_wells": 417,
+        "same_wells": 1,
+        "max_regression_rmse": 40.935881,
+        "max_regression_well": "86454a6f"
+      }
+    }
+  },
+  "comparison_sha256": {
+    "vs_exp072_overall_metrics": "21b1b75e1664535d5aeb3cd161199119f2ff2e6913082ba31868585de1ed4d29",
+    "vs_exp072_distance_bucket_metrics": "677578b3527f94a6033ad823acafeb9f715fc26541749c743a455a61b2ada59d",
+    "vs_exp072_true_typewell_pct_metrics": "b6ada72b0224665541d93283583d4b7c354c8a2b42325f7b606061c20ceb4912",
+    "vs_exp072_by_well_delta": "f08928cb2cf9e81b14239ada268dbb9b9dcae67123ddb1b66a44900fc7efeff0",
+    "vs_exp192_pct50_overall_metrics": "b61f2f2f49e3e2eff204b845ac3531468c19751b9e33db23ab1948a65af87ef1",
+    "vs_exp192_pct50_distance_bucket_metrics": "d5ea457408437b6de9b685217134c8eec6404cd7b462bc4d6d742974a38a108a",
+    "vs_exp192_pct50_true_typewell_pct_metrics": "b1420a278bb3890088c4ce24fe814886f8c9a80502bda9b541ee9e8da21f2de5",
+    "vs_exp192_pct50_by_well_delta": "abe23b35280314069d413f221352b3063ca0ceecd14ebd27d512acfb8b42de47",
+    "summary": "d5f595b0adcaa68ab164e6b9eb865f8e56f73ecf1c62fced301761440deec106"
+  },
+  "artifacts": [
+    "artifacts/exp196_typewell_late_range_hard_window_pct40_full_cache_replacement_full_replay_cache_pixiux_likpf_hard_window_pct40_public_replay_train_features.csv.gz",
+    "artifacts/exp196_typewell_late_range_hard_window_pct40_full_cache_replacement_full_replay_cache_feature_schema.csv",
+    "artifacts/exp196_typewell_late_range_hard_window_pct40_full_cache_replacement_full_replay_cache_summary.json",
+    "artifacts/exp196_kaggle_train_v1.log",
+    "artifacts/exp196_vs_exp072_overall_metrics.csv",
+    "artifacts/exp196_vs_exp072_distance_bucket_metrics.csv",
+    "artifacts/exp196_vs_exp072_true_typewell_pct_metrics.csv",
+    "artifacts/exp196_vs_exp072_by_well_delta.csv",
+    "artifacts/exp196_vs_exp192_pct50_overall_metrics.csv",
+    "artifacts/exp196_vs_exp192_pct50_distance_bucket_metrics.csv",
+    "artifacts/exp196_vs_exp192_pct50_true_typewell_pct_metrics.csv",
+    "artifacts/exp196_vs_exp192_pct50_by_well_delta.csv",
+    "artifacts/exp196_direct_pfbeam_comparison_summary.json"
+  ],
+  "notes": [
+    "Implements KAGGLE_DIRECTION backlog typewell_late_range_hard_window_pct40_full_cache_replacement.",
+    "Existing exp072 and exp192 pct50 full replay caches are comparison targets only and are not generation inputs.",
+    "No LightGBM, inference, submission, or Public LB is produced.",
+    "pct40 recovers most of pct50's true_typewell_pct lt_0p50 collapse but gives weaker global likpf_mean and pf_ancc gains than pct50."
+  ]
+}

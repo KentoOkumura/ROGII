@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0.0",
+  "partitioning": ["candidate_id", "outer_fold"],
+  "key_columns": {
+    "id": "string; canonical exp072 id",
+    "well": "string; canonical well id",
+    "well_row_idx": "int32; id suffix and contiguous within well",
+    "outer_fold": "int8; deterministic well-group fold 0..4",
+    "md_since": "float32; target-free distance from last known row"
+  },
+  "value_columns": {
+    "candidate_id": "string",
+    "candidate_name": "string",
+    "family": "string",
+    "source_exp": "string",
+    "source_artifact": "string",
+    "rawtest_status": "string",
+    "formula": "string",
+    "last_known_tvt": "float32",
+    "candidate_tvt": "float32",
+    "candidate_minus_last": "float32",
+    "candidate_finite": "bool",
+    "candidate_available": "bool",
+    "fallback_used": "bool",
+    "coverage_valid": "bool",
+    "candidate_step": "float32",
+    "candidate_curvature": "float32",
+    "rolling_slope_32_128_512": "float32",
+    "rolling_curvature_32_128_512": "float32",
+    "rolling_straightness_32_128_512": "float32",
+    "anchor_drift": "float32",
+    "candidate_bank_median": "float32",
+    "candidate_bank_range": "float32",
+    "candidate_bank_std": "float32",
+    "candidate_vs_bank_median": "float32",
+    "candidate_vs_bank_median_abs": "float32",
+    "bank_disagreement_mean_32_128_512": "float32",
+    "candidate_is_bank_min": "bool",
+    "candidate_is_bank_max": "bool"
+  },
+  "confidence_common_slots": {
+    "confidence_source": "string",
+    "confidence_valid": "bool",
+    "sigma_tvt": "float32 or NaN",
+    "loglik_per_row": "float32 or NaN",
+    "entropy": "float32 or NaN",
+    "score_margin": "float32 or NaN",
+    "support_count": "float32 or NaN",
+    "ess_fraction": "float32 or NaN",
+    "fallback_rate": "float32 or NaN",
+    "confidence_missing_fields": "comma-separated unavailable field names"
+  },
+  "forbidden_row_columns": [
+    "target",
+    "true_tvt",
+    "absolute_error",
+    "oracle_label",
+    "selector_output",
+    "outer_valid_target"
+  ],
+  "virtual_features": {
+    "pair": [
+      "mean_50_tvt",
+      "signed_disagreement",
+      "absolute_disagreement",
+      "midpoint_minus_anchor",
+      "parent_to_anchor_direction_agreement",
+      "all_parent_confidence_valid"
+    ],
+    "multi_component": ["component_range", "component_std"]
+  }
+}
+

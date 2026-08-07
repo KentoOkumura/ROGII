@@ -1,0 +1,372 @@
+experiment:
+  name: exp302_exp226_multiscale_k_segment_candidate_audit
+  description: >-
+    Changes only the exp226 geometric segment count from the saved K=16
+    control to K=12 and K=24, then audits direct OOF quality and add-one
+    candidate novelty against the frozen exp293 deployable12 bank.
+  route: pf_beam
+  status: kaggle_cpu_v2_completed_direct_fail_candidate_novelty_pass
+  created_at: "2026-07-20"
+  inference_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.n_folds
+    - validation.score_rows
+
+lineage:
+  parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  comparisons:
+    - exp293_physics_only_candidate_bank_headroom_contract
+    - exp300_exp264_vs_exp274_well_selector_readout
+  design_source: .steering/20260720-exp302-exp226-multiscale-k-segment-candidate-audit
+  diff_summary: >-
+    Reuse the saved exp226 K=16 OOF as control and change k_segments only.
+    Generate K=12 and K=24 on the same five group-safe folds. All other
+    geometry, kNN, kappa, GR-correction, and U-projection settings remain
+    byte-for-byte equivalent to exp226. No HMM parameter is changed.
+
+validation:
+  strategy: fixed_exp226_group_safe_kfold_multiscale_k_addone_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  trained_folds: 0
+  group_column: well_id
+  fold_source: exp226_saved_oof_well_fold_identity
+  fold_roles:
+    evaluation: exp226_saved_oof_fold
+    candidate_bank_provenance: exp263_outer_fold
+    frozen_block_sha: exp263_outer_fold
+  require_evaluation_and_bank_fold_equality: false
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  control_candidate: exp226_k16
+  control_oof_rmse_ft: 9.42710967407494
+  control_policy: reuse_saved_oof_without_regeneration
+  report_scopes:
+    - pooled
+    - fold
+    - distance_bucket
+    - distance_1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+    - by_well_p50_p95_worst
+  candidate_novelty_horizons_rows: [1, 128, 256, 512]
+  primary_candidate_novelty_horizon_rows: 512
+  include_whole_well_oracle: true
+  include_final_short_block: true
+  truth_join_policy: after_candidate_prediction_and_block_manifest_sha_freeze
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  raw_train_dir_patterns:
+    - data/raw/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+  raw_horizontal_glob: "*__horizontal_well.csv"
+  raw_columns:
+    truth: TVT
+    visible_input: TVT_input
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    patterns:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    pre_freeze_columns: [well_id, row_idx, suffix_offset, tvt_pred, fold]
+    forbidden_pre_freeze_columns: [tvt_true, TVT, error, abs_error, oracle_rank]
+  exp263_manifest:
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+      - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+      - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1/artifacts/cache_manifest.json
+      - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1_sample_partitions/artifacts/cache_manifest.json
+    expected_file_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+    expected_canonical_id_sha256: de07df322a8dc3a981b556ea78c3ddcecb2e708a31e986cfe05873109d4ae9d3
+    small_parity_filename: small_parity_sample.parquet
+  exp293_bank:
+    name: exp263_stage1_deployable12
+    source_experiment: exp293_physics_only_candidate_bank_headroom_contract
+    expected_count: 12
+    block_assignment_source: exp293_saved_h128_h256_h512_assignment
+    expected_candidate_content_sha256: 29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474
+    expected_block_assignment_file_sha256: 49571a6e674f9cec2729e47ccf7c7740417c2f560eeb7b5d5dcf47ab3475667c
+    expected_block_assignment_decompressed_sha256: b0755c22aa8d791012d3f605e2f1b66063ce9bb6ba46ddd4b48dca77cce032d7
+    expected_block_assignment_logical_sha256: 63f9a26a243ce3b1dd0cbec85c9674fd69a0768246220728ee9d54defba046e5
+    expected_key_content_sha256: 42ede2f53e28dc2ccb28f847e0bc23680d1121bb29e980016dee989dbdddfef7
+    runtime_contract: reconstruct_exp263_bank_and_match_completed_exp293_sha
+  hidden_like_assignment:
+    source_experiment: exp115_hidden_like_spatial_holdout_from_ppt
+    patterns:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_file_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    well_column: well_id
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+candidate_bank:
+  name: exp263_stage1_deployable12
+  expected_count: 12
+  order:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__exact_hmm
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+    - likpf_mean__exact_hmm
+    - exp226_w500_50_50
+  primitives:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+  pairs:
+    exp226_k16__selfgr_hmm_a070: {exp226_k16: 0.5, selfgr_hmm_a070: 0.5}
+    exp226_k16__exact_hmm: {exp226_k16: 0.5, exact_hmm: 0.5}
+    exp226_k16__likpf_mean: {exp226_k16: 0.5, likpf_mean: 0.5}
+    selfgr_hmm_a070__likpf_mean: {selfgr_hmm_a070: 0.5, likpf_mean: 0.5}
+    likpf_mean__exact_hmm: {likpf_mean: 0.5, exact_hmm: 0.5}
+  fixed_formula:
+    exp226_w500_50_50: {exp226_k16: 0.5, likpf_mean: 0.25, exact_hmm: 0.25}
+  formula_float_contract: match_exp263_stage1_float_operation_order
+  formula_parity_max_abs_ft: 0.001
+
+model:
+  name: deterministic_exp226_multiscale_k_segment_variants
+  estimator: deterministic_geometry_pf_beam_style
+  params:
+    variants:
+      - name: exp226_k12
+        k_segments: 12
+      - name: exp226_k24
+        k_segments: 24
+    fixed_from_exp226:
+      theta0: 118.4
+      local_linear_k: 50
+      local_linear_bandwidth: 500.0
+      local_linear_ridge: 1.0
+      smooth_rho: 10.0
+      gate: 0.35
+      field_min_proj: 0.3
+      kbins: [0.0, 750.0, 1500.0, 2500.0, 4000.0, 1000000000000000000.0]
+      kappa_regimes: [0.0, 1000.0, 1500.0, 2000.0]
+      rot_max_deg: 60.0
+      ancc_theta_bandwidth: 1500.0
+      gr_grid_step: 0.5
+      gr_window: 500
+      gr_stride: 125
+      gr_tau: 2.0
+      gr_w_mse: 0.5
+      gr_w_lvl: 0.1
+      gr_sh_a: 1.1
+      gr_sh_b: 0.12
+      gr_sh_lo: 0.3
+      gr_cap: 4.0
+      gr_s0: 0.10
+      gr_extent: 30.0
+      enable_gr_correction: true
+      enable_u_projection: true
+      u_projection_deg: 4
+      u_projection_beta: 0.75
+      u_projection_iters: 4
+
+candidate_novelty_audit:
+  frozen_bank: exp293_stage1_deployable12
+  work_chunk_rows: 100000
+  candidate_order:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__exact_hmm
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+    - likpf_mean__exact_hmm
+    - exp226_w500_50_50
+  added_candidates_evaluated_separately: [exp226_k12, exp226_k24]
+  added_candidate_dtype: float32_matching_exp293_bank
+  objective: minimum_sum_squared_tvt_error
+  block_origin: first_prediction_suffix_row_per_well
+  block_horizons_rows: [128, 256, 512]
+  primary_horizon_rows: 512
+  tie_atol_squared_ft: 0.000000001
+  tie_policy: frozen_bank_order_then_added_candidate
+  persist_oracle_prediction: false
+
+audit:
+  work_chunk_rows: 100000
+  distance_buckets_ft:
+    "000_050": [0.0, 50.0]
+    "050_100": [50.0, 100.0]
+    "100_250": [100.0, 250.0]
+    "250_500": [250.0, 500.0]
+    "500_1000": [500.0, 1000.0]
+    "1000_plus": [1000.0, .inf]
+
+artifacts:
+  output_prefix: exp302_exp226_multiscale_k_segment_candidate_audit
+  expected_train:
+    - exp302_exp226_multiscale_k_segment_candidate_audit_contract.json
+    - exp302_exp226_multiscale_k_segment_candidate_audit_input_manifest.csv
+    - exp302_exp226_multiscale_k_segment_candidate_audit_raw_input_manifest.csv
+    - exp302_exp226_multiscale_k_segment_candidate_audit_block_assignment.csv.gz
+    - exp302_exp226_multiscale_k_segment_candidate_audit_exp226_k12_oof_predictions.csv.gz
+    - exp302_exp226_multiscale_k_segment_candidate_audit_exp226_k24_oof_predictions.csv.gz
+    - exp302_exp226_multiscale_k_segment_candidate_audit_exp226_k12_kappa_by_fold.csv
+    - exp302_exp226_multiscale_k_segment_candidate_audit_exp226_k24_kappa_by_fold.csv
+    - exp302_exp226_multiscale_k_segment_candidate_audit_freeze_manifest.json
+    - exp302_exp226_multiscale_k_segment_candidate_audit_post_freeze_truth_manifest.csv
+    - exp302_exp226_multiscale_k_segment_candidate_audit_direct_metrics.csv
+    - exp302_exp226_multiscale_k_segment_candidate_audit_direct_by_well.csv
+    - exp302_exp226_multiscale_k_segment_candidate_audit_candidate_novelty_metrics.csv
+    - exp302_exp226_multiscale_k_segment_candidate_audit_candidate_correlations.csv
+    - exp302_exp226_multiscale_k_segment_candidate_audit_candidate_novelty_by_well.csv
+    - exp302_exp226_multiscale_k_segment_candidate_audit_summary.json
+    - exp302_exp226_multiscale_k_segment_candidate_audit_sha_manifest.csv
+  expected_inference: []
+
+success_criteria:
+  technical_all_required:
+    finite_prediction_coverage: 1.0
+    duplicate_rows: 0
+    expected_rows: 3783989
+    expected_wells: 773
+    required_control_parity_max_abs_ft: 0.001
+    required_truth_access_before_freeze: 0
+    required_evaluation_truth_access_before_freeze: 0
+    required_outer_valid_truth_state_count: 0
+    outer_train_donor_fit_truth_allowed: true
+    required_bank_and_block_sha_match: true
+  direct_pass_for_at_least_one_variant:
+    maximum_pooled_rmse_ft: 9.3771096741
+    minimum_improved_folds: 4
+    maximum_distance_1000_plus_delta_ft: 0.02
+    maximum_hidden_like_spatial_delta_ft: 0.02
+    maximum_hidden_like_typewell_purged_delta_ft: 0.02
+    maximum_by_well_p95_delta_ft: 0.25
+    maximum_worst_well_delta_ft: 0.25
+  candidate_novelty_pass_for_at_least_one_variant:
+    minimum_h512_oracle_rmse_improvement_ft: 0.03
+    minimum_whole_well_oracle_rmse_improvement_ft: 0.02
+    minimum_h512_strict_unique_best_fraction: 0.02
+    minimum_improved_folds: 4
+  decision:
+    scientific_support: direct_pass_or_candidate_novelty_pass
+    direct_candidate_promotion: direct_pass_only
+    exp303_dependency: candidate_novelty_pass_only
+    both_fail: close_branch_without_rescue_grid
+
+execution:
+  implementation: true
+  implementation_authorized: true
+  implementation_authorized_at: "2026-07-20"
+  implementation_authorization_source: user_message_implement_exp302
+  kaggle_execution_authorized: true
+  kaggle_execution_authorized_at: "2026-07-20"
+  kaggle_execution_authorization_source: user_message_run_exp302
+  one_run_authorization_consumed: true
+  kaggle_execution_completed: true
+  kaggle_execution_completed_at: "2026-07-20T14:19:59.617307+00:00"
+  kaggle_execution_outcome: technical_pass_direct_fail_candidate_novelty_pass
+  kaggle_kernel_id: kentookumura/exp302-ksegment-candidate-audit-train
+  kaggle_kernel_id_no: 128010921
+  kaggle_kernel_version: 2
+  kaggle_run_config_sha256: a7838b30f8c76c05e00f4d7fc1b09f0fd8b3e00c52c382f760742229e88012ba
+  kaggle_audit_completed_at_seconds: 1281.068195241
+  kaggle_log_last_timestamp_seconds: 1291.656253355
+  technical_passed: true
+  direct_passed: false
+  candidate_novelty_passed: true
+  exp303_dependency_satisfied: true
+  kaggle_inference_push_approved: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  active_scientific_variants: 2
+  outer_evaluation_folds: 5
+  total_variant_fold_runs: 10
+  active_scientific_variants_if_implemented: 2
+  outer_evaluation_folds_if_implemented: 5
+  total_variant_fold_runs_if_implemented: 10
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  parent_or_control_regeneration: false
+  gpu: false
+  inference: false
+  submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_run_on_push: false
+    inference_run_on_push: false
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: deterministic_sorting_and_sha256_fold_assignment_reused_from_exp226
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng_initial_process_count_1
+  stable_order_keys: [fold, well_id, MD, original_row_index, variant]
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Pin raw input, saved K=16 OOF, exp293 bank, and block-assignment SHA before reading truth.
+    - Keep exp226 evaluation folds separate from exp263 bank provenance folds; only the former stratify exp302 direct and novelty guards.
+    - Record K=12 and K=24 prediction content SHA separately.
+    - No inference or submission is in scope, so this experiment cannot become a deterministic submission anchor.
+
+forbidden_actions:
+  - regenerate_exp226_k16_control
+  - change_any_exp226_parameter_except_k_segments
+  - test_k_values_other_than_12_and_24
+  - hmm_step_or_n_rates_search
+  - blend_or_selector_training
+  - candidate_weight_or_threshold_grid
+  - use_outer_valid_or_evaluation_truth_before_prediction_and_block_freeze
+  - persist_oracle_prediction
+  - raw_test_inference
+  - submission
+
+notes:
+  - The compact self-contained train source was adopted as the canonical train Notebook for completed Kaggle private CPU version 2.
+  - The one-run authorization is consumed. Direct promotion failed, while candidate novelty passed and satisfies only the exp302-side dependency for exp303.
+  - Inference and submission remain unauthorized.
+  - exp226 K=16 remains not adopted as a direct submission despite its candidate value.

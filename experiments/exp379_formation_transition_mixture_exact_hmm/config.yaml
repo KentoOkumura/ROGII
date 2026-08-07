@@ -1,0 +1,102 @@
+experiment:
+  name: "exp379_formation_transition_mixture_exact_hmm"
+  description: "exp209 exact HMMにbaseと6地層由来のK16 transition modeを導入し、区間境界だけでmode遷移させる"
+  route: pf_beam
+  status: design_closed_by_exp377_stage1_scientific_fail
+  created_at: "2026-07-24"
+
+lineage:
+  parent: exp209_emission_dynamics_direct_hmm
+  physics_source: exp378_formation_relative_exp226_multisurface_candidate_audit
+  comparison:
+    exp209_direct_hmm_rmse: 11.938287234887435
+    exp209_fixed_blend_rmse: 10.269696146642758
+  diff_summary: "exp209のexact HMMを保ち、遷移率の生成modeをbase prefix-rateと6 formation-relative rateへ拡張する。modeはK16区間内で固定し、境界でのみMarkov遷移する。"
+
+validation:
+  split: exp209_outer_5fold_well_split
+  primary_scope: all_3783989_rows
+  report_scopes:
+    - h512
+    - long401
+    - clean273
+  by_fold_required: true
+  by_well_required: true
+
+hmm:
+  inference: exact_forward_backward_viterbi
+  segment_count: 16
+  modes:
+    - base_prefix_rate
+    - formation_ANCC
+    - formation_ASTNU
+    - formation_ASTNL
+    - formation_EGFDU
+    - formation_EGFDL
+    - formation_BUDA
+  initial_probability:
+    base_prefix_rate: 0.50
+    each_formation: 0.08333333333333333
+  boundary_transition:
+    stay_same_mode: 0.95
+    each_other_mode: 0.008333333333333333
+  within_segment_mode_switch: false
+  all_other_exp209_components_fixed: true
+
+model:
+  name: formation_transition_mixture_exact_hmm
+
+gates:
+  stage0_resource_and_parity:
+    audit_wells: 16
+    base_mode_parent_parity_rmse_tolerance: 1.0e-8
+    posterior_normalization_tolerance: 1.0e-8
+    projected_full_runtime_seconds_max: 30600
+    peak_rss_gb_max: 25
+    posterior_base_mass_mean_range:
+      - 0.05
+      - 0.95
+  stage1_full_cv:
+    direct_rmse_gain_vs_exp209_ft_min: 0.10
+    positive_fold_count_min: 4
+    scope_regression_tolerance_ft: 0.02
+    p95_well_regression_max_ft: 0.0
+    worst_well_regression_max_ft: 0.25
+    fixed_likelihood_pf_blend_gain_ft_min: 0.05
+
+runtime:
+  use_amp: false
+  accelerator: cpu
+  stage0_hmm_wells: 16
+  stage1_hmm_wells: 773
+  stage1_requires_separate_user_approval: true
+  replay_parent_control: false
+  rescue_grid: forbidden
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: true
+  seed_policy: no_rng_exact_hmm
+  stochastic_components: []
+  parallel_rng_policy: no_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - "mode順、K16境界、遷移行列、入力候補SHA、audit well listを固定する。"
+
+dependencies:
+  requires_pass:
+    - exp377_identifiability
+    - exp378_candidate_novelty
+
+notes:
+  - "設計確定のみ。実装・Stage0・Stage1はいずれも未着手。"
+  - "Stage0合格後も773坑井のStage1実行前に別途ユーザー承認を得る。"
+  - "exp377 v2のformation-relative pathがdirectより全fold・全6面で悪化したため、HMM modeで救済せず閉鎖する。"

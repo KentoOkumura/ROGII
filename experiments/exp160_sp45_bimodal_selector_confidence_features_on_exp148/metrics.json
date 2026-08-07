@@ -1,0 +1,142 @@
+{
+  "experiment": "exp160_sp45_bimodal_selector_confidence_features_on_exp148",
+    "status": "submitted_public_lb_8p061_not_adopted",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "baseline": {
+    "experiment": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+    "model": "lgb_mean",
+    "cv_rmse": 8.50128118189582,
+    "public_lb": 7.96
+  },
+  "planned_run": {
+    "active_variants": [
+      "sp45_bimodal_selector_confidence_addonly"
+    ],
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "active_modes": [
+      "gpu_repro_guard_dp_threads8"
+    ],
+    "total_boosters": 15,
+    "control_retrain": false
+  },
+  "metric": "rmse",
+  "cv": {
+    "model": "lgb_mean",
+    "rmse_tvt": 8.463718773783008,
+    "rmse_target": 8.463718764025762,
+    "delta_vs_exp148_lgb_mean": -0.0375624081128117,
+    "rows": 3783989,
+    "wells": 773,
+    "features": 372,
+    "feature_join_coverage_pass": true,
+    "dropped_base_rows": 0,
+    "dropped_base_wells": 0,
+    "prediction_sha256": "e23018cb8e776dd3cde0cd3b35fb51044dcddc09b4ae1e67e263195584865a16",
+    "pooled_metrics": {
+      "lgb0": {
+        "rmse_tvt": 8.582750400462936,
+        "prediction_sha256": "7662fcd76663bb5ade0c7de73b22d2e4960de16c886b25c2c17287689d6fa2ae"
+      },
+      "lgb1": {
+        "rmse_tvt": 8.458535254476557,
+        "prediction_sha256": "405d188c58a9d1680e07a948ae85d5437b4d28738d28961c7689f7834054dfab"
+      },
+      "lgb2": {
+        "rmse_tvt": 8.502983730831977,
+        "prediction_sha256": "261f96cf3d4cc1b35da015b238cfccbea019a85efbc842f81eac3b010d4fcc5a"
+      },
+      "lgb_mean": {
+        "rmse_tvt": 8.463718773783008,
+        "prediction_sha256": "e23018cb8e776dd3cde0cd3b35fb51044dcddc09b4ae1e67e263195584865a16"
+      }
+    }
+  },
+    "public_lb": 8.061,
+    "private_lb": null,
+    "inference": {
+        "kernel": "kentookumura/exp160-sp45-bimodal-exp148-inference",
+        "version": 1,
+        "status": "COMPLETE",
+        "output_dir": "/tmp/kaggle-output/exp160_sp45_bimodal_selector_confidence_features_on_exp148/inference_v1",
+        "summary_path": "/tmp/kaggle-output/exp160_sp45_bimodal_selector_confidence_features_on_exp148/inference_v1/artifacts/exp160_sp45_bimodal_selector_confidence_features_on_exp148_inference_summary.json",
+        "submission_path": "/tmp/kaggle-output/exp160_sp45_bimodal_selector_confidence_features_on_exp148/inference_v1/submission.csv",
+        "submit_check": "pass",
+        "variant": "sp45_bimodal_selector_confidence_addonly",
+        "mode": "gpu_repro_guard_dp_threads8",
+        "model": "lgb_mean",
+        "model_count": 15,
+        "feature_count": 372,
+        "test_rows": 14151,
+        "submission_rows": 14151,
+        "predicted_rows": 14151,
+        "fallback_rows": 0,
+        "prediction_min": 11590.32421875,
+        "prediction_max": 12240.2470703125,
+        "prediction_mean": 11905.43988022876,
+        "prediction_std": 278.6956018524119,
+        "prediction_sha256": "cb85e56ed032e3f5c0577c1928272e9f1621da9e9b356932caac20fc0d1c03d2",
+        "submission_sha256": "366543ab052b98afec8c61f020c6eccc84c751fd734262dd9913bbb53fab354b",
+        "elapsed_seconds": 141.319,
+        "test_feature_elapsed_seconds": 102.769,
+        "test_wells": 3,
+        "rawtest_learned_likelihood_rows": 14151,
+        "rawtest_learned_likelihood_columns": 51,
+        "rawtest_learned_likelihood_sha256": "4568f323d336bc93e9822e3ee933f9597ae423a6611ecd7c73a34a9a7387e96b",
+        "rawtest_learned_likelihood_decompressed_sha256": "8d1146ac1e68da67a2c8d2d00788c1593fc99654b949e0a5ac065cf781344e13",
+        "long_likelihood_rows": 70755,
+        "long_likelihood_sha256": "4c424769db59f133538ba94f0e8e397f15bf97c8283fe3464420a471e02041c5",
+        "long_likelihood_decompressed_sha256": "92ae5e9328073ac2727fa18dc2e03025a557e9646b8b9be57fd051d1ae86c612",
+        "anchor_t0_vs_last_known_abs_max": 0.0,
+        "anchor_t0_vs_last_known_abs_mean": 0.0,
+        "known_prefix_rows_min": 1442,
+        "known_prefix_rows_max": 2083
+    },
+    "kaggle_train": {
+    "kernel": "kentookumura/exp160-sp45-bimodal-exp148-train",
+    "version": 2,
+    "url": "https://www.kaggle.com/code/kentookumura/exp160-sp45-bimodal-exp148-train",
+    "status": "COMPLETE",
+    "id_no": 125290303,
+    "enable_gpu": true,
+    "enable_internet": false
+  },
+    "kaggle_inference": {
+    "kernel": "kentookumura/exp160-sp45-bimodal-exp148-inference",
+    "version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp160-sp45-bimodal-exp148-inference",
+        "status": "COMPLETE",
+    "id_no": 125343487,
+    "enable_gpu": true,
+    "machine_shape": "Gpu",
+    "enable_internet": false,
+    "kernel_sources": [
+      "kentookumura/exp072-exp063-full-replay-feature-cache-train",
+      "kentookumura/exp099-pf-multiobs-likelihood-train",
+      "kentookumura/exp111-learned-pf-likelihood-train",
+      "kentookumura/exp112-learned-pf-likelihood-followup-train",
+      "kentookumura/exp160-sp45-bimodal-exp148-train"
+        ]
+    },
+    "submissions": [
+        {
+            "ref": 54183128,
+            "date": "2026-06-29 23:36:23.280000",
+            "status": "COMPLETE",
+            "public_lb": 8.061,
+            "private_lb": null,
+            "file": "submission.csv",
+            "description": "",
+            "attribution": "Confirmed by user as exp160 Public LB.",
+            "submission_path": "/tmp/kaggle-output/exp160_sp45_bimodal_selector_confidence_features_on_exp148/inference_v1/submission.csv",
+            "submission_sha256": "366543ab052b98afec8c61f020c6eccc84c751fd734262dd9913bbb53fab354b"
+        }
+    ],
+  "failure": {
+    "version": 1,
+    "reason": "Kernel died during SP45/Bimodal feature generation after repeated DataFrame fragmentation warnings; likely memory fragmentation or OOM.",
+    "fix": "Build SP45/Bimodal features as a dict of arrays and create one DataFrame, avoid key merge by using row-order guard plus concat, and reduce configured SP45 feature set."
+  },
+    "notes": "Kaggle train v1 failed during SP45 feature generation. V2 completed successfully with dict-of-array SP45 generation. Train-side lgb_mean CV improved from exp148 8.50128118189582 to 8.463718773783008. Inference v1 completed on Kaggle using the completed short train slug as kernel source. submission.csv passed validation. User confirmed exp160 Public LB is 8.061, which is worse than exp148 7.960 by +0.101."
+}

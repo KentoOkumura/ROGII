@@ -1,0 +1,127 @@
+{
+  "experiment": "exp296_exp223_self_gr_known_tvt_support_gate",
+  "status": "completed_train_side_guard_failed_closed",
+  "route": "ensemble",
+  "metric": "train_side_unknown_suffix_rmse",
+  "cv": 12.15974913969598,
+  "public_lb": null,
+  "private_lb": null,
+  "rows": 3783989,
+  "wells": 773,
+  "hypothesis": "Mask only the exp223 self-GR contribution outside the inclusive visible-prefix known TVT range while preserving the inside-support exp223 boost exactly.",
+  "lineage": {
+    "parent": "exp223_joint_typewell_self_gr_hmm_likelihood_probe",
+    "negative_reference": "exp225_state_known_tvt_self_gr_hmm_emission"
+  },
+  "execution": {
+    "active_variants": 1,
+    "hmm_well_runs": 773,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "parent_control_retraining": false,
+    "gpu": false,
+    "elapsed_seconds": 16667.26450252533,
+    "elapsed_hours": 4.629795695145925
+  },
+  "overall": {
+    "saved_exp223_control": {
+      "rmse": 11.349942946009358,
+      "mae": 6.471268656700649,
+      "within10": 0.7948405769678506
+    },
+    "support_gate_variant": {
+      "rmse": 12.15974913969598,
+      "mae": 7.041758435927032,
+      "within10": 0.7677776018904917
+    },
+    "delta_vs_exp223": {
+      "rmse": 0.8098061936866223,
+      "mae": 0.5704897792263832,
+      "within10": -0.027062975077358886
+    }
+  },
+  "reporting_folds": [
+    {"fold": 0, "control_rmse": 10.001163807368478, "variant_rmse": 10.966358338828648, "delta_rmse": 0.9651945314601704},
+    {"fold": 1, "control_rmse": 11.479555441876931, "variant_rmse": 12.010423557411197, "delta_rmse": 0.5308681155342665},
+    {"fold": 2, "control_rmse": 13.754857448341177, "variant_rmse": 14.392580225954502, "delta_rmse": 0.637722777613325},
+    {"fold": 3, "control_rmse": 12.294011388632113, "variant_rmse": 12.035704497385892, "delta_rmse": -0.25830689124622097},
+    {"fold": 4, "control_rmse": 9.148242242347635, "variant_rmse": 11.437966460118346, "delta_rmse": 2.2897242177707113}
+  ],
+  "scope_readout": {
+    "true_tvt_inside_known_range": {"rows": 2324458, "control_rmse": 10.044091892816233, "variant_rmse": 9.472289811023206, "delta_rmse": -0.5718020817930274},
+    "true_tvt_outside_known_range": {"rows": 1459531, "control_rmse": 13.164897096107179, "variant_rmse": 15.506321741446312, "delta_rmse": 2.341424645339133},
+    "distance_1000_plus": {"rows": 3012442, "control_rmse": 12.45545713363981, "variant_rmse": 13.352947848437081, "delta_rmse": 0.8974907147972715},
+    "hidden_like_spatial": {"rows": 972463, "control_rmse": 12.463402232350285, "variant_rmse": 13.574214991440265, "delta_rmse": 1.1108127590899795},
+    "hidden_like_typewell_purged": {"rows": 976449, "control_rmse": 12.2663168972401, "variant_rmse": 13.38495091254302, "delta_rmse": 1.11863401530292}
+  },
+  "by_well": {
+    "improved": 302,
+    "worsened": 471,
+    "equal": 0,
+    "p95_delta_rmse": 1.7280870455593735,
+    "worst_well": "2364716c",
+    "worst_well_delta_rmse": 39.68779120447727,
+    "best_well": "028d7b28",
+    "best_well_delta_rmse": -19.815744187115087
+  },
+  "hard_gates": {
+    "passed": false,
+    "technical_passed": true,
+    "technical_pass_count": 12,
+    "technical_total": 12,
+    "performance_passed": false,
+    "performance_pass_count": 2,
+    "performance_total": 10,
+    "failed_performance": {
+      "pooled_rmse_delta_vs_exp223": 0.8098061936866223,
+      "improving_reporting_folds": 1,
+      "true_tvt_outside_known_range_rmse_delta": 2.341424645339133,
+      "distance_1000_plus_rmse_delta": 0.8974907147972715,
+      "hidden_like_spatial_rmse_delta": 1.1108127590899795,
+      "hidden_like_typewell_purged_rmse_delta": 1.11863401530292,
+      "by_well_rmse_p95_delta": 1.7280870455593735,
+      "worst_well_rmse_delta": 39.68779120447727
+    },
+    "passed_performance": {
+      "true_tvt_inside_known_range_rmse_delta": -0.5718020817930274,
+      "step_delta_p99_delta_vs_exp223": -0.0002657520054343415
+    },
+    "fail_action": "close_without_support_alpha_clip_window_topk_or_threshold_rescue"
+  },
+  "freeze": {
+    "unknown_suffix_truth_access_before_freeze": 0,
+    "saved_control_target_access_before_freeze": 0,
+    "saved_control_decompressed_sha256": "0eb48b5516276b0ab7b2191a52a39ebb89d9997363cc7839ede519c7863baa0c",
+    "support_manifest_sha256": "b537eb37a81155da031f46b8472a848e4bfed257e845a745b0f4890e8383b209",
+    "prediction_decompressed_sha256": "e87f1c64a870991b65f310891b316e2854f6c717947df923d60ab2f73c5ac99a",
+    "prediction_raw_gzip_sha256": "e8aabd98ed0d7b675b2d8f20d793129b02ada3c7a571a8706a72099b2bb07261",
+    "prediction_schema_sha256": "c367db595b8a6f431a0827f3c5481273b520fe9749f57ab39d066aed64622d25",
+    "decoder_manifest_sha256": "ce9106a655fc5e2658d14dd1babb3d0bc8dca5d6cd446ef577185b482189b427"
+  },
+  "artifact_audit": {
+    "downloaded_small_artifacts": 13,
+    "downloaded_recorded_sha_matches": 13,
+    "summary_download_sha256": "74701c7642c86d3e9b019f46b11491c12d00eacec74b7a3a42b013fa13ffc4fc",
+    "kernel_log_sha256": "8efb5e7a8065e0caafaa648fb41d50784d0110ee880805943a63f77031c581a0"
+  },
+  "kaggle_run": {
+    "kernel": "kentookumura/exp296-exp223-self-gr-known-tvt-support-gate-train",
+    "url": "https://www.kaggle.com/code/kentookumura/exp296-exp223-self-gr-known-tvt-support-gate-train",
+    "id_no": 127897387,
+    "version_1": {"status": "error", "reason": "raw input resolver selected the 3-well public test directory", "completed_hmm_wells": 0},
+    "version_2": {"status": "error", "reason": "lineage-only model.hmm.source was passed as a runtime keyword", "completed_hmm_wells": 0},
+    "version_3": {"status": "complete", "result": "completed_train_side_guard_failed"}
+  },
+  "implementation": {
+    "contract_tests": 14,
+    "repository_tests_passed": 331,
+    "repository_tests_skipped": 1,
+    "jupytext_roundtrip_passed": true,
+    "ruff_passed": true,
+    "py_compile_passed": true
+  },
+  "decision": "reject_strict_known_tvt_support_gate_and_close_branch",
+  "next_action": "Do not run inference, submission, or a support/padding/soft-gate rescue grid. Retain only target-free self-GR quality and support-risk diagnostics as possible add-only ML features in the existing low-priority backlog.",
+  "notes": "No inference prediction, trained model, booster, or submission was generated."
+}

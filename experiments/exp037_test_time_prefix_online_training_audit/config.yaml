@@ -1,0 +1,179 @@
+experiment:
+  name: exp037_test_time_prefix_online_training_audit
+  description: Audit test-time online training from visible TVT_input prefix rows on the exp026 pseudo-tail anchor
+  route: ml_model
+  status: planned
+  created_at: "2026-06-08"
+  updated_at: "2026-06-08"
+
+lineage:
+  parent: exp026_pseudo_tail_bucket_shrink_inference_submit
+  diff_summary: Keep the exp026 pseudo_tail_3_cutoffs_distance_balanced model and fixed exp014 bucket shrink control, then audit fold-safe online retraining with validation-well visible prefix rows.
+
+validation:
+  leakage_policy:
+    - Same well is never split across train and validation folds.
+    - The base model recipe is inherited from exp026 and trained only on training-fold wells.
+    - Online cutoffs are generated only inside each validation well's visible TVT_input prefix.
+    - Online rows use only validation-well rows whose TVT_input is finite and after the online cutoff.
+    - Held-out tail rows whose TVT_input is NaN are used only for scoring, never for online training.
+    - Original-fold and stable well-hash holdout selection are reported before any inference decision.
+    - Train-only formation columns are not used.
+    - Public LB is not used to select an online-training method.
+
+data: {}
+
+model:
+  name: test_time_prefix_online_training_audit
+  primary_strategy: drift_model
+  drift_strategy: drift_model
+  feature_set: no_gr_signal
+  strategies:
+    - last_anchor
+    - recent_linear
+    - drift_model
+  params:
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+    gr_slope_window: 200
+    max_abs_gr_slope: 2.0
+    gr_roll_short: 25
+    gr_roll_long: 100
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  drift_model:
+    estimator: LGBMRegressor
+    params:
+      n_estimators: 800
+      learning_rate: 0.03
+      num_leaves: 31
+      min_child_samples: 80
+      subsample: 0.9
+      colsample_bytree: 0.9
+      reg_lambda: 0.1
+      n_jobs: 2
+  training:
+    max_train_rows_per_fold: 300000
+    max_train_rows_final: 450000
+    max_train_rows_per_well: 800
+
+audit:
+  parent_train_experiment: exp023_pseudo_tail_distance_augmentation
+  parent_inference_experiment: exp024_pseudo_tail_inference_postprocess
+  parent_postprocess_audit: exp025_pseudo_tail_postprocess_cv_audit
+  control_experiment: exp026_pseudo_tail_bucket_shrink_inference_submit
+  parent_best_variant: pseudo_tail_3_cutoffs_distance_balanced
+  raw_pseudo_tail_cv: 12.942938
+  raw_pseudo_tail_public_lb: 12.166
+  selected_postprocess: exp014_bucket_shrink_params
+  selected_postprocess_cv: 12.870780
+  selected_delta_vs_raw: -0.072158
+  same_oof_bucket_alpha_fit_cv: 12.863570
+  exp026_public_lb: 12.102
+  selected_variant_index: 4
+  well_holdout_folds: 5
+  online_training:
+    n_aug_splits: 1
+    cutoff_quantiles: [0.55]
+    min_prefix_rows: 200
+    min_online_rows: 80
+    min_finite_rows: 30
+    max_rows_per_well: 220
+    max_rows_per_fold: 45000
+    online_source_kind: test_time_prefix_online
+    candidates:
+      - exp026_bucket_shrink_control
+      - online_weight_0_05
+      - online_weight_0_10
+      - online_weight_0_20
+    weights:
+      - name: online_weight_0_05
+        online_weight: 0.05
+      - name: online_weight_0_10
+        online_weight: 0.10
+      - name: online_weight_0_20
+        online_weight: 0.20
+  training_variants:
+    enabled: true
+    selected_variant: pseudo_tail_3_cutoffs_distance_balanced
+    variants:
+      - name: control_lightgbm_no_gr
+        cutoffs_per_well: 0
+        distance_balanced: false
+      - name: pseudo_tail_1_cutoff
+        cutoffs_per_well: 1
+        cutoff_quantiles: [0.65]
+        distance_balanced: false
+        max_rows_per_pseudo_tail: 350
+      - name: pseudo_tail_3_cutoffs
+        cutoffs_per_well: 3
+        cutoff_quantiles: [0.45, 0.65, 0.82]
+        distance_balanced: false
+        max_rows_per_pseudo_tail: 260
+      - name: distance_balanced_sampling
+        cutoffs_per_well: 0
+        distance_balanced: true
+        balanced_rows_per_bucket: 60000
+      - name: pseudo_tail_3_cutoffs_distance_balanced
+        cutoffs_per_well: 3
+        cutoff_quantiles: [0.45, 0.65, 0.82]
+        distance_balanced: true
+        max_rows_per_pseudo_tail: 260
+        balanced_rows_per_bucket: 60000
+  pseudo_tail:
+    min_prefix_rows: 200
+    min_pseudo_eval_rows: 250
+    cutoff_strategy: quantile
+  distance_buckets:
+    - name: rows_0_49
+      max_step: 49
+    - name: rows_50_249
+      max_step: 249
+    - name: rows_250_999
+      max_step: 999
+    - name: rows_1000_2499
+      max_step: 2499
+    - name: rows_2500_plus
+      max_step: 1000000000
+
+postprocess:
+  selected_method: distance_bucket_shrink
+  candidate_methods:
+    - raw
+    - distance_bucket_shrink
+  methods:
+    raw: {}
+    distance_bucket_shrink:
+      name: exp014_bucket_shrink_params
+      buckets:
+        - name: rows_0_49
+          max_step: 49
+          alpha: 0.20
+        - name: rows_50_249
+          max_step: 249
+          alpha: 0.5917180252647632
+        - name: rows_250_999
+          max_step: 999
+          alpha: 1.15
+        - name: rows_1000_2499
+          max_step: 2499
+          alpha: 1.15
+        - name: rows_2500_plus
+          max_step: 1000000000
+          alpha: 1.0490770312511664
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: 30
+  kaggle:
+    kernel_sources: []
+
+notes:
+  - exp026 fixed bucket shrink CV 12.870780 and Public LB 12.102 are the control anchor.
+  - Online training rows are generated from train well の途中以降を隠した疑似 test slices inside visible TVT_input prefix only.
+  - This carries rules-risk because organizer approval for test-time online training was not confirmed in local notes.
+  - Do not inference or submit unless original-fold and well-hash holdout audits improve the exp026 control.

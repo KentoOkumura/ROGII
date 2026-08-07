@@ -1,0 +1,99 @@
+{
+  "experiment": "exp136_gr_shape_descriptor_verifier_on_candidate_selector",
+  "status": "completed_train_side_audit",
+  "updated_at": "2026-06-27",
+  "route": "pf_beam",
+  "parent": "exp102_confidence_gated_likpf_fallback_on_exp101",
+  "key_idea": "Use exp131-style GR shape descriptor scores as a conservative verifier over exp101 candidate selector switches while keeping likPF as the default.",
+  "kaggle_kernel": "kentookumura/exp136-gr-shape-verifier-train",
+  "kaggle_url": "https://www.kaggle.com/code/kentookumura/exp136-gr-shape-verifier-train",
+  "kaggle_version": 2,
+  "cv": {
+    "best_gate_variant": "gate_descriptor_joint_margin_sr010_d035_std999999_df025_dm005_seg001",
+    "best_gate_rmse_tvt": 11.585115241553358,
+    "best_gate_mae_tvt": 7.057835,
+    "best_gate_within_10ft": 0.772744,
+    "best_gate_oracle_label_accuracy": 0.388653,
+    "best_gate_switch_rows": 37839,
+    "best_gate_switch_rate": 0.0099998869,
+    "delta_rmse_vs_likpf_mean": -0.009782430664344588,
+    "delta_mae_vs_likpf_mean": -0.009798,
+    "delta_within10_vs_likpf_mean": -0.000063,
+    "best_balanced_variant": "gate_descriptor_conservative_margin_sr005_d035_std000020_df035_dm000_seg001",
+    "best_balanced_rmse_tvt": 11.585504,
+    "best_balanced_within_10ft": 0.772849,
+    "best_balanced_delta_rmse_vs_likpf": -0.009393,
+    "best_balanced_delta_within10_vs_likpf": 0.000041,
+    "recommendation": "diagnostic_only_not_submit_candidate"
+  },
+  "baselines": {
+    "oracle_rmse_tvt": 7.434029841171774,
+    "oracle_within_10ft": 0.9065253625208741,
+    "likpf_mean_rmse_tvt": 11.594897672217703,
+    "likpf_mean_within_10ft": 0.772807479091509,
+    "exp101_error_ranker_rmse_tvt": 11.600096614747736,
+    "exp101_error_ranker_within_10ft": 0.7714520311766234,
+    "exp102_best_gate_rmse_tvt_reference": 11.561205807581649
+  },
+  "selection": {
+    "best_gate_likpf_mean_rows": 3746150,
+    "best_gate_likpf_mean_rate": 0.990000,
+    "best_gate_pf_ancc_rows": 31751,
+    "best_gate_pf_ancc_rate": 0.008391,
+    "best_gate_beam_mean_rows": 6088,
+    "best_gate_beam_mean_rate": 0.001609
+  },
+  "guardrails": {
+    "wells_improved_vs_likpf": 452,
+    "wells_worsened_vs_likpf": 245,
+    "max_well_regression_rmse": 3.542356,
+    "max_well_improvement_rmse": -4.799888,
+    "near_000_050_delta_rmse": -0.065584,
+    "longtail_1000_plus_delta_rmse": -0.010945,
+    "tail_rank_1000_plus_delta_rmse": -0.009783
+  },
+  "source": {
+    "rows": 3783989,
+    "wells": 773,
+    "runtime_seconds": 2574.4102113246918,
+    "train_feature_sha256": "4bd9df60f5c09f7a3029dac399afef73aa45b0158a7fd06a62a56f85fd0fde38",
+    "train_feature_decompressed_sha256": "1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a",
+    "schema_sha256": "203e4f9a280fe901f5f21d39b85c3e0e2a7fe10c466081c15015c7fb014a0413",
+    "exp101_feature_schema_sha256": "ea2819375dd025448c3e294b56fd92179b8b261e22f5a7fb37fbf3e8ddfac9c6",
+    "exp101_model_manifest_sha256": "4f453761f1cc09042767baa934f8a1c5a89036bfb1c244a5f3fc5ab0cc843cc5"
+  },
+  "sha256": {
+    "metrics": "1ff417b9b15ddee8e92c02f27ddfa97a32d5d95d97e102051abdb22570aa174b",
+    "predictions": "34014e3be12004f13ba12da3c1d677d30e9455e147e482c7704633e0f1c2650a",
+    "predictions_decompressed": "ae45cfefe2c35fafd68529c3128b55b9bf36c17e1c90a9fa9a64f9c9b83bfdb0",
+    "best_gate_prediction": "2bc210c26d445fe663a87ad90a92de03751c6555b9981dd37b34a3440940b952",
+    "selection_distribution": "adf9879b26a8c846974c84bb794047ecd59d8c331c5b3e6a36f6bc9c87bb1a30",
+    "by_well": "91cf1082e371749d90a3c0847c90a2f240703cdb0b3c490261bb0476d634c1fd",
+    "bucket_metrics": "3a6068b2f1deb1a2a65a21d31172b3e2c2ad4a804e90253ea7daf02517963c07",
+    "descriptor_well_summary": "3674dd83ffe66fbe1082db766105351dfb30f29ab6d36c19c02c889039a2e50c"
+  },
+  "local_validation": {
+    "py_compile": "passed",
+    "notebook_json": "passed",
+    "ruff_check": "passed",
+    "validate_exp": "passed",
+    "prepare_kaggle_train": "passed",
+    "kaggle_train_v1": "failed_dead_kernel_after_score_reconstruction",
+    "kaggle_train_v2": "complete"
+  },
+  "artifacts": {
+    "output_dir": "experiments/exp136_gr_shape_descriptor_verifier_on_candidate_selector/kaggle/output/train_v2",
+    "summary": "experiments/exp136_gr_shape_descriptor_verifier_on_candidate_selector/kaggle/output/train_v2/artifacts/exp136_gr_shape_descriptor_verifier_on_candidate_selector_summary.json",
+    "metrics": "experiments/exp136_gr_shape_descriptor_verifier_on_candidate_selector/kaggle/output/train_v2/artifacts/exp136_gr_shape_descriptor_verifier_on_candidate_selector_metrics.csv",
+    "selection_distribution": "experiments/exp136_gr_shape_descriptor_verifier_on_candidate_selector/kaggle/output/train_v2/artifacts/exp136_gr_shape_descriptor_verifier_on_candidate_selector_selection_distribution.csv",
+    "by_well": "experiments/exp136_gr_shape_descriptor_verifier_on_candidate_selector/kaggle/output/train_v2/artifacts/exp136_gr_shape_descriptor_verifier_on_candidate_selector_by_well.csv",
+    "bucket_metrics": "experiments/exp136_gr_shape_descriptor_verifier_on_candidate_selector/kaggle/output/train_v2/artifacts/exp136_gr_shape_descriptor_verifier_on_candidate_selector_bucket_metrics.csv",
+    "oof_predictions": "experiments/exp136_gr_shape_descriptor_verifier_on_candidate_selector/kaggle/output/train_v2/artifacts/exp136_gr_shape_descriptor_verifier_on_candidate_selector_oof_predictions.csv.gz"
+  },
+  "notes": [
+    "Train-side posthoc audit only.",
+    "Best RMSE gate improves RMSE slightly but slightly worsens within10 and has max well regression +3.542 RMSE.",
+    "A balanced gate improves RMSE and within10 slightly, but gains are too small for inference port or submit.",
+    "Descriptor verifier is retained only as diagnostic/confidence feature material."
+  ]
+}

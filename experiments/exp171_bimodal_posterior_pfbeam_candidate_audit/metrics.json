@@ -1,0 +1,55 @@
+{
+  "artifact_sha256": {
+    "bucket_metrics": "43ce84f003b655285ca468857c38105bab5bfbf5df3111a60867501ee0223cdc",
+    "candidate_metrics": "5d67c63c0c61d8bc635c1a7de84752dd568c910e590b7fb9b4d3ebbd694a74eb",
+    "gain_vs_commit": "7c8c7bc9c5eae2597bea18e3a13975ccfe084b9514f47485b4fab9e7ff4c3c0b",
+    "row_context_decompressed": "8899ead616b05182788f77581097f606f1b15984ab036dc8bab8a75f1b70ebbd",
+    "row_context_gzip": "1f210ec405be93cec466e0094480f19d149c0582d056651abb34d17f5b80b14a",
+    "well_input_summary": "fd4397c09d15701fe28710aaa7ac1b909922a95646facfc3986e72c7d9f91341",
+    "well_metrics": "2599f7b2dec8701c9027489d3c6d7c62383ffa6501a0c64fe783d697d2c25e5e"
+  },
+  "best_all": {
+    "candidate": "likpf_mean",
+    "filter": "raw",
+    "rmse_tvt": 11.471434006343651,
+    "mae_tvt": 6.989251836305448,
+    "within10": 0.7754386319534282
+  },
+  "best_posterior_all": {
+    "candidate": "posterior_mean_t16",
+    "filter": "rolling_median_11",
+    "rmse_tvt": 76.6980965870815,
+    "mae_tvt": 39.75964873928416,
+    "within10": 0.22428595973479948
+  },
+  "best_posterior_hidden_tail": {
+    "candidate": "posterior_mean_t16",
+    "filter": "savgol_31_p2",
+    "rmse_tvt": 102.301054,
+    "mae_tvt": 50.511337,
+    "within10": 0.2079
+  },
+  "commit_top1_all": {
+    "candidate": "commit_top1",
+    "filter": "savgol_31_p2",
+    "rmse_tvt": 77.45538643930347,
+    "mae_tvt": 41.032059448656724,
+    "within10": 0.22104675371927554
+  },
+  "cv": "diagnostic_only",
+  "experiment": "exp171_bimodal_posterior_pfbeam_candidate_audit",
+  "kernel": {
+    "id": "kentookumura/exp171-bimodal-posterior-pfbeam-train",
+    "status": "COMPLETE",
+    "url": "https://www.kaggle.com/code/kentookumura/exp171-bimodal-posterior-pfbeam-train",
+    "version": 1
+  },
+  "metric": "rmse",
+  "notes": "Kaggle train-side diagnostic completed. Posterior/midpoint candidates improve hard commit slightly but are far worse than fixed likpf_mean, so direct candidate replacement, inference, and submit are rejected.",
+  "private_lb": null,
+  "public_lb": null,
+  "rows": 1187328,
+  "runtime_sec": 889.6769416332245,
+  "status": "completed_train_side_rejected_no_submit",
+  "wells": 773
+}

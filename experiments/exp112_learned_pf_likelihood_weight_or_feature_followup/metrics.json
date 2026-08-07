@@ -1,0 +1,67 @@
+{
+  "experiment": "exp112_learned_pf_likelihood_weight_or_feature_followup",
+  "status": "completed_train_side_posthoc_audit",
+  "route": "pf_beam",
+  "parent": "exp111_learned_pf_observation_likelihood_probe",
+  "kernel": {
+    "id": "kentookumura/exp112-learned-pf-likelihood-followup-train",
+    "version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp112-learned-pf-likelihood-followup-train",
+    "status": "COMPLETE",
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "metrics": {
+    "rows": 757738,
+    "wells": 155,
+    "candidate_rows": 3788690,
+    "runtime_seconds": 310.78230357170105,
+    "likpf_mean_single_rmse": 11.604409800913183,
+    "likpf_mean_single_mae": 6.944251372485444,
+    "likpf_mean_single_within10": 0.7843119917438481,
+    "best_variant": "gate_expected_error_m2p0_d20p0",
+    "best_rmse": 11.573266039149988,
+    "best_mae": 6.9266264658245165,
+    "best_within10": 0.7850642306443653,
+    "best_switch_rate_vs_likpf": 0.0040766069538547625,
+    "best_delta_rmse_vs_likpf": -0.031143761763194888,
+    "best_delta_within10_vs_likpf": 0.0007522389005171215,
+    "learned_error_top1_rmse": 11.579703112302719,
+    "learned_error_top1_within10": 0.7817253437048156,
+    "learned_prob_top1_rmse": 11.600926403354208,
+    "learned_prob_top1_within10": 0.7804230028065176,
+    "best_pf_weight_rmse": 69.4843582943713,
+    "best_pf_weight_variant": "pf_weight_expected_error_alpha_0p4",
+    "oracle_rmse": 7.857730,
+    "oracle_within10": 0.908454
+  },
+  "decision": {
+    "recommendation": "pf_weight_rejected_gate_supported_train_side_needs_rawtest_parity",
+    "direct_submission_candidate": "not_selected",
+    "selected_train_side_variant": "gate_expected_error_m2p0_d20p0"
+  },
+  "artifacts": {
+    "output_dir": "experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1",
+    "summary": "experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_summary.json",
+    "metrics": "experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_metrics.csv",
+    "by_well": "experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_by_well.csv",
+    "bucket_metrics": "experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_bucket_metrics.csv",
+    "selection_distribution": "experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_selection_distribution.csv",
+    "oof_predictions": "experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_oof_predictions.csv.gz",
+    "ml_features": "experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_ml_features.csv.gz",
+    "feature_schema": "experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv"
+  },
+  "sha256": {
+    "exp099_wide_cache_decompressed": "1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a",
+    "exp111_oof_likelihood_long_decompressed": "3aa5e72e982417012a18f4172df1a233ef0f609cf91d48fb1250fc74fa9e89f8",
+    "metrics": "ac4068b86f4a1f43a5fb3e27c58692419ffd520d1b5570cd38256e8b993757ef",
+    "by_well": "4014bf570f1e2b2d672d3354b76ccf5e356b60280e78ed61ab1938ac88aad394",
+    "bucket_metrics": "17d5b4c749358b229eafca59c3f9fea53b23df82548401bdfee4685612d8e561",
+    "selection_distribution": "df2cf8117cb673e7bae9a59b9b20b7db2e629ac9acdf548a69c3987b020d5598",
+    "oof_predictions_decompressed": "e3df222a2bb11432f2474f51d672d6d961eb598c9a17e4905c41017e66bb15d7",
+    "ml_features_decompressed": "56c0f62238abfc89f05e5700341344c15815bd3a5f93e5b0a6a079a661b9411e",
+    "feature_schema": "b1285777136304d65c927d28a1d0f57d68c0e45a9c4d8a0cbaaff054e4315cf8",
+    "prediction": "642426a934e967310062411cdda05449291dd181a80c33965992d9caa90adfd9"
+  },
+  "notes": "PF-weight alpha variants were rejected because they inherited the multiobs top1 failure. A very-low-switch expected-error verifier gate improved train-side RMSE and within10 slightly, but requires raw-test parity and worst-well guard before any inference or submission work."
+}

@@ -1,0 +1,114 @@
+{
+  "experiment": "exp388_exp374_fixed13_dual_selector_on_exp264",
+  "route": "ensemble",
+  "status": "completed_fixed13_selector_scientific_gate_failed_closed",
+  "created_at": "2026-07-24",
+  "updated_at": "2026-07-24",
+  "cv": 8.73610410942288,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "selector_parent": "exp264_exp263_candidate_confidence_dual_selector",
+  "candidate_parent": "exp374_exp209_student_t_exact_hmm_emission",
+  "candidate_id": "student_t_exact_hmm",
+  "kernel": {
+    "id": "kentookumura/exp388-exp374-student-t-fixed13-selector-train",
+    "version": 1,
+    "id_no": 128464582,
+    "status": "KernelWorkerStatus.COMPLETE",
+    "elapsed_seconds": 7253.168438142
+  },
+  "execution": {
+    "active_variants": 1,
+    "objectives": 2,
+    "outer_folds": 5,
+    "inner_folds": 4,
+    "planned_cpu_boosters": 40,
+    "trained_cpu_boosters": 40,
+    "parent_control_retraining": false,
+    "gpu_boosters": 0,
+    "downstream_tvt_training": false,
+    "inference": false,
+    "submission": false
+  },
+  "input": {
+    "kernel_id": "kentookumura/exp374-exp209-student-t-exact-hmm-emission-train",
+    "kernel_version": 1,
+    "kernel_id_no": 128436182,
+    "rows": 3783989,
+    "wells": 773,
+    "file_sha256": "ea6f95334b2d75ab8c96f705c453f66b856397fd222770cd15f3ae0b7fef221e",
+    "decompressed_sha256": "668fe87da902955acee742c72d30724abb53f32050bb5d0a5c1b3dee0cbd626e",
+    "post_read_prediction_content_sha256": "506842291a539c9c8dd4da1a0a1eb6a11bfb2c8466fb022f4410b9bfdc234854"
+  },
+  "stage_a": {
+    "rows_audited": 650000,
+    "feature_count_before_audit": 153,
+    "selected_feature_count": 90,
+    "compact_feature_count": 77,
+    "feature_schema_sha256": "66568a948768a8dd4953a404b6b88f8e7f58c5ecf6f5afe22ca8bcd0a4b881fe"
+  },
+  "stage_c": {
+    "model_count": 40,
+    "compact_partition_count": 25,
+    "compact_rows": 18919945,
+    "outer_valid_score_long_rows": 49191857,
+    "expected_error_mae": 3.838679870660455,
+    "expected_error_prior_mae": 5.844224568782212,
+    "within10_logloss": 0.35849516373791496,
+    "within10_prior_logloss": 0.5099491078275723,
+    "within10_brier": 0.11159620287319136,
+    "within10_prior_brier": 0.16493816189472538,
+    "score_guard_passed": true,
+    "leakage_audit_passed": true
+  },
+  "hard_selector": {
+    "fixed13_rmse": 8.73610410942288,
+    "parent_fixed12_rmse": 8.652531955610227,
+    "fixed_fallback_rmse": 8.238331546485645,
+    "delta_fixed13_minus_parent_ft": 0.08357215381265348,
+    "fold_deltas_ft": [
+      -0.02100549765413895,
+      0.2009001442529641,
+      0.30459929015651177,
+      -0.1271220218551843,
+      0.0489775813756097
+    ],
+    "folds_improved": 2,
+    "student_t_top1_rows": 692647,
+    "student_t_top1_fraction": 0.18304677947002487,
+    "positive_usage_folds": 5
+  },
+  "scopes": {
+    "near_0_250_delta_ft": 0.00904923807837843,
+    "distance_1000_plus_delta_ft": 0.08972375559726053,
+    "hidden_like_spatial_delta_ft": 0.08818437705402715,
+    "hidden_like_typewell_purged_delta_ft": 0.09125219955095254
+  },
+  "by_well": {
+    "improved_wells": 366,
+    "regressed_wells": 407,
+    "delta_median_ft": 0.006057639562472,
+    "delta_p95_ft": 0.9101231719676119,
+    "worst_well": "d2f3b1ab",
+    "worst_delta_ft": 6.708956172934057
+  },
+  "postfreeze_oracle": {
+    "h512_improvement_ft": 0.09729893639770903,
+    "whole_well_improvement_ft": 0.0734076114032689,
+    "h512_unique_best_groups": 1127,
+    "whole_well_unique_best_groups": 112
+  },
+  "reproducibility": {
+    "model_manifest_sha256": "9acdc4a165b69f737ee4807e953653070b0f3db0647514554744b7790d573044",
+    "compact_manifest_sha256": "5e9a1242c73963f5947955a653604633d9034ab136ef9b6f56c4154d78e08968",
+    "outer_valid_score_sha256": "7ad8419f299419824447ad2b500ebdb353af4a39773ef5aefc702692ef36ecd8",
+    "summary_sha256": "bc5ce77913862c963d6a65ff4491a3f193405b8e6fdf83c9d648615b16b74b99"
+  },
+  "technical_gate_passed": true,
+  "selector_score_guard_passed": true,
+  "scientific_gate_passed": false,
+  "decision": "FAIL_CLOSE_FIXED13_SELECTOR_BRANCH",
+  "dedicated_tests_passed": 10,
+  "common_and_dedicated_tests_passed": 27
+}

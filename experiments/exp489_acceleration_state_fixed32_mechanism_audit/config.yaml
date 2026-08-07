@@ -1,0 +1,338 @@
+experiment:
+  name: exp489_acceleration_state_fixed32_mechanism_audit
+  description: >-
+    Continue the frozen exp444 acceleration-state HMM to its fixed32 mechanism
+    preflight using the exp458 v2 scaled CPU engine under an explicit
+    user-approved small-numerical-deviation waiver.
+  route: pf_beam
+  status: stage0b_fail_closed
+  created_at: "2026-07-30"
+  updated_at: "2026-07-30"
+  inference_enabled: false
+
+lineage:
+  parent: exp458_acceleration_state_exact_runtime_engine_audit
+  structural_parent: exp458_acceleration_state_exact_runtime_engine_audit
+  scientific_parent: exp444_acceleration_state_exact_hmm
+  root_parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  references:
+    - exp408_hmm_message_rate_basin_audit
+    - exp411_predictive_filtered_rate_innovation_destick
+    - exp444_acceleration_state_exact_hmm
+    - exp458_acceleration_state_exact_runtime_engine_audit
+    - docs/06_reproducibility.md
+  steering: ../../.steering/20260730-exp489-acceleration-state-fixed32-mechanism-audit
+  diff_summary: >-
+    Preserve exp458 as a terminal exact-parity FAIL. Under the user's explicit
+    judgment that the observed deviations are small enough to continue, reuse
+    its v2 frozen four-well outputs, decode only the remaining 28 fixed32 wells
+    with the unchanged engine/scientific contract, and apply the unchanged
+    exp444 Stage 0B mechanism and safety gates after target-free SHA freeze.
+
+design:
+  priority: P3_mechanism_preflight
+  design_frozen: true
+  implementation_authorized: true
+  implementation_approval_source: user_message_small_difference_proceed_2026_07_30
+  canonical_notebook_adoption_authorized: true
+  canonical_notebook_adoption_approval_source: user_message_small_difference_proceed_2026_07_30
+  kaggle_package_authorized: true
+  kaggle_package_approval_source: user_message_small_difference_proceed_2026_07_30
+  user_approved_numerical_waiver: true
+  exp458_exact_parity_reclassified: false
+  exp458_terminal_status_preserved: true
+  same_run_gate_rescue_allowed: false
+  completed_kernel_id: kentookumura/exp489-accel-state-fixed32-mechanism-audit-train
+  completed_kernel_version: 1
+  completed_kernel_id_no: 129171668
+  stage0b_result: fail_closed_mechanism
+  numerical_waiver:
+    approval_source: user_message_small_difference_proceed_2026_07_30
+    interpretation: small_approximation_accepted_for_stage0b_not_exact_equivalence
+    exp458_kernel_id: kentookumura/exp458-accel-state-exact-runtime-eng-audit-train
+    exp458_kernel_version: 2
+    exp458_kernel_id_no: 129168013
+    observed_exp458_v2_max_abs_errors:
+      parent_prediction_mean_max_abs_error_ft: 0.00010413506242912263
+      parent_prediction_std_max_abs_error_ft: 0.0000635657412058066
+      parent_acceleration_posterior_max_abs_error: 0.00000897726402104837
+      parent_rate_diagnostic_max_abs_error: 0.0000010862973659972464
+    prohibited_claims:
+      - exp458_exact_parity_pass
+      - bitwise_equivalent_to_exp444
+      - frozen_thresholds_satisfied
+
+validation:
+  strategy: >-
+    fixed32_target_free_freeze_then_truth_late_mechanism_preflight_not_cv
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  leakage_policy:
+    - Read only the well column from fixed32 manifest before all target-free outputs are frozen.
+    - Reuse exp458 v2 outputs only after all new 28 well outputs are frozen.
+    - Read truth, role, fold, exp209 control, episode and cause only after combined fixed32 artifact freeze.
+    - Treat Stage 0B as a mechanism preflight, not CV or promotion evidence.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  fixed32_manifest:
+    filename: stage0_fixed32_manifest.csv
+    local: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+    expected_sha256: fbbc62b7cb79e16a7fb436f3a9d11f8975e935ad2475a17e2dec4fd7b142e4d6
+    persistent_wells: 16
+    matched_control_wells: 16
+    total_wells: 32
+    expected_suffix_rows: 156088
+  fixed4_selection:
+    count: 4
+    source: exp444_fixed4_identity_ledger
+    sort_key: sha256_exp444_runtime_preflight_plus_well_id
+    expected_rows: 21962
+    prohibited_before_freeze: [truth, role, fold, episode, cause, control]
+  exp458_saved_fixed4:
+    source_experiment: exp458_acceleration_state_exact_runtime_engine_audit
+    kaggle_kernel_id: kentookumura/exp458-accel-state-exact-runtime-eng-audit-train
+    kaggle_kernel_version: 2
+    prediction_filename: exp458_acceleration_state_exact_runtime_engine_audit_stage0a_repeat2_predictions.csv.gz
+    acceleration_posterior_filename: exp458_acceleration_state_exact_runtime_engine_audit_stage0a_repeat2_acceleration_posterior.csv.gz
+    diagnostic_filename: exp458_acceleration_state_exact_runtime_engine_audit_stage0a_repeat2_target_free_diagnostics.csv.gz
+    summary_filename: exp458_acceleration_state_exact_runtime_engine_audit_stage0a_summary.json
+    expected_prediction_decompressed_sha256: 99c3fc141b39188e21dc1b8fef1c55998ef3878a6a0b0a7922f82ddeedf1aefb
+    expected_acceleration_posterior_decompressed_sha256: 4299cbbdfb2aa9b54e4d372d4abba7479ecafaf06628bb5ec5ee22c42c4dffe9
+    expected_diagnostic_decompressed_sha256: 0220cd1408695e77c6d60d64e7849bb86a4e5037b8af4db8c81c47fd4c83457d
+    expected_summary_raw_sha256: 831bc1602ba3e04a266481b29c8436abc257ea8e9f024c39674728f0dd6de3c7
+    expected_runtime_engine_contract_sha256: cb14a4f1dfc1d5de03a6e9329402fef476918b7ffb235552e9cd9d98d6c71451
+    regenerate: false
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp458-accel-state-exact-runtime-eng-audit-train/artifacts
+      - /kaggle/input/exp458-accel-state-exact-runtime-eng-audit-train/artifacts
+      - experiments/exp458_acceleration_state_exact_runtime_engine_audit/kaggle/output/train_v2/artifacts
+  exp209_saved_root_reference:
+    source_experiment: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    prediction_column: hmm_mean_tvt
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    regenerate: false
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts
+  persistent_episodes:
+    filename: persistent_offset_episodes.csv
+    local: experiments/exp408_hmm_message_rate_basin_audit/assets/persistent_offset_episodes.csv
+    expected_sha256: 031067fa77c195b77920a0997401310fbdd16532a2d0e99a9c3b5044de28913c
+    join_policy: after_combined_fixed32_target_free_freeze_only
+  exp408_episode_causes:
+    filename: exp408_hmm_message_rate_basin_audit_episode_summary.csv
+    local: experiments/exp408_hmm_message_rate_basin_audit/artifacts/kaggle_v3/exp408_hmm_message_rate_basin_audit_episode_summary.csv
+    expected_sha256: b230ffc759e6ee4891f22809b3f3c8a8796681fb461ec0b7215b94a352bf0ab0
+    join_policy: after_combined_fixed32_target_free_freeze_only
+
+scientific_contract:
+  expected_sha256: f4a0bbbcc8b9cb44a55cff29e07f49ed251e11a896b3e877b4e2d6f9d08f4972
+  source: exp444_acceleration_state_exact_hmm
+
+model:
+  name: acceleration_state_full_support_ou_exact_hmm_user_approved_scaled_approximation
+  estimator: deterministic_exact_state_space_forward_backward_scaled_engine
+  fitted_model_artifact: false
+  state: [tvt_position, u_rate, u_acceleration]
+  fixed_from_exp441:
+    position_grid_step_ft: 0.35
+    rate_grid: per_well_zero_centered_41_state_parent_grid
+    n_rates: 41
+    rate_span: 0.10
+    rate_span_min: 0.10
+    rate_transition_family: exact_ornstein_uhlenbeck_full_support_bin_integral
+    sig_r: 0.002
+    rate_momentum: 0.998
+    sig_p: 0.02
+    emission_family: gaussian_typewell_gr
+    emission_lambda: 1.0
+    sigma_mode: known_prefix_zero_fill_population_std
+    sigma_clip: [10.0, 60.0]
+    start_sigma_ft: 0.75
+    initial_rate_sigma: 0.01
+    band_pad_ft: 100.0
+    rate_boundary_semantics: preserve_parent_substochastic_outward_mass
+    position_boundary_semantics: preserve_parent_truncation
+    position_mean_formula: r_destination*delta_MD-delta_Z
+    output: smoothed_posterior_mean_and_std
+  active_scientific_variants:
+    - three_state_persistent_acceleration
+  acceleration_state:
+    units: u_rate_per_md_ft
+    values: [-0.0005, 0.0, 0.0005]
+    initial_probability: [0.0, 1.0, 0.0]
+    transition:
+      interior_to_lower: 0.08
+      interior_stay: 0.84
+      interior_to_upper: 0.08
+      boundary_outward_policy: add_outward_probability_to_boundary_stay
+      derivation_note: nominal_exp209_one_ft_rate_move_probability_per_direction
+    destination_rate_mean_formula: exp(-kappa*delta_MD)*r_source+a_destination*delta_MD
+    destination_rate_variance_formula: sig_r^2*(1-exp(-2*kappa*delta_MD))/(2*kappa)
+    position_update_uses: destination_rate
+  forbidden:
+    - acceleration_value_count_span_transition_or_initial_prior_grid
+    - acceleration_trigger_reset_reanchor_or_truth_direction
+    - exp441_rate_kernel_position_grid_noise_emission_prior_or_readout_change
+    - viterbi_map_selector_blend_or_same_oof_rescue
+
+runtime_engine:
+  candidates:
+    - scaled_probability_factorized_cached_outer4
+  candidate_count: 1
+  dtype: float64
+  forward:
+    - acceleration_3x3_matrix
+    - destination_acceleration_conditioned_rate_41x41_matrix
+    - exact_parent_position_five_offset_stencil
+    - exact_parent_gr_emission
+    - per_row_scale_normalization_and_log_scale_record
+  backward: use_saved_forward_scale_with_reverse_factorized_operator
+  joint_dense_transition_materialized: false
+  delta_md_ou_cache:
+    enabled: true
+    key: exact_float64_bit_pattern_within_well
+    rounding_or_quantization: false
+  parallel:
+    outer_well_workers: 4
+    process_isolation: true
+    numba_threads_per_worker: 1
+    omp_threads_per_worker: 1
+    mkl_threads_per_worker: 1
+    openblas_threads_per_worker: 1
+    shared_reduction_across_wells: false
+    output_order: stable_well_id_then_row_idx
+  accelerator: cpu_only
+  gpu: false
+  use_amp: false
+
+gates:
+  stage0b_fixed32:
+    prerequisite: user_approved_exp458_small_numerical_deviation_waiver
+    role: mechanism_preflight_only_not_cv_or_promotion
+    scientific_variants: 1
+    selected_runtime_engines: 1
+    total_unique_candidate_hmm_wells: 32
+    reused_stage0a_candidate_wells: 4
+    additional_candidate_hmm_well_runs: 28
+    total_physical_candidate_hmm_well_runs_through_exp458_and_exp489: 36
+    parent_hmm_well_runs: 0
+    technical:
+      expected_wells: 32
+      expected_rows: 156088
+      finite_coverage_min: 1.0
+      acceleration_posterior_nonzero_mass_fraction_min: 0.01
+      acceleration_posterior_nonzero_mass_fraction_max: 0.80
+      truth_role_fold_episode_cause_control_reads_before_freeze_max: 0
+      peak_rss_gb_max: 25
+    mechanism:
+      posterior_acceleration_future_rate_curvature_sign_agreement_min: 0.60
+      sign_agreement_positive_folds_min: 4
+      forward_cause_episode_sse_reduction_min_fraction: 0.10
+      persistent_episode_sse_reduction_min_fraction: 0.05
+      persistent_improved_wells_min: 10
+      persistent_improving_folds_min: 4
+      matched_exp209_control_pooled_rmse_delta_max_ft: 0.02
+      matched_exp209_control_by_well_delta_p95_max_ft: 0.25
+    fail_action: close_without_runtime_scientific_parameter_or_gate_rescue
+  stage1_full_oof:
+    prerequisite: stage0b_all_gates_pass_and_separate_user_approval
+    candidate_hmm_well_runs: 773
+    execution_authorized: false
+
+execution:
+  selected_stage: stage0b_fixed32_mechanism_audit_completed_fail_closed
+  implementation_authorized: true
+  implementation_approval_source: user_message_small_difference_proceed_2026_07_30
+  canonical_notebook_adoption_authorized: true
+  canonical_notebook_adoption_approval_source: user_message_small_difference_proceed_2026_07_30
+  kaggle_package_authorized: true
+  kaggle_package_approval_source: user_message_small_difference_proceed_2026_07_30
+  stage0a_run_authorized: false
+  stage0b_run_authorized: false
+  stage0b_execution_approval_source: user_message_small_difference_proceed_2026_07_30
+  stage1_run_authorized: false
+  inference_authorized: false
+  submission_authorized: false
+  run_hmm: false
+  create_prediction: false
+  create_submission: false
+  run_local_notebook: false
+  canonical_train_notebook_adopted: true
+  scientific_variants: 1
+  runtime_engine_candidates: 1
+  reused_stage0a_candidate_wells: 4
+  additional_candidate_hmm_well_runs: 28
+  stage0b_total_unique_candidate_wells: 32
+  parent_control_hmm_well_runs: 0
+  lightgbm_configs: 0
+  trained_ml_folds: 0
+  boosters: 0
+  fitted_models: 0
+  pf_runs: 0
+  beam_runs: 0
+  gpu_runs: 0
+  completed_kernel_id: kentookumura/exp489-accel-state-fixed32-mechanism-audit-train
+  completed_kernel_version: 1
+  completed_kernel_id_no: 129171668
+  stage0b_result: fail_closed_mechanism
+
+runtime:
+  use_amp: false
+  num_workers: 4
+  numba_num_threads_per_worker: 1
+  target: kaggle_private_cpu
+  hard_runtime_limit_seconds: 3600
+  peak_rss_limit_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    planned_kernel_id: kentookumura/exp489-accel-state-fixed32-mechanism-audit-train
+    planned_title: exp489 accel state fixed32 mechanism audit train
+    bootstrap_dependency_files:
+      - source: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+        destination: assets/stage0_fixed32_manifest.csv
+      - source: experiments/exp408_hmm_message_rate_basin_audit/assets/persistent_offset_episodes.csv
+        destination: assets/persistent_offset_episodes.csv
+      - source: experiments/exp408_hmm_message_rate_basin_audit/artifacts/kaggle_v3/exp408_hmm_message_rate_basin_audit_episode_summary.csv
+        destination: assets/exp408_hmm_message_rate_basin_audit_episode_summary.csv
+    kernel_sources:
+      - kentookumura/exp458-accel-state-exact-runtime-eng-audit-train
+      - kentookumura/exp209-joint-exact-parity-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng
+  stochastic_components: []
+  parallel_rng_policy: no_rng_and_no_cross_well_shared_reduction
+  output_order: stable_well_id_then_row_idx
+  gzip_sha_policy: decompressed_content_sha_primary
+  record:
+    kernel_version: true
+    input_sha: true
+    source_sha: true
+    scientific_contract_sha: true
+    exact_delta_md_key_ledger_sha: true
+    prediction_sha: true
+    posterior_sha: true
+    diagnostic_sha: true
+    runtime_manifest_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+
+inference:
+  mode: disabled_stage0b_fail_closed
+  selected_variant: null

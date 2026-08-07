@@ -1,0 +1,88 @@
+{
+  "b_peak_count": 2,
+  "best_variant": {
+    "bias_pred_minus_true": -4.766830325030437,
+    "mae": 32.70950823131668,
+    "rmse": 52.50742292458995,
+    "rows": 3783989,
+    "variant": "known_tvt_fit_full",
+    "within10": 0.34398276527759464
+  },
+  "cv": 52.50742292458995,
+  "experiment": "exp206_discussion711308_dz_dtvt_bpeak_cluster_baseline",
+  "feature_content_sha256": "909d533512f688f8f5bcb3848cf72c55e0493b310e335b691da3bf1540bf46d7",
+  "inference_kernel": "kentookumura/exp206-dz-dtvt-bpeak-cluster-inference",
+  "inference_kernel_version": 5,
+  "kernel": "kentookumura/exp206-dz-dtvt-bpeak-cluster-train",
+  "kernel_version": 4,
+  "key_idea": "Fit dTVT ~= a*dZ+b from each query/test well's known TVT_input and transform the unknown suffix from the last known TVT anchor.",
+  "metric": "rmse_tvt",
+  "notes": "v4 selected_variant is known_tvt_fit_full. It uses all available known TVT_input rows for each query/test well to fit a,b, then cumulatively predicts unknown rows with a*dZ+b. Train CV and Public LB both worsened, so this direct known-TVT fit path is not adopted.",
+  "private_lb": null,
+  "public_lb": 57.063,
+  "route": "pf_beam",
+  "selected_variant": "known_tvt_fit_full",
+  "selected_variant_metrics": {
+    "bias_pred_minus_true": -4.766830325030437,
+    "mae": 32.70950823131668,
+    "rmse": 52.50742292458995,
+    "rows": 3783989,
+    "variant": "known_tvt_fit_full",
+    "within10": 0.34398276527759464
+  },
+  "sha256": {
+    "full_fit_by_well": "8dc878046a32689fc5d4db485dc4b313054b186654baf2071bea300398eacf45",
+    "submission_csv": "ba1903650c6da55cd64656e0eedc475701494e7250b0c62e0dd7d28a84f5e5d2",
+    "test_assignments": "a7f990fdc1a01aae6f477053e4371e1102e15af4c23684eee4b1ac1aef958d4e",
+    "train_oof_predictions_decompressed": "909d533512f688f8f5bcb3848cf72c55e0493b310e335b691da3bf1540bf46d7",
+    "train_oof_predictions_raw_gzip": "f724b6b773f41bc310ff119fb942c97d523926f7b1169d92e3203803ba60fd6d",
+    "variant_metrics": "4883b0829be9e440e6a0719364bbd4e66da1ef30bc79228617a156664a7b08b1"
+  },
+  "status": "submitted_v4_public_lb_57p063_failed_requirement",
+  "submission_ref": 54458212,
+  "train_unknown_rows": 3783989,
+  "train_wells": 773,
+  "updated_at": "2026-07-08",
+  "version_history": [
+    {
+      "cv": 81.7364272463997,
+      "inference_kernel_version": 1,
+      "public_lb": 41.214,
+      "selected_variant": "exact_typewell_peak_xy_k8",
+      "status": "submitted_public_lb_41p214_failed_requirement",
+      "submission_ref": 54395246,
+      "submission_sha256": "46832ec24b291f0fb1d6e6ecf2f1a29879da334ee83c10382734334f248f41a3",
+      "train_kernel_version": 1
+    },
+    {
+      "cv": 35.41055512960111,
+      "inference_kernel_version": 2,
+      "public_lb": 34.908,
+      "selected_variant": "prefix_holdout_source_b_fixeda_h600",
+      "status": "submitted_v2_public_lb_34p908_failed_requirement",
+      "submission_ref": 54396544,
+      "submission_sha256": "fcd44d9ada12214d605eaf301751b6ff932e27de9992008be459e8fd537fed4c",
+      "train_kernel_version": 2
+    },
+    {
+      "cv": 35.30041735041327,
+      "inference_kernel_version": 3,
+      "public_lb": 29.193,
+      "selected_variant": "discussion_fullxyz_cluster_holdout_ab_k24_h300",
+      "status": "submitted_v3_public_lb_29p193_failed_requirement",
+      "submission_ref": 54408573,
+      "submission_sha256": "0f37a593ff2a3cf3ffedcf4ecfadcaaae5d6d2ac68ba86b564eb43f608afdd23",
+      "train_kernel_version": 3
+    },
+    {
+      "cv": 52.50742292458995,
+      "inference_kernel_version": 5,
+      "public_lb": 57.063,
+      "selected_variant": "known_tvt_fit_full",
+      "status": "submitted_v4_public_lb_57p063_failed_requirement",
+      "submission_ref": 54458212,
+      "submission_sha256": "ba1903650c6da55cd64656e0eedc475701494e7250b0c62e0dd7d28a84f5e5d2",
+      "train_kernel_version": 4
+    }
+  ]
+}

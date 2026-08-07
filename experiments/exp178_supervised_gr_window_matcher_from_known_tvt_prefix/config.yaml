@@ -1,0 +1,141 @@
+experiment:
+  name: "exp178_supervised_gr_window_matcher_from_known_tvt_prefix"
+  description: Learn a supervised GR window matching scorer from observed TVT_input prefix alignments as a 1-fold row-capped smoke.
+  route: pf_beam
+  status: implemented_not_run
+  created_at: "2026-07-03"
+  updated_at: "2026-07-03"
+
+lineage:
+  parent: supervised_gr_window_matcher_from_known_tvt_prefix backlog
+  diagnostic_parents:
+    - exp131_gr_shape_descriptor_matching_ablation
+    - exp132_multi_scale_gr_observation_likelihood
+    - exp133_gr_bimodal_match_ambiguity_detector
+    - exp169_tvt_input_pfbeam_offset_calibration
+  implementation_source: exp178_supervised_gr_window_matcher_from_known_tvt_prefix_train.py
+  diff_summary: Builds positive and negative GR window pairs from known TVT_input prefix rows, fits logistic/no-GR/shuffled controls plus a small expected-error regressor, and reports pair AUC plus topK true-alignment recovery. It does not train a TVT predictor, replace PF/Beam paths, create a submission, or use evaluation-tail true TVT.
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+validation:
+  strategy: known_tvt_input_prefix_groupkfold_pair_smoke
+  metric: pair_auc
+  seed: 42
+  n_folds: 5
+  fold_index: 0
+  group_column: well
+  score_rows: observed_TVT_input_prefix_pairs
+  secondary_metrics:
+    - logloss
+    - top1_within10_rate
+    - within10_topk_coverage
+    - expected_error_mae
+    - shuffled_gr_negative_control
+    - no_gr_negative_control
+    - by_well_top1_rate
+  leakage_policy:
+    - Positive labels use only observed TVT_input prefix rows from raw train horizontal wells.
+    - Negative windows are generated from fixed offsets and hard local decoys around the same known-prefix row.
+    - Evaluation-tail TVT and TVT_input-NaN rows are not used for window centers, labels, normalization, or threshold selection.
+    - Features may use candidate TVT, candidate minus final known TVT, MD/Z context, GR descriptors, and missingness; they do not include candidate minus observed TVT as an input.
+    - Shuffled-GR and no-GR controls must be beaten before any downstream PF/Beam observation-likelihood or ML add-only feature follow-up.
+    - Direct TVT regression, hard path replacement, softmax weighted average, midpoint proxy, PF weight replacement, inference port, and submission are out of scope.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: supervised_gr_window_matcher_from_known_tvt_prefix_smoke
+  estimator: sklearn_logistic_controls_and_hist_gradient_boosting_expected_error
+  target: pair_label_candidate_within_10ft_of_observed_TVT_input_prefix
+  base_prediction: none
+  outputs:
+    - learned_gr_match_prob_real_gr_logistic
+    - learned_gr_match_prob_shuffled_gr_logistic
+    - learned_gr_match_prob_no_gr_logistic
+    - learned_gr_expected_error_real_gr
+  notes:
+    - The learned scores are pair-level diagnostics. They are not TVT predictions.
+    - If useful, a later experiment can materialize hidden-safe `learned_gr_match_prob_*` confidence features for PF/Beam candidates or exp148/exp092 add-only ML surfaces.
+
+pair_dataset:
+  max_wells: 160
+  rows_per_well: 64
+  max_pairs: 120000
+  row_margin: 32
+  gr_smoothing_window: 5
+  window_offsets: [-24, -18, -12, -6, 0, 6, 12, 18, 24]
+  derivative_step: 3
+  positive_threshold_ft: 10.0
+  negative_offsets_ft: [-100, -50, -25, -15, 15, 25, 50, 100]
+  hard_decoy_scan_offsets_ft: [-180, -150, -120, -90, -60, -40, -25, -15, 15, 25, 40, 60, 90, 120, 150, 180]
+
+decision_thresholds:
+  min_auc_margin_vs_shuffled: 0.02
+  min_top1_margin_vs_no_gr: 0.03
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 32
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_well_for_shuffled_controls_and_deterministic_row_sampling
+  stochastic_components:
+    - sklearn_logistic_regression_solver
+    - sklearn_hist_gradient_boosting_expected_error
+  parallel_rng_policy: no_parallel_rng_in_exp178
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a train-side pair-classification smoke, not a deterministic submission anchor.
+    - Row selection is deterministic by sorted wells and evenly spaced prefix rows.
+    - Shuffled-GR rolls use stable SHA256 seeds keyed by experiment and well.
+    - Gzip artifacts record decompressed content SHA in the summary JSON.
+
+audit:
+  mode: supervised_gr_window_matcher_from_known_tvt_prefix
+  output_prefix: exp178_supervised_gr_window_matcher_from_known_tvt_prefix
+  topk_values: [1, 2, 3, 5]
+  expected_train_artifacts:
+    - exp178_supervised_gr_window_matcher_from_known_tvt_prefix_pair_features.csv.gz
+    - exp178_supervised_gr_window_matcher_from_known_tvt_prefix_validation_predictions.csv.gz
+    - exp178_supervised_gr_window_matcher_from_known_tvt_prefix_pair_metrics.csv
+    - exp178_supervised_gr_window_matcher_from_known_tvt_prefix_rank_metrics.csv
+    - exp178_supervised_gr_window_matcher_from_known_tvt_prefix_by_well_rank_metrics.csv
+    - exp178_supervised_gr_window_matcher_from_known_tvt_prefix_well_status.csv
+    - exp178_supervised_gr_window_matcher_from_known_tvt_prefix_logistic_coefficients.csv
+    - exp178_supervised_gr_window_matcher_from_known_tvt_prefix_feature_schema.csv
+    - exp178_supervised_gr_window_matcher_from_known_tvt_prefix_summary.json
+
+inference:
+  mode: not_selected_train_side_diagnostic_only
+  selected_variant: null
+  notes:
+    - No inference notebook should be pushed for submission.
+    - A later follow-up must first regenerate the same pair-score feature family for current test without using TVT_input-NaN rows as labels.
+
+notes:
+  - Implements the backlog item supervised_gr_window_matcher_from_known_tvt_prefix.
+  - The first execution should be Kaggle train v1; local notebook execution is not authoritative.

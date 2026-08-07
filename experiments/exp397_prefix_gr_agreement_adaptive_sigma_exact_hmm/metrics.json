@@ -1,0 +1,100 @@
+{
+  "experiment": "exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm",
+  "status": "stage_0_completed_guard_failed_closed",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "stage0_identifiability_then_rmse",
+  "implementation": {
+    "stage_0_compact_selfcontained_candidate": true,
+    "canonical_notebook_adopted": true,
+    "stage_1_implemented": false,
+    "inference_enabled": false,
+    "submission_enabled": false
+  },
+  "validation": {
+    "dedicated_tests_passed": 11,
+    "jupytext_conversion_test": "passed",
+    "py_compile": "passed",
+    "ruff": "passed",
+    "strict_experiment_validation": "passed"
+  },
+  "execution": {
+    "stage_0_run": true,
+    "runtime_seconds": 39.35975061899995,
+    "diagnostic_variants": 1,
+    "reporting_folds": 5,
+    "hmm_well_runs": 0,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "pf_well_runs": 0,
+    "beam_well_runs": 0,
+    "boosters": 0,
+    "parent_control_reruns": 0,
+    "kaggle_kernel_id": "kentookumura/exp397-prefix-gr-adaptive-sigma-hmm-train",
+    "kaggle_kernel_id_no": 128540665,
+    "kaggle_kernel_version": 1
+  },
+  "stage_0": {
+    "passed": false,
+    "decision": "stage_0_failed_close_without_rescue",
+    "stage_1_eligible": false,
+    "wells": 773,
+    "full_evaluable_wells": 773,
+    "primary_evaluable_well_fraction": 1.0,
+    "fallback_wells": 0,
+    "fallback_well_fraction": 0.0,
+    "poor_multiplier_wells": 8,
+    "poor_multiplier_well_fraction": 0.01034928848641656,
+    "tail_evaluable_wells": 773,
+    "tail_evaluable_well_fraction": 1.0,
+    "full_tail_multiplier_agreement": 0.666235446313066,
+    "full_tail_spearman_correlation": 0.16746641700676126,
+    "minimum_fold_primary_evaluable_fraction": 1.0,
+    "checks": {
+      "minimum_primary_evaluable_well_fraction": true,
+      "maximum_fallback_well_fraction": true,
+      "poor_multiplier_well_fraction_range": false,
+      "minimum_each_fold_primary_evaluable_fraction": true,
+      "minimum_tail_evaluable_well_fraction": true,
+      "minimum_full_tail_multiplier_agreement": false,
+      "minimum_full_tail_spearman_correlation": false
+    },
+    "full_rho_quantiles": {
+      "q00": 0.22186250555043296,
+      "q05": 0.6262307996865487,
+      "q25": 0.7553630228723918,
+      "q50": 0.8140589119721423,
+      "q75": 0.8644325104628664,
+      "q95": 0.9284776289171331,
+      "q100": 0.9731465844955948
+    },
+    "tail_rho_quantiles": {
+      "q00": -0.6919100043959675,
+      "q05": -0.06196998072018229,
+      "q25": 0.4028387583175844,
+      "q50": 0.6482897328510447,
+      "q75": 0.7878204425005816,
+      "q95": 0.8980807715574387,
+      "q100": 0.9631551918851453
+    }
+  },
+  "reproducibility": {
+    "executed_package_source_sha256": "d4f43a6554b1caa3d4d4d840b92a1cb1ff722db1576c35536076c8ad45157d7e",
+    "executed_package_config_sha256": "886540b040ea8eeafb8f893bb99f052937072fda33e6f0b9c6fee20ed9ef3884",
+    "executed_notebook_sha256": "c8be29734a0d329f2c5724843ac121c66b1126679cd9c09f85e935c6abd3e16f",
+    "scientific_contract_sha256": "d2af5925416871f393aaffd3e638c0fb01777d7f74abd592479e7ea9890c3053",
+    "raw_well_identity_sha256": "bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32",
+    "fold_assignment_decompressed_sha256": "709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609",
+    "agreement_logical_sha256": "20a69c425a4f85b288b091f65b1bfd6cfb4990548c43a4b1e50108b1f1357d51",
+    "coefficient_logical_sha256": "859512d721cd7e543efb2596ae25cead136181e361dd4b64a6fcbc50af14e8bc",
+    "stability_logical_sha256": "8d821046149e6a5218112b8eb2bab9d752dcfa6cba826abdb8432c784ec19d6f",
+    "fold_metrics_logical_sha256": "e44885a76cd0f525993c2ef13a3443b2b819895772ef7c23fdb51a1022c6d859",
+    "well_manifest_logical_sha256": "4df4b295bbb684d17d6dfe3d1723bb9e520d9fcac77e972b16e215e3d38be97b",
+    "freeze_manifest_sha256": "74895018c460626e57bae17f694e40db0b6d1b44c4f2817f1dbf21bdebb27d79",
+    "truth_rows_before_freeze": 0,
+    "parent_control_loaded": false,
+    "prediction_generated": false
+  },
+  "notes": "Kaggle private CPU Stage 0 version 1 failed the frozen non-degeneracy and full-tail stability gates. The branch is closed without rescue; Stage 1, inference, and submission were not run."
+}

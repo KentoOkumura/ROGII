@@ -1,0 +1,229 @@
+experiment:
+  name: exp281_exp226_residual_offset_exact_hmm_transition_probe
+  description: >-
+    Decode one fixed slow residual-offset exact HMM in the moving coordinate
+    system of group-safe exp226 geometry-only tvt_geop after exp280 established
+    fold-stable raw-GR likelihood separability.
+  route: pf_beam
+  status: completed_train_side_guard_failed
+  created_at: "2026-07-19"
+  updated_at: "2026-07-19"
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.score_rows
+
+lineage:
+  parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  decoder_parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  separability_parent: exp280_exp226_shift_likelihood_separability_readout
+  failure_reference: exp279_exp226_geop_centered_exact_hmm_redecode
+  control_reference: exp263_last_anchor_better_candidate_confidence_pair_cache
+  diff_summary: >-
+    Reparameterizes the exp209 joint exact HMM from absolute TVT position into
+    delta around saved group-safe exp226 tvt_geop. The absolute transition
+    center is the exp226 row-to-row geometry increment and the only dynamic
+    freedom is a slow residual offset and its minimal rate state. Keeps the
+    exp209 Gaussian raw-GR emission, known-prefix calibration, missing-GR
+    interpolation, 0.35-ft step, 41 rate states, process grammar, and likelihood
+    weight fixed. exp226 tvt_pred is forbidden to prevent GR double use.
+
+validation:
+  strategy: group_safe_exp226_residual_offset_exact_hmm_unknown_suffix_oof
+  metric: rmse_tvt
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  promotion_baseline:
+    candidate: exp263_fixed_exp226_w500_50_50
+    oof_rmse: 8.238331
+    parity_atol_ft: 0.00001
+    public_lb: 7.800
+  guards:
+    minimum_oof_gain_ft: 0.02
+    minimum_improved_folds: 3
+    maximum_scope_rmse_regression_ft: 0.02
+    maximum_worst_well_rmse_regression_ft: 0.25
+    maximum_persistent_episode_count_delta: 0
+    minimum_recovery_rate_delta: 0.0
+    required_delta_grid_coverage: 1.0
+    required_finite_coverage: 1.0
+  leakage_policy:
+    - exp226 OOF is group-safe and the decoder loads tvt_geop but not tvt_pred, gr_delta, truth, error, or abs_error.
+    - The decoder receives raw horizontal/typewell inputs, known TVT_input prefix, and saved group-safe tvt_geop only.
+    - Offset grid, rate states, transition noise, likelihood calibration, and guards are fixed before execution.
+    - Unknown-suffix true TVT is attached by id only after every well candidate path is frozen.
+    - Recovery episodes and all performance guards are truth-only post-generation readouts and cannot select a parameter.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    safe_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    forbidden_decoder_columns: [tvt_pred, gr_delta, tvt_true, error, abs_error]
+    truth_columns: [well_id, row_idx, tvt_true, tvt_pred]
+  exp209_oof:
+    filename: exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    candidates:
+      - /tmp/exp209_blend_audit/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    expected_decompressed_sha256: ee3b548b0d38f78966742542e86fa31b7e64698d4762b924c924a5895d2ee3f4
+    prediction_column: hmm_mean_tvt
+  exp072_oof:
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v2_stream/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    expected_decompressed_sha256: 99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350
+    delta_column: likpf_mean_d
+    anchor_column: last_known_tvt
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /tmp/exp275-output-v2/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+
+model:
+  name: exp226_residual_offset_exact_hmm
+  estimator: deterministic_exact_forward_backward_on_delta_and_offset_rate
+  target: train_unknown_suffix_tvt_for_post_generation_scoring_only
+  hmm:
+    delta_min_ft: -80.0
+    delta_max_ft: 80.0
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_delta_ft: 0.0
+    start_sig: 0.75
+    initial_offset_rate: 0.0
+    r0_sig: 0.01
+    mom: 0.998
+    rate_center: zero
+    gr_log_likelihood_clip: 600.0
+    typewell_extension_ft: 40.0
+    transition_center: exp226_tvt_geop_row_delta
+    active_variants: [residual_offset_delta80_step035_rate41]
+    forbid_columns: [tvt_pred, gr_delta, tvt_true, abs_error, error]
+  fixed_formula_control:
+    name: exp263_fixed_exp226_w500_50_50
+    weights:
+      exp226_pred: 0.50
+      likelihood_pf_mean: 0.25
+      exact_hmm: 0.25
+
+audit:
+  output_prefix: exp281_exp226_residual_offset_exact_hmm_transition_probe
+  distance_buckets_ft: [50, 100, 250, 500, 1000]
+  promotion_scopes:
+    near:
+      minimum_md_since_ft: 0.0
+      maximum_md_since_ft: 250.0
+    long_tail:
+      minimum_md_since_ft: 1000.0
+      maximum_md_since_ft: null
+  persistent_offset:
+    error_threshold_ft: 10.0
+    minimum_consecutive_rows: 128
+    return_threshold_ft: 5.0
+    recovery_horizons_rows: [256, 512]
+  persist_full_posterior: false
+  persist_oracle_predictions: false
+  persist_selector: false
+  persist_candidate_blend: false
+  expected_artifacts:
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe_oof_predictions.csv.gz
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe_candidate_metrics.csv
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe_fold_metrics.csv
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe_distance_bucket_metrics.csv
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe_hidden_like_metrics.csv
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe_by_well_metrics.csv
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe_recovery_episodes.csv
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe_recovery_summary.csv
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe_well_manifest.csv
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe_input_manifest.csv
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe_decoder_manifest.json
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe_summary.json
+
+execution:
+  active_hmm_variants: 1
+  total_hmm_well_runs: 773
+  outer_workers: 1
+  numba_num_threads: 4
+  progress_every_wells: 2
+  max_wells: null
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  control_or_parent_retraining: false
+  cpu_exact_hmm_control_regenerated: false
+  gpu: false
+  inference: false
+  submission: false
+  kaggle_push_approved: true
+
+inference:
+  enabled: false
+  mode: disabled_until_full_train_guard_passes_and_user_approves_hidden_safe_regeneration
+  create_submission: false
+  selected_candidate: null
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_sorted_well_order_saved_exp226_group_fold
+  stochastic_components: []
+  parallel_rng_policy: no_rng_outer_workers1_numba_threads4
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - exp280 passed the separability guard, but top1 accuracy was too weak for direct correction.
+    - One successful Kaggle run is not enough to call this a deterministic anchor.
+    - Decoder manifest SHA replaces fitted-model SHA because no model is trained.

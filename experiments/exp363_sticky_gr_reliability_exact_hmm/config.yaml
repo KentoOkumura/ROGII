@@ -1,0 +1,299 @@
+experiment:
+  name: "exp363_sticky_gr_reliability_exact_hmm"
+  description: >-
+    Add one sticky latent GR-reliability state to the exp209 exact HMM, after
+    a truth-late-join emission-reliability identifiability readout.
+  route: pf_beam
+  status: stage_0_failed_closed
+  created_at: "2026-07-23"
+  updated_at: "2026-07-24"
+
+implementation:
+  enabled: true
+  scope: stage0_train_side_reliability_readout
+  stage_1_implemented: false
+  train_notebook_state: canonical_adopted_from_compact_selfcontained
+  canonical_notebook_adopted: true
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.score_rows
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260723-exp363-sticky-gr-reliability-exact-hmm
+  references:
+    - exp269_missing_gr_neutrality_hmm
+    - exp346_exp209_observed_only_finite_sigma_gr_hmm
+    - exp232_adaptive_robust_likelihood_pf
+    - exp233_outlier_mixture_pf
+  diff_summary: >-
+    Keep the exp209 position/rate state, transition, grids, initialization,
+    Gaussian emission scale, and posterior-mean output fixed. Add only
+    q in {normal, weak}; q follows a fixed sticky Markov chain and weak rows
+    multiply the exp209 log emission by 0.25. No rate prediction is added.
+
+validation:
+  strategy: two_stage_truth_late_join_reliability_readout_then_exact_hmm
+  metric: bad10_auc_and_block_rmse
+  seed: 42
+  n_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  expected_wells: 773
+  expected_rows: 3783989
+  group_column: well_id
+  score_rows: unknown_suffix_only
+  truth_attachment: after_block_ledger_and_weak_posterior_content_sha_freeze
+  stage_0:
+    name: saved_exp209_path_emission_reliability_readout
+    hmm_well_runs: 0
+    block_rows: 512
+    stride_rows: 256
+    tail_policy: keep_short_tail_from_stride_starts
+    posterior_score: row_weighted_mean_forward_filtered_weak_probability
+    bad_block_label_after_freeze: exp209_block_rmse_greater_than_or_equal_10ft
+    bad_block_rmse_ft: 10.0
+    quartile_edges: [0.25, 0.75]
+    quartile_metric: mean_block_rmse_q4_minus_q1
+    fold_pass_definition: real_bad10_auc_strictly_greater_than_0p50
+    hidden_like_policy: require_both_spatial_and_typewell_purged
+    negative_control:
+      kind: within_well_nonzero_circular_shift_of_block_weak_score
+      key_prefix: exp363
+      offset_formula: one_plus_sha256_well_prefix_mod_block_count_minus_one
+      preserve_within_well_score_multiset: true
+      single_block_well_policy: identity_and_report
+    all_required:
+      minimum_bad_block_auc: 0.60
+      minimum_auc_gain_over_circular: 0.02
+      minimum_q4_minus_q1_block_rmse_ft: 0.50
+      minimum_passing_folds: 4
+      minimum_hidden_like_auc: 0.55
+      weak_posterior_mean_range: [0.02, 0.50]
+  stage_1:
+    enabled_only_after_stage_0_pass_and_separate_user_approval: true
+    exact_hmm_well_runs: 773
+    all_required:
+      minimum_rmse_gain_vs_exp209_ft: 0.05
+      minimum_improved_folds: 4
+      maximum_1000_plus_regression_ft: 0.02
+      maximum_hidden_like_spatial_regression_ft: 0.02
+      maximum_hidden_like_typewell_purged_regression_ft: 0.02
+      maximum_by_well_p95_regression_ft: 0.02
+      maximum_worst_well_regression_ft: 0.25
+
+data:
+  train_dir: data/raw/train
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  parent_control:
+    candidate: hmm_mean_tvt
+    direct_rmse_ft: 11.938287417
+    usage: saved_prediction_only_no_control_rerun
+  saved_exp209_path:
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts
+    prediction_column: hmm_mean_tvt
+    sigma_column: hmm_prefix_sigma
+    safe_columns: [id, well, hmm_mean_tvt, hmm_prefix_sigma]
+    forbidden_columns: [target, TVT, tvt_true, error, abs_error]
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    truth_columns: [well_id, row_idx, tvt_true]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+model:
+  name: sticky_gr_reliability_exact_hmm
+  estimator: none_stage0_then_deterministic_exact_hmm_if_promoted
+  state: [position, rate, gr_reliability]
+  exp209_path_emission:
+    path_prediction_column: hmm_mean_tvt
+    sigma_column: hmm_prefix_sigma
+    kind: gaussian_negative_half_min_squared_z_600_without_log_sigma
+    squared_z_clip: 600.0
+    horizontal_gr_policy: exp209_linear_interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+    affine_a: 1.0
+    affine_b: 0.0
+  gr_reliability:
+    states: [normal, weak]
+    transition_matrix:
+      - [0.998046875, 0.001953125]
+      - [0.0078125, 0.9921875]
+    initial_probability: [0.8, 0.2]
+    normal_log_emission_multiplier: 1.0
+    weak_log_emission_multiplier: 0.25
+  fixed_from_exp209:
+    - position_and_rate_grid
+    - transition_and_momentum
+    - initial_position_and_rate_distribution
+    - gaussian_emission_sigma
+    - posterior_mean_output
+  forbidden:
+    - rate_or_rate_change_prediction_from_prefix_or_geometry
+    - missing_row_hard_mask
+    - emission_sigma_change
+    - transition_change
+    - multiplier_or_transition_grid
+    - blend_or_selector
+    - parent_control_rerun
+
+audit:
+  output_prefix: exp363_sticky_gr_reliability_exact_hmm
+  expected_artifacts:
+    - exp363_sticky_gr_reliability_exact_hmm_scientific_contract.json
+    - exp363_sticky_gr_reliability_exact_hmm_raw_well_manifest.csv
+    - exp363_sticky_gr_reliability_exact_hmm_input_manifest.json
+    - exp363_sticky_gr_reliability_exact_hmm_target_free_block_ledger.csv.gz
+    - exp363_sticky_gr_reliability_exact_hmm_target_free_weak_posterior_blocks.csv.gz
+    - exp363_sticky_gr_reliability_exact_hmm_late_truth_block_readout.csv.gz
+    - exp363_sticky_gr_reliability_exact_hmm_scope_metrics.csv
+    - exp363_sticky_gr_reliability_exact_hmm_stage0_gate.json
+    - exp363_sticky_gr_reliability_exact_hmm_summary.json
+
+runtime:
+  device: cpu
+  use_gpu: false
+  use_amp: false
+  num_workers: 1
+  maximum_seconds: 30600
+  maximum_peak_rss_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    train_run_on_push: false
+    kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_well_row_state_and_sha256_circular_offset
+  stochastic_components: []
+  parallel_rng_policy: single_worker_no_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Freeze block features and weak posterior before attaching suffix truth.
+    - The circular negative control uses a stable SHA256-derived nonzero block shift.
+    - Stage 0 is a deterministic fixed-input diagnostic, not a submission anchor.
+    - Raw-test generation, inference, and submission remain disabled until promotion.
+
+execution_contract:
+  stage_0:
+    diagnostic_variants: 1
+    reporting_folds: 5
+    hmm_well_runs: 0
+    model_configs: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+  stage_1_if_pass_and_separately_approved:
+    scientific_variants: 1
+    reporting_folds: 5
+    exact_hmm_well_runs: 773
+    model_configs: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+  parent_control_retraining: false
+
+execution:
+  implementation_approved: true
+  implementation_approval_scope: user_message_implement_exp363
+  implementation_approved_at: "2026-07-23"
+  kaggle_push_approved: false
+  kaggle_push_approval_scope: user_message_execute_exp363
+  kaggle_push_approved_at: "2026-07-24"
+  active_stage: stage_0_completed_failed_closed
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+  kaggle_kernel_id: kentookumura/exp363-sticky-gr-reliability-exact-hmm-train
+  kaggle_kernel_title: exp363 sticky gr reliability exact hmm train
+  kaggle_kernel_version: 1
+  kaggle_kernel_id_no: 128370770
+  kaggle_kernel_url: https://www.kaggle.com/code/kentookumura/exp363-sticky-gr-reliability-exact-hmm-train
+  kaggle_kernel_status: COMPLETE
+  stage_1_counts:
+    scientific_variants: 1
+    reporting_folds: 5
+    exact_hmm_well_runs: 773
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    parent_control_reruns: 0
+
+results:
+  stage: stage_0
+  decision: stage_0_failed_close_without_rescue
+  technical_gate_passed: true
+  scientific_gate_passed: false
+  stage_1_eligible: false
+  rows: 3783989
+  wells: 773
+  blocks: 15174
+  runtime_seconds: 497.0825231075287
+  pooled_bad10_auc: 0.6075519952264062
+  circular_bad10_auc: 0.5839957758286425
+  real_minus_circular_auc: 0.023556219397763756
+  q4_minus_q1_mean_block_rmse_ft: 4.816306326034209
+  passing_folds_auc_gt_0p50: 5
+  hidden_like_spatial_auc: 0.5460579716716817
+  hidden_like_typewell_purged_auc: 0.5521945394145014
+  row_weighted_weak_mass: 0.5894409974648201
+  failed_scientific_checks:
+    - hidden_like_spatial_auc_below_0p55
+    - row_weighted_weak_mass_above_0p50
+
+inference:
+  enabled: false
+  mode: disabled_stage0_failed_closed
+  create_submission: false
+
+notes:
+  - Design frozen on 2026-07-23.
+  - User approved Stage 0 implementation on 2026-07-23.
+  - User approved the fixed Stage 0 Kaggle CPU package/push/run on 2026-07-24.
+  - Kaggle CPU version 1 completed with technical PASS and scientific FAIL.
+  - Hidden-like spatial AUC and weak-mass gates failed; Stage 1 is ineligible.
+  - Stage 1 exact HMM, inference, blend, and submission are not implemented.
+  - Any Stage 0 gate failure closes the branch without transition, multiplier, sigma, or blend rescue.

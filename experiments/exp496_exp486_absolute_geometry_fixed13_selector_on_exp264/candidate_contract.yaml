@@ -1,0 +1,125 @@
+schema_version: 1.0.0
+implementation_status: compact_stage_a_stage_c_complete_run_not_approved
+source_of_truth: exp263_deployable12_plus_saved_exp486_absolute_geometry_prediction
+expected_rows: 3783989
+expected_wells: 773
+
+score_candidates:
+  - {id: exp226_k16, kind: primitive, family: geometry}
+  - {id: selfgr_hmm_a070, kind: primitive, family: self_gr_hmm}
+  - {id: likpf_mean, kind: primitive, family: likelihood_pf}
+  - {id: exact_hmm, kind: primitive, family: exact_hmm}
+  - {id: pf_ancc, kind: primitive, family: particle_filter}
+  - {id: beam_mean, kind: primitive, family: beam}
+  - id: exp226_k16__selfgr_hmm_a070
+    kind: pair_mean_50
+    family: geometry_self_gr_hmm_pair
+    parents: [exp226_k16, selfgr_hmm_a070]
+    weights: [0.5, 0.5]
+  - id: exp226_k16__exact_hmm
+    kind: pair_mean_50
+    family: geometry_exact_hmm_pair
+    parents: [exp226_k16, exact_hmm]
+    weights: [0.5, 0.5]
+  - id: exp226_k16__likpf_mean
+    kind: pair_mean_50
+    family: geometry_likelihood_pf_pair
+    parents: [exp226_k16, likpf_mean]
+    weights: [0.5, 0.5]
+  - id: selfgr_hmm_a070__likpf_mean
+    kind: pair_mean_50
+    family: self_gr_hmm_likelihood_pf_pair
+    parents: [selfgr_hmm_a070, likpf_mean]
+    weights: [0.5, 0.5]
+  - id: likpf_mean__exact_hmm
+    kind: pair_mean_50
+    family: likelihood_pf_exact_hmm_pair
+    parents: [likpf_mean, exact_hmm]
+    weights: [0.5, 0.5]
+  - id: exp226_w500_50_50
+    kind: named_fixed
+    family: geometry_likelihood_pf_exact_hmm_fixed
+    parents: [exp226_k16, likpf_mean, exact_hmm]
+    weights: [0.5, 0.25, 0.25]
+  - id: exp486_absolute_geometry_likpf
+    kind: absolute_geometry_likelihood_pf
+    family: geometry_guided_likelihood_pf
+    source_experiment: exp486_exp226_geometry_residual_likelihood_pf
+    prediction_column: likpf_scale5_absolute_geometry_unary
+    candidate_generation: fold_safe_exp226_oof_geometry_plus_target_free_per_well_pf
+    source_fold_role: upstream_oof_safety_audit_only
+    source_fold_used_as_model_feature: false
+    selector_join_policy: global_well_id_row_idx_then_exp263_fold_repartition
+    native_confidence:
+      geometry_residual_mean: geometry_residual_mean
+      geometry_residual_std: geometry_residual_std
+      geometry_log_factor_mean: geometry_log_factor_mean
+      effective_sample_size: effective_sample_size
+      resampled_seed_fraction: resampled_seed_fraction
+
+legal_domains:
+  primitive_pair_bank:
+    role: primary_meta_and_hard_select_domain
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_k16__selfgr_hmm_a070
+      - exp226_k16__exact_hmm
+      - exp226_k16__likpf_mean
+      - selfgr_hmm_a070__likpf_mean
+      - likpf_mean__exact_hmm
+      - exp486_absolute_geometry_likpf
+  primitive_fixed_bank:
+    role: unchanged_fixed_fallback_comparison_domain
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_w500_50_50
+
+candidate_id_model_encoding:
+  type: one_hot
+  order_source: score_candidates_declared_order
+  width: 13
+  keep_string_id_in_artifacts: true
+  ordinal_index_as_model_feature: false
+
+added_candidate_contract:
+  included: [exp486_absolute_geometry_likpf]
+  excluded_exp486_outputs:
+    - likpf_scale5_slow_residual_offset
+    - likpf_scale5_absolute_geometry_unary__hmm_50_50
+    - likpf_scale5_slow_residual_offset__hmm_50_50
+  new_pair_or_blend_candidates: []
+  fixed_fallback_changed: false
+
+confidence_contract:
+  native_confidence_required_for_added_candidate: true
+  native_confidence_finite_required: true
+  universal_proxy_required_for_every_candidate: true
+  universal_proxy_groups:
+    - candidate_availability_and_coverage
+    - candidate_anchor_distance
+    - candidate_local_shape
+    - candidate_bank_disagreement
+    - candidate_family_and_kind_one_hot
+
+forbidden_behaviors:
+  - use_exp486_residual_prediction_or_ledger
+  - use_exp486_truth_error_control_role_fold_scope_gate_or_by_well_result_as_feature
+  - use_upstream_exp226_fold_id_as_selector_feature
+  - create_exp486_hmm_blend_or_new_pair_candidate
+  - change_existing_candidate_value_order_formula_or_domain
+  - add_exp486_to_fixed_fallback_domain
+  - use_candidate_error_or_oracle_as_feature
+  - tune_candidate_weight_usage_threshold_or_gate_on_same_oof
+  - train_parent_control_or_downstream_tvt
+  - run_pf_hmm_or_beam_generation
+  - run_inference_or_submission_before_separate_approval

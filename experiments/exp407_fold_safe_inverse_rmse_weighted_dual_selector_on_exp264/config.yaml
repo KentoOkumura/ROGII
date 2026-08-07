@@ -1,0 +1,635 @@
+experiment:
+  name: exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264
+  description: >-
+    Keep the corrected exp264 twelve-candidate bank unchanged and test whether
+    fold-safe inverse candidate-RMSE task weights reduce negative transfer in
+    the shared dual-objective selector.
+  hypothesis: >-
+    Downweighting globally weak candidate tasks without removing their rows or
+    changing inference domains can improve unweighted selector calibration and
+    hard readouts by reducing shared-model capacity dilution.
+  route: ml_model
+  status: stage_b_completed_scientific_fail_closed
+  created_at: "2026-07-26"
+  updated_at: "2026-07-26"
+  inference_enabled: false
+  submission_enabled: false
+  next_action: close_exp407_without_rescue_and_keep_exp264_as_selector_anchor
+
+lineage:
+  parent: exp264_exp263_candidate_confidence_dual_selector
+  candidate_source: exp263_last_anchor_better_candidate_confidence_pair_cache
+  selector_method_parent: exp264_corrected_stage_b_v5
+  downstream_method_parent: exp264_corrected_stage_c_v6_and_stage_d_v3
+  steering: ../../.steering/20260726-exp407-fold-safe-inverse-rmse-weighted-dual-selector-on-exp264
+  references:
+    - docs/06_reproducibility.md
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/config.yaml
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/candidate_contract.yaml
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/metrics.json
+  diff_summary: >-
+    Change only the candidate-long training sample weight. For each exact model
+    fit partition, compute actual-TVT RMSE per candidate from fit rows, convert
+    inverse RMSE to mean-one clipped candidate weights, and apply the same
+    weight to both selector objectives. Keep all candidates, values, features,
+    folds, sampling, model parameters, legal domains, validation metrics, and
+    downstream adapters fixed.
+
+implementation:
+  enabled: true
+  scope: stage_b_code_and_approved_kaggle_execution
+  design_approval_received: true
+  design_approval_source: user_message_create_backlog_experiment_steering_and_freeze_design_2026_07_26
+  stage_b_implementation_approval_received: true
+  stage_b_implementation_approval_source: user_message_exp407_implementation_2026_07_26
+  scaffold_created: true
+  notebook_placeholders_only: false
+  canonical_notebook_adopted: true
+  canonical_notebook_adoption_approval_received: true
+  canonical_notebook_adoption_approval_source: user_message_execute_exp407_2026_07_26
+  jupytext_source_created: true
+  helper_code_created: true
+  tests_created: true
+  kaggle_package_created: true
+  stage_b_implemented: true
+  stage_b_execution_enabled: false
+  stage_b_execution_completed: true
+  stage_b_execution_approval_received: true
+  stage_b_execution_approval_source: user_message_execute_exp407_2026_07_26
+  stage_c_enabled: false
+  stage_d_enabled: false
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: outer5_groupkfold_selector_then_conditional_outer5_inner4_nested_stacking
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  outer_folds: 5
+  inner_folds: 4
+  group_column: well
+  score_rows: TVT_input_isna
+  expected_base_rows: 3783989
+  expected_wells: 773
+  expected_outer_folds: [0, 1, 2, 3, 4]
+  primary_metrics_unweighted: true
+  secondary_metrics:
+    - candidate_expected_error_mae
+    - candidate_within10_logloss
+    - candidate_within10_brier
+    - calibration_error
+    - hard_primary_top1_rmse
+    - distance_bucket_rmse
+    - hidden_like_rmse
+    - fold_rmse
+    - worst_well_regression
+  leakage_policy:
+    - Freeze the parent feature schema, candidate order, fit row IDs, and folds before joining truth for labels or weights.
+    - Compute each weight table only from the exact sampled fit rows for that model.
+    - Outer-valid, inner-valid, hidden-like, current-test, global-OOF truth, errors, and oracle labels are forbidden from weight calculation.
+    - Stage B weights use sampled outer-train rows only.
+    - Conditional Stage C weights use sampled inner-train rows only for each outer-inner model.
+    - Validation data receives no sample weights and every reported metric is unweighted.
+    - Weight tables are training controls and are never model features or current-test inputs.
+    - Downstream outer-train compact features must remain inner OOF and outer-valid compact features must remain inner-model ensemble predictions.
+
+data:
+  parent_experiment: experiments/exp264_exp263_candidate_confidence_dual_selector
+  parent_candidate_contract: experiments/exp264_exp263_candidate_confidence_dual_selector/candidate_contract.yaml
+  parent_metrics: experiments/exp264_exp263_candidate_confidence_dual_selector/metrics.json
+  candidate_source_of_truth: exp263_stage1_raw_test_surfaces
+  expected_candidate_count: 12
+  expected_wells: 773
+  expected_base_rows: 3783989
+  expected_candidate_long_oof_rows: 45407868
+  expected_candidate_rows_each: 3783989
+  expected_feature_count: 88
+  expected_feature_schema_logical_sha256: aaef4ffdd90667893b099b76a52f1957b22197aea9cee5e5b57bc81048ddd3a4
+  expected_parent_stage_b_candidate_score_oof_sha256: 9a91b62599278d4e56d57074df4725d4a09391460458b8eccc02dd50af34d48a
+  expected_parent_stage_b_model_manifest_sha256: d5159ed142a055865ddd94a66d89e8242cb720b28dddf175d313ee32125ca07d
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  exp263_stage0_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts
+    - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1/artifacts
+    - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1_sample_partitions/artifacts
+  exp263_stage0_manifest_patterns:
+    - "**/cache_manifest.json"
+  exp263_expected_stage0_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+  exp263_expected_catalog_sha256: 7cd748661b719bfcfb1ed21b9fe314366b1c089cc0dd224a9e4cbd4ba7e9e6e0
+  exp251_selected_feature_schema_patterns:
+    - inputs/exp251_v4_selected_feature_schema.csv
+    - experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/kaggle/output/train_v4_selected/artifacts/exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv
+    - "**/exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv"
+  exp251_selected_feature_schema_sha256: 7a9217d6ed96f5f1e569dbefff2a1fb17751405d6ddccae5e5d9dbf12da787ae
+  exp251_expected_selected_feature_count: 295
+  candidate_contract_sha256: 4f4d3f77db01d7477f9e73066ac311cfdc2c14b15eba84fab9830f4cf5486c20
+  parent_stage_b_v5:
+    selector_metrics_patterns:
+      - inputs/exp264_stage_b_v5/selector_metrics.json
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_b_v5/artifacts/selector_metrics.json
+    selector_metrics_sha256: 576120d677bdd76bd7c2d40bf73d96bc37c759d79a8acd9a8a58faee43e4bf54
+    distance_bucket_metrics_patterns:
+      - inputs/exp264_stage_b_v5/selector_distance_bucket_metrics.csv
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_b_v5/artifacts/selector_distance_bucket_metrics.csv
+    distance_bucket_metrics_sha256: 6eb5bf535c49d93ad386bfba8b89a8e5e2f0435a3a97291592ccffdf410d6bb8
+    by_well_metrics_patterns:
+      - inputs/exp264_stage_b_v5/selector_by_well.csv
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_b_v5/artifacts/selector_by_well.csv
+    by_well_metrics_sha256: 426f827ef88185fb78df8b6394d8d502071310d9289be7537f1d20525f1c946b
+  hidden_like_assignment:
+    patterns:
+      - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+candidate_bank:
+  freeze_parent_contract: true
+  count: 12
+  order:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__exact_hmm
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+    - likpf_mean__exact_hmm
+    - exp226_w500_50_50
+  candidate_id_encoding: one_hot_12
+  ordinal_candidate_index_feature: false
+  keep_all_candidates: true
+  remove_beam_mean: false
+  add_candidates: false
+  change_candidate_values: false
+  legal_domains:
+    primitive_pair_bank:
+      candidate_count: 11
+      role: primary_top1_top2_margin_meta
+    primitive_fixed_bank:
+      candidate_count: 7
+      role: fixed_fallback_comparison_meta
+  global_oof_rmse_sanity_check_only:
+    forbidden_as_fit_weight: true
+    values_ft:
+      exp226_k16: 9.427110
+      selfgr_hmm_a070: 11.349943
+      likpf_mean: 11.594898
+      exact_hmm: 11.938287
+      pf_ancc: 14.493051
+      beam_mean: 15.774327
+      exp226_k16__selfgr_hmm_a070: 8.532715
+      exp226_k16__exact_hmm: 8.635074
+      exp226_k16__likpf_mean: 8.813822
+      selfgr_hmm_a070__likpf_mean: 10.123457
+      likpf_mean__exact_hmm: 10.269697
+      exp226_w500_50_50: 8.238332
+    illustrative_mean_one_inverse_rmse_weights:
+      exp226_k16: 1.0968
+      selfgr_hmm_a070: 0.9110
+      likpf_mean: 0.8917
+      exact_hmm: 0.8661
+      pf_ancc: 0.7134
+      beam_mean: 0.6555
+      exp226_k16__selfgr_hmm_a070: 1.2118
+      exp226_k16__exact_hmm: 1.1974
+      exp226_k16__likpf_mean: 1.1731
+      selfgr_hmm_a070__likpf_mean: 1.0214
+      likpf_mean__exact_hmm: 1.0068
+      exp226_w500_50_50: 1.2551
+
+candidate_task_weight:
+  enabled: true
+  application: training_rows_only
+  unit: candidate_within_exact_model_fit_partition
+  fit_partition_stage_b: deterministic_sampled_outer_train_base_rows
+  fit_partition_stage_c: deterministic_sampled_inner_train_base_rows
+  truth_join_after_schema_fold_and_row_freeze: true
+  rmse:
+    expression: sqrt(mean((candidate_tvt - true_tvt)^2))
+    epsilon_ft: 1.0e-6
+  inverse:
+    exponent: 1.0
+    expression: 1 / max(candidate_rmse, epsilon_ft)
+  normalization:
+    before_clip: divide_by_candidate_mean
+    clip: [0.5, 1.5]
+    after_clip: divide_by_candidate_mean
+    final_mean: 1.0
+    final_mean_absolute_tolerance: 1.0e-12
+    final_range: [0.5, 1.5]
+    fail_if_final_range_violated: true
+  objectives:
+    pred_abs_error: same_candidate_task_weight
+    p_within10: same_candidate_task_weight
+  validation_weight: none
+  metric_weight: none
+  persist_fold_tables:
+    - fit_candidate_rmse
+    - raw_inverse_rmse
+    - mean_normalized_weight
+    - clipped_weight
+    - final_weight
+    - fit_row_count
+    - fit_row_id_content_sha256
+  forbidden:
+    - global_oof_weight_for_fit
+    - outer_valid_truth
+    - inner_valid_truth
+    - hidden_like_truth
+    - current_test_truth
+    - inverse_square
+    - exponent_grid
+    - clip_grid
+    - candidate_specific_manual_weight
+    - objective_specific_weight
+    - candidate_subset
+    - beam_removal
+    - weight_as_model_feature
+
+features:
+  parent_schema: corrected_exp264_stage_a_v4_raw_test_safe_88
+  freeze_parent_schema: true
+  schema_mode: allowlist_transform_then_sha_freeze
+  feature_count: 88
+  feature_schema_logical_sha256: aaef4ffdd90667893b099b76a52f1957b22197aea9cee5e5b57bc81048ddd3a4
+  groups: [ctx, cand, conf, bank, formula, id]
+  no_additional_features: true
+  no_feature_subset: true
+  missing_policy: native_nan_plus_validity_flags
+  exact_duplicate_policy: drop_after_deterministic_audit
+  constant_policy: drop_after_deterministic_audit
+  correlation_policy: report_only_for_abs_pearson_or_spearman_ge_0p999
+  raw_context:
+    horizontal_numeric_allowlist:
+      - MD
+      - X
+      - Y
+      - Z
+      - GR
+    add_delta_from_last_known_row: true
+    add_typewell_summary: true
+    forbidden_columns: [TVT, TVT_input, target, true_tvt]
+  audit:
+    base_rows_per_fold: 10000
+    correlation_long_rows: 50000
+    pearson_abs_threshold: 0.999
+    spearman_abs_threshold: 0.999
+  shape_windows: [32, 128, 512]
+
+model:
+  name: exp264_dual_objective_candidate_long_lightgbm_with_fit_partition_inverse_rmse_weight
+  objectives:
+    - name: pred_abs_error
+      estimator: lightgbm_regression_l1
+      label: candidate_abs_error
+    - name: p_within10
+      estimator: lightgbm_binary
+      label: candidate_within10
+  parent_settings_frozen: true
+  training:
+    max_train_base_rows_per_outer_fold: 60000
+    max_valid_base_rows_for_early_stopping: 30000
+    predict_base_row_chunk_size: 20000
+    num_boost_round: 1200
+    early_stopping_rounds: 80
+    log_evaluation_period: 100
+  lightgbm_common:
+    learning_rate: 0.035
+    num_leaves: 63
+    min_child_samples: 80
+    subsample: 0.85
+    subsample_freq: 1
+    colsample_bytree: 0.85
+    reg_alpha: 0.1
+    reg_lambda: 1.0
+    n_jobs: 8
+    deterministic: true
+    force_col_wise: true
+    verbosity: -1
+
+parent_control:
+  source: corrected_exp264_stage_b_v5
+  retrain: false
+  valid_for_comparison: true
+  feature_count: 88
+  variants: 1
+  objectives: 2
+  folds: 5
+  actual_model_count: 10
+  expected_error_mae: 3.7958011626240817
+  within10_logloss: 0.3599715948027694
+  within10_brier: 0.11245097922004564
+  hard_primary_oof_rmse: 8.587004386703422
+  fixed_fallback_oof_rmse: 8.238331546485645
+  near_delta_vs_fixed_rmse: 0.07932566251519568
+  distance_1000_plus_delta_vs_fixed_rmse: 0.38920790195822086
+  hidden_like_spatial_delta_vs_fixed_rmse: 0.7685853293433027
+  hidden_like_typewell_purged_delta_vs_fixed_rmse: 0.7211369755348187
+  worst_well_regression_vs_fixed_rmse: 14.684480796325985
+
+stages:
+  stage_b:
+    status: completed_technical_pass_scientific_fail_closed
+    implemented: true
+    enabled: false
+    variants: 1
+    objectives: 2
+    outer_folds: 5
+    planned_cpu_boosters: 10
+    parent_control_retraining: false
+    pf_hmm_beam_regeneration: false
+  stage_c:
+    status: closed_stage_b_scientific_gate_failed
+    enabled: false
+    variants: 1
+    objectives: 2
+    outer_folds: 5
+    inner_folds: 4
+    planned_cpu_boosters: 40
+    parent_control_retraining: false
+  stage_d:
+    status: closed_stage_b_scientific_gate_failed
+    enabled: false
+    variants: [selector_compact_addonly]
+    lightgbm_configs: 3
+    folds: 5
+    planned_gpu_boosters: 15
+    saved_control_retraining: false
+    base_feature_count: 273
+    compact_feature_count: 74
+    addonly_feature_count: 347
+  inference:
+    status: closed_stage_b_scientific_gate_failed
+    enabled: false
+  submission:
+    status: closed_stage_b_scientific_gate_failed
+    enabled: false
+
+execution:
+  stage: selector_outer_oof
+  state: completed_scientific_fail_closed
+  monitoring_stopped_at: "2026-07-26T11:25:15+09:00"
+  monitoring_stopped_by: user_request
+  run_approved: false
+  run_completed: true
+  completion_observed_at: "2026-07-26T20:37:53+09:00"
+  approval_scope: inverse_rmse_weighted_stage_b_1_variant_2_objectives_5_outer_10_cpu_boosters_no_control_retraining
+  approval_received_at: "2026-07-26T11:14:46+09:00"
+  approval_source: user_message_execute_exp407_2026_07_26
+  active_variants: 1
+  objectives: 2
+  outer_folds: 5
+  planned_cpu_boosters: 10
+  parent_control_retraining: false
+  gpu_boosters: 0
+  pf_hmm_beam_regeneration: false
+  inference: false
+  submission: false
+  kaggle_push_requires_user_approval: true
+  retry_requires_user_approval: true
+
+outcome:
+  status: completed_scientific_fail_closed
+  decision: fail_close_exp407_without_rescue
+  technical_gate_passed: true
+  scientific_gate_passed: false
+  elapsed_seconds: 1531.430
+  pooled:
+    expected_error_mae: 3.7986703583181702
+    expected_error_delta_vs_parent: 0.002869195694088
+    within10_logloss: 0.3604606479455683
+    within10_logloss_delta_vs_parent: 0.000489053142799
+    within10_brier: 0.11264822387628641
+    within10_brier_delta_vs_parent: 0.000197244656241
+    hard_primary_oof_rmse: 8.66814102464331
+    hard_primary_delta_vs_parent: 0.081136637939888
+  fold_counts:
+    expected_error_improved: 2
+    within10_logloss_nonworse: 1
+    within10_brier_nonworse: 2
+    hard_primary_nonworse: 1
+  tails:
+    near_delta_vs_parent: 0.005087332884175622
+    distance_1000_plus_delta_vs_parent: 0.0912276539147765
+    hidden_like_spatial_delta_vs_parent: 0.1037590194668816
+    hidden_like_typewell_purged_delta_vs_parent: 0.07905226513054942
+    worst_well_delta_vs_parent: 16.226862522494358
+    worst_well: 52f1e77a
+  weight_audit:
+    minimum: 0.6468215060740257
+    maximum: 1.2626658474376724
+    mean: 1.0
+    forbidden_truth_reads: 0
+    fit_valid_well_overlap: 0
+  models:
+    count: 10
+    sha_validated: 10
+  sha256:
+    gate: 2ae8cb3eaafd3f11558035f27c4afdf0be70468e8edacb0c8703c6b949a99962
+    selector_metrics: bba61b7d0a45e1c551f74294d363de00ddf50f7adf4426ebd5fca1eb1e32ae11
+    model_manifest: 1fce3716fc7f545e0ea883e8ee71b05174d141212334f7c01913b32ef38adfd4
+    candidate_score_oof: d993b806d92c2462c1509f110669b272b27d48806c0280a2cf54e87c7f32f1e8
+    compact_meta_oof: a88503f506985ae1b25391234abc753e39bd1d81b52b98e827486fa6102b9672
+    weight_manifest: 7234351edcebbd852ea8d4b771258e676bbb5295939105226fb61c92033be067
+
+gates:
+  technical:
+    base_rows: 3783989
+    candidate_count: 12
+    candidate_long_rows: 45407868
+    candidate_rows_each: 3783989
+    feature_count: 88
+    feature_schema_logical_sha256: aaef4ffdd90667893b099b76a52f1957b22197aea9cee5e5b57bc81048ddd3a4
+    legal_domain_counts: [11, 7]
+    fit_valid_well_overlap_max: 0
+    valid_truth_reads_for_weight_max: 0
+    nonfinite_or_missing_weights_max: 0
+    final_weight_min: 0.5
+    final_weight_max: 1.5
+    final_weight_mean: 1.0
+    final_weight_mean_absolute_tolerance: 1.0e-12
+    validation_weight_must_be_none: true
+    metrics_must_be_unweighted: true
+    expected_model_count: 10
+    model_sha_validation: 10_of_10
+  scientific:
+    expected_error_mae_max: 3.7858011626240818
+    expected_error_mae_improved_fold_count_min: 4
+    within10_logloss_max: 0.3604715948027694
+    within10_logloss_nonworse_fold_count_min: 3
+    within10_brier_max: 0.11295097922004564
+    within10_brier_nonworse_fold_count_min: 3
+    hard_primary_oof_rmse_max: 8.587004386703422
+    hard_primary_nonworse_fold_count_min: 3
+    near_delta_vs_parent_max_ft: 0.02
+    distance_1000_plus_delta_vs_parent_max_ft: 0.02
+    hidden_like_spatial_delta_vs_parent_max_ft: 0.02
+    hidden_like_typewell_purged_delta_vs_parent_max_ft: 0.02
+    worst_well_regression_vs_parent_max_ft: 0.25
+  decision:
+    pass: stage_c_implementation_and_40_cpu_boosters_eligible_pending_explicit_approval
+    fail: close_exp407_without_weight_or_candidate_rescue
+    technical_error: fix_only_same_frozen_contract_pending_explicit_rerun_approval
+
+guards:
+  technical:
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_score_candidates: 12
+    duplicate_candidate_ids: 0
+    candidate_value_coverage: 1.0
+    forbidden_feature_hits: 0
+    formula_parity_max_abs_error: 1.0e-6
+  selector_score:
+    expected_error_mae_vs_parent: improve_by_at_least_0p010_and_4_of_5_folds
+    within10_logloss_vs_parent: pooled_tolerance_and_at_least_3_of_5_nonworse
+    within10_brier_vs_parent: pooled_tolerance_and_at_least_3_of_5_nonworse
+  hard_readout_diagnostic:
+    fallback_candidate: exp226_w500_50_50
+    fallback_oof_rmse: 8.238331546485645
+    min_overall_rmse_improvement: 0.02
+    min_improved_folds: 3
+    max_near_delta_rmse: 0.02
+    max_1000_plus_delta_rmse: 0.02
+    max_hidden_like_delta_rmse: 0.02
+    max_worst_well_regression: 0.25
+    note: >-
+      The inherited parent-versus-fixed diagnostic is emitted by the shared
+      pipeline; exp407 promotion is decided only by the explicit new-versus-parent
+      all-AND gate above.
+
+artifacts:
+  required:
+    - feature_catalog.csv
+    - feature_schema.json
+    - feature_duplicate_correlation_audit.csv
+    - confidence_coverage_by_candidate_fold.csv
+    - candidate_task_weight_by_fold.csv
+    - candidate_task_weight_sampling_manifest.csv
+    - candidate_task_weight_truth_read_ledger.csv
+    - candidate_task_weight_manifest.json
+    - candidate_score_oof.parquet
+    - compact_meta_oof.parquet
+    - selector_model_manifest.json
+    - selector_metrics.json
+    - selector_metrics.csv
+    - selector_candidate_metrics.csv
+    - selector_selection_rate.csv
+    - selector_calibration.csv
+    - selector_distance_bucket_metrics.csv
+    - selector_by_well.csv
+    - exp407_parent_fold_comparison.csv
+    - exp407_parent_bucket_comparison.csv
+    - exp407_parent_hidden_like_comparison.csv
+    - exp407_parent_by_well_comparison.csv
+    - exp407_stage_b_gate.json
+    - reproducibility_manifest.json
+
+runtime:
+  accelerator: cpu
+  internet: false
+  use_amp: false
+  num_workers: 8
+  stage_b_variants: 1
+  stage_b_objectives: 2
+  stage_b_folds: 5
+  stage_b_planned_cpu_boosters: 10
+  stage_b_parent_control_boosters: 0
+  stage_b_gpu_boosters: 0
+  pf_runs: 0
+  hmm_runs: 0
+  beam_runs: 0
+  inference_runs: 0
+  submissions: 0
+  kaggle:
+    private: true
+    enable_gpu: false
+    enable_internet: false
+    run_on_push: true
+    metadata_created: true
+    package_created_at: "2026-07-26T11:14:46+09:00"
+    pushed_at: "2026-07-26T11:18:00+09:00"
+    kernel_version: 1
+    kernel_url: https://www.kaggle.com/code/kentookumura/exp407-inverse-rmse-dual-selector-exp264-train
+    last_status: KernelWorkerStatus.COMPLETE
+    elapsed_seconds: 1531.430
+    completion_observed_at: "2026-07-26T20:37:53+09:00"
+    package_config_sha256: 0d7252823acb5d97cb5cb8782fb174f11d5debfdbc037616755143085b4493d9
+    canonical_kernel_id: kentookumura/exp407-inverse-rmse-dual-selector-exp264-train
+    canonical_title: exp407 inverse rmse dual selector exp264 train
+    kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+    bootstrap_dependency_files:
+      - source: experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/kaggle/output/train_v4_selected/artifacts/exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv
+        destination: inputs/exp251_v4_selected_feature_schema.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_b_v5/artifacts/selector_metrics.json
+        destination: inputs/exp264_stage_b_v5/selector_metrics.json
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_b_v5/artifacts/selector_distance_bucket_metrics.csv
+        destination: inputs/exp264_stage_b_v5/selector_distance_bucket_metrics.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_b_v5/artifacts/selector_by_well.csv
+        destination: inputs/exp264_stage_b_v5/selector_by_well.csv
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: inherit_parent_fixed_seed_and_deterministic_sampled_row_ids
+  stochastic_components:
+    - lightgbm_subsample_with_parent_seed
+    - lightgbm_colsample_with_parent_seed
+  parallel_rng_policy: stable_candidate_fold_row_order_and_no_global_rng_for_weight_generation
+  parent_control_load_only: true
+  pf_hmm_beam_regeneration: false
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    package_config_sha: true
+    source_config_sha: true
+    input_manifest_sha: true
+    sampling_manifest_sha: true
+    fit_row_id_content_sha: true
+    candidate_contract_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    fold_weight_table_sha: true
+    model_file_sha: true
+    model_manifest_sha: true
+    candidate_score_oof_sha: true
+    compact_oof_sha: true
+    metrics_decision_sha: true
+    prediction_sha: false
+    submission_sha: false
+  rerun_required_before_deterministic_anchor: true
+  notes:
+    - Global OOF RMSE is diagnostic only and must never be used as a fit weight.
+    - Record decompressed content SHA for gzip artifacts.
+    - See docs/06_reproducibility.md before treating any output as a deterministic anchor.
+
+forbidden:
+  - kaggle_execution_without_explicit_stage_b_approval
+  - parent_stage_b_control_retraining
+  - candidate_add_drop_or_replace
+  - beam_mean_removal
+  - candidate_value_change
+  - feature_add_drop_or_recompute
+  - fold_or_sampling_change
+  - lightgbm_parameter_change
+  - global_oof_fit_weight
+  - inverse_rmse_square
+  - exponent_or_clip_grid
+  - candidate_specific_manual_weight
+  - objective_specific_weight
+  - weighted_validation_metrics
+  - same_oof_rescue
+  - stage_c_without_stage_b_all_gates_and_approval
+  - stage_c_after_stage_b_scientific_failure
+  - inverse_rmse_weight_rescue_after_scientific_failure
+  - stage_d_without_stage_c_all_gates_and_approval
+  - inference
+  - submission

@@ -1,0 +1,142 @@
+{
+  "experiment": "exp438_u_state_fixed_lattice_exact_hmm",
+  "route": "pf_beam",
+  "status": "stage0_fail_closed_v1",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "created_at": "2026-07-29",
+  "updated_at": "2026-07-29",
+  "key_idea": "Replace the fixed TVT lattice with a last-known-Z anchored fixed absolute-U lattice while preserving the exp209 joint rate process and continuous coordinate identity.",
+  "kaggle": {
+    "kernel_id": "kentookumura/exp438-u-state-fixed-lattice-exact-hmm-train",
+    "kernel_id_no": 129056676,
+    "kernel_version": 1,
+    "status": "complete",
+    "private": true,
+    "accelerator": "cpu",
+    "internet": false,
+    "completed_at_utc_observed": "2026-07-29 13:03:10 UTC"
+  },
+  "implementation": {
+    "compact_selfcontained_train": true,
+    "fail_closed_inference": true,
+    "canonical_notebooks_replaced": true,
+    "kaggle_package_created": true,
+    "kaggle_run_completed": true,
+    "dedicated_tests_passed": 12,
+    "py_compile": "passed",
+    "ruff_f821": "passed",
+    "jupytext_roundtrip": "passed",
+    "strict_experiment_validation": "passed",
+    "template_validation": "passed"
+  },
+  "execution_contract": {
+    "scientific_variants": 1,
+    "stage0_hmm_well_runs": 32,
+    "stage1_max_hmm_well_runs": 773,
+    "reporting_folds": 5,
+    "parent_control_hmm_reruns": 0,
+    "lightgbm_configs": 0,
+    "trained_ml_folds": 0,
+    "fitted_ml_models": 0,
+    "boosters": 0,
+    "pf_runs": 0,
+    "beam_runs": 0,
+    "gpu_runs": 0
+  },
+  "runtime": {
+    "stage0_elapsed_seconds": 1452.118439438,
+    "candidate_hmm_seconds": 1403.6660016699993,
+    "stage1_projection_seconds": 33907.30685284092,
+    "stage1_projection_limit_seconds": 30600.0,
+    "stage1_projection_excess_seconds": 3307.3068528409207,
+    "peak_rss_gb": 1.1334762573242188,
+    "numba_threads": 1
+  },
+  "gates": {
+    "stage0_all_gates_pass": false,
+    "stage1_eligible_for_separate_approval": false,
+    "fail_action": "close_without_grid_phase_anchor_step_band_noise_rate_emission_or_blend_rescue",
+    "technical": {
+      "passed": 20,
+      "failed": 1,
+      "failed_gates": [
+        "runtime_projection"
+      ],
+      "constant_z_parent_prediction_max_abs_ft": 5.4569682106375694e-12,
+      "brute_force_maximum_abs": 2.9459618633431717e-08,
+      "maximum_transition_row_sum_error": 3.3306690738754696e-16,
+      "maximum_posterior_normalization_error": 1.5543122344752192e-15,
+      "finite_coverage": 1.0,
+      "nontrivial_lattice_phase_rows": 147364,
+      "candidate_control_prediction_nonidentity_rows": 156013
+    },
+    "mechanism": {
+      "passed": 0,
+      "failed": 7,
+      "posterior_weighted_quantization_bias": {
+        "parent_sum_ft": 3658.9370473305353,
+        "candidate_sum_ft": 5253.4993706449395,
+        "reduction_fraction": -0.4357993326170384,
+        "required_min_fraction": 0.1,
+        "pass": false
+      },
+      "forward_cause_episode_sse": {
+        "parent": 10827465.785975542,
+        "candidate": 34084417.66678212,
+        "reduction_fraction": -2.147958935222916,
+        "required_min_fraction": 0.05,
+        "pass": false
+      },
+      "persistent_episode_sse": {
+        "parent": 13363710.665030783,
+        "candidate": 123511976.22870356,
+        "reduction_fraction": -8.24234139189357,
+        "required_min_fraction": 0.03,
+        "pass": false
+      },
+      "persistent_improved_wells": {
+        "value": 2,
+        "total": 16,
+        "required_min": 10,
+        "pass": false
+      },
+      "persistent_improving_folds": {
+        "value": 0,
+        "total": 5,
+        "required_min": 4,
+        "pass": false
+      },
+      "matched_control_pooled_rmse": {
+        "parent_ft": 3.4284362857550077,
+        "candidate_ft": 46.748911014177615,
+        "delta_ft": 43.32047472842261,
+        "allowed_delta_max_ft": 0.02,
+        "pass": false
+      },
+      "matched_control_by_well_delta_p95": {
+        "value_ft": 72.48098981134187,
+        "allowed_max_ft": 0.25,
+        "pass": false
+      }
+    }
+  },
+  "artifacts": {
+    "remote_metrics_sha256": "7118b009a518aec5bf0bc2916bc38a273243202cc701ccf6912d61dc4f9f2322",
+    "gate_report_sha256": "ed4a3745acafe29e97e031442054d92c67137441ac181def8809f39468233ff2",
+    "numerical_contract_sha256": "124a5c75cde6a22964ee217ad8323f97a7ecee0d934c9bd19194d734a02ae2f1",
+    "episode_metrics_sha256": "0c59103d8e06a2ee3b8b2a105130e1154b664b31ef8ab30d878261b9261a5695",
+    "well_metrics_sha256": "6af93b427f8272f13c818156e2fbce91657a0847cca8322a762c8cfde777d489",
+    "prediction_logical_sha256": "6a2096746b4b98bf192be5180b8f3763e528262b91bcedd8301ece927993753d",
+    "rate_readout_logical_sha256": "9e3359964c46fdf00560b293ef52eed2bd97cf2003bfaff88b194010db5f0d8b",
+    "transition_ledger_logical_sha256": "24ee57208298466bb215eb763f4073b2ab2f62e198d40be21a1105c2d3d68806"
+  },
+  "reproducibility": {
+    "deterministic_anchor": false,
+    "first_run_is_anchor": false,
+    "rerun_performed": false
+  },
+  "notes": "Kaggle Stage 0 version 1 completed. Runtime projection and all seven mechanism gates failed, so the experiment is terminally fail-closed without Stage 1, inference, submission, or same-fixed32 rescue."
+}

@@ -1,0 +1,115 @@
+experiment:
+  name: "exp086_oof_feature_importance_error_readout"
+  description: "Read out where exp073 OOF errors concentrate against fold-averaged LightGBM feature importance and selected full replay feature values."
+  route: ml_model
+  status: readout_completed
+  created_at: "2026-06-20"
+  updated_at: "2026-06-20"
+
+lineage:
+  parent: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  readout_parent: exp077_full_replay_postprocess_guard
+  implementation_source: oof_feature_importance_error_readout.py
+  diff_summary: >
+    Creates a diagnostic readout instead of a new model. It joins exp073 deterministic
+    OOF baseline/postprocess predictions, exp077 fold-averaged LightGBM feature
+    importance, and selected exp072 full replay feature values to identify high-importance
+    features and value buckets associated with large OOF errors.
+
+validation:
+  strategy: exp073_oof_diagnostic_readout
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: exp073_oof_rows
+  leakage_policy:
+    - This experiment does not train a supervised model and does not create a submission.
+    - Predictions are fold-out OOF rows from the deterministic exp073 anchor and exp077 fixed postprocess audit.
+    - Feature values are exp072 train-only full replay feature cache rows joined by id.
+    - The readout is diagnostic; any future gating or feature changes must become separate experiments.
+
+model:
+  name: exp086_oof_feature_importance_error_readout
+  source_experiment: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  readout_experiment: exp077_full_replay_postprocess_guard
+  estimator: none
+  expected_feature_count: 196
+  target: diagnostic_only
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+audit:
+  mode: oof_feature_importance_error_readout
+  output_prefix: exp086_oof_feature_importance_error_readout
+  selected_mode: gpu_repro_guard_dp_threads8
+  selected_model: lgb_mean
+  baseline_policy: baseline_exp073_lgb_mean
+  compare_policy: longtail_likpf_tiny_gate_w006
+  top_features: 30
+  quantile_bins: 5
+  correlation_sample_rows: 500000
+  max_rows: null
+  required_feature_columns:
+    - md_since
+    - last_known_tvt
+    - likpf_mean_d
+    - pf_ancc
+    - pf_ancc_delta
+    - pf_z
+    - pf_z_delta
+    - tvt_dense50_d
+    - tvt_densew_d
+    - tvt_dense_d
+    - dense_dist
+    - dense_nb_std
+    - known_len
+  candidates:
+    exp077_policy_predictions:
+      - /tmp/kaggle-output/exp077-full-replay-postprocess-guard-train-v1/artifacts/exp077_full_replay_postprocess_guard_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp077-full-replay-postprocess-guard-train/artifacts/exp077_full_replay_postprocess_guard_predictions.csv.gz
+    exp077_policy_metrics:
+      - /tmp/kaggle-output/exp077-full-replay-postprocess-guard-train-v1/artifacts/exp077_full_replay_postprocess_guard_metrics.csv
+      - /kaggle/input/notebooks/kentookumura/exp077-full-replay-postprocess-guard-train/artifacts/exp077_full_replay_postprocess_guard_metrics.csv
+    exp077_feature_importance_mean:
+      - /tmp/kaggle-output/exp077-full-replay-postprocess-guard-train-v1/artifacts/exp063_full_replay_repro_guard_feature_importance_mean.csv
+      - /kaggle/input/notebooks/kentookumura/exp077-full-replay-postprocess-guard-train/artifacts/exp063_full_replay_repro_guard_feature_importance_mean.csv
+    exp072_feature_cache:
+      - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v1/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    exp073_oof_predictions:
+      - /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/train_v2/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp073-full-replay-repro-guard-train/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+  expected_train_artifacts:
+    - exp086_oof_feature_importance_error_readout_policy_metrics.csv
+    - exp086_oof_feature_importance_error_readout_feature_summary.csv
+    - exp086_oof_feature_importance_error_readout_feature_quantile_metrics.csv
+    - exp086_oof_feature_importance_error_readout_well_summary.csv
+    - exp086_oof_feature_importance_error_readout_feature_error_lift_top20.png
+    - exp086_oof_feature_importance_error_readout_feature_error_correlation_top20.png
+    - exp086_oof_feature_importance_error_readout_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 4
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp077-full-replay-postprocess-guard-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp073-full-replay-repro-guard-train
+
+notes:
+  - The originally requested title included exp073 as a prefix. Because this is a new experiment after exp085, the experiment id is exp086 and exp073 appears only as the parent anchor.
+  - Kaggle train v1 completed and generated OOF feature-importance error readout artifacts.
+  - The output guides later feature/gate hypotheses such as confidence weighting, not ML route anchor updates.

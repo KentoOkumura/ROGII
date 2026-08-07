@@ -1,0 +1,277 @@
+experiment:
+  name: exp387_prefix_gr_rgt_scenario_posterior
+  description: >-
+    Keep the exp386 RGT scenario bank fixed and use target GR plus known TVT
+    prefix to compute a deterministic posterior over physically compatible
+    scenarios, producing a posterior-mean physical TVT path.
+  route: pf_beam
+  status: design_closed_by_exp386_stage0_fail
+  created_at: "2026-07-24"
+  updated_at: "2026-07-24"
+
+lineage:
+  parent: exp386_cycle_consistent_rgt_scenario_bank
+  prerequisites:
+    - exp386_stage0_target_free_pass
+    - exp386_stage1_prefix_rolling_origin_pass
+    - exp386_stage2_scenario_oracle_pass
+    - exp386_scenario_bank_manifest_sha_pinned
+  comparison_references:
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp335_signed_residual_meta_on_exp264
+    - exp385_gr_typewell_likelihood_on_vector_drift_paths
+  diff_summary: >-
+    Do not alter or regenerate any exp386 path. Compare observed target GR with
+    the outer-train reference-GR template attached to each scenario, combine
+    fixed Student-t window likelihoods with the exp386 graph-cost prior, and
+    marginalize scenarios with an exact compatibility-constrained
+    forward-backward decoder. This is independent of the exp383--385 path family.
+
+validation:
+  strategy: exp386_same_outer5_groupfold_gr_posterior
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  controls:
+    physical:
+      experiment: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+      regenerate: false
+      cv_rmse_ft: 9.427109596582213
+      public_lb: 9.837
+    prior_only:
+      experiment: exp386_cycle_consistent_rgt_scenario_bank
+      output: graph_cost_prior_weighted_mean
+      regenerate: false
+  report_scopes:
+    - near_0_250
+    - mid_250_1000
+    - 1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  leakage_policy:
+    - The exp386 bank and its reference-GR templates are frozen by logical content SHA before target GR is read.
+    - Outer-valid/test suffix true TVT and raw formation columns are unavailable to likelihood, posterior, and state transitions.
+    - Known TVT_input prefix is used only for gauge parity, rolling-origin evaluation, and prior calibration.
+    - The visible three-well sample test may not select likelihood, transition, or gate settings.
+
+data:
+  target_allowed_pre_freeze_columns: [well_id, row_idx, MD, X, Y, Z, GR, TVT_input]
+  target_forbidden_pre_freeze_columns:
+    - TVT
+    - ANCC
+    - ASTNU
+    - ASTNL
+    - EGFDU
+    - EGFDL
+    - BUDA
+  parent_artifacts:
+    expected_manifest_logical_sha256: null
+    experiment: exp386_cycle_consistent_rgt_scenario_bank
+    files:
+      manifest: exp386_cycle_consistent_rgt_scenario_bank_manifest.json
+      target_paths: exp386_cycle_consistent_rgt_scenario_bank_target_paths.parquet
+      reference_gr_templates: exp386_cycle_consistent_rgt_scenario_bank_reference_gr_templates.parquet
+      fold_manifest: exp386_cycle_consistent_rgt_scenario_bank_fold_manifest.csv
+      role_read_ledger: exp386_cycle_consistent_rgt_scenario_bank_role_read_ledger.csv
+    contract:
+      minimum_scenarios_per_well: 8
+      maximum_scenarios_per_well: 32
+      scenario_order: total_graph_cost_then_path_sha256
+      candidate_value_modification: forbidden
+      target_gr_used_by_parent: false
+
+candidate_bank:
+  source: exp386_saved_rgt_scenarios
+  order: total_graph_cost_then_path_sha256
+  minimum_count: 8
+  maximum_count: 32
+  scenario_values_fixed: true
+  missing_scenario_handling: availability_mask
+  oracle_or_truth_feature_usage: forbidden
+
+likelihood:
+  target_observation: horizontal_GR
+  reference: exp386_outer_train_reference_gr_template_per_scenario
+  preprocessing:
+    family: robust_per_well_standardization
+    center: median
+    scale: 1.4826_mad
+    scale_floor_gr_api: 1.0
+    channels: [standardized_gr_level, standardized_gr_first_difference]
+    channel_aggregation: equal_valid_pair_mean
+  window:
+    length_rows: 256
+    stride_rows: 64
+    minimum_valid_pairs: 64
+  emission:
+    distribution: student_t
+    df: 4
+    sigma_source: outer_train_leave_one_well_out_template_residual_mad
+    sigma_clip_gr_api: [5.0, 60.0]
+    aggregate: valid_pair_mean_loglik
+    loglik_clip: [-25.0, 0.0]
+    insufficient_window: neutral
+  negative_control:
+    family: circular_shift
+    shift_rows: 512
+    direction: positive
+  prior:
+    source: exp386_frozen_graph_cost
+    transform: stable_negative_cost_softmax
+    temperature: 1.0
+
+decoder:
+  family: exact_forward_backward_over_exp386_scenarios
+  state: exp386_scenario_id
+  transition:
+    stay_probability: 0.995
+    refresh_probability: 0.005
+    switch_only_at_shared_rgt_control_node: true
+    maximum_tvt_boundary_mismatch_ft: 2.0
+    incompatible_transition_probability: 0.0
+    refresh_distribution: current_window_available_exp386_prior
+  unavailable_state_probability: 0.0
+  row_projection: overlap_add_window_posterior
+  primary_output: posterior_weighted_scenario_tvt
+  hard_top1_output: forbidden
+  no_eligible_window_fallback: exp386_graph_cost_prior_weighted_mean
+
+model:
+  name: deterministic_prefix_gr_rgt_scenario_posterior
+  fitted_model: false
+  estimator: exact_forward_backward
+
+gates:
+  stage0_target_free_prefix:
+    parent_manifest_sha_match: true
+    candidate_count_min: 8
+    candidate_count_max: 32
+    base_path_coverage_min: 1.0
+    eligible_gr_window_fraction_min: 0.25
+    eligible_well_fraction_min: 0.50
+    posterior_normalization_max_abs_error: 1.0e-12
+    ineligible_prior_parity_max_abs_ft: 1.0e-8
+    known_prefix_heldout_rows: 512
+    known_prefix_minimum_rows: 1024
+    heldout_rmse_gain_vs_prior_mean_ft_min: 0.25
+    positive_fold_count_min: 4
+    real_minus_circular_mrr_gain_min: 0.02
+    real_entropy_better_fold_count_min: 4
+    valid_formation_reads_max: 0
+    valid_suffix_truth_reads_max: 0
+    resource_audit_wells: 16
+    projected_runtime_seconds_max: 30600
+    projected_peak_rss_gb_max: 25
+  stage1_truth_late_scientific:
+    pooled_rmse_max_ft: 7.20
+    pooled_gain_vs_exp226_ft_min: 2.0
+    positive_fold_count_min: 4
+    long_1000_plus_gain_vs_exp226_ft_min: 2.0
+    hidden_like_spatial_gain_vs_exp226_ft_min: 1.5
+    hidden_like_typewell_purged_gain_vs_exp226_ft_min: 1.5
+    near_0_250_regression_max_ft: 0.05
+    parent_scenario_oracle_rmse_max_ft: 5.50
+    by_well_tail: report_only_for_initial_scientific_signal
+    fail_action: close_without_window_df_sigma_transition_temperature_or_hard_top1_rescue
+  stage2_promotion_safety:
+    requires_separate_user_approval: true
+    by_well_p95_regression_vs_exp226_max_ft: 0.0
+    worst_well_regression_vs_exp226_max_ft: 0.25
+    hidden_like_non_regression: true
+    deterministic_rerun_content_sha_match: true
+
+runtime:
+  accelerator: cpu
+  internet: false
+  use_amp: false
+  scientific_variants: 1
+  reporting_folds: 5
+  fitted_models: 0
+  model_configs: 0
+  trained_folds: 0
+  lightgbm_boosters: 0
+  hmm_runs: 0
+  pf_runs: 0
+  beam_runs: 0
+  stage0_likelihood_audits: 1
+  stage1_exact_decoder_well_runs: 773
+  parent_scenario_regeneration: false
+  parent_control_regeneration: false
+  stage1_requires_separate_user_approval: true
+
+execution:
+  design_authorized: true
+  design_authorization_source: user_message_create_backlog_experiments_and_steering
+  implementation_authorized: false
+  parent_stage_pass_required: true
+  parent_artifact_sha_required: true
+  canonical_notebook_adoption_authorized: false
+  kaggle_package_authorized: false
+  kaggle_push_authorized: false
+  kaggle_execution_authorized: false
+  inference_enabled: false
+  submission_enabled: false
+  parent_stage_pass_satisfied: false
+  parent_failure: exp386_stage0_empty_scenario_bank_and_cycle_residual_fail
+  terminal_decision: close_without_implementation
+  stage: design_closed_by_parent_stage0_fail
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_fold_well_scenario_window_and_state_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_results_sorted_by_immutable_well_window_and_scenario_keys
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Pin the exp386 scenario bank and reference-GR template by logical content SHA before reading target GR.
+    - Record real and circular likelihoods, transition manifest, posterior, and prediction logical SHA.
+    - Do not call the first successful run a deterministic anchor; require a content-SHA-matching rerun before promotion.
+    - Kaggle bootstrap metadata and embedded config must be checked before any future push.
+
+artifacts:
+  planned:
+    - exp387_prefix_gr_rgt_scenario_posterior_parent_manifest_check.json
+    - exp387_prefix_gr_rgt_scenario_posterior_role_read_ledger.csv
+    - exp387_prefix_gr_rgt_scenario_posterior_real_circular_scores.parquet
+    - exp387_prefix_gr_rgt_scenario_posterior_transition_manifest.json
+    - exp387_prefix_gr_rgt_scenario_posterior_window_posterior.parquet
+    - exp387_prefix_gr_rgt_scenario_posterior_oof_predictions.csv.gz
+    - exp387_prefix_gr_rgt_scenario_posterior_fold_metrics.csv
+    - exp387_prefix_gr_rgt_scenario_posterior_scope_metrics.csv
+    - exp387_prefix_gr_rgt_scenario_posterior_by_well_metrics.csv
+    - exp387_prefix_gr_rgt_scenario_posterior_stage0_guard.json
+    - exp387_prefix_gr_rgt_scenario_posterior_stage1_guard.json
+    - exp387_prefix_gr_rgt_scenario_posterior_manifest.json
+    - exp387_prefix_gr_rgt_scenario_posterior_sha_manifest.csv
+
+forbidden_actions:
+  - exp386_candidate_value_or_order_modification
+  - exp386_scenario_regeneration_inside_exp387
+  - outer_valid_or_test_raw_formation_read
+  - outer_valid_suffix_truth_read_before_freeze
+  - oracle_or_truth_feature_usage
+  - hard_top1_scenario_selection
+  - window_stride_df_sigma_transition_temperature_or_prior_grid
+  - fitted_ml_hmm_pf_or_beam
+  - current_test_generation
+  - inference_or_submission
+
+notes:
+  - Design is frozen only. Template train and inference notebooks remain unimplemented scaffolds.
+  - exp386 version 1 failed Stage 0 with an empty scenario bank and cycle residual p95 above the fixed gate.
+  - The mandatory parent prerequisite cannot be met, so exp387 is closed without implementation or execution.
+  - This experiment tests likelihood and posterior only; candidate generation belongs exclusively to exp386.

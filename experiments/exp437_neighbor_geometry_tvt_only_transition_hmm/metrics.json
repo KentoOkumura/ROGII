@@ -1,0 +1,150 @@
+{
+  "experiment": "exp437_neighbor_geometry_tvt_only_transition_hmm",
+  "route": "pf_beam",
+  "status": "stage0_fail_closed",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "created_at": "2026-07-29",
+  "updated_at": "2026-07-29",
+  "parent": "exp435_tvt_memoryless_u_rate_dzonly_hmm",
+  "geometry_evidence_parent": "exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction",
+  "base_and_changes": {
+    "base": "exp435 TVT-only probability-state exact HMM",
+    "single_change": "Replace only the -delta_Z transition center with adjacent differences of fold-safe exp226 tvt_geop.",
+    "fixed": "TVT grid, start prior, GR emission, position noise, five-cell kernel, and forward-backward.",
+    "forbidden": "Persistent rate/branch state, exp226 GR/U/final prediction, blend, selector, and parent/control rerun."
+  },
+  "kaggle": {
+    "kernel_id": "kentookumura/exp437-neighbor-geometry-tvt-transition-hmm-train",
+    "kernel_version": 1,
+    "kernel_id_no": 129056603,
+    "status": "COMPLETE",
+    "cpu_only": true,
+    "internet": false
+  },
+  "execution_contract": {
+    "scientific_variants": 1,
+    "stage_0_candidate_hmm_well_runs": 32,
+    "parent_control_hmm_reruns": 0,
+    "fitted_ml_models": 0,
+    "lightgbm_configs": 0,
+    "trained_ml_folds": 0,
+    "boosters": 0,
+    "pf_runs": 0,
+    "beam_runs": 0,
+    "gpu_runs": 0
+  },
+  "validation": {
+    "stage": "stage_0_fixed32",
+    "fixed32_is_mechanism_only": true,
+    "fixed32_is_cv": false,
+    "fixed32_is_promotion_evidence": false,
+    "wells": 32,
+    "rows": 156088
+  },
+  "technical_gates": {
+    "all_pass": true,
+    "duplicate_rows": true,
+    "finite_schedule_prediction_coverage": true,
+    "fixed32_folds": true,
+    "fixed32_roles_and_unique_wells": true,
+    "fixed32_rows": true,
+    "forbidden_geometry_columns_before_freeze": true,
+    "missing_rows": true,
+    "peak_rss": true,
+    "posterior_normalization": true,
+    "prediction_readback_logical_sha": true,
+    "projected_full_runtime": true,
+    "role_reads_before_freeze": true,
+    "schedule_first_difference_parity": true,
+    "schedule_manifest_sha_recorded": true,
+    "source_manifest_fold_match": true,
+    "transition_row_sum": true,
+    "truth_reads_before_freeze": true
+  },
+  "mechanism_gates": {
+    "all_pass": false,
+    "gain_vs_exp226_geometry_all32": false,
+    "matched_control_delta_vs_exp226_geometry": true,
+    "persistent_gain_vs_exp226_geometry": false,
+    "matched_control_gain_vs_exp435_dz_only": true,
+    "improving_folds_vs_exp226_geometry": false,
+    "paired_by_well_delta_p95": false,
+    "worst_well_delta": false
+  },
+  "result": {
+    "candidate_all32_rmse_ft": 13.01900908762586,
+    "exp226_geometry_all32_rmse_ft": 9.2672047781933,
+    "gain_vs_exp226_geometry_all32_ft": -3.7518043094325613,
+    "candidate_matched_control_rmse_ft": 7.771561731699539,
+    "exp226_geometry_matched_control_rmse_ft": 8.719886308092539,
+    "exp435_dz_only_matched_control_rmse_ft": 17.133652290742923,
+    "candidate_persistent_rmse_ft": 16.59245529759133,
+    "exp226_geometry_persistent_rmse_ft": 9.768805033681078,
+    "improving_folds_vs_exp226_geometry": 2,
+    "paired_by_well_delta_p95_ft": 21.69922878995339,
+    "worst_well_delta_ft": 24.45243565445809,
+    "maximum_transition_row_sum_error": 4.440892098500626e-16,
+    "maximum_posterior_normalization_error": 2.220446049250313e-15,
+    "maximum_schedule_first_difference_parity_abs_ft": 0.0,
+    "source_manifest_fold_match": 1.0,
+    "candidate_hmm_seconds": 9.336708374000068,
+    "stage0_elapsed_seconds": 39.153269533000014,
+    "projected_full_runtime_seconds": 225.53986165943914,
+    "peak_rss_gb": 0.4159660339355469
+  },
+  "fold_metrics": [
+    {
+      "fold": 0,
+      "candidate_rmse_ft": 16.211801294589943,
+      "exp226_geometry_rmse_ft": 7.387184873618083,
+      "delta_ft": 8.82461642097186,
+      "improved": false
+    },
+    {
+      "fold": 1,
+      "candidate_rmse_ft": 19.646252786908864,
+      "exp226_geometry_rmse_ft": 11.89148306109143,
+      "delta_ft": 7.754769725817434,
+      "improved": false
+    },
+    {
+      "fold": 2,
+      "candidate_rmse_ft": 8.672544426179408,
+      "exp226_geometry_rmse_ft": 8.522654191775494,
+      "delta_ft": 0.14989023440391414,
+      "improved": false
+    },
+    {
+      "fold": 3,
+      "candidate_rmse_ft": 6.897768249349054,
+      "exp226_geometry_rmse_ft": 9.236981904805674,
+      "delta_ft": -2.3392136554566196,
+      "improved": true
+    },
+    {
+      "fold": 4,
+      "candidate_rmse_ft": 8.00304618925444,
+      "exp226_geometry_rmse_ft": 9.621559152540517,
+      "delta_ft": -1.6185129632860775,
+      "improved": true
+    }
+  ],
+  "artifacts": {
+    "prediction_decompressed_sha256": "9eead0755e11fc5093ffedff59c9f4f3aeee3c7b5755d493af498fd4589bc2d8",
+    "prediction_manifest_sha256": "d190c8fb9a92eb9ed3606205fcb9be1213f227a38b9529b0f07f95be5b3fb263",
+    "schedule_manifest_sha256": "6d42fe8928c0f142902a3dd47679d64cdbac801eef5439c7dddb216d8e92b2d2",
+    "schedule_manifest_file_sha256": "b796dcf850eec624c933e6fc0899bec1a0277674e41408cf809737d524b806b3",
+    "diagnostic_manifest_sha256": "a80b193bea1e4786cde21b1718dc1a3f172f681591d064aee04f23c8328e5646",
+    "well_metrics_sha256": "e7e8950984e33644dcfaf90c54db0ed8aa327719bef2a6c70f113afd2ab9f6a8",
+    "input_manifest_sha256": "2e1cc2426d53461aeb35b5f5c5fe9dd2caa2c51d18e90f8e3438d7b96058edca",
+    "summary_sha256": "f9a16a66fda2dd691902792ac61071857008017ff3e35ace2abf37e14d680a05"
+  },
+  "stage0_all_gates_pass": false,
+  "stage1_eligible_for_separate_approval": false,
+  "decision": "stage0_fail_closed_without_same_oof_rescue",
+  "next_action": "Close exp437 without Stage 1, transition/noise/emission/grid rescue, inference, or submission. Treat exp438/exp439 as independent hypotheses rather than exp437 rescue.",
+  "notes": "Technical execution was clean, but the geometry-centered TVT-only HMM strongly regressed the persistent subset and by-well tail."
+}

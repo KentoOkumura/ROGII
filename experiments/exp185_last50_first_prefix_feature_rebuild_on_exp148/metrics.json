@@ -1,0 +1,108 @@
+{
+  "experiment": "exp185_last50_first_prefix_feature_rebuild_on_exp148",
+  "status": "completed_negative_no_submit",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "baseline": {
+    "exp148_lgb_mean_pooled_rmse": 8.50128118189582,
+    "exp148_public_lb": 7.96,
+    "control_retrain": false
+  },
+  "planned_run": {
+    "runtime": "cpu_deterministic_threads8",
+    "active_variant": "last50_first_prefix_rebuild",
+    "folds": 5,
+    "lgb_configs": 3,
+    "active_modes": 1,
+    "total_boosters": 15,
+    "control_retrain": false
+  },
+  "kaggle_run": {
+    "feature_cache_kernel": "kentookumura/exp185-l50rebuild-features",
+    "train_kernels_failed_or_superseded": [
+      "kentookumura/exp185-l50rebuild-lgb0",
+      "kentookumura/exp185-l50rebuild-lgb1"
+    ],
+    "train_kernels_started_cpu": [
+      "kentookumura/exp185-l50rebuild-lgb0",
+      "kentookumura/exp185-l50rebuild-lgb1",
+      "kentookumura/exp185-l50rebuild-cpu-lgb2"
+    ],
+    "train_kernel_versions_cpu": {
+      "kentookumura/exp185-l50rebuild-lgb0": 3,
+      "kentookumura/exp185-l50rebuild-lgb1": 3,
+      "kentookumura/exp185-l50rebuild-cpu-lgb2": 2
+    },
+    "failure_note": "User reported GPU split run failed; split lgb0/lgb1/lgb2 should run on CPU.",
+    "cpu_failure_note": "CPU split v2/v2/v1 all died after prefix_crop_variant_join_start with nbclient DeadKernelError, consistent with memory pressure during prefix crop feature join.",
+    "memory_fix_note": "Reload prefix crop cache numeric columns as float32, check finite values column-wise, free large unused intermediate frames before prefix join, and build variant train frame from only runtime columns plus selected non-prefix and prefix features.",
+    "previous_pending_reason": "Kaggle GPU session limit: Maximum batch GPU session count of 2 reached.",
+    "lgb2_original_slug_failure": "kentookumura/exp185-l50rebuild-lgb2 CPU push failed with Notebook not found; recovered with kentookumura/exp185-l50rebuild-cpu-lgb2."
+  },
+  "results": {
+    "source": "Kaggle logs plus downloaded split prediction outputs in /tmp/kaggle-output/exp185_lgb0, exp185_lgb1, exp185_lgb2",
+    "rows": 3783989,
+    "features": 334,
+    "feature_cache": {
+      "rows": 3783989,
+      "wells": 773,
+      "feature_count": 76,
+      "source_decompressed_sha256": "d7a95c9449d48ffe89efb80d281fcc24c6d1d007d61220599ea6e5491d1d23ea"
+    },
+    "single_models": {
+      "lgb0": {
+        "kernel": "kentookumura/exp185-l50rebuild-lgb0",
+        "version": 3,
+        "pooled_rmse_tvt": 8.636150399376218,
+        "fold_rmse_tvt": [
+          9.322552298302394,
+          8.868274051827358,
+          7.559982525261882,
+          8.595870945433594,
+          8.734493318938897
+        ]
+      },
+      "lgb1": {
+        "kernel": "kentookumura/exp185-l50rebuild-lgb1",
+        "version": 3,
+        "pooled_rmse_tvt": 8.583238238261155,
+        "fold_rmse_tvt": [
+          9.067938575853871,
+          8.681374847192444,
+          7.534949131605497,
+          8.699969882504172,
+          8.847673226473592
+        ]
+      },
+      "lgb2": {
+        "kernel": "kentookumura/exp185-l50rebuild-cpu-lgb2",
+        "version": 2,
+        "pooled_rmse_tvt": 8.583791509222095,
+        "fold_rmse_tvt": [
+          9.04240360468405,
+          8.67962079188078,
+          7.538190827925028,
+          8.711658858347098,
+          8.863975245990092
+        ]
+      }
+    },
+    "ensemble": {
+      "model": "lgb_mean_split3",
+      "pooled_rmse_tvt": 8.544817143008956,
+      "prediction_sha256": "df0367a0caf94334f6c8f4d2e2eb0658a20d312c67364b0e2de1af9391ead15d",
+      "component_models": [
+        "lgb0",
+        "lgb1",
+        "lgb2"
+      ]
+    },
+    "comparison": {
+      "exp148_lgb_mean_delta": 0.043535961113136525,
+      "exp172_best_single_delta": -0.030309706572594743,
+      "best_single_model": "lgb1",
+      "best_single_delta_vs_exp148": 0.08195705636533473
+    },
+    "decision": "negative_no_inference_no_submit"
+  }
+}

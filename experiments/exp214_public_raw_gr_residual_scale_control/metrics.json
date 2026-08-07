@@ -1,0 +1,80 @@
+{
+  "experiment": "exp214_public_raw_gr_residual_scale_control",
+  "status": "completed_train_side_audit",
+  "route": "pf_beam",
+  "metric": "rmse",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "kernel": "kentookumura/exp214-public-raw-gr-residual-scale-control-train",
+  "kernel_version": 1,
+  "rows": 478958,
+  "wells": 64,
+  "runtime_seconds": 3369.568489074707,
+  "primary_baseline": "pf_raw_scale_5",
+  "primary_baseline_metrics": {
+    "rmse": 15.596464865518797,
+    "mae": 9.503911877450632,
+    "within10": 0.6618805824310273,
+    "bias": -2.687171095899849
+  },
+  "best_non_oracle_candidate_by_rmse": {
+    "candidate": "pf_raw_scale_12",
+    "rmse": 15.223856557712873,
+    "mae": 9.218136956538334,
+    "within10": 0.6739129527014894,
+    "bias": -2.479065322941286,
+    "delta_rmse_vs_primary_baseline": -0.37260830780592435,
+    "max_well_regression_vs_primary": 2.0181281893337193
+  },
+  "reference_candidates": {
+    "exp072_pf_ancc": {
+      "rmse": 17.494197129514692,
+      "mae": 10.454962780612417,
+      "within10": 0.6684907653698237
+    },
+    "beam_raw_top1": {
+      "rmse": 18.339187521089787,
+      "mae": 13.121684067532408,
+      "within10": 0.5093745171810472
+    },
+    "exp072_pf_z": {
+      "rmse": 24.1651766470043,
+      "mae": 13.864957457533464,
+      "within10": 0.6142521891272303
+    }
+  },
+  "oracle_diagnostics": {
+    "oracle_best_variant_candidate": {
+      "rmse": 11.104328373560481,
+      "mae": 5.609021903978924,
+      "within10": 0.8397020198013186,
+      "delta_rmse_vs_primary_baseline": -4.492136491958316
+    },
+    "pf_raw_top3_oracle": {
+      "rmse": 14.236926379315499,
+      "mae": 7.992557182727922,
+      "within10": 0.7319660596545,
+      "delta_rmse_vs_primary_baseline": -1.3595384862032986
+    }
+  },
+  "pf_diagnostics_summary": {
+    "gr_sigma_mean": 13.897758962125387,
+    "ess_mean": 366.11257553100586,
+    "resampling_rate": 0.05337286816211417
+  },
+  "sha256": {
+    "row_candidates_decompressed": "bef105d23466b13be8d3caee907dd1e5cea1d4f7468907116a95f9bf49344da1",
+    "row_candidates_raw_gzip": "198017244c3e094e4f9fdb41b4cfaadf817bab0f21b1a0410832959f85306eda",
+    "candidate_metrics": "e68595c55cc8bc3a935f87086792330df958627e51eb1f209c27f260e58e15f7",
+    "filter_delta_metrics": "a80e66ab332ed7d53d3a9ec788acf1befc0fa44e709b6609f3cdc0e6dc2a55c0",
+    "bucket_metrics": "ca80573f5f2e55fe072a07d9dd7ee0b0ad07ea6fc7ff9a3a85481e8a62cc0413",
+    "by_well": "35e0683ee158c5a36dd1e973f37c3b0a540b9bd629337c4b68c6fa021e6d48c8",
+    "group_metrics": "c760eb23d32c8edc52ff34a72c6fbcdf6ecfd7b5c5a4a99287e925a4efda3b57",
+    "pf_diagnostics": "a7675f68a015a7177b65697ea6ed5b913d6b66a7e00eaaadf59299490cae4643",
+    "summary": "585f1caf7f17a4c37f04412e25a57147b0dda77ce71f2a0ded2cf39eff886391",
+    "target_wells": "b430641fc305cb56a9332ec4f41ee2497db4bbd269310c969d3754721ad5eac6",
+    "well_status": "0e5d0bcec5677fd0674e6b42d6f5dfc69b09f0f10cb30d7706423e269e11974f"
+  },
+  "notes": "Train-side exp072-aligned public-like raw GR residual-scale control only; no inference or submission."
+}

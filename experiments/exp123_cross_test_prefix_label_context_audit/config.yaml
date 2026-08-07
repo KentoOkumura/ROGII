@@ -1,0 +1,95 @@
+experiment:
+  name: "exp123_cross_test_prefix_label_context_audit"
+  description: Diagnose whether other wells in the same pseudo test batch can use visible TVT_input prefix labels to estimate batch-level bias, slope, or residual scale.
+  route: ml_model
+  status: completed
+  created_at: "2026-06-25"
+  updated_at: "2026-06-25"
+
+lineage:
+  parent: exp037_test_time_prefix_online_training_audit
+  related_backlog:
+    - cross_test_prefix_label_context_audit
+    - test_batch_covariate_context_audit
+  diff_summary: Uses train wells as pseudo test batches and, for each validation target well, excludes that target well while using the other validation wells' finite TVT_input prefix labels to diagnose batch-level residual bias, slope, and scale corrections. This is a rules-risk diagnostic and does not produce a submission.
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation:
+  strategy: GroupKFold pseudo test batch; score only target well TVT_input NaN rows
+  metric: rmse
+  n_folds: 5
+  seed: 42
+  group_column: well_id
+  score_rows: TVT_input_isna
+  leakage_policy:
+    - Target well evaluation rows use true TVT only for scoring.
+    - Context features for a target well exclude that same target well.
+    - Other validation wells' finite TVT_input prefix labels are intentionally used as a diagnostic label source.
+    - This has organizer-rules risk and is not inference-portable without explicit rules confirmation.
+
+# Common paths and submission columns come from project.yml.
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: no_new_model_prefix_label_context_audit
+  params:
+    base_predictions:
+      - hold_prefix_control
+      - self_linear_prefix_control
+    cross_batch_candidates:
+      - cross_batch_bias_hold
+      - cross_batch_slope_hold
+      - cross_batch_scale_slope_hold
+      - cross_batch_bias_scale_hold
+
+audit:
+  min_prefix_rows: 30
+  min_eval_rows: 30
+  context_prefix_tail_rows: 500
+  context_residual_clip: 60.0
+  max_context_correction: 25.0
+  scale_reference: 10.0
+  scale_min_alpha: 0.25
+  scale_max_alpha: 1.0
+  decision_policy:
+    - Treat same-OOF improvement as diagnostic only.
+    - Do not inference-port unless organizer rules explicitly allow cross-well visible TVT_input label use.
+    - Compare fold-selection readout, by-well regressions, and distance buckets before promoting any idea.
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: deterministic_groupkfold_and_csv_read_order
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - No model is trained and no submission is generated.
+    - The audit is deterministic for a fixed train directory and GroupKFold implementation.
+
+notes:
+  - exp036/exp037 showed prefix-derived same-OOF improvements did not transfer cleanly to holdout selection.
+  - This experiment narrows the idea to batch-level bias, slope, and scale diagnostics from other wells only.

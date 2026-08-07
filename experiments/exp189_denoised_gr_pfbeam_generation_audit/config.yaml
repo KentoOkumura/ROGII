@@ -1,0 +1,169 @@
+experiment:
+  name: "exp189_denoised_gr_pfbeam_generation_audit"
+  description: Train-side scoped audit for inserting denoised/smoothed GR into PF/Beam observation likelihood.
+  route: pf_beam
+  status: completed_train_side_diagnostic_no_submit
+  created_at: "2026-07-04"
+  updated_at: "2026-07-04"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+
+lineage:
+  parent: denoised_gr_pfbeam_generation_audit backlog
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - exp099_pf_multi_observation_likelihood_probe
+    - exp167_fft_denoised_gr_matching_audit
+    - exp170_heel_calibrated_shift_scan_pfbeam_audit
+  implementation_source: denoised_gr_pfbeam_generation_audit.py
+  diff_summary: >
+    Compares raw GR observation likelihood against rolling-median and Savitzky-Golay
+    smoothed GR likelihood inside a scoped PF/Beam rerun. The audit uses exp072
+    TVT_input-missing-equivalent train rows for scoring, keeps PF seeds, particles,
+    transition noise, beam width, and target wells fixed across filters, and does not
+    train a model, port inference, or produce a submission candidate.
+
+validation:
+  strategy: train_well_pseudotail_denoised_gr_pfbeam_generation_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within10
+    - raw_vs_smoothed_delta_rmse
+    - pf_effective_sample_size
+    - pf_resampling_rate
+    - path_jump_rate
+    - oracle_topk_coverage
+    - selector_headroom
+    - worst_well_regression_vs_raw
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Target wells are selected by target-free availability, eval row count, and md_since coverage, not by true error.
+    - Evaluation-zone true TVT is materialized as last_known_tvt + target from the exp072 cache only for scoring.
+    - Smoothing variants are fixed before execution; window lengths and thresholds are not selected from train truth.
+    - PF/Beam raw and smoothed variants share the same seed schedule and runtime constants.
+    - Positive train-side results are diagnostic only and must become selector/confidence features before any inference port.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_reference_candidates:
+    - pf_ancc
+    - beam_mean
+    - likpf_mean
+    - pf_z
+
+model:
+  name: denoised_gr_pfbeam_generation_audit
+  estimator: none_pfbeam_generation_audit
+  target: exp072_target_for_scoring_only
+  gr_filters:
+    - name: raw
+      kind: raw
+    - name: rolling_median_w11
+      kind: rolling_median
+      window: 11
+    - name: savgol_w31_p2
+      kind: savgol
+      window: 31
+      polyorder: 2
+  validation_surface:
+    selection_mode: long_md_since
+    max_target_wells: 64
+    well_include: []
+    min_known_prefix_rows: 160
+    min_eval_rows: 64
+  runtime:
+    particles: 240
+    seed_count: 8
+    likelihood_temperature: 6.0
+    topk_oracle: 3
+    resample_threshold: 0.5
+    init_spread: 4.5
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_pos_noise: 0.10
+    resample_velocity_noise: 0.001
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+  beam:
+    beam_size: 14
+    move_radius: 2
+    move_cost: 16.0
+    error_scale: 120.0
+    post_smooth_window: 1
+
+audit:
+  mode: denoised_gr_pfbeam_generation_audit
+  output_prefix: exp189_denoised_gr_pfbeam_generation_audit
+  primary_baseline: pf_raw_lik_mean
+  path_jump_threshold_ft: 8.0
+  expected_train_artifacts:
+    - exp189_denoised_gr_pfbeam_generation_audit_candidate_metrics.csv
+    - exp189_denoised_gr_pfbeam_generation_audit_filter_delta_metrics.csv
+    - exp189_denoised_gr_pfbeam_generation_audit_bucket_metrics.csv
+    - exp189_denoised_gr_pfbeam_generation_audit_by_well.csv
+    - exp189_denoised_gr_pfbeam_generation_audit_group_metrics.csv
+    - exp189_denoised_gr_pfbeam_generation_audit_pf_diagnostics.csv
+    - exp189_denoised_gr_pfbeam_generation_audit_target_wells.csv
+    - exp189_denoised_gr_pfbeam_generation_audit_well_status.csv
+    - exp189_denoised_gr_pfbeam_generation_audit_row_candidates.csv.gz
+    - exp189_denoised_gr_pfbeam_generation_audit_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_query_well_seed_index_shared_across_gr_filters
+  stochastic_components:
+    - exp072_eval_zone_pf_particle_propagation
+    - exp072_eval_zone_pf_resampling
+  parallel_rng_policy: sequential_initial_audit_with_per_well_stable_seeds_no_global_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it is train-side diagnostic only.
+    - PF seeds are shared across GR filters for the same query well and seed index.
+    - Beam variants are deterministic for fixed filtered GR input and config.
+    - FFT notch and heel calibration are intentionally excluded based on exp167 and exp170.
+    - No inference or submission output is generated by this experiment.
+
+inference:
+  mode: not_applicable_train_side_audit_only
+  selected_candidate: null
+  notes:
+    - Positive train-side smoothing results must be converted to selector confidence features or ML add-only diagnostics before any inference port.
+    - Direct candidate replacement and direct submission are out of scope.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog denoised_gr_pfbeam_generation_audit as a small scoped audit.
+  - Only raw, rolling median, and Savitzky-Golay observation filters are tested; FFT notch and calibration-dependent variants are excluded.
+  - Direct PF/Beam candidate replacement, LightGBM training, inference port, and submit are explicitly out of scope.

@@ -1,0 +1,263 @@
+experiment:
+  name: exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout
+  description: >-
+    Propose at most three causal same-well self-GR alternative mode branches at
+    fixed target-free ambiguity events, then audit proposal recall and future
+    typewell-evidence separability without changing a decoder or prediction.
+  route: pf_beam
+  status: kaggle_cpu_v2_completed_scientific_guard_failed
+  created_at: "2026-07-19"
+  updated_at: "2026-07-19"
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.group_column
+    - validation.score_rows
+
+lineage:
+  parent: exp282_longtail_prediction_zone_self_gr_loop_closure_readout
+  base_reference: exp263_last_anchor_better_candidate_confidence_pair_cache
+  geometry_reference: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  emission_reference: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  ambiguity_reference: exp236_exact_hmm_posterior_bimodality_audit
+  separability_reference: exp280_exp226_shift_likelihood_separability_readout
+  diff_summary: >-
+    Replaces exp282's hard donor-transfer interpretation with a causal top-K
+    proposal readout. The base path is always retained. Proposal rows end at the
+    event, while the primary verifier uses only the following 256 rows and the
+    frozen exp209 raw-GR/typewell likelihood. Geometry is diagnostic/veto only.
+
+validation:
+  strategy: target_free_ambiguity_event_self_gr_top3_future_evidence_readout
+  metric: candidate_recall_and_future_branch_separability
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: fixed_target_free_unknown_suffix_events_with_256_future_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  guards:
+    required_event_coverage: 1.0
+    required_proposal_finite_coverage: 1.0
+    required_evidence_finite_coverage: 1.0
+    required_truth_attachment_before_freeze: 0
+    minimum_top3_within10_lift_vs_shuffled: 0.02
+    minimum_positive_proposal_lift_folds: 5
+    minimum_branch_choice_auc_each_fold: 0.60
+    minimum_selected_h256_rmse_gain_ft: 0.10
+    minimum_nonregressing_selected_folds: 5
+    maximum_base_unique_best_false_switch_rate: 0.05
+  leakage_policy:
+    - Events use target-free posterior flags and candidate disagreements only.
+    - Proposal windows end at the event row and do not read verifier rows.
+    - Future evidence uses rows strictly after the event and does not reuse NCC proposal scores.
+    - Raw true TVT and error are forbidden until event, proposal, and evidence tables are frozen and hashed.
+    - Fold labels are used only for outer-train margin q20 and post-freeze stratification.
+    - Truth, error, oracle labels, and fold performance cannot select event, donor, K, horizon, veto, or threshold.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  exp236_row_summary:
+    filename: exp236_exact_hmm_posterior_bimodality_audit_row_summary.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp236_exact_hmm_posterior_bimodality_audit/train_v1/artifacts/exp236_exact_hmm_posterior_bimodality_audit_row_summary.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp236-exact-hmm-posterior-bimodality-audit-train/artifacts/exp236_exact_hmm_posterior_bimodality_audit_row_summary.csv.gz
+    expected_raw_sha256: 5410ceae22d5a785536cd5dc33ee2fbcc950c8ac1094e262d29d8e890acc30a9
+    expected_decompressed_sha256: bf124fda2aed9fd1309ef9c8e608537cd16dfc116e920fd2387904888410e9a0
+    safe_columns: [id, well, bimodal_flag, bimodal_segment_id, mode_mass_switch_from_prev, mode_track_break_from_prev]
+    forbidden_columns: [target_tvt_readout_only]
+  exp209_candidate_cache:
+    filename: exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    candidates:
+      - /tmp/exp209_blend_audit/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    expected_raw_sha256: b50b4d1ee483b101d911a3bb3715a047836c028c1b29b9f986be0abeaebcb64b
+    expected_decompressed_sha256: ee3b548b0d38f78966742542e86fa31b7e64698d4762b924c924a5895d2ee3f4
+    safe_columns: [id, well, md_since, hmm_mean_tvt, hmm_minus_likpf_mean]
+    derived_columns:
+      exact_hmm: hmm_mean_tvt
+      likpf_mean: hmm_mean_tvt_minus_hmm_minus_likpf_mean
+    forbidden_columns: [target]
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    safe_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    forbidden_columns: [tvt_pred, gr_delta, tvt_true, error, abs_error]
+  exp263_base:
+    candidate: exp226_w500_50_50
+    oof_rmse: 8.238331
+    manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+    canonical_id_sha256: de07df322a8dc3a981b556ea78c3ddcecb2e708a31e986cfe05873109d4ae9d3
+    manifest_candidates:
+      - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1_small/artifacts/cache_manifest.json
+      - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+      - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+    formula_weights:
+      exp226_k16: 0.50
+      likpf_mean: 0.25
+      exact_hmm: 0.25
+  hidden_like:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+event_detection:
+  disagreement_threshold_ft: 10.0
+  persistent_rows: 128
+  shift_margin_block_rows: 128
+  shift_margin_outer_train_quantile: 0.20
+  refractory_rows: 256
+  trigger_precedence: [exp236_bimodal_segment_end, exact_hmm_likpf_persistent, exact_hmm_exp226_persistent, low_shift_margin]
+  require_primary_future_rows: 256
+  shift_bank_ft: [-80.0, -40.0, -20.0, -10.0, -5.0, -2.0, 0.0, 2.0, 5.0, 10.0, 20.0, 40.0, 80.0]
+  emission:
+    sigma_mode: known_prefix_residual_std
+    sigma_clip: [10.0, 60.0]
+    log_likelihood_clip: 600.0
+
+proposal:
+  max_alternative_branches: 3
+  gr_rolling_mean_rows: 5
+  trailing_window_rows: [17, 31, 51]
+  primary_window_rows: 51
+  donor_stride_rows: 3
+  minimum_prediction_donor_gap_rows: 256
+  donor_sources: [known_prefix, earlier_prediction_zone]
+  orientations: [forward, reverse]
+  donor_center_dedup_rows: 25
+  anchor_dedup_ft: 2.0
+  prediction_donor_anchor: exp263_fixed_exp226_w500_50_50
+  future_increment_path: exp226_tvt_geop
+  tie_policy: ncc51_desc_multiscale_desc_known_prefix_forward_donor_row_asc
+
+evidence:
+  primary_horizon_rows: 256
+  diagnostic_horizons_rows: [128, 512]
+  primary_score: mean_cumulative_exp209_gaussian_raw_gr_typewell_log_likelihood
+  geometry_role: diagnostic_and_veto_only
+  geometry_veto:
+    maximum_anchor_shift_ft: 80.0
+    typewell_extension_ft: 40.0
+    require_finite_path_and_steps: true
+  selection_readout: max_typewell_evidence_after_geometry_veto_else_base
+  emission:
+    sigma_mode: known_prefix_residual_std
+    sigma_clip: [10.0, 60.0]
+    log_likelihood_clip: 600.0
+
+negative_control:
+  kind: same_well_event_source_donor_assignment_shuffle
+  seed: 42
+  seed_policy: stable_sha256_per_well_event_source_local_rng
+
+audit:
+  output_prefix: exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout
+  same_tvt_thresholds_ft: [2.0, 5.0, 10.0]
+  truth_attach_stage: after_event_proposal_evidence_content_sha
+  expected_artifacts:
+    - exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout_event_contract.json
+    - exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout_target_free_events.csv.gz
+    - exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout_target_free_proposals.csv.gz
+    - exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout_target_free_future_evidence.csv.gz
+    - exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout_proposal_metrics.csv
+    - exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout_verifier_metrics.csv
+    - exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout_fold_metrics.csv
+    - exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout_scope_metrics.csv
+    - exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout_by_well_metrics.csv
+    - exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout_input_manifest.csv
+    - exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout_summary.json
+
+model:
+  name: none_self_gr_topk_future_evidence_readout
+  estimator: none_deterministic_diagnostic
+  active_audit_variants: [fixed_top3_h256]
+  active_variant_count: 1
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  booster_count: 0
+  hmm_regeneration_count: 0
+  pf_regeneration_count: 0
+  parent_control_retraining: false
+
+execution:
+  stage: kaggle_cpu_v2_completed_scientific_guard_failed
+  active_audit_variants: 1
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  hmm_well_runs: 0
+  pf_well_runs: 0
+  control_or_parent_retraining: false
+  gpu: false
+  inference: false
+  submission: false
+  kaggle_push_approved: true
+  approval_source: user_message_execute_2026_07_19
+  process_order: sorted_sequential_wells
+  event_chunk_size: 128
+  persist_full_pairwise_matrix: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp283-self-gr-topk-future-evidence-readout-train
+    train_kernel_title: exp283 self gr topk future evidence readout train
+    train_kernel_sources:
+      - kentookumura/exp236-exact-hmm-posterior-bimodality-audit-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_real_pipeline_stable_sha256_local_rng_shuffled_control
+  stochastic_components: [stable_shuffled_donor_negative_control_only]
+  parallel_rng_policy: single_process_sorted_wells_events_and_local_rng_per_event
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Event, proposal, and future-evidence content SHA are frozen before truth attachment.
+    - This is a fixed-input diagnostic, not a prediction or submission anchor.
+
+inference:
+  enabled: false
+  mode: disabled_readout_only
+  selected_candidate: null
+  create_submission: false
+
+notes:
+  - Compact self-contained sources were adopted as the regular notebooks before the approved run.
+  - Kaggle CPU version 2 completed with all technical guards passing and the scientific guard failing.
+  - Exp284 was run only under a separate explicit standalone override; exp283 grants no decoder promotion.

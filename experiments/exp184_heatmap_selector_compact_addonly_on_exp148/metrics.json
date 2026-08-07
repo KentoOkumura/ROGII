@@ -1,0 +1,115 @@
+{
+  "experiment": "exp184_heatmap_selector_compact_addonly_on_exp148",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "selector_parent": "exp184_cnn_sdf_mtp_heatmap_path_features_on_exp158",
+  "heatmap_parent": "exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe",
+  "created_at": "2026-07-05",
+  "updated_at": "2026-07-05",
+  "cv": 8.604130846223319,
+  "key_idea": "Add compact exp184 CNN/SDF/MTP heatmap selector confidence features on top of the exp148 learned-likelihood LightGBM surface; Kaggle CPU split train completed but worsened, so no inference or submit.",
+  "active_variants": [
+    "heatmap_selector_compact_addonly"
+  ],
+  "active_modes": [
+    "cpu_deterministic_threads8"
+  ],
+  "runtime": {
+    "kaggle_enable_gpu": false,
+    "lightgbm": "cpu_deterministic_threads8"
+  },
+  "control_retraining": false,
+  "planned_boosters": 15,
+  "reference_metrics": {
+    "exp148_gpu_lgb_mean_pooled_rmse": 8.50128118189582,
+    "exp148_cpu_runtime_lgb_mean_pooled_rmse": 8.528698114,
+    "exp148_public_lb_gpu_inference_v7": 7.96,
+    "exp148_public_lb_cpu_runtime_inference_v1": 7.921,
+    "exp188_addonly_lgb_mean_pooled_rmse": 8.53957379,
+    "exp194_replacement_lgb_mean_pooled_rmse": 9.329893102,
+    "exp184_best_viterbi_rmse": 10.560650324533297
+  },
+  "kaggle_train": {
+    "status": "COMPLETE",
+    "execution": "cpu_split_train_lgb0_lgb1_lgb2",
+    "kernel_version": 1,
+    "enable_gpu": false,
+    "total_boosters": 15,
+    "per_notebook_boosters": 5,
+    "rows": 3783989,
+    "wells": 773,
+    "features": 322,
+    "feature_join_coverage_pass": true,
+    "hmp184_generated_feature_count": 28,
+    "hmp184_expected_local_smoke_feature_count": 31,
+    "caveat": "The Kaggle split train inputs did not include the exp148 train output, so optional exp148 OOF delta features were unavailable and the run used 28 hmp184 features instead of the 31 features generated in local helper smoke.",
+    "splits": {
+      "lgb0": {
+        "kernel_id": "kentookumura/exp184-heatmap-selcompact-exp148-train-lgb0",
+        "status": "COMPLETE",
+        "version": 1,
+        "selected_lgb_config_indices": [
+          0
+        ],
+        "planned_boosters": 5,
+        "elapsed_seconds": 11120.622,
+        "output_dir": "experiments/exp184_heatmap_selector_compact_addonly_on_exp148/kaggle/output/train_lgb0_v1",
+        "rmse_tvt": 8.710685277023513,
+        "rmse_target": 8.710685058516807,
+        "prediction_sha256": "58aecc36671c53466c86e4768f4eb1dbcc26d2d1f48227e0df501b66389dcde8"
+      },
+      "lgb1": {
+        "kernel_id": "kentookumura/exp184-heatmap-selcompact-exp148-train-lgb1",
+        "status": "COMPLETE",
+        "version": 1,
+        "selected_lgb_config_indices": [
+          1
+        ],
+        "planned_boosters": 5,
+        "elapsed_seconds": 8422.584,
+        "output_dir": "experiments/exp184_heatmap_selector_compact_addonly_on_exp148/kaggle/output/train_lgb1_v1",
+        "rmse_tvt": 8.63943235301729,
+        "rmse_target": 8.639432519652363,
+        "prediction_sha256": "c825f45f3a31fdca2fdbd544baf6e9a2f309ddb42a06f44b4c7bb258d1befc23"
+      },
+      "lgb2": {
+        "kernel_id": "kentookumura/exp184-heatmap-selcompact-exp148-train-lgb2",
+        "status": "COMPLETE",
+        "version": 1,
+        "selected_lgb_config_indices": [
+          2
+        ],
+        "planned_boosters": 5,
+        "elapsed_seconds": 10234.615,
+        "output_dir": "experiments/exp184_heatmap_selector_compact_addonly_on_exp148/kaggle/output/train_lgb2_v1",
+        "rmse_tvt": 8.611075284742665,
+        "rmse_target": 8.611075085796356,
+        "prediction_sha256": "8809ca09dc7b21cf549dbaf633f290dabbcd1527ac0c6a8118d1ac9f8d60240d"
+      }
+    },
+    "cross_split_lgb_mean": {
+      "artifact_summary": "experiments/exp184_heatmap_selector_compact_addonly_on_exp148/artifacts/exp184_heatmap_selector_compact_addonly_on_exp148_split_lgb_mean_summary.json",
+      "artifact_metrics": "experiments/exp184_heatmap_selector_compact_addonly_on_exp148/artifacts/exp184_heatmap_selector_compact_addonly_on_exp148_split_lgb_mean_metrics.csv",
+      "rows": 3783989,
+      "wells": 773,
+      "chunks": 19,
+      "rmse_tvt": 8.604130846223319,
+      "rmse_target": 8.604130684382842,
+      "delta_vs_exp148_gpu_lgb_mean": 0.10284966432749876,
+      "delta_vs_exp148_cpu_runtime_lgb_mean": 0.0754327322233177
+    }
+  },
+  "decision": {
+    "result": "rejected_no_inference_no_submit",
+    "reason": "Cross-split lgb_mean OOF is worse than the exp148 GPU and CPU runtime anchors, and also worse than exp188 add-only selector confidence.",
+    "inference": "not_run",
+    "submit": "not_run"
+  },
+  "notes": [
+    "Kaggle train ran on CPU with enable_gpu=false in three split notebooks to avoid timeout.",
+    "Parent/control retraining was not included.",
+    "Exp184 selected TVT was used as features only, never as direct replacement, blend, postprocess, hard gate, or submit path.",
+    "A strict 31-feature rerun would need the exp148 train output as a Kaggle input source, but the current 28-feature result is strongly negative."
+  ]
+}

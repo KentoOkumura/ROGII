@@ -1,0 +1,596 @@
+experiment:
+  name: exp507_exp504_nested_rank_compact_addonly_on_exp413
+  description: >-
+    Add a strict outer/inner nested 45-column compact representation of the
+    exp504 H512 pairwise rank surface to the frozen exp413 final370 TVT feature
+    set. The hard-selected TVT and the full 66 pair probabilities are excluded.
+  hypothesis: >-
+    Exp504 pairwise preferences may be useful to the downstream TVT model even
+    though collapsing them to one hard winner failed fold, hidden-like, and
+    by-well tail gates.
+  route: ensemble
+  status: stage_d_complete_technical_pass_scientific_fail_closed
+  created_at: "2026-08-03"
+  updated_at: "2026-08-03"
+
+lineage:
+  parent: exp413_scale5_likpf_full_replacement_on_exp335
+  rank_source: exp504_h512_regret_weighted_block_rank_selector
+  candidate_contract_parent: exp293_physics_only_candidate_bank_headroom_contract
+  selector_feature_contract_parent: exp264_exp263_candidate_confidence_dual_selector
+  replacement_negative_reference: exp502_exp501_fixed13_selector_replacement_on_exp413
+  steering: ../../.steering/20260803-exp507-exp504-nested-rank-compact-addonly-on-exp413
+  references:
+    - exp413_scale5_likpf_full_replacement_on_exp335
+    - exp504_h512_regret_weighted_block_rank_selector
+    - exp502_exp501_fixed13_selector_replacement_on_exp413
+    - exp264_exp263_candidate_confidence_dual_selector
+    - exp293_physics_only_candidate_bank_headroom_contract
+    - docs/06_reproducibility.md
+  diff_summary: >-
+    Keep exp413 clean273, compact74, signed23, downstream folds, model configs,
+    and evaluation fixed. Add only a strict nested rank_compact45 block to form
+    final415. Reuse the five saved exp504 outer-valid surfaces and train only
+    twenty inner rank models in a future separately approved Stage N.
+
+implementation:
+  design_approval_received: true
+  design_approval_source: user_message_2026_08_03_create_backlog_experiment_and_steering_design_only
+  implementation_approval_received: true
+  implementation_approval_source: user_message_2026_08_03_implement_exp507
+  kaggle_stage_n_approval_received: true
+  kaggle_stage_n_approval_source: user_message_execute_exp507_2026_08_03
+  kaggle_stage_d_approval_received: true
+  kaggle_stage_d_approval_source: user_message_next_after_stage_n_2026_08_03
+  inference_approval_received: false
+  submission_approval_received: false
+  scaffold_created: true
+  code_created: true
+  tests_created: true
+  jupytext_source_created: true
+  compact_selfcontained_candidate_created: true
+  canonical_train_notebook_is_markdown_placeholder: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_is_markdown_placeholder: true
+  kaggle_package_created: true
+  stage_d_executed: true
+  training_enabled: false
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: inherited_exp413_outer_groupkfold_with_inner_crossfit_for_rank_features
+  group_column: well_id
+  outer_folds: 5
+  inner_folds_per_outer: 4
+  metric: rmse
+  score_rows: inherited_exp413_suffix_rows
+  hidden_like_scopes:
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  leakage_policy:
+    - A downstream outer-valid well is absent from every model used to create its features.
+    - A downstream outer-train inner-held well is absent from its rank feature model.
+    - Rank labels and regret weights use only the three allowed inner-training folds.
+    - Standard exp504 five-fold OOF must not be copied into downstream outer-train partitions.
+    - Truth, error, oracle, well id, hard-selected TVT, and ordinal candidate id are forbidden features.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  id_column: id
+  rows: 3783989
+  wells: 773
+  folds: 5
+  h512_blocks: 7787
+  candidates: 12
+  join_keys: [well, row_idx]
+  exp504:
+    kernel_id: kentookumura/exp504-h512-regret-block-rank-selector-train
+    kernel_version: 1
+    kernel_id_no: 129488458
+    candidate_content_sha256: 29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474
+    row_feature_schema_sha256: aaef4ffdd90667893b099b76a52f1957b22197aea9cee5e5b57bc81048ddd3a4
+    block_feature_schema_sha256: 523ef0b85cf9873abe463a7ec7f99b703eb0fde6062bcc85e7f5f40508f060d4
+    block_feature_content_sha256: f333d097d8bdd369b2b6786328dee050d6bb5ba4114d810e26e60be976fd56c8
+    model_manifest_logical_sha256: 60696a0574de0c62f8c413c2344a664f40a40634f202ec3a02a754bd2ef3de25
+    oof_prediction_content_sha256: 1dd09844b70536ec7eae26d6656efb70a00bdc3488a57aca188fb6dfc3b2504f
+    root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp504-h512-regret-block-rank-selector-train
+      - /kaggle/input/exp504-h512-regret-block-rank-selector-train
+      - experiments/exp504_h512_regret_weighted_block_rank_selector/kaggle/output/train_v1
+      - /tmp/exp507-exp504-v1-contract
+    artifacts:
+      candidate_bank:
+        filename: exp504_h512_regret_weighted_block_rank_selector_candidate_bank.f32
+        patterns:
+          - "**/.exp504_work/exp504_h512_regret_weighted_block_rank_selector_candidate_bank.f32"
+          - "**/exp504_h512_regret_weighted_block_rank_selector_candidate_bank.f32"
+        file_sha256: 1281c1ec501c21bdee9d918d805eb320b3e0e82715d993c2cfd0f9dda18909bc
+        logical_content_sha256: 29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474
+        key_content_sha256: 42ede2f53e28dc2ccb28f847e0bc23680d1121bb29e980016dee989dbdddfef7
+      candidate_block_features:
+        filename: exp504_h512_regret_weighted_block_rank_selector_candidate_block_features.npy
+        patterns: ["**/exp504_h512_regret_weighted_block_rank_selector_candidate_block_features.npy"]
+        file_sha256: b23521c6d524fad712927808cb5ef04b89921ce11c6d0770e003ee1eb8872581
+        shape: [7787, 12, 594]
+      shared_block_features:
+        filename: exp504_h512_regret_weighted_block_rank_selector_shared_block_features.npy
+        patterns: ["**/exp504_h512_regret_weighted_block_rank_selector_shared_block_features.npy"]
+        file_sha256: 044efa09f529a3451ca76f4c8ce60b1ac4afab2823759bf59db3514d033de352
+        shape: [7787, 198]
+      block_context:
+        filename: exp504_h512_regret_weighted_block_rank_selector_block_context.npy
+        patterns: ["**/exp504_h512_regret_weighted_block_rank_selector_block_context.npy"]
+        file_sha256: 1b01d03b6401e55c525dee259293de2bfc377ddeb0944b7005ea910bc4593186
+        shape: [7787, 6]
+      block_feature_schema:
+        filename: exp504_h512_regret_weighted_block_rank_selector_block_feature_schema.json
+        patterns: ["**/exp504_h512_regret_weighted_block_rank_selector_block_feature_schema.json"]
+        file_sha256: 4bc790e59b2c3e91f4d4f4e5a6d0f25a1e967861c7da4ca9b70999b0288964af
+      block_metadata:
+        filename: exp504_h512_regret_weighted_block_rank_selector_block_metadata.parquet
+        patterns: ["**/exp504_h512_regret_weighted_block_rank_selector_block_metadata.parquet"]
+        file_sha256: 2417ef9661f61cd3892e02853e92a81408372bbbff1ec6a96de8691630caa181
+        logical_content_sha256: dc50b0d65b347675a1485466379637443bbd2a0db255f87640ce0a02f76cc735
+      block_selection:
+        filename: exp504_h512_regret_weighted_block_rank_selector_block_selection.parquet
+        patterns: ["**/exp504_h512_regret_weighted_block_rank_selector_block_selection.parquet"]
+        file_sha256: 7a53818a1d96fa2601eb2dc4043633ea9a65d22baa47551df207715f9bd38dea
+        logical_content_sha256: 0cd97d79b2925e2ad9ed0b7fc5ec70f6fbb74d8156a056839130435f8b7b4f8b
+      pair_probability:
+        filename: exp504_h512_regret_weighted_block_rank_selector_pair_probability_oof.parquet
+        patterns: ["**/exp504_h512_regret_weighted_block_rank_selector_pair_probability_oof.parquet"]
+        file_sha256: 48b1466f278c63f7ffed069e7994348067ff708214cc00d491194a50b3aaf78a
+        logical_content_sha256: fb1697339f41db0de9c0f67c67edb92c74381bd611924314d25ca891f1678272
+      row_metadata:
+        filename: exp504_h512_regret_weighted_block_rank_selector_oof_predictions.parquet
+        patterns: ["**/exp504_h512_regret_weighted_block_rank_selector_oof_predictions.parquet"]
+        file_sha256: 6dfdccfa0baf0a21a4e4fb9fb8cd026063c595ff5857f83a885c381261019181
+        allowlist_columns: [id, well, well_row_idx, outer_fold, md_since, h512_group]
+        logical_allowlist_sha256: 30870f5c137ebe77eaf0b7683c1f9c5aee3ca8a8af07ac9d56668e7c57581a3a
+      pair_contract:
+        filename: exp504_h512_regret_weighted_block_rank_selector_pair_contract.json
+        patterns: ["**/exp504_h512_regret_weighted_block_rank_selector_pair_contract.json"]
+        file_sha256: bb78caf27119bd3c53bf7dc1e2124cb2bea34540ac04a3c83e48ecea5676bce3
+      model_manifest:
+        filename: exp504_h512_regret_weighted_block_rank_selector_model_manifest.json
+        patterns: ["**/exp504_h512_regret_weighted_block_rank_selector_model_manifest.json"]
+        file_sha256: f397dafded7f89e07c6b7e4517dae17c1acf192dba5be67cadc04d028041d3d3
+        logical_content_sha256: 60696a0574de0c62f8c413c2344a664f40a40634f202ec3a02a754bd2ef3de25
+      target_free_freeze:
+        filename: exp504_h512_regret_weighted_block_rank_selector_target_free_freeze.json
+        patterns: ["**/exp504_h512_regret_weighted_block_rank_selector_target_free_freeze.json"]
+        file_sha256: 86b3b643b862143a108b116735848cd99dd3b62fa003c2dec3fd560b1eb3255b
+  exp413:
+    kernel_id: kentookumura/exp413-scale5-likpf-downstream-train
+    kernel_version: 2
+    oof_rmse_ft: 7.884802794404715
+    oof_prediction_sha256: 9bd2d17778b3b27d771b12cbff72def8b87e6cdf14062e1c0ba192434cef4a9d
+    model_manifest_sha256: 4b4f988154468ba6697cdd57c0a0c6bf7cc631e7b2bbe1f15fa8f51fdeb7c3df
+    fold_metrics_sha256: 82e70b6674f218f2892d6e5f70e327dfcbbdaf0fa5e431c4e07231009e9e2d8f
+    scope_metrics_sha256: c89add97cd4cae628b79774615a717e4cfbffe7b65a4a68c58b2c2e2737948ed
+    hidden_scope_metrics_sha256: eafa3546e4ea5c0d180d380f7fe2c39b5cac970ea4c8097b68b077017da1f1b8
+    by_well_metrics_sha256: e82c6908ed2caa9b3e5c1664bc66a3226b3bc6d9284f4863bd4fa941ae32d080
+    clean_feature_count: 273
+    nested_feature_count: 74
+    signed_feature_count: 23
+    stage_c_compact_manifest_sha256: 507429faa4fbc336dbc00e8edfee5a45788b8a58dbc2e15a440d5e7780d5f07f
+    stage_c_metrics_sha256: 4642e1b22662d830fcd601f5d46452657e51546f1d741b1e0ae4a8e1c836168d
+    stage_c_model_manifest_sha256: 7badcf45bccab0e2b0535ab7e7171e4c6cb7bf81e0bb115d5e283b1486b7b875
+    stage_c_schema_file_sha256: e3a677610899cb33bf58262f4cf02f650300c8c2207c46b53588d3418162ea74
+    stage_c_schema_logical_sha256: 23614916c99edbbd513bcefee958d26cdfae5b83fb05c232c19736f2708dd725
+    stage_s_compact_manifest_sha256: 7a4282a25d7e7887e314cd3d01b8a09c81ff91ba3c1b1cf62e3197079ac93323
+    stage_s_metrics_sha256: ce540b392f23e3becd0b65bceb01589424dac0b0593646c93043d75f81525410
+    stage_s_model_manifest_sha256: 84a0047667ce9209ce63e3b9e935ff6c379d2d38b1ae4262318db94a47aaca9f
+    stage_s_schema_file_sha256: e57c6d5fde307eb26193a1c5efdb31accde94a6836df75de03100189d232021a
+    stage_s_schema_logical_sha256: 74abf31f057dfe29177221895e3e26c5a261e5b51defc04f081d6b140f2be44c
+    stage_s_reproducibility_manifest_sha256: 6acebb4461ac2df6f94c6edf1068a0ba9e42bc8c8877d83b4b3ccfa586a3e7c1
+    stage_d_metrics_sha256: 3ea2229b6174a1bc37960e425e05994645cfbedd3636f0d33a856aacf0f579e7
+    stage_d_prediction_column: scale5_x1p0_full_replacement__lgb_mean__pred_tvt
+    stage_c_root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp413-scale5-likpf-selector-train/artifacts
+      - /kaggle/input/exp413-scale5-likpf-selector-train/artifacts
+      - experiments/exp413_scale5_likpf_full_replacement_on_exp335/kaggle/output/stage_c/artifacts
+    stage_s_root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp413-scale5-likpf-signed-train/artifacts
+      - /kaggle/input/exp413-scale5-likpf-signed-train/artifacts
+      - experiments/exp413_scale5_likpf_full_replacement_on_exp335/kaggle/output/stage_s/artifacts
+    stage_d_root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp413-scale5-likpf-downstream-train/artifacts
+      - /kaggle/input/exp413-scale5-likpf-downstream-train/artifacts
+      - experiments/exp413_scale5_likpf_full_replacement_on_exp335/kaggle/output/stage_d/artifacts
+  fold_contract:
+    expected_manifest_sha256: fa41084c5fcb4adffb88d44211b4cc5d2d2f46b5bd4d65828b6af941184b2a6d
+  parent_exp413_config:
+    patterns:
+      - inputs/parent_exp413_config.yaml
+      - experiments/exp413_scale5_likpf_full_replacement_on_exp335/config.yaml
+    sha256: d12e6d74a7f567f0873d5513883b3a7d36d0cd5be5231037e7db12f1a74036a7
+  stage_n_source:
+    root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp507-exp504-nested-rank-compact-stage-n/artifacts
+      - /kaggle/input/exp507-exp504-nested-rank-compact-stage-n/artifacts
+      - experiments/exp507_exp504_nested_rank_compact_addonly_on_exp413/kaggle/output/stage_n/artifacts
+    expected_manifest_sha256: 9a126024f0a67ab571e053038aa4a36e8b6773b6f0ff839d1fdf9ec63bcb7735
+
+candidate_contract:
+  order:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__exact_hmm
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+    - likpf_mean__exact_hmm
+    - exp226_w500_50_50
+  anchor: exp226_w500_50_50
+  candidate_count: 12
+  unordered_pair_count: 66
+  horizon_rows: 512
+  non_overlapping_blocks: true
+  include_final_short_block: true
+
+rank_source_contract:
+  inherited_from_exp504: true
+  pair_orientation: canonical_pair_antisymmetrized
+  borda_formula: mean_probability_candidate_beats_each_of_other_11
+  tie_tolerance: 1.0e-12
+  tie_rule: anchor_first_then_frozen_candidate_order
+  anchor_guard_probability_threshold: 0.5
+  anchor_guard_comparison: strict_greater_than
+  label: lower_h512_block_mse_wins
+  raw_regret_weight: row_count_times_log1p_absolute_block_mse_difference
+  weight_normalization: mean_one_within_each_rank_training_partition
+  lightgbm:
+    estimator: LGBMClassifier
+    objective: binary
+    metric: binary_logloss
+    boosting_type: gbdt
+    learning_rate: 0.03
+    n_estimators: 800
+    num_leaves: 31
+    min_child_samples: 100
+    max_depth: -1
+    subsample: 1.0
+    subsample_freq: 0
+    colsample_bytree: 0.8
+    reg_alpha: 0.1
+    reg_lambda: 1.0
+    max_bin: 255
+    random_state: 42
+    deterministic: true
+    force_col_wise: true
+    device: cpu
+    n_jobs: 4
+    early_stopping: false
+
+features:
+  parent:
+    clean_count: 273
+    nested_compact_count: 74
+    signed_compact_count: 23
+    final_count: 370
+  rank_compact:
+    dtype: float32
+    feature_count: 45
+    block_constant_feature_count: 42
+    row_varying_feature_count: 3
+    broadcast: h512_block_to_all_rows
+    ordered_groups:
+      - name: borda_scores
+        count: 12
+        columns: rank_borda__candidate_order
+      - name: candidate_vs_anchor_probability
+        count: 11
+        columns: rank_p_vs_anchor__non_anchor_candidate_order
+        orientation: probability_candidate_beats_anchor
+      - name: borda_summary
+        count: 5
+        columns:
+          - rank_borda_top1_score
+          - rank_borda_top2_score
+          - rank_borda_margin
+          - rank_borda_score_std
+          - rank_borda_entropy
+      - name: anchor_rank
+        count: 1
+        columns: [rank_anchor_rank]
+      - name: provisional_and_fallback
+        count: 13
+        columns:
+          - rank_provisional_is__candidate_order_x12
+          - rank_anchor_guard_fallback
+      - name: weighted_tvt_moments
+        count: 2
+        columns:
+          - rank_borda_tvt_mean
+          - rank_borda_tvt_std
+      - name: block_relative_position
+        count: 1
+        columns: [rank_h512_relative_position]
+    anchor_score_column: rank_borda__exp226_w500_50_50
+    duplicate_anchor_score_column: false
+    provisional_encoding: one_hot_12
+    borda_weight_formula: borda_score_divided_by_sum_of_12_borda_scores
+    expected_borda_sum: 6.0
+    borda_sum_tolerance: 1.0e-6
+    entropy_formula: negative_sum_w_log_w_divided_by_log_12
+    score_std_ddof: 0
+    weighted_tvt_std_ddof: 0
+    relative_position_formula: block_row_offset_divided_by_max_row_count_minus_1_and_1
+    full_66_pair_probabilities_in_downstream: false
+    hard_selected_tvt_in_downstream: false
+  treatment:
+    formula: clean273_plus_compact74_plus_signed23_plus_rank_compact45
+    final_feature_count: 415
+    add_only: true
+    parent_feature_replacement: false
+
+nested_generation:
+  downstream_outer_folds: 5
+  inner_partitions_per_outer: 4
+  outer_valid:
+    source: saved_exp504_version_1_outer_valid_rank_artifacts
+    rank_training_folds: 4
+    new_rank_model_count: 0
+  outer_train_inner:
+    source: new_strict_cross_fit_rank_models
+    train_rule: exclude_downstream_outer_fold_and_held_inner_fold
+    rank_training_folds: 3
+    new_rank_model_count: 20
+  compact_partition_count: 25
+  compact_row_roles: 18919945
+  raw_pair_probability_policy: transient_for_inner_borda_then_discard_except_anchor_11_compact
+
+model:
+  name: exp413_tvt_lightgbm_with_exp504_nested_rank_compact_addonly
+  source_config: exp413_downstream_gpu_config_indices_0_1_2
+  treatment_variants: 1
+  lightgbm_configs: 3
+  outer_folds: 5
+  gpu_models: 15
+  parent_control_retrains: 0
+  early_stopping: inherited_exp413
+  postprocess: inherited_exp413
+  lightgbm_config_indices: [0, 1, 2]
+  gpu_mode: gpu_repro_guard_dp_threads8
+  early_stopping_rounds: 250
+  log_evaluation_period: 100
+  matrix_copy_chunk_columns: 32
+
+technical_gate:
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_outer_folds: 5
+  expected_h512_blocks: 7787
+  expected_rank_inner_models: 20
+  expected_rank_compact_partitions: 25
+  expected_rank_compact_row_roles: 18919945
+  expected_rank_compact_features: 45
+  expected_final_features: 415
+  require_all_input_sha_match: true
+  require_unique_join_keys: true
+  require_zero_missing_or_extra_rows: true
+  require_zero_duplicate_feature_names: true
+  require_zero_nan_or_inf: true
+  require_held_outer_and_inner_well_overlap_zero: true
+  require_forbidden_feature_count_zero: true
+  require_schema_content_partition_and_model_sha: true
+
+promotion_gate:
+  matched_control: saved_exp413_oof
+  matched_control_rmse_ft: 7.884802794404715
+  required_gain_ft: 0.03
+  required_nonworse_folds: 3
+  total_folds: 5
+  maximum_scope_delta_rmse_ft: 0.02
+  scopes:
+    - md_since_0_250
+    - md_since_250_1000
+    - md_since_1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  require_technical_gate: true
+  by_well_tail_is_mandatory_readout: true
+  by_well_tail_is_promotion_gate: false
+  fail_action: FAIL_CLOSE_WITHOUT_PAIR_FEATURE_SUBSET_TEMPERATURE_OR_GATE_RESCUE
+  pass_action: require_new_user_approval_before_inference_work
+
+execution_contract:
+  scientific_variants: 1
+  stage_n:
+    status: complete_technical_pass
+    rank_configs: 1
+    outer_folds: 5
+    inner_folds_per_outer: 4
+    new_cpu_models: 20
+    new_cpu_boosters: 20
+    reused_outer_models: 5
+    outer_model_retrains: 0
+  stage_d:
+    status: complete_technical_pass_scientific_fail_closed
+    treatment_variants: 1
+    lightgbm_configs: 3
+    outer_folds: 5
+    new_gpu_models: 15
+    new_gpu_boosters: 15
+    control_retrains: 0
+  total_new_boosters: 35
+  candidate_regeneration_runs: 0
+  pf_runs: 0
+  hmm_runs: 0
+  beam_runs: 0
+  inference_runs: 0
+  submission_files: 0
+
+runtime:
+  stage_n_environment: kaggle_private_cpu
+  stage_d_environment: kaggle_private_gpu
+  enable_internet: false
+  seed: 42
+  stage_n_num_workers: 1
+  stage_n_lightgbm_threads: 4
+  pair_matrix_dtype: float32
+  pair_matrix_storage: one_inner_model_at_a_time_memmap_deleted_after_fit
+  max_pair_feature_columns: 1986
+  implementation_notebook_source_format: jupytext_percent_compact_selfcontained
+  selected_stage: stage_d
+  stage_n_run_approved: false
+  stage_d_run_approved: false
+  inference_run_approved: false
+  submission_run_approved: false
+  kaggle:
+    enable_internet: false
+    enable_gpu: true
+    enable_tpu: false
+    machine_shape: NvidiaTeslaT4
+    package_created: true
+    train_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp413-scale5-likpf-selector-train
+      - kentookumura/exp413-scale5-likpf-signed-train
+      - kentookumura/exp413-scale5-likpf-downstream-train
+      - kentookumura/exp507-exp504-nested-rank-compact-stage-n
+    train_dataset_sources:
+      - kentookumura/exp404-v1-frozen-predictions
+    train_model_sources: []
+    stage_n:
+      enable_gpu: false
+      planned_kernel_id: kentookumura/exp507-exp504-nested-rank-compact-stage-n
+      planned_kernel_title: exp507 exp504 nested rank compact stage n
+      kernel_id: kentookumura/exp507-exp504-nested-rank-compact-stage-n
+      kernel_version: 1
+      kernel_id_no: 129565024
+      pushed_at: "2026-08-03 10:17:33 UTC"
+      completed_at_from_final_log: "approximately 2026-08-03 13:08 UTC"
+      completed_detected_at: "2026-08-03 14:34:44 UTC"
+      elapsed_seconds_to_stage_n_pass: 10263.367916021
+      final_log_time_seconds: 10273.817937654
+      status: COMPLETE
+      package_notebook_sha256: b5ecf6209193354124979587d64e43d92683beac2ed1176f6d3e1c92d66dc610
+      package_metadata_sha256: 036a263df1c7e814c49682601316d9221dc71dd479f4c5e08f57d22a772e7b08
+      remote_metadata_sha256: a9aa7f102c757b1f892d879499b18ea2524e94a26e5d9aba390849b1dcf21200
+      pushed_config_sha256: ad6e8be8d660f206c6de4f51944a2ec955234d8a12901d03b045624968bf8ffa
+      scientific_source_sha256: a0ec0bb586a5c0cbecc301f9b4509bdacc2e2a430c2f4e0abe71d1bebe0490e8
+      stage_n_manifest_sha256: 9a126024f0a67ab571e053038aa4a36e8b6773b6f0ff839d1fdf9ec63bcb7735
+      rank_model_manifest_sha256: ccce7aa350ec9de526823a1a9023588e8e55f94747eb1ebb7b972128b1bce364
+      rank_partition_manifest_sha256: 86419566d6e9ad51d2be269946108d25df1bd20c2ca9853d586866533076df2e
+      rank_leakage_ledger_sha256: 187ded6ca4636b0186b16f7651492115634f89d0288627b5fc4acd89700abd18
+      rank_feature_importance_sha256: 7d29fa91211066713ba5ac99cde16b3f1062fa41d825d79cb8cd9027a40a112e
+    stage_d:
+      enable_gpu: true
+      machine_shape: NvidiaTeslaT4
+      planned_kernel_id: kentookumura/exp507-exp504-nested-rank-compact-stage-d
+      planned_kernel_title: exp507 exp504 nested rank compact stage d
+      kernel_id: kentookumura/exp507-exp504-nested-rank-compact-stage-d
+      kernel_version: 1
+      kernel_id_no: 129584313
+      pushed_at: "2026-08-03 14:53:03 UTC"
+      completed_detected_at: "2026-08-03 19:39:48 UTC"
+      audit_completed_at: "2026-08-03 19:43:01 UTC"
+      final_log_time_seconds: 17145.681811311
+      status: COMPLETE
+      scientific_status: train_complete_gate_failed_closed
+      actual_gpu_models: 15
+      actual_total_best_iteration_trees: 32711
+      control_retraining_boosters: 0
+      exp507_oof_rmse_ft: 7.889515565580203
+      exp413_control_rmse_ft: 7.884802794404715
+      gain_ft: -0.004712771175488406
+      nonworse_folds: 2
+      maximum_scope_delta_ft: 0.036938806684603476
+      package_notebook_sha256: ffcdbad040b98819eda29861cddfe2973ad53850b86239110641569fc56b4109
+      package_metadata_sha256: e520e83e2a2e8e617d53b1883af60cab256fc85ee928b2edaf6322deb31796b5
+      remote_metadata_sha256: 38ec5fba3323d7b19b633f48e6776e49cf2c668fbc37dd0264b273be1a5477be
+      remote_notebook_sha256: 06b8dfa98812de324a9397d10a7dd39d2e0c1997da75eacdf201891a95ac68bb
+      pushed_config_sha256: a569f04866035086f7801af469b3f9d475a39a082c225497897d1bebee06eb18
+      scientific_source_sha256: a0ec0bb586a5c0cbecc301f9b4509bdacc2e2a430c2f4e0abe71d1bebe0490e8
+      final415_schema_logical_sha256: 491fccff6222d5d5180a80b31a8f727046243f438419866bf96af7d196065bea
+      final415_schema_file_sha256: 90264d44bc78fae1ec73b1f920654c6ce723ba588e53dbfcb8fec29e86b6f0a6
+      stage_d_metrics_sha256: 76b25364a67ead4e9c948f08b6ecf93a81a762e3540427570689fcd3f28a7c5e
+      stage_d_model_manifest_sha256: 9b5386b6f5940624de59b5254646123570f0cf564e19482d2714cf4ba3976faa
+      stage_d_oof_sha256: bc4a90c9f22e1a4d0306ce6b26d976e7e31d606c0ac43e405fd82c780659074a
+      stage_d_fold_metrics_sha256: 67ff68045e85cf8b182c4487df31db164376543c87faad397b6f369e309f9860
+      stage_d_scope_metrics_sha256: 7cafad4a0240f1d5e723b0921c72134df64762273e2f6955958c64fa93ffd118
+      stage_d_hidden_metrics_sha256: 2dac1a04de0901faa66c9e232a1e18809f2d109c0f12b00dfb18dbd958175286
+      stage_d_by_well_sha256: 5942f797326c294ea860492d458be4a8fe0aca1707ab0cd815c80c102d2c5a18
+      stage_d_importance_sha256: 85ac15685742a9efbd64a50aa094d53fc1e295751e2d3e87ac11190f515109e3
+      reproducibility_manifest_file_sha256: 6cfe6a919a205c3141967862b5dfa53f98bfa7c9472c1afbd03d2ec74d5ed142
+      downloaded_log_sha256: 35d00c68b33e39db2fd021bffdfd76aff6c6a0a33b0b240e31fba265c77f9617
+    bootstrap_dependency_files:
+      - source: experiments/exp413_scale5_likpf_full_replacement_on_exp335/config.yaml
+        destination: inputs/parent_exp413_config.yaml
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: inputs/exp218_source/config.yaml
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/settings.py
+        destination: inputs/exp218_source/settings.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/learned_likelihood_rawtest_feature_generator_parity.py
+        destination: inputs/exp145_source/learned_likelihood_rawtest_feature_generator_parity.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/pf_multi_observation_likelihood_probe.py
+        destination: inputs/exp145_source/pf_multi_observation_likelihood_probe.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/config.yaml
+        destination: inputs/exp145_source/config.yaml
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/settings.py
+        destination: inputs/exp145_source/settings.py
+      - source: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+        destination: exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+        destination: inputs/exp218_clean_273_allowlist.csv
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_seed_with_stable_outer_inner_candidate_pair_and_row_order
+  stochastic_components:
+    - cpu_lightgbm_rank_training_with_fixed_seed
+    - gpu_lightgbm_tvt_training_with_exp413_fixed_seed
+  parallel_rng_policy: no_global_rng_in_parallel_paths
+  feature_sha_policy: decompressed_content_sha_for_gzip_and_logical_keyed_sha_for_tables
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    partition_manifest_sha: true
+    model_manifest_sha: true
+    every_model_sha: true
+    prediction_sha: true
+    submission_sha: false
+  rerun_policy: >-
+    Do not call this a deterministic anchor until an independent rerun matches
+    feature, model, and OOF prediction SHA or its numeric deltas are documented.
+  kaggle_bootstrap_policy: verify_metadata_embedded_config_run_flags_and_input_sources_before_push
+
+forbidden:
+  - downstream_full_66_pair_probability_features
+  - h128_h256_whole_well_overlap_or_variable_horizon
+  - pair_subset_temperature_loss_weight_model_threshold_or_guard_grid
+  - candidate_add_remove_recompute_or_formula_change
+  - ordinal_provisional_or_selected_candidate_id
+  - hard_selected_tvt_as_feature_or_prediction
+  - target_error_oracle_well_id_features
+  - borda_softmax_temperature_or_direct_weighted_tvt_prediction
+  - exp413_final370_feature_removal_or_replacement
+  - parent_control_or_exp504_outer_model_retraining
+  - pf_hmm_beam_regeneration
+  - same_oof_feature_subset_weight_gate_or_well_row_rescue
+  - stage_d_before_stage_n_technical_pass
+  - inference_or_submission_without_new_approval
+
+notes:
+  - Train-side candidate implementation and contract tests exist; no Kaggle package, model training, inference, or submission exists.
+  - Anchor score is already one of the twelve Borda columns, so rank_compact has 45 rather than 46 unique columns.
+  - The two Borda-weighted TVT moments are row-wise by frozen formula; together with H512 relative position, row-varying feature count is 3 and block-constant count is 42.

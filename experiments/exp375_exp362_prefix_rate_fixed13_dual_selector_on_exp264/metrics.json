@@ -1,0 +1,188 @@
+{
+  "experiment": "exp375_exp362_prefix_rate_fixed13_dual_selector_on_exp264",
+  "status": "completed_fail_closed",
+  "decision": "FAIL_CLOSE_FIXED13_SELECTOR_BRANCH",
+  "cv": 8.78785571000234,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "route": "ensemble",
+  "parent": "exp264_exp263_candidate_confidence_dual_selector",
+  "candidate_parent": "exp362_segment_local_donor_slope_exact_hmm",
+  "candidate_id": "prefix_rate_exact_hmm",
+  "execution": {
+    "kernel_id": "kentookumura/exp375-exp362-prefix-fixed13-selector-train",
+    "kernel_version": 1,
+    "kernel_id_no": 128436686,
+    "kaggle_status": "KernelWorkerStatus.COMPLETE",
+    "elapsed_seconds": 6978.658913637,
+    "active_variants": 1,
+    "objectives": 2,
+    "outer_folds": 5,
+    "inner_folds": 4,
+    "planned_cpu_selector_boosters": 40,
+    "trained_cpu_selector_boosters": 40,
+    "parent_control_retraining": 0,
+    "gpu_boosters": 0,
+    "downstream_tvt": false,
+    "inference": false,
+    "submission": false
+  },
+  "input_contract": {
+    "rows": 3783989,
+    "wells": 773,
+    "allowlist_columns": [
+      "well_id",
+      "row_idx",
+      "fold",
+      "candidate_tvt",
+      "candidate_std",
+      "hmm_loglik"
+    ],
+    "source_file_sha256": "cf3198f9a49b1240741b73a3c59d06ec31c7ddeb9ec01d3b1a213940da0adbe5",
+    "prediction_logical_sha256": "bdf616e00bdebb496093d3d05526aebce01381281c4b1c46f7b77e72e57415cb",
+    "prediction_decompressed_sha256": "e1d672ff9743b92c33a40bec8d4cf3b0a8c29cdbbb37948992f0809522e3e7ef",
+    "post_read_prediction_content_sha256": "fa23301c5b3da1a9846630009e327016b5f131dc1ac370e0c2fa94f9b0561095",
+    "parent_score_sha256": "a10b7848127f01bef522f4b17dfd1640c9784956892dc24fc1159e3869500abc",
+    "selector_join_policy": "global_well_id_row_idx_then_exp263_fold_repartition",
+    "source_fold_used_as_model_feature": false,
+    "truth_or_error_columns_loaded": 0,
+    "native_confidence_finite_fraction": 1.0
+  },
+  "candidate_count": 13,
+  "primary_domain_count": 12,
+  "fixed_fallback_domain_count": 7,
+  "compact_feature_count": 77,
+  "stage_a": {
+    "rows_audited": 650000,
+    "feature_count_before_audit": 153,
+    "selected_feature_count": 90,
+    "dropped_all_missing": 41,
+    "dropped_constant": 5,
+    "dropped_exact_duplicate": 17,
+    "near_duplicate_pairs": 14,
+    "feature_schema_sha256": "465eee3b936bca4acafbe4c9010e6f744d0b5219c2d0ebeafb6199bdc11c4faf"
+  },
+  "stage_c": {
+    "model_count": 40,
+    "compact_partition_count": 25,
+    "compact_rows": 18919945,
+    "outer_valid_score_long_rows": 49191857,
+    "hard_primary_oof_rmse": 8.78785571000234,
+    "parent_fixed12_hard_oof_rmse": 8.652531955610227,
+    "delta_fixed13_minus_parent": 0.13532375439211286,
+    "fixed_fallback_oof_rmse": 8.238331546485645,
+    "delta_fixed13_minus_fixed_fallback": 0.5495241635166952,
+    "fold_hard_primary_rmse": [
+      9.443650199842608,
+      8.540884371233924,
+      8.963983299986698,
+      8.42694543589473,
+      8.521858836255996
+    ],
+    "fold_delta_fixed13_minus_parent": [
+      0.45193017449874695,
+      0.1142494462939947,
+      0.0634799591458215,
+      0.0004724326338614304,
+      0.022300164240142806
+    ],
+    "improved_parent_folds": 0,
+    "score_guard": {
+      "passed": true,
+      "expected_error_mae": 3.8072913288900483,
+      "expected_error_prior_mae": 5.813038459716873,
+      "within10_logloss": 0.35635716301025366,
+      "within10_prior_logloss": 0.5089002565283361,
+      "within10_brier": 0.1108928198522899,
+      "within10_prior_brier": 0.16448328245670435,
+      "all_metrics_improved_folds": 5
+    },
+    "leakage_audit_passed": true
+  },
+  "scope_readout": {
+    "near_0_250_delta_rmse": 0.03714706627484521,
+    "distance_1000_plus_delta_rmse": 0.14863032170780777,
+    "verification_like_spatial_role_delta_rmse": -0.08021415072259153,
+    "verification_like_typewell_purged_role_delta_rmse": -0.07107095050323942
+  },
+  "candidate_usage": {
+    "pooled_top1_rows": 436138,
+    "pooled_top1_fraction": 0.11525879171424652,
+    "positive_usage_folds": 5,
+    "fold_top1_fraction": [
+      0.133630621666064,
+      0.09488799312760193,
+      0.10346113414126187,
+      0.12021249476622009,
+      0.12407090294811866
+    ]
+  },
+  "well_safety": {
+    "improved_wells": 393,
+    "worsened_wells": 380,
+    "by_well_p95_delta_rmse": 1.0477445673957777,
+    "worst_well": "b19b0395",
+    "worst_well_delta_rmse": 28.995116411424533,
+    "worst_well_prefix_rate_top1_fraction": 0.002580423189403,
+    "usage_delta_pearson": -0.024413616135135773,
+    "usage_delta_spearman": -0.04105514823122608
+  },
+  "scientific_gate": {
+    "passed": false,
+    "checks": {
+      "selector_score_guard": true,
+      "prefix_rate_usage_pooled": true,
+      "prefix_rate_usage_folds": true,
+      "pooled_nonworse_than_parent": false,
+      "improved_parent_folds": false,
+      "near_nonworse": false,
+      "distance_1000_plus_nonworse": false,
+      "hidden_like_nonworse": true,
+      "by_well_p95_nonworse": false,
+      "worst_well_nonworse": false
+    },
+    "fixed_fallback_error_parity_max_abs_ft": 0.0
+  },
+  "postfreeze_addone_novelty": {
+    "diagnostic_only": true,
+    "affects_scientific_gate": false,
+    "h512": {
+      "fixed12_primary_oracle_rmse": 3.7003199957189286,
+      "fixed13_add_one_oracle_rmse": 3.537643353156343,
+      "oracle_improvement_ft": 0.16267664256258563,
+      "strict_unique_best_groups": 1236,
+      "strict_unique_best_fraction": 0.15872608193142418
+    },
+    "whole_well": {
+      "fixed12_primary_oracle_rmse": 4.801786361487399,
+      "fixed13_add_one_oracle_rmse": 4.678573028383364,
+      "oracle_improvement_ft": 0.12321333310403482,
+      "strict_unique_best_groups": 130,
+      "strict_unique_best_fraction": 0.16817593790426907
+    }
+  },
+  "artifact_sha256": {
+    "feature_schema_semantic": "465eee3b936bca4acafbe4c9010e6f744d0b5219c2d0ebeafb6199bdc11c4faf",
+    "nested_selector_model_manifest": "03e0277c62c2d315fe5000c9538095449ec73eff4dba71d6a4c311201b1cfbba",
+    "nested_compact_manifest": "06a8fbd204c9df14499d0f47f63902faa8c241d1171e71b88cf3b1fd35f36f62",
+    "nested_outer_valid_candidate_score": "6086a1f1de211a43712cae893669dabbf1958b01edc8a5047d81724db725d67a",
+    "scope_metrics": "ad932afb622bfb879f0189549e3fee9ae2310f7045f27bcf885ccc46b6b4c474",
+    "candidate_usage": "4e03c089b39c6279ff3121d7bb8fa6ca81c66394d5ac075807a7d63e44d11fc0",
+    "by_well": "3b43f05118ac15cfe555741935e7913cca13792949ecc77bf92f0e73eb32645d",
+    "scientific_gate": "950dff2017d23ec834c63c86ea8ec1a8e526c080d6cf8e9032ac0f3dceb14445",
+    "postfreeze_novelty_csv": "bf7b24e8e8c6c400da9884db5d14754a2d777ac6cdf2890a7ff992d3fad814ff",
+    "postfreeze_novelty_json": "1b32a1c029f56ce59b45b87ad0398687051353fa895527727931f3e79ec152b8",
+    "summary": "1e503ff962e7707662baf27d3dab19924ca31fbb24bb5c969dd7170fcdf3f318"
+  },
+  "tests": {
+    "dedicated": "10 passed",
+    "exp375_exp373_exp371_exp264_regression_bundle": "47 passed, 1 failed only because exp373 approval-consumed lifecycle had advanced",
+    "py_compile": "passed",
+    "ruff": "passed",
+    "jupytext_train_inference": "passed",
+    "strict_experiment_validation": "passed"
+  },
+  "deterministic_anchor": false,
+  "notes": "Technical and leakage checks passed, but fixed13 worsened pooled, all five folds, near, 1000+, and well-tail safety versus saved parent fixed12. The branch is fail-closed; no downstream TVT, inference, or submission."
+}

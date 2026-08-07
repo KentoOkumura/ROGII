@@ -1,0 +1,44 @@
+{
+  "artifacts": {
+    "output_dir": "experiments/exp093_pf_candidate_coverage_then_ranker_audit/kaggle/output/train_v1",
+    "selection_counts": "experiments/exp093_pf_candidate_coverage_then_ranker_audit/kaggle/output/train_v1/artifacts/exp093_pf_candidate_coverage_then_ranker_audit_selection_counts.csv",
+    "summary": "experiments/exp093_pf_candidate_coverage_then_ranker_audit/kaggle/output/train_v1/artifacts/exp093_pf_candidate_coverage_then_ranker_audit_summary.json"
+  },
+  "best_candidate_by_rmse": {
+    "candidate": "likpf_mean",
+    "rmse_tvt": 11.594897270202637,
+    "within_10ft": 0.772807479091509
+  },
+  "cv": null,
+  "experiment": "exp093_pf_candidate_coverage_then_ranker_audit",
+  "kaggle_kernel": "kentookumura/exp093-pf-candidate-coverage-ranker-train",
+  "kaggle_kernel_version": 1,
+  "key_idea": "Measure PF/Beam candidate-set oracle coverage before training a candidate ranker.",
+  "metric": "candidate_coverage_audit",
+  "notes": "Kaggle train v1 completed. Candidate set has oracle headroom, but current target-free rank score is weak and under-selects pf_ancc.",
+  "private_lb": null,
+  "public_lb": null,
+  "ranker_readiness": {
+    "baseline_plus_self_gr_oracle_rmse": 6.958935260772705,
+    "baseline_plus_self_gr_oracle_within_10ft": 0.92249237510997,
+    "baseline_primary_oracle_rmse": 7.434030055999756,
+    "baseline_primary_oracle_within_10ft": 0.9065253625208741,
+    "oracle_coverage_gain_from_self_gr": 0.01596701258909583,
+    "oracle_rmse_gain_from_self_gr": 0.4750947952270508,
+    "recommendation": "ranking_or_likelihood_scorer_audit_before_ranker"
+  },
+  "route": "pf_beam",
+  "selection_counts": {
+    "complete_noise_candidate_count": 0,
+    "pf_ancc_oracle_best_count": 1092069,
+    "pf_ancc_rank_score_top1_count": 0
+  },
+  "source": {
+    "rows": 3783989,
+    "schema_sha256": "700d38149f583c3ab6574ea7b163c3c8709c2514b675bea381d822f82f4809b8",
+    "source_decompressed_sha256": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350",
+    "source_sha256": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18",
+    "wells": 773
+  },
+  "status": "completed_train_side_audit"
+}

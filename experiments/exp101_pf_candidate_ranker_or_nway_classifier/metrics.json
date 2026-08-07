@@ -1,0 +1,70 @@
+{
+  "experiment": "exp101_pf_candidate_ranker_or_nway_classifier",
+  "status": "completed_train_side_rejected",
+  "updated_at": "2026-06-21",
+  "route": "pf_beam",
+  "parent": "exp099_pf_multi_observation_likelihood_probe",
+  "key_idea": "Train supervised ranker / N-way classifier over fixed PF/Beam candidates using exp099 multi-observation likelihood features.",
+  "kaggle_kernel": "kentookumura/exp101-pf-cand-ranker-train",
+  "kaggle_url": "https://www.kaggle.com/code/kentookumura/exp101-pf-cand-ranker-train",
+  "kaggle_version": 1,
+  "cv": {
+    "best_oof_variant": "lgb_candidate_error_ranker",
+    "best_oof_rmse_tvt": 11.600096614747736,
+    "best_oof_mae_tvt": 7.006912545231286,
+    "best_oof_within_10ft": 0.7714520311766234,
+    "best_oof_oracle_label_accuracy": 0.38988009743157287,
+    "delta_rmse_vs_likpf_mean": 0.005198942530032724,
+    "delta_rmse_vs_multiobs_score_top1": -78.39429474281361,
+    "recommendation": "ranker_not_supported"
+  },
+  "baselines": {
+    "oracle_rmse_tvt": 7.434030,
+    "oracle_within_10ft": 0.906525,
+    "likpf_mean_rmse_tvt": 11.594898,
+    "likpf_mean_within_10ft": 0.772807,
+    "multiobs_score_top1_rmse_tvt": 89.994391,
+    "multiobs_score_top1_within_10ft": 0.523815
+  },
+  "selection": {
+    "best_oof_pf_ancc_selection_rate": 0.3598324413733761,
+    "best_oof_likpf_mean_selection_rate": 0.547939,
+    "best_oof_max_path_switch_per_1000_rows": 365.9959171770195
+  },
+  "source": {
+    "rows": 3783989,
+    "wells": 773,
+    "train_feature_sha256": "4bd9df60f5c09f7a3029dac399afef73aa45b0158a7fd06a62a56f85fd0fde38",
+    "train_feature_decompressed_sha256": "1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a",
+    "schema_sha256": "203e4f9a280fe901f5f21d39b85c3e0e2a7fe10c466081c15015c7fb014a0413"
+  },
+  "sha256": {
+    "metrics": "afc561764179b5572faa3ac9611bc0c3b349aa78d188e66844844198443e54d5",
+    "feature_schema": "ea2819375dd025448c3e294b56fd92179b8b261e22f5a7fb37fbf3e8ddfac9c6",
+    "predictions": "cc1960e83024ccc54f594289aebfb6e7f02aceaf71a3e8a1cd6e3ff0ceaf8274",
+    "predictions_decompressed": "05cd6bc1658ab4e7c2958154bf9358582a6f1f38932ec7db8637613c00d6d09a",
+    "model_manifest": "4f453761f1cc09042767baa934f8a1c5a89036bfb1c244a5f3fc5ab0cc843cc5"
+  },
+  "local_validation": {
+    "py_compile": "passed",
+    "ruff_check": "passed",
+    "validate_exp": "passed",
+    "dry_smoke": {
+      "rows": 20000,
+      "wells": 5,
+      "features": 47,
+      "long_rows": 5000
+    },
+    "local_train_smoke": "not_run_lightgbm_missing_in_local_venv"
+  },
+  "artifacts": {
+    "output_dir": "experiments/exp101_pf_candidate_ranker_or_nway_classifier/kaggle/output/train_v1",
+    "summary": "experiments/exp101_pf_candidate_ranker_or_nway_classifier/kaggle/output/train_v1/artifacts/exp101_pf_candidate_ranker_or_nway_classifier_summary.json",
+    "metrics": "experiments/exp101_pf_candidate_ranker_or_nway_classifier/kaggle/output/train_v1/artifacts/exp101_pf_candidate_ranker_or_nway_classifier_metrics.csv",
+    "selection_distribution": "experiments/exp101_pf_candidate_ranker_or_nway_classifier/kaggle/output/train_v1/artifacts/exp101_pf_candidate_ranker_or_nway_classifier_selection_distribution.csv",
+    "by_well": "experiments/exp101_pf_candidate_ranker_or_nway_classifier/kaggle/output/train_v1/artifacts/exp101_pf_candidate_ranker_or_nway_classifier_by_well.csv",
+    "bucket_metrics": "experiments/exp101_pf_candidate_ranker_or_nway_classifier/kaggle/output/train_v1/artifacts/exp101_pf_candidate_ranker_or_nway_classifier_bucket_metrics.csv",
+    "feature_importance_mean": "experiments/exp101_pf_candidate_ranker_or_nway_classifier/kaggle/output/train_v1/artifacts/exp101_pf_candidate_ranker_or_nway_classifier_feature_importance_mean.csv",
+    "model_manifest": "experiments/exp101_pf_candidate_ranker_or_nway_classifier/kaggle/output/train_v1/artifacts/exp101_pf_candidate_ranker_or_nway_classifier_model_manifest.json"
+  }
+}

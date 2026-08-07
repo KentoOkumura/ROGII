@@ -1,0 +1,402 @@
+experiment:
+  name: exp434_physics_candidate_public_lb_audit
+  description: >-
+    Complete a Public-LB census for the frozen exp263 six physical primitives,
+    five fixed 50:50 pairs, and one fixed three-way blend without changing any
+    generator, candidate, or weight.
+  route: pf_beam
+  status: completed_public_lb_census_12_of_12_scored
+  created_at: "2026-07-29"
+  updated_at: "2026-07-31"
+
+implementation:
+  enabled: true
+  scope: canonical_compact_selfcontained_inference
+  implementation_approval_received: true
+  implementation_approval_source: user_message_2026_07_29_implement_exp434
+  canonical_notebook_is_placeholder: false
+  canonical_notebook_adopted: true
+  jupytext_source_created: true
+  compact_inference_notebook_created: true
+  tests_created: true
+  kaggle_package_created: true
+  kaggle_run_started: true
+  kaggle_runs_completed: 10
+  submit_checks_passed: 10
+  competition_submission_started: true
+
+lineage:
+  parent: exp263_last_anchor_better_candidate_confidence_pair_cache
+  steering: ../../.steering/20260729-exp434-physics-candidate-public-lb-audit
+  references:
+    - exp069_pixiux_pf_beam_direct_submit_audit
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp264_exp263_candidate_confidence_dual_selector
+  diff_summary: >-
+    Keep all twelve exp263 Stage-1 deployable physical surfaces and formulas
+    unchanged. Reuse three provenance-qualified existing Public-LB results and
+    gate three existing Public-LB results, reuse the two equivalent candidates,
+    and submit the remaining nine plus the non-equivalent LikPF realization.
+    No OOF, model, selector, or candidate is created.
+
+validation:
+  strategy: frozen_groupkfold_oof_to_public_lb_candidate_census
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: tvt_input_is_missing
+  oof_rows: 3783989
+  oof_wells: 773
+  public_lb_display_precision: 3
+  diagnostics:
+    - public_lb_minus_oof_rmse
+    - oof_rank
+    - public_lb_rank_with_ties
+    - rank_difference
+    - spearman_rank_correlation_report_only
+
+data:
+  parent_stage0_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+  parent_stage1_formula_parity_sha256: bda0502894d6a20cc3c332d729cf120b17ceed2e1773093bd7140c6df71e360c
+  parent_stage1_prediction_sha256: a418876d319301702cc6c3e28b0d30e95518510ef9c83823197c4ecff2e3ce4b
+  parent_source_sha256:
+    exp073_pf_replay: 4af212a8a1c83e36cdcc0bc912942a62df1fbc94ca67fd75789171afaa1a647e
+    exp209_exact_hmm: d5e626bec9618790f12bcdc8e491c95e4e3a5a89879cf2db8b6da63efa604dfd
+    exp223_selfgr_hmm: a6701355b97e7be523bf4bfc238da201a84cfd6ab0c7f62f5fffddbfe6b9f361
+    exp226_k16: 8293e915672d34b67e10b7951b22dfee50c7551c4ed6d98ac988b4ef9d4db4b8
+  exp226_source_config_sha256: 6dd2e2d34fa1bdb7e6fefa37691414b37fd6c8718e5b86233655d76974450af8
+  exposed_reference:
+    filename: exp237_hmm_exp226_candidate_selector_on_exp183_rawtest_candidate_features.csv.gz
+    path_token: exp237-hmm-exp226-candidate-selector-exp183-infer
+    raw_sha256: 052e7db70bd715a2543b9f185a2e6d44bd815b11e75a090e1310e238862f108a
+    decompressed_content_sha256: ec6035c9d3094b7d420956ec5890be76b314178585cacf561bebd27c34f128f3
+  exposed_primitive_content_sha256:
+    exp226_k16: 4705dfb306efd1477186e5b2898a819cfe50320aa0299d6f260f8af151a539a3
+    selfgr_hmm_a070: 28fd41bd63b2ab9649d0f60046cea8fecddd65cccdc7bd2d85f1a36ba57cc804
+    likpf_mean: c6d27354dbf019383594c32e2e3492cc7aecea5601313ca51d7c2ecb08a241d8
+    exact_hmm: 727967afcc61807bad235cfbbf4cb5a1d4070337f7f76f23b68d97a5f3a47992
+    pf_ancc: 41a3d56ece17ff1c743772f292b0f9e366783cc0e92dbc7abe769d13e9fb93ff
+    beam_mean: e19b8afe60ca71c266bac67c6bf92499e6cf8db936c3697582a670f6879b6ec4
+
+candidate_contract:
+  source_of_truth: exp263_stage1_raw_test_deployable_12
+  candidate_count: 12
+  primitive_count: 6
+  pair_count: 5
+  fixed_count: 1
+  dtype: float32
+  pair_arithmetic: float32_0p5_left_plus_0p5_right
+  fixed_arithmetic: float32_0p5_k16_plus_0p25_likpf_plus_0p25_exact_hmm
+  candidates:
+    - id: exp226_k16
+      kind: primitive
+      formula: exp226_k16
+      oof_rmse: 9.427109596582213
+      lb_action: reuse_after_equivalence_gate
+      public_lb: 9.837
+      submission_ref: 54491603
+    - id: selfgr_hmm_a070
+      kind: primitive
+      formula: selfgr_hmm_a070
+      oof_rmse: 11.349942882774709
+      lb_action: submit_batch_2
+      public_lb: 9.318
+      submission_ref: 55105261
+    - id: likpf_mean
+      kind: primitive
+      formula: likpf_mean
+      oof_rmse: 11.594897884
+      lb_action: equivalence_failed_submit_generated_version_10
+      public_lb: 9.807
+      submission_ref: 55133074
+      non_equivalent_existing_public_lb: 9.721
+      non_equivalent_submission_ref: 53706005
+    - id: exact_hmm
+      kind: primitive
+      formula: exact_hmm
+      oof_rmse: 11.938287
+      lb_action: submit_batch_2
+      public_lb: 9.063
+      submission_ref: 55105266
+    - id: pf_ancc
+      kind: primitive
+      formula: pf_ancc
+      oof_rmse: 14.493051
+      lb_action: submit_batch_3
+      public_lb: 12.061
+      submission_ref: 55133068
+    - id: beam_mean
+      kind: primitive
+      formula: beam_mean
+      oof_rmse: 15.774327
+      lb_action: submit_batch_3
+      public_lb: 15.563
+      submission_ref: 55133072
+    - id: exp226_k16__selfgr_hmm_a070
+      kind: pair
+      formula: 0.5*exp226_k16 + 0.5*selfgr_hmm_a070
+      oof_rmse: 8.532715037
+      lb_action: submit_batch_1
+      public_lb: 7.913
+      submission_ref: 55083262
+    - id: exp226_k16__exact_hmm
+      kind: pair
+      formula: 0.5*exp226_k16 + 0.5*exact_hmm
+      oof_rmse: 8.635074
+      lb_action: submit_batch_1
+      public_lb: 7.678
+      submission_ref: 55083266
+    - id: exp226_k16__likpf_mean
+      kind: pair
+      formula: 0.5*exp226_k16 + 0.5*likpf_mean
+      oof_rmse: 8.813822
+      lb_action: submit_batch_1
+      public_lb: 8.365
+      submission_ref: 55083270
+    - id: selfgr_hmm_a070__likpf_mean
+      kind: pair
+      formula: 0.5*selfgr_hmm_a070 + 0.5*likpf_mean
+      oof_rmse: 10.123457
+      lb_action: submit_batch_1
+      public_lb: 8.812
+      submission_ref: 55105249
+    - id: likpf_mean__exact_hmm
+      kind: pair
+      formula: 0.5*likpf_mean + 0.5*exact_hmm
+      oof_rmse: 10.269697
+      lb_action: submit_batch_1
+      public_lb: 8.642
+      submission_ref: 55105256
+    - id: exp226_w500_50_50
+      kind: fixed
+      formula: 0.5*exp226_k16 + 0.25*likpf_mean + 0.25*exact_hmm
+      oof_rmse: 8.238331
+      lb_action: reuse_exact_parent_submission
+      public_lb: 7.800
+      submission_ref: 54761954
+
+existing_lb:
+  equivalence_max_abs_tolerance_ft: 0.001
+  exp226_k16:
+    kernel: kentookumura/exp226-k16-kappa-repro-inference
+    kernel_version: 1
+    ref: 54491603
+    public_lb: 9.837
+    submission_sha256: b71e15f7dc7e66f7be70db4a81d9ec72e1001ff2ba13907c3aba24938e906047
+    status: equivalence_passed_reusable
+  likpf_mean:
+    kernel: kentookumura/exp069-pixiux-pf-beam-direct-infer
+    kernel_version: 3
+    ref: 53706005
+    public_lb: 9.721
+    submission_sha256: 57d5c55c5caa1d07b6691a054116b434d63dd9f8e03c73dfb6ef45753aa8fa01
+    status: equivalence_failed_submit_required
+  exp226_w500_50_50:
+    kernel: kentookumura/exp263-last-anchor-pair-cache-inference
+    kernel_version: 2
+    ref: 54761954
+    public_lb: 7.800
+    submission_sha256: 6316695197ee67c9a2aaa23754e6f2a5cf30dd0ec4ef1a018921f9ea640a1dbc
+    version3_exact_submission_parity: true
+    status: reusable_exact
+  artifact_sources:
+    exp226_k16:
+      filename: submission.csv
+      path_token: exp226-k16-kappa-repro-inference
+    likpf_mean:
+      filename: submission.csv
+      path_token: exp069-pixiux-pf-beam-direct-infer
+    exp226_w500_50_50:
+      filename: submission.csv
+      path_token: exp263-last-anchor-pair-cache-inference
+
+submission_plan:
+  daily_limit_from_project_record: 5
+  frozen_before_scores: true
+  batch_1:
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__exact_hmm
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+    - likpf_mean__exact_hmm
+  batch_2:
+    - selfgr_hmm_a070
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+  equivalence_failure_policy: append_same_candidate_after_batch_2_on_next_available_day
+  normal_new_submission_count: 9
+  maximum_new_submission_count: 11
+  forbid_adaptation_between_batches: true
+
+generator_contract:
+  stage0_manifest:
+    filename: cache_manifest.json
+    path_token: exp263-last-anchor-pair-cache-train
+  pf_replay:
+    source_filename: public_notebook_replay_audit.py
+    source_path_token: exp073-full-replay-repro-guard-infer
+    n_jobs: 8
+    pf_seeds: 128
+    pf_particles: 500
+    fast: false
+    use_gpu: cpu
+  exact_hmm:
+    source_filename: exact_hmm_smoother.py
+    source_path_token: exp209-joint-exact-parity-train
+    params:
+      step: 0.35
+      n_rates: 41
+      rate_span: 0.10
+      sig_r: 0.002
+      sig_p: 0.02
+      df: 4.0
+      emission: gauss
+      lam: 1.0
+      sigma_mode: std
+      start_sig: 0.75
+      r0_sig: 0.01
+      band_pad: 100.0
+      mom: 0.998
+      rate_center: zero
+  selfgr_hmm_a070:
+    source_filename: exact_hmm_smoother.py
+    source_path_token: exp223-selfgr-hmm-train
+    alpha: 0.07
+    clip: 1.0
+    mode: boost_only
+    surface:
+      enabled: true
+      alpha_grid: [0.07]
+      clip_grid: [1.0]
+      modes: [boost_only]
+      max_variants: 1
+      window_radius_rows: 12
+      descriptor_offsets: [-12, -8, -4, 0, 4, 8, 12]
+      top_k: 5
+      prefix_anchor_stride: 3
+      max_prefix_anchors: 128
+      keep_last_prefix_anchors: 32
+      min_prefix_anchors: 12
+      max_window_missing_rate: 0.35
+      gaussian_sigma_tvt: 12.0
+      descriptor_distance_temperature: 1.5
+      typewell_agreement_sigma_tvt: 18.0
+      surface_quadratic_clip: 60.0
+      surface_chunk_size: 256
+  exp226_k16:
+    source_filename: connortynan_k16_reproduction.py
+    source_path_token: exp226-k16-kappa-repro-inference
+    source_config_filename: config.yaml
+
+model:
+  name: no_training_frozen_physics_candidate_lb_census
+  active_variants: []
+  lightgbm_config_count: 0
+  fold_training_count: 0
+  booster_count: 0
+  parent_control_retraining: false
+
+runtime:
+  device: cpu
+  use_gpu: false
+  use_amp: false
+  num_workers: 1
+  internet: false
+  canonical_inference_kernel: kentookumura/exp434-physics-candidate-lb-audit-infer
+  parent_exposed_runtime_seconds: 354.341
+  parent_raw_test_generation:
+    pf_particles: 500
+    pf_seeds: 128
+    pf_seed_policy: stable_sha256_per_well
+    exact_hmm_source: exp209
+    selfgr_hmm_source: exp223
+    k16_source: exp226
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    run_on_push: true
+    kernel_id: kentookumura/exp434-physics-candidate-lb-audit-infer
+    kernel_version: null
+    kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp263-last-anchor-pair-cache-inference
+      - kentookumura/exp073-full-replay-repro-guard-infer
+      - kentookumura/exp069-pixiux-pf-beam-direct-infer
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp226-k16-kappa-repro-inference
+      - kentookumura/exp237-hmm-exp226-candidate-selector-exp183-infer
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: exp073_stable_sha256_per_well_for_pf_family
+  stochastic_components:
+    - pf_beam_likelihood_pf_raw_hidden_test_regeneration
+  parallel_rng_policy: stable_per_well_seed_independent_of_worker_schedule
+  feature_sha_policy: decompressed_content_sha_for_gzip_and_logical_content_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+    candidate_version_manifest: true
+  not_applicable:
+    model_sha: no_training
+
+execution:
+  stage: completed_public_lb_census_12_of_12_scored
+  implementation_approved: true
+  implementation_approved_at: "2026-07-29"
+  canonical_notebook_adoption_approved: true
+  kaggle_package_approved: true
+  kaggle_push_approved: true
+  kaggle_run_approved: true
+  competition_submission_approved: true
+  competition_submission_approval_scope: frozen_kernel_versions_1_through_10_only
+  run_train: false
+  run_inference: true
+  create_submission: true
+  submit_candidates: false
+  selected_candidate: likpf_mean
+  candidate_version_label: equivalence_01_likpf_mean
+  canonical_notebook_sha256: 00c31d80a3b817445fe6d1d3cc6b199b776ad05bd0d43e694b0f946706a9a95f
+  prepared_package_notebook_sha256: 440c65acd55ff14e2f266e2f5170fa807e5cf46cb36823ec070e46a68efd2b89
+  kernel_version: 10
+  counts:
+    train_variants: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+    parent_retraining: 0
+    planned_inference_candidate_versions: 9
+    actual_inference_candidate_versions: 10
+    successful_submit_checks: 10
+    planned_new_submissions: 9
+    maximum_new_submissions: 11
+    actual_competition_submissions: 10
+    scored_competition_submissions: 10
+
+forbidden:
+  - oof_recomputation_or_refit
+  - candidate_or_formula_change
+  - weight_grid_or_lb_weight_tuning
+  - candidate_subset_or_new_candidate
+  - selector_router_gate_or_postprocess
+  - batch_change_after_observing_lb
+  - static_exposed_test_prediction_for_hidden_scoring
+  - automatic_train_side_or_final_submission_promotion
+
+notes:
+  - Design frozen on 2026-07-29; canonical inference and ten candidate versions completed.
+  - LikPF existing-submission equivalence failed, so the pre-registered conditional LikPF version was generated.
+  - Frozen versions 1-3 scored 7.913, 7.678, and 8.365.
+  - Frozen versions 4-7 scored 8.812, 8.642, 9.318, and 9.063.
+  - Frozen versions 8-10 scored 12.061, 15.563, and 9.807.
+  - All twelve candidate Public-LB values are now complete; final OOF/LB Spearman is 0.846153846154.
+  - Public LB is descriptive evidence and is not a replacement for 773-well OOF.

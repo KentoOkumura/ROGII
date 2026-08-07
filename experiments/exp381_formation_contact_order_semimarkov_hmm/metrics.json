@@ -1,0 +1,152 @@
+{
+  "experiment": "exp381_formation_contact_order_semimarkov_hmm",
+  "status": "stage0_failed_closed",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "implementation": {
+    "scope": "stage0_contact_predictability_only",
+    "compact_selfcontained_train": true,
+    "fail_closed_inference": true,
+    "canonical_notebook_adopted": true,
+    "contract_tests_passed": 10,
+    "ruff": "passed",
+    "py_compile": "passed",
+    "jupytext_roundtrip": "passed",
+    "strict_experiment_validation": "passed",
+    "repository_tests": {
+      "passed": 876,
+      "skipped": 6,
+      "failed": 3,
+      "exp381_failed": 0,
+      "unrelated_failures": [
+        "tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py::test_config_fixes_one_approved_kaggle_cpu_variant",
+        "tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py::test_full_runner_requires_separate_kaggle_cpu_approval",
+        "tests/test_exp384_fault_aware_piecewise_stratigraphic_vector_field.py::test_execution_contract_records_implementation_but_blocks_run"
+      ]
+    }
+  },
+  "execution": {
+    "scientific_diagnostics": 1,
+    "reporting_surfaces": 6,
+    "reporting_folds": 5,
+    "fitted_models": 0,
+    "hmm_runs": 0,
+    "pf_runs": 0,
+    "beam_runs": 0,
+    "lightgbm_boosters": 0,
+    "parent_control_regeneration": 0,
+    "gpu": false,
+    "kaggle_run": true,
+    "kaggle_execution_authorized": true,
+    "stage0_run_authorized": true,
+    "one_run_authorization_consumed": true,
+    "package_preflight_passed": true,
+    "kaggle_execution_started": true,
+    "kaggle_target_version": 2,
+    "kaggle_kernel_id_no": 128461656,
+    "scientific_stage0_run_started": true,
+    "scientific_stage0_run_completed": true,
+    "scientific_stage0_elapsed_seconds": 653.714,
+    "attempts": [
+      {
+        "version": 1,
+        "status": "error",
+        "elapsed_seconds": 43.463,
+        "phase": "outer_train_source_loading_before_surface_fit",
+        "scientific_stage0_run_started": false,
+        "reason": "source formation columns incorrectly required all six finite"
+      },
+      {
+        "version": 2,
+        "status": "complete",
+        "pushed_at_utc": "2026-07-24T10:13:54Z",
+        "completed_at_utc": "2026-07-24T10:24:41.970116Z",
+        "elapsed_seconds": 653.714,
+        "stage0_passed": false
+      }
+    ]
+  },
+  "stage0": {
+    "passed": false,
+    "decision": "stage0_failed_close_without_semimarkov_hmm",
+    "gate": {
+      "eligible_well_fraction": {
+        "value": 0.4514877102199224,
+        "threshold": 0.25,
+        "passed": true
+      },
+      "contact_event_count": {
+        "value": 1291,
+        "threshold": 1000,
+        "passed": true
+      },
+      "crossing_md_mae_ft": {
+        "value": 35.994405005580674,
+        "threshold": 128.0,
+        "passed": true
+      },
+      "crossing_md_p90_ft": {
+        "value": 61.79922625060317,
+        "threshold": 512.0,
+        "passed": true
+      },
+      "contact_tvt_rmse_ft": {
+        "value": 44.7701013046603,
+        "threshold": 15.0,
+        "passed": false
+      },
+      "correct_order_fraction": {
+        "value": 0.997134670487106,
+        "threshold": 0.95,
+        "passed": true
+      },
+      "positive_fold_count": {
+        "value": 5,
+        "threshold": 4,
+        "passed": true
+      },
+      "gain_vs_constant_surface_ft": {
+        "value": 687.6760846816501,
+        "threshold": 0.1,
+        "passed": true
+      }
+    },
+    "pooled": {
+      "total_wells": 773,
+      "eligible_wells": 349,
+      "eligible_well_fraction": 0.4514877102199224,
+      "contact_event_count": 1291,
+      "crossing_md_mae_ft": 35.994405005580674,
+      "crossing_md_p90_ft": 61.79922625060317,
+      "constant_crossing_md_mae_ft": 723.6704896872308,
+      "gain_vs_constant_surface_ft": 687.6760846816501,
+      "contact_tvt_rmse_ft": 44.7701013046603,
+      "correct_order_fraction": 0.997134670487106,
+      "surface_fallback_fraction": 0.0,
+      "surface_effective_donors_p05": 2.9579437603865912
+    },
+    "resource": {
+      "audited_wells": 16,
+      "projected_773_well_seconds": 172.98682110849165,
+      "max_rss_gb": 0.5914268493652344,
+      "gate_mode": "report_only"
+    },
+    "artifact_validation": {
+      "expected_artifacts_present": 15,
+      "sha_manifest_rows": 14,
+      "raw_sha_all_match": true,
+      "decompressed_sha_all_match": true,
+      "target_free_bundle_logical_sha256": "69787c31c0857128939e8b1dc23034892767f4d700d99cc73b3eacf82d4b6955",
+      "truth_manifest_logical_sha256": "b27a1c42d177eff0ad5228168eef619f024323800aca8d2f6144e9b848e0cf2c",
+      "contact_event_logical_sha256": "c967ee577830e9f3377c9469cb93736749a87480682f1eb5552c6fb212712c11",
+      "sha_manifest_file_sha256": "50ae5db46bc645b0610f8173d5f07e6c718159ea9c25a8ea6f9067e332d9e251"
+    }
+  },
+  "stage1_implemented": false,
+  "inference": false,
+  "submission": false,
+  "notes": "Kaggle CPU version 2 completed. Stage 0 failed only the contact-TVT RMSE gate and closed without semi-Markov HMM rescue; inference and submission were not run."
+}

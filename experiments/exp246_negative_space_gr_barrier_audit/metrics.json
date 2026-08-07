@@ -1,0 +1,100 @@
+{
+  "experiment": "exp246_negative_space_gr_barrier_audit",
+  "status": "completed_guard_failed",
+  "decision": "diagnostic_only_guard_failed_close_hard_barrier_route",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "negative_space_barrier_safety_audit",
+  "kaggle": {
+    "kernel": "kentookumura/exp246-negative-space-gr-barrier-audit-train",
+    "version": 2,
+    "id_no": 127059485,
+    "status": "COMPLETE"
+  },
+  "runtime": {
+    "seconds": 733.6724941730499,
+    "processed_wells": 773,
+    "processed_rows": 3783989,
+    "active_variant_count": 1,
+    "lightgbm_config_count": 0,
+    "fold_training_count": 0,
+    "booster_count": 0,
+    "parent_control_retraining": false,
+    "gpu": false
+  },
+  "guards": {
+    "true_path_forbidden_rate": {
+      "value": 0.006421794566527545,
+      "limit": 0.001,
+      "pass": false
+    },
+    "true_anchor_component_survival_rate": {
+      "value": 0.9917599683918873,
+      "limit": 0.995,
+      "pass": false
+    },
+    "good_candidate_false_prune_rate": {
+      "value": 0.3615739799134345,
+      "limit": 0.001,
+      "pass": false
+    },
+    "union_oracle_rmse_delta_ft": {
+      "value": 1.6568981463448518,
+      "limit": 0.0,
+      "pass": false
+    },
+    "worst_well_union_oracle_delta_ft": {
+      "value": 77.74761606287846,
+      "limit": 0.25,
+      "pass": false
+    }
+  },
+  "primary_metrics": {
+    "guard_pass": false,
+    "barrier_supported_rate": 0.6773761763049523,
+    "true_path_endpoint_forbidden_rate": 0.005290184511635737,
+    "true_path_edge_crossing_rate": 0.004304452259242825,
+    "truth_valid_after_history_rate": 0.6995009763506184,
+    "no_survivor_rate": 0.27863030257223265,
+    "union_oracle_before_rmse": 7.4340211131514655,
+    "union_oracle_after_strict_rmse": 8.925524763257608,
+    "union_oracle_after_fallback_rmse": 9.090919259496317,
+    "wells_improved": 0,
+    "wells_equal": 138,
+    "wells_worse": 635,
+    "worst_well": "d07aed8f"
+  },
+  "hidden_like": {
+    "verification_like_spatial": {
+      "true_path_forbidden_rate": 0.010500142421871063,
+      "true_anchor_component_survival_rate": 0.9853364687691267,
+      "no_survivor_rate": 0.3393650966669169,
+      "union_oracle_delta_rmse": 2.189781225160134
+    },
+    "verification_like_typewell_purged": {
+      "true_path_forbidden_rate": 0.01049107531473738,
+      "true_anchor_component_survival_rate": 0.985210082397028,
+      "no_survivor_rate": 0.3377524069357437,
+      "union_oracle_delta_rmse": 2.204004340977278
+    }
+  },
+  "input_sha256": {
+    "candidate_cache_decompressed": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350",
+    "candidate_cache_raw": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18",
+    "hidden_like_assignment": "5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597",
+    "raw_file_inventory": "335b336bd47b56d1a58d42a77c7a511957b4582d5f06e2a4ad87e6229251fd9d",
+    "executed_config": "4a0e7673cf6e4c523b4090eec353489352c3ecb50bcbf00384bbaaa709812724"
+  },
+  "output_sha256": {
+    "row_audit_raw": "5c50162c07f6b54d707ae234851930dc04c17aacc294914e2a182b1151aa488f",
+    "row_audit_decompressed": "07d2c918e9315f3f934d30970fb7d60b8d3453aff1f62e99c7500f561b3f1597",
+    "group_metrics": "23e2dd4469596a8236cb1239964dfe1a4407f24dc5634809a46a5d2bb8163089",
+    "candidate_metrics": "eecedf398c1eac91755af4ec6e654403682829408fdd0630b9f497b9d35af42f",
+    "by_well": "2d6329b09da7363ff34c49d5d273ac1c71fbb747a0c4d623ac15b4ceab04c9e1",
+    "barrier_well_summary": "96e684c0ae19f5ecc609eabf59eddb2c50ea780cd8302b27c4b5f4f6a113b32f",
+    "summary_download": "1b0570b529bbad1ec33a08782b84749c1947a56a3c671f5402e4284766b64a92",
+    "metrics_download": "545c9aea5844b49c661e5e74a8f2083ce3a0229c301758666d956856b31e863f"
+  },
+  "notes": "Kaggle CPU v2 completed. All five safety guards failed. Hard edge-cut, raw-test inference, and submission are closed."
+}

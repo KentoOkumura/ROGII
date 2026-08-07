@@ -1,0 +1,255 @@
+experiment:
+  name: "exp215_mtp_full_tail_heatmap_path_generator_probe"
+  description: >
+    Train-side diagnostic for a learned MTP full-tail heatmap path generator
+    with path_pred [K,L] and learned path_logit [K].
+  route: pf_beam
+  status: completed_train_side_gpu_probe_supported_no_submit
+  created_at: "2026-07-07"
+  updated_at: "2026-07-07"
+
+lineage:
+  parent: exp202_heatmap_mdn_candidate_generator_probe
+  dense_parent: exp208_heatmap_mdn_dense_stride_window_path_regeneration_probe
+  full_grid_parent: exp212_heatmap_mdn_full_grid_path_generation_probe
+  comparison_parent: exp099_pf_multi_observation_likelihood_probe
+  backlog: exp215_mtp_full_tail_heatmap_path_generator_probe
+  discussion_source: docs/discussions/rogii-wellbore-geology-prediction-699853-multi-trajectory-prediction-mtp-with-deep-cnn-for-welllog-inversion-fullcsv.md
+  implementation_source: exp215_mtp_full_tail_heatmap_path_generator_probe_train.py
+  diff_summary: >
+    Replaces the exp202 grid-cell path classifier / heuristic stitched artifact
+    with a continuous MTP path generator. The model reads the same base
+    5-channel heatmap, including the input-only TVT_input history SDF channel,
+    and outputs topK full-tail path predictions plus learned path logits. It
+    does not train an SDF head, use sdf_loss, retrain any parent/control model,
+    run inference, or submit.
+
+validation:
+  strategy: fold_safe_groupkfold_train_side_full_tail_mtp_probe
+  metric: rmse
+  primary_diagnostic_metric: existing_plus_learned_mtp_topk_oracle_rmse
+  seed: 42
+  n_folds: 5
+  active_fold_indices: [0, 1, 2, 3, 4]
+  group_column: well
+  score_rows: exp099_feature_cache_row_grid_for_oof_valid_wells
+  secondary_metrics:
+    - rank1_center_rmse
+    - weighted_center_rmse
+    - rank1_path_rmse
+    - weighted_path_rmse
+    - top10_oracle_center_rmse
+    - source_coverage_rate_vs_cache
+    - fallback_unique_row_rate
+    - existing_plus_learned_topk_oracle_rmse
+    - distance_bucket_oracle_delta
+    - by_well_oracle_delta
+  success_gate:
+    source_coverage_rate_vs_cache_min: 0.95
+    fallback_unique_row_rate_max: 0.05
+    stitched_only_exp212_top5_rmse_reference: 50.085237573
+    require_existing_plus_learned_topk_improves_existing: true
+  leakage_policy:
+    - Train labels use only fold train wells; OOF dense generation is performed on valid wells.
+    - Valid true TVT is used for loss/evaluation only, after fold split.
+    - Candidate generation, aggregation, path_prob, path_logit, candidate_cost, coverage flags, and stitch/aggregation weights do not use oracle rank, absolute error, within10, or target-derived best-path columns.
+    - Hidden/test true TVT is never used.
+    - No direct TVT replacement, softmax average submission, PF weight replacement, postprocess blend, inference, or submit is in scope.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+
+model:
+  name: mtp_full_tail_heatmap_path_generator_probe
+  estimator: pytorch_conv2d_continuous_path_pred_and_path_logit_head
+  target: continuous_true_tvt_path_residual_from_target_free_prior_center
+  base_input_channels:
+    - typewell_gr_heatmap
+    - horizontal_gr_heatmap
+    - typewell_minus_horizontal_gr
+    - tvt_history_sdf_from_observed_tvt_input_prefix
+    - observed_tvt_input_mask
+  variants:
+    - real_gr
+  channel_sets:
+    base:
+      include_geometry: false
+  architecture:
+    channels: [32, 64, 64, 64]
+    kernel_size: 3
+    path_modes: 10
+    path_horizon: 128
+    max_residual_ft: 768.0
+    use_group_norm: true
+    dropout: 0.05
+  active_run_specs:
+    - name: mtp_fulltail_real_w128_b64_fullfold
+      variant: real_gr
+      channel_set: base
+      fold_indices: [0, 1, 2, 3, 4]
+      horizontal_window_rows: 128
+      typewell_window_bins: 64
+      tvt_grid_half_width_ft: 192.0
+      history_scale_ft: 200.0
+  loss:
+    regression: smooth_l1
+    path_scale_ft: 256.0
+    mode_ce_alpha: 0.2
+    smoothness_alpha: 0.001
+  training:
+    max_wells: null
+    max_train_wells: null
+    max_valid_wells: null
+    max_tail_rows: null
+    train_samples_per_well: 28
+    valid_samples_per_well: 10
+    center_target_tolerance_ft: 10.0
+    epochs: 5
+    learning_rate: 0.001
+    weight_decay: 0.0001
+    gradient_clip_norm: 1.0
+    dataloader_shuffle: true
+    require_cuda: true
+    min_cuda_capability_major: 7
+    planned_active_variants: 1
+    planned_cnn_training_models: 5
+    planned_lightgbm_configs: 0
+    planned_boosters: 0
+    control_or_parent_retraining: false
+
+path_generation:
+  enabled: true
+  split: valid_dense
+  row_center_stride: 64
+  include_tail_stop: true
+  batch_size: 96
+  output:
+    save_window_predictions: true
+    save_window_path_npz: true
+    save_full_grid_candidate_paths: true
+
+full_grid:
+  enabled: true
+  primary_topk: 5
+  aggregation:
+    rank_weight: path_prob_times_triangular_window_weight
+    weighted_path_weight: triangular_window_weight
+    fallback: row_index_linear_interpolation_or_endpoint_hold
+  output_columns:
+    - well
+    - id
+    - row_index
+    - md_since
+    - path_rank
+    - tvt_pred
+    - path_logit
+    - path_prob
+    - weighted_tvt_pred
+    - source_window_count
+    - coverage_flag
+    - fallback_flag
+    - candidate_cost
+
+candidate_union:
+  enabled: true
+  source_cache: data.exp099_train_feature_cache_local
+  id_column: id
+  target_delta_column: target
+  last_known_tvt_column: last_known_tvt
+  distance_column: md_since
+  within_ft: 10.0
+  existing_candidates:
+    - pf_ancc
+    - beam_mean
+    - likpf_mean
+    - sc_ens
+    - hyb
+    - tvt_dense
+    - tvt_densew
+    - tvt_dense50
+  required_existing_candidates:
+    - pf_ancc
+    - beam_mean
+    - likpf_mean
+    - sc_ens
+    - hyb
+  optional_existing_candidates:
+    - tvt_dense
+    - tvt_densew
+    - tvt_dense50
+  distance_buckets:
+    - [0, 50]
+    - [50, 100]
+    - [100, 250]
+    - [250, 500]
+    - [500, 1000]
+    - [1000, 1000000000]
+
+runtime:
+  use_amp: false
+  num_workers: 0
+  batch_size: 64
+  kaggle:
+    enable_gpu: true
+    machine_shape: NvidiaTeslaT4
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: global_seed_42_and_stable_loader_seed_by_experiment_run_spec_fold
+  stochastic_components:
+    - pytorch_cuda_convolution
+    - adamw_optimizer
+    - dataloader_shuffle_for_train_samples
+  parallel_rng_policy: num_workers_0_no_thread_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - GPU training is not treated as bitwise deterministic.
+    - This is not a deterministic submission anchor because it is train-side only and creates no submission.
+    - gzip outputs record decompressed CSV content SHA.
+    - The TVT_input history SDF channel is an input representation only; no SDF target or SDF loss is trained.
+
+audit:
+  mode: mtp_full_tail_heatmap_path_generator_probe
+  output_prefix: exp215_mtp_full_tail_heatmap_path_generator_probe
+  expected_train_artifacts:
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_sample_index.csv.gz
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_dense_validation_predictions.csv.gz
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_window_candidate_paths_top10.npz
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_window_path_samples.csv.gz
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_window_path_rank_index.csv.gz
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_full_grid_candidate_paths.csv.gz
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_candidate_union_metrics.csv
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_candidate_union_by_well.csv
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_candidate_union_distance_bucket_metrics.csv
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_metrics.csv
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_fold_metrics.csv
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_training_history.csv
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_feature_schema.csv
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_run_spec_manifest.json
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_model_manifest.json
+    - exp215_mtp_full_tail_heatmap_path_generator_probe_summary.json
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog exp215_mtp_full_tail_heatmap_path_generator_probe.
+  - Does not use hengck23 run_train_sdf.py's SDF output branch or sdf_loss.
+  - Uses the CNN MTP example pattern of path predictions plus learned path logits.
+  - Kaggle train push requires user approval because it trains 5 CNN models on GPU.

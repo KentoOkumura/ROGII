@@ -1,0 +1,72 @@
+{
+  "experiment": "exp139_exp092_exp098_small_rank_slot_merge",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "ml_model",
+  "parent": "exp092_u_projection_correction_disagreement_fullrun",
+  "rank_slot_source_parent": "exp098_selector_rank_slot_features_on_exp073",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "selected_variant": "u_projection_rank_slot_small_merge",
+  "kaggle_train": {
+    "kernel": "kentookumura/exp139-small-rank-slot-train",
+    "version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp139-small-rank-slot-train",
+    "runtime_seconds": 15866.843,
+    "rows": 3783989,
+    "wells": 773,
+    "features": 255,
+    "model_count": 15,
+    "output_dir": "experiments/exp139_exp092_exp098_small_rank_slot_merge/kaggle/output/train_v1",
+    "output_note": "Full output download was interrupted after essential logs, bucket/by-well/importance/schema/manifest files were retrieved; pooled metrics were extracted from the complete Kaggle log summary."
+  },
+  "cv": {
+    "best_model": "lgb1",
+    "best_rmse_tvt": 9.324907640659603,
+    "lgb0_rmse_tvt": 9.61322629250303,
+    "lgb1_rmse_tvt": 9.324907640659603,
+    "lgb2_rmse_tvt": 9.337578311375358,
+    "lgb_mean_rmse_tvt": 9.370584225326722,
+    "delta_lgb1_vs_exp092_lgb1": 0.002427745155675749,
+    "delta_lgb2_vs_exp092_lgb2": -0.0006140932698210881,
+    "delta_lgb_mean_vs_exp092_lgb_mean": 0.02752015933164911,
+    "delta_lgb1_vs_exp098_lgb1": -0.033243411659156964,
+    "prediction_sha256": {
+      "lgb0": "6027d47b76a13a89a964c4af6311dfd8733ec23fa73f2ed1fc4f76b4c0b89563",
+      "lgb1": "b309bc3c24b003a95d7b9afc31c16ce7977151bebf998994fbac2b5d3a6861b3",
+      "lgb2": "19291ff4438c2835cea030a74c015981a2c4a5f1d3b396f5d47b5e8a01278646",
+      "lgb_mean": "09ced87e6de69c101d0a31b4e06012c730c7303ea7b1311b099feaea719a0e28"
+    }
+  },
+  "bucket_readout": {
+    "lgb1_distance_000_050_rmse": 1.4108266830444336,
+    "lgb1_distance_1000_plus_rmse": 10.234379768371582,
+    "lgb2_distance_000_050_rmse": 1.339465618133545,
+    "lgb2_distance_1000_plus_rmse": 10.250080108642578
+  },
+  "reference_metrics": {
+    "exp092_lgb1_rmse_tvt": 9.322479895503927,
+    "exp092_lgb2_rmse_tvt": 9.338192404645179,
+    "exp092_lgb_mean_rmse_tvt": 9.343064065995073,
+    "exp092_public_lb": 8.35,
+    "exp098_lgb1_rmse_tvt": 9.35815105231876,
+    "exp098_public_lb": 8.441,
+    "exp107_best_rmse_tvt": 9.437602823,
+    "exp108_best_rmse_tvt": 9.479370656
+  },
+  "decision": {
+    "submit": false,
+    "reason": "Best lgb1 is +0.002428 worse than exp092 lgb1; lgb2 only slightly improves exp092 lgb2 and remains worse than the exp092 best model."
+  },
+  "artifacts": {
+    "log": {
+      "path": "kaggle/output/train_v1/exp139-small-rank-slot-train.log.json",
+      "sha256": "377c43609000ee4d57c75ed798c3d6d3714aff4908b2050d890298244b65f504"
+    },
+    "bucket_metrics_sha256": "4dc7a859a0643ba60d57d4cf715da3ab5568841aaa6e04ff4d40437c5c7eee6e",
+    "by_well_sha256": "403ff217e4347582c127efe64d72f746331bc0631aa01d2e06fae2a52aa8e9df",
+    "feature_importance_mean_sha256": "63a3f52f064095cb9dc6648ae7757bd1b175029798352d03821d974abf19c6e7",
+    "feature_schema_sha256": "5bb946437fbc8531662c3172b1a9c9377ae4fbaec5f14b2de5cbb43db517548e",
+    "model_manifest_sha256": "f8bebd76e8cd452922ce74446c9906d6ce41fc61a48d8d14e92c61227af9063e"
+  },
+  "public_lb": null,
+  "private_lb": null
+}

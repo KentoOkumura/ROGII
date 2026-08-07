@@ -1,0 +1,277 @@
+experiment:
+  name: "exp147_exp092_exp098_rank_slot_replacement_only"
+  description: Replace the exp092 U-projection/disagreement columns that overlap with exp098 rank-slot signals, while keeping the base 196-feature surface fixed.
+  route: ml_model
+  status: completed_train_side_rejected_no_submit
+  created_at: "2026-06-27"
+  updated_at: "2026-06-27"
+
+lineage:
+  parent: exp092_u_projection_correction_disagreement_fullrun
+  rank_slot_source_parent: exp098_selector_rank_slot_features_on_exp073
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  base_surface_parent: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  comparison_parents:
+    - exp092_u_projection_correction_disagreement_fullrun
+    - exp098_selector_rank_slot_features_on_exp073
+    - exp107_selector_topn_candidate_only_features
+    - exp108_topn_related_feature_prune
+  implementation_source: exp092_exp098_rank_slot_replacement_only.py
+  public_replay_source: public_notebook_replay_audit.py
+  diff_summary: Keeps the exp073/exp072 base 196 features and exp092 U-projection generator, drops only the projection/disagreement columns whose meaning overlaps with exp098 rank-slot ordering, and inserts rank1/rank2/rank3 target-free rank-slot signals. Candidate TVT paths are not selected, averaged, blended, or used as a postprocess replacement.
+
+validation:
+  strategy: groupkfold_by_well_exp092_surface_with_limited_rank_slot_replacement_only
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Train features are read from exp072's raw-train-only deterministic feature cache.
+    - The supervised target remains TVT minus last_known_tvt.
+    - GroupKFold is grouped by well; a well never appears in train and validation in the same fold.
+    - U-projection features use only target-free PF/Beam/likelihood-PF candidate paths, row Z, MD distance, and known-prefix anchors.
+    - Rank slots use exp098's target-free candidate score rules only; evaluation-zone true TVT is never used to create rank order or rank features.
+    - Rank-slot columns are replacement-only model features; exp098 predictions, OOF predictions, direct selector output, soft average, and postprocess replacement are not used.
+    - This is not a submission candidate until OOF, worst-well, near-row, bucket, path continuity, feature importance, and raw-test feature parity are reviewed.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_summary_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_summary.json
+
+model:
+  name: exp147_exp092_exp098_rank_slot_replacement_only_lgbm
+  source_experiment: exp092_u_projection_correction_disagreement_fullrun
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  feature_source: exp072_exp063_full_replay_train_feature_cache
+  expected_base_feature_count: 196
+  target: target
+  base_prediction: last_known_tvt
+  estimator: lightgbm
+  lgb_config_family: exp063_public_pixiux_lgb0_lgb1_lgb2
+  u_projection:
+    anchor_definition: local_prefix_u0_equals_T0_plus_Z0
+    degree: 3
+    robust_iters: 3
+    clip_sigma: 4.0
+    include_lgb_oof_features: false
+    sources:
+      pf_ancc:
+        value_column: pf_ancc
+        enabled: true
+      pf_z:
+        value_column: pf_z
+        enabled: true
+      beam_mean:
+        delta_column: beam_mean_d
+        enabled: true
+      beam_med:
+        delta_column: beam_med_d
+        enabled: true
+      likpf_mean:
+        delta_column: likpf_mean_d
+        enabled: true
+  rank_slot:
+    top_k: 3
+    degree: 3
+    robust_iters: 3
+    clip_sigma: 4.0
+    include_lgb_oof_features: false
+    candidates:
+      - name: pf_ancc
+        source_column: pf_ancc
+        transform: absolute
+        family: pf
+        enabled: true
+      - name: beam_mean
+        source_column: beam_mean_d
+        transform: base_plus_delta
+        family: beam
+        enabled: true
+      - name: likpf_mean
+        source_column: likpf_mean_d
+        transform: base_plus_delta
+        family: likelihood_pf
+        enabled: true
+      - name: sc_ens
+        source_column: sc_ens_d
+        transform: base_plus_delta
+        family: ncc_scale_ensemble
+        enabled: true
+      - name: hyb
+        source_column: hyb_d
+        transform: base_plus_delta
+        family: public_hybrid
+        enabled: true
+  feature_ablation:
+    selected_variant: u_projection_rank_slot_replacement_only
+    active_variants:
+      - name: u_projection_rank_slot_replacement_only
+        description: Keep base 196 features, retain non-overlapping exp092 U-projection features, drop rank-slot-overlapping projection/disagreement columns, and insert target-free rank1/rank2/rank3 rank-slot replacement signals.
+        feature_groups:
+          - projection_correction
+          - u_disagreement
+        drop_columns:
+          - uproj_pf_ancc_corr
+          - uproj_pf_ancc_resid
+          - uproj_pf_ancc_abs_resid
+          - uproj_pf_ancc_resid_mad
+          - uproj_beam_mean_corr
+          - uproj_beam_mean_resid
+          - uproj_beam_mean_abs_resid
+          - uproj_beam_mean_resid_mad
+          - uproj_likpf_mean_corr
+          - uproj_likpf_mean_resid
+          - uproj_likpf_mean_abs_resid
+          - uproj_likpf_mean_resid_mad
+          - uproj_diff_pf_ancc_minus_beam_mean
+          - uproj_absdiff_pf_ancc_beam_mean
+          - uproj_diff_pf_ancc_minus_likpf_mean
+          - uproj_absdiff_pf_ancc_likpf_mean
+          - uproj_diff_beam_mean_minus_likpf_mean
+          - uproj_absdiff_beam_mean_likpf_mean
+          - uproj_source_u_std
+          - uproj_source_u_range
+          - uproj_corr_std
+          - uproj_corr_range
+        extra_columns:
+          - rank1_candidate_minus_last_anchor
+          - rank1_score
+          - rank1_source_code
+          - rank1_u_resid
+          - rank1_u_slope
+          - rank1_u_curvature
+          - rank2_candidate_minus_last_anchor
+          - rank2_score
+          - rank2_source_code
+          - rank2_u_resid
+          - rank2_u_slope
+          - rank2_u_curvature
+          - rank3_candidate_minus_last_anchor
+          - rank3_score
+          - rank3_source_code
+          - rank3_u_resid
+          - rank3_u_slope
+          - rank3_u_curvature
+          - rank1_minus_rank2_candidate_delta
+          - rank1_minus_rank2_score_gap
+          - rank1_minus_rank3_score_gap
+          - rank2_minus_rank3_score_gap
+          - rank_score_top1_margin
+          - rank_slot_u_std
+          - rank_slot_u_range
+        enabled: true
+  training:
+    early_stopping_rounds: 250
+    max_train_rows: null
+    max_rows: null
+    save_models: true
+    save_predictions: true
+    top_n_importance: 50
+    active_modes:
+      - gpu_repro_guard_dp_threads8
+    modes:
+      gpu_repro_guard_dp_threads8:
+        description: GPU double precision plus fixed thread count and deterministic flags.
+        use_gpu: true
+        common_overrides:
+          gpu_use_dp: true
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+      cpu_deterministic_threads8:
+        description: CPU deterministic LightGBM control with fixed thread count.
+        use_gpu: false
+        common_overrides:
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+    inference_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp147-rank-slot-replacement-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_groupkfold_seed_no_new_pf_rng
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - gpu_lightgbm_training
+  parallel_rng_policy: LightGBM deterministic flags plus fixed n_jobs and num_threads; rank-slot replacement feature generation itself has no RNG.
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  notes:
+    - This is a train-side feature audit, not a deterministic submission anchor.
+    - Source gzip cache decompressed content SHA is recorded by the train summary when available.
+
+audit:
+  mode: exp092_exp098_rank_slot_replacement_only_from_exp072_cache
+  output_prefix: exp147_exp092_exp098_rank_slot_replacement_only
+  fast: false
+  reference_metrics:
+    exp092_best_lgb1_pooled_rmse: 9.322479895503927
+    exp092_lgb_mean_pooled_rmse: 9.343064065995073
+    exp098_best_lgb1_pooled_rmse: 9.35815105231876
+    exp139_best_lgb1_pooled_rmse: 9.324907640659603
+    exp139_lgb_mean_pooled_rmse: 9.370584225326722
+    exp107_best_top2_lgb2_pooled_rmse: 9.437602823
+    exp108_best_lgb2_pooled_rmse: 9.479370656
+    exp092_public_lb: 8.350
+    exp098_public_lb: 8.441
+  bucket_columns:
+    distance: md_since
+    tail_rank: id
+  expected_train_artifacts:
+    - exp147_exp092_exp098_rank_slot_replacement_only_metrics.csv
+    - exp147_exp092_exp098_rank_slot_replacement_only_by_well.csv
+    - exp147_exp092_exp098_rank_slot_replacement_only_bucket_metrics.csv
+    - exp147_exp092_exp098_rank_slot_replacement_only_projection_feature_summary.csv
+    - exp147_exp092_exp098_rank_slot_replacement_only_rank_slot_feature_summary.csv
+    - exp147_exp092_exp098_rank_slot_replacement_only_feature_importance.csv
+    - exp147_exp092_exp098_rank_slot_replacement_only_feature_importance_mean.csv
+    - exp147_exp092_exp098_rank_slot_replacement_only_feature_importance_mean_top.png
+    - exp147_exp092_exp098_rank_slot_replacement_only_predictions.csv.gz
+    - exp147_exp092_exp098_rank_slot_replacement_only_feature_schema.csv
+    - exp147_exp092_exp098_rank_slot_replacement_only_lgb_models/manifest.json
+    - exp147_exp092_exp098_rank_slot_replacement_only_summary.json
+
+inference:
+  mode: saved_lgb_booster_inference_with_raw_test_feature_replay
+  deterministic_pf: true
+  seed_policy: stable_sha256_per_well
+  selected_variant: u_projection_rank_slot_replacement_only
+  selected_mode: gpu_repro_guard_dp_threads8
+  selected_model: lgb2
+  notes:
+    - Inference is disabled as a decision until train-side OOF and guard readouts support the replacement-only variant.
+    - If enabled later, raw-test full replay and the same target-free U-projection and rank-slot features are regenerated from test inputs.
+
+submission:
+  status: not_submitted_train_side_rejected
+  public_lb: null
+  private_lb: null
+
+notes:
+  - Implements backlog item `exp092_exp098_rank_slot_replacement_only`.
+  - Base 196 features are intentionally kept; replacement is limited to exp092 generated projection/disagreement columns that overlap with rank-slot semantics.
+  - The first variant intentionally avoids a full 64-column exp098 rank-slot union and avoids add-only mixing with the dropped overlap columns.
+  - Kaggle train v1 rejected the replacement-only variant; best lgb2 RMSE 9.397013 is worse than exp092 lgb1 and exp139 lgb1.

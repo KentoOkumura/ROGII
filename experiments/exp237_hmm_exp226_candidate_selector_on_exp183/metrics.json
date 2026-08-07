@@ -1,0 +1,108 @@
+{
+  "experiment": "exp237_hmm_exp226_candidate_selector_on_exp183",
+  "status": "completed_rawtest_inference_not_submitted_after_guard_failure",
+  "route": "ensemble",
+  "parent": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector",
+  "key_idea": "Add fixed exp209 HMM blend, exp223 self-GR HMM, and exp226 K16 geometry OOF paths to the exp183 candidate-error selector with one fixed Viterbi continuity rule.",
+  "planned": {
+    "lightgbm_configs": 1,
+    "folds": 5,
+    "boosters": 5,
+    "viterbi_variants": 1,
+    "control_retraining": false,
+    "enable_gpu": false,
+    "inference": false,
+    "submit": false
+  },
+  "historical_baselines": {
+    "exp072_likpf_mean_rmse": 11.594897672217703,
+    "exp183_continuity_rmse": 10.60148177371247,
+    "exp226_single_rmse": 9.427109596582213
+  },
+  "cv": {
+    "rows": 3783989,
+    "wells": 773,
+    "runtime_seconds": 3051.085713624954,
+    "candidate_count": 11,
+    "candidate_oracle_rmse": 2.883509552289388,
+    "base8_oracle_rmse": 4.564605114796885,
+    "candidate_oracle_delta_vs_base8": -1.681095562507497,
+    "rowwise_error_ranker": {
+      "rmse_tvt": 8.545227678368821,
+      "mae_tvt": 4.9981930162996475,
+      "within_10ft": 0.8501560126099732
+    },
+    "fixed_viterbi": {
+      "variant": "viterbi_sw200_bias000_jw100_jf025_d0075_std999999_md0000_seg001",
+      "rmse_tvt": 8.545093285823208,
+      "mae_tvt": 4.991818709287342,
+      "within_10ft": 0.8494747209888823,
+      "oracle_label_accuracy": 0.19880633902476988,
+      "path_switch_count": 7640,
+      "path_switch_per_1000_rows": 2.0190333534267673,
+      "delta_vs_exp183": -2.0563884878892615,
+      "delta_vs_exp226_single": -0.8820163107590044,
+      "delta_vs_likpf": -3.049804386394495
+    },
+    "guard": {
+      "overall_vs_exp183": "pass",
+      "overall_vs_exp226_single": "pass",
+      "distance_000_050_vs_exp183_delta_rmse": 0.167573,
+      "hidden_like_spatial_valid_vs_exp183_delta_rmse": -3.955555,
+      "hidden_like_typewell_purged_valid_vs_exp183_delta_rmse": -3.881109,
+      "worst_well": "fb03ae90",
+      "worst_well_rmse": 57.642328,
+      "max_per_well_regression_vs_exp183_well": "70925e23",
+      "max_per_well_regression_vs_exp183_rmse": 25.639006,
+      "decision": "global_supported_guard_not_passed_no_inference_no_submit"
+    }
+  },
+  "kernel": {
+    "id": "kentookumura/exp237-hmm-exp226-candidate-selector-exp183-train",
+    "url": "https://www.kaggle.com/code/kentookumura/exp237-hmm-exp226-candidate-selector-exp183-train",
+    "version": 1,
+    "status": "COMPLETE",
+    "id_no": 126812357
+  },
+  "inference": {
+    "status": "completed_not_submitted",
+    "mode": "fixed_viterbi_rawtest_artifact_only",
+    "selected_variant": "viterbi_sw200_bias000_jw100_jf025_d0075_std999999_md0000_seg001",
+    "retrained_boosters": 0,
+    "competition_submit": false,
+    "kernel": {
+      "id": "kentookumura/exp237-hmm-exp226-candidate-selector-exp183-infer",
+      "url": "https://www.kaggle.com/code/kentookumura/exp237-hmm-exp226-candidate-selector-exp183-infer",
+      "version": 2,
+      "status": "COMPLETE"
+    },
+    "runtime_seconds": 213.659,
+    "rows": 14151,
+    "wells": 3,
+    "selection_distribution": {
+      "pf_ancc": 1.0
+    },
+    "submission_contract": {
+      "columns": ["id", "tvt"],
+      "duplicate_ids": 0,
+      "null_ids": 0,
+      "null_tvt": 0,
+      "finite_tvt": true,
+      "matches_selected_tvt": true
+    },
+    "artifacts": {
+      "status": "rawtest_inference_completed_not_submitted",
+      "selected_predictions_gzip_sha256": "a5e1fa8becbc682d7376c21fef29d9e0ab4c0ee62b27cecda81808e973aff55f",
+      "candidate_features_gzip_sha256": "052e7db70bd715a2543b9f185a2e6d44bd815b11e75a090e1310e238862f108a",
+      "prediction_content_sha256": "01034afdbc7671dfcd93128f704e87b77cc78c9538a28f7030c8e7987a210207",
+      "submission_sha256": "8e188be763a761965b9cfa1f3b26991b8093b447e5198ee01864209fb4d1c2a0"
+    },
+    "known_rawtest_feature_gap": {
+      "description": "exp109_exp114_oof_only_cluster_prior_features_use_rawtest_schema_medians_or_zero_when_all_missing",
+      "available_row_feature_count": 149,
+      "unavailable_long_feature_count": 320,
+      "imputation_policy": "rawtest_long_feature_median_per_model_schema; all_missing_columns_use_zero"
+    },
+    "decision": "artifact_integrity_passed_but_not_a_submission_candidate_due_to_guard_failure_and_rawtest_feature_parity_gap"
+  }
+}

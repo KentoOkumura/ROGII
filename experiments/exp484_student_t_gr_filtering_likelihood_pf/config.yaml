@@ -1,0 +1,460 @@
+experiment:
+  name: exp484_student_t_gr_filtering_likelihood_pf
+  description: >-
+    Design-frozen one-factor PF ablation that replaces the exp404 Gaussian
+    particle GR log likelihood with the exp374 fixed df=4 Student-t score.
+  hypothesis: >-
+    A df=4 heavy-tailed filtering likelihood can retain correct PF modes under
+    large GR residuals better than the capped Gaussian likelihood.
+  route: pf_beam
+  status: stage1_gate_failed_terminal_close
+  created_at: "2026-07-30"
+  updated_at: "2026-07-31"
+
+lineage:
+  parent: exp417_scale5_seed_aggregation_promotion_audit
+  exact_pf_implementation_reference: exp404_scale5_sigma_gr_likelihood_pf_ablation
+  hmm_evidence_source: exp374_exp209_student_t_exact_hmm_emission
+  steering: ../../.steering/20260730-exp484-student-t-gr-filtering-likelihood-pf
+  diff_summary: >-
+    Change only the per-particle GR log emission from capped Gaussian to the
+    fixed exp374 df=4 Student-t score. Keep x1.0 GR scale, PF dynamics,
+    500 particles, 128 stable seeds, resampling, roughening, missing-GR policy,
+    and temperature-5 seed aggregation unchanged.
+
+implementation:
+  enabled: true
+  design_approval_received: true
+  design_approval_source: user_message_2026_07_30_freeze_pf_transfer_designs
+  implementation_approval_received: true
+  implementation_approval_source: user_message_2026_07_30_implement_exp484
+  scaffold_created: true
+  canonical_notebooks_are_markdown_placeholders: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  compact_train_candidate: exp484_student_t_gr_filtering_likelihood_pf_compact_selfcontained_train.py
+  compact_train_notebook_candidate: exp484_student_t_gr_filtering_likelihood_pf_compact_selfcontained_train.ipynb
+  compact_inference_guard_candidate: exp484_student_t_gr_filtering_likelihood_pf_compact_selfcontained_inference.py
+  compact_inference_guard_notebook_candidate: exp484_student_t_gr_filtering_likelihood_pf_compact_selfcontained_inference.ipynb
+  dedicated_test: ../../tests/test_exp484_student_t_gr_filtering_likelihood_pf.py
+  jupytext_source_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  train_execution_enabled: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: fixed32_technical_then_all_well_student_t_filtering_likelihood_pf
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: tvt_input_missing_evaluation_suffix
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  primary_control: exp404_exp417_likpf_scale5_x1p0
+  primary_control_rmse_ft: 10.914522073
+  fixed_hmm_pf_50_50_control_rmse_ft: 10.084909679560383
+  primary_candidate: likpf_scale5_student_t_df4
+  fixed32_is_cv: false
+  truth_attachment: after_candidate_prediction_and_all_content_sha_freeze
+  leakage_policy:
+    - PF generation reads only deployable raw inputs, Type Well data, and known TVT_input.
+    - Unknown-suffix truth, error, fold, and hidden-like role are attached after prediction freeze.
+    - exp374 fixes df and formula only and cannot define row or well selection.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  observed_log_column: GR
+  id_column: id
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  fixed32_manifest:
+    filename: stage0_fixed32_manifest.csv
+    local: experiments/exp484_student_t_gr_filtering_likelihood_pf/assets/stage0_fixed32_manifest.csv
+    expected_sha256: 293d3fae9ca12f906113b1a19578b2bcede23e3b47d5e76b885835f6deb71e0e
+    expected_wells: 32
+    expected_suffix_rows: 165010
+    selection_namespace: exp484::stage0
+    target_free_columns: [well_id, selection_sha256, total_rows, suffix_rows]
+  saved_control:
+    source: exp404_scale5_sigma_gr_likelihood_pf_ablation
+    kernel_source: kentookumura/exp404-scale5-sigma-gr-likpf-ablation-train
+    source_kernel_version: 1
+    dataset_source: kentookumura/exp404-v1-frozen-predictions
+    filename: exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin
+    prediction_column: likpf_scale_5_x1p0
+    expected_rmse_ft: 10.914522073
+    expected_logical_sha256: 5f4b6e715081b598b0a34607ad0c81339d0ecd5882ea3a45dd79f33123959a00
+    expected_raw_sha256: b3699432a691229da5a6562ce74e0b84f1bee3021bd80d650526906f5aa390f8
+    expected_decompressed_sha256: 00fe1b90fce84bd601b4b91442d9fc698200aafadd48658f7d8c26ec1fbe0d00
+    candidates:
+      - /kaggle/input/exp404-v1-frozen-predictions
+      - /kaggle/input/datasets/kentookumura/exp404-v1-frozen-predictions
+      - /tmp/exp404-v1-frozen-predictions-dataset
+      - /tmp/exp404-reference
+    patterns:
+      - "**/exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin"
+    rerun: false
+  exp209_hmm_control:
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    prediction_column: hmm_mean_tvt
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+    patterns:
+      - "**/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz"
+    rerun: false
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    kernel_source: kentookumura/exp226-k16-kappa-repro-train
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    forbidden_decoder_columns: [tvt_geop, tvt_pred, gr_delta, tvt_true, error, abs_error]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    patterns:
+      - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    kernel_source: kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_role_counts:
+      hidden_like_spatial:
+        train: 573
+        valid: 200
+      hidden_like_typewell_purged:
+        train: 557
+        valid: 200
+        purged_train_excluded: 16
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    patterns:
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+
+model:
+  name: fixed_student_t_gr_filtering_likelihood_pf
+  estimator: stochastic_likelihood_weighted_particle_filter
+  active_variants: [student_t_df4]
+  changed_factor:
+    family: student_t
+    df: 4.0
+    z_definition: observed_minus_typewell_gr_at_particle_tvt_divided_by_exp404_sigma_gr
+    log_likelihood: "-0.5*(df+1)*log1p(z^2/df)"
+    normalization_constant: omitted_as_particle_state_independent
+    additional_clip: null
+    application_scope: every_finite_gr_particle_update
+  fixed_from_exp404:
+    particles: 500
+    seeds: 128
+    primary_seed_weighting_temperature: 5.0
+    gr_scale_multiplier: 1.0
+    base_scale_clip: [10.0, 60.0]
+    initial_position_spread_ft: 4.5
+    initial_rate_spread: 0.01
+    momentum: 0.998
+    rate_noise: 0.002
+    position_noise: 0.005
+    rough_position: 0.1
+    rough_rate: 0.001
+    resample_threshold_fraction: 0.5
+    typewell_grid_step_ft: 0.2
+    typewell_tvt_pad_ft: 100.0
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    output_dtype: float32
+
+stages:
+  stage_0:
+    purpose: technical_preflight_not_cv
+    well_set: stable_sha256_fixed32
+    scientific_variants: 1
+    candidate_pf_well_runs: 32
+    seed_well_trajectories: 4096
+    particle_starts: 2048000
+    control_pf_well_runs: 0
+  stage_1:
+    enabled_only_after_stage_0_pass_and_separate_user_approval: true
+    scientific_variants: 1
+    candidate_pf_well_runs: 773
+    seed_well_trajectories: 98944
+    particle_starts: 49472000
+    control_pf_well_runs: 0
+
+guards:
+  technical:
+    require_formula_unit_contract: true
+    require_finite_prediction_coverage: 1.0
+    require_stable_seed_identity: true
+    require_execution_count_match: true
+    maximum_truth_error_fold_hidden_reads_before_freeze: 0
+    maximum_seconds_full_projection: 30600
+    maximum_peak_rss_gb: 25
+    require_saved_control_rmse_parity_atol_ft: 0.00001
+    require_fixed_hmm_pf_50_50_parity_atol_ft: 0.00001
+  scientific:
+    minimum_pooled_rmse_gain_vs_control_ft: 0.05
+    minimum_improved_folds: 4
+    minimum_raw_gr_observed_gain_ft: 0.05
+    maximum_raw_gr_missing_regression_ft: 0.0
+    maximum_high_missing_well_regression_ft: 0.0
+    maximum_long_tail_1000_plus_regression_ft: 0.0
+    maximum_hidden_like_spatial_regression_ft: 0.0
+    maximum_hidden_like_typewell_purged_regression_ft: 0.0
+    maximum_by_well_delta_p95_ft: 0.0
+    maximum_worst_well_regression_ft: 0.25
+    maximum_fixed_hmm_pf_50_50_regression_ft: 0.0
+    require_all_checks: true
+  forbidden:
+    - df_scale_temperature_or_clip_search
+    - gaussian_student_t_mixture
+    - particle_seed_transition_or_resampling_change
+    - well_or_row_gate
+    - arithmetic_mean_as_primary
+    - blend_or_selector_rescue
+    - same_oof_rescue
+
+runtime:
+  device: cpu
+  use_gpu: false
+  num_workers: 8
+  maximum_seconds: 30600
+  maximum_peak_rss_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    planned_train_kernel_id: kentookumura/exp484-student-t-gr-filtering-likelihood-pf-train
+    planned_train_title: exp484 student t gr filtering likelihood pf train
+    actual_train_kernel_id: kentookumura/exp484-student-t-gr-filtering-likelihood-pf-train
+    actual_train_kernel_version: 3
+    actual_train_kernel_id_no: 129170461
+    actual_train_kernel_url: https://www.kaggle.com/code/kentookumura/exp484-student-t-gr-filtering-likelihood-pf-train
+    actual_train_package_notebook_sha256: 57fb941c25ee837aafbe9e9fe894bf961ea5ba094c18d70771669d53f5ce0aa9
+    planned_stage1_kernel_version: 3
+    kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    dataset_sources:
+      - kentookumura/exp404-v1-frozen-predictions
+    bootstrap_dependency_files:
+      - source: experiments/exp484_student_t_gr_filtering_likelihood_pf/assets/stage0_fixed32_manifest.csv
+        destination: assets/stage0_fixed32_manifest.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: >-
+    seed_base=sha256_first16("likpf::train::<well_id>")
+    modulo_2147483647_plus_1; seed=seed_base+seed_index_0_to_127;
+    variant name is excluded.
+  stochastic_components:
+    - particle_initialization
+    - rate_and_position_process_noise
+    - systematic_resampling
+    - post_resampling_roughening
+  parallel_rng_policy: explicit_per_well_seed_stream_independent_of_thread_schedule
+  stable_order: well_id_then_original_row_then_seed_index_then_particle_index
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    scientific_contract_sha: true
+    prediction_schema_sha: true
+    prediction_content_sha: true
+    well_audit_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+
+execution:
+  implementation_approved: true
+  implementation_approval_source: user_message_2026_07_30_implement_exp484
+  kaggle_push_approved: true
+  kaggle_push_approval_source: user_message_2026_07_30_execute_exp484
+  stage_0_execution_approved: true
+  stage_0_execution_approval_source: user_message_2026_07_30_execute_exp484
+  run_stage_0: false
+  stage_0_started_at_utc: "2026-07-30 12:41:48 UTC"
+  stage_0_completed_at_utc: "2026-07-30 12:53:34 UTC"
+  stage_0_kernel_version: 2
+  stage_0_kernel_status: COMPLETE
+  stage_0_failed_versions:
+    - kernel_version: 1
+      status: ERROR
+      reason: raw_identity_sha_algorithm_mismatch_fixed_without_scientific_change
+  stage_1_execution_approved: true
+  stage_1_execution_approval_source: user_message_2026_07_30_proceed_exp484_stage1
+  stage_1_started_at_utc: "2026-07-30 13:22:27 UTC"
+  stage_1_completed_at_utc: "2026-07-30 16:25:05 UTC"
+  stage_1_kernel_version: 3
+  stage_1_kernel_status: COMPLETE
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+  active_variants: 1
+  stage_0_candidate_pf_well_runs: 32
+  stage_0_seed_well_trajectories: 4096
+  stage_0_particle_starts: 2048000
+  stage_1_candidate_pf_well_runs: 773
+  stage_1_seed_well_trajectories: 98944
+  stage_1_particle_starts: 49472000
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  control_pf_well_runs: 0
+  hmm_well_runs: 0
+  beam_well_runs: 0
+  gpu_runs: 0
+
+stage_0_result:
+  status: stage0_passed_pending_separate_stage1_approval
+  scope: stable_hash_fixed32_technical_preflight_not_cv
+  rows: 165010
+  wells: 32
+  all_technical_gates_passed: true
+  technical_gates_passed: 16
+  technical_gates_total: 16
+  report_only_not_cv_not_promotion:
+    candidate_rmse_ft: 16.536326062515673
+    saved_exp404_control_rmse_ft: 17.358983592771203
+    control_minus_candidate_gain_ft: 0.8226575302555297
+    improved_wells: 18
+    total_wells: 32
+  runtime:
+    candidate_seconds: 629.2169744968414
+    projected_full_773_seconds: 15199.522540189326
+    peak_rss_gb: 0.9093971252441406
+  truth_access:
+    truth_reads_before_freeze: 0
+    control_reads_before_freeze: 0
+    fold_reads_before_freeze: 0
+    hidden_role_reads_before_freeze: 0
+  reproducibility:
+    deterministic_anchor: false
+    scientific_contract_sha256: af07896332346cccf722bcedc1cee5c371d93089e9fab2a49e19cada2cb5cc36
+    prediction_logical_sha256: 9527bdff3feb26c86a4943a6d4f48dc1fb1d4a9fe9f33fdc3f5d3071579cf483
+    prediction_raw_gzip_sha256: 6543268e88f3792ba965d053150ae07c67863e690612b44bb28680c23f039781
+    prediction_decompressed_sha256: 8b20ad290de96f0e2d972c40025be3fa7f509a8594e5a8714b04c0fafa02edae
+    well_audit_sha256: deefa093b64b7a7a03d6851f840612f85f9e985a33679f9ac1c5958dd33f721e
+  decision:
+    stage_1_run: true
+    stage_1_approved: true
+    reason: >-
+      Stage 0 is technical-only. The user separately approved the frozen
+      all-773-well Stage 1 evaluation on 2026-07-30.
+
+stage_1_result:
+  status: stage1_gate_failed_terminal_close
+  scope: stage1_all_well_train_side_cv
+  rows: 3783989
+  wells: 773
+  reporting_folds: [0, 1, 2, 3, 4]
+  primary:
+    candidate_rmse_ft: 10.89709692312777
+    saved_exp404_control_rmse_ft: 10.914521913422574
+    improvement_ft: 0.017424990294804488
+    candidate_minus_control_rmse_ft: -0.017424990294804488
+    improved_folds: 2
+    required_improved_folds: 4
+    fold_improvement_ft:
+      fold_0: -0.10465642717847423
+      fold_1: -0.14741840814164675
+      fold_2: -0.07724560226002275
+      fold_3: 0.08487579725820638
+      fold_4: 0.27548005045857415
+  scope_improvement_ft:
+    raw_gr_observed: -0.06890035663986005
+    raw_gr_missing: 0.20536830388171623
+    missing_fraction_high: 0.1651920417417685
+    md_since_1000_plus: 0.028529855371738577
+    hidden_like_spatial: 0.1299765870556122
+    hidden_like_typewell_purged: -0.1301462559061548
+  by_well:
+    improved_wells: 442
+    worsened_wells: 331
+    total_wells: 773
+    delta_rmse_p95_ft: 1.4550666558525527
+    worst_well_id: d924e971
+    worst_well_regression_ft: 16.664889732705497
+  fixed_exp209_hmm_pf_50_50:
+    candidate_rmse_ft: 10.067803689497714
+    control_rmse_ft: 10.084909779429955
+    candidate_minus_control_rmse_ft: -0.017106089932241275
+    passed: true
+  technical_gate:
+    passed: true
+    checks_passed: 18
+    checks_total: 18
+    runtime_seconds: 10959.720402002335
+    runtime_seconds_to_prediction_freeze: 10871.425777435303
+    peak_rss_gb: 3.30963134765625
+    saved_control_rmse_absolute_difference: 1.5957742682815024e-07
+    fixed_hmm_pf_50_50_control_rmse_absolute_difference: 9.986957216767678e-08
+    truth_error_fold_hidden_reads_before_freeze: 0
+  scientific_gate:
+    passed: false
+    decision: terminal_close_without_student_t_or_pf_rescue
+    failed_checks:
+      - pooled_rmse_gain
+      - minimum_improved_folds
+      - raw_gr_observed_gain
+      - hidden_like_typewell_purged_non_regression
+      - by_well_delta_p95
+      - worst_well_regression
+  execution_counts:
+    scientific_variants: 1
+    candidate_pf_well_runs: 773
+    seed_well_trajectories: 98944
+    particle_starts: 49472000
+    control_pf_well_runs: 0
+    hmm_well_runs: 0
+    beam_well_runs: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    gpu_runs: 0
+  reproducibility:
+    deterministic_anchor: false
+    scientific_contract_sha256: af07896332346cccf722bcedc1cee5c371d93089e9fab2a49e19cada2cb5cc36
+    prediction_logical_sha256: 4dbe939363b1522dbc521680cd25d3ce7993ff8b94ddbdbf30b95073db2b28f4
+    prediction_raw_gzip_sha256: e1344c2dc63dda8905b997bb82b8c3e25ea9df3cfade2688e2e48dab9f8cc655
+    prediction_decompressed_sha256: 1b02c68b0e52cd031b9d06e931f8fa92e2fb841dbc9e4ee6c7778807af5f1962
+    prediction_schema_sha256: c5ce3792dd158041ccda88aa093e7b56bce3e439323117d5a812757247e6dbfc
+    primary_metrics_sha256: d8c818d7bb52ee532119db158095e838d5a2a0f0ad8bf0e8294ebc0a548541c1
+    by_well_metrics_sha256: d82f7a7c6496fa84d80c72d1b35a8b5593fa7cc2f9223cafe7fd2773266c5b0f
+    fixed_hmm_pf_50_50_metrics_sha256: b8c6687d4871796e3a63b2ff38a50a3d4a631ba8441ec3075d9f4db3e164a712
+    promotion_gate_sha256: 32a5c8473a4c94eb6ebbad8461332be5ffa40150f1cbeb9af2726b0db56afb50
+    runtime_ledger_sha256: d4043fa1acdaa8a718fed4a0c3ca4b8d5c84e56cc198d980540d4770633a9c67
+    summary_sha256: 51d9658ea32fa45b0724b543169661ba36fea5f61b9e331d327dfd6e0db1a380
+    well_audit_sha256: 7a3299d4105153f99fb3d0a3553dcffd6d4e490f913e99b3d86e1806728194d2
+
+notes:
+  - Implemented on 2026-07-30 as a compact self-contained fixed32 Stage 0 candidate.
+  - The only scientific kernel change is the fixed df=4 Student-t per-particle GR emission.
+  - Stage 0 Kaggle CPU package/push/run was approved by the user on 2026-07-30.
+  - Kernel v1 failed in raw-identity preflight; the SHA routine was restored to the exact exp404 algorithm.
+  - Kernel v2 completed Stage 0 with all 16 technical checks passing.
+  - Fixed32 RMSE is diagnostic only and is not CV or promotion evidence.
+  - The user separately approved the all-773-well Stage 1 run on 2026-07-30.
+  - Kernel v3 completed Stage 1 with all 18 technical checks passing.
+  - The candidate improved pooled RMSE by only 0.017424990 ft and improved 2/5 folds; the preregistered scientific all-AND gate failed.
+  - The Student-t PF branch was closed without rescue, inference, or submission.
+  - Inference and submission remain disabled and were not run because the Stage 1 scientific gate failed.

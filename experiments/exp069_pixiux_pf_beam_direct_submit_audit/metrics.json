@@ -1,0 +1,82 @@
+{
+  "experiment": "exp069_pixiux_pf_beam_direct_submit_audit",
+  "status": "completed",
+  "cv": null,
+  "public_lb": 9.721,
+  "private_lb": null,
+  "metric": "rmse",
+  "route": "pf_beam",
+  "parent": "exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit",
+  "selected_candidate": "likpf_mean",
+  "deterministic_patch": {
+    "implemented_at": "2026-06-15",
+    "n_jobs": 1,
+    "per_well_stable_seed": true,
+    "seeded_pf_ancc": true,
+    "seeded_pf_z": true,
+    "seeded_likpf": true,
+    "deterministic_warmup": true,
+    "kaggle_rerun_status": "complete",
+    "kaggle_rerun_kernel": "kentookumura/exp069-pixiux-pf-beam-direct-infer",
+    "kaggle_rerun_version": 3,
+    "kaggle_rerun_started_at": "2026-06-15",
+    "kaggle_rerun_output_dir": "/tmp/kaggle-output/exp069_pixiux_pf_beam_direct_submit_audit/infer_v3",
+    "kaggle_rerun_submission_sha256": "57d5c55c5caa1d07b6691a054116b434d63dd9f8e03c73dfb6ef45753aa8fa01",
+    "kaggle_rerun_submit_check": "pass",
+    "note": "Public LB 9.721 belongs to the deterministic patch v3 code submission. Pre-patch v2 scored 9.877."
+  },
+  "kaggle": {
+    "inference": {
+      "kernel": "kentookumura/exp069-pixiux-pf-beam-direct-infer",
+      "version": 3,
+      "status": "complete",
+      "enable_gpu": false,
+      "enable_internet": false,
+      "deterministic": true,
+      "n_jobs": 1,
+      "output_dir": "/tmp/kaggle-output/exp069_pixiux_pf_beam_direct_submit_audit/infer_v3",
+      "submit_check": "pass",
+      "submission_sha256": "57d5c55c5caa1d07b6691a054116b434d63dd9f8e03c73dfb6ef45753aa8fa01",
+      "submission_rows": 14151,
+      "fallback_rows": 0,
+      "prediction_min": 11601.626953,
+      "prediction_max": 12241.427734,
+      "prediction_mean": 11910.589483,
+      "prediction_std": 280.495213,
+      "feature_elapsed_seconds": 251.913,
+      "elapsed_seconds": 257.258
+    },
+    "submission": {
+      "ref": 53706005,
+      "status": "complete",
+      "public_lb": 9.721,
+      "private_lb": null,
+      "delta_vs_exp063_v2_best_public_lb": 0.91,
+      "delta_vs_exp027_public_lb": 0.94,
+      "duplicate_complete_ref_same_score": 53705994,
+      "misattributed_refs": [
+        53710264,
+        53710105
+      ],
+      "pre_patch_v2_ref": 53637978,
+      "pre_patch_v2_public_lb": 9.877,
+      "recorded_submission_version": "v031"
+    }
+  },
+  "reference_diffs": {
+    "exp027_public_replay_needless090_sel15_spread3": {
+      "diff_rmse": 12.852195,
+      "diff_mean": 6.95941,
+      "changed_rows": 14151,
+      "corr": 0.99929
+    },
+    "exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit": {
+      "diff_rmse": 8.700711,
+      "diff_mean": 5.060228,
+      "changed_rows": 14151,
+      "corr": 0.999689
+    }
+  },
+  "key_idea": "Submit Pixiux likelihood-PF direct TVT predictions without LightGBM booster inference.",
+  "notes": "Kaggle inference version 3 completed with deterministic=true and n_jobs=1. submission.csv was downloaded and submit-check passed. Code submission ref=53706005 scored Public LB 9.721, worse than exp063 v2/best 8.811 by +0.910 and exp027 8.781 by +0.940. Pre-patch v2 ref=53637978 scored 9.877. Refs 53710264/53710105 with Public LB 8.766 were initially misattributed and are not recorded as exp069."
+}

@@ -1,0 +1,39 @@
+contract_version: 1
+candidate_id: exp510_final_slot_2
+route: ensemble
+role: public_distribution_hedge
+public_component:
+  sp45_input: sp45_projection_submission.csv
+  learned_input: submission_B.csv
+  forbidden_input: submission_A.csv
+  sp45_weight: 0.55
+  learned_weight: 0.45
+  freeze_before_guarded_contact: true
+  gold_enabled: false
+final_formula:
+  exp413_weight: 0.90
+  public_preoverride_weight: 0.10
+  dtype: float64
+weight_fit_allowed: false
+postprocess_after_blend: none
+conditional_routing: false
+scientific_promotion: false
+technical_fail_policy: fail_closed
+implementation:
+  candidate_source: exp510_exp413_exact_public_preoverride_hedge_compact_selfcontained_inference.py
+  candidate_notebook: exp510_exp413_exact_public_preoverride_hedge_compact_selfcontained_inference.ipynb
+  canonical_adoption: false
+  kaggle_run: true
+  kaggle_kernel_version: 4
+  kaggle_status: complete_technical_gate_pass_not_submitted
+  dynamic_exp413_generation: true
+  static_exp413_public_sidecar_allowed: false
+  exp413_serialized_artifact_boundary: true
+  exp413_saved_boosters: 75
+  pipeline_b_dataset: fleongg/rogii-claude-models-pub
+  pipeline_b_dataset_version: 1
+  pipeline_b_saved_boosters: 3
+  saved_boosters_total: 78
+  inference_time_booster_training: 0
+  stable_seed_policy: sha256_base_split_family_well_seed_index
+submission_requires_separate_approval: true

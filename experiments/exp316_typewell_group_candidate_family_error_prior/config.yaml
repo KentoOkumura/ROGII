@@ -1,0 +1,61 @@
+experiment:
+  name: exp316_typewell_group_candidate_family_error_prior
+  description: Outer-train truthからType Well群×candidate familyの誤差priorをcross-fitしselector補助へ限定する
+  route: ml_model
+  status: design_frozen_blocked_on_exp313_exp315
+  created_at: "2026-07-21"
+
+lineage:
+  parent: exp315_typewell_group_candidate_likelihood_rank_features
+  dependencies: [exp313_typewell_group_unseen_transfer_guard, exp293_physics_only_candidate_bank_headroom_contract]
+  diff_summary: 候補値を変えず、outer-trainだけで推定したType Well群×候補familyのshrunk MAE/RMSE/rank priorをnested selectorへadd-onlyする。
+
+implementation: {enabled: false, scope: design_only, inference_enabled: false, submission_enabled: false}
+
+validation:
+  strategy: exp264_nested_outer5_inner4
+  outer_folds: 5
+  inner_folds: 4
+  fit_scope: outer_train_only_for_family_prior; nested_train_only_for_selector
+  truth_join_policy: freeze_prior_before_outer_valid_error_join
+  control: exp315_selected_or_saved_corrected_exp264
+
+prior:
+  typewell_group: native_overlap_1
+  unit: well_equal_weighted_candidate_family
+  statistics: [mae, rmse, best_family_rate]
+  shrinkage_support_k_wells: 10
+  fallback_order: [group_family, global_family, neutral]
+  families: fixed_from_exp293_manifest
+  forbidden: [well_id_prior, outer_valid_error, candidate_specific_threshold, hard_router]
+
+model:
+  name: corrected_exp264_dual_selector
+  source: exp264_corrected_dual_selector
+  objectives: [expected_error, within10]
+  control_retrain: false
+
+execution_contract:
+  stage_a: {prior_variants: 1, model_configs: 0, boosters: 0}
+  stage_b_if_stage_a_passes: {scientific_variants: 1, objectives: 2, outer_folds: 5, inner_folds: 4, selector_models: 40}
+
+promotion_gates:
+  stage_a_family_rank_spearman_min: 0.15
+  stage_a_folds_positive_min: 4
+  stage_b_parent_gain_min_ft: 0.03
+  hidden_like_nonregression: true
+  worst_well_delta_max_ft: 0.25
+  fallback_group_nonregression: true
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: exp264_fixed_nested_folds_and_stable_group_reducers
+  stochastic_components: [lightgbm_selector_training]
+  parallel_rng_policy: fixed model seeds; deterministic prior tables
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: true, prediction_sha: true, submission_sha: false}
+
+notes:
+  - This is a soft prior feature, never a hard family selector.
+  - No inference or submit is permitted before both stages pass every guard.

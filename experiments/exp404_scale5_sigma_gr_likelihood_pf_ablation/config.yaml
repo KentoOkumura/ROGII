@@ -1,0 +1,452 @@
+experiment:
+  name: exp404_scale5_sigma_gr_likelihood_pf_ablation
+  description: >-
+    Design-frozen paired train-side likelihood-PF ablation that compares
+    gs x1.0 with gs x1.3 while fixing the seed aggregation to likelihood
+    temperature scale 5. Both variants rerun the same exp072-compatible
+    500-particle, 128-seed PF with common per-well random seeds.
+  hypothesis: >-
+    The x1.3 GR observation scale that failed with arithmetic seed averaging
+    in exp400 can improve the likelihood-weighted scale-5 prediction because
+    scale-5 aggregation suppresses low-likelihood seed trajectories instead
+    of averaging incompatible alignment modes.
+  route: pf_beam
+  status: train_side_paired_scale5_gs_x1p3_gate_failed_closed
+  created_at: "2026-07-26"
+  updated_at: "2026-07-26"
+
+lineage:
+  parent: exp400_all_well_1p3_sigma_gr_likelihood_pf
+  kernel_parent: exp072_exp063_full_replay_feature_cache
+  reporting_fold_source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  hidden_like_source: exp115_hidden_like_spatial_holdout_from_ppt
+  steering: ../../.steering/20260726-exp404-scale5-sigma-gr-likelihood-pf-ablation
+  references:
+    - exp069_pixiux_pf_beam_direct_submit_audit
+    - exp214_public_raw_gr_residual_scale_control
+    - docs/06_reproducibility.md
+    - https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction/discussion/728712
+    - https://www.kaggle.com/code/hjyact/ultimate-pf-config-strategy-a-reproducible-score
+  diff_summary: >-
+    Replace exp400's arithmetic pf_mean primary endpoint with a pre-fixed
+    likelihood-weighted scale-5 endpoint and add an exact x1.0 scale-5
+    control. Rerun x1.0 and x1.3 with identical per-well seed labels because
+    the saved exp072 cache has no scale-5 prediction. Keep the PF kernel,
+    particle count, seed count, dynamics, resampling, interpolation, base
+    scale estimator, folds, and score rows fixed. Do not replay the public
+    notebook's ML, Beam, selector, hold, projection, or calibration pipeline.
+
+implementation:
+  enabled: true
+  scope: train_side_paired_scale5_pf_audit_only
+  design_approval_received: true
+  design_approval_source: user_message_create_backlog_experiment_steering_and_freeze_design_2026_07_26
+  implementation_approval_received: true
+  implementation_approval_source: user_message_exp404_implement_2026_07_26
+  scaffold_created: true
+  notebook_placeholders_only: false
+  canonical_notebook_is_placeholder: false
+  canonical_notebook_adopted: true
+  canonical_notebook_adoption_source: user_message_execute_exp404_2026_07_26
+  jupytext_source_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  training_enabled: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: paired_all_well_likelihood_pf_scale5_gs_multiplier_ablation
+  metric: rmse
+  metric_weighting: unweighted_suffix_rows
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  primary_control: likpf_scale_5_x1p0
+  primary_candidate: likpf_scale_5_x1p3
+  gain_definition: rmse_x1p0_minus_rmse_x1p3
+  truth_attachment: after_both_variant_predictions_and_logical_content_sha_freeze
+  missing_fraction_buckets:
+    low: [0.0, 0.10]
+    mid: [0.10, 0.30]
+    high: [0.30, 1.0]
+    boundary_policy: left_closed_right_open_except_final_closed
+  leakage_policy:
+    - PF generation reads horizontal MD, Z, GR, and TVT_input but not horizontal suffix TVT.
+    - Type Well TVT is a reference-curve coordinate and is allowed during PF generation.
+    - Both variant predictions, their row identity, and logical content SHA are frozen before suffix truth, error, fold score, or hidden-like role is read.
+    - exp226 is used only for well, row, suffix-offset, and reporting-fold identity.
+    - Public LB and exp400's post-hoc scale ordering cannot change the multiplier, scale temperature, seed policy, gate, or scope.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  observed_log_column: GR
+  id_column: id
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  exp072_reference:
+    source: exp072_exp063_full_replay_feature_cache
+    kernel_source: kentookumura/exp072-exp063-full-replay-feature-cache-train
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    saved_prediction_columns_available: [last_known_tvt, likpf_mean_d]
+    saved_scale_5_available: false
+    expected_raw_gzip_sha256: 14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18
+    expected_decompressed_sha256: 99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350
+    expected_saved_mean_rmse_ft: 11.594897672217703
+    accepted_exp400_control_rmse_ft: 11.594894395642696
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts
+      - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts
+      - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v2_stream/artifacts
+    rerun_scale5_required: true
+  exp400_reference:
+    source: exp400_all_well_1p3_sigma_gr_likelihood_pf
+    kernel_source: kentookumura/exp400-all-well-1p3-sigma-gr-likelihood-pf-train
+    kernel_version: 1
+    mean_x1p3_rmse_ft: 12.221810980460939
+    scale_5_x1p3_rmse_ft: 11.174614846889103
+    prediction_logical_content_sha256: 009a1d73e187c4126a70231214f14fbe1ae44edee47d9a166818ab1bd928a3bf
+    use: implementation_parity_reference_only
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    kernel_source: kentookumura/exp226-k16-kappa-repro-train
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    forbidden_decoder_columns: [tvt_geop, tvt_pred, gr_delta, tvt_true, error, abs_error]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    allowed_roles:
+      hidden_like_spatial: [train, valid]
+      hidden_like_typewell_purged: [train, valid, purged_train_excluded]
+    expected_role_counts:
+      hidden_like_spatial:
+        train: 573
+        valid: 200
+      hidden_like_typewell_purged:
+        train: 557
+        valid: 200
+        purged_train_excluded: 16
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+  frozen_prediction_resume:
+    enabled: true
+    source: exp404_kaggle_private_cpu_train_version_1_failed_after_prediction_freeze
+    source_kernel_id: kentookumura/exp404-scale5-sigma-gr-likpf-ablation-train
+    source_kernel_version: 1
+    source_kernel_id_no: 128628818
+    dataset_source: kentookumura/exp404-v1-frozen-predictions
+    prediction_filename: exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin
+    audit_filename: exp404_scale5_sigma_gr_likelihood_pf_ablation_well_gr_scale_seed_audit.csv
+    contract_filename: exp404_scale5_sigma_gr_likelihood_pf_ablation_scientific_contract.json
+    candidates:
+      - /kaggle/input/exp404-v1-frozen-predictions
+      - /tmp/exp404-failed-v1-output/artifacts
+    expected_prediction_raw_sha256: b3699432a691229da5a6562ce74e0b84f1bee3021bd80d650526906f5aa390f8
+    expected_prediction_decompressed_sha256: 00fe1b90fce84bd601b4b91442d9fc698200aafadd48658f7d8c26ec1fbe0d00
+    expected_prediction_logical_sha256: 5f4b6e715081b598b0a34607ad0c81339d0ecd5882ea3a45dd79f33123959a00
+    expected_prediction_schema_sha256: 2372de95ab154ddd2b1bfe545923233bc41f96104e66c32ab93e6f0fa99bee88
+    expected_audit_raw_sha256: bcd0634a760a8c3d6b5da33da878f33408cd37285633eb17498c8bb3cee0a390
+    expected_scientific_contract_sha256: 41c1f95ca8bd7d20eef00f244ced7d4dbc4b3571cc9fd4189c08d6831ef15b57
+    expected_rows: 3783989
+    expected_wells: 773
+    generated_pf_well_runs_this_kernel: 0
+    reused_pf_well_runs: 1546
+    reused_seed_well_trajectories: 197888
+    reused_particle_starts: 98944000
+    forbidden_columns:
+      - true_tvt
+      - tvt_true
+      - error
+      - abs_error
+      - fold
+      - verification_like_spatial_role
+      - verification_like_typewell_purged_role
+
+model:
+  name: deterministic_exp072_likelihood_pf_scale5_gs_multiplier_ablation
+  estimator: likelihood_weighted_particle_filter
+  active_variants:
+    - gs_x1p0_scale5
+    - gs_x1p3_scale5
+  primary_control: likpf_scale_5_x1p0
+  primary_candidate: likpf_scale_5_x1p3
+  nonpromotional_parity_outputs:
+    - likpf_mean_x1p0
+    - likpf_mean_x1p3
+  gr_scale:
+    base_estimator: known_prefix_zero_fill_population_std
+    base_clip: [10.0, 60.0]
+    variants:
+      gs_x1p0:
+        multiplier: 1.0
+        post_multiplier_clip: null
+        effective_range: [10.0, 60.0]
+      gs_x1p3:
+        multiplier: 1.3
+        post_multiplier_clip: null
+        effective_range: [13.0, 78.0]
+    application_scope: all_wells
+    application_order: clip_base_then_multiply_exactly_once
+  pf:
+    particles: 500
+    seeds: 128
+    seed_indices: [0, 127]
+    primary_seed_weighting_scale: 5.0
+    other_seed_weighting_scales_enabled: false
+    arithmetic_mean_enabled_for_parity_only: true
+    typewell_grid_step_ft: 0.2
+    initial_position_spread_ft: 4.5
+    initial_rate_spread: 0.01
+    momentum: 0.998
+    rate_noise: 0.002
+    position_noise: 0.005
+    rough_position: 0.1
+    rough_rate: 0.001
+    resample_threshold_fraction: 0.5
+    emission: capped_gaussian
+    emission_clip_z2: 600.0
+    typewell_tvt_pad_ft: 100.0
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    output_dtype: float32
+  execution_count:
+    scientific_variants: 2
+    candidate_pf_well_runs: 1546
+    seeds_per_variant_well: 128
+    seed_well_trajectories: 197888
+    particles_per_seed: 500
+    particle_starts: 98944000
+    primary_prediction_readouts: 2
+    parity_prediction_readouts: 2
+    reporting_folds: 5
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    hmm_well_runs: 0
+    beam_well_runs: 0
+
+runtime:
+  device: cpu
+  use_amp: false
+  num_workers: 8
+  batch_size: 1
+  maximum_seconds: 30600
+  maximum_peak_rss_gb: 25
+  estimated_seconds_from_exp400_linear_projection: 20992.599778175354
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_run_on_push: true
+    train_kernel_id: kentookumura/exp404-scale5-sigma-gr-likpf-ablation-train
+    train_title: exp404 scale5 sigma gr likpf ablation train
+    train_kernel_version: 4
+    train_kernel_id_no: 128628818
+    train_status: KernelWorkerStatus.COMPLETE
+    train_started_at: "2026-07-26 12:20:09 UTC"
+    train_completed_at: "2026-07-26 12:25:04 UTC"
+    train_runtime_seconds: 270.98839378356934
+    train_url: >-
+      https://www.kaggle.com/code/kentookumura/exp404-scale5-sigma-gr-likpf-ablation-train
+    kernel_slug_shortening_reason: >-
+      Kaggle SaveKernel returned HTTP 400 for the original 51-character
+      likelihood-pf slug and title; likpf preserves the scientific meaning
+      while keeping both at 43 characters under Kaggle's 50-character limit.
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp400-all-well-1p3-sigma-gr-likelihood-pf-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    dataset_sources:
+      - kentookumura/exp404-v1-frozen-predictions
+
+guards:
+  technical:
+    require_all_input_sha_matches: true
+    require_expected_rows: 3783989
+    require_expected_wells: 773
+    require_expected_folds: [0, 1, 2, 3, 4]
+    require_id_row_order_fold_identity: true
+    require_all_wells_completed_without_fallback: true
+    require_finite_prediction_coverage: 1.0
+    require_common_seed_labels_across_variants: true
+    require_variant_seed_base_excludes_multiplier: true
+    require_base_scale_range: [10.0, 60.0]
+    require_x1p0_scale_ratio: 1.0
+    require_x1p3_scale_ratio: 1.3
+    scale_ratio_absolute_tolerance: 1.0e-12
+    require_post_multiplier_clip_count: 0
+    require_x1p0_mean_parity_vs_exp072_atol_ft: 0.00001
+    require_x1p3_mean_rmse_parity_vs_exp400_atol_ft: 0.00001
+    require_x1p3_scale5_rmse_parity_vs_exp400_atol_ft: 0.00001
+    maximum_truth_error_fold_hidden_reads_before_both_variants_freeze: 0
+    require_execution_count_match: true
+  scientific:
+    minimum_pooled_rmse_gain_x1p3_vs_x1p0_ft: 0.05
+    minimum_improved_folds: 4
+    minimum_raw_gr_observed_gain_ft: 0.05
+    maximum_raw_gr_missing_regression_ft: 0.0
+    maximum_high_missing_well_regression_ft: 0.0
+    maximum_long_tail_1000_plus_regression_ft: 0.0
+    maximum_hidden_like_spatial_regression_ft: 0.0
+    maximum_hidden_like_typewell_purged_regression_ft: 0.0
+    maximum_by_well_delta_p95_ft: 0.0
+    maximum_worst_well_regression_ft: 0.25
+    require_all_checks: true
+  decision:
+    pass_action: scale5_supports_global_gs_x1p3_for_separate_downstream_design
+    fail_action: scale5_rejects_global_gs_x1p3_close_without_rescue
+  forbidden:
+    - likelihood_temperature_search
+    - multiplier_or_clip_search
+    - particle_seed_or_initial_spread_search
+    - scale_3_8_12_generation_or_post_result_selection
+    - arithmetic_mean_as_scientific_primary
+    - public_notebook_full_pipeline_replay
+    - well_or_row_adaptive_multiplier
+    - hmm_or_beam_generation
+    - model_training
+    - selector_hold_ridge_projection_contact_or_model_package_replay
+    - blend_weight_search
+    - same_oof_rescue
+    - inference_or_submission_without_separate_approval
+
+execution:
+  stage: train_side_paired_scale5_gs_x1p3_gate_failed_closed
+  design_approved: true
+  implementation_approved: true
+  canonical_notebook_adoption_approved: true
+  kaggle_package_approved: true
+  kaggle_push_approved: true
+  train_run_approved: true
+  train_run_approval_source: user_message_execute_exp404_2026_07_26
+  train_run_started: true
+  train_run_completed: true
+  technical_retry_version_2_approved: true
+  technical_retry_approval_basis: original_user_execute_request_same_frozen_scientific_contract
+  version_1_error: >-
+    After both paired predictions were generated and frozen, late-readout
+    stopped because exp404 omitted exp115 expected_role_counts from config.
+  version_2_scope: >-
+    Reuse the exact SHA-locked version-1 frozen predictions and audit;
+    restore the formal exp115 role-count contract and run late readout only.
+  version_2_started: true
+  version_2_started_at: "2026-07-26 11:51:01 UTC"
+  version_2_error: >-
+    The recovery gzip was intentionally published with a .bin suffix, but
+    pandas header/full reads inferred plain CSV from the suffix. The run
+    stopped before prediction parsing, truth attachment, or metrics.
+  version_3_technical_retry_approved: true
+  version_3_scope: >-
+    Keep the same recovery bytes and scientific contract; explicitly pass
+    compression=gzip to pandas for the .csv.gz.bin input.
+  version_3_started: true
+  version_3_started_at: "2026-07-26 11:55:17 UTC"
+  version_3_error: >-
+    The exact recovery bytes passed raw gzip, decompressed-content, and
+    logical-content SHA checks, but the schema SHA differed because local
+    pandas 3 represents dtype=str as str while Kaggle pandas 2 represents
+    the same text columns as object. The run stopped before truth
+    attachment or metrics.
+  version_4_technical_retry_approved: true
+  version_4_scope: >-
+    Keep the exact version-1 recovery bytes and scientific contract; cast
+    every resumed prediction column to an explicit semantic dtype before
+    computing the schema SHA so the guard is pandas-version independent.
+  version_4_started: true
+  version_4_started_at: "2026-07-26 12:20:09 UTC"
+  version_4_completed: true
+  version_4_completed_at: "2026-07-26 12:25:04 UTC"
+  technical_gate_passed: true
+  scientific_gate_passed: false
+  decision: scale5_rejects_global_gs_x1p3_close_without_rescue
+  kaggle_push_attempts: 2
+  first_push_failure: >-
+    HTTP 400 SaveKernel for the original 51-character likelihood-pf slug
+    and title; no kernel was created.
+  inference_approved: false
+  submission_approved: false
+  run_train: true
+  run_inference: false
+  create_submission: false
+  submit_to_kaggle: false
+  planned_scope: two_paired_all_well_gs_variants_fixed_scale5_zero_models
+  actual_scope: completed_train_side_readout_reusing_version_1_frozen_predictions
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: >-
+    seed_base=sha256_first16("likpf::train::<well_id>")
+    modulo_2147483647_plus_1; per-seed seed=seed_base+seed_index_0_to_127;
+    the multiplier is deliberately excluded so x1.0 and x1.3 use common
+    random-number labels.
+  stochastic_components:
+    - particle_initialization
+    - rate_and_position_process_noise
+    - systematic_resampling
+    - post_resampling_roughening
+  parallel_rng_policy: fixed_8_well_threads_each_numba_kernel_receives_explicit_stable_seed
+  stable_order: well_id_lexicographic_then_variant_x1p0_x1p3_then_original_row_then_seed_index
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  freeze_before_truth:
+    - scientific_contract
+    - well_gr_scale_and_seed_audit
+    - paired_prediction_table
+    - paired_prediction_logical_content_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Resampling times may diverge after the gs intervention; that divergence is part of the treatment and does not violate paired seeding.
+    - An initial train-side run is a deterministic candidate audit, not a deterministic submission anchor.
+    - Raw-test regeneration, inference, and submission are out of scope and require a separate design.
+
+artifacts:
+  output_prefix: exp404_scale5_sigma_gr_likelihood_pf_ablation
+  planned:
+    - paired_predictions.csv.gz
+    - well_gr_scale_seed_audit.csv
+    - overall_fold_scope_metrics.csv
+    - by_well_metrics.csv
+    - parity_metrics.json
+    - promotion_gate.json
+    - scientific_contract.json
+    - input_manifest.csv
+    - artifact_manifest.csv
+    - summary.json
+
+inference:
+  enabled: false
+  mode: disabled_until_train_side_all_gates_pass_and_separate_approval
+  selected_candidate: null
+
+notes:
+  - The exp400 x1.3 scale-5 score is prior exploratory evidence and is not used as the x1.0 comparison.
+  - Both variants must be rerun because exp072 saved only likpf_mean and gs changes resampling trajectories.
+  - The public notebook's default seed_base=0 is not reproduced; this experiment tests deterministic transfer to the exp072 lineage.
+  - The compact self-contained train/inference candidates are adopted as the canonical notebooks by the explicit 2026-07-26 execution request.
+  - Kaggle private CPU package, push, and train execution are approved; inference and submission remain unapproved.

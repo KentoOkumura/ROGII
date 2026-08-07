@@ -1,0 +1,397 @@
+experiment:
+  name: "exp217_grcal_public_raw_pf_confidence_features_on_exp158"
+  description: Add full-train public-like raw PF diagnostics as candidate confidence features to the exp158 continuity selector.
+  route: pf_beam
+  status: closed_train_side_positive_vs_exp158_not_anchor_no_submit
+  created_at: "2026-07-07"
+  updated_at: "2026-07-14"
+
+lineage:
+  parent: exp158_segment_continuity_selector_on_exp157
+  ranker_parent: exp157_candidate_ranker_feature_enrichment
+  public_raw_pf_parent: exp214_public_raw_gr_residual_scale_control
+  affine_diagnostic_parent: exp211_affine_calibrated_gr_observation_pfbeam
+  structural_diagnostic_parent: exp213_prefix_structural_prior_pfbeam
+  ruler_diagnostic_parent: exp216_affine_shift_landscape_ruler_readout
+  feature_cache_parent: exp072_exp063_full_replay_feature_cache
+  multiobs_parent: exp099_pf_multi_observation_likelihood_probe
+  stress_parent: exp115_hidden_like_spatial_holdout_from_ppt
+  implementation_source: grcal_public_raw_pf_confidence_features_on_exp158.py
+  diff_summary: >
+    Keeps exp157/158's eight PF/Beam/dense selectable candidates and exp158's
+    Viterbi continuity grid, but retrains the candidate score models with
+    add-only public-like raw PF diagnostics regenerated on the full train
+    selector surface. The pubraw PF values are used only as confidence and
+    candidate-distance features, never as selectable candidates, direct
+    replacement, blend, postprocess, PF weight replacement, inference output, or
+    submission candidate.
+
+validation:
+  strategy: train_well_pseudotail_candidate_selector_oof_plus_viterbi_with_pubraw_pf_confidence_features
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - oracle_label_accuracy
+    - selection_distribution
+    - path_switch_count
+    - bucket_rmse
+    - subgroup_rmse
+    - worst_well_rmse
+    - pubraw_scale_spread_bucket_rmse
+    - pubraw_likpf_gap_bucket_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Candidate values and target-free likelihood features are read from exp099 v2 and exp072 train-side pseudo-tail caches.
+    - Dense candidates are reconstructed as last_known_tvt plus tvt_dense*_d columns, matching exp157/158.
+    - Public raw PF diagnostics are regenerated from raw horizontal GR, raw typewell GR, known prefix TVT_input/Z/MD, and evaluation-row GR/Z/MD only.
+    - Known-prefix GR residual sigma is fit on observed prefix rows only; evaluation-tail true TVT is never used in feature generation.
+    - exp214 scoped output is not joined; exp217 regenerates full-train/current-test-compatible pubraw features.
+    - Candidate-long labels use oracle-best candidate index and absolute candidate error only as training labels, not as feature columns.
+    - Viterbi local costs use OOF predicted-error scores from the newly trained add-only ranker. Transition penalties use candidate path geometry and target-free guard features only.
+    - exp115 hidden-like roles are used only for result subgroup metrics, never for training features.
+    - No validation/test true TVT, oracle candidate, true-error rank, or OOF absolute error is used in selector features.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_reference_candidates:
+    - pf_ancc
+    - beam_mean
+    - likpf_mean
+    - pf_z
+  exp115_fold_assignments_local: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+model:
+  name: grcal_public_raw_pf_confidence_features_on_exp158
+  target: oracle_best_candidate_and_candidate_abs_error
+  base_prediction: candidate_selected_tvt
+  estimator:
+    - lightgbm_multiclass
+    - lightgbm_candidate_binary
+    - lightgbm_candidate_error_ranker
+  trains_new_boosters: true
+  planned_lightgbm_configs: 3
+  planned_folds: 5
+  planned_boosters: 15
+  control_or_parent_retraining: false
+  observation_variants:
+    - name: raw
+      kind: raw
+      transition: classic
+  validation_surface:
+    selection_mode: long_md_since
+    max_target_wells: null
+    well_include: []
+    min_known_prefix_rows: 160
+    min_eval_rows: 64
+  runtime:
+    particles: 500
+    seed_count: 128
+    likelihood_scales: [3.0, 5.0, 8.0, 12.0]
+    primary_scale: 5.0
+    topk_oracle: 3
+    resample_threshold: 0.5
+    init_spread: 4.5
+    momentum: 0.998
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_pos_noise: 0.10
+    resample_velocity_noise: 0.001
+    grid_step: 0.2
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+
+ranker:
+  mode: supervised_candidate_selector_with_public_raw_pf_confidence_features
+  max_rows: null
+  include_candidate_values: false
+  log_period: 100
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+    - name: beam_mean
+      column: beam_mean
+    - name: likpf_mean
+      column: likpf_mean
+    - name: sc_ens
+      column: sc_ens
+    - name: hyb
+      column: hyb
+    - name: tvt_dense
+      column: tvt_dense
+    - name: tvt_densew
+      column: tvt_densew
+    - name: tvt_dense50
+      column: tvt_dense50
+  context_columns:
+    - last_known_tvt
+    - pf_ancc_std
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+    - eval_len
+    - md_since
+    - likpf_mean_d
+  multiobs_feature_columns:
+    - multiobs_score_max
+    - multiobs_score_mean
+    - multiobs_score_gap
+    - multiobs_top1_source_id
+    - multiobs_top1_mae
+    - multiobs_top1_ncc
+    - multiobs_score_pf_ancc
+    - multiobs_mae_pf_ancc
+    - multiobs_ncc_pf_ancc
+    - multiobs_score_beam_mean
+    - multiobs_mae_beam_mean
+    - multiobs_ncc_beam_mean
+    - multiobs_score_likpf_mean
+    - multiobs_mae_likpf_mean
+    - multiobs_ncc_likpf_mean
+    - multiobs_score_sc_ens
+    - multiobs_mae_sc_ens
+    - multiobs_ncc_sc_ens
+    - multiobs_score_hyb
+    - multiobs_mae_hyb
+    - multiobs_ncc_hyb
+  optional_columns:
+    - multiobs_top1
+    - multiobs_softmax_t0p15
+    - multiobs_softmax_t0p3
+    - likpf_multiobs_blend_w0p25
+    - likpf_multiobs_blend_w0p5
+  feature_enrichment:
+    enabled: true
+    prefix: crfe_
+    max_missing_rate: 0.0
+    min_md_scale: 25.0
+    min_dense_scale: 10.0
+    near_md_threshold: 50.0
+    primary_dense_candidate: tvt_densew
+    auxiliary_candidate_columns:
+      - tvt_dense
+      - tvt_densew
+      - tvt_dense50
+    auxiliary_columns:
+      - tvt_dense_d
+      - tvt_densew_d
+      - tvt_dense50_d
+      - dense_std
+      - dense_dist
+      - pf_vs_dense
+    dense_delta_columns:
+      tvt_dense: tvt_dense_d
+      tvt_densew: tvt_densew_d
+      tvt_dense50: tvt_dense50_d
+    reference_candidates:
+      - likpf_mean
+      - beam_mean
+      - pf_ancc
+    base_feature_columns:
+      - tvt_dense_d
+      - tvt_densew_d
+      - tvt_dense50_d
+      - dense_std
+      - dense_dist
+      - pf_vs_dense
+  public_raw_pf_features:
+    enabled: true
+    prefix: pubraw_
+    max_missing_rate: 0.0
+    min_candidate_scale_ft: 10.0
+    log_period: 25
+    cache:
+      enabled: true
+      features_file: exp217_grcal_public_raw_pf_confidence_features_on_exp158_pubraw_features.csv.gz
+      summary_file: exp217_grcal_public_raw_pf_confidence_features_on_exp158_pubraw_cache_summary.json
+      source_kernel: kentookumura/exp217-pubraw-cache-v1
+    base_feature_columns:
+      - pubraw_pf_scale5
+      - pubraw_pf_scale12
+      - pubraw_scale12_minus_scale5
+      - pubraw_scale_spread
+      - pubraw_gr_sigma
+      - pubraw_ess_mean
+      - pubraw_resampling_rate
+      - pubraw_seed_weight_max
+      - pubraw_seed_weight_entropy
+      - pubraw_seed_mean_minus_scale5
+      - pubraw_best_seed_minus_scale5
+      - pubraw_likpf_mean_minus_pf_scale12
+      - pubraw_likpf_mean_minus_pf_scale12_abs
+      - pubraw_likpf_mean_minus_pf_scale5
+      - pubraw_likpf_mean_minus_pf_scale5_abs
+      - pubraw_pf_ancc_minus_pf_scale12
+      - pubraw_pf_ancc_minus_pf_scale12_abs
+      - pubraw_beam_mean_minus_pf_scale12
+      - pubraw_beam_mean_minus_pf_scale12_abs
+  multiclass_lgbm:
+    params:
+      n_estimators: 600
+      learning_rate: 0.045
+      num_leaves: 63
+      min_child_samples: 120
+      subsample: 0.85
+      subsample_freq: 1
+      colsample_bytree: 0.85
+      reg_alpha: 0.1
+      reg_lambda: 1.0
+      n_jobs: -1
+      verbose: -1
+  long_models:
+    max_train_rows_per_fold: 120000
+    max_valid_rows_per_fold: 120000
+    predict_chunk_rows: 50000
+    binary_lgbm:
+      params:
+        n_estimators: 550
+        learning_rate: 0.045
+        num_leaves: 63
+        min_child_samples: 160
+        subsample: 0.85
+        subsample_freq: 1
+        colsample_bytree: 0.85
+        reg_alpha: 0.1
+        reg_lambda: 1.0
+        n_jobs: -1
+        verbose: -1
+    error_lgbm:
+      params:
+        n_estimators: 550
+        learning_rate: 0.04
+        num_leaves: 63
+        min_child_samples: 160
+        subsample: 0.85
+        subsample_freq: 1
+        colsample_bytree: 0.85
+        reg_alpha: 0.1
+        reg_lambda: 1.0
+        n_jobs: -1
+        verbose: -1
+
+selector:
+  mode: grcal_public_raw_pf_confidence_features_on_exp158
+  default_candidate: likpf_mean
+  ranker_variant: lgb_candidate_error_ranker
+  allowed_switch_candidates:
+    - pf_ancc
+    - beam_mean
+    - sc_ens
+    - hyb
+    - tvt_dense
+    - tvt_densew
+    - tvt_dense50
+  log_period: 10
+  viterbi_grid:
+    switch_penalty: [0.0, 5.0, 10.0, 20.0, 40.0]
+    nondefault_bias: [0.0]
+    jump_penalty_weight: [0.0, 0.5, 1.0]
+    jump_free_ft: [25.0]
+    jump_scale_ft: 25.0
+    max_abs_delta_vs_default: [75.0, 150.0, 999999.0]
+    max_pf_ancc_std: [999999.0]
+    min_md_since: [0.0]
+    min_segment_len: [1, 12, 36, 96]
+  historical_baselines:
+    likpf_mean_rmse: 11.594897672217703
+    exp157_rowwise_rmse: 10.79579983712686
+    exp158_continuity_rmse: 10.789163253079206
+    exp184_heatmap_addonly_rmse: 10.560650324533297
+    exp191_typewell_late_range_continuity_rmse: 10.598006879875323
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    pfbeam_features_kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+    train_kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp217-pubraw-cache-v1
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_query_well_public_likpf_seed_base_plus_seed_index_and_fixed_lightgbm_seeds
+  stochastic_components:
+    - public_like_likelihood_pf_particle_propagation
+    - public_like_likelihood_pf_resampling
+    - upstream_pf_beam_cache_from_exp072
+    - upstream_exp099_likelihood_pf_oof_candidates
+    - lightgbm_histogram_training
+    - candidate_long_training_row_subsample
+  parallel_rng_policy: numba_kernel_uses_per_well_stable_seed_base_no_thread_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    pubraw_feature_schema_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a train-side selector audit, not a deterministic submission anchor.
+    - Public raw PF generation uses stable per-well seeds and no global RNG.
+    - Candidate-long model training samples row indices with a fixed local RNG seed per fold to cap memory.
+    - Kaggle train v1/v2 did not complete because public raw PF generation and selector training were combined in one notebook.
+    - Public raw PF generation is now split into a cached pfbeam_features stage; selector train reads the cached pubraw file instead of regenerating it.
+    - Public raw PF generation remains CPU/Numba and does not use GPU directly.
+    - Viterbi selection is deterministic given OOF score surface, candidate values, config, and row order.
+
+audit:
+  mode: grcal_public_raw_pf_confidence_features_on_exp158
+  output_prefix: exp217_grcal_public_raw_pf_confidence_features_on_exp158
+  expected_train_artifacts:
+    - exp217_grcal_public_raw_pf_confidence_features_on_exp158_metrics.csv
+    - exp217_grcal_public_raw_pf_confidence_features_on_exp158_oof_predictions.csv.gz
+    - exp217_grcal_public_raw_pf_confidence_features_on_exp158_selection_distribution.csv
+    - exp217_grcal_public_raw_pf_confidence_features_on_exp158_by_well.csv
+    - exp217_grcal_public_raw_pf_confidence_features_on_exp158_bucket_metrics.csv
+    - exp217_grcal_public_raw_pf_confidence_features_on_exp158_subgroup_metrics.csv
+    - exp217_grcal_public_raw_pf_confidence_features_on_exp158_viterbi_params.csv
+    - exp217_grcal_public_raw_pf_confidence_features_on_exp158_score_summary.csv
+    - exp217_grcal_public_raw_pf_confidence_features_on_exp158_feature_importance.csv
+    - exp217_grcal_public_raw_pf_confidence_features_on_exp158_feature_importance_mean.csv
+    - exp217_grcal_public_raw_pf_confidence_features_on_exp158_feature_schema.csv
+    - exp217_grcal_public_raw_pf_confidence_features_on_exp158_pubraw_feature_schema.csv
+    - exp217_grcal_public_raw_pf_confidence_features_on_exp158_pubraw_feature_summary.csv
+    - exp217_grcal_public_raw_pf_confidence_features_on_exp158_model_manifest.json
+    - exp217_grcal_public_raw_pf_confidence_features_on_exp158_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - No inference notebook candidate is selected by this implementation.
+    - A positive OOF result still needs worst-well, near-row, distance bucket, path switch, exp115 hidden-like, and raw-test/current-test parity review before inference work.
+
+notes:
+  - Implements the `grcal_public_raw_pf_confidence_features_on_exp158` backlog item.
+  - Planned Kaggle train cost before push is 1 active add-only selector variant, 3 LightGBM configs, 5 folds, 15 boosters.
+  - Parent/control retraining is not included; exp157 and exp158 are compared through historical baseline metrics and shared fixed candidate sources.
+  - "`pubraw_pf_scale5/12` are confidence feature sources only and are not selectable candidates."
+  - Pubraw cache v1 separates public raw PF generation from selector train. The downstream selector still uses the same feature set, candidate set, folds, and LightGBM parameters.

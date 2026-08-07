@@ -1,0 +1,178 @@
+experiment:
+  name: exp266_pf_ancc_pf_z_multiseed_stability_audit
+  description: >-
+    Replays the exact exp072 PF ANCC and PF-Z kernels with the original stable
+    seed plus 63 independent stable seeds on all train pseudo-tail wells, then
+    measures whether single-seed wins such as 11d0f5ac are robust or lucky.
+  route: pf_beam
+  status: completed_train_side_multiseed_stability_audit
+  created_at: "2026-07-17"
+
+overrides:
+  project_defaults:
+    - validation.metric
+    - validation.n_folds
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  references:
+    - exp106_strict_exp072_pf_z_multiseed_scale_cache
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md pf_ancc_pf_z_multiseed_stability_audit
+  diff_summary: >-
+    Keeps the exp072 PF ANCC and PF-Z state, transition, observation,
+    initialization, clamp, particle count, and resampling equations exact. The
+    only stochastic extension is 63 additional stable seeds per algorithm. No
+    likelihood weighting, target-based seed selection, parameter grid, model,
+    inference, or submission is added.
+
+validation:
+  strategy: full_train_exp072_pseudotail_multiseed_stability_audit
+  metric: per_well_seed_rmse_distribution
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: TVT_input_isna_exp072_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  focus_well: 11d0f5ac
+  strong_margin_ft: 2.0
+  success_thresholds_ft: [5.0, 10.0]
+  distance_bucket_edges_ft: [0.0, 50.0, 100.0, 250.0, 500.0, 1000.0]
+  leakage_policy:
+    - PF generation reads raw horizontal/typewell data and known TVT_input prefix only.
+    - True TVT, target, error, oracle, HMM, exp226, and likelihood-PF values are not passed to either PF kernel or seed aggregation.
+    - Reference paths and true TVT are joined only after seed trajectories and fixed aggregations are frozen.
+    - All 773 wells are generated; target-side phenotype labels do not select PF execution wells.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  exp072:
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    expected_sha256: 14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18
+    expected_decompressed_sha256: 99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350
+    expected_schema_sha256: 700d38149f583c3ab6574ea7b163c3c8709c2514b675bea381d822f82f4809b8
+  exp209:
+    filename: exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    expected_sha256: b50b4d1ee483b101d911a3bb3715a047836c028c1b29b9f986be0abeaebcb64b
+    expected_decompressed_sha256: ee3b548b0d38f78966742542e86fa31b7e64698d4762b924c924a5895d2ee3f4
+  exp226:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+
+model:
+  name: exact_exp072_pf_ancc_pf_z_multiseed_stability_audit
+  estimator: none_particle_filter_diagnostic
+  algorithms: [pf_ancc, pf_z]
+  pf:
+    particles: 600
+    seed_count: 64
+    original_seed_index: 0
+    new_seed_count: 63
+    nested_seed_counts: [1, 4, 8, 16, 32, 64]
+    aggregations: [mean, median, trimmed_mean_10pct]
+    trim_fraction: 0.10
+    grid_step: 0.2
+    resample_threshold: 0.5
+  pf_ancc:
+    alpha: 0.998
+    rate_noise: 0.002
+    position_noise: 0.005
+    init_spread: 0.3
+    rough_position: 0.1
+    rough_rate: 0.001
+  pf_z:
+    momentum: 0.993
+    velocity_noise: 0.005
+    position_noise: 0.01
+    gr_smooth_window: 5
+    gr_smooth_weight: 0.3
+    rough_position: 0.2
+    rough_velocity: 0.003
+  gr_sigma:
+    minimum: 10.0
+    maximum: 60.0
+    default: 30.0
+
+execution:
+  active_variant_count: 2
+  pf_dynamics_variants: 2
+  lightgbm_config_count: 0
+  fold_count: 0
+  total_boosters: 0
+  parent_control_retraining: false
+  inference_enabled: false
+  submission_enabled: false
+  parity_phase_first: true
+  require_exact_full_parity: true
+  detailed_path_scope: original_strong_phenotype_wells
+  progress_every_wells: 16
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: >-
+    seed0=exp072 stable_seed(algorithm,well); seed1..63=stable_sha256
+    (experiment,train,algorithm,well,seed_index)
+  stochastic_components:
+    - pf_ancc_particle_initialization
+    - pf_ancc_process_noise
+    - pf_ancc_resampling
+    - pf_z_particle_initialization
+    - pf_z_process_noise
+    - pf_z_resampling
+  parallel_rng_policy: well_thread_parallel_each_algorithm_well_seed_explicit_before_numba_kernel
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Exact parity is required for both original PF columns before additional-seed diagnostics are accepted.
+    - Model and submission SHA are not applicable because this is a train-side PF diagnostic only.
+
+artifacts:
+  output_prefix: exp266_pf_ancc_pf_z_multiseed_stability_audit
+  expected:
+    - original_parity_summary.csv
+    - reference_by_well.csv
+    - seed_by_well.csv.gz
+    - aggregate_by_well.csv.gz
+    - well_stability_summary.csv
+    - global_seed_metrics.csv
+    - global_aggregate_metrics.csv
+    - occurrence_group_summary.csv
+    - occurrence_feature_associations.csv
+    - occurrence_feature_buckets.csv
+    - detailed_strong_paths.csv.gz
+    - input_manifest.csv
+    - artifact_manifest.csv
+    - summary.json
+
+inference:
+  enabled: false
+  mode: disabled_train_side_diagnostic_only
+  selected_candidate: null
+
+notes:
+  - User approved one Kaggle CPU notebook with two PF variants, 64 seeds each, 0 folds, 0 boosters, and no GPU.
+  - Expected runtime is approximately 5.5 to 7 hours from exp106 PF-Z 64-seed all-well runtime.

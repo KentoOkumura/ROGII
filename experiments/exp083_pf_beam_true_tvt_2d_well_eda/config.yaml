@@ -1,0 +1,337 @@
+experiment:
+  name: "exp083_pf_beam_true_tvt_2d_well_eda"
+  description: Visual EDA of generated PF/Beam candidate trajectories against true train TVT, grouped by well.
+  route: pf_beam
+  status: eda_running
+  created_at: "2026-06-19"
+  updated_at: "2026-06-26"
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  related:
+    - exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  anchor: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  diff_summary: Read the exp072 deterministic full-replay feature cache used as the train input for the current exp073 anchor and generate well-level 2D true-vs-candidate plots plus manifest tables for PF/Beam failure-map EDA. No candidate generation, supervised fitting, routing, or submission is performed.
+
+validation:
+  strategy: visual_eda_on_pseudo_hidden_train_tails
+  metric: rmse
+  leakage_policy:
+    - The experiment reads existing PF/Beam pseudo-hidden train artifacts and true train TVT only for scoring and visualization.
+    - True TVT is never passed into PF/Beam generation, candidate ranking for submission, or any learned model.
+    - Representative plots are diagnostic only and must not be used as direct hard-router evidence without a separate fold-safe audit.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  pfbeam_sources:
+    - name: exp072_full_replay_feature_cache_for_exp073
+      source_experiment: exp072_exp063_full_replay_feature_cache
+      local_path: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      kaggle_source_slug: exp072-exp063-full-replay-feature-cache-train
+      relative_paths:
+        - artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+        - exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+      well_column: well
+      target_column: true_tvt
+      target_delta_column: target
+      base_column: last_known_tvt
+      x_column: md_since
+      cutoff_column: null
+      selected_cutoff: null
+      candidate_columns:
+        - name: last_anchor_tvt
+          label: last anchor
+          role: anchor
+          source_column: last_known_tvt
+          transform: absolute
+        - name: pf_ancc
+          label: PF ANCC
+          role: selected_pf
+          source_column: pf_ancc
+          transform: absolute
+        - name: pf_z
+          label: PF Z
+          role: pf_candidate
+          source_column: pf_z
+          transform: absolute
+        - name: beam_cons
+          label: Beam conservative
+          role: beam_candidate
+          source_column: beam_cons_d
+          transform: base_plus_delta
+        - name: beam_sm5
+          label: Beam sm5
+          role: beam_candidate
+          source_column: beam_sm5_d
+          transform: base_plus_delta
+        - name: beam_mean
+          label: Beam mean
+          role: selected_beam
+          source_column: beam_mean_d
+          transform: base_plus_delta
+        - name: beam_med
+          label: Beam median
+          role: beam_candidate
+          source_column: beam_med_d
+          transform: base_plus_delta
+        - name: sc_ens
+          label: NCC ensemble
+          role: ncc_candidate
+          source_column: sc_ens_d
+          transform: base_plus_delta
+        - name: hyb
+          label: Hybrid PF/Beam/NCC
+          role: hybrid_candidate
+          source_column: hyb_d
+          transform: base_plus_delta
+        - name: likpf_mean
+          label: Likelihood PF mean
+          role: likelihood_pf_candidate
+          source_column: likpf_mean_d
+          transform: base_plus_delta
+        - name: tvtF_ANCC
+          label: Formation ANCC
+          role: formation_candidate
+          source_column: tvtF_ANCC
+          transform: absolute
+        - name: tvt_dense
+          label: Dense ANCC
+          role: dense_candidate
+          source_column: tvt_dense_d
+          transform: base_plus_delta
+      confidence_columns:
+        - pf_ancc_std
+        - beam_std_d
+        - sig_std
+        - sc_trust
+        - pfx_rmse
+        - known_len
+        - eval_len
+        - likpf_mean_d
+      disagreement_columns:
+        pf_beam_abs: pf_ancc_vs_beam_mean_abs
+        pf_beam_signed: pf_ancc_vs_beam_mean
+
+model:
+  name: pf_beam_true_tvt_2d_well_visual_eda
+  params: {}
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_used_except_stable_representative_sampling
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is not a deterministic prediction anchor; it is a diagnostic visualization notebook.
+    - The source artifact is identified by decompressed content SHA when compressed.
+
+eda:
+  mode: pf_beam_true_tvt_2d_well_eda
+  source_name: exp072_full_replay_feature_cache_for_exp073
+  output_prefix: pf_beam_true_tvt_2d_well_eda_known_prefix_replay_overlay_v14
+  selected_cutoff: null
+  max_plots: null
+  plot_all_wells: false
+  selected_wells:
+    - 91b301ce
+    - ba48188d
+    - fef8af96
+    - 1b1eba53
+    - 86454a6f
+    - 4e050c92
+  max_points_per_plot: 6000
+  representative_counts:
+    best_pf_rmse: 8
+    worst_pf_rmse: 12
+    highest_pf_beam_disagreement: 12
+    beam_beats_pf: 8
+    anchor_beats_pf: 8
+    longest_eval_tail: 8
+    stable_random: 16
+  plot_columns:
+    true: target_tvt
+    primary:
+      - last_anchor_tvt
+      - pf_ancc
+      - pf_z
+      - beam_mean
+      - likpf_mean
+    secondary: []
+  physical_decomposition:
+    enabled: false
+    x_column: MD
+    dpi: 110
+    formation_columns:
+      - ANCC
+      - ASTNU
+      - ASTNL
+      - EGFDU
+      - EGFDL
+      - BUDA
+    jump_column: dTVT_dMD
+    jump_quantile: 0.99
+    max_jump_markers: 24
+    derivative_clip_quantile: 0.995
+  physical_background:
+    enabled: true
+    common_scale: true
+    common_low_q: 0.02
+    common_high_q: 0.98
+    target_low_q: 0.02
+    target_high_q: 0.98
+    columns:
+      - name: Z
+        label: "-Z scaled"
+        transform: negate
+        use_common_scale: false
+        color: "#0f172a"
+        alpha: 0.22
+        linewidth: 1.0
+        linestyle: "--"
+      - name: ANCC
+        label: "ANCC scaled"
+        transform: raw
+        use_common_scale: true
+        color: "#b45309"
+        alpha: 0.34
+        linewidth: 1.1
+      - name: ASTNU
+        label: "ASTNU scaled"
+        transform: raw
+        use_common_scale: true
+        color: "#2f7d32"
+        alpha: 0.30
+        linewidth: 0.95
+      - name: ASTNL
+        label: "ASTNL scaled"
+        transform: raw
+        use_common_scale: true
+        color: "#1d70b8"
+        alpha: 0.30
+        linewidth: 0.95
+      - name: EGFDU
+        label: "EGFDU scaled"
+        transform: raw
+        use_common_scale: true
+        color: "#b91c1c"
+        alpha: 0.30
+        linewidth: 0.95
+      - name: EGFDL
+        label: "EGFDL scaled"
+        transform: raw
+        use_common_scale: true
+        color: "#7e22ce"
+        alpha: 0.30
+        linewidth: 0.95
+      - name: BUDA
+        label: "BUDA scaled"
+        transform: raw
+        use_common_scale: true
+        color: "#57534e"
+        alpha: 0.30
+        linewidth: 0.95
+    bands:
+      - upper: ANCC
+        lower: ASTNU
+        label: "ANCC-ASTNU"
+        color: "#fef3c7"
+        alpha: 0.18
+      - upper: ASTNU
+        lower: ASTNL
+        label: "ASTNU-ASTNL"
+        color: "#dcfce7"
+        alpha: 0.17
+      - upper: ASTNL
+        lower: EGFDU
+        label: "ASTNL-EGFDU"
+        color: "#dbeafe"
+        alpha: 0.16
+      - upper: EGFDU
+        lower: EGFDL
+        label: "EGFDU-EGFDL"
+        color: "#fee2e2"
+        alpha: 0.16
+      - upper: EGFDL
+        lower: BUDA
+        label: "EGFDL-BUDA"
+        color: "#ede9fe"
+        alpha: 0.16
+  derivative_panel:
+    enabled: true
+    column: dZ_dMD
+    label: "dZ/dMD"
+    color: "#0f172a"
+    alpha: 0.85
+    linewidth: 1.1
+    clip_quantile: 0.995
+  prediction_start_line:
+    enabled: true
+    x_value: 0.0
+    fallback_to_first_x: true
+    label: "prediction start"
+    color: "#dc2626"
+    linestyle: ":"
+    linewidth: 1.5
+    alpha: 0.9
+  known_replay_overlay:
+    enabled: true
+    description: Add exp169-style PF/Beam replay over the masked known TVT_input prefix holdout rows.
+    prefix_holdout_rows: 256
+    min_known_prefix_rows: 80
+    min_calibration_rows: 32
+    n_jobs: 2
+    pf_seeds: 32
+    pf_particles: 300
+    use_likpf: true
+    candidate_names:
+      - pf_ancc
+      - pf_z
+      - beam_mean
+      - likpf_mean
+    plot_columns:
+      - known_replay_pf_ancc
+      - known_replay_pf_z
+      - known_replay_beam_mean
+      - known_replay_likpf_mean
+    linestyle: "--"
+    linewidth: 2.0
+    alpha: 0.95
+  write_all_well_manifest: true
+  write_plot_manifest: true
+  zip_plots: true
+  debug_max_wells: 6
+
+notes:
+  - Implements the pf_beam_true_tvt_2d_well_eda backlog item from KAGGLE_DIRECTION.md.
+  - Default view uses exp072 because it is the deterministic train feature cache consumed by the current exp073 anchor.
+  - v3 clean plot view keeps only true TVT, PF ANCC, Beam mean, likelihood-PF mean, and anchor.
+  - v4 clean-all plot view writes one PNG for every well.
+  - v5 ANCC/Z decomposition view joins raw train-only formation columns for diagnostic plots only; it is not an inference feature or submission policy.
+  - v12 adds a prediction-start vertical line at md_since=0; it does not use test TVT_input.
+  - v13 falls back to the first plotted x position when md_since=0 is outside the hidden-tail plot range.
+  - v14 prepends known TVT_input prefix rows for selected wells and overlays exp169-style known-prefix PF/Beam replay trajectories.

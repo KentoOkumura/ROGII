@@ -1,0 +1,151 @@
+{
+  "experiment": "exp358_exp209_missing_distance_emission_downweight",
+  "status": "stage_1_completed_scientific_gate_failed_closed",
+  "updated_at": "2026-07-25",
+  "route": "pf_beam",
+  "stage": "stage_1",
+  "cv": 12.012569787442315,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "kaggle_run": {
+    "id": "kentookumura/exp358-missing-distance-emission-downweight-train",
+    "version": 2,
+    "id_no": 128528105,
+    "status": "KernelWorkerStatus.COMPLETE",
+    "last_checked_at_utc": "2026-07-25 06:02:54 UTC",
+    "generated_at_utc": "2026-07-25T06:01:43.583830+00:00",
+    "runtime_seconds": 17475.55788087845,
+    "private": true,
+    "gpu": false,
+    "tpu": false,
+    "internet": false
+  },
+  "direct": {
+    "candidate_rmse": 12.012569787442315,
+    "control_rmse": 11.938287234887435,
+    "delta_rmse_candidate_minus_control": 0.07428255255488025,
+    "improvement_ft": -0.07428255255488025,
+    "minimum_improvement_ft": 0.05,
+    "folds_improved": 0,
+    "minimum_folds_improved": 4,
+    "passed": false
+  },
+  "folds": [
+    {
+      "fold": 0,
+      "candidate_rmse": 11.195489400146029,
+      "control_rmse": 10.9237759753371,
+      "improvement_ft": -0.2717134248089277
+    },
+    {
+      "fold": 1,
+      "candidate_rmse": 12.333944404122578,
+      "control_rmse": 12.302481043900219,
+      "improvement_ft": -0.03146336022235907
+    },
+    {
+      "fold": 2,
+      "candidate_rmse": 11.59910054844393,
+      "control_rmse": 11.570050070150725,
+      "improvement_ft": -0.029050478293205728
+    },
+    {
+      "fold": 3,
+      "candidate_rmse": 12.731649397149413,
+      "control_rmse": 12.72386120441385,
+      "improvement_ft": -0.007788192735562305
+    },
+    {
+      "fold": 4,
+      "candidate_rmse": 12.121978601043477,
+      "control_rmse": 12.067702147866969,
+      "improvement_ft": -0.054276453176507644
+    }
+  ],
+  "scope_improvement_ft": {
+    "raw_gr_observed": -0.04838442996051029,
+    "raw_gr_missing": -0.1297384393357266,
+    "gap_1_3": -0.12417134185796641,
+    "gap_4_15": -0.14254495209430473,
+    "gap_16_plus": -0.11185002347828288,
+    "missing_fraction_low": -0.012641827049481691,
+    "missing_fraction_mid": 0.03816484398973152,
+    "missing_fraction_high": -0.16230208703035665,
+    "md_since_0_250": 0.0009459572537293681,
+    "md_since_250_1000": -0.024556599235034504,
+    "md_since_1000_plus": -0.08277620493382365,
+    "hidden_like_spatial": -0.22496964566177624,
+    "hidden_like_typewell_purged": -0.22958685819473246
+  },
+  "fixed_likpf_50_50": {
+    "candidate_rmse": 10.3066733932215,
+    "control_rmse": 10.269692505026358,
+    "delta_rmse_candidate_minus_control": 0.036980888195142114,
+    "passed": false
+  },
+  "by_well": {
+    "wells": 773,
+    "improved_wells": 358,
+    "regressed_wells": 415,
+    "median_delta_rmse_candidate_minus_control": 0.0007862250499020007,
+    "p95_delta_rmse_candidate_minus_control": 0.4693701802022063,
+    "worst_well_id": "f5859199",
+    "worst_candidate_rmse": 29.148028128869154,
+    "worst_control_rmse": 22.517662928381903,
+    "worst_delta_rmse_candidate_minus_control": 6.630365200487251
+  },
+  "technical_gate": {
+    "reported_passed": false,
+    "only_failed_check": "missing_weight_formula_exact",
+    "rows": 3783989,
+    "wells": 773,
+    "hmm_well_runs": 773,
+    "finite_coverage": 1.0,
+    "posterior_normalization_max_abs_error": 3.9968028886505635e-15,
+    "weight_applied_exactly_once": true,
+    "observed_weight_exact_one": true,
+    "missing_weight_min": 0.25,
+    "missing_weight_max": 0.9170040432046712,
+    "missing_weight_unique_count": 16,
+    "postrun_formula_audit": {
+      "root_cause": "post_gzip_csv_float_parse_bit_exact_guard",
+      "mismatched_missing_rows": 753,
+      "total_missing_rows": 1200837,
+      "maximum_absolute_difference": 5.551115123125783e-17,
+      "allclose_rtol_0_atol_1e_16": true,
+      "substantive_formula_contract_passed": true
+    },
+    "baseline_metric_parity": {
+      "exp209_raw_hmm_absolute_difference": 0.0,
+      "likpf_absolute_difference": 3.276557304587868e-06,
+      "exp209_hmm_likpf_50_50_absolute_difference": 3.6416164004293705e-06
+    }
+  },
+  "execution_counts": {
+    "scientific_variants": 1,
+    "reporting_folds": 5,
+    "hmm_well_runs": 773,
+    "model_configs": 0,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "pf_well_runs": 0,
+    "beam_well_runs": 0,
+    "boosters": 0,
+    "parent_control_reruns": 0
+  },
+  "reproducibility": {
+    "package_remote_notebook_cell_source_sha256": "fbe348f196f8a5ddcd74938a82480ca969da3e32d4020053ef666958f2c18356",
+    "scientific_contract_sha256": "90e02546e56e9b0b3c1d58f944fa6f3fe82fc63c6467bfde8e4b94882399ab65",
+    "input_control_manifest_sha256": "c07b2ee089457d07257661d452c8511452f9dd03ca41827fa3e3eaa480af00f0",
+    "prediction_decompressed_sha256": "5d5c1cb9a0682d5f352e56dd19fffd44574816ce26b0a0e85cfc49d16cc14742",
+    "raw_gr_emission_contract_decompressed_sha256": "36499c6d7d81eb90e98f9181f427db5023eda3857dc3877503e64ac1bdfb7e14",
+    "raw_gr_emission_contract_raw_gzip_sha256": "eebf8350458c0ee46e0924ff5827fd9db124dbdb7e95282e12b619bfdc425d85",
+    "observation_audit_decompressed_sha256": "bf88a2e069e0b8eb906b6a90fdf11e4e4374cf5153a0f3e7dc40b9ea4949e4d4"
+  },
+  "decision": "missing_distance_exp209_failed_close_without_rescue",
+  "inference": false,
+  "submission": false,
+  "key_idea": "Distance-decaying raw-missing GR emission weights worsened exp209 overall and in all five folds; close without rescue.",
+  "notes": "The formal technical gate was also false because a post-CSV bit-exact comparison found 753 half-ULP round-trip differences. The generated weights and applied emissions satisfy the formula within 5.56e-17, so this does not alter the decisive scientific failure."
+}

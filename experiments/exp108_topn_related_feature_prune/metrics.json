@@ -1,0 +1,48 @@
+{
+  "experiment": "exp108_topn_related_feature_prune",
+  "status": "completed_train_side_rejected",
+  "updated_at": "2026-06-22",
+  "route": "ml_model",
+  "parent": "exp098_selector_rank_slot_features_on_exp073",
+  "base_surface_parent": "exp073_gpu_reproducibility_guard_for_exp063_full_replay",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "kaggle_kernel": "kentookumura/exp108-topn-related-feature-prune-train",
+  "kaggle_kernel_version": 1,
+  "runtime_seconds": 8775.76,
+  "rows": 3783989,
+  "wells": 773,
+  "active_variants": [
+    "top3_related_pruned_260"
+  ],
+  "features": 195,
+  "feature_groups": {
+    "base_196_non_candidate_context": 152,
+    "base_196_topn_core_candidate_family": 7,
+    "rank_slot_top3_related": 36
+  },
+  "result": {
+    "best_model": "lgb2",
+    "best_rmse_tvt": 9.479370655777334,
+    "lgb0_rmse_tvt": 9.798771536513895,
+    "lgb1_rmse_tvt": 9.491034033735406,
+    "lgb2_rmse_tvt": 9.479370655777334,
+    "lgb_mean_rmse_tvt": 9.529005953959533,
+    "delta_best_vs_exp073_raw_anchor": -0.047004093613348,
+    "delta_best_vs_exp077_policy": 0.008855854777334,
+    "delta_best_vs_exp098_best": 0.121219603458574,
+    "delta_lgb_mean_vs_exp098_lgb_mean": 0.101557966569562,
+    "delta_best_vs_exp105_best": 0.03826749468648,
+    "delta_best_vs_exp092_best": 0.156890760273407
+  },
+  "artifact_sha256": {
+    "model_manifest": "e773850dd0f9eac74a416d1936cdf9a9b2a511dda094083952919e2da253b88b",
+    "predictions_gzip_raw": "b16061aab916298e141a0482d2cfcee8cb06d5de1f6ab91592a5b9978cbc302b",
+    "predictions_decompressed": "993fbf4e48a4e612e8b3a26d3d26fccc2d29d412e911a13098eeded4a11844ef",
+    "feature_schema": "1633b2628df46a92a23597f6807992f64b3fe6bf5dd42baa33bbb80ba54821e7",
+    "source_cache": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18",
+    "feature_schema_source": "700d38149f583c3ab6574ea7b163c3c8709c2514b675bea381d822f82f4809b8",
+    "summary_source": "133f9be7a6bcf8606e18b7d41f4d24d84e1d8e0f128660717b21fea4fad46b7f"
+  },
+  "recommendation": "rejected_no_inference_no_submit",
+  "notes": "Top3-related static feature pruning worsened versus exp098 full rank-slot and exp105 compact rank-slot. Keep exp098 full rank-slot as the comparison baseline."
+}

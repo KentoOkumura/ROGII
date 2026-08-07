@@ -1,0 +1,83 @@
+{
+  "experiment": "exp188_exp183_selector_confidence_addonly_on_exp148",
+  "status": "train_completed_not_selected",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "selector_parent": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector",
+  "baseline": {
+    "experiment": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+    "model": "lgb_mean",
+    "cv_rmse": 8.50128118189582,
+    "public_lb": 7.96
+  },
+  "planned_train": {
+    "active_variants": [
+      "exp183_selector_confidence_addonly"
+    ],
+    "disabled_variants": [
+      "exp148_fulltrain_control"
+    ],
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "active_modes": [
+      "gpu_repro_guard_dp_threads8"
+    ],
+    "total_boosters": 15,
+    "control_retraining": false,
+    "train_notebook_split_by_lgb_config": false,
+    "gpu": true
+  },
+  "metric": "rmse",
+  "cv": {
+    "model": "lgb_mean",
+    "rmse_tvt": 8.539573790248323,
+    "rmse_target": 8.539573830581087,
+    "delta_vs_exp148_lgb_mean": 0.03829260835250367,
+    "rows": 3783989,
+    "wells": 773,
+    "features": 326,
+    "feature_join_coverage_pass": true,
+    "dropped_base_rows": 0,
+    "dropped_base_wells": 0,
+    "prediction_sha256": "f008092f52656be999db63db751d96e14f4f1f87be685742d3c5cab289db74f5",
+    "exp183_selector_feature_count": 32,
+    "pooled_metrics": {
+      "lgb0": {
+        "rmse_tvt": 8.620017123997677,
+        "prediction_sha256": "ba1c3c72a986771d0cfc8e1ee7b192dbe2ab2a42093fb8f0da7f3c94e98b574b"
+      },
+      "lgb1": {
+        "rmse_tvt": 8.568069225541835,
+        "prediction_sha256": "deae5a8bb3cf7be3ba2fc4f2cb1509504a5f6b884718ed293a91b50714f91cbe"
+      },
+      "lgb2": {
+        "rmse_tvt": 8.576058237164844,
+        "prediction_sha256": "fb213c84e77a035ce7074b243cc2c88bca927a43fa4d5028370dee0390521705"
+      },
+      "lgb_mean": {
+        "rmse_tvt": 8.539573790248323,
+        "prediction_sha256": "f008092f52656be999db63db751d96e14f4f1f87be685742d3c5cab289db74f5"
+      }
+    }
+  },
+  "kaggle_train": {
+    "kernel": "kentookumura/exp188-exp183-selconf-exp148-train",
+    "version": 3,
+    "url": "https://www.kaggle.com/code/kentookumura/exp188-exp183-selconf-exp148-train",
+    "status": "COMPLETE",
+    "enable_gpu": true,
+    "enable_internet": false,
+    "output_dir": "experiments/exp188_exp183_selector_confidence_addonly_on_exp148/kaggle/output/train_v3",
+    "elapsed_seconds": 14426.84
+  },
+  "inference": {
+    "status": "not_selected",
+    "selected_variant": null,
+    "selected_model": null
+  },
+  "submitted": false,
+  "decision": {
+    "submit_candidate": false,
+    "reason": "train-side OOF worsened versus exp148 lgb_mean baseline; do not implement inference port or submit."
+  }
+}

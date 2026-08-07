@@ -1,0 +1,205 @@
+experiment:
+  name: exp262_selector_lightgbm_extra_trees_ablation_on_exp238
+  description: Single-parameter extra-trees ablation on the frozen exp238 nested candidate-error selector.
+  route: ml_model
+  status: completed_train_selector_guard_failed_rejected_no_downstream_no_inference_no_submit
+  created_at: '2026-07-16'
+  completed_at: '2026-07-17'
+
+lineage:
+  parent: exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218
+  candidate_parent: exp237_hmm_exp226_candidate_selector_on_exp183
+  downstream_parent: exp218_gr_wavelet_rotation_confidence_features_on_exp148
+  diff_summary: Keep the exp238 train-v4 candidate bank, 184 context features, candidate-long adapter, outer5-inner4 folds, bounded row sampling, objective, seed, and fixed Viterbi rule; add only LightGBM extra_trees=True to the nested selector. Historical exp238 scores and models are frozen controls, and downstream exp218 LightGBM is not retrained.
+
+data:
+  historical_selector_artifact_dir_local: experiments/exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218/artifacts
+  historical_selector_kernel_slug: exp238-nested-selector-train
+  selector_artifact_dir_local: experiments/exp262_selector_lightgbm_extra_trees_ablation_on_exp238/artifacts
+
+validation:
+  strategy: exp238_train_v4_outer5_inner4_groupkfold_by_well_nested_selector
+  metric: rmse
+  group_column: well
+  seed: 42
+  outer_folds: 5
+  inner_folds: 4
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_context_feature_count: 184
+  expected_candidate_count: 11
+  expected_candidate_long_extra_feature_count: 3
+  fixed_viterbi:
+    default_candidate: likpf_mean
+    allowed_switch_candidates: [pf_ancc, beam_mean, sc_ens, hyb, tvt_dense, tvt_densew, tvt_dense50, blend_likpf_hmm_w500, hmm_selfgr_boost_only_a070_c100, v6_k16_geometry_gr_u_projection]
+    switch_penalty: 20.0
+    nondefault_bias: 0.0
+    jump_penalty_weight: 1.0
+    jump_free_ft: 25.0
+    jump_scale_ft: 25.0
+    max_abs_delta_vs_default: 75.0
+    max_pf_ancc_std: 999999.0
+    min_md_since: 0.0
+    min_segment_len: 1
+  historical_reference:
+    global_delta_rmse_vs_likpf: -3.0899109840393066
+    near_000_050_delta_rmse_vs_likpf: -0.60954048037529
+    longtail_1000_plus_delta_rmse_vs_likpf: -3.3722251892089843
+    worst_well_max_regression_vs_likpf: 37.6808967590332
+  selector_guard:
+    min_mean_abs_score_difference: 1.0e-8
+    max_candidate_error_mae_delta: 0.0
+    max_oracle_candidate_logloss_delta: 0.0
+    max_pairwise_rank_accuracy_drop: 0.0
+    max_top1_global_rmse_delta: 0.0
+    max_viterbi_global_rmse_delta: 0.0
+    max_viterbi_near_rmse_delta: 0.0
+    max_viterbi_longtail_rmse_delta: 0.0
+    max_viterbi_hidden_like_rmse_delta: 0.0
+    max_worst_well_regression_vs_historical: 0.25
+    max_worst_well_vs_likpf_delta_from_historical: 0.0
+    min_nonworse_outer_folds: 3
+  leakage_policy:
+    - Outer-valid wells never enter the corresponding inner selector train or early-stopping rows.
+    - Historical scores must match the current id, well, row_index, role, fold, and candidate-column contract.
+    - Candidate values and context features are rebuilt from the same exp237 train-side OOF sources as exp238.
+    - exp115 roles are used only for stress evaluation and never as labels, thresholds, or sampling rules.
+
+model:
+  name: exp238_nested_candidate_error_lgbm_extra_trees_ablation
+  active_variants: [extra_trees_true]
+  active_selector_configs: 1
+  outer_folds: 5
+  inner_folds: 4
+  selector_boosters: 20
+  downstream_configs: 0
+  downstream_boosters: 0
+  total_boosters: 20
+  parent_control_retraining: false
+  downstream_retraining: false
+  run_approved: true
+  approved_scope: extra_trees_true_1_variant_1_selector_config_outer5_inner4_20_cpu_boosters_no_control_or_downstream_retraining
+  required_approval_scope: extra_trees_true_1_variant_1_selector_config_outer5_inner4_20_cpu_boosters_no_control_or_downstream_retraining
+  selector:
+    candidates: [pf_ancc, beam_mean, likpf_mean, sc_ens, hyb, tvt_dense, tvt_densew, tvt_dense50, blend_likpf_hmm_w500, hmm_selfgr_boost_only_a070_c100, v6_k16_geometry_gr_u_projection]
+    objective: regression_l1_candidate_absolute_error
+    changed_parameter:
+      extra_trees: true
+    max_train_long_rows_per_model: 120000
+    max_valid_long_rows_per_model: 120000
+    predict_chunk_rows: 50000
+    early_stopping_rounds: 50
+    log_evaluation_period: 100
+    params:
+      n_estimators: 1200
+      learning_rate: 0.04
+      num_leaves: 31
+      max_depth: 8
+      min_child_samples: 80
+      subsample: 0.85
+      colsample_bytree: 0.85
+      reg_alpha: 0.1
+      reg_lambda: 1.0
+      n_jobs: -1
+      verbose: -1
+  evaluation:
+    oracle_candidate_logloss_temperature_ft: 1.0
+    top_n_feature_importance: 60
+  forbidden_operations:
+    - historical_exp238_selector_retraining
+    - downstream_exp218_retraining_before_selector_guard
+    - objective_change
+    - seed_change
+    - bounded_sampling_change
+    - candidate_bank_change
+    - context_feature_change
+    - viterbi_rule_change
+    - threshold_or_temperature_grid
+    - exp251_dual_objective_merge
+    - raw_test_inference_before_selector_guard
+    - competition_submit_before_selector_guard
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    push_requires_user_approval: true
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp109-typewell-neighbor-prior-train
+      - kentookumura/exp114-spatial-neighbor-prior-signal-audit-train
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp237-hmm-exp226-candidate-selector-exp183-train
+      - kentookumura/exp238-nested-selector-train
+    bootstrap_dependency_files:
+      - source: experiments/exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218/config.yaml
+        destination: exp238_source/config.yaml
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/hmm_exp226_candidate_selector_on_exp183.py
+        destination: exp237_source/hmm_exp226_candidate_selector_on_exp183.py
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/settings.py
+        destination: exp237_source/settings.py
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/config.yaml
+        destination: exp237_source/config.yaml
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: exp237_source/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_exp238_groupkfold_model_seed_and_local_bounded_sampling_rng
+  stochastic_components:
+    - exp238_bounded_base_row_sampling
+    - lightgbm_extra_trees_random_threshold_selection
+  parallel_rng_policy: Bounded sampling uses a per-model np.random.default_rng derived from seed, outer fold, and inner fold; LightGBM uses the unchanged exp238 random_state and n_jobs settings.
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - CPU LightGBM is used, but the result is not treated as a deterministic anchor before a same-kernel rerun confirms the recorded SHA values.
+    - Existing PF/Beam/HMM candidates are fixed inputs; this experiment adds no stochastic candidate generation.
+    - Historical exp238 scores and model manifest are frozen controls and are not retrained.
+    - Raw-test inference and submission are outside the initial implementation scope.
+
+audit:
+  mode: exp238_selector_lightgbm_extra_trees_single_parameter_ablation
+  output_prefix: exp262_selector_lightgbm_extra_trees_ablation_on_exp238
+  expected_train_artifacts:
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_parameter_audit.csv
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_fold_manifest.csv
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_context_feature_schema.csv
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_historical_input_manifest.csv
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_selector_model_manifest.csv
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_feature_importance_mean.csv
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_feature_importance_mean_top.png
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_candidate_metrics.csv
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_score_comparison.csv
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_selection_metrics.csv
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_selector_by_well.csv
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_fixed_selection_predictions.csv.gz
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_nested_scores_outer0.csv.gz
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_nested_scores_outer1.csv.gz
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_nested_scores_outer2.csv.gz
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_nested_scores_outer3.csv.gz
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_nested_scores_outer4.csv.gz
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_guard.json
+    - exp262_selector_lightgbm_extra_trees_ablation_on_exp238_summary.json
+
+inference:
+  mode: disabled_until_selector_guard_passes_and_user_approves_downstream_retraining_or_rawtest_port
+  enabled: false
+  submission: false
+
+notes:
+  - Implements the selector_lightgbm_extra_trees_ablation_on_exp238 backlog as exp262.
+  - Initial scope is one selector variant, one config, outer five by inner four folds, twenty CPU boosters, no historical control retraining, and no downstream retraining.

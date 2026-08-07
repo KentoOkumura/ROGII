@@ -1,0 +1,173 @@
+experiment:
+  name: "exp216_affine_shift_landscape_ruler_readout"
+  description: Implement affine-shift ruler readout for prefix-only GR matching diagnostics before PF/Beam or ML changes.
+  route: pf_beam
+  status: completed_train_side_rejected_no_submit
+  created_at: "2026-07-07"
+
+lineage:
+  parent: affine_shift_landscape_ruler_readout backlog
+  references:
+    - KAGGLE_DIRECTION.md backlog affine_shift_landscape_ruler_readout
+    - Georgy Mamarin "Stop reforking: the best GR fit is the wrong depth" section 5c
+    - exp167_fft_denoised_gr_matching_audit
+    - exp072_exp063_full_replay_feature_cache
+    - Discussion 716289
+  diff_summary: >
+    Builds on exp167 shift-scan diagnostics by emitting ruler readout metrics at row level.
+    In addition to best-location scores, it stores best/second delta, zero-shift rank/cost,
+    margin-style gap, and calibration residual scale to support ambiguity and fallback decisions.
+
+validation:
+  strategy: train_well_known_prefix_shift_ruler_readout
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within2
+    - within5
+    - within10
+    - top1_top2_cost_gap
+    - margin
+    - entropy
+    - decoy_gap
+    - second_delta
+    - zero_rank
+    - zero_cost
+    - calibration_residual_scale
+    - bimodal_flag
+    - prefix_holdout_error
+    - distance_bucket_error_correlation
+    - pfbeam_candidate_rmse
+    - pfbeam_observation_cost_gap_vs_shift_top1
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: sampled_hidden_tail_and_prefix_backtest_rows
+  leakage_policy:
+    - Calibration uses only known-prefix horizontal GR and known-prefix TVT_input.
+    - Hidden-tail true TVT is used only for train-side scoring metrics.
+    - Prefix-backtest calibration uses only the prefix before the artificial cutoff.
+    - Fixed exp072 PF/Beam candidates are read for observation-cost diagnostics only.
+    - Candidate error, oracle best candidate, and true-error rank are never used to fit calibration or thresholds.
+
+data:
+  train_dir: data/raw/train
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+
+model:
+  name: none_affine_shift_landscape_ruler_readout
+  estimator: deterministic_shift_scan_diagnostic
+  params: {}
+
+audit:
+  mode: affine_shift_landscape_ruler_readout
+  output_prefix: exp216_affine_shift_landscape_ruler_readout
+  max_wells: null
+  well_include: []
+  min_prefix_rows: 80
+  max_eval_rows_per_region_per_well: 256
+  prefix_backtest_tail_rows: 256
+  prefix_slope_window_rows: 80
+  slope_clip: [-3.0, 3.0]
+  shift_min_ft: -220.0
+  shift_max_ft: 220.0
+  shift_step_ft: 5.0
+  local_offsets_rows: [-36, -24, -12, -6, 0, 6, 12, 24, 36]
+  typewell_smooth_window: 5
+  score_temperature: 6.0
+  ncc_weight: 8.0
+  decoy_offsets_ft: [15.0, 20.0, 25.0]
+  bimodal_min_separation_ft: 25.0
+  bimodal_gap_threshold: 1.0
+  calibration_prefix_sample_rows: 512
+  calibration_min_pairs: 32
+  calibration_clip_gain: [0.35, 2.50]
+  calibration_clip_offset: [-80.0, 80.0]
+  filters:
+    - name: raw
+      kind: raw
+    - name: rolling_median_11
+      kind: rolling_median
+      window: 11
+    - name: savgol_31_p2
+      kind: savgol
+      window: 31
+      polyorder: 2
+      fallback_kind: rolling_mean
+  calibration_modes:
+    - raw
+    - flat_calibrated
+    - heel_calibrated
+  pfbeam_candidates:
+    - name: pf_ancc
+      source_columns: [pf_ancc]
+      transform: absolute
+    - name: beam_mean
+      source_columns: [beam_mean_d, beam_mean]
+      transform: base_plus_delta
+    - name: likpf_mean
+      source_columns: [likpf_mean_d, likpf_mean]
+      transform: base_plus_delta
+    - name: sc_ens
+      source_columns: [sc_ens_d, sc_ens]
+      transform: base_plus_delta
+    - name: hyb
+      source_columns: [hyb_d, hyb]
+      transform: base_plus_delta
+    - name: pf_z
+      source_columns: [pf_z]
+      transform: absolute
+  artifacts:
+    - exp216_affine_shift_landscape_ruler_readout_row_context.csv.gz
+    - exp216_affine_shift_landscape_ruler_readout_surface_metrics.csv
+    - exp216_affine_shift_landscape_ruler_readout_bucket_metrics.csv
+    - exp216_affine_shift_landscape_ruler_readout_well_metrics.csv
+    - exp216_affine_shift_landscape_ruler_readout_gain_vs_raw.csv
+    - exp216_affine_shift_landscape_ruler_readout_shift_curve_metrics.csv
+    - exp216_affine_shift_landscape_ruler_readout_error_correlation_metrics.csv
+    - exp216_affine_shift_landscape_ruler_readout_pfbeam_candidate_metrics.csv
+    - exp216_affine_shift_landscape_ruler_readout_pfbeam_observation_metrics.csv
+    - exp216_affine_shift_landscape_ruler_readout_well_input_summary.csv
+    - exp216_affine_shift_landscape_ruler_readout_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_deterministic_linspace_sampling
+  stochastic_components:
+    - upstream_exp072_pf_beam_likpf_cache
+  parallel_rng_policy: no_parallel_rng_in_exp216
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is a diagnostic audit, not a deterministic submission anchor.
+    - Upstream exp072 cache is used only for fixed candidate observation readout.
+    - Gzip output SHA is recorded both as raw gzip SHA and decompressed content SHA.
+    - Save best/second/zero ruler signals in row_context and compare through gain tables.
+    - Save aggregate shift-curve metrics, bimodal flags, prefix holdout errors, and error correlations.
+
+inference:
+  mode: not_applicable_train_side_audit_only
+  selected_candidate: null
+  notes:
+    - Positive readout signals must pass near-row and worst-well checks before any inference port.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog affine_shift_landscape_ruler_readout.
+  - Direct PF/Beam candidate replacement and exp148 ML add-only features are follow-up decisions, not part of this experiment.

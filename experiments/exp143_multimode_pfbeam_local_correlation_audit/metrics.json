@@ -1,0 +1,106 @@
+{
+  "experiment": "exp143_multimode_pfbeam_local_correlation_audit",
+  "status": "completed_scoped_train_side_diagnostic_no_submit",
+  "route": "pf_beam",
+  "kaggle_kernel": "kentookumura/exp143-multimode-pfbeam-corr-train",
+  "kaggle_kernel_version": 3,
+  "scope": {
+    "type": "targeted_timeout_recovery_v2",
+    "rows": 12000,
+    "wells": 6,
+    "max_rows_per_well": 2000,
+    "focus_wells": [
+      "1b1eba53",
+      "86454a6f",
+      "fb03ae90",
+      "91b301ce",
+      "ba48188d",
+      "fef8af96"
+    ]
+  },
+  "runtime_sec": 294.6933045387268,
+  "cv": {
+    "metric": "rmse",
+    "best_candidate": {
+      "candidate": "exp072_pf_ancc",
+      "rmse": 50.72184186871317,
+      "mae": 43.41675431315104,
+      "bias": -3.2730399576822915,
+      "within_10ft": 0.16483333333333333
+    },
+    "exp072_likpf_mean": {
+      "rmse": 52.758771915447056,
+      "mae": 47.63593896484375,
+      "bias": -0.12249641927083334,
+      "within_10ft": 0.0008333333333333334
+    },
+    "exp072_pf_z": {
+      "rmse": 57.64169126285315,
+      "mae": 45.05014534505208,
+      "bias": -12.649785970052083,
+      "within_10ft": 0.21666666666666667
+    },
+    "exp072_beam_mean": {
+      "rmse": 70.29764677414622,
+      "mae": 66.37069378124706,
+      "bias": 7.521429643780303,
+      "within_10ft": 0.0046666666666666
+    },
+    "strict_pf_z_best_candidate": {
+      "candidate": "pf_z_ms_scale_12",
+      "rmse": 64.03953426826833,
+      "mae": 59.54323055013021,
+      "bias": 1.2484672037760416,
+      "within_10ft": 0.005416666666666667,
+      "rmse_delta_vs_exp072_beam_mean": -6.2581125058778895,
+      "rmse_delta_vs_exp072_likpf_mean": 11.28076235282127,
+      "rmse_delta_vs_exp072_pf_z": 6.397843005415176
+    },
+    "multimode_pf_z_best_candidate": {
+      "candidate": "multimode_pf_zacc_s010_a020_noise050_best_lik_seed",
+      "rmse": 60.763085375027224,
+      "mae": 55.59968872070313,
+      "bias": -1.204916259765625,
+      "within_10ft": 0.0065,
+      "rmse_delta_vs_exp072_beam_mean": -9.534561399119,
+      "mae_delta_vs_exp072_beam_mean": -10.771005060543928,
+      "rmse_delta_vs_exp072_likpf_mean": 8.004313459580167,
+      "rmse_delta_vs_exp072_pf_z": 3.121394112174073
+    }
+  },
+  "mode_diagnostics": {
+    "zmean_s006_noise025": {
+      "mean_mode_count": 1.309,
+      "mode_count_le1_rate": 0.717,
+      "mean_mode_entropy": 0.224718,
+      "mean_seed_spread_p90_p10": 3.425996,
+      "mean_local_corr_topk_spread": 2.214723,
+      "mean_local_corr_topk": 0.060912
+    },
+    "zacc_s010_a020_noise050": {
+      "mean_mode_count": 1.462917,
+      "mode_count_le1_rate": 0.645333,
+      "mean_mode_entropy": 0.301848,
+      "mean_seed_spread_p90_p10": 4.078184,
+      "mean_local_corr_topk_spread": 3.605253,
+      "mean_local_corr_topk": 0.064942
+    }
+  },
+  "parity_summary": {
+    "rows": 12000,
+    "wells": 6,
+    "max_abs_diff": 60.40625,
+    "mean_abs_diff": 19.928363800048828,
+    "p95_abs_diff": 52.673876953125,
+    "rmse_diff": 25.16115595653261
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "submission": null,
+  "artifacts_dir": "experiments/exp143_multimode_pfbeam_local_correlation_audit/kaggle/output/train_v3/artifacts",
+  "summary": {
+    "executed": true,
+    "selected_candidate": null,
+    "recommendation": "beam_baseline_improved_but_no_inference_no_submit"
+  }
+}

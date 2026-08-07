@@ -1,0 +1,56 @@
+experiment:
+  name: exp319_soft_typewell_similarity_meta_calibration
+  description: exact Type Well群が使えないwellへcontent similarityで校正priorをsoft transferできるか監査する
+  route: pf_beam
+  status: design_frozen_blocked_on_exp311_exp313
+  created_at: "2026-07-21"
+
+lineage:
+  parent: exp313_typewell_group_unseen_transfer_guard
+  dependencies: [exp311_typewell_group_prefix_suffix_gr_calibration_readout]
+  references: [exp065_typewell_leakage_audit]
+  diff_summary: exact native-overlap群のfallbackとして、Type Well contentだけから距離を計算しgroup calibration/noise priorをsoft平均する。raw-test well情報やtruthは類似度に使わない。
+
+implementation: {enabled: false, scope: design_only, inference_enabled: false, submission_enabled: false}
+
+validation:
+  strategy: leave_one_typewell_group_out_nested_in_5_well_folds
+  n_folds: 5
+  fit_scope: outer_train_groups_only
+  truth_join_policy: select_similarity_contract_on_outer_train_only_then_freeze
+
+similarity:
+  input: canonical_typewell_gr_on_native_tvt_grid
+  descriptors: [quantiles_10_25_50_75_90, autocorr_lags_1_5_20, gradient_mad, missing_fraction]
+  standardization: outer_train_robust
+  metric: diagonal_mahalanobis
+  neighbors: 3
+  kernel: exp_negative_distance
+  temperature: 1.0
+  max_distance: outer_train_p90_nearest_neighbor_distance
+  fallback: global_prior
+  negative_control: descriptor_permutation_within_fold
+
+execution_contract: {scientific_variants: 1, diagnostic_controls: 1, model_configs: 0, folds: 5, boosters: 0, decoder_runs: 0}
+
+model: {name: none, params: {}}
+
+promotion_gates:
+  leave_group_out_gain_min_ft: 0.03
+  folds_improved_min: 4
+  real_minus_permuted_gain_min_ft: 0.03
+  far_neighbor_fallback_nonregression: true
+  worst_well_delta_max_ft: 0.25
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_folds_and_stable_neighbor_ties
+  stochastic_components: []
+  parallel_rng_policy: lexicographic tie-break; no global RNG
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: false, submission_sha: false}
+
+notes:
+  - Soft similarity cannot be enabled as exp313 fallback unless every promotion gate passes.
+  - Exact group membership remains the primary path; this experiment targets unseen or singleton groups only.

@@ -1,0 +1,99 @@
+{
+  "experiment": "exp337_prefix_backtested_structure_sigma_gr",
+  "status": "stage0_gate_failed_branch_closed",
+  "decision": "stage0_fail_close_without_hmm_rescue_inference_or_submission",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "known_prefix_forward_gaussian_nll",
+  "parent": "exp209_exp072_exp205_joint_exact_parity_fast_cache_generation",
+  "evidence_experiment": "exp307_finite_only_robust_sigma_gr",
+  "kaggle": {
+    "kernel_id": "kentookumura/exp337-prefix-backtested-structure-sigma-gr-train",
+    "kernel_version": 1,
+    "kernel_id_no": 128220965,
+    "status": "KernelWorkerStatus.COMPLETE",
+    "runtime_seconds": 143.899363
+  },
+  "execution_counts": {
+    "stage0_diagnostics": 1,
+    "hmm_well_runs": 0,
+    "model_configs": 0,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "pf_well_runs": 0,
+    "beam_well_runs": 0,
+    "boosters": 0,
+    "parent_control_retraining": 0
+  },
+  "stage0": {
+    "gate_passed": false,
+    "wells": 773,
+    "rolling_rows": 1546,
+    "origins": {
+      "0.60": {
+        "evaluable_wells": 773,
+        "evaluable_well_fraction": 1.0,
+        "evaluation_finite_pairs": 186184,
+        "fallback_wells": 0,
+        "fallback_well_fraction": 0.0,
+        "pooled_nll_finite_only": 3.027164870115609,
+        "pooled_nll_zero_fill": 3.589239068245176,
+        "pooled_nll_structure_added": 3.0738661030667833,
+        "structure_gain_vs_zero_fill_per_residual": 0.5153729651783925,
+        "folds_structure_beats_finite": 0,
+        "folds_structure_beats_zero_fill": 5,
+        "pooled_structure_beats_finite": false
+      },
+      "0.80": {
+        "evaluable_wells": 773,
+        "evaluable_well_fraction": 1.0,
+        "evaluation_finite_pairs": 178469,
+        "fallback_wells": 0,
+        "fallback_well_fraction": 0.0,
+        "pooled_nll_finite_only": 2.9718541607003055,
+        "pooled_nll_zero_fill": 3.571888954744798,
+        "pooled_nll_structure_added": 3.0157835169957905,
+        "structure_gain_vs_zero_fill_per_residual": 0.5561054377490073,
+        "folds_structure_beats_finite": 0,
+        "folds_structure_beats_zero_fill": 5,
+        "pooled_structure_beats_finite": false
+      }
+    },
+    "full_prefix": {
+      "wells": 773,
+      "fallback_wells": 0,
+      "median_tau_structure": 0.0,
+      "lower_clip_wells": 42,
+      "lower_clip_well_fraction": 0.054333764553686936
+    }
+  },
+  "truth_and_downstream_guards": {
+    "unknown_suffix_truth_read_before_freeze": false,
+    "stage1_implemented": false,
+    "stage1_run": false,
+    "inference_run": false,
+    "submission_created": false
+  },
+  "sha256": {
+    "scientific_contract": "57fa5c9e3def170f8a3a83018eb4d69ab69ef835f5b61511633c066189feddb5",
+    "input_dependency_contract": "7f19db5ec37b524b9caf17beeee30b281f11760fb6061a1dfe4a3bccc9cbef32",
+    "rolling_origin_scale_nll_audit_raw": "c0978a5013afd1fb6cfedc45fb01487af5e87656ff78abee92a53098a4fddb96",
+    "rolling_origin_scale_nll_audit_content": "3f72fb1dcb4ea95c4b77b54d2b75c7f302dd0fd7fbd2707ddcd2c5532dd0e883",
+    "full_prefix_scale_audit_raw": "06c7a9a1ca8c826be873a15abc06862efd158590ed1f7b95e30803372fa5b498",
+    "full_prefix_scale_audit_content": "b83a5a6c41dc6887afec2840c160482091aafcf26fd19de5f5167487888fd2b8",
+    "stage0_gate_summary_raw": "415c89ad62002e6462571ca349ff5fdf49c5dac3335a6166aa170b29ff45944e"
+  },
+  "implementation_validation": {
+    "dedicated_tests": "10 passed",
+    "dedicated_plus_shared_notebook_tests": "14 passed",
+    "jupytext_roundtrip": "passed",
+    "py_compile": "passed",
+    "ruff": "passed",
+    "strict_experiment_validation": "passed",
+    "template_validation": "passed",
+    "full_pytest": "568 passed, 3 skipped, 2 pre-existing exp296 failures",
+    "canonical_notebook_adopted": true
+  }
+}

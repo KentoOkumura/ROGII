@@ -1,0 +1,428 @@
+experiment:
+  name: exp405_geometry_reinjected_interval_semimarkov_fusion
+  description: >-
+    Design-frozen saved-OOF experiment that fuses the twelve exp293 physical
+    paths with an exact interval semi-Markov posterior and a docking-independent
+    exp226 geometry re-injection floor. Current-test implementation is forbidden
+    unless every train-side scientific gate passes.
+  hypothesis: >-
+    H256 morphology likelihood around each saved path, H512-or-longer segment
+    persistence, and unconditional geometry re-injection can recover the strong
+    exp293 interval oracle headroom without the wrong-mode lock-in observed in
+    exp399.
+  route: pf_beam
+  status: scientific_fail_closed_exp406_stage0_unlocked
+  created_at: "2026-07-26"
+  updated_at: "2026-07-26"
+  inference_enabled: false
+  submission_enabled: false
+
+lineage:
+  parent: exp293_physics_only_candidate_bank_headroom_contract
+  promotion_control: exp263_last_anchor_better_candidate_confidence_pair_cache
+  reporting_fold_source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  hidden_like_source: exp115_hidden_like_spatial_holdout_from_ppt
+  steering: ../../.steering/20260726-exp405-geometry-reinjected-interval-semimarkov-fusion
+  references:
+    - exp297_prefix_calibrated_latent_registration_gr_evidence
+    - exp399_soft_sticky_fused_exact_runtime_audit
+    - exp370_triggered_reset_rejuvenation_pf
+    - experiments/exp293_physics_only_candidate_bank_headroom_contract/downstream_branch_contract.md
+    - docs/06_reproducibility.md
+  diff_summary: >-
+    Keep all twelve exp293 path values and identities fixed. Replace the failed
+    exp297 prefix-affine evidence and exp399 docking-dependent branch transition
+    with block-local, shift-marginalized GR morphology evidence and an exact
+    explicit-duration posterior. New segments always retain an exp226_k16
+    geometry prior floor independent of docking. No path, PF, HMM, Beam, ML
+    model, selector, or parent control is regenerated.
+
+implementation:
+  enabled: true
+  scope: fixed16_preflight
+  design_approval_received: true
+  design_approval_source: user_message_create_backlog_experiment_steering_and_freeze_design_2026_07_26
+  implementation_approval_received: true
+  implementation_approval_source: user_message_implement_exp405_2026_07_26
+  scaffold_created: true
+  notebook_placeholders_only: false
+  canonical_notebooks_are_placeholders: false
+  canonical_notebook_adopted: true
+  canonical_notebook_adoption_approval_source: user_message_execute_exp405_2026_07_26
+  compact_selfcontained_train_candidate_created: true
+  jupytext_source_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  training_enabled: false
+  current_test_implementation_enabled: false
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: saved_exp293_bank_truth_late_interval_semimarkov_oof
+  metric: rmse
+  metric_weighting: unweighted_suffix_rows
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  reporting_fold_policy: reuse_exp293_outer_fold_identity_without_refit
+  truth_attachment: after_candidate_score_posterior_prediction_and_logical_content_sha_freeze
+  primary_control:
+    experiment: exp263_last_anchor_better_candidate_confidence_pair_cache
+    candidate: exp226_w500_50_50
+    rmse_ft: 8.2383315465
+    public_lb: 7.800
+    regenerate: false
+  support_reference:
+    experiment: exp293_physics_only_candidate_bank_headroom_contract
+    h256_oracle_rmse_ft: 3.552829
+    h512_oracle_rmse_ft: 3.683763
+    h512_fold_rmse_ft: [3.998262, 3.745013, 3.317686, 4.117908, 3.141067]
+    whole_well_oracle_rmse_ft: 4.784904
+  report_scopes:
+    - near_0_250
+    - mid_250_1000
+    - 1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  leakage_policy:
+    - Candidate membership, order, values, folds, blocks, score formula, duration, priors, and gates are fixed before truth access.
+    - Candidate score, posterior, prediction, and logical content SHA are frozen before suffix TVT, error, oracle, or hidden-like role is read.
+    - Type Well TVT and GR are reference-curve inputs; horizontal suffix GR is observable at current-test and may be used.
+    - Registration shift is marginalized as an observation state and is never added to output TVT.
+    - Public LB and same-OOF diagnostics may not change a grid, weight, prior, duration, threshold, candidate, or fallback.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  observed_log_column: GR
+  exp293:
+    kernel_source: kentookumura/exp293-physics-bank-headroom-audit-train
+    candidate_matrix_patterns:
+      - experiments/exp293_physics_only_candidate_bank_headroom_contract/kaggle/output/train_v2/.exp293_work/exp293_physics_only_candidate_bank_headroom_contract_candidate_bank.f32
+      - /kaggle/input/notebooks/kentookumura/exp293-physics-bank-headroom-audit-train/.exp293_work/exp293_physics_only_candidate_bank_headroom_contract_candidate_bank.f32
+      - /kaggle/input/exp293-physics-bank-headroom-audit-train/.exp293_work/exp293_physics_only_candidate_bank_headroom_contract_candidate_bank.f32
+    candidate_matrix_file_sha256: 1281c1ec501c21bdee9d918d805eb320b3e0e82715d993c2cfd0f9dda18909bc
+    candidate_content_sha256: 29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474
+    bank_manifest_patterns:
+      - experiments/exp293_physics_only_candidate_bank_headroom_contract/kaggle/output/train_v2/artifacts/exp293_physics_only_candidate_bank_headroom_contract_bank_manifest.json
+      - /kaggle/input/notebooks/kentookumura/exp293-physics-bank-headroom-audit-train/artifacts/exp293_physics_only_candidate_bank_headroom_contract_bank_manifest.json
+      - /kaggle/input/exp293-physics-bank-headroom-audit-train/artifacts/exp293_physics_only_candidate_bank_headroom_contract_bank_manifest.json
+    bank_manifest_file_sha256: 646a394fed300469bd3e880290457b43df23cda5ce152c1ee43014f3a8278cdf
+    block_assignment_patterns:
+      - experiments/exp293_physics_only_candidate_bank_headroom_contract/kaggle/output/train_v2/artifacts/exp293_physics_only_candidate_bank_headroom_contract_block_assignment.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp293-physics-bank-headroom-audit-train/artifacts/exp293_physics_only_candidate_bank_headroom_contract_block_assignment.csv.gz
+      - /kaggle/input/exp293-physics-bank-headroom-audit-train/artifacts/exp293_physics_only_candidate_bank_headroom_contract_block_assignment.csv.gz
+    block_assignment_file_sha256: 49571a6e674f9cec2729e47ccf7c7740417c2f560eeb7b5d5dcf47ab3475667c
+    block_assignment_decompressed_sha256: b0755c22aa8d791012d3f605e2f1b66063ce9bb6ba46ddd4b48dca77cce032d7
+    block_assignment_logical_sha256: 63f9a26a243ce3b1dd0cbec85c9674fd69a0768246220728ee9d54defba046e5
+    key_content_sha256: 42ede2f53e28dc2ccb28f847e0bc23680d1121bb29e980016dee989dbdddfef7
+  hidden_like_assignment:
+    expected_file_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    well_column: well_id
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    patterns:
+      - experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  raw_train_dir_patterns:
+    - data/raw/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+  raw_horizontal_glob: "*__horizontal_well.csv"
+
+candidate_bank:
+  name: exp293_stage1_deployable12
+  expected_count: 12
+  order:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__exact_hmm
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+    - likpf_mean__exact_hmm
+    - exp226_w500_50_50
+  geometry_candidate: exp226_k16
+  safe_candidate: exp226_w500_50_50
+  regenerate_train_candidates: false
+  add_remove_candidates: false
+  current_test_formula_float_contract: match_exp263_stage1_float_operation_order
+
+observation:
+  family: block_local_shift_marginalized_multiscale_gr_morphology
+  base_block_rows: 256
+  include_final_short_block: true
+  typewell_query:
+    centered_on_candidate_tvt: true
+    minimum_shift_ft: -55.0
+    maximum_shift_ft: 55.0
+    step_ft: 5.0
+    expected_states: 23
+    interpolation: linear
+    extrapolation: disabled
+    prior: laplace
+    prior_scale_ft: 20.0
+    add_shift_to_output_tvt: false
+  normalization:
+    kind: separate_block_median_1p4826mad
+    scale_clip: [5.0, 60.0]
+    minimum_finite_pairs: 64
+    minimum_pair_fraction: 0.50
+    invalid_policy: neutral_candidate_common_emission
+  components:
+    raw: {window_rows: 1, weight: 0.50}
+    rolling_21: {window_rows: 21, weight: 0.25}
+    rolling_101: {window_rows: 101, weight: 0.25}
+  rolling_contract:
+    centered_within_h256_block: true
+    minimum_periods: full_window
+    cross_block_values: forbidden
+  residual:
+    kind: capped_squared_standardized_difference
+    cap_z2: 9.0
+    block_reduction: finite_pair_mean
+    log_likelihood_scale: -0.5
+  reliability:
+    reliable_mass: 0.80
+    candidate_common_neutral_mass: 0.20
+  forbidden:
+    - prefix_affine_fit
+    - exp297_student_t_ncc_derivative_reuse
+    - full_tvt_grid
+    - registration_output_correction
+
+semimarkov:
+  solver: exact_log_space_forward_backward
+  base_block_rows: 256
+  minimum_duration_blocks: 2
+  maximum_duration_blocks: remaining_well_blocks
+  final_short_segment: right_censored_allowed
+  duration_prior: uniform_over_valid_lengths
+  segment_switch_penalty:
+    log_cost: 2.1972245773362196
+    interpretation: log_9
+  segment_start_prior:
+    exp226_w500_50_50: 0.45
+    exp226_k16: 0.10
+    each_other_candidate: 0.045
+  transition:
+    same_candidate_continues_without_new_segment: true
+    new_segment_candidate_must_differ: true
+    different_candidate_prior: renormalized_segment_start_prior_excluding_current
+    geometry_floor_if_current_is_not_geometry: 0.10
+    geometry_floor_depends_on_docking: false
+    geometry_floor_depends_on_emission_or_uncertainty: false
+  prediction:
+    use_viterbi: false
+    hard_top1: false
+    block_marginal: candidate_probability
+    row_weight_interpolation: linear_between_block_centers
+    output: convex_candidate_tvt_posterior_mean
+    output_dtype: float64
+  numerical:
+    logsumexp_dtype: float64
+    posterior_normalization_abs_error_max: 1.0e-10
+    stable_tie_order: candidate_bank_order
+
+negative_controls:
+  controls:
+    - stable_within_well_finite_gr_circular_rotation_preserve_nan_mask
+    - stable_within_well_block_order_gr_permutation_preserve_blocks_and_nan_mask
+  seed_key: SHA256_exp405_control_name_well_id
+  minimum_circular_rotation_fraction: 0.25
+  truth_freeze_order: same_as_real
+  block_permutation:
+    equal_length_full_h256_blocks_only: true
+    final_short_block_fixed: true
+    stable_hash_sort: true
+
+gates:
+  technical:
+    candidate_count: 12
+    finite_candidate_coverage: 1.0
+    finite_prediction_coverage: 1.0
+    convex_hull_coverage: 1.0
+    primary_control_rmse_abs_tolerance_ft: 1.0e-5
+    truth_reads_before_freeze_max: 0
+    hidden_role_reads_before_freeze_max: 0
+    posterior_normalization_abs_error_max: 1.0e-10
+    fixed16_resource_preflight_wells: 16
+    projected_runtime_seconds_max: 7200
+    projected_peak_rss_gb_max: 25
+  constrained_oracle:
+    maximum_rmse_ft: 5.50
+    require_improvement_vs_exp263_folds: 5
+  scientific:
+    maximum_pooled_rmse_ft: 6.90
+    require_improvement_vs_exp263_folds: 5
+    require_1000_plus_improvement: true
+    require_hidden_like_spatial_improvement: true
+    require_hidden_like_typewell_purged_improvement: true
+    maximum_by_well_delta_p95_ft: 0.0
+    maximum_worst_well_regression_ft: 5.0
+    real_gain_vs_each_negative_control_ft_min: 0.05
+    require_real_better_than_each_control_folds: 5
+    geometry_posterior_pooled_mean_min: 0.05
+    geometry_posterior_per_well_mean_median_min: 0.02
+    geometry_posterior_well_fraction_below_0p005_max: 0.10
+    physical_continuity_guard: true
+  decision:
+    pass: current_test_implementation_eligible_pending_explicit_approval
+    scientific_fail: close_exp405_and_unlock_exp406_stage0
+    technical_error: fix_only_technical_issue_and_rerun_same_contract
+    same_oof_rescue: forbidden
+
+current_test:
+  implementation_enabled: false
+  eligible_only_after: all_exp405_technical_constrained_oracle_and_scientific_gates_pass
+  implementation_location: same_exp405
+  candidate_regeneration_required_after_pass: true
+  train_inference_parity_required: true
+  explicit_implementation_approval_required: true
+  explicit_kaggle_inference_approval_required: true
+  explicit_submission_approval_required: true
+
+model:
+  name: exact_interval_semimarkov_physical_path_fusion
+  estimator: deterministic_exact_semimarkov_posterior
+  fitted_model: false
+  target: post_freeze_true_tvt_readout_only
+  active_scientific_endpoints: [geometry_reinjected_semimarkov_posterior_mean]
+
+runtime:
+  accelerator: cpu
+  internet: false
+  use_amp: false
+  num_workers: 2
+  chunk_wells: 2
+  maximum_seconds: 7200
+  maximum_peak_rss_gb: 25
+  scientific_endpoints: 1
+  diagnostic_negative_controls: 2
+  reporting_folds: 5
+  model_configs: 0
+  trained_folds: 0
+  lightgbm_boosters: 0
+  hmm_runs: 0
+  pf_runs: 0
+  beam_runs: 0
+  parent_control_regeneration: false
+  fixed16_selector:
+    method: sha256_ranked_round_robin_by_outer_fold
+    seed_key: exp405_fixed16_preflight
+    expected_wells: 16
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp405-geometry-reinjected-semimarkov-fusion-train
+    train_title: exp405 geometry reinjected semimarkov fusion train
+    train_kernel_sources:
+      - kentookumura/exp293-physics-bank-headroom-audit-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+execution:
+  design_authorized: true
+  implementation_authorized: true
+  kaggle_package_authorized: false
+  kaggle_push_authorized: false
+  kaggle_execution_authorized: false
+  fixed16_preflight_approval_source: user_message_execute_exp405_2026_07_26
+  current_test_implementation_authorized: false
+  inference_authorized: false
+  submission_authorized: false
+  run_stage: implementation_only
+  run_fixed16_preflight: false
+  fixed16_preflight_approved: true
+  fixed16_preflight_passed: true
+  fixed16_preflight_summary_sha256: 78774852751fcb534f528938f03006c97aecfe0c516359144f8f11cd2826a9c6
+  fixed16_preflight_kernel_ref: kentookumura/exp405-geometry-reinjected-semimarkov-fusion-train
+  fixed16_preflight_kernel_id_no: 128631270
+  fixed16_preflight_kernel_version: 1
+  run_full_saved_oof: false
+  full_saved_oof_approved: true
+  full_saved_oof_approval_source: user_message_full_oof_execute_2026_07_26
+  full_saved_oof_completed: true
+  full_saved_oof_kernel_ref: kentookumura/exp405-geometry-reinjected-semimarkov-fusion-train
+  full_saved_oof_kernel_id_no: 128631270
+  full_saved_oof_kernel_version: 2
+  full_saved_oof_summary_sha256: 9992612ba22cb615e3fd01795450c5b44bcf9cc24dcf8d6b7b331b3579d7bc77
+  full_saved_oof_gate_sha256: d601df56ca58ec137a67a622c412750bf3a7a6fc455440d7823c5e14885947bf
+  full_saved_oof_decision_sha256: e159cfb712a6ed81e78f4524febbf0d995375124a473a5056aad3c1347b648f0
+  exp406_stage0_unlocked: true
+  current_stage: scientific_fail_closed_exp406_stage0_unlocked
+  exp406_unlock_condition: technically_valid_exp405_scientific_fail
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_real_sha256_stable_negative_control_per_well
+  stochastic_components:
+    - deterministic_sha256_keyed_negative_control_permutation
+  parallel_rng_policy: no_global_rng_two_well_threads_results_stably_sorted
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    score_sha: true
+    posterior_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Saved-path deterministic train-side audit, not yet a deterministic current-test anchor.
+    - First successful run is not an anchor until an identical rerun confirms score, posterior, and prediction content SHA.
+    - Current-test regeneration SHA requirements become active only after scientific PASS and explicit implementation approval.
+
+artifacts:
+  planned:
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_contract.json
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_input_manifest.csv
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_role_read_ledger.csv
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_pretruth_input_manifest.csv
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_pretruth_role_read_ledger.csv
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_block_score.parquet
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_posterior.parquet
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_train_oof_predictions.csv.gz
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_negative_control_metrics.csv
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_fold_metrics.csv
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_scope_metrics.csv
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_by_well.csv
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_geometry_mass.csv
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_gate.json
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_sha_manifest.csv
+    - exp405_geometry_reinjected_interval_semimarkov_fusion_summary.json
+
+forbidden_actions:
+  - add_remove_or_regenerate_train_candidate
+  - full_tvt_grid
+  - docking_dependent_geometry_transition
+  - trigger_dependent_geometry_reset
+  - exp297_observation_reuse
+  - hard_top1_viterbi_or_rowwise_switch
+  - registration_shift_added_to_output
+  - ml_selector_or_regressor
+  - parameter_grid_or_same_oof_rescue
+  - current_test_implementation_before_pass
+  - inference_or_submission
+
+notes:
+  - This is a user-approved independent replacement experiment after the closed exp297 branch; it does not retroactively turn exp297 into PASS.
+  - A technically valid scientific FAIL is the only condition that unlocks exp406.
+  - The inference notebook and settings.py remain placeholders and are not executable experiment implementations.

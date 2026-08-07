@@ -1,0 +1,75 @@
+{
+  "experiment": "exp144_learned_likelihood_hidden_stress_and_rawtest_parity",
+  "status": "completed_hidden_like_supported_rawtest_parity_missing_no_submit",
+  "route": "ml_model",
+  "parent": "exp127_learned_likelihood_features_on_exp092",
+  "feature_parent": "exp112_learned_pf_likelihood_weight_or_feature_followup",
+  "split_parent": "exp115_hidden_like_spatial_holdout_from_ppt",
+  "cv": "hidden-like lgb_mean add-only improves control: spatial 13.037491 -> 12.760311 (delta -0.277180), typewell_purged 13.082838 -> 12.787921 (delta -0.294917); raw-test parity missing; no submit",
+  "public_lb": null,
+  "private_lb": null,
+  "key_idea": "Audit exp127 learned likelihood add-only features under exp115 hidden-like stress and record raw-test/full-train parity blockers without retraining or submitting.",
+  "updated_at": "2026-06-27",
+  "kernel": {
+    "id": "kentookumura/exp144-train",
+    "url": "https://www.kaggle.com/code/kentookumura/exp144-train",
+    "version": 1,
+    "status": "complete",
+    "output_dir": "experiments/exp144_learned_likelihood_hidden_stress_and_rawtest_parity/kaggle/output/train_v1"
+  },
+  "metrics": {
+    "lgb_mean_delta_focus": [
+      {
+        "control_rmse_tvt": 9.84705303335568,
+        "delta_rmse_addonly_minus_control": -0.11973520692026796,
+        "mode": "gpu_repro_guard_dp_threads8",
+        "model": "lgb_mean",
+        "rmse_tvt": 9.727317826435412,
+        "rows": 757738,
+        "split_variant": "all_shared_rows"
+      },
+      {
+        "control_rmse_tvt": 13.037491101207415,
+        "delta_rmse_addonly_minus_control": -0.2771804817734278,
+        "mode": "gpu_repro_guard_dp_threads8",
+        "model": "lgb_mean",
+        "rmse_tvt": 12.760310619433987,
+        "rows": 169691,
+        "split_variant": "verification_like_spatial"
+      },
+      {
+        "control_rmse_tvt": 13.082838236200454,
+        "delta_rmse_addonly_minus_control": -0.2949168908634956,
+        "mode": "gpu_repro_guard_dp_threads8",
+        "model": "lgb_mean",
+        "rmse_tvt": 12.787921345336958,
+        "rows": 166972,
+        "split_variant": "verification_like_typewell_purged"
+      }
+    ],
+    "hidden_like_lgb_mean_supported": true,
+    "max_hidden_like_well_regression_lgb_mean": 1.0709999340256804,
+    "rawtest_parity_all_pass": false,
+    "rawtest_parity_status_counts": {
+      "fail": 3,
+      "pass": 5
+    }
+  },
+  "sha256": {
+    "bucket_delta": "b4d112db03063d96c6b083969d8b0bfa0d44c681d4427da3da24f27691ef098e",
+    "bucket_metrics": "fe78228dcfd062fb81109d07851ba40b647caf0e23637565af34294595d34646",
+    "by_well": "f0a054a678662c13a7a71edb7715f26bc4aa67d0713a3e76e6cdded8a3079c66",
+    "overall_delta": "18c2be023a5922e05c674ab80ae6d842d24d5be1a6d05bd6e2c26c352fb5a2f6",
+    "overall_metrics": "b25748debe86d28a00a6c16f24354887da9b81101b5349fdcdcac87811a6f43a",
+    "rawtest_parity_checklist": "66cdc866bfdc60cc06b298073473093a46833354a439a0291373518c880017b4",
+    "summary": "b4d76acccf522c6e77d4b0c06f14317e6aedfe207d359c0c8aa3e85bec966e8f",
+    "worst_well_delta": "8d6bd3cd852f460e888dd1e4f89250bb8ab224c4e15a45b3c1574978391715d0"
+  },
+  "decision": {
+    "direct_submission_candidate": "not_selected",
+    "hidden_like_lgb_mean_supported": true,
+    "max_hidden_like_well_regression_lgb_mean": 1.0709999340256804,
+    "rawtest_parity_all_pass": false,
+    "recommendation": "hidden_like_supported_but_rawtest_parity_missing"
+  }
+}

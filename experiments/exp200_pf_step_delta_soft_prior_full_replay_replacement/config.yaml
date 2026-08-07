@@ -1,0 +1,177 @@
+experiment:
+  name: "exp200_pf_step_delta_soft_prior_full_replay_replacement"
+  description: CPU-only exp072-style full replay train feature cache rebuilt from raw files with a per-step TVT delta soft prior inside PF_ANCC, PF_Z, and likelihood-PF particle weights.
+  route: pf_beam
+  status: completed_train_feature_cache_direct_pfbeam_rejected_no_submit
+  created_at: "2026-07-05"
+  updated_at: "2026-07-05"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.metric
+
+lineage:
+  parent: pf_step_delta_soft_prior_full_replay_replacement backlog
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - exp186_typewell_late_range_pfbeam_generation_soft_prior
+    - docs/analysis/tvt_boundary_delta_audit_20260705.md
+  implementation_source: feature_cache.py
+  public_replay_source: step_delta_public_replay.py
+  diff_summary: >
+    Rebuilds the exp072-style full Pixiux public replay train feature cache from raw
+    competition files, without using an existing full replay cache as input. The
+    selected per-step TVT delta prior is applied only to PF_ANCC, PF_Z, and
+    128-seed likelihood-PF particle weights: dtvt = current_tvt - previous_particle_tvt,
+    excess = max(0, abs(dtvt) - delta_free), prior = delta_cost * (excess / delta_scale)^2,
+    and likelihood *= exp(-prior). Beam search is intentionally unchanged from exp072.
+    No LightGBM model is trained, no inference port is created, and no submission
+    candidate is produced by this experiment.
+
+validation:
+  strategy: full_replay_train_feature_cache_generation
+  metric: generated_feature_contract_and_direct_pfbeam_comparison
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  leakage_policy:
+    - Uses raw competition train horizontal/typewell files as generation input.
+    - Does not read the existing exp072 full replay cache while generating features.
+    - The train TVT label is written only as the target column for downstream CV and direct comparison; it is not used by PF/Beam generation.
+    - Does not read raw test files, train models, infer, submit, or use labels outside the generated train target column.
+    - Downstream inference notebooks must regenerate current raw test features directly with the same step-delta generation code.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: no_model_train_feature_cache
+  estimator: none
+  target: target
+  base_prediction: last_known_tvt
+  selected_step_delta_prior_variant: delta_free010_cost0025_scale003
+  step_delta_prior_variants:
+    - name: no_prior
+      delta_free: 999999.0
+      delta_cost: 0.0
+      delta_scale: 0.03
+      active: false
+    - name: delta_free010_cost0025_scale003
+      delta_free: 0.10
+      delta_cost: 0.025
+      delta_scale: 0.03
+      active: true
+    - name: delta_free008_cost005_scale003
+      delta_free: 0.08
+      delta_cost: 0.05
+      delta_scale: 0.03
+      active: false
+  notes:
+    - The second non-baseline variant is configured but inactive to avoid doubling full replay runtime and output size in the default run.
+    - To run the stronger variant, change selected_step_delta_prior_variant and feature_cache.selected_step_delta_prior_variant to delta_free008_cost005_scale003 and push a separate Kaggle run.
+
+feature_cache:
+  variant: pixiux_likpf_step_delta_prior_public_replay
+  selected_step_delta_prior_variant: delta_free010_cost0025_scale003
+  deterministic_pf: true
+  seed_policy: stable_sha256_per_well
+  expected_feature_count: 196
+  output_prefix: exp200_pf_step_delta_soft_prior_full_replay_replacement_full_replay_cache
+  n_jobs: 8
+  pf_seeds: 128
+  pf_particles: 500
+  fast: false
+  max_wells: null
+  expected_artifacts:
+    - exp200_pf_step_delta_soft_prior_full_replay_replacement_full_replay_cache_pixiux_likpf_step_delta_prior_public_replay_train_features.csv.gz
+    - exp200_pf_step_delta_soft_prior_full_replay_replacement_full_replay_cache_feature_schema.csv
+    - exp200_pf_step_delta_soft_prior_full_replay_replacement_full_replay_cache_summary.json
+
+comparison:
+  baseline_experiment: exp072_exp063_full_replay_feature_cache
+  comparison_kernel_id: kentookumura/exp200-pf-step-delta-prior-comparison
+  comparison_kernel_version: 5
+  baseline_feature_cache:
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v2_stream/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  candidate_features:
+    - experiments/exp200_pf_step_delta_soft_prior_full_replay_replacement/artifacts/exp200_pf_step_delta_soft_prior_full_replay_replacement_full_replay_cache_pixiux_likpf_step_delta_prior_public_replay_train_features.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp200-pf-step-delta-prior-train/artifacts/exp200_pf_step_delta_soft_prior_full_replay_replacement_full_replay_cache_pixiux_likpf_step_delta_prior_public_replay_train_features.csv.gz
+  result_artifacts:
+    - experiments/exp200_pf_step_delta_soft_prior_full_replay_replacement/artifacts/exp200_vs_exp072_overall_metrics.csv
+    - experiments/exp200_pf_step_delta_soft_prior_full_replay_replacement/artifacts/exp200_vs_exp072_distance_bucket_metrics.csv
+    - experiments/exp200_pf_step_delta_soft_prior_full_replay_replacement/artifacts/exp200_vs_exp072_by_well_delta.csv
+    - experiments/exp200_pf_step_delta_soft_prior_full_replay_replacement/artifacts/exp200_vs_exp072_step_delta_rates.csv
+    - experiments/exp200_pf_step_delta_soft_prior_full_replay_replacement/artifacts/exp200_vs_exp072_summary.json
+  output_prefix: exp200_vs_exp072
+  candidate_columns:
+    - pf_ancc
+    - pf_z
+    - beam_mean
+    - beam_cons
+    - beam_sm5
+    - beam_med
+    - likpf_mean
+  step_delta_thresholds:
+    - 0.08
+    - 0.10
+    - 0.20
+  success_guard:
+    likpf_mean_baseline_rmse: 11.594898
+    likpf_mean_max_allowed_delta_rmse: 0.02
+    reject_if_pf_ancc_or_pf_z_large_regression: true
+    reject_if_near_or_1000_plus_or_worst_well_breaks: true
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources: []
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_well
+  stochastic_components:
+    - full_replay_pf_particle_propagation
+    - full_replay_pf_resampling
+    - full_replay_likelihood_pf_seed_ensemble
+  parallel_rng_policy: joblib_threads_with_per_well_stable_sha256_seeds
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it generates a train feature cache only.
+    - PF seeds are stable per well and split; the step-delta prior changes likelihood weights and resampling decisions but not seed derivation.
+    - Beam variants are deterministic and intentionally unchanged from exp072.
+    - No inference or submission output is generated by this experiment.
+
+inference:
+  mode: not_applicable_train_feature_cache_only
+  selected_candidate: null
+  notes:
+    - Test PF/Beam/likelihood-PF features are intentionally not cached here.
+    - Each downstream inference notebook should regenerate current raw test features directly with the same step-delta generation code.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog pf_step_delta_soft_prior_full_replay_replacement as an exp072-style full replay train cache rebuild.
+  - Existing full replay cache is not a generation input; it is only a comparison target after generation.
+  - Direct hard clipping, Beam transition changes, LightGBM training, inference, and submit are explicitly out of scope.
+  - Kaggle train v1 completed, but direct exp072 comparison failed the likpf_mean replacement guard by +0.003444 RMSE beyond the allowed +0.02 delta; no downstream inference or submit is created.

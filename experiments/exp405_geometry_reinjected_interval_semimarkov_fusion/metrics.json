@@ -1,0 +1,192 @@
+{
+  "experiment": "exp405_geometry_reinjected_interval_semimarkov_fusion",
+  "status": "scientific_fail_closed_exp406_stage0_unlocked",
+  "route": "pf_beam",
+  "parent": "exp293_physics_only_candidate_bank_headroom_contract",
+  "cv": 8.451059619470808,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "design_evidence": {
+    "exp263_control_rmse_ft": 8.2383315465,
+    "exp263_public_lb": 7.8,
+    "exp293_h512_oracle_rmse_ft": 3.683763,
+    "exp399_rmse_ft": 11.395645678,
+    "exp399_geometry_occupancy": 0.05299
+  },
+  "planned_execution": {
+    "implemented": true,
+    "canonical_notebook_adopted": true,
+    "kaggle_package_created": true,
+    "fixed16_preflight_approved": true,
+    "kaggle_run": true,
+    "kaggle_kernel": {
+      "ref": "kentookumura/exp405-geometry-reinjected-semimarkov-fusion-train",
+      "id_no": 128631270,
+      "version": 2,
+      "status": "complete"
+    },
+    "current_test_implementation": false,
+    "inference": false,
+    "submission": false,
+    "saved_candidates": 12,
+    "scientific_endpoints": 1,
+    "negative_controls": 2,
+    "reporting_folds": 5,
+    "models": 0,
+    "boosters": 0,
+    "pf_runs": 0,
+    "hmm_runs": 0,
+    "beam_runs": 0,
+    "parent_regeneration": 0
+  },
+  "decision_contract": {
+    "pass": "current_test_implementation_eligible_pending_explicit_approval",
+    "scientific_fail": "close_exp405_and_unlock_exp406_stage0",
+    "technical_error": "rerun_same_contract_after_technical_fix"
+  },
+  "fixed16_preflight": {
+    "status": "technical_preflight_pass",
+    "all_technical_gates_passed": true,
+    "rows": 81485,
+    "wells": 16,
+    "candidate_count": 12,
+    "controls": [
+      "real",
+      "circular",
+      "block_permutation"
+    ],
+    "elapsed_seconds": 24.578047078999816,
+    "measured_peak_rss_gb": 1.3176422119140625,
+    "projected_full_seconds": 1187.4268995041787,
+    "projected_full_peak_rss_gb": 1.8228335082530975,
+    "posterior_normalization_abs_error_max": 1.2212453270876722e-14,
+    "row_weight_normalization_abs_error_max": 4.440892098500626e-16,
+    "truth_reads_before_freeze": 0,
+    "hidden_role_reads_before_freeze": 0,
+    "gates": {
+      "all_folds_present": true,
+      "block_center_interpolation": true,
+      "candidate_bank_sha_exact": true,
+      "convex_hull": true,
+      "finite_predictions": true,
+      "fixed16_well_count_exact": true,
+      "hidden_role_reads_zero": true,
+      "physical_continuity": true,
+      "posterior_normalization": true,
+      "projected_peak_rss": true,
+      "projected_runtime": true,
+      "row_weight_normalization": true,
+      "truth_reads_zero": true
+    },
+    "sha256": {
+      "candidate_content": "29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474",
+      "input_manifest_logical": "276003369f573d5ce042a8b3adf01968cf51883a2470c263877aad5c534e03d8",
+      "score_logical": "3db157c9ba0bb5731b3d62b18e1aaf8e61b9b36187d45a0cd99475b5af4cd459",
+      "posterior_logical": "80174b9c1950ac21f8cf5024acb26bea08ae25b23121ece4701b84d2321c9510",
+      "prediction_logical": "773659a402f87ae8da7254d8e38790752a42da55bf564fc6a39fe835627722cd",
+      "summary_file": "78774852751fcb534f528938f03006c97aecfe0c516359144f8f11cd2826a9c6",
+      "kaggle_metrics_file": "88a4e518e3c93f028a6ccda53a7dc9998df0ce4c60c4eb2dde9e9c192a20200d"
+    }
+  },
+  "full_saved_oof": {
+    "status": "scientific_fail_close_exp405_unlock_exp406_stage0",
+    "rows": 3783989,
+    "wells": 773,
+    "candidate_count": 12,
+    "controls": 3,
+    "scientific_endpoints": 1,
+    "reporting_folds": 5,
+    "models": 0,
+    "boosters": 0,
+    "pf_runs": 0,
+    "hmm_runs": 0,
+    "beam_runs": 0,
+    "parent_reruns": 0,
+    "elapsed_seconds": 1434.099050801,
+    "peak_rss_gb": 2.2207374572753906,
+    "technical_pass": true,
+    "constrained_oracle_pass": true,
+    "scientific_pass": false,
+    "all_gates_pass": false,
+    "current_test_implementation_eligible": false,
+    "exp406_stage0_unlocked": true,
+    "metrics": {
+      "posterior_mean_rmse_ft": 8.451059619470808,
+      "anchor_rmse_ft": 8.238331745483704,
+      "delta_vs_anchor_ft": 0.21272787398710413,
+      "constrained_oracle_rmse_ft": 3.6068216732079152,
+      "by_well_delta_p95_ft": 1.7445841876495594,
+      "worst_well_regression_ft": 3.5158139081754474,
+      "geometry_mass_pooled_mean": 0.1024888532381817,
+      "geometry_mass_well_median": 0.10261806365403006,
+      "geometry_low_mass_well_fraction": 0.0,
+      "negative_control_gain_ft": {
+        "circular": 0.00034606401486314553,
+        "block_permutation": 0.00023046824574635139
+      }
+    },
+    "fold_delta_vs_anchor_ft": [
+      0.327486,
+      0.131317,
+      0.297318,
+      0.051511,
+      0.261915
+    ],
+    "scope_delta_vs_anchor_ft": {
+      "1000_plus": 0.23085,
+      "hidden_like_spatial": 0.373085,
+      "hidden_like_typewell_purged": 0.354028
+    },
+    "scientific_gate_pass": {
+      "pooled_rmse": false,
+      "improves_anchor_all_folds": false,
+      "1000_plus_improves": false,
+      "hidden_like_spatial_improves": false,
+      "hidden_like_typewell_purged_improves": false,
+      "by_well_delta_p95": false,
+      "worst_well_regression": true,
+      "real_gain_vs_circular": false,
+      "real_gain_vs_block_permutation": false,
+      "real_better_circular_all_folds": false,
+      "real_better_block_permutation_all_folds": false,
+      "geometry_posterior_pooled_mean": true,
+      "geometry_posterior_well_median": true,
+      "geometry_posterior_low_mass_well_fraction": true,
+      "physical_continuity_guard": true
+    },
+    "sha256": {
+      "decision": "e159cfb712a6ed81e78f4524febbf0d995375124a473a5056aad3c1347b648f0",
+      "summary_file": "9992612ba22cb615e3fd01795450c5b44bcf9cc24dcf8d6b7b331b3579d7bc77",
+      "gate_file": "d601df56ca58ec137a67a622c412750bf3a7a6fc455440d7823c5e14885947bf",
+      "kaggle_metrics_file": "64206258559e86efa8494819f8ceca151c4d7c47215b2a1e17eb3c025c3ee444",
+      "candidate_content": "29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474",
+      "score_logical": "7b6f08efc27f2245b48995235a6dfca4ea06aa3d9035385251cfdef85c1920d9",
+      "posterior_logical": "598690cb6645f692397e3dbe2ad98c469a2040a5dfb2b45152bec0c30ab908e6",
+      "prediction_logical": "02245e4c08e7c93de82cf16051a412ecad51c2dbb0114bd237733b4d78fd41b4",
+      "prediction_decompressed": "136f4e0e65c8df9e2e22bc94573948f99c1aa5cf5aa8cd00d6abc248cca2add1"
+    }
+  },
+  "implementation_validation": {
+    "compact_selfcontained_train_candidate": true,
+    "canonical_notebook_adopted": true,
+    "dedicated_tests_passed": 11,
+    "py_compile_passed": true,
+    "ruff_f821_f811_passed": true,
+    "jupytext_roundtrip_passed": true,
+    "strict_experiment_validation_passed": true,
+    "template_validation_passed": true,
+    "repository_regression": {
+      "passed": 1149,
+      "skipped": 7,
+      "failed": 6,
+      "exp405_dedicated_failures": 0,
+      "remaining_reproducible_failures": [
+        "exp293 downstream contract historical SHA mismatch (2)",
+        "exp296 completed-config versus pre-run stale expectations (2)"
+      ],
+      "concurrent_exp403_failures_cleared_on_rerun": 2
+    }
+  },
+  "notes": "Full saved-OOF was technically valid but scientifically failed: posterior RMSE was worse than the anchor in every fold and nearly indistinguishable from both negative controls. exp405 is closed, exp406 Stage 0 is unlocked, and current-test, inference, and submission remain disabled."
+}

@@ -1,0 +1,200 @@
+experiment:
+  name: exp255_nested_selector_gated_bounded_direct_readout_on_exp238
+  description: Apply the exp238 fold-held-out selector top1 path through fixed target-free confidence gates and bounded moves from the exp238 add-only OOF prediction.
+  route: ensemble
+  status: completed_no_profile_passed_inference_forbidden
+  created_at: '2026-07-15'
+
+lineage:
+  parent: exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218
+  selector_parent: exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218
+  candidate_parent: exp237_hmm_exp226_candidate_selector_on_exp183
+  related:
+    - exp245_selector_context_parity_on_exp238
+    - exp253_prefix_verified_bounded_candidate_controller
+  diff_summary: >
+    Keep the frozen exp238 outer5/inner4 selector scores, candidate paths, and
+    final add-only OOF prediction. Add an explicit target-free gate and bounded
+    correction toward selector top1. No selector, final LightGBM, candidate,
+    parent, or control model is retrained.
+
+validation:
+  strategy: exp238_outer_fold_heldout_selector_scores_and_final_oof_posthoc_readout
+  metric: rmse
+  group_column: well
+  seed: 42
+  outer_folds: 5
+  leakage_policy:
+    - Only role=valid scores from each exp238 outer-fold nested score artifact may select candidates for that outer-valid row.
+    - Candidate values are fixed group-safe OOF paths from exp099/209/223/226.
+    - exp238 lgb_mean is the frozen fold-held-out base prediction.
+    - Truth and true candidate error are used only after predictions are frozen for metrics and guards.
+    - Gate profiles and thresholds are fixed before Kaggle execution; no target-selected parameter grid is allowed.
+  distance_buckets:
+    - {name: '000_050', min_md_since: 0, max_md_since: 50}
+    - {name: '050_100', min_md_since: 50, max_md_since: 100}
+    - {name: '100_250', min_md_since: 100, max_md_since: 250}
+    - {name: '250_500', min_md_since: 250, max_md_since: 500}
+    - {name: '500_1000', min_md_since: 500, max_md_since: 1000}
+    - {name: '1000_plus', min_md_since: 1000, max_md_since: null}
+  hidden_like_assignment_file: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  adoption_guard:
+    require_global_improvement: true
+    require_near_nonworse: true
+    require_longtail_nonworse: true
+    require_hidden_like_spatial_nonworse: true
+    require_hidden_like_typewell_purged_nonworse: true
+    min_improved_outer_folds: 3
+    max_worst_well_regression: 0.25
+    require_zero_direction_violations: true
+    require_move_cap: true
+
+data:
+  target_column: TVT
+  id_column: id
+  exp238_selector_score_prefix: exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218_nested_scores_outer
+  exp238_selector_summary: exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218_selector_summary.json
+  exp238_selector_score_sha256_decompressed:
+    '0': 88cab4e2c7cf5cdd3fa621c634f8b6baf2bd9d52b036b7609b75392c7d19b2b5
+    '1': 77dea04cd83e66737b8d155053098dd90f06dcffe0f51693174f2322731ff780
+    '2': 587c9d2eddb20c15b805c895468987e9229e03939627a869cab8b2703bcdac13
+    '3': 96925affde7e05413c4c5f7aac6226218ecdeaae90eaadbdfd3f4054fc134444
+    '4': bdee35c9d5588fcc6daf8c756fe693c81eee8ef21eeaefdb46a5c773ccf1eab6
+  exp238_final_oof: exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218_final_oof_predictions.csv.gz
+  exp238_final_prediction_column: lgb_mean_pred_tvt
+
+model:
+  name: nested_selector_gated_bounded_direct_readout
+  estimator: none
+  active_variants:
+    - conservative
+    - balanced
+    - assertive
+  model_configs: 0
+  folds_trained: 0
+  boosters: 0
+  parent_control_retraining: false
+  base_prediction: exp238_lgb_mean_oof
+  selector_default_candidate: likpf_mean
+  candidates:
+    - pf_ancc
+    - beam_mean
+    - likpf_mean
+    - sc_ens
+    - hyb
+    - tvt_dense
+    - tvt_densew
+    - tvt_dense50
+    - blend_likpf_hmm_w500
+    - hmm_selfgr_boost_only_a070_c100_mean_tvt
+    - exp226_v6_k16_geometry_gr_u_projection
+  profiles:
+    conservative:
+      min_predicted_gain: 1.00
+      min_predicted_margin: 0.50
+      max_top1_predicted_error: 10.0
+      min_well_dominant_candidate_share: 0.65
+      min_well_direction_consistency: 0.70
+      min_eligible_rows_per_well: 20
+      alpha: 0.20
+      candidate_delta_clip: 20.0
+      max_move: 4.0
+    balanced:
+      min_predicted_gain: 0.50
+      min_predicted_margin: 0.25
+      max_top1_predicted_error: 12.0
+      min_well_dominant_candidate_share: 0.50
+      min_well_direction_consistency: 0.60
+      min_eligible_rows_per_well: 20
+      alpha: 0.30
+      candidate_delta_clip: 25.0
+      max_move: 7.5
+    assertive:
+      min_predicted_gain: 0.25
+      min_predicted_margin: 0.10
+      max_top1_predicted_error: 15.0
+      min_well_dominant_candidate_share: 0.40
+      min_well_direction_consistency: 0.55
+      min_eligible_rows_per_well: 10
+      alpha: 0.40
+      candidate_delta_clip: 30.0
+      max_move: 12.0
+  forbidden:
+    - unconditional_hard_top1_promotion
+    - outer_valid_truth_in_gate
+    - oracle_candidate_selection
+    - target_selected_parameter_grid
+    - selector_training
+    - final_lightgbm_training
+    - parent_control_retraining
+    - current_test_inference_before_guard_pass
+    - competition_submission
+
+audit:
+  active_mode: full_oof_fixed_profiles
+  output_prefix: exp255_nested_selector_gated_bounded_direct_readout_on_exp238
+  score_read_chunksize: 250000
+  expected_outputs:
+    - exp255_nested_selector_gated_bounded_direct_readout_on_exp238_metrics.csv
+    - exp255_nested_selector_gated_bounded_direct_readout_on_exp238_by_well.csv
+    - exp255_nested_selector_gated_bounded_direct_readout_on_exp238_gate_summary.csv
+    - exp255_nested_selector_gated_bounded_direct_readout_on_exp238_candidate_distribution.csv
+    - exp255_nested_selector_gated_bounded_direct_readout_on_exp238_selected_oof.csv.gz
+    - exp255_nested_selector_gated_bounded_direct_readout_on_exp238_input_manifest.json
+    - exp255_nested_selector_gated_bounded_direct_readout_on_exp238_summary.json
+
+inference:
+  status: forbidden_until_oof_adoption_guard_passes
+  selector_training_during_inference: false
+  final_training_during_inference: false
+  submission_requested: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  allow_local: false
+  kaggle:
+    enabled: true
+    internet: false
+    push_requires_user_approval: true
+    train:
+      enable_gpu: false
+    inference:
+      enable_gpu: false
+    train_kernel_sources:
+      - kentookumura/exp238-nested-selector-train
+      - kentookumura/exp238-nested-rank-slot-exp218-train
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp237-hmm-exp226-candidate-selector-exp183-train
+    inference_kernel_sources: []
+    bootstrap_dependency_files:
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/hmm_exp226_candidate_selector_on_exp183.py
+        destination: exp237_source/hmm_exp226_candidate_selector_on_exp183.py
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/settings.py
+        destination: exp237_source/settings.py
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/config.yaml
+        destination: exp237_source/config.yaml
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: true
+  executed_config_sha256: 7878feb423e3c4bb7795c8c1723dea1352b005cad517e0608e5d4654aa2a54ae
+  selected_oof_sha256_decompressed: 2ea22a46c46ef62a0411b170a0f9a81e85664355d5f224f27d73ffd0f929296a
+  seed_policy: frozen_upstream_oof_artifacts_no_new_rng
+  stochastic_components: []
+  parallel_rng_policy: no_new_stochastic_generation
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false

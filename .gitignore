@@ -1,0 +1,80 @@
+# Repository boundary
+#
+# Keep in Git:
+# - source code, tests, configuration, and automation
+# - experiment notebooks and their lightweight records (README, result, metrics,
+#   SESSION_NOTES, and steering documents)
+# - documentation, survey notes, and the submission history Markdown
+# - top-level artifacts/, studies/, and logs/ as experiment evidence
+#
+# Keep out of Git:
+# - credentials and machine-local settings
+# - raw/derived competition data and local Python environments
+# - copied Kaggle upload packages, downloaded Kaggle outputs, feature caches,
+#   model weights, and prediction/submission files
+#
+# Standard cache and credential rules below still apply inside tracked
+# directories (for example, studies/__pycache__/ remains ignored).
+
+# Python environments and caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Local agent/editor state
+/.codex/
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment files and credentials
+.env
+.env.*
+!.env.example
+kaggle.json
+credentials.json
+token.json
+*.pem
+*.p12
+*.pfx
+
+# Competition data and local/external tools
+/data/raw/
+/data/processed/
+/data/external/
+/tools/rogii-viewer/
+
+# Per-experiment generated or copied directories
+/experiments/*/artifacts/
+/experiments/*/features/
+/experiments/*/submission/
+/experiments/*/kaggle/
+/experiments/*/variants/
+
+# Generated model and array/table formats
+*.ckpt
+*.pth
+*.pt
+*.onnx
+*.pkl
+*.joblib
+*.parquet
+*.feather
+*.npy
+*.npz
+
+# Notebook runtime state
+.ipynb_checkpoints/
+
+# OS/editor
+.DS_Store

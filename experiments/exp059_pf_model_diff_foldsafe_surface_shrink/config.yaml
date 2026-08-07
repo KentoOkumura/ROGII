@@ -1,0 +1,244 @@
+experiment:
+  name: "exp059_pf_model_diff_foldsafe_surface_shrink"
+  description: Add fold-safe PF-vs-exp052/054 disagreement features and surface-specific fold-out bucket shrink to the exp058 LightGBM capacity audit surface.
+  route: ml_model
+  status: submitted_complete
+  created_at: "2026-06-10"
+  updated_at: "2026-06-10"
+
+lineage:
+  parent: exp058_lgbm_pf_confidence_only_features
+  model_anchor_parent: exp052_lgbm_capacity_pseudotail_inference_submit
+  seed_bag_anchor_parent: exp054_pseudo_tail_seed_bagging_inference_submit
+  supporting_artifact: exp029_public_sel15_pf_oof_feature_generation
+  diff_summary: Reuse the exp058 pseudo-test surface and LightGBM capacity paired-control setup, but replace the exp026 proxy disagreement with fold-out exp052/054-style pseudo-tail predictions generated separately for each validation split. Add surface-specific bucket alpha postprocess fitted on other folds only, plus a confidence-conditioned fold-out alpha variant.
+
+validation:
+  leakage_policy:
+    - Input rows come from exp029 pseudo-test artifacts where each train well was masked after the cutoff before public sel15 PF/Beam features were generated.
+    - Splits are well-level only; the same well is never in train and validation for a candidate model.
+    - exp052/054 source predictions are regenerated inside each audit split using only training-fold wells, then applied to validation-fold wells.
+    - PF-vs-model and Beam-vs-model features use only fold-out source predictions, public PF/Beam predictions, geometry, and prefix-safe diagnostics.
+    - target_tvt is used only as the supervised label, scoring label, and for fitting fold-out shrink alpha on non-held-out folds.
+    - Fold-out bucket shrink fits alpha on train split rows only and applies it to the held-out split.
+    - Error diagnostic columns pf_error, last_anchor_error, and beam_error are excluded from features.
+    - Raw PF prediction, raw Beam prediction, and exp026_oof prediction columns are not used as direct model features.
+    - Train-only formation columns are not read.
+
+data:
+  feature_path: experiments/exp029_public_sel15_pf_oof_feature_generation/features/public_sel15_pf_oof_features.csv.gz
+  source_well_summary_path: experiments/exp029_public_sel15_pf_oof_feature_generation/artifacts/public_sel15_pf_oof_well_summary.csv
+
+model:
+  name: lgbm_pf_model_diff_foldsafe_surface_shrink
+  target: target_tvt_minus_last_anchor_tvt
+  base_prediction: last_anchor_tvt
+  estimator: LGBMRegressor
+  params:
+    n_estimators: 800
+    learning_rate: 0.03
+    num_leaves: 47
+    min_child_samples: 60
+    subsample: 0.9
+    colsample_bytree: 0.9
+    reg_lambda: 0.1
+    n_jobs: 2
+  prediction:
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  training:
+    max_train_rows_per_split: 300000
+    max_train_rows_per_bucket: 60000
+    seed: 42
+  feature_sets:
+    geometry_anchor_context:
+      - pseudo_cutoff_fraction
+      - cutoff_row
+      - row_idx
+      - prefix_length
+      - eval_step
+      - eval_fraction
+      - MD
+      - X
+      - Y
+      - Z
+      - gr_isna
+      - gr_prefix_availability
+      - gr_eval_availability
+      - last_anchor_tvt
+    pf_beam_confidence_only:
+      - pf_seed_std
+      - pf_likelihood_margin
+      - pf_lik_best
+      - pf_lik_mean
+      - pf_lik_std
+      - pf_weight_entropy
+      - pf_weight_top
+      - pf_weight_best_second_gap
+      - pf_effective_seeds
+      - pf_mean_effective_particles
+      - pf_min_effective_particles
+      - pf_resample_count_mean
+      - pf_gr_sigma_mean
+      - pf_initial_rate_mean
+      - pf_scale_std
+      - pf_scale_range
+      - pf_scale_range_to_seed_std
+      - pf_selected_vs_scale_mean
+      - abs_pf_vs_last_anchor
+      - pf_ancc_delta_per_eval_step
+      - abs_pf_beam_diff
+      - beam_spread
+      - beam_final_cost_mean
+      - beam_final_cost_min
+    pf_model_diff_foldsafe:
+      - exp052_foldout_delta_from_anchor
+      - exp054_foldout_delta_from_anchor
+      - pf_minus_exp052_foldout
+      - abs_pf_minus_exp052_foldout
+      - beam_minus_exp052_foldout
+      - abs_beam_minus_exp052_foldout
+      - pf_minus_exp054_foldout
+      - abs_pf_minus_exp054_foldout
+      - beam_minus_exp054_foldout
+      - abs_beam_minus_exp054_foldout
+      - exp054_minus_exp052_foldout
+      - abs_exp054_minus_exp052_foldout
+      - min_abs_pf_model_diff
+      - model_diff_seed_spread
+  variants:
+    - name: lgbm_capacity_geometry_control
+      estimator: LGBMRegressor
+      params: {}
+      feature_families: [geometry_anchor_context]
+      training_policy: &exp051_training_policy
+        name: exp051_cutoffs_distance_balanced
+        cutoff_quantiles: [0.45, 0.65, 0.82]
+        strict_cutoff_coverage: false
+        max_rows_per_pseudo_tail: 260
+        distance_balanced: true
+        balanced_rows_per_bucket: 60000
+        max_train_rows_per_split: 300000
+        seed: 42
+    - name: lgbm_capacity_pf_confidence_only
+      estimator: LGBMRegressor
+      params: {}
+      feature_families: [geometry_anchor_context, pf_beam_confidence_only]
+      training_policy: *exp051_training_policy
+    - name: lgbm_capacity_pf_model_diff_foldsafe
+      estimator: LGBMRegressor
+      params: {}
+      feature_families:
+        - geometry_anchor_context
+        - pf_beam_confidence_only
+        - pf_model_diff_foldsafe
+      training_policy: *exp051_training_policy
+
+postprocess:
+  selected_method: audit_selected_by_holdout
+  candidate_methods:
+    - raw
+    - foldout_bucket_shrink
+    - confidence_foldout_bucket_shrink
+  methods:
+    foldout_bucket_shrink:
+      min_rows: 500
+      default_alpha: 1.0
+      alpha_min: 0.0
+      alpha_max: 1.25
+    confidence_foldout_bucket_shrink:
+      condition_column: min_abs_pf_model_diff
+      condition_quantiles: [0.5]
+      min_rows: 500
+      default_alpha: 1.0
+      alpha_min: 0.0
+      alpha_max: 1.25
+
+inference:
+  selected_variant: lgbm_capacity_pf_model_diff_foldsafe
+  selected_candidate: lgbm_capacity_pf_model_diff_foldsafe_raw
+  selected_postprocess: raw
+  kaggle_kernel_id: kentookumura/exp059-pf-model-diff-infer
+  visible_branch: physical_replay
+  hidden_branch: pf_model_diff_lgbm_raw
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  chunk_rows: 500000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp029-sel15-pf-oof-train
+
+audit:
+  parent_exp049_cv: 12.779452
+  parent_exp050_public_lb: 12.083
+  parent_exp051_cv: 12.634392
+  parent_exp052_public_lb: 12.076
+  parent_exp054_public_lb: 11.856
+  parent_exp058_raw_original_fold_cv: 15.945678
+  parent_exp058_raw_well_hash_cv: 15.569216
+  parent_exp058_bucket_original_fold_cv: 16.071589
+  parent_exp058_bucket_well_hash_cv: 15.671243
+  reference_control: lgbm_capacity_pf_confidence_only_raw
+  require_beat_reference_control: true
+  paired_success_controls:
+    - candidate_prefix: lgbm_capacity_pf_model_diff_foldsafe
+      control_prefix: lgbm_capacity_pf_confidence_only
+  required_controls:
+    - lgbm_capacity_geometry_control_raw
+    - lgbm_capacity_pf_confidence_only_raw
+    - exp052_foldout_control
+    - exp054_foldout_control
+    - public_pf_selector
+    - pf090_hold010
+  success_controls: []
+  require_beat_success_controls: true
+  supported_candidate_markers:
+    - _raw
+    - _foldout_bucket_shrink
+    - _confidence_foldout_bucket_shrink
+  report_controls:
+    - last_anchor
+    - public_pf_selector
+    - pf090_hold010
+    - beam
+    - exp052_foldout_control
+    - exp054_foldout_control
+  well_holdout_folds: 5
+  include_exp026_regenerated_control: false
+  model_diff_sources:
+    - name: exp052_foldout
+      config_path: exp052_source_config.yaml
+      prediction_method: distance_bucket_shrink
+      seed: 42
+      max_rows_per_well: 800
+      max_rows_total: 300000
+    - name: exp054_foldout
+      config_path: exp054_source_config.yaml
+      prediction_method: distance_bucket_shrink
+      seed: 42
+      max_rows_per_well: 800
+      max_rows_total: 300000
+  source_feature_generation:
+    source_experiment: exp029_public_sel15_pf_oof_feature_generation
+    current_local_cutoff_fraction: 0.65
+    desired_pseudotail_cutoff_fractions: [0.45, 0.65, 0.82]
+    expected_rows_cutoff065: 1782279
+    expected_wells: 773
+  distance_buckets:
+    - {name: rows_0_49, max_step: 49}
+    - {name: rows_50_249, max_step: 249}
+    - {name: rows_250_999, max_step: 999}
+    - {name: rows_1000_2499, max_step: 2499}
+    - {name: rows_2500_plus, max_step: 1000000000}
+
+notes:
+  - This experiment implements the high-priority backlog item pf_model_diff_foldsafe_surface_shrink.
+  - exp052/054 source predictions are not loaded from submissions; they are regenerated fold-out for each train-side audit split.
+  - PF/Beam raw predictions remain excluded as direct replacement features; only disagreement against fold-out ML anchors and confidence diagnostics are model inputs.
+  - Fixed exp014 bucket-shrink is intentionally not reused. All shrink candidates fit alpha only on non-held-out rows for the current audit split.
+  - Direct PF controls are reported as diagnostics on the exp029 pseudo-test surface, not as the ML-route adoption criterion.

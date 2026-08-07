@@ -1,0 +1,203 @@
+experiment:
+  name: "exp142_trajectory_aware_pf_transition_prior"
+  description: "Train-side PF/Beam audit that injects dZ/dMD and d2Z/dMD2 into the PF-Z transition prior, then compares trajectory-aware PF candidates against exp072 pf_z, exp106 strict multiseed, pf_ancc, beam, and likpf_mean."
+  route: pf_beam
+  status: completed_train_side_rejected_no_submit
+  created_at: "2026-06-27"
+  updated_at: "2026-06-27"
+
+lineage:
+  parent: exp106_strict_exp072_pf_z_multiseed_scale_cache
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  secondary_parents:
+    - exp083_pf_beam_true_tvt_2d_well_eda
+    - exp100_pf_z_unified_velocity_observation_prior
+    - exp104_pf_z_seedbag_scale_cache
+    - exp141_z_driven_pf_z_candidate_gate
+  implementation_source: trajectory_aware_pf_transition_prior.py
+  diff_summary: >
+    Implements the KAGGLE_DIRECTION backlog item trajectory_aware_pf_transition_prior.
+    The exp106 strict exp072 PF-Z parity candidate is retained as a baseline.
+    New trajectory-aware PF variants alter only the transition prior: local TVT
+    velocity mean reverts toward a target derived from dZ/dMD, d2Z/dMD2, and
+    prefix TVT slope, while process noise and velocity likelihood width expand
+    in high-curvature trajectory intervals. Evaluation remains train-side
+    pseudo-tail only and never uses validation/test true TVT in transition prior.
+
+validation:
+  strategy: train_well_pseudotail_trajectory_pf_transition_prior_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_1ft
+    - within_2ft
+    - within_5ft
+    - within_10ft
+    - bucket_rmse_by_md_since
+    - bucket_rmse_by_row_idx
+    - bucket_rmse_by_abs_dzdmd
+    - bucket_rmse_by_abs_d2zdmd2
+    - worst_well_rmse
+    - path_switch_count
+    - mean_abs_step
+    - p95_abs_acceleration
+    - effective_sample_size
+    - resample_count
+    - collapse_rate
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp072_rows
+  leakage_policy:
+    - Existing exp072 pf_z, pf_ancc, beam, and likpf candidates are read from the raw-train-only exp072 feature cache.
+    - Strict PF-Z parity and trajectory-aware PF candidates use raw horizontal/typewell files, finite prefix TVT_input rows, GR, MD, and Z only.
+    - Trajectory transition prior uses only target-free eval-zone MD/Z trajectory plus prefix-derived TVT/Z slopes.
+    - Evaluation-zone true TVT is reconstructed only as last_known_tvt + target for scoring and oracle diagnostics.
+    - This is train-side diagnostic only; any submission requires a later raw-test-compatible inference port in the same exp.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+model:
+  name: trajectory_aware_pf_transition_prior
+  estimator: none_particle_filter_candidate_audit
+  target: true_tvt_for_scoring_only
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  strict_pf_z:
+    n_particles: 600
+    n_seeds: 32
+    scales: [3.0, 5.0, 8.0, 12.0]
+    gr_grid_step: 0.2
+    momentum: 0.993
+    velocity_noise: 0.005
+    position_noise: 0.01
+    gr_smooth_window: 5
+    gr_smooth_weight: 0.3
+    rough_position: 0.2
+    rough_velocity: 0.003
+    resample_threshold: 0.5
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+    parity_abs_max_tolerance: 1.0e-4
+    parity_rmse_tolerance: 1.0e-5
+    require_parity_for_full: true
+  trajectory_pf_z:
+    n_particles: 600
+    n_seeds: 32
+    scales: [3.0, 8.0]
+    prefix_tail_rows: 50
+    momentum: 0.993
+    velocity_noise: 0.005
+    position_noise: 0.01
+    gr_smooth_weight: 0.3
+    rough_position: 0.2
+    rough_velocity: 0.003
+    resample_threshold: 0.5
+    collapse_std_threshold: 0.25
+    transition_variants:
+      - name: zmean_s006_noise025
+        transition_strength: 0.06
+        z_accel_gain: 0.0
+        prefix_slope_strength: 0.02
+        velocity_noise_gain: 0.25
+        position_noise_gain: 0.10
+        likelihood_sigma_gain: 0.10
+        curve_clip: 3.0
+      - name: zacc_s010_a020_noise050
+        transition_strength: 0.10
+        z_accel_gain: 0.20
+        prefix_slope_strength: 0.02
+        velocity_noise_gain: 0.50
+        position_noise_gain: 0.20
+        likelihood_sigma_gain: 0.20
+        curve_clip: 4.0
+      - name: zacc_s014_a035_noise075
+        transition_strength: 0.14
+        z_accel_gain: 0.35
+        prefix_slope_strength: 0.04
+        velocity_noise_gain: 0.75
+        position_noise_gain: 0.30
+        likelihood_sigma_gain: 0.30
+        curve_clip: 5.0
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  parity_seed_policy: exp072_stable_seed_pf_z_well
+  seed_policy: stable_sha256_seed_from_experiment_trajectory_pf_z_well_variant_seed_index
+  stochastic_components:
+    - strict_pf_z_particle_initialization
+    - strict_pf_z_process_noise
+    - strict_pf_z_resampling
+    - trajectory_pf_z_particle_initialization
+    - trajectory_pf_z_process_noise
+    - trajectory_pf_z_resampling
+    - upstream_exp072_pf_beam_likpf_cache
+  parallel_rng_policy: well_level_thread_parallel_with_per_well_per_variant_seed_vector
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_file_sha: true
+    exp072_cache_sha: true
+    candidate_wide_sha: true
+    candidate_long_sha: true
+    metrics_sha: true
+    parity_diff_sha: true
+    trajectory_quality_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it is a train-side candidate audit.
+    - Source gzip cache decompressed content SHA is recorded in summary JSON.
+    - Each well and trajectory variant receives deterministic seed vectors before entering the Numba kernel.
+
+audit:
+  mode: trajectory_aware_pf_transition_prior
+  output_prefix: exp142_trajectory_aware_pf_transition_prior
+  max_rows: null
+  max_wells: null
+  save_candidate_long: false
+  thresholds_ft: [1, 2, 5, 10]
+  bucket_edges_md_since: [0, 50, 100, 250, 500, 1000]
+  bucket_edges_row_idx: [0, 100, 250, 500, 1000]
+  bucket_edges_abs_dzdmd: [0, 0.1, 0.25, 0.5, 1.0]
+  bucket_edges_abs_d2zdmd2: [0, 0.001, 0.003, 0.01, 0.03]
+  expected_train_artifacts:
+    - exp142_trajectory_aware_pf_transition_prior_candidate_metrics.csv
+    - exp142_trajectory_aware_pf_transition_prior_bucket_metrics.csv
+    - exp142_trajectory_aware_pf_transition_prior_by_well.csv
+    - exp142_trajectory_aware_pf_transition_prior_strict_pf_z_quality.csv
+    - exp142_trajectory_aware_pf_transition_prior_trajectory_pf_z_quality.csv
+    - exp142_trajectory_aware_pf_transition_prior_parity_diff.csv.gz
+    - exp142_trajectory_aware_pf_transition_prior_candidate_wide.csv.gz
+    - exp142_trajectory_aware_pf_transition_prior_summary.json
+
+inference:
+  mode: disabled_train_side_diagnostic_only
+  selected_candidate: null
+  notes:
+    - No inference notebook candidate is selected in this implementation.
+    - If trajectory-aware candidates show oracle/gate headroom without collapse, raw-test-compatible inference parity should be implemented in this same experiment before submission.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog trajectory_aware_pf_transition_prior.
+  - Directly beating likpf_mean is not the first pass condition; Z-driven added value, oracle/gate headroom, ESS, mode diversity, and path roughness are the first audit targets.

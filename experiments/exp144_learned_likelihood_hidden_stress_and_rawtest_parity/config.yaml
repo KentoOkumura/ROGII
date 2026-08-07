@@ -1,0 +1,140 @@
+experiment:
+  name: "exp144_learned_likelihood_hidden_stress_and_rawtest_parity"
+  description: Hidden-like stress readout and raw-test/full-train parity audit for exp127 learned likelihood add-only features.
+  route: ml_model
+  status: implemented_not_run
+  created_at: "2026-06-27"
+  updated_at: "2026-06-27"
+
+lineage:
+  parent: exp127_learned_likelihood_features_on_exp092
+  feature_parent: exp112_learned_pf_likelihood_weight_or_feature_followup
+  split_parent: exp115_hidden_like_spatial_holdout_from_ppt
+  anchor_parent: exp092_u_projection_correction_disagreement_fullrun
+  comparison_parents:
+    - exp127_learned_likelihood_features_on_exp092
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - exp112_learned_pf_likelihood_weight_or_feature_followup
+    - exp125_confidence_gate_continuity_rawtest_parity
+  implementation_source: learned_likelihood_hidden_stress_and_rawtest_parity.py
+  diff_summary: Does not retrain exp127. Reads exp127 saved row-level predictions, exp115 hidden-like split artifacts, and exp112 learned likelihood feature cache to score control versus add-only features under hidden-like stress buckets and to record raw-test/full-train parity blockers.
+
+validation:
+  strategy: saved_oof_hidden_like_stress_and_rawtest_parity_audit
+  metric: rmse
+  seed: 42
+  group_column: well
+  score_rows: exp127_shared_rows_and_exp115_hidden_like_overlap
+  leakage_policy:
+    - exp115 split files define only readout masks; no model is refit on exp115 validation wells.
+    - exp127 row-level predictions are saved OOF predictions from the parent experiment.
+    - exp112 learned likelihood features are used only as saved target-free diagnostics and bucket context.
+    - True TVT is used only for scoring saved predictions.
+    - Raw-test parity is a checklist; no hidden test labels, oracle candidate, or true-error rank enters feature generation.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp127_predictions: experiments/exp127_learned_likelihood_features_on_exp092/kaggle/output/train_v1/artifacts/exp127_learned_likelihood_features_on_exp092_predictions.csv.gz
+  exp127_feature_schema: experiments/exp127_learned_likelihood_features_on_exp092/kaggle/output/train_v1/artifacts/exp127_learned_likelihood_features_on_exp092_feature_schema.csv
+  exp127_summary: experiments/exp127_learned_likelihood_features_on_exp092/kaggle/output/train_v1/artifacts/exp127_learned_likelihood_features_on_exp092_summary.json
+  exp112_ml_features: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_ml_features.csv.gz
+  exp112_feature_schema: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+  exp112_summary: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_summary.json
+  exp115_fold_assignments: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  exp115_well_metadata: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_well_metadata.csv
+
+model:
+  name: no_new_model_exp127_readout
+  estimator: none
+  retrain_model: false
+  source_prediction_experiment: exp127_learned_likelihood_features_on_exp092
+  control_variant: exp092_shared_row_control
+  addonly_variant: learned_likelihood_confidence_addonly
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp127-train
+      - kentookumura/exp112-learned-pf-likelihood-followup-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_deterministic_csv_join
+  stochastic_components:
+    - upstream_exp127_gpu_lightgbm_training
+    - upstream_exp112_learned_likelihood_cache
+    - upstream_exp115_split_builder
+  parallel_rng_policy: no parallel RNG; pandas joins and groupby readouts only
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    split_content_sha: true
+    upstream_prediction_sha: true
+    feature_schema_sha: true
+    readout_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This experiment is a readout and parity audit, not a deterministic submission anchor.
+    - Raw-test feature parity is expected to fail until exp112 learned likelihood features have a target-free inference generator.
+
+audit:
+  mode: learned_likelihood_hidden_stress_and_rawtest_parity
+  output_prefix: exp144_learned_likelihood_hidden_stress_and_rawtest_parity
+  control_variant: exp092_shared_row_control
+  addonly_variant: learned_likelihood_confidence_addonly
+  expected_addonly_feature_count: 294
+  models:
+    - lgb0
+    - lgb1
+    - lgb2
+    - lgb_mean
+  hidden_like_split_variants:
+    - verification_like_spatial
+    - verification_like_typewell_purged
+  bucket_columns:
+    - eval_rank_bucket
+    - md_since_bucket
+    - spatial_bin
+    - eval_length_bin
+    - prefix_length_bin
+    - gr_bin
+    - tvt_bin
+    - typewell_group_size_bin
+    - ll_entropy_bucket
+    - ll_margin_bucket
+    - candidate_range_bucket
+  expected_train_artifacts:
+    - exp144_learned_likelihood_hidden_stress_and_rawtest_parity_overall_metrics.csv
+    - exp144_learned_likelihood_hidden_stress_and_rawtest_parity_bucket_metrics.csv
+    - exp144_learned_likelihood_hidden_stress_and_rawtest_parity_by_well.csv
+    - exp144_learned_likelihood_hidden_stress_and_rawtest_parity_overall_delta.csv
+    - exp144_learned_likelihood_hidden_stress_and_rawtest_parity_bucket_delta.csv
+    - exp144_learned_likelihood_hidden_stress_and_rawtest_parity_worst_well_delta.csv
+    - exp144_learned_likelihood_hidden_stress_and_rawtest_parity_rawtest_parity_checklist.csv
+    - exp144_learned_likelihood_hidden_stress_and_rawtest_parity_summary.json
+
+inference:
+  mode: disabled_readout_only
+  selected_variant: null
+  notes:
+    - This experiment does not generate submission.csv.
+    - Even if hidden-like stress improves, raw-test feature regeneration must pass before any inference port.
+
+notes:
+  - Implements backlog exp127_learned_likelihood_hidden_stress_and_rawtest_parity with corrected experiment id exp144.
+  - The main decision is whether exp127 learned likelihood features remain useful under exp115 stress and whether blockers to raw-test/full-train parity are explicit.

@@ -1,0 +1,299 @@
+experiment:
+  name: exp513_hjyact_v2_final_standalone_public_lb_audit
+  description: >-
+    Replay the complete hjyact version-2 final prediction used as the public
+    component of exp512, submit it without exp413 or any additional blend, and
+    measure its Public LB under this repository's hidden-safe implementation.
+  route: ensemble
+  status: kaggle_two_run_visible_final_parity_pass_hidden_rng_nondeterminism_detected_no_submit
+  created_at: "2026-08-05"
+  updated_at: "2026-08-05"
+  inference_enabled: true
+  train_enabled: false
+
+lineage:
+  parent: exp512_hjyact_v2_final_10pct_hedge_on_exp413
+  source_model_anchor: exp413_scale5_likpf_full_replacement_on_exp335
+  comparison:
+    - exp512_hjyact_v2_final_10pct_hedge_on_exp413
+    - exp510_exp413_exact_public_preoverride_hedge
+    - exp413_scale5_likpf_full_replacement_on_exp335
+  public_source_family: hjyact_ultimate_pf_config_strategy_reproducible_score_v2
+  steering: ../../.steering/20260805-exp513-hjyact-v2-final-standalone-public-lb-audit
+  diff_summary: >-
+    Isolate the complete hjyact-v2 final component specified by exp512. Remove
+    exp413 regeneration, the 0.50/0.50 blend, and the cross-consumer candidate
+    reuse DAG. Preserve the public component's source boundary, parameters,
+    write order, and hidden-safe restrictions without retuning.
+
+authorization:
+  design_approved: true
+  design_source: user_request_2026_08_05
+  implementation_approved: true
+  implementation_authorization_source: user_request_implement_after_exp512_failures_2026_08_05
+  canonical_notebook_adoption_approved: false
+  kaggle_package_approved: true
+  kaggle_run_approved: true
+  output_archive_download_approved: true
+  kaggle_execution_authorization_source: user_request_execute_2026_08_05
+  competition_submission_approved: false
+
+implementation:
+  code_created: true
+  compact_selfcontained_candidate_created: true
+  dedicated_contract_tests_created: true
+  generator: ../../scripts/prepare_exp513_hjyact_v2_standalone_candidate.py
+  generator_sha256: d90b8b189bce85e9817b629be037f60caa30ee41f34f6bf966c00fa6aef9625f
+  parent_generator_sha256: de18a4ecaa76c7c5be483d1c303239fb4afcb9a6dd7414aed62db5ee2110a57e
+  parent_generator_current_sha256_at_v1_validation: e5a7d59ca1a3dcf95212933bda6ab8b3c6de5e5b31fadb830d7a253aa5ba5915
+  parent_generator_changed_after_candidate_freeze: true
+  current_parent_regeneration_candidate_sha256: 542f09479955ae1f0f7f6b29c4fb08920f0b58e3b009e538d14a29849e9baf43
+  current_parent_regeneration_exact_match: true
+  candidate_source: exp513_hjyact_v2_final_standalone_public_lb_audit_compact_selfcontained_inference.py
+  candidate_notebook: exp513_hjyact_v2_final_standalone_public_lb_audit_compact_selfcontained_inference.ipynb
+  candidate_source_sha256: 542f09479955ae1f0f7f6b29c4fb08920f0b58e3b009e538d14a29849e9baf43
+  candidate_notebook_sha256: 1e919d36db5747ff2aa9bdb6e8b84ddf4cb491efc9a46c47ccab808935826c5e
+  candidate_source_lines: 5097
+  candidate_source_bytes: 236961
+  candidate_notebook_cells: 48
+  standalone_contract_sha256: eabd84514b369ed4171dfc4fc6b50572c36fc6def16f223575517ca1d18df569
+  model_manifest_sha256: afa1bfd594c6d99db67f2e823a1c0a13cad8134a783761e32f398aaa99a3247d
+  static_validation: pass
+  jupytext_roundtrip: pass
+  py_compile: pass
+  ruff_f821: pass
+  dedicated_contract_tests: 7_passed
+  parent_plus_candidate_contract_tests: 13_passed
+  strict_experiment_validation: pass
+  template_validation: pass
+  canonical_inference_notebook_is_template_placeholder: true
+  canonical_train_notebook_is_template_placeholder: true
+  source_reference: ../exp512_hjyact_v2_final_10pct_hedge_on_exp413/exp512_hjyact_v2_final_10pct_hedge_on_exp413_compact_selfcontained_inference.py
+  exp512_failure_guards:
+    kaggle_v1_legacy_competition_mount: fixed_by_unique_content_resolver
+    kaggle_v2_legacy_ridge_mount: fixed_by_sha_audited_root_injection
+    direct_legacy_root_assignments_allowed: false
+    package_source_limit_bytes: 1048576
+  candidate_source_is_below_package_limit: true
+  kaggle_package_created: true
+  kaggle_run_performed: true
+  external_submission_performed: false
+  current_scope: kaggle_package_run_monitor_and_output_validation
+
+public_source:
+  author: hjyact
+  kernel_slug: ultimate-pf-config-strategy-a-reproducible-score
+  kernel_id: 128161011
+  kernel_version: 2
+  kernel_run_id: 337064157
+  url: https://www.kaggle.com/code/hjyact/ultimate-pf-config-strategy-a-reproducible-score?scriptVersionId=337064157
+  published_public_lb: 6.568
+  submission_profile: vp_balanced_modelpkg_005
+  pulled_notebook_sha256: 4b4879a6d427422c127a300e09dc763b71ea5e7878eb3639941c75753a23933c
+  pulled_code_cells_sha256: ee93ce4c80c6490cbf2f9cfe518e8e3b54516c212aa813c4a045a64b4c126088
+  visible_final_submission_sha256: b192d3f348ae00680dc4df942b95cef5fd708c636a741f77dfb6b6e89b9ded4a
+  visible_sample_id_order_sha256: e6a2a380b8751443333064563fe94289055b95a739a3c8ac42d672df28a7e269
+  docker_image_digest: 37c64f7dd9c54116ecd1bcc88817c5469b88387388fade02bfa8bf3fc647d461
+  original_runtime_seconds: 787.7964199
+  original_runtime_accelerator: gpu
+  output_copy_allowed: false
+
+standalone_component:
+  boundary: after_complete_hjyact_v2_final_stack_and_pf_seed_branch_hedge
+  output_name: hjyact_v2_final
+  exp413_included: false
+  downstream_blend_included: false
+  selectable_variant_count: 1
+  weight_fit_allowed: false
+  parameter_grid_allowed: false
+  public_lb_retuning_allowed: false
+  sp45_weight: 0.60
+  learned_weight: 0.40
+  guarded_overlap_override: true
+  visible_prefix:
+    enabled: true
+    profile: balanced
+    final_selection: profile
+    cut_fractions: [0.50, 0.65, 0.75]
+    calibration_seeds: 24
+    final_seeds: 48
+    particles: 350
+  model_package:
+    enabled: true
+    gated_max_weight: 0.00425
+    gated_scale: 6.0
+    diff_p95_disable: 25.0
+  pf_seed_branch_hedge:
+    enabled: true
+    strength: 0.60
+    min_mass: 0.25
+    separation_low: 4.0
+    separation_high: 40.0
+    cap_ft: 2.0
+
+validation:
+  metric: rmse
+  strategy: exact_visible_source_parity_then_two_run_reproducibility_then_single_code_submission
+  new_cv_run: false
+  honest_oof_available: false
+  source_parity:
+    visible_reference_rows: 14151
+    visible_reference_wells: 3
+    prediction_branch_may_use_reference_cardinality: false
+    require_id_order_match: true
+    require_submission_sha_match: true
+    expected_sha256: b192d3f348ae00680dc4df942b95cef5fd708c636a741f77dfb6b6e89b9ded4a
+    version_1_status: pass
+    version_1_sample_id_order_match: true
+    version_1_submission_sha_match: true
+    version_2_status: pass
+    version_2_sample_id_order_match: true
+    version_2_submission_sha_match: true
+  reproducibility_reruns_required: 2
+  reproducibility_reruns_completed: 2
+  visible_final_two_run_reproducibility: pass
+  visible_final_two_run_submission_sha256: b192d3f348ae00680dc4df942b95cef5fd708c636a741f77dfb6b6e89b9ded4a
+  intermediate_hidden_path_reproducibility: fail_close
+  intermediate_hidden_path_evidence: >-
+    Version 1 and version 2 logs report different pre-override
+    submission_sp45_learned_w0.60 summary statistics even though all visible
+    rows are overwritten later and the final visible SHA is identical.
+  hidden_code_submission_ready: false
+  fail_close_on_parity_mismatch: true
+  public_lb_evaluation:
+    source_reference: 6.568
+    exp413_reference: 7.201
+    exp510_reference: 7.201
+    display_precision_match_required_for_source_reproduction: true
+    submit_count: 1
+    retune_after_lb_allowed: false
+  leakage_policy:
+    - Do not hardcode visible well IDs, row count, well count, or Public LB values into prediction routing.
+    - Preserve source dynamic guarded-overlap and visible-prefix logic exactly.
+    - Do not copy a public visible output CSV into hidden inference.
+    - Use visible SHA values only as post-hoc assertions after dynamic sample identity is known.
+    - Do not change the source profile, thresholds, write order, or component weights after LB feedback.
+
+data:
+  sample_contract: dynamic_competition_sample_id_order_and_nonempty_wells
+  hjyact_static_visible_prediction_allowed: false
+  source_dataset_version_ids:
+    koolbox_offline: 14001952
+    rogii_tabicl_mirror: 16170053
+    rogii_v10_fresh_artifacts: 16215026
+    rogii_model_package: 16563058
+    rogii_03: 16589367
+    wellbore_geology_prediction_artifacts: 16629729
+    rogii_claude_models_pub: 16681285
+  require_saved_model_manifest_before_push: true
+
+model:
+  name: hjyact_v2_final_standalone_exact_replay
+  manifest: model_manifest.yaml
+  scientific_variants: 1
+  lightgbm_train_configs: 0
+  ridge_runtime_configs: 1
+  ridge_runtime_folds: 5
+  runtime_ridge_fit_count: 5
+  new_boosters: 0
+  parent_control_retraining: false
+  hjyact_saved_model_files: 13
+  contained_estimators_total: 33
+
+runtime:
+  accelerator: gpu
+  internet: false
+  use_amp: false
+  num_workers: 4
+  expected_seconds_reference: 787.7964199
+  kaggle_source_limit_bytes: 1048576
+  compact_candidate_source_bytes: 236961
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    machine_shape: Gpu
+    inference_kernel_id: kentookumura/exp513-hjyact-v2-standalone-lb-audit-inference
+    inference_title: exp513 hjyact v2 standalone lb audit inference
+    execution_notebook_kind: current_test_inference
+    execution_source_notebook: exp513_hjyact_v2_final_standalone_public_lb_audit_compact_selfcontained_inference.ipynb
+    canonical_notebook_adopted: false
+    package_prepared: true
+    source_execution_notebook_sha256: d6e247a8c2f89062c493b22cdedf20f62d46ada90208b0db4384be0584bab000
+    packaged_notebook_sha256: 9d7efcca9f187907358f685063b9b6b3616d5a3d0e85cced2666b91ebe8e6d4b
+    packaged_notebook_bytes: 437126
+    packaged_config_sha256: de98ac5de51866c4809d1e0d731d84814fe77cfafca6f1f76c78be4637fec06a
+    package_source_limit_check: pass
+    existing_kernel_pull_before_push: forbidden_not_found
+    kaggle_kernel_version: 2
+    kaggle_status_at_push: KernelWorkerStatus.RUNNING
+    pushed_at: "2026-08-05"
+    kernel_url: https://www.kaggle.com/code/kentookumura/exp513-hjyact-v2-standalone-lb-audit-inference
+    kaggle_kernel_id_no: 129735820
+    kaggle_v1_final_status: KernelWorkerStatus.COMPLETE
+    kaggle_v1_runtime_seconds: 819.9389021396637
+    kaggle_v1_source_parity: pass
+    kaggle_v1_submission_sha256: b192d3f348ae00680dc4df942b95cef5fd708c636a741f77dfb6b6e89b9ded4a
+    kaggle_v1_sample_id_order_sha256: e6a2a380b8751443333064563fe94289055b95a739a3c8ac42d672df28a7e269
+    pulled_kaggle_notebook_sha256: a97fc1c5bbd25e32e01ddd1115d6ab35b67b7cd41a912f391987512315fbcb9a
+    readback_all_cell_sources_sha256: f2150e378eac51e9daf2ea75ca2cb9b7456fa37258e286d584d33cb55984d1e2
+    readback_source_parity: pass
+    output_directory: kaggle/output/inference_v1
+    kaggle_v2_status_at_push: KernelWorkerStatus.RUNNING
+    kaggle_v2_package_sha256: 9d7efcca9f187907358f685063b9b6b3616d5a3d0e85cced2666b91ebe8e6d4b
+    kaggle_v2_final_status: KernelWorkerStatus.COMPLETE
+    kaggle_v2_runtime_seconds: 816.8805031776428
+    kaggle_v2_source_parity: pass
+    kaggle_v2_submission_sha256: b192d3f348ae00680dc4df942b95cef5fd708c636a741f77dfb6b6e89b9ded4a
+    kaggle_v2_sample_id_order_sha256: e6a2a380b8751443333064563fe94289055b95a739a3c8ac42d672df28a7e269
+    kaggle_v2_output_directory: kaggle/output/inference_v2
+    versioned_output_cli_bug: owner_slug_version_is_parsed_but_not_forwarded_to_api_version_label
+    competition_sources:
+      - rogii-wellbore-geology-prediction
+    dataset_sources:
+      - phongnguyn23021656/koolbox-offline
+      - nina2025/rogii-03
+      - pilkwang/rogii-model-package
+      - thbdh5765/rogii-v10-fresh-artifacts
+      - fleongg/rogii-claude-models-pub
+      - needless090/rogii-tabicl-mirror
+      - ravaghi/wellbore-geology-prediction-artifacts
+    current_test_inference_dataset_sources:
+      - phongnguyn23021656/koolbox-offline
+      - nina2025/rogii-03
+      - pilkwang/rogii-model-package
+      - thbdh5765/rogii-v10-fresh-artifacts
+      - fleongg/rogii-claude-models-pub
+      - needless090/rogii-tabicl-mirror
+      - ravaghi/wellbore-geology-prediction-artifacts
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  deterministic_anchor_reason: >-
+    The two visible final files are byte-identical, but source-derived unseeded
+    Numba PF kernels run under threaded well-level parallelism and the two run
+    logs show different pre-override blend statistics. Hidden-well determinism
+    is therefore not established.
+  seed_policy: preserve_hjyact_v2_source_seed_contract_then_audit_two_identical_reruns
+  stochastic_components:
+    - sp45_likelihood_pf
+    - learned_likelihood_pf
+    - visible_prefix_seed_bank
+    - pf_seed_branch_hedge
+  parallel_rng_policy: preserve_source_semantics_and_reject_unexplained_thread_scheduling_dependence
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+    rerun_comparison: true
+
+notes:
+  - The public source score is reference evidence, not an exp513 result.
+  - The canonical template notebooks remain placeholders; only the execution-only candidate was packaged and run.
+  - Both visible reruns match the source SHA, but no competition submission was made and no exp513 LB exists.
+  - Hidden code submission remains gated on a user decision about preserving source RNG semantics versus adding explicit per-well seeds.

@@ -1,0 +1,161 @@
+{
+  "experiment": "exp336_exp287_formation_tail_attribution_readout",
+  "status": "kaggle_cpu_v2_complete_no_stable_formation_attribution_closed",
+  "updated_at": "2026-07-22",
+  "route": "ml_model",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "formation_tail_attribution_gate",
+  "kaggle_run": {
+    "kernel": "kentookumura/exp336-exp287-formtail-attribution-readout-train",
+    "kernel_id_no": 128221753,
+    "completed_version": 2,
+    "runtime_seconds": 92.458,
+    "notebook_total_seconds": 102.406,
+    "gpu": false,
+    "internet": false,
+    "version_1": {
+      "status": "technical_error_before_family_evaluation",
+      "cause": "three SHA-identical hidden-like assignment paths were rejected as non-unique",
+      "scientific_contract_changed": false
+    }
+  },
+  "execution_count": {
+    "target_free_attribute_families": 6,
+    "model_variants": 0,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "control_retraining_boosters": 0
+  },
+  "decision": {
+    "status": "NO_STABLE_FORMATION_ATTRIBUTION_CLOSE",
+    "primary_family_count": 6,
+    "passed_family_count": 0,
+    "passed_families": [],
+    "promotes_exp287_or_exp334": false,
+    "authorizes_separate_intervention_experiment": false,
+    "authorizes_prediction_inference_or_submission": false
+  },
+  "pooled_oof_report_only": {
+    "exp287_rmse": 8.136708220359452,
+    "exp264_rmse": 8.460811237612477,
+    "delta_rmse": -0.3241030172530248,
+    "well_delta_mean": -0.16968355253980363,
+    "well_delta_median": -0.06512229968663474,
+    "largest_absolute_delta_well": "11d0f5ac",
+    "worsened_plus_1ft_wells": 80,
+    "worsened_plus_3ft_wells": 17,
+    "worsened_plus_5ft_wells": 4
+  },
+  "families": [
+    {
+      "family": "plane_reference_distance",
+      "global_q4_minus_q1_mean": 0.08181672348448682,
+      "global_q4_minus_q1_median": 0.08086357510681697,
+      "positive_folds": 3,
+      "hidden_like_positive_scopes": 0,
+      "q1_wells": 194,
+      "q4_wells": 193,
+      "passed": false,
+      "failed_checks": ["global_effect", "fold_direction", "hidden_like_direction"]
+    },
+    {
+      "family": "dense_reference_distance",
+      "global_q4_minus_q1_mean": 0.35047070133613445,
+      "global_q4_minus_q1_median": 0.314589732970733,
+      "positive_folds": 5,
+      "hidden_like_positive_scopes": 0,
+      "hidden_like_spatial_q4_minus_q1_mean": -0.01936808515252375,
+      "hidden_like_typewell_purged_q4_minus_q1_mean": -0.03725492572780159,
+      "q1_wells": 194,
+      "q4_wells": 193,
+      "passed": false,
+      "failed_checks": ["hidden_like_direction"]
+    },
+    {
+      "family": "dense_neighbor_uncertainty",
+      "global_q4_minus_q1_mean": 0.15101421639114684,
+      "global_q4_minus_q1_median": 0.016835721498028478,
+      "positive_folds": 5,
+      "hidden_like_positive_scopes": 1,
+      "q1_wells": 194,
+      "q4_wells": 193,
+      "passed": false,
+      "failed_checks": ["global_effect", "hidden_like_direction"]
+    },
+    {
+      "family": "plane_dense_disagreement",
+      "global_q4_minus_q1_mean": 0.2295963539927981,
+      "global_q4_minus_q1_median": 0.1287552669219134,
+      "positive_folds": 4,
+      "hidden_like_positive_scopes": 0,
+      "q1_wells": 194,
+      "q4_wells": 193,
+      "passed": false,
+      "failed_checks": ["global_effect", "hidden_like_direction"]
+    },
+    {
+      "family": "formation_consensus_spread",
+      "global_q4_minus_q1_mean": 0.014517213983747251,
+      "global_q4_minus_q1_median": 0.08034391418573117,
+      "positive_folds": 4,
+      "hidden_like_positive_scopes": 2,
+      "q1_wells": 194,
+      "q4_wells": 193,
+      "passed": false,
+      "failed_checks": ["global_effect"]
+    },
+    {
+      "family": "known_prefix_formation_calibration_error",
+      "global_q4_minus_q1_mean": 0.0315853603467319,
+      "global_q4_minus_q1_median": -0.002890046570533933,
+      "positive_folds": 4,
+      "hidden_like_positive_scopes": 2,
+      "q1_wells": 194,
+      "q4_wells": 193,
+      "passed": false,
+      "failed_checks": ["global_effect", "global_median"]
+    }
+  ],
+  "technical_audit": {
+    "rows": 3783989,
+    "wells": 773,
+    "valid_partitions": 5,
+    "id_well_fold_alignment": true,
+    "max_actual_tvt_absolute_difference": 0.0,
+    "forbidden_columns_opened": [],
+    "all_families_strictly_eligible": true,
+    "global_fold_hidden_like_coverage_all_passed": true,
+    "freeze_sha_verified_before_oof_open": true,
+    "output_artifact_count": 11,
+    "all_recorded_artifact_sha256_verified": true
+  },
+  "reproducibility": {
+    "stage_a_freeze_manifest_sha256": "e65a9924c11f77008d1574070f71b6cf2d099993e8510eeaf7cc285c5d54979f",
+    "target_free_well_attributes_sha256": "a53a537db8eb9416ef4b83e6529d11d8b10233f02926939c349bd679d09f03aa",
+    "attribution_decision_sha256": "06b7bfd64405b8f330ac818efe59ca51c9b1b13babc5aff440d72447eea9f99a",
+    "scientific_contract_sha256": "b2c8e40c4912abd29277fae96b462d22aaf9826b0a3d4a799902b0f640ee3328",
+    "pushed_package": {
+      "train_notebook_sha256": "abc6c1cde62dfc04ea416b78e44048b469cc2868485e4a83eecec3bd57b3422c",
+      "train_source_sha256": "d9d6cfb504e1a642138475ed95bdb850488f3e59c3c9d84174cee25d32130307",
+      "config_sha256": "6f31f387ff217daaa23bbf3126cc6cf34a5264c53c8b525194f2e9dfd8626d87",
+      "kernel_metadata_sha256": "189141cf09c7224336bd21be662701b66b4ab081215d78edd23be2e3097a2227"
+    },
+    "seed_policy": "no_rng_sorted_identity_and_fixed_numpy_linear_quantiles",
+    "model_prediction_submission_sha256": null
+  },
+  "implementation_validation": {
+    "canonical_notebook_adopted": true,
+    "synthetic_tests_passed": 11,
+    "combined_notebook_tests_passed": 15,
+    "jupytext_roundtrip_passed": true,
+    "py_compile_passed": true,
+    "ruff_f821_passed": true,
+    "strict_experiment_validation_passed": true
+  },
+  "inference_run": false,
+  "submission_created": false,
+  "notes": "All six preregistered families failed the fixed AND gate. The formation-attribution branch is closed without same-OOF family/threshold rescue, inference, or submission."
+}

@@ -1,0 +1,77 @@
+{
+  "experiment": "exp104_pf_z_seedbag_scale_cache",
+  "route": "pf_beam",
+  "status": "completed_train_side_audit_rejected",
+  "metric": "train_well_pseudotail_candidate_parity_audit",
+  "cv": {
+    "source": "kaggle_train_v1",
+    "rows": 3783989,
+    "wells": 773,
+    "runtime_seconds": 41132.91109704971,
+    "best_candidate": {
+      "candidate": "exp072_likpf_mean",
+      "rmse": 11.594897672217703,
+      "mae": 7.067632584311985,
+      "within_10ft": 0.772807479091509,
+      "bias": -1.0994231121947302
+    },
+    "best_pf_z_seedbag": {
+      "candidate": "pf_z_seedbag_scale_12",
+      "rmse": 14.145856008300676,
+      "mae": 8.776380613466866,
+      "within_10ft": 0.6952602134942781,
+      "bias": -0.9537326492005196
+    },
+    "exp072_pf_z": {
+      "candidate": "exp072_pf_z",
+      "rmse": 17.78817117151714,
+      "mae": 10.677486524833235,
+      "within_10ft": 0.6476681089717755,
+      "bias": -0.9345598923620186
+    },
+    "delta_pf_z_seedbag_best_minus_exp072_likpf_mean_rmse": 2.5509583360829726,
+    "delta_pf_z_seedbag_best_minus_exp072_pf_z_rmse": -3.6423151632164625
+  },
+  "updated_at": "2026-06-22",
+  "kernel": {
+    "id": "kentookumura/exp104-pf-z-seedbag-scale-train",
+    "version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp104-pf-z-seedbag-scale-train",
+    "status": "KernelWorkerStatus.COMPLETE",
+    "enable_gpu": false,
+    "enable_internet": false,
+    "kernel_sources": [
+      "kentookumura/exp072-exp063-full-replay-feature-cache-train"
+    ]
+  },
+  "artifacts": {
+    "local_output_dir": "experiments/exp104_pf_z_seedbag_scale_cache/kaggle/output/train_v1",
+    "expected": [
+      "exp104_pf_z_seedbag_scale_cache_candidate_metrics.csv",
+      "exp104_pf_z_seedbag_scale_cache_bucket_metrics.csv",
+      "exp104_pf_z_seedbag_scale_cache_by_well.csv",
+      "exp104_pf_z_seedbag_scale_cache_pf_z_seedbag_quality.csv",
+      "exp104_pf_z_seedbag_scale_cache_candidate_wide.csv.gz",
+      "exp104_pf_z_seedbag_scale_cache_candidate_long.csv.gz",
+      "exp104_pf_z_seedbag_scale_cache_summary.json"
+    ],
+    "sha256": {
+      "exp072_cache_raw": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18",
+      "exp072_cache_decompressed": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350",
+      "exp072_schema": "700d38149f583c3ab6574ea7b163c3c8709c2514b675bea381d822f82f4809b8",
+      "candidate_metrics": "b3343b394a7acd356a547ba134e70cd958aacd38731c2f09f996f4a55efef19b",
+      "bucket_metrics": "86ffbc937cf8f82598dcdb679956853e5f8ee2f6de3d369cf6a7b26a8e17bd2d",
+      "by_well": "334d721b7fddb12c78f588d4784aad839a74a79c5eb56753c56b73c237013c92",
+      "pf_z_seedbag_quality": "f501c17ca68fcc8ebabc5212e6cea8e47d41605acea4c4166f1dd7534f082da8",
+      "candidate_wide_raw": "031e57c20e49faf681e194a2f8833f6d22a6780a49a5216161af9945ac8dafc7",
+      "candidate_wide_decompressed": "3d27bb3c580f5c2df3542c9e6dcccb981c20b37f81a2a6a10cda17153e134fd2",
+      "candidate_long_raw": "43a45040cdbee7e19fd7ee2f04f732b0e62372d14dfd8cb6fefbc3af2505d27d",
+      "candidate_long_decompressed": "17e8a58595a4fc2fce62d7a30634cf3da48e41a64d7f11e93f10f131ae2851f6",
+      "summary": "f5339a5fdb5855b3b15ad4e349f3b98695f384d762dffb8ec60483803fdb7fb3"
+    }
+  },
+  "decision": {
+    "recommendation": "do_not_port_or_submit",
+    "reason": "pf_z_seedbag_scale_12 improves over exp072_pf_z but remains worse than exp072_likpf_mean by +2.550958 RMSE and -0.077547 within10 on identical rows."
+  }
+}

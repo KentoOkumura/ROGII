@@ -1,0 +1,151 @@
+{
+  "experiment": "exp096_projection_fadein_after_prefix",
+  "status": "submitted_public_lb_recorded",
+  "updated_at": "2026-06-21",
+  "route": "ml_model",
+  "parent": "exp094_projection_only_on_exp073",
+  "implemented_backlog": "projection_fadein_after_prefix",
+  "kaggle_train": {
+    "kernel_id": "kentookumura/exp096-projection-fadein-after-prefix-train",
+    "kernel_id_no": 124064301,
+    "version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp096-projection-fadein-after-prefix-train",
+    "status": "COMPLETE",
+    "output_path": "/tmp/kaggle-output/exp096_projection_fadein_after_prefix/train_v1",
+    "runtime_seconds": 1137.359,
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "kaggle_inference": {
+    "kernel_id": "kentookumura/exp096-projection-fadein-after-prefix-inference",
+    "kernel_id_no": 124117959,
+    "version": 2,
+    "url": "https://www.kaggle.com/code/kentookumura/exp096-projection-fadein-after-prefix-inference",
+    "status": "COMPLETE",
+    "output_path": "/tmp/kaggle-output/exp096_projection_fadein_after_prefix/inference_v2",
+    "enable_gpu": true,
+    "enable_internet": false,
+    "hidden_rerun_fix": "regenerate_exp073_base_predictions_from_current_test_before_projection",
+    "kernel_sources": [
+      "kentookumura/exp073-full-replay-repro-guard-train"
+    ],
+    "selected_variant": "degree4_beta0.75_c2_fade250_750",
+    "rows": 14151,
+    "wells": 3,
+    "fallback_rows": 0,
+    "submission_sha256": "41b251c4ef29aa9daee62768890b406621310b7977164c24923a979e844dbaf5",
+    "test_predictions_gzip_sha256": "e701f0c0f629a820e0e374695a4bfc5600ff41d9d3dc13edc396234eda5f2274",
+    "test_predictions_decompressed_content_sha256": "a99e3625ef886a67fc0731b943247ff508f5422d97ef438555b93a633885d089",
+    "summary_sha256": "0408a410faba1567e04f71ced736e7e63e5d67082b576d58afa79aac9afe92fc",
+    "log_sha256": "a04773890c5eac4171f765d2ff74e1231daa580cac9d8446c1b06762bda4b65e",
+    "prediction_min": 11591.73046875,
+    "prediction_max": 12239.677734375,
+    "prediction_mean": 11905.696063468351,
+    "prediction_std": 279.37088839026467,
+    "exp073_inference_decompressed_content_sha256": "f3f04e56f3035191d651e330d26ee48e819f42cf0497acecefc88fe985cdc219",
+    "exp073_inference_raw_file_sha256": "e9e7826fc4cfe3b0c56e34ac34ae9b8ebcefa8a8fe16bf44864e0d7ede397bab",
+    "exp073_inference_prediction_sha256": "9b67c2540e93262a095f7f65f527e140a54c0c7e399b068ba85c437b61303822",
+    "exp073_base_generation": {
+      "test_rows": 14151,
+      "fallback_rows": 0,
+      "train_manifest": "/kaggle/input/exp073-full-replay-repro-guard-train/artifacts/exp063_full_replay_repro_guard_lgb_models/manifest.json",
+      "feature_seconds": 107.386,
+      "feature_sha256": "f778b7238ef333bf8a639435be4b924c97d0c3e1a685545991cfe9a3dd1b7623"
+    },
+    "diff_vs_exp073_inference_v2": {
+      "rmse_diff": 0.9842920495337029,
+      "mean_diff": 0.03980532515369938,
+      "std_diff": 0.9835215968645181,
+      "min_diff": -2.744140625,
+      "max_diff": 6.015625,
+      "p95_abs_diff": 1.953125,
+      "p99_abs_diff": 2.734375
+    },
+    "submit_check": {
+      "status": "PASS",
+      "rows_match_sample": true,
+      "header_matches_sample": true,
+      "id_order_matches_sample": true,
+      "duplicate_ids": 0,
+      "missing_or_nonfinite_tvt": 0
+    }
+  },
+  "submission": {
+    "ref": 53896594,
+    "date": "2026-06-21",
+    "status": "COMPLETE",
+    "public_lb": 8.651,
+    "private_lb": null,
+    "kernel_id": "kentookumura/exp096-projection-fadein-after-prefix-inference",
+    "kernel_version": 2,
+    "submission_sha256": "41b251c4ef29aa9daee62768890b406621310b7977164c24923a979e844dbaf5",
+    "delta_vs_exp077_public_lb": 0.040000000000000924,
+    "delta_vs_exp073_public_lb": -0.12899999999999956,
+    "adoption": "do_not_promote_over_exp077_ml_route_anchor"
+  },
+  "submission_attempts": [
+    {
+      "version": 1,
+      "status": "failed_hidden_rerun",
+      "reported_error": "Notebook Threw Exception",
+      "diagnosis": "inference v1 depended on public exp073 inference notebook output, which is incompatible with hidden rerun row/well set."
+    }
+  ],
+  "baseline": {
+    "variant": "baseline_exp073",
+    "rmse_tvt": 9.526374816894531,
+    "prediction_sha256": "5b443dfd6a71ad9c5af2d85002a4d77ff333fd90b64b03bc5c48902d91d0e50c"
+  },
+  "best_variant": {
+    "variant": "degree4_beta0.75_c2_fade250_750",
+    "degree": 4.0,
+    "beta": 0.75,
+    "fade_start": 250.0,
+    "fade_end": 750.0,
+    "robust_c": 2.0,
+    "rmse_tvt": 9.397537231445312,
+    "delta_vs_baseline": -0.12883751794536913,
+    "delta_vs_exp094_global_best": -0.001918792724609375,
+    "correction_abs_p95": 3.35009765625,
+    "correction_abs_max": 20.202392578125,
+    "effective_beta_mean": 0.6734941601753235,
+    "prediction_sha256": "0cdb4c7e0add9584f8847a8ab63fd02be09c3d573cc8ad776f76211f185634b3",
+    "prediction_gzip_sha256": "87a08c68a15abea9dd543d9e81800c2c6f208bc68f843f99af7ce62db259bdae",
+    "prediction_decompressed_content_sha256": "05c6787e19f5058b8d82bd1861072cb263976a70a35355969ae548ffc0d8d6a8"
+  },
+  "guard": {
+    "passes_guard": true,
+    "recommendation": "port_to_inference_candidate",
+    "max_fold_regression": -0.09222984313964844,
+    "near_row_regression": 0.0,
+    "short_tail_regression": 0.0019179582595825195
+  },
+  "bucket_highlights": {
+    "distance_000_050_delta": 0.0,
+    "distance_050_100_delta": 0.0,
+    "distance_100_250_delta": 0.0,
+    "distance_250_500_delta": -0.0982666015625,
+    "distance_500_1000_delta": -0.16400718688964844,
+    "distance_1000_plus_delta": -0.13450908660888672,
+    "tail_rank_000_099_delta": 0.0,
+    "tail_length_000_499_delta": 0.0019179582595825195
+  },
+  "source": {
+    "exp073_oof_decompressed_content_sha256": "fd6c68050058c40b4960f3ff2af9905bfcb1c12d540c71e331d0aa85ca9756a4",
+    "exp073_oof_raw_file_sha256": "986e26c5c6617ade714623d44433e9beacdb2b1027d46c4a4e70825bc8ab87fc",
+    "exp073_oof_prediction_sha256": "3a10327457f5712420f4672432fba11cd8a432b6d3321d67d57ab557acff4d01",
+    "rows": 3783989,
+    "wells": 773,
+    "anchor_t0_vs_exp073_last_known_abs_max": 0.0
+  },
+  "outputs": {
+    "variant_metrics": "artifacts/exp096_projection_fadein_after_prefix_variant_metrics.csv",
+    "fold_metrics": "artifacts/exp096_projection_fadein_after_prefix_fold_metrics.csv",
+    "bucket_metrics": "artifacts/exp096_projection_fadein_after_prefix_bucket_metrics.csv",
+    "by_well": "artifacts/exp096_projection_fadein_after_prefix_by_well.csv",
+    "best_predictions": "artifacts/exp096_projection_fadein_after_prefix_best_predictions.csv.gz",
+    "context_schema": "artifacts/exp096_projection_fadein_after_prefix_context_schema.csv",
+    "summary": "artifacts/exp096_projection_fadein_after_prefix_summary.json"
+  },
+  "notes": "Fade-in projection improves exp073 OOF from 9.526374817 to 9.397537231 and passes near-prefix/fold/short-tail guards. Kaggle inference v2 regenerates exp073 base predictions from current test rows, completes, and submit-check passes. Submitted ref 53896594 scored Public LB 8.651; better than exp073 raw 8.780 but worse than exp077 ML route anchor 8.611."
+}

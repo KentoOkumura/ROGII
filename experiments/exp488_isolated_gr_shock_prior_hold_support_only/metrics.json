@@ -1,0 +1,177 @@
+{
+  "experiment": "exp488_isolated_gr_shock_prior_hold_support_only",
+  "status": "stage0_failed_closed",
+  "route": "pf_beam",
+  "validation": {
+    "stage": "stage_a0_a1_support32",
+    "role": "shock_enriched_mechanism_only_not_cv_or_promotion",
+    "cv": null,
+    "public_lb": null,
+    "private_lb": null,
+    "metric": "rmse",
+    "decision": "stage0_failed_close_without_trigger_threshold_or_output_rescue",
+    "passed": false,
+    "technical_passed": false,
+    "scientific_passed": false
+  },
+  "eligibility": {
+    "passed": true,
+    "raw_census_wells": 773,
+    "isolated_shock_rows": 17047,
+    "support_wells": 763,
+    "zero_shock_wells_report_only": 10,
+    "minimum_rows_passed": true,
+    "minimum_support_wells_passed": true
+  },
+  "counts": {
+    "evaluated_wells": 32,
+    "support_wells": 32,
+    "control_wells": 0,
+    "evaluated_rows": 183093,
+    "trigger_rows": 0,
+    "trigger_wells": 0,
+    "trigger_folds": 0,
+    "trigger_fraction": 0.0,
+    "parent_message_hmm_replays": 32,
+    "candidate_state_modifying_hmm_runs": 0,
+    "saved_parent_prediction_reruns": 0,
+    "lightgbm_configs": 0,
+    "trained_ml_folds": 0,
+    "boosters": 0,
+    "fitted_models": 0,
+    "pf_runs": 0,
+    "beam_runs": 0,
+    "gpu_runs": 0
+  },
+  "scores": {
+    "parent_rmse_ft": 7.668975974817114,
+    "candidate_rmse_ft": 7.668975974817114,
+    "improvement_ft": 0.0,
+    "improving_folds": 0,
+    "by_well_delta_p95_ft": 0.0,
+    "worst_well_regression_ft": 0.0,
+    "folds": [
+      {
+        "fold": 0,
+        "rows": 53966,
+        "wells": 10,
+        "parent_rmse_ft": 8.627291,
+        "candidate_rmse_ft": 8.627291,
+        "delta_ft": 0.0
+      },
+      {
+        "fold": 1,
+        "rows": 32695,
+        "wells": 5,
+        "parent_rmse_ft": 5.770497,
+        "candidate_rmse_ft": 5.770497,
+        "delta_ft": 0.0
+      },
+      {
+        "fold": 2,
+        "rows": 17921,
+        "wells": 3,
+        "parent_rmse_ft": 3.308634,
+        "candidate_rmse_ft": 3.308634,
+        "delta_ft": 0.0
+      },
+      {
+        "fold": 3,
+        "rows": 42595,
+        "wells": 8,
+        "parent_rmse_ft": 6.237724,
+        "candidate_rmse_ft": 6.237724,
+        "delta_ft": 0.0
+      },
+      {
+        "fold": 4,
+        "rows": 35916,
+        "wells": 6,
+        "parent_rmse_ft": 10.298702,
+        "candidate_rmse_ft": 10.298702,
+        "delta_ft": 0.0
+      }
+    ]
+  },
+  "technical": {
+    "stage0_elapsed_seconds": 1899.470163996,
+    "notebook_log_elapsed_seconds": 1922.239474176,
+    "projected_full_runtime_seconds": 39059.748071987335,
+    "projected_full_runtime_limit_seconds": 30600,
+    "peak_rss_gb": 1.4179039001464844,
+    "truth_late_rows": 183093,
+    "truth_late_wells": 32,
+    "forbidden_reads_before_freeze": 0,
+    "passed_checks": [
+      "expected_support_wells",
+      "expected_wells",
+      "support_only_manifest",
+      "well_overlap_zero",
+      "finite_coverage",
+      "forbidden_reads_before_freeze",
+      "peak_rss_gb_max",
+      "posterior_normalization_max_error",
+      "final_trigger_fraction_max"
+    ],
+    "failed_checks": [
+      "final_trigger_folds_required",
+      "final_trigger_rows_min",
+      "final_trigger_wells_min",
+      "full_runtime_projection_seconds_max",
+      "parent_replay_prediction_max_abs_error_ft"
+    ]
+  },
+  "scientific": {
+    "candidate_better_fraction_on_trigger_rows": null,
+    "trigger_row_sse_reduction_fraction": null,
+    "support_pooled_rmse_improvement_ft": 0.0,
+    "improving_folds": 0,
+    "by_well_delta_p95_ft": 0.0,
+    "worst_well_regression_ft": 0.0,
+    "interpretation": "The full frozen AND trigger did not fire, so candidate and parent are identical and there is no mechanism evidence."
+  },
+  "design": {
+    "scientific_variants": 1,
+    "support_only_validation": true,
+    "support32_is_not_cv_or_promotion_evidence": true,
+    "stage1_authorized": false,
+    "inference_authorized": false,
+    "submission_authorized": false
+  },
+  "runtime": {
+    "kernel_id": "kentookumura/exp488-gr-shock-support-only-train",
+    "kernel_id_no": 129170127,
+    "kernel_version": 2,
+    "status": "complete",
+    "completed_at_utc": "2026-07-30 13:42:12 UTC",
+    "python": "3.12.13",
+    "pandas": "2.3.3",
+    "numpy": "2.0.2",
+    "numba": "0.60.0"
+  },
+  "sha256": {
+    "scientific_contract": "3f38c95eefa949561aaaf663d737f9b33cc60b94cb8fdc871916e7568a623508",
+    "canonical_train_notebook": "b7675f28dfb98050caa1e746137002edb778c5b0166790f25b15e1aa210f9ca5",
+    "packaged_train_notebook": "0f8e904081f12c260b0843bb555052ba36743e624c9bb38976e893e6bc60a360",
+    "kernel_metadata": "195fba678c6161febac7424e26c65f731c08a47247e41a754d9bf873a9b8b804",
+    "parent_prediction_input_decompressed": "8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5",
+    "fold_input_decompressed": "709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609",
+    "raw_census": "fdbb653e13bdd6132ffbe08d129fc44a744ed72b81fdc4d41ae04aa0848202cb",
+    "raw_shock_rows_decompressed": "1615aa3504eba71a90dc5c36f782ba79ea34162f3bd2876043b132f703332116",
+    "raw_shock_rows_gzip": "b8236c4d31ffb5c4659bf091f851b5badab9d048e8358a25fa30877658ac40e2",
+    "manifest": "52e50a44f8976aa58899971b603fd1c6675bd410ab0c3a681d4acd73dc3eb41d",
+    "message_bundle": "ba00a800b0c53c3e3e7d5eac80ba0c5973f42b106177d681e322d74997d48ce2",
+    "diagnostics_decompressed": "ba7c625e266067d03e725c51da9b60ca8cb4bb4065684723ff8fd9bd4e1d9207",
+    "diagnostics_gzip": "81cd7f75355e06affbb6af4e604a3a65c86bac4eb3aa67f5c4cd1cc875ccc4f6",
+    "trigger": "9e92bdf46a0a63813f315dbd73ff8258ee2a94da4ab555bc3d18ec4326c7dad0",
+    "trigger_gzip": "652aa9a5e78610f14aa907169e1678dd299403e6059cf93876f72abd8382af80",
+    "prediction": "10c6491e93c56228d0a346f6f05619016abba946134fde64065aae9f2391c17c",
+    "prediction_gzip": "2d9a2dd56fcd5849dcf98cdbaf5c43ade98878ada250593af04f0fa12279296d",
+    "by_well": "b70ac5b04488db553e783dddbd52346452a1fcf70e615058a3350c5742de0de0",
+    "well_audit": "7741a90a75029c8b1fa433d4d84d2f0bcf05cb9ee72d1f575a4843bee9132296",
+    "scope_metrics": "54dbfbb82837c6295783ff45f6eb243ddea022b4b51490d8ecdae195f2fea836",
+    "gates": "40e3d5eb3883cb73141eb55d06eefea11e514a82ec977fb51e2104b4ae07ed92",
+    "summary": "6a84c175e4386e875ba80c25673e8956fe5606a768d2eaa1a9a7f8d04f14ea3d"
+  },
+  "notes": "Version 2 completed after a JSON-only numpy.bool_ fix. No output archive was downloaded because Kaggle logs contained the required gates, metrics, runtime, and SHA evidence."
+}

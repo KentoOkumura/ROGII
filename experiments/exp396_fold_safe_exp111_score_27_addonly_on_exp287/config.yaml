@@ -1,0 +1,645 @@
+experiment:
+  name: exp396_fold_safe_exp111_score_27_addonly_on_exp287
+  description: >-
+    Stage A completed on Kaggle private CPU with all technical, scorer-quality,
+    runtime, and memory gates passed for the fixed 27 exp111 learned likelihood
+    score features. Stage B completed all 15 T4 GPU boosters with zero control
+    retraining, but failed the fixed promotion gate: pooled RMSE improved only
+    0.002413 ft versus exp287, only 2/5 folds were nonworse, scope and by-well
+    tail guards regressed. The branch is closed without inference or submission.
+  route: ml_model
+  status: stage_b_complete_promotion_gate_failed_closed
+  created_at: "2026-07-25"
+  updated_at: "2026-07-26"
+
+lineage:
+  parent: exp287_fold_safe_formation_74_addonly_on_exp264
+  clean_tail_control: exp264_exp263_candidate_confidence_dual_selector
+  scorer_contract_source: exp111_learned_pf_observation_likelihood_probe
+  rawtest_parity_reference: exp145_learned_likelihood_rawtest_feature_generator_parity
+  candidate_cache_parent: exp099_pf_multi_observation_likelihood_probe
+  diff_summary: >-
+    Keep the saved exp287 clean-273 plus nested-compact-74 plus
+    fold-safe-formation-74 surface, outer folds, target, LightGBM configs, and
+    unweighted metrics fixed. Add only the fixed 27 exp111 score columns after
+    regenerating them with outer-five by inner-four strict well-group nesting.
+    Saved exp111 fold-0 model predictions and their dependent GRWR columns are
+    forbidden.
+
+validation:
+  strategy: exp287_outer5_groupfold_with_inner4_groupfold_exp111_scorers
+  metric: rmse
+  metric_weighting: unweighted_rows
+  seed: 42
+  outer_folds: 5
+  inner_folds_per_outer: 4
+  group_column: well
+  id_column: id
+  target_column: TVT
+  score_rows: TVT_input_isna
+  expected_rows: 3783989
+  expected_wells: 773
+  primary_control:
+    experiment: exp287_fold_safe_formation_74_addonly_on_exp264
+    rmse: 8.136708220359452
+    public_lb: 7.530
+  clean_tail_control:
+    experiment: exp264_exp263_candidate_confidence_dual_selector
+    rmse: 8.460811237612477
+  scopes:
+    - near_0_250
+    - mid_250_1000
+    - 1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  leakage_policy:
+    - Assign inner folds by well independently inside each downstream outer-train partition.
+    - Give outer-train rows only inner-OOF scorer predictions.
+    - Give outer-valid rows the mean of four inner models trained exclusively on outer-train wells.
+    - Fit each 48-column imputation median vector on that inner-train partition only.
+    - Never use full-train or batch medians and never fit a scorer on outer-valid wells.
+    - Never reuse saved exp111 fold-0 model predictions.
+    - Do not share a global five-fold scorer OOF cache across downstream outer folds.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  stage_c_artifact_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-train/artifacts
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_c_v6/artifacts
+  stage_c_expected_nested_selector_metrics_sha256: 421376abe55378ac3e0d9c37d2a882a97d6fd4ebf866ec4395e7346c1d4f478b
+  stage_c_expected_nested_selector_model_manifest_sha256: 3f28b04a017f0edadb815be44bf6f6f039dbd115bb72b3401e2681d3002422d2
+  stage_c_expected_nested_compact_manifest_sha256: f4855726de446b8308a8acf80d6ff6cd6a789f18ef90e165b98fa05d12aecf1c
+  stage_c_expected_compact_meta_schema_file_sha256: e3a677610899cb33bf58262f4cf02f650300c8c2207c46b53588d3418162ea74
+  stage_c_expected_compact_meta_schema_logical_sha256: 23614916c99edbbd513bcefee958d26cdfae5b83fb05c232c19736f2708dd725
+  exp218_source_patterns:
+    - inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+    - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+  exp218_config_patterns:
+    - inputs/exp218_source/config.yaml
+    - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+  clean_273_allowlist_patterns:
+    - inputs/exp218_clean_273_allowlist.csv
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+  clean_273_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
+  hidden_like_assignment_patterns:
+    - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  hidden_like_assignment_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  saved_exp287_artifact_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp287-foldsafe-form74-addonly-exp264-train/artifacts
+    - experiments/exp287_fold_safe_formation_74_addonly_on_exp264/kaggle/output/train_v5/artifacts
+  expected_exp287_oof_sha256: 8f026c5c5f6508fb142981832994c6ba9cded4940168c648a9df9f3e698c3913
+  expected_exp287_model_manifest_sha256: 419dbdf83dd6bc343f0265aca56dd690ba1f231ee419e7cf0ff456ffdb797590
+  expected_exp287_metrics_sha256: 435434342494aaa62cee6e627809363ac34f16174973f4b81301d2923f780862
+  expected_exp287_fold_metrics_sha256: 864eca0452eea578c96baa653d25c4f2ae241c84b8e5d659b277407b5e427141
+  expected_exp287_by_well_sha256: 3562cec13abe3c3df496e57d71b46aeb592ea2022c7bf0b9b5df1e062c21024d
+  expected_exp287_formation_fold_manifest_sha256: 25611e281299991d626f1caca48673aee6225a890ad47ecdcd28a117ae827772
+  expected_exp287_feature_schema_sha256: c1327324d6e0719eab45b9f8841033dd6cf09dd09228b044e6e8cc85f0fa8413
+  expected_exp287_raw_schema_audit_sha256: 45d0bf77b1893adfce74921f4427c4ca5ba6d95c69326cbbd35abb766e502a41
+  saved_stage_a_artifact_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp396-foldsafe-exp111-score27-exp287-train/artifacts
+    - experiments/exp396_fold_safe_exp111_score_27_addonly_on_exp287/kaggle/output/stage_a_v2/artifacts
+  expected_stage_a_summary_sha256: e5fa67ed62266a8cfed03121463692d1abec1e1e85616e3af0611912cf1a383e
+  expected_stage_a_gate_sha256: 35314fb017234cd0ed3fe8a2eb7f998e7ceee9b837a20c4c207d54718391ff49
+  expected_stage_a_model_manifest_sha256: b42757edd5dbb061ccc2903595e7c1676a8e21bfcc87837202a3f9387f4bd028
+  expected_stage_a_score_partition_manifest_sha256: 055d2c1f5583b6b44b0ea3413bfd66592b485adb764cec69522e7b33d571aba5
+  expected_stage_a_reproducibility_manifest_sha256: 84cc8703868eea2ebddbbfb176e861505e1f3b6281c725b02e772a31518338f0
+  saved_exp264_oof_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-tvt-train/artifacts/stage_d_oof_predictions.parquet
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_d_v3_corrected/artifacts/stage_d_oof_predictions.parquet
+  expected_exp264_oof_sha256: b11c5005ca566f76588f4e1735386c15b8f016b874701a82e1c0741c8b839ae2
+  exp111_contract_source_patterns:
+    - inputs/exp111_source/learned_pf_observation_likelihood_probe.py
+    - experiments/exp111_learned_pf_observation_likelihood_probe/learned_pf_observation_likelihood_probe.py
+  exp111_contract_config_patterns:
+    - inputs/exp111_source/config.yaml
+    - experiments/exp111_learned_pf_observation_likelihood_probe/config.yaml
+  exp111_contract_feature_schema_patterns:
+    - inputs/exp111_source/exp111_learned_pf_observation_likelihood_probe_feature_schema.csv
+    - experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_feature_schema.csv
+  exp111_contract_model_manifest_patterns:
+    - inputs/exp111_source/exp111_learned_pf_observation_likelihood_probe_model_manifest.json
+    - experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_model_manifest.json
+  exp111_contract_source_sha256: 0f9ec70f8080bf98566dee2122a36066ba161db0a7a3de4be203757d86ebec48
+  exp111_contract_config_sha256: ca8b27de391e306ea6f3e7fbfa9510af63aacfeacd42ea99dbaa0a05b21d851f
+  exp111_contract_feature_schema_sha256: d5adf0f71d1ca44b1ddd7b0577b3637e3ea5e9affd9cb317f931bb3485537f8d
+  exp111_reference_input_decompressed_sha256: 1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a
+  exp111_reference_feature_schema_sha256: 203e4f9a280fe901f5f21d39b85c3e0e2a7fe10c466081c15015c7fb014a0413
+  exp111_reference_model_manifest_sha256: 178e8b3124b817a2b230080fc041aaaee1b06941e5a4223a68cc31bf26e68010
+  exp111_saved_model_prediction_use: forbidden
+  exp099_train_feature_cache_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp099-pf-multiobs-likelihood-train/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+    - experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp099-pf-multiobs-likelihood-train/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+    - experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+
+scorer:
+  name: strict_nested_exp111_dual_objective_likelihood
+  outer_folds: 5
+  inner_folds: 4
+  objectives_per_inner: 2
+  planned_cpu_boosters: 40
+  expected_saved_models: 40
+  expected_imputation_vectors: 40
+  target_definitions:
+    within10_classifier: candidate_abs_error_lte_10
+    expected_error_regressor: candidate_abs_error
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+    - name: beam_mean
+      column: beam_mean
+    - name: likpf_mean
+      column: likpf_mean
+    - name: sc_ens
+      column: sc_ens
+    - name: hyb
+      column: hyb
+  candidate_count: 5
+  input_feature_count: 48
+  model_feature_schema_sha256: 2168c04d71c1bb1de9cdeddfd24fcc83f14d43d269438645af4e9cc3d5e4fe4e
+  log_evaluation_period: 100
+  exp111_row_context_columns:
+    - last_known_tvt
+    - pf_ancc_std
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+    - eval_len
+    - md_since
+    - likpf_mean_d
+  exp111_multiobs_global_columns:
+    - multiobs_score_max
+    - multiobs_score_mean
+    - multiobs_score_gap
+    - multiobs_top1_source_id
+    - multiobs_top1_mae
+    - multiobs_top1_ncc
+  input_contract:
+    row_features: 32
+    candidate_derived_features: 16
+    include_candidate_values: false
+    preserve_exp111_feature_names_and_order: true
+  imputation:
+    strategy: model_specific_inner_train_median
+    persist_feature_count: 48
+    apply_to:
+      - inner_valid
+      - outer_valid
+      - current_test
+    forbidden:
+      - full_train_median
+      - outer_train_full_median
+      - batch_median
+      - current_test_median
+  sampling:
+    unit: wide_score_rows_before_candidate_long_expansion
+    max_train_rows_per_inner_fit: 350000
+    stable_sort_keys: [well, id]
+    seed_material: "exp396|outer=<outer_fold>|inner=<inner_fold>|candidate_long"
+    seed_algorithm: sha256_to_local_uint32
+    share_sample_between_objectives: true
+    global_rng_allowed: false
+    record_sample_row_id_sha256: true
+  classifier_lgbm:
+    objective: binary
+    early_stopping_rounds: 50
+    params:
+      n_estimators: 500
+      learning_rate: 0.045
+      num_leaves: 63
+      min_child_samples: 180
+      subsample: 0.85
+      subsample_freq: 1
+      colsample_bytree: 0.85
+      reg_alpha: 0.1
+      reg_lambda: 1.0
+      n_jobs: 8
+      verbose: -1
+      random_state: 42
+  error_lgbm:
+    objective: l1
+    early_stopping_rounds: 50
+    params:
+      n_estimators: 500
+      learning_rate: 0.04
+      num_leaves: 63
+      min_child_samples: 180
+      subsample: 0.85
+      subsample_freq: 1
+      colsample_bytree: 0.85
+      reg_alpha: 0.1
+      reg_lambda: 1.0
+      n_jobs: 8
+      verbose: -1
+      random_state: 42
+  score_core:
+    count: 10
+    schema_sha256: 8ea2fc2161b6b9fa142c9fd12a26a57e9ec259bd131550aba28c617919c82df7
+    physical_cache_allowed: true
+    aggregation_for_outer_valid: arithmetic_mean_across_four_inner_models
+    aggregation_for_current_test: arithmetic_mean_across_same_outer_four_inner_models
+  derivation:
+    candidate_order: [pf_ancc, beam_mean, likpf_mean, sc_ens, hyb]
+    tie_break: fixed_candidate_order
+    predicted_error_floor_before_ranking: 0.0
+    entropy_probability_clip: [1.0e-6, 1.0]
+    probability_weight_denominator_fallback:
+      threshold: 1.0e-6
+      fallback: 1.0
+    inverse_error_weight_floor: 1.0e-3
+    likpf_mean_tvt_formula: last_known_tvt_plus_likpf_mean_d
+    output_dtype: float32
+    feature_schema_sha256: 1d2c4bd40944abffdbbc4f9bddfbff4efe23d06c3e053069bef05d51ea8a5f44
+    ordered_groups:
+      - summary_13
+      - candidate_probability_and_error_10
+      - weighted_tvt_differences_4
+  feature_columns:
+    - ll_learned_prob_top1_index
+    - ll_learned_error_top1_index
+    - ll_learned_prob_top1_value
+    - ll_learned_prob_top2_value
+    - ll_learned_prob_margin_top1_top2
+    - ll_learned_prob_entropy
+    - ll_learned_error_top1_value
+    - ll_learned_error_top2_value
+    - ll_learned_error_margin_top2_top1
+    - ll_learned_prob_likpf_rank
+    - ll_learned_error_likpf_rank
+    - ll_learned_prob_top3_contains_likpf
+    - ll_learned_error_top3_contains_likpf
+    - ll_learned_prob_pf_ancc
+    - ll_learned_pred_abs_error_pf_ancc
+    - ll_learned_prob_beam_mean
+    - ll_learned_pred_abs_error_beam_mean
+    - ll_learned_prob_likpf_mean
+    - ll_learned_pred_abs_error_likpf_mean
+    - ll_learned_prob_sc_ens
+    - ll_learned_pred_abs_error_sc_ens
+    - ll_learned_prob_hyb
+    - ll_learned_pred_abs_error_hyb
+    - ll_learned_prob_weighted_tvt_minus_last_known_tvt
+    - ll_learned_prob_weighted_tvt_minus_likpf_mean_tvt
+    - ll_learned_error_weighted_tvt_minus_last_known_tvt
+    - ll_learned_error_weighted_tvt_minus_likpf_mean_tvt
+  feature_count: 27
+  current_test:
+    enabled: false
+    full_train_refit: false
+    use_outer_fold_specific_four_model_ensemble: true
+    requires_stage_b_pass_and_separate_approval: true
+
+model:
+  name: exp287_421_plus_fold_safe_exp111_score_27_lightgbm
+  source_surface:
+    clean_base_feature_count: 273
+    nested_compact_feature_count: 74
+    fold_safe_formation_feature_count: 74
+    parent_feature_count: 421
+    added_exp111_score_feature_count: 27
+    final_feature_count: 448
+    final_feature_schema_sha256: 07f6c2b51d166f210bae18720c32fae638aead255b24adda4ac598eaac517630
+    target: target_residual_from_last_known_tvt
+    model_family: exp218_exp063_public_pixiux_lgb0_lgb1_lgb2
+    lightgbm_config_indices: [0, 1, 2]
+    folds: 5
+    early_stopping_rounds: 250
+    log_evaluation_period: 100
+    matrix_copy_chunk_columns: 32
+    mode: gpu_repro_guard_dp_threads8
+  downstream_tvt_stage:
+    expected_source_base_feature_count: 380
+    expected_base_feature_count: 273
+    base_feature_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
+  execution_count:
+    active_variants: 1
+    variant: fold_safe_exp111_score_27_addonly
+    lightgbm_configs: 3
+    folds: 5
+    planned_gpu_boosters: 15
+    control_retraining_boosters: 0
+
+guards:
+  stage_a_technical:
+    require_zero_outer_inner_well_overlap: true
+    require_row_coverage: 1.0
+    require_well_coverage: 1.0
+    require_full_coverage: 1.0
+    maximum_duplicate_ids: 0
+    require_target_free_before_label_join: true
+    require_all_score_core_finite: true
+    require_all_27_features_finite: true
+    expected_model_count: 40
+    expected_imputation_vector_count: 40
+    expected_input_feature_count_per_model: 48
+    maximum_projected_runtime_seconds: 30600
+    maximum_peak_rss_gb: 25
+    require_all_checks: true
+  stage_a_score_quality:
+    expected_error_mae_vs_outer_train_candidate_prior: improve_pooled_and_at_least_4_of_5_folds
+    within10_logloss_vs_outer_train_candidate_prior: improve_pooled_and_at_least_4_of_5_folds
+    within10_brier_vs_outer_train_candidate_prior: improve_pooled_and_at_least_4_of_5_folds
+    require_all_checks: true
+  stage_b_promotion:
+    maximum_pooled_delta_rmse_vs_exp287: -0.02
+    minimum_nonworse_folds_vs_exp287: 4
+    maximum_scope_delta_rmse_vs_exp287: 0.02
+    maximum_by_well_delta_p95_vs_exp287: 0.0
+    maximum_worst_well_delta_rmse_vs_exp264: 0.25
+    worsened_well_thresholds_ft: [1.0, 3.0, 5.0]
+    maximum_worsened_well_counts_vs_exp264:
+      plus_1ft: 135
+      plus_3ft: 39
+      plus_5ft: 14
+    require_all_checks: true
+  reference_exp287_failure:
+    worst_well_delta_rmse_vs_exp264: 8.228409822385604
+    worsened_well_counts_vs_exp264:
+      plus_1ft: 140
+      plus_3ft: 40
+      plus_5ft: 19
+  forbidden:
+    - saved_exp111_fold0_model_predictions
+    - non_oof_exp111_score_columns
+    - global_scorer_oof_cache_shared_across_outer_folds
+    - full_train_scorer_refit
+    - full_train_or_batch_imputation_median
+    - dependent_grwr_six_columns
+    - learned_score_hard_top1
+    - learned_score_direct_weighted_tvt
+    - prediction_blend
+    - feature_subset_or_parameter_grid
+    - sample_weight
+    - formation_or_compact_feature_change
+    - control_retraining
+    - guard_relaxation
+    - inference_or_submit_before_all_guards_pass_and_separate_approval
+  dependent_grwr_six:
+    - grwr_candidate_tvt_std
+    - grwr_candidate_tvt_range
+    - grwr_dwt_energy_ratio_w065_x_candidate_std
+    - grwr_fft_rotation_ratio_x_candidate_range
+    - grwr_dwt_minus_raw_ncc_gap_x_candidate_range
+    - grwr_ll_entropy_x_dwt_energy_ratio_w065
+
+execution:
+  stage: implementation_only
+  allowed_stages:
+    - implementation_only
+    - stage_a_preflight_only
+    - stage_a_cpu_scorer_train
+    - stage_b_preflight_only
+    - stage_b_gpu_tvt_train
+  implementation_approved: true
+  implementation_approval_source: user_message_implement_exp396_2026_07_25
+  implementation_approved_at: "2026-07-25"
+  stage_a_preflight_run_approved: true
+  stage_a_preflight_approval_source: user_message_execute_exp396_after_scope_confirmation_2026_07_25
+  stage_a_preflight_approved_at: "2026-07-25"
+  stage_a_cpu_run_approved: true
+  stage_a_cpu_run_approval_source: user_message_next_after_exp396_preflight_pass_2026_07_25
+  stage_a_cpu_run_approved_at: "2026-07-25"
+  stage_b_implementation_approved: true
+  stage_b_implementation_approval_source: user_message_execute_stage_b_2026_07_25
+  stage_b_implementation_approved_at: "2026-07-25"
+  stage_b_gpu_run_approved: true
+  stage_b_gpu_run_approval_source: user_message_execute_stage_b_2026_07_25
+  stage_b_gpu_run_approved_at: "2026-07-25"
+  stage_b_gpu_run_completed_at_utc: "2026-07-25 15:31:14 UTC"
+  inference_approved: false
+  submission_approved: false
+  kaggle_push_approved: false
+  kaggle_push_approval_source: user_message_execute_stage_b_2026_07_25
+  run_train: false
+  run_inference: false
+  create_submission: false
+  submit_to_kaggle: false
+  control_retraining: false
+  stage_a_implementation_requires_separate_user_approval: false
+  stage_a_preflight_requires_separate_user_approval: true
+  stage_a_cpu_run_requires_separate_user_approval: true
+  stage_b_requires_stage_a_all_pass: true
+  stage_b_requires_separate_user_approval: true
+  inference_requires_separate_user_approval: true
+  submission_requires_separate_user_approval: true
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  batch_size: 50000
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    machine_shape: NvidiaTeslaT4
+    train_kernel_id: kentookumura/exp396-score27-exp287-stageb-train
+    train_title: exp396 score27 exp287 stageb train
+    stage_a_kernel_id: kentookumura/exp396-foldsafe-exp111-score27-exp287-train
+    stage_a_kernel_version: 2
+    stage_a_kernel_id_no: 128540844
+    stage_a_kernel_last_status: KernelWorkerStatus.COMPLETE
+    stage_a_kernel_last_status_checked_at_utc: "2026-07-25 05:12:40 UTC"
+    stage_b_kernel_version: 1
+    stage_b_kernel_id_no: 128570498
+    stage_b_kernel_last_status: KernelWorkerStatus.COMPLETE
+    stage_b_kernel_last_status_checked_at_utc: "2026-07-25 15:31:14 UTC"
+    preflight_runtime_seconds: 277.13375637900003
+    preflight_peak_rss_gb: 5.168308258056641
+    stage_a_runtime_seconds: 3662.974058053
+    stage_a_peak_rss_gb: 8.762432098388672
+    train_kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp287-foldsafe-form74-addonly-exp264-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-tvt-train
+      - kentookumura/exp396-foldsafe-exp111-score27-exp287-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp145-train
+    bootstrap_dependency_files:
+      - source: experiments/exp111_learned_pf_observation_likelihood_probe/learned_pf_observation_likelihood_probe.py
+        destination: inputs/exp111_source/learned_pf_observation_likelihood_probe.py
+      - source: experiments/exp111_learned_pf_observation_likelihood_probe/config.yaml
+        destination: inputs/exp111_source/config.yaml
+      - source: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_feature_schema.csv
+        destination: inputs/exp111_source/exp111_learned_pf_observation_likelihood_probe_feature_schema.csv
+      - source: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_model_manifest.json
+        destination: inputs/exp111_source/exp111_learned_pf_observation_likelihood_probe_model_manifest.json
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: inputs/exp218_source/config.yaml
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/settings.py
+        destination: inputs/exp218_source/settings.py
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+        destination: inputs/exp218_clean_273_allowlist.csv
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  stage_a:
+    accelerator: cpu
+    enable_internet: false
+    threads: 8
+    maximum_projected_runtime_seconds: 30600
+    maximum_peak_rss_gb: 25
+  stage_b:
+    accelerator: gpu
+    machine_shape: NvidiaTeslaT4
+    enable_internet: false
+    gpu_use_dp: true
+    deterministic: true
+    force_col_wise: true
+    num_threads: 8
+    preflight_runtime_seconds: 570.220847435
+    preflight_peak_rss_gb: 23.867610931396484
+    train_and_evaluation_runtime_seconds: 16830.25523505
+    kaggle_log_last_timestamp_seconds: 17430.630990448
+    peak_rss_gb: 25.557098388671875
+
+outcome:
+  decision: stage_b_complete_promotion_gate_failed_closed
+  technical_preflight_passed: true
+  checks_passed: 16
+  checks_total: 16
+  stage_a_gate_passed: true
+  technical_gate_passed: true
+  score_quality_gate_passed: true
+  scientific_gate_evaluated: true
+  full_stage_a_resource_gate_evaluated: true
+  stage_b_gate_passed: false
+  stage_b_completed_gpu_boosters: 15
+  stage_b_model_count: 15
+  stage_b_feature_count: 448
+  stage_b_feature_schema_sha256: 07f6c2b51d166f210bae18720c32fae638aead255b24adda4ac598eaac517630
+  stage_b_exp396_rmse: 8.134294734835043
+  stage_b_exp287_rmse: 8.136708220359452
+  stage_b_delta_rmse_vs_exp287: -0.002413485524408898
+  stage_b_nonworse_folds_vs_exp287: 2
+  stage_b_maximum_scope_delta_rmse_vs_exp287: 0.026155870703092887
+  stage_b_by_well_delta_p95_vs_exp287: 0.34292654498632785
+  stage_b_worst_well_delta_rmse_vs_exp264: 7.802733094923152
+  stage_b_worsened_well_counts_vs_exp264:
+    plus_1ft: 68
+    plus_3ft: 16
+    plus_5ft: 5
+  stage_b_predictions_generated: true
+  stage_b_inference_generated: false
+  stage_b_submission_generated: false
+  rows: 3783989
+  wells: 773
+  duplicate_ids: 0
+  row_coverage: 1.0
+  well_coverage: 1.0
+  full_coverage: 1.0
+  nested_manifest_rows: 20
+  outer_inner_well_overlap_sum: 0
+  boosters_trained: 40
+  model_count: 40
+  median_vector_count: 40
+  schema_record_count: 40
+  score_partition_count: 10
+  predictions_generated: false
+  submission_generated: false
+  control_retraining_boosters: 0
+  runtime_seconds: 3662.974058053
+  peak_rss_gb: 8.762432098388672
+  quality:
+    candidate_rows: 18919945
+    learned_expected_error_mae: 5.908305461058927
+    prior_expected_error_mae: 39.05507516312361
+    expected_error_mae_delta: -33.14676970206468
+    expected_error_mae_improved_folds: 5
+    learned_within10_logloss: 0.34512524723695354
+    prior_within10_logloss: 0.535689166777512
+    within10_logloss_delta: -0.19056391954055846
+    within10_logloss_improved_folds: 5
+    learned_within10_brier: 0.11213481757995002
+    prior_within10_brier: 0.17740592942088648
+    within10_brier_delta: -0.06527111184093647
+    within10_brier_improved_folds: 5
+  fold_assignment_sha256: e8c3dd328af6e5b295940467679fb36b07614f6d6f0b1120f1bc373bec85f92f
+  nested_manifest_logical_sha256: f8104336a64369cccdeddebdfb1c29c349872f6c91529677391cdb9946892035
+  synthetic_derivation_logical_sha256: 2c5e71073a8f70825b95e1f825789a00d79fff275b27b90271bffe589df8a61c
+  artifacts:
+    preflight_manifest_sha256: 2661b808dedc5e463d3813af501e6e61f397cac36f044e9cf709b8d6ccb02749
+    nested_fold_manifest_sha256: 3d42173760625993e51a76d91eb2b7d7dc9e9fbe1a16dbba71c2382c749d41c0
+    stage_a_summary_sha256: e5fa67ed62266a8cfed03121463692d1abec1e1e85616e3af0611912cf1a383e
+    stage_a_gate_sha256: 35314fb017234cd0ed3fe8a2eb7f998e7ceee9b837a20c4c207d54718391ff49
+    stage_a_model_manifest_sha256: b42757edd5dbb061ccc2903595e7c1676a8e21bfcc87837202a3f9387f4bd028
+    stage_a_fold_manifest_sha256: ad8279628a64f8afb812ef6c7ae4ade1307aeff24dd6b5f0ce0d57b232354e4b
+    stage_a_score_partition_manifest_sha256: 055d2c1f5583b6b44b0ea3413bfd66592b485adb764cec69522e7b33d571aba5
+    stage_a_score_quality_sha256: 40abadfb5e9e385a9b15fbc53ae4d829cde948badbd0e2be66b64ea7f213b679
+    stage_a_feature_importance_sha256: 9abf67ae6f3f73da18408cfb59eb397e8c85ffd502e7533c01e01a2a849eea91
+    stage_a_reproducibility_manifest_sha256: 84cc8703868eea2ebddbbfb176e861505e1f3b6281c725b02e772a31518338f0
+    logs_sha256: a8e96ce402e6e44972121ea79034431225bb6345b7de64b4088cb14bded1353b
+    canonical_notebook_sha256: c89d6dce607083204791e83bfdef8db21595d95e549de67f9cd0bef591715d01
+    packaged_notebook_sha256: 3c86cea88b8259e7e5857dfdde307ee7349c6b813dd56881e70e053bec99f938
+    packaged_metadata_sha256: 1162f2a9754357bbc92e16669e5c1a398e52015a8b9fb93082748f01576dc5b2
+    packaged_config_sha256: de5729067cfdd193785778e3fbe4f643dc272f21191e995589339bdf971c704f
+    stage_b_canonical_notebook_sha256: 0a19d05759febf720bb2a60c38b9885b2cc8841295c00c6024a7a1944fa44cf2
+    stage_b_packaged_notebook_sha256: b80878667f6f47b742143557e65858dcf30e69c89c1c04fb43d462d7b6e13e13
+    stage_b_packaged_metadata_sha256: 59c887f9532ca3a4820eec1bf663f51cf4ede0478732dc94fe3d0828ffefc012
+    stage_b_packaged_config_sha256: d741e1aa6d1a2c30ab5153d83c200c873a1548b34d9703083e27de990967c8d5
+    stage_b_preflight_manifest_sha256: 0cd823b4e3058b547e3aa411de158a7c66c9a29b0f58cf66f9a1950d6be5052e
+    stage_b_component_manifest_sha256: 1a228ffe8679a2087ff9f11dd17db69917bed104927407199047077800449af1
+    stage_b_fold_metrics_sha256: 3c3c16271da83518a7fd1ccaabec6119da3ee86b92f315ab2d46af7d706376a4
+    stage_b_scope_metrics_sha256: 67244fb51a7ebb385cbc241146df4540959155d22d89eeca41d3ee1667d0211d
+    stage_b_by_well_metrics_sha256: 6cb967c0ea2b30b74c3ddc9827a256e048ba9497c43f57530a18511e1cb86e96
+    stage_b_feature_importance_sha256: 6c9d7b9ffa8bf1838f3693a5f09cfefadeaa6610da2bec2a2be56c079f89f6b3
+    stage_b_metrics_sha256: d80395f71279e7a8c1597f91902303c471ecfaf22e13fddca61193f7fcdc5146
+    stage_b_model_manifest_sha256: 85059c057895365c53158e75a5f18246414d591123c5b52a1627501af63d75c1
+    stage_b_reproducibility_manifest_sha256: fd7434ce4dd39be3996d1a10c403d1ed00d4d2a4ce67d34c266b265e1031c8a9
+    stage_b_oof_prediction_sha256: ebf4a12896c80435ab12f16e8bcb3297874edef81b7630f42dea7c53713a81c3
+    stage_b_logs_sha256: 0a28d6b1a83453e27f3ceeb4b5121fc0ae6cbca30564077974377de593989b46
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_groupfold_seed_42_and_stable_sha256_local_subsample_seed
+  stochastic_components:
+    - cpu_lightgbm_scorer_training
+    - candidate_long_row_subsample
+    - gpu_lightgbm_tvt_training_after_separate_approval
+  parallel_rng_policy: >-
+    Stable-sort row identities and freeze every sampled row set with a
+    task-local SHA256-derived RNG before any threaded model fit; never use
+    global RNG state or thread completion order.
+  gpu_policy:
+    gpu_use_dp: true
+    deterministic: true
+    force_col_wise: true
+    num_threads: 8
+    bitwise_rerun_claimed: false
+  feature_sha_policy: decompressed_content_sha_for_gzip_and_file_plus_logical_sha_for_parquet
+  record:
+    kernel_version: true
+    input_sha: true
+    outer_inner_fold_assignment_sha: true
+    sampled_row_id_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    imputation_median_sha: true
+    model_sha: true
+    model_manifest_sha: true
+    oof_prediction_sha: true
+    submission_sha: false
+  notes:
+    - Saved PF/Beam/candidate caches are fixed upstream inputs and are not regenerated in this experiment.
+    - Stage A sample identities, imputation vectors, schemas, and model files must all be SHA-addressed.
+    - Stage B GPU LightGBM completed one approved run and is not a deterministic anchor; the closed branch must not be rerun without a new independent design and approval.
+    - Inference and submission are outside the current implementation-only scope.
+
+notes:
+  - The scientific variable is the fixed 27-column learned score add-only surface.
+  - The saved exp111 fold-0 models are evidence and contract references only, never prediction inputs.
+  - The normal implementation priority does not supersede already approved or quota-waiting GPU work.
+  - Stage A compact self-contained train was adopted as the canonical train notebook after explicit approval.
+  - Stage A zero-booster preflight passed on Kaggle private CPU version 1 with all 16 checks true.
+  - Stage A version 2 completed all 40 CPU boosters and passed every fixed gate.
+  - The Kaggle output remains the authoritative source for the 40 models and 10 score-core partitions.
+  - Stage B implementation and one T4 run are approved for one 448-feature variant, three configs, five folds, 15 boosters, and zero control retraining.
+  - Stage B version 1 completed 15/15 T4 GPU boosters but failed five of six fixed promotion checks.
+  - The exp111 score-27 add-only branch is closed without rescue, inference, or submission.
+next_action: Keep exp287 as the train-side parent anchor; only consider the low-P4 zero-booster transfer-failure attribution readout after a new explicit need and approval.

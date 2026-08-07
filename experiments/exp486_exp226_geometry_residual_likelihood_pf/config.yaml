@@ -1,0 +1,549 @@
+experiment:
+  name: exp486_exp226_geometry_residual_likelihood_pf
+  description: >-
+    Two-variant PF audit of the exp279 absolute exp226 geometry unary and the
+    exp281 slow residual-offset state. All-well Stage 1 passed the technical
+    gate, but absolute geometry failed the preregistered well-tail guard and
+    residual offset regressed overall, so both variants closed without promotion.
+  hypothesis: >-
+    Group-safe exp226 geometry may prevent PF mode slip either as a fixed
+    absolute observation potential or as the moving center of a slow residual
+    state, even though a relative-rate defensive proposal failed in exp419.
+  route: pf_beam
+  status: stage1_all_variants_gate_failed_terminal_close
+  created_at: "2026-07-30"
+  updated_at: "2026-07-30"
+
+lineage:
+  parent: exp417_scale5_seed_aggregation_promotion_audit
+  exact_pf_implementation_reference: exp404_scale5_sigma_gr_likelihood_pf_ablation
+  absolute_geometry_source: exp279_exp226_geop_centered_exact_hmm_redecode
+  residual_offset_source: exp281_exp226_residual_offset_exact_hmm_transition_probe
+  nonduplicate_pf_reference: exp419_exp226_guided_defensive_mixture_pf
+  steering: ../../.steering/20260730-exp486-exp226-geometry-residual-likelihood-pf
+  diff_summary: >-
+    Evaluate two preregistered variants independently: add the exp279
+    sigma20/lambda0.50 absolute tvt_geop unary to the unchanged exp404 PF, or
+    replace its state dynamics with an exp281-derived slow offset around
+    tvt_geop. Do not use exp226 final prediction, mix the variants, or select a
+    same-OOF winner. Exp419 used only a relative-rate proposal and did not test
+    either treatment.
+
+implementation:
+  enabled: true
+  design_approval_received: true
+  design_approval_source: user_message_2026_07_30_freeze_pf_transfer_designs
+  implementation_approval_received: true
+  implementation_approval_source: user_message_2026_07_30_implement_exp486
+  scaffold_created: true
+  canonical_notebooks_are_markdown_placeholders: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  compact_train_candidate: exp486_exp226_geometry_residual_likelihood_pf_compact_selfcontained_train.py
+  compact_train_notebook_candidate: exp486_exp226_geometry_residual_likelihood_pf_compact_selfcontained_train.ipynb
+  compact_inference_guard_candidate: exp486_exp226_geometry_residual_likelihood_pf_compact_selfcontained_inference.py
+  compact_inference_guard_notebook_candidate: exp486_exp226_geometry_residual_likelihood_pf_compact_selfcontained_inference.ipynb
+  dedicated_test: ../../tests/test_exp486_exp226_geometry_residual_likelihood_pf.py
+  jupytext_source_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  train_execution_enabled: false
+  stage_1_implemented: true
+  inference_enabled: false
+  test_geometry_regeneration_implemented: false
+  submission_enabled: false
+
+validation:
+  strategy: fixed32_technical_then_all_well_two_independent_exp226_geometry_pf_variants
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: tvt_input_missing_evaluation_suffix
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  primary_control: exp404_exp417_likpf_scale5_x1p0
+  primary_control_rmse_ft: 10.914522073
+  fixed_hmm_pf_50_50_control_rmse_ft: 10.084909679560383
+  fixed32_is_cv: false
+  active_variants:
+    - absolute_geometry_unary_sigma20_lambda050
+    - slow_residual_offset_state
+  selection_policy: independent_report_only_no_same_oof_winner
+  truth_attachment: after_both_predictions_mechanism_ledgers_and_all_content_sha_freeze
+  leakage_policy:
+    - PF input allowlist from exp226 is well_id, row_idx, suffix_offset, and tvt_geop only.
+    - Fold is attached only after both variant predictions freeze.
+    - exp226 tvt_pred, gr_delta, tvt_true, error, and abs_error are forbidden PF inputs.
+    - Unknown-suffix truth and hidden-like roles are attached after all candidate content SHA freeze.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  observed_log_column: GR
+  id_column: id
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  exp226_oof_geometry:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    prediction_time_usecols: [well_id, row_idx, suffix_offset, tvt_geop]
+    report_only_after_freeze_columns: [fold]
+    forbidden_pf_columns: [tvt_pred, gr_delta, tvt_true, error, abs_error]
+    train_policy: group_safe_outer_fold_oof_geometry
+    test_policy: regenerate_same_exp226_geometry_formula_from_raw_deployable_inputs
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    patterns:
+      - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+  fixed32_manifest:
+    source: exp411_predictive_filtered_rate_innovation_destick
+    filename: stage0_fixed32_manifest.csv
+    local: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+    expected_sha256: fbbc62b7cb79e16a7fb436f3a9d11f8975e935ad2475a17e2dec4fd7b142e4d6
+    expected_suffix_rows: 156088
+    prefreeze_columns: [well]
+    postfreeze_columns: [well, role, fold]
+  saved_control:
+    source: exp404_scale5_sigma_gr_likelihood_pf_ablation
+    filename: exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin
+    prediction_column: likpf_scale_5_x1p0
+    expected_rmse_ft: 10.914522073
+    expected_logical_sha256: 5f4b6e715081b598b0a34607ad0c81339d0ecd5882ea3a45dd79f33123959a00
+    expected_raw_sha256: b3699432a691229da5a6562ce74e0b84f1bee3021bd80d650526906f5aa390f8
+    expected_decompressed_sha256: 00fe1b90fce84bd601b4b91442d9fc698200aafadd48658f7d8c26ec1fbe0d00
+    candidates:
+      - /kaggle/input/exp404-v1-frozen-predictions
+      - /kaggle/input/datasets/kentookumura/exp404-v1-frozen-predictions
+      - /tmp/exp404-v1-frozen-predictions-dataset
+      - /tmp/exp404-reference
+    patterns:
+      - "**/exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin"
+    rerun: false
+  exp209_hmm_control:
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    prediction_column: hmm_mean_tvt
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+    patterns:
+      - "**/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz"
+    rerun: false
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    kernel_source: kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_role_counts:
+      hidden_like_spatial:
+        train: 573
+        valid: 200
+      hidden_like_typewell_purged:
+        train: 557
+        valid: 200
+        purged_train_excluded: 16
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    patterns:
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+  stage1_frozen_resume:
+    source: exp486_kaggle_version_2_error_after_target_free_freeze
+    dataset_source: kentookumura/exp486-v2-stage1-frozen-targetfree
+    source_kernel_version: 2
+    source_kernel_elapsed_to_error_seconds: 13311.053095581
+    scientific_contract_sha256: 62dcb499c0c9c9320091fa28663771493847dd6f46f03737015d1373dddc5f8e
+    files:
+      freeze_manifest:
+        filename: exp486_exp226_geometry_residual_likelihood_pf_stage1_freeze_manifest.json
+        raw_sha256: 47ce46149c55b1d853aab08572c6254064fa9ad92751522640b855ef287677cc
+      predictions:
+        filename: exp486_exp226_geometry_residual_likelihood_pf_stage1_predictions.csv.gz
+        raw_sha256: 0fe0cdda02c49eaa80ab668cb8e68e5b3e02b98f46a5105be6818497f2b65de3
+        decompressed_sha256: 05f692238c53711172f5e4e430eb46766cd26f2e3dac92472cb211b5639153e6
+        logical_sha256: 70a5ac662c9c58fe54d050f1350ed08e912ecb4edc6362e98e3c3663cd704ea8
+      absolute_ledger:
+        filename: exp486_exp226_geometry_residual_likelihood_pf_stage1_absolute_ledger.csv.gz
+        raw_sha256: 3f7381f1265d9b5bc9f0b9a68d4a3a088a620bfc04d674faca0d608390ea7b96
+        decompressed_sha256: ef76d89fef9529d11501a5c17999e95e22d45006c0fd1e6b80e71d674b6c5a80
+        logical_sha256: ef76d89fef9529d11501a5c17999e95e22d45006c0fd1e6b80e71d674b6c5a80
+      residual_ledger:
+        filename: exp486_exp226_geometry_residual_likelihood_pf_stage1_residual_ledger.csv.gz
+        raw_sha256: 9aaa61988642bc41e9d4b16162980e7ba6b4cfeab3612716af9d6580b5fdfcf0
+        decompressed_sha256: e41dc48abbc849c5faa6d564ddd45faefdb100747af9c57911c258eba07a59b7
+        logical_sha256: e41dc48abbc849c5faa6d564ddd45faefdb100747af9c57911c258eba07a59b7
+      well_audit:
+        filename: exp486_exp226_geometry_residual_likelihood_pf_stage1_well_audit.csv
+        raw_sha256: 1f2f8cd2da5df0485bae9dd44f50efc7f54bb647d9801269f8fe3f3cb7b5b59b
+    candidates:
+      - /kaggle/input/exp486-v2-stage1-frozen-targetfree
+      - /kaggle/input/datasets/kentookumura/exp486-v2-stage1-frozen-targetfree
+      - /tmp/exp486-v2-stage1-frozen-dataset
+
+model:
+  name: exp226_absolute_geometry_and_residual_offset_likelihood_pf_audit
+  estimator: stochastic_likelihood_weighted_particle_filter
+  active_variants:
+    - absolute_geometry_unary_sigma20_lambda050
+    - slow_residual_offset_state
+  absolute_geometry_unary:
+    state: exp404_position_and_rate_unchanged
+    geometry_center: tvt_geop
+    sigma_ft: 20.0
+    lambda: 0.50
+    log_likelihood: "0.50 * (-0.5 * min(((particle_tvt-tvt_geop)/20)^2,600))"
+    added_to: exp404_capped_gaussian_gr_log_likelihood
+  residual_offset_state:
+    state: [offset_from_tvt_geop, offset_rate]
+    output_tvt: tvt_geop_plus_offset
+    initial_offset_center: last_known_tvt_minus_tvt_geop_at_first_score_row
+    initial_offset_spread_ft: 4.5
+    initial_offset_rate_center: 0.0
+    initial_offset_rate_spread: 0.01
+    offset_rate_transition: "0.998*previous_offset_rate + 0.002*normal"
+    offset_transition: "previous_offset + current_offset_rate*delta_md + 0.005*normal"
+    gr_emission_position: tvt_geop_plus_offset
+    gr_emission: exp404_capped_gaussian_x1p0
+  fixed_from_exp404_for_both:
+    particles: 500
+    seeds: 128
+    initial_state_spread_ft: 4.5
+    initial_rate_spread: 0.01
+    primary_seed_weighting_temperature: 5.0
+    gr_scale_multiplier: 1.0
+    base_scale_clip: [10.0, 60.0]
+    momentum: 0.998
+    rate_noise: 0.002
+    position_noise: 0.005
+    rough_position: 0.1
+    rough_rate: 0.001
+    resample_threshold_fraction: 0.5
+    typewell_grid_step_ft: 0.2
+    typewell_tvt_pad_ft: 100.0
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    output_dtype: float32
+
+mechanism_readout:
+  absolute_geometry_unary:
+    - geometry_log_weight_quantiles
+    - particle_geometry_residual_quantiles
+    - ess_and_resampling_delta
+  slow_residual_offset_state:
+    - offset_and_offset_rate_quantiles
+    - geometry_delta_vs_particle_drift
+    - finite_and_geometry_support_coverage
+    - ess_and_resampling_delta
+  target_free_before_prediction_freeze: true
+
+stages:
+  stage_0:
+    purpose: technical_and_mechanism_preflight_not_cv
+    well_set: stable_sha256_fixed32
+    wells: 32
+    scientific_variants: 2
+    candidate_pf_well_runs: 64
+    seed_well_trajectories: 8192
+    particle_starts: 4096000
+    control_pf_well_runs: 0
+  stage_1:
+    enabled_only_after_stage_0_pass_and_separate_user_approval: true
+    scientific_variants: 2
+    candidate_pf_well_runs: 1546
+    seed_well_trajectories: 197888
+    particle_starts: 98944000
+    control_pf_well_runs: 0
+
+guards:
+  technical_stage_0:
+    require_exp226_decompressed_sha_match: true
+    require_prediction_time_usecols_exact_match: true
+    require_forbidden_pf_column_read_count: 0
+    require_geometry_row_coverage: 1.0
+    require_variant_formula_and_state_contracts: true
+    require_finite_prediction_coverage_each_variant: 1.0
+    require_stable_seed_identity: true
+    require_execution_count_match: true
+    maximum_truth_error_fold_hidden_reads_before_both_freeze: 0
+    maximum_seconds_full_projection: 30600
+    maximum_peak_rss_gb: 25
+  scientific_each_variant:
+    minimum_pooled_rmse_gain_vs_control_ft: 0.05
+    minimum_improved_folds: 4
+    minimum_raw_gr_observed_gain_ft: 0.05
+    maximum_raw_gr_missing_regression_ft: 0.0
+    maximum_high_missing_well_regression_ft: 0.0
+    maximum_long_tail_1000_plus_regression_ft: 0.0
+    maximum_hidden_like_spatial_regression_ft: 0.0
+    maximum_hidden_like_typewell_purged_regression_ft: 0.0
+    maximum_by_well_delta_p95_ft: 0.0
+    maximum_worst_well_regression_ft: 0.25
+    maximum_fixed_hmm_pf_50_50_regression_ft: 0.0
+    require_all_checks: true
+  decision:
+    selection_within_exp486: forbidden
+    downstream_if_any_variant_passes: new_steering_and_separate_user_approval
+  forbidden:
+    - sigma_lambda_offset_noise_or_initialization_search
+    - absolute_unary_plus_residual_state_combination
+    - exp226_final_prediction_or_gr_delta_use
+    - same_oof_variant_winner_selection
+    - well_or_row_geometry_gate
+    - particle_seed_temperature_or_gr_scale_change
+    - blend_or_selector_rescue
+    - same_oof_rescue
+
+runtime:
+  device: cpu
+  use_gpu: false
+  num_workers: 8
+  maximum_seconds: 30600
+  maximum_peak_rss_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    planned_train_kernel_id: kentookumura/exp486-exp226-geometry-residual-likpf-train
+    planned_train_title: exp486 exp226 geometry residual likpf train
+    dataset_sources:
+      - kentookumura/exp404-v1-frozen-predictions
+      - kentookumura/exp486-v2-stage1-frozen-targetfree
+    kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    bootstrap_dependency_files:
+      - source: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+        destination: assets/stage0_fixed32_manifest.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: >-
+    seed_base=sha256_first16("likpf::train::<well_id>")
+    modulo_2147483647_plus_1; seed=seed_base+seed_index_0_to_127;
+    variant name is excluded for common random-number labels.
+  stochastic_components:
+    - particle_initialization
+    - rate_or_offset_process_noise
+    - systematic_resampling
+    - post_resampling_roughening
+  parallel_rng_policy: explicit_per_well_seed_stream_independent_of_thread_schedule
+  stable_order: well_id_then_variant_declared_order_then_row_then_seed_then_particle
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    exp226_geometry_sha: true
+    scientific_contract_sha: true
+    mechanism_ledger_sha: true
+    prediction_schema_sha: true
+    prediction_content_sha: true
+    submission_sha: false
+
+execution:
+  implementation_approved: true
+  kaggle_push_approved: true
+  kaggle_push_approval_source: user_message_2026_07_30_runtime_accepted_proceed_stage1
+  stage_0_execution_approved: true
+  stage_0_execution_approval_source: user_message_2026_07_30_execute_exp486
+  selected_stage: null
+  run_stage_0: false
+  run_stage_1: false
+  stage_1_resume_from_frozen_v2: true
+  stage_1_resume_current_kernel_pf_well_runs: 0
+  run_inference: false
+  create_submission: false
+  submit_to_kaggle: false
+  scientific_variants: 2
+  stage_0_candidate_pf_well_runs: 64
+  stage_0_seed_well_trajectories: 8192
+  stage_0_particle_starts: 4096000
+  stage_1_candidate_pf_well_runs: 1546
+  stage_1_seed_well_trajectories: 197888
+  stage_1_particle_starts: 98944000
+  control_pf_well_runs: 0
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  hmm_well_runs: 0
+  beam_well_runs: 0
+  gpu_runs: 0
+  stage_0_completed: true
+  stage_0_result: stage0_fail_closed
+  stage_0_all_gates_pass: false
+  stage_0_technical_all_pass: false
+  stage_0_mechanism_all_pass: false
+  stage_0_runtime_exception_approved: true
+  stage_0_runtime_exception_approval_source: user_message_2026_07_30_runtime_accepted_proceed_stage1
+  stage_0_support_numerical_exception_accepted: true
+  stage_0_support_numerical_exception_source: measured_1e_15_normalization_overshoot
+  stage_1_execution_approved: true
+  stage_1_execution_approval_source: user_message_2026_07_30_runtime_accepted_proceed_stage1
+  stage_1_completed: true
+  stage_1_result: stage1_all_variants_gate_failed_terminal_close
+  stage_1_gate_passed: false
+  stage_1_eligible_variants: []
+  stage_1_eligible_pending_separate_user_approval: false
+  stage_1_eligible_under_approved_exceptions: false
+  next_action: terminal_close_without_geometry_pf_rescue
+
+stage_0_result:
+  status: stage0_fail_closed
+  stage: stage0_fixed32_technical_mechanism_preflight_not_cv
+  fixed32_is_cv: false
+  generated_at_utc: "2026-07-30T12:52:05.140987+00:00"
+  wells: 32
+  rows: 156088
+  technical_all_pass: false
+  mechanism_all_pass: false
+  all_pass: false
+  failed_checks:
+    - runtime_projection
+    - residual_support_fraction_bounded
+  runtime:
+    prefreeze_wall_seconds: 1029.9962048530579
+    summed_variant_well_seconds: 7487.545464754105
+    preregistered_projected_full_seconds: 180871.02013296634
+    maximum_seconds_full_projection: 30600
+    peak_rss_gb_gate_measurement: 1.2391624450683594
+    runtime_ledger_peak_rss_gb: 0.9443702697753906
+  mechanism:
+    mean_absolute_geometry_log_factor: -0.009604882988508487
+    mean_residual_offset_std: 3.9771524394354416
+    minimum_residual_support_fraction: 0.9999999999999988
+    maximum_residual_support_fraction: 1.0000000000000011
+    residual_support_rows_above_one: 54924
+    residual_support_failure_is_floating_point_overshoot: true
+  fixed32_descriptive_metrics_not_cv:
+    absolute_geometry_unary_sigma20_lambda050: 9.183489453268399
+    slow_residual_offset_state: 10.399506240490478
+    saved_exp404_control: 9.616740808061033
+    exp226_tvt_geop_reference: 9.2672047781933
+  decision:
+    stage_1_run: true
+    inference_run: false
+    submission_run: false
+    next_action: run_stage1_all_well_two_variant_train_side_cv
+  runtime_exception:
+    approved: true
+    approval_source: user_message_2026_07_30_runtime_accepted_proceed_stage1
+    policy: >-
+      Preserve the original runtime_projection=false result, but allow Stage 1
+      because the user explicitly accepted runtime. This does not reclassify
+      the original Stage 0 gate as PASS.
+  support_bound_numerical_exception:
+    accepted: true
+    source: measured_stage0_residual_ledger
+    original_check_passed: false
+    minimum: 0.9999999999999988
+    maximum: 1.0000000000000011
+    stage_1_readback_tolerance: 0.000000000001
+    policy: >-
+      Preserve the original strict-bound FAIL. Treat only values within
+      [-1e-12, 1+1e-12] as numerical normalization roundoff for Stage 1
+      technical readback.
+
+stage_1_result:
+  status: stage1_all_variants_gate_failed_terminal_close
+  stage: stage1_all_well_train_side_cv
+  generated_at_utc: "2026-07-30T23:17:29.082818+00:00"
+  rows: 3783989
+  wells: 773
+  reporting_folds: [0, 1, 2, 3, 4]
+  saved_control_rmse_ft: 10.914522073423171
+  technical_gate_passed: true
+  scientific_gate_passed: false
+  eligible_variants: []
+  selection_policy: independent_report_only_no_same_oof_winner
+  variants:
+    absolute_geometry_unary_sigma20_lambda050:
+      rmse_ft: 9.7269380294375
+      improvement_ft: 1.1875840439856713
+      improved_folds: 4
+      fixed_hmm_pf_50_50_rmse_ft: 8.871021641765827
+      fixed_hmm_pf_50_50_improvement_ft: 1.213888206994186
+      by_well_delta_p95_ft: 10.069321492226827
+      worst_well_id: 389ae58f
+      worst_well_regression_ft: 44.02197705356748
+      gate_passed: false
+    slow_residual_offset_state:
+      rmse_ft: 11.139812021086678
+      improvement_ft: -0.22528994766350685
+      improved_folds: 2
+      fixed_hmm_pf_50_50_rmse_ft: 9.832639500252796
+      fixed_hmm_pf_50_50_improvement_ft: 0.2522703485072171
+      by_well_delta_p95_ft: 4.795182565348637
+      worst_well_id: 70e1788b
+      worst_well_regression_ft: 32.921501346637896
+      gate_passed: false
+  runtime:
+    combined_stage1_elapsed_seconds: 13769.492126705116
+    current_version_seconds_through_large_artifacts: 458.439031124115
+    peak_rss_gb: 4.5059661865234375
+  reproducibility:
+    scientific_contract_sha256: 62dcb499c0c9c9320091fa28663771493847dd6f46f03737015d1373dddc5f8e
+    prediction_logical_sha256: 70a5ac662c9c58fe54d050f1350ed08e912ecb4edc6362e98e3c3663cd704ea8
+    primary_metrics_sha256: 326aa169d85e003d7e81e494381ba943c0442e8c5c015886e55ebf7c4020988c
+    by_well_metrics_sha256: 63aa32898dd34a725fe68c16f4569a21060967444c4389c3ed4f833d1e022a72
+    promotion_gate_sha256: ec5e450ae953267fdbfc37170df5899b629e01d5f0c087d9bb027f6592dabb46
+    runtime_ledger_sha256: d11ef8af62b67ca7f140df15ca9eab48c49f27854dcfb25ad4d54e421dfb0e99
+  decision: terminal_close_without_geometry_pf_rescue
+
+kaggle_run:
+  kernel_id: kentookumura/exp486-exp226-geometry-residual-likpf-train
+  id_no: 129170320
+  kernel_version: 4
+  url: https://www.kaggle.com/code/kentookumura/exp486-exp226-geometry-residual-likpf-train
+  status: COMPLETE
+  runtime: private_cpu
+  gpu: false
+  internet: false
+  pushed_at_utc: "2026-07-30T23:08:59Z"
+  completed_at_utc: "2026-07-30T23:17:29.082818+00:00"
+  resume_from_frozen_version: 2
+  current_kernel_pf_well_runs: 0
+  version_history:
+    - kernel_version: 1
+      status: COMPLETE
+      completed_at_utc: "2026-07-30T12:52:05.140987+00:00"
+      stage: stage0_fixed32_technical_mechanism_preflight_not_cv
+    - kernel_version: 2
+      status: ERROR
+      pushed_at_utc: "2026-07-30T13:31:53Z"
+      failed_at_utc: "2026-07-30T17:10:58Z"
+      failure: exp209_expected_sha_manifest_typo_after_target_free_freeze
+      target_free_artifacts_recovered: true
+    - kernel_version: 3
+      status: ERROR
+      pushed_at_utc: "2026-07-30T23:00:08Z"
+      failed_at_utc: "2026-07-30T23:03:18Z"
+      failure: unpacked_ledger_float_reserialization_logical_sha_mismatch
+      current_kernel_pf_well_runs: 0
+    - kernel_version: 4
+      status: COMPLETE
+      pushed_at_utc: "2026-07-30T23:08:59Z"
+      completed_at_utc: "2026-07-30T23:17:29.082818+00:00"
+      stage: stage1_all_well_train_side_cv
+      current_kernel_pf_well_runs: 0
+
+notes:
+  - Compact self-contained Stage 0 candidate, inference guard, and contract tests were implemented on 2026-07-30.
+  - The user authorized canonical train Notebook adoption, Kaggle package/push, and fixed32 Stage 0 execution on 2026-07-30.
+  - Kaggle CPU version 1 completed and failed closed under the original Stage 0 gates on 2026-07-30.
+  - The user accepted runtime and explicitly approved all-well Stage 1 on 2026-07-30.
+  - The original Stage 0 failures remain immutable; inference and submission remain unapproved.
+  - Kaggle CPU version 4 completed Stage 1; both variants failed their independent scientific gates, so the branch closed without inference or submission.

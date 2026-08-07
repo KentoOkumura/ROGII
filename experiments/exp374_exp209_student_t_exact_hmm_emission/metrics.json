@@ -1,0 +1,67 @@
+{
+  "experiment": "exp374_exp209_student_t_exact_hmm_emission",
+  "route": "pf_beam",
+  "status": "terminal_closed_tail_gate_failed_no_rescue",
+  "created_at": "2026-07-24",
+  "updated_at": "2026-07-24",
+  "cv": 11.720478702142103,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "key_idea": "exp209 absolute-TVT exact HMMのGaussian emissionだけを固定df=4 Student-tへ置換する。",
+  "kernel": {
+    "id": "kentookumura/exp374-exp209-student-t-exact-hmm-emission-train",
+    "id_no": 128436182,
+    "version": 1,
+    "runtime_seconds": 19662.082424402237
+  },
+  "execution": {
+    "scientific_variants": 1,
+    "hmm_well_runs": 773,
+    "control_reruns": 0,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0
+  },
+  "technical_gate_passed": true,
+  "scientific_gate_passed": false,
+  "direct": {
+    "candidate_rmse": 11.720478702142103,
+    "control_rmse": 11.938287234887435,
+    "improvement_ft": 0.21780853274533207,
+    "folds_improved": 4,
+    "raw_observed_improvement_ft": 0.13192743336147217,
+    "raw_missing_improvement_ft": 0.4044858246712053,
+    "high_missing_improvement_ft": 0.5038729399761408,
+    "md_since_1000_plus_improvement_ft": 0.23610529873962172,
+    "hidden_like_spatial_improvement_ft": 0.4888728959840911,
+    "hidden_like_typewell_purged_improvement_ft": 0.415855542522392
+  },
+  "fixed_likpf_50_50": {
+    "candidate_rmse": 10.12538554487205,
+    "control_rmse": 10.269692505026358,
+    "improvement_ft": 0.14430696015430833
+  },
+  "by_well": {
+    "improved_wells": 430,
+    "regressed_wells": 343,
+    "delta_median_ft": -0.022888103877402,
+    "delta_p95_ft": 0.9826613435468504,
+    "worst_well_id": "a6f967fb",
+    "worst_well_candidate_rmse": 47.80145878967239,
+    "worst_well_control_rmse": 12.785495553911945,
+    "worst_well_delta_ft": 35.015963235760445
+  },
+  "reproducibility": {
+    "prediction_content_sha256": "668fe87da902955acee742c72d30724abb53f32050bb5d0a5c1b3dee0cbd626e",
+    "raw_gr_emission_contract_content_sha256": "64703b79937aff0c68af809274f70de7813c24eddaaf042e97f9531c1057da2b",
+    "observation_audit_content_sha256": "d0a9fffcb8e16aacf4b03ee01bbc4fb1fd07bef4fb59df2135e2158ed5193c75",
+    "scientific_contract_sha256": "1425655ef89d0b7f887480a28a74f747115df9104a158cc821aa27b58b5ba0e5",
+    "promotion_gate_sha256": "d8334237a3da5e3e8deee159971dfc7fbe50a2793332ba93c10311c879298d4a",
+    "overall_fold_scope_metrics_sha256": "e8ced8993785827da1cf67beb1f253a7fcb398fa5dc6136273e95840d5546784",
+    "by_well_metrics_sha256": "ab6bc449d211f043e0bf99300a572f7bcf95d51c73cb557c5b427c28148ff447"
+  },
+  "canonical_notebook_adopted": true,
+  "dedicated_tests_passed": 9,
+  "decision": "student_t_exp209_failed_close_without_rescue"
+}

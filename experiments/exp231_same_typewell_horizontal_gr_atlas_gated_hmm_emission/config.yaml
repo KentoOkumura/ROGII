@@ -1,0 +1,264 @@
+experiment:
+  name: "exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission"
+  description: >
+    Build a fold-safe same-typewell horizontal-GR atlas and add it only as a
+    confidence-gated, state-centered auxiliary emission to the exp209 exact HMM.
+  route: pf_beam
+  status: completed_train_side_rejected_no_inference_no_submit
+  created_at: "2026-07-11"
+  updated_at: "2026-07-12"
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.n_folds
+    - validation.score_rows
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  references:
+    - exp065_typewell_supertype_cluster_cv_audit
+    - exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit
+    - exp201_typewell_spatial_tvt_error_readout
+    - exp223_joint_typewell_self_gr_hmm_likelihood_probe
+    - exp225_state_known_tvt_self_gr_hmm_emission
+    - exp230_dtw_typewell_warp_hmm_emission_correction
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - KAGGLE_DIRECTION.md same_typewell_horizontal_gr_atlas_gated_hmm_emission
+  implementation_source:
+    - exact_hmm_smoother.py
+    - feature_cache.py
+    - direct_hmm_comparison.py
+    - joint_cache_generation.py
+  diff_summary: >
+    Keeps exp209's exact HMM transition, state grid, raw typewell-GR emission,
+    runtime policy, and saved exp072 comparison cache fixed. For each fold,
+    only other horizontal wells in the same exp065 native-overlap typewell
+    group and the training split build a (group, TVT-bin) local-GR patch atlas.
+    The validation well and every same-fold validation well are absent from its
+    peer atlas. The auxiliary score is centered and clipped across HMM states,
+    then added only as alpha * target-free confidence * centered peer score.
+    V2 ranks and margins unique TVT bins before expanding values to duplicate
+    HMM states, uses relative fit plus a soft absolute-novelty guard, and
+    initially verifies the gate with a fixed target-well subset.
+    No peer TVT path is a prediction candidate, direct replacement, PF weight,
+    blend, or selector input.
+
+validation:
+  strategy: deterministic_well_groupkfold_fold_safe_same_typewell_atlas_hmm
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  success_criteria:
+    - Every validation well uses only same-typewell peers from its training fold.
+    - The gated HMM is competitive with the saved exp072 likPF reference and
+      does not materially regress in 1000_plus, hidden-like, or worst-well readouts.
+    - Peer confidence identifies persistent-offset onset above chance and the
+      top-decile confidence lift is recorded without using target values in generation.
+    - Candidate true-state rank, peer coverage, state uniqueness, HMM uncertainty,
+      feature schema/content SHA, and CPU wall time are recorded.
+  leakage_policy:
+    - Atlas source rows are horizontal rows from training-fold wells only.
+    - The validation well and every same-fold validation well are excluded from
+      all atlas source patches, source support, and TVT bins.
+    - Peer true TVT is used only to index the training-fold atlas. Validation
+      true TVT is used only for target, RMSE, rank, and offset-onset metrics.
+    - Full validation-tail GR is allowed because it is an input-time observation;
+      test-well joint inference and test-peer TVT use are out of scope.
+    - Confidence uses only GR, atlas support/distribution, base emission ambiguity,
+      innovation, and GR change-point signals. It never uses validation labels,
+      true error, oracle candidate, or Public LB tuning.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp065_cluster_assignment_candidates:
+    - experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/common_typewell_cluster_assignments.csv
+    - /kaggle/input/notebooks/kentookumura/exp065-typewell-supertype-cluster-cv-audit-train/artifacts/common_typewell_cluster_assignments.csv
+    - /kaggle/input/exp065-typewell-supertype-cluster-cv-audit-train/artifacts/common_typewell_cluster_assignments.csv
+
+model:
+  name: same_typewell_horizontal_gr_atlas_gated_hmm_emission
+  estimator: none
+  target: target
+  base_prediction: last_known_tvt
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+  peer_atlas_emission:
+    enabled: true
+    active_variants:
+      - name: hmm_peer_atlas_a025
+        alpha: 0.025
+    max_variants: 1
+    group_method: native_overlap
+    group_threshold: "1"
+    min_cluster_size: 2
+    window_rows: [64, 128, 256]
+    patch_points: 16
+    source_stride_rows: 32
+    query_stride_rows: 16
+    tvt_bin_width: 2.0
+    min_peer_patches: 3
+    min_peer_wells: 2
+    max_patches_per_well_bin: 6
+    patch_variance_floor: 0.15
+    score_clip: 8.0
+    support_reference: 8
+    relative_iqr_floor: 0.25
+    relative_fit_scale: 1.0
+    absolute_distance_reference: 30.0
+    uniqueness_margin_scale: 0.50
+    base_margin_scale: 0.20
+    innovation_scale: 2.0
+    change_point_rows: 32
+    change_point_scale: 2.0
+    confidence_floor: 0.0
+    notes:
+      - Patches are robustly standardized per local window and resampled to patch_points.
+      - Source support is counted by both source patch and unique source well.
+      - Ranking/margin use unique TVT bins; repeated HMM states in one bin cannot make the top margin zero.
+      - Match confidence combines relative fit with a soft absolute-novelty guard.
+      - Peer scores are centered over valid candidate bins, clipped, and zero outside atlas support.
+      - The per-row gate is target-free; confidence zero leaves the base exp209 emission unchanged.
+
+feature_cache:
+  exp072:
+    variant: pixiux_likpf_public_replay
+    expected_feature_count: 196
+    output_prefix: exp063_full_replay_feature_cache
+    keep_frame_for_comparison: false
+  hmm:
+    variant: same_typewell_horizontal_gr_atlas_gated_hmm_emission
+    output_prefix: exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission
+    expected_feature_count: 39
+    fast: false
+    max_wells: null
+    preflight_target_wells: null
+    outer_workers: 2
+    expected_artifacts:
+      - exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission_same_typewell_horizontal_gr_atlas_gated_hmm_emission_train_features.csv.gz
+      - exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission_feature_schema.csv
+      - exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission_by_well_generation_summary.csv
+      - exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission_atlas_fold_summary.csv
+      - exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission_summary.json
+
+execution:
+  run_exp072_full_cache: false
+  run_hmm_cache: true
+  run_direct_comparison: true
+  direct_comparison_use_in_memory_exp072: false
+  run_reference_parity_checks: false
+  write_joint_summary: true
+  notes:
+    - Formal v3 run evaluates one new peer-atlas HMM alpha (`0.025`) over all 773 target wells.
+    - The atlas is rebuilt fold-safely from training-fold peers for each validation target.
+    - Reuses the saved exp072 cache; it does not rerun exp072 or exp209 controls.
+    - Runs direct train-side comparison and diagnostics only. Raw-test regeneration, inference, and submission remain disabled.
+
+comparison:
+  baseline_experiment: exp072_exp063_full_replay_feature_cache
+  output_prefix: exp231_peer_atlas_hmm_vs_exp072
+  baseline_feature_cache:
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  hmm_feature_cache:
+    - /kaggle/working/artifacts/exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission_same_typewell_horizontal_gr_atlas_gated_hmm_emission_train_features.csv.gz
+    - experiments/exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission/artifacts/exp231_same_typewell_horizontal_gr_atlas_gated_hmm_emission_same_typewell_horizontal_gr_atlas_gated_hmm_emission_train_features.csv.gz
+  baseline_candidate_columns: [likpf_mean, pf_ancc, pf_z, beam_mean]
+  blend_hmm_weights: []
+  expected_exp072_likpf_mean_rmse_tvt: 11.594897668440991
+  exp209_reference_best_candidate: blend_likpf_hmm_w500
+  exp209_reference_best_rmse_tvt: 10.269696146642758
+  uncertainty_bins: 10
+  write_enriched_cache: false
+  step_delta_thresholds: [5.0, 10.0, 25.0]
+  persistent_offset:
+    baseline_candidate: likpf_mean
+    abs_error_threshold: 20.0
+    horizon_rows: 128
+    confidence_column: peer_atlas_confidence
+    q: 0.90
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  valid_role_columns:
+    verification_like_spatial: verification_like_spatial_role
+    verification_like_typewell_purged: verification_like_typewell_purged_role
+  result_artifacts:
+    - exp231_peer_atlas_hmm_vs_exp072_overall_metrics.csv
+    - exp231_peer_atlas_hmm_vs_exp072_distance_bucket_metrics.csv
+    - exp231_peer_atlas_hmm_vs_exp072_hidden_like_metrics.csv
+    - exp231_peer_atlas_hmm_vs_exp072_by_well_delta.csv
+    - exp231_peer_atlas_hmm_vs_exp072_hmm_std_calibration.csv
+    - exp231_peer_atlas_hmm_vs_exp072_true_state_rank_metrics.csv
+    - exp231_peer_atlas_hmm_vs_exp072_persistent_offset_onset.csv
+    - exp231_peer_atlas_hmm_vs_exp072_step_delta_rates.csv
+    - exp231_peer_atlas_hmm_vs_exp072_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: deterministic_sorted_well_groupkfold_and_deterministic_patch_strides
+  stochastic_components: []
+  parallel_rng_policy: >
+    Atlas construction, patch positions, fold assignment, and HMM use no RNG after
+    the fixed local fold shuffle. Per-well HMM tasks only read their already-built
+    fold atlas, so thread scheduling cannot change atlas membership or values.
+  feature_sha_policy: decompressed_content_sha_for_gzip plus raw_gzip_sha_recorded_separately
+  record:
+    kernel_version: true
+    input_sha: true
+    cluster_assignment_sha: true
+    atlas_fold_summary_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is a deterministic train-side diagnostic cache, not a deterministic submission anchor.
+    - Raw-test atlas regeneration and test-peer policy must be separately audited before inference is enabled.
+
+inference:
+  mode: not_applicable_train_feature_cache_only
+  selected_candidate: null
+  notes:
+    - This first implementation creates no raw-test features, predictions, or submission.csv.
+    - A raw-test port requires a separate review of atlas source availability, feature parity, and submission safeguards.

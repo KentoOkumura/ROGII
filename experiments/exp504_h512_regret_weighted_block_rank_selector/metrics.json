@@ -1,0 +1,148 @@
+{
+  "experiment": "exp504_h512_regret_weighted_block_rank_selector",
+  "status": "completed_train_side_rejected_no_inference_no_submit",
+  "route": "ensemble",
+  "parent": "exp293_physics_only_candidate_bank_headroom_contract",
+  "created_at": "2026-08-02",
+  "implementation": {
+    "code_created": true,
+    "tests_created": true,
+    "canonical_notebook_adopted": true,
+    "contract_tests_passed": 9,
+    "strict_experiment_validation_passed": true,
+    "kaggle_package_created": true,
+    "kaggle_run_started": true,
+    "kaggle_run_completed": true,
+    "training_enabled": true,
+    "inference_enabled": false,
+    "submission_enabled": false
+  },
+  "frozen_contract": {
+    "rows": 3783989,
+    "wells": 773,
+    "candidates": 12,
+    "horizon_rows": 512,
+    "queries": 7787,
+    "candidate_blocks": 93444,
+    "unordered_pairs_before_ties": 513942,
+    "scientific_variants": 1,
+    "rank_configs": 1,
+    "outer_folds": 5,
+    "cpu_models": 5,
+    "gpu_models": 0,
+    "parent_control_retrains": 0,
+    "pf_hmm_beam_runs": 0
+  },
+  "execution_actual": {
+    "scientific_variants": 1,
+    "rank_configs": 1,
+    "outer_folds": 5,
+    "cpu_models": 5,
+    "boosters": 5,
+    "gpu_models": 0,
+    "parent_control_retrains": 0,
+    "candidate_regeneration_runs": 0,
+    "pf_runs": 0,
+    "hmm_runs": 0,
+    "beam_runs": 0,
+    "inference_runs": 0,
+    "submission_files": 0
+  },
+  "kaggle": {
+    "initial_long_kernel_id": "kentookumura/exp504-h512-regret-weighted-block-rank-selector-train",
+    "initial_long_slug_length": 53,
+    "initial_push_error": "SaveKernel 400 before execution",
+    "kernel_id": "kentookumura/exp504-h512-regret-block-rank-selector-train",
+    "kernel_version": 1,
+    "id_no": 129488458,
+    "canonical_slug_length": 44,
+    "pushed_at_utc": "2026-08-02 14:40:34 UTC",
+    "observed_complete_at_utc": "2026-08-02 23:03:22 UTC",
+    "run_on_push": true,
+    "enable_gpu": false,
+    "enable_internet": false,
+    "status": "complete"
+  },
+  "runtime": {
+    "accelerator": "cpu",
+    "elapsed_seconds": 5422.75768366,
+    "peak_rss_gib": 12.883975982666016,
+    "python": "3.12.13"
+  },
+  "cv": {
+    "metric": "rmse_tvt_ft",
+    "selected_oof_rmse_ft": 8.11427698046817,
+    "anchor_oof_rmse_ft": 8.238331546485645,
+    "delta_vs_anchor_ft": -0.12405456601747566,
+    "nonworse_folds": 3,
+    "folds": [
+      {"outer_fold": 0, "selected_rmse_ft": 7.838884246421012, "anchor_rmse_ft": 8.191667134648563, "delta_vs_anchor_ft": -0.35278288822755144},
+      {"outer_fold": 1, "selected_rmse_ft": 8.21083182049001, "anchor_rmse_ft": 8.486255237865391, "delta_vs_anchor_ft": -0.27542341737538045},
+      {"outer_fold": 2, "selected_rmse_ft": 7.623980998044318, "anchor_rmse_ft": 7.859005920903078, "delta_vs_anchor_ft": -0.2350249228587602},
+      {"outer_fold": 3, "selected_rmse_ft": 8.481513454218089, "anchor_rmse_ft": 8.357930025267716, "delta_vs_anchor_ft": 0.12358342895037211},
+      {"outer_fold": 4, "selected_rmse_ft": 8.383404162416065, "anchor_rmse_ft": 8.28304012169112, "delta_vs_anchor_ft": 0.10036404072494598}
+    ]
+  },
+  "scope_metrics": {
+    "md_since_0_250_delta_ft": -0.002730465632972523,
+    "md_since_250_1000_delta_ft": -0.101911964708572,
+    "md_since_1000_plus_delta_ft": -0.13294190343751744,
+    "hidden_like_spatial_delta_ft": 0.2857593304842485,
+    "hidden_like_typewell_purged_delta_ft": 0.2698330243026099
+  },
+  "by_well": {
+    "improved": 446,
+    "worsened": 319,
+    "delta_p50_ft": -0.15440963302749822,
+    "delta_p90_ft": 1.683951075027134,
+    "delta_p95_ft": 2.963655991758373,
+    "worst_well": "81bf5923",
+    "worst_well_delta_ft": 16.799044122418348
+  },
+  "rank_readout": {
+    "h512_top1_exact_accuracy": 0.1126236034416335,
+    "weighted_pair_accuracy": 0.7419079970740255,
+    "unweighted_pair_accuracy": 0.6916375815880497,
+    "ndcg_at_1": 0.6825371345404736,
+    "top3_oracle_coverage": 0.2865031462694234,
+    "anchor_guard_fallback_blocks": 747,
+    "anchor_guard_fallback_rate": 0.09592911262360344,
+    "selected_anchor_blocks": 2942,
+    "selected_anchor_rate": 0.3778091691280339,
+    "inter_block_switch_count": 4427
+  },
+  "technical_gate": {
+    "passed": true,
+    "row_well_block_coverage": true,
+    "input_and_schema_sha": true,
+    "truth_late_prediction_freeze": true,
+    "five_models_and_sha": true,
+    "oof_prediction_sha": true
+  },
+  "promotion_gate": {
+    "passed": false,
+    "pooled_gain_at_least_0p05_ft": true,
+    "pooled_rmse_within_fixed_max": true,
+    "nonworse_folds_at_least_4_of_5": false,
+    "all_fixed_scopes_within_0p02_ft": false,
+    "by_well_delta_p95_within_0p25_ft": false,
+    "worst_well_delta_within_0p25_ft": false,
+    "decision": "FAIL_TERMINAL_CLOSE_WITHOUT_HORIZON_LOSS_WEIGHT_OR_THRESHOLD_RESCUE"
+  },
+  "sha256": {
+    "pushed_notebook_file": "d2c6ecc6a7842a23fee0886b58e6a87497594b7c7f787e57f1a46883f9390c39",
+    "kernel_metadata_file": "484f94975126655ea6cb589f38f2ede2200e7a401ba7bf5fed55de5c44f1e4e1",
+    "executed_config_file": "26506f78320117d2c628b0fd5a840e6021a47545614cd126e2d9975b3ff108ba",
+    "candidate_bank_content": "29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474",
+    "candidate_key_content": "42ede2f53e28dc2ccb28f847e0bc23680d1121bb29e980016dee989dbdddfef7",
+    "row_feature_schema": "aaef4ffdd90667893b099b76a52f1957b22197aea9cee5e5b57bc81048ddd3a4",
+    "block_feature_schema": "523ef0b85cf9873abe463a7ec7f99b703eb0fde6062bcc85e7f5f40508f060d4",
+    "block_feature_content": "f333d097d8bdd369b2b6786328dee050d6bb5ba4114d810e26e60be976fd56c8",
+    "model_manifest_logical": "60696a0574de0c62f8c413c2344a664f40a40634f202ec3a02a754bd2ef3de25",
+    "oof_prediction_content": "1dd09844b70536ec7eae26d6656efb70a00bdc3488a57aca188fb6dfc3b2504f",
+    "summary_file": "91723f6e22423706316980a5af2a48007594b561e3345fa67a63322aa1500a87"
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "notes": "Pooled OOF improved by 0.124055 ft, but only 3/5 folds were nonworse and hidden-like/by-well tail gates failed. Technical gate passed; exp504 is terminally closed without same-OOF rescue, inference, or submission."
+}

@@ -1,0 +1,121 @@
+experiment:
+  name: "exp382_formation_physics_candidate_addonly_on_exp335"
+  description: "exp378の7物理候補をstrict-nested生成し、Public-LB-best参照exp335へ20特徴だけadd-onlyする"
+  route: ml_model
+  status: design_closed_by_exp377_stage1_scientific_fail_via_exp378
+  created_at: "2026-07-24"
+
+lineage:
+  parent: exp335_dense_prefix_recent_coverage_repeat1_on_exp304
+  physics_source: exp378_formation_relative_exp226_multisurface_candidate_audit
+  excluded_sources:
+    - exp379_hmm_output
+    - exp380_pf_output
+    - exp381_semimarkov_output
+  diff_summary: "exp335の親370特徴・3config・5foldを固定し、exp378の7候補から事前固定した20特徴だけを追加する。fold mismatch leakageを避けるため、保存済み5-fold OOFを流用せずouter5×inner4で再生成する。"
+
+validation:
+  split: exp335_outer_5fold_well_split
+  nested_generation:
+    outer_folds: 5
+    inner_folds_per_outer: 4
+    generated_partitions: 25
+    outer_valid_reference_scope: outer_train_only
+    outer_train_feature_mode: inner4_oof
+  primary_scope: all_3783989_rows
+  report_scopes:
+    - h512
+    - long401
+    - clean273
+  by_fold_required: true
+  by_config_required: true
+  by_well_required: true
+
+features:
+  parent_feature_count: 370
+  added_feature_count: 20
+  final_feature_count: 390
+  added:
+    - d_last_frk16_ANCC
+    - d_last_frk16_ASTNU
+    - d_last_frk16_ASTNL
+    - d_last_frk16_EGFDU
+    - d_last_frk16_EGFDL
+    - d_last_frk16_BUDA
+    - d_last_frk16_median6
+    - d_exp226_frk16_ANCC
+    - d_exp226_frk16_ASTNU
+    - d_exp226_frk16_ASTNL
+    - d_exp226_frk16_EGFDU
+    - d_exp226_frk16_EGFDL
+    - d_exp226_frk16_BUDA
+    - d_exp226_frk16_median6
+    - cross_surface_mean
+    - cross_surface_std
+    - cross_surface_range
+    - cross_surface_max_abs_delta
+    - min_surface_support
+    - median_effective_donors
+  posthoc_feature_selection: forbidden
+
+model:
+  name: lightgbm_exp335_fixed_add20
+  family: exp335_lgbm
+  configs: 3
+  folds: 5
+  variants:
+    - formation_physics_add20
+  lightgbm_boosters: 15
+  parent_control_retraining: false
+
+gates:
+  prerequisite:
+    exp378_technical_gate: pass
+    exp378_candidate_novelty_gate: pass
+  cv:
+    parent_cv_rmse: 8.146107755881022
+    rmse_max: 8.096107755881022
+    positive_fold_count_min: 4
+    scope_regression_tolerance_ft: 0.02
+    positive_config_count_min: 3
+    p95_well_regression_max_ft: 0.0
+    worst_well_regression_max_ft: 0.25
+  clean273_regression_counts_max:
+    plus_1ft: 150
+    plus_3ft: 53
+    plus_5ft: 21
+
+runtime:
+  use_amp: false
+  accelerator: kaggle_t4_gpu
+  variant_count: 1
+  config_count: 3
+  fold_count: 5
+  total_boosters: 15
+  parent_control_boosters: 0
+  gpu_execution_authorized: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_global_seed_plus_deterministic_nested_fold_manifest
+  stochastic_components: []
+  parallel_rng_policy: no_stochastic_feature_generation
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - "実装時はLightGBM deterministic=true、force_col_wise=true、全seedをconfigに明示する。"
+    - "outer/inner fold manifest、20列schema、各partition content SHA、model manifestを保存する。"
+
+notes:
+  - "設計確定のみ。実装、GPU学習、推論、提出は未承認・未着手。"
+  - "routeはml_model。物理候補は補助特徴で、最終予測を生成する本体はLightGBMのみ。"
+  - "exp379/exp380のHMM/PF出力を本実験へ混ぜない。採用する場合は別のensemble実験を切る。"
+  - "exp377 v2のformation-relative pathがdirectより全fold・全6面で悪化したため、exp378経由のadd-only特徴を作らず閉鎖する。"

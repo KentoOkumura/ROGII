@@ -1,0 +1,132 @@
+{
+  "experiment": "exp117_linear_md_z_prior_residual_target",
+  "status": "completed_train_side_rejected",
+  "updated_at": "2026-06-24",
+  "route": "ml_model",
+  "parent": "exp073_gpu_reproducibility_guard_for_exp063_full_replay",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "diagnostic_parent": "exp113_linear_md_z_prior_global_search",
+  "metric": "rmse",
+  "cv": "control dTVT 9.664290853925893; rejected linear targets: a0p02_bm0p25 11.06164161944389, a0p02_bm0p50 12.515352276615092, a0p04_bm0p25 11.079208960595539",
+  "control_cv": 9.664290853925893,
+  "rejected_linear_prior_target_cv": {
+    "linear_prior_a0p02_bm0p25": 11.06164161944389,
+    "linear_prior_a0p02_bm0p50": 12.515352276615092,
+    "linear_prior_a0p04_bm0p25": 11.079208960595539
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "expected_feature_count": 196,
+  "active_mode": "gpu_repro_guard_dp_threads8",
+  "active_targets": [
+    "dTVT",
+    "linear_prior_a0p02_bm0p25",
+    "linear_prior_a0p02_bm0p50",
+    "linear_prior_a0p04_bm0p25"
+  ],
+  "linear_prior_formula": "T0 + a * (MD - MD0) + b * (Z - Z0)",
+  "linear_priors": [
+    {"a": 0.0, "b": 0.0},
+    {"a": 0.02, "b": -0.25},
+    {"a": 0.02, "b": -0.5},
+    {"a": 0.04, "b": -0.25}
+  ],
+  "max_lgb_models": 1,
+  "best_target": "dTVT",
+  "selected_for_inference": false,
+  "pooled_rmse": {
+    "dTVT_lgb0": 9.664290853925893,
+    "linear_prior_a0p02_bm0p25_lgb0": 11.06164161944389,
+    "linear_prior_a0p02_bm0p50_lgb0": 12.515352276615092,
+    "linear_prior_a0p04_bm0p25_lgb0": 11.079208960595539
+  },
+  "distance_bucket_rmse": {
+    "dTVT": {
+      "000_050": 0.8658710718154907,
+      "050_100": 1.3216172456741333,
+      "100_250": 2.2726919651031494,
+      "250_500": 3.7578563690185547,
+      "500_1000": 5.562122344970703,
+      "1000_plus": 10.594759941101074
+    },
+    "linear_prior_a0p02_bm0p25": {
+      "000_050": 0.6080662608146667,
+      "050_100": 1.0898103713989258,
+      "100_250": 2.102435350418091,
+      "250_500": 3.6202633380889893,
+      "500_1000": 5.656289100646973,
+      "1000_plus": 12.19047737121582
+    },
+    "linear_prior_a0p02_bm0p50": {
+      "000_050": 1.0289610624313354,
+      "050_100": 1.7306101322174072,
+      "100_250": 2.7197954654693604,
+      "250_500": 4.015090465545654,
+      "500_1000": 6.007545471191406,
+      "1000_plus": 13.813261985778809
+    },
+    "linear_prior_a0p04_bm0p25": {
+      "000_050": 0.6052147150039673,
+      "050_100": 1.1556730270385742,
+      "100_250": 2.2331743240356445,
+      "250_500": 3.679816246032715,
+      "500_1000": 5.687558174133301,
+      "1000_plus": 12.20653247833252
+    }
+  },
+  "well_delta_vs_dTVT": {
+    "linear_prior_a0p02_bm0p25": {
+      "improved_wells": 268,
+      "worse_wells": 505,
+      "max_regression_rmse": 20.65573501586914,
+      "max_improvement_rmse": -10.976210594177246
+    },
+    "linear_prior_a0p02_bm0p50": {
+      "improved_wells": 248,
+      "worse_wells": 525,
+      "max_regression_rmse": 51.263206481933594,
+      "max_improvement_rmse": -13.351453304290771
+    },
+    "linear_prior_a0p04_bm0p25": {
+      "improved_wells": 250,
+      "worse_wells": 523,
+      "max_regression_rmse": 15.1365966796875,
+      "max_improvement_rmse": -9.723212242126465
+    }
+  },
+  "anchor_diagnostics": {
+    "anchor_wells": 773,
+    "anchor_t0_vs_last_known_abs_max": 0.0,
+    "known_prefix_rows_min": 851,
+    "known_prefix_rows_max": 2392,
+    "known_prefix_md_span_min": 850.0,
+    "known_prefix_md_span_max": 2391.0,
+    "md_delta_abs_p99": 7054.0,
+    "z_delta_abs_p99": 267.33013916015625
+  },
+  "kaggle_train": {
+    "kernel_id": "kentookumura/exp117-linear-md-z-prior-residual-target-train",
+    "kernel_version": 1,
+    "status": "COMPLETE",
+    "url": "https://www.kaggle.com/code/kentookumura/exp117-linear-md-z-prior-residual-target-train",
+    "output_path": "/tmp/kaggle-output/exp117_linear_md_z_prior_residual_target/train_v1",
+    "elapsed_seconds": 13598.921
+  },
+  "artifacts": {
+    "metrics": "artifacts/exp117_linear_md_z_prior_residual_target_metrics.csv",
+    "by_well": "artifacts/exp117_linear_md_z_prior_residual_target_by_well.csv",
+    "bucket_metrics": "artifacts/exp117_linear_md_z_prior_residual_target_bucket_metrics.csv",
+    "target_summary": "artifacts/exp117_linear_md_z_prior_residual_target_target_summary.csv",
+    "feature_schema": "artifacts/exp117_linear_md_z_prior_residual_target_feature_schema.csv",
+    "model_manifest": "artifacts/exp117_linear_md_z_prior_residual_target_lgb_models/manifest.json",
+    "summary": "artifacts/exp117_linear_md_z_prior_residual_target_summary.json",
+    "predictions_external": "/tmp/kaggle-output/exp117_linear_md_z_prior_residual_target/train_v1/artifacts/exp117_linear_md_z_prior_residual_target_predictions.csv.gz",
+    "model_files_external": "/tmp/kaggle-output/exp117_linear_md_z_prior_residual_target/train_v1/artifacts/exp117_linear_md_z_prior_residual_target_lgb_models"
+  },
+  "notes": [
+    "Kaggle train v1 completed successfully.",
+    "All linear MD/Z prior residual targets worsen pooled RMSE versus dTVT.",
+    "Weak priors improve some near-distance buckets but regress the 1000+ ft bucket and most wells.",
+    "Inference is intentionally unselected; do not port this target."
+  ]
+}

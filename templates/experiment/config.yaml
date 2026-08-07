@@ -1,0 +1,45 @@
+experiment:
+  name: "{{ EXPERIMENT_NAME }}"
+  description: TODO
+  route: ml_model  # ml_model, pf_beam, or ensemble
+  status: planned
+  created_at: "{{ TODAY }}"
+
+lineage:
+  parent: TODO
+  diff_summary: TODO
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation: {}
+
+# Common paths and submission columns come from project.yml.
+data: {}
+
+model:
+  name: baseline
+  params: {}
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: TODO  # e.g. fixed_global_seed, stable_sha256_per_well
+  stochastic_components: []
+  parallel_rng_policy: TODO  # avoid global RNG in threaded/joblib paths
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - See docs/06_reproducibility.md before treating this experiment as a deterministic anchor.
+
+notes: []

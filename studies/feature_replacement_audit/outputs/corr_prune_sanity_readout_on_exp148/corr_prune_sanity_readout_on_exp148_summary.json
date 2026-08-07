@@ -1,0 +1,55 @@
+{
+  "study": "corr_prune_sanity_readout_on_exp148",
+  "status": "completed",
+  "purpose": "No-training sanity readout for exact/near feature prune candidates before exact_replacement_prune_on_exp148.",
+  "inputs": {
+    "corr_dir": "/tmp/kaggle-output/exp148_feature_correlation_audit_v2",
+    "train_artifact_dir": "/tmp/kaggle-output/exp148_train_v1/artifacts",
+    "inference_artifact_dir": "/tmp/kaggle-output/exp148_inference_v7/artifacts"
+  },
+  "exp148_anchor": {
+    "cv_lgb_mean": 8.50128118189582,
+    "public_lb": 7.96,
+    "feature_count": 294
+  },
+  "corr_audit_summary": {
+    "sample_rows_used": 600000,
+    "feature_counts": {
+      "total": 294,
+      "base_replay": 196,
+      "u_projection": 44,
+      "learned_likelihood": 54
+    },
+    "constant_or_single_value_features": [
+      "sc_trust",
+      "ll_candidate_tvt_likpf_mean_minus_likpf_mean_tvt"
+    ],
+    "pair_counts_by_abs_corr_threshold": {
+      "0.9": 1786,
+      "0.95": 1731,
+      "0.98": 1498,
+      "0.995": 910
+    }
+  },
+  "candidate_counts": {
+    "exact_prune_17": 17,
+    "formation_last50_followup_12": 12,
+    "learned_likelihood_slim_review": 4,
+    "u_projection_slim_review": 14
+  },
+  "schema_parity": {
+    "exp148_train_inference_diff_nonboth": 0,
+    "exp145_train_rawtest_diff_nonboth": 0
+  },
+  "outputs": {
+    "drop_candidates": "corr_prune_sanity_readout_on_exp148_drop_candidates.csv",
+    "constant_features": "corr_prune_sanity_readout_on_exp148_constant_features.csv",
+    "components_abs_ge_0995": "corr_prune_sanity_readout_on_exp148_components_abs_ge_0995.csv",
+    "code_references": "corr_prune_sanity_readout_on_exp148_code_references.csv",
+    "exp148_train_inference_schema_diff": "corr_prune_sanity_readout_on_exp148_exp148_train_inference_schema_diff.csv",
+    "exp145_train_rawtest_schema_diff": "corr_prune_sanity_readout_on_exp148_exp145_train_rawtest_schema_diff.csv",
+    "config_fragment_yaml": "corr_prune_sanity_readout_on_exp148_config_fragment.yaml",
+    "config_fragment_json": "corr_prune_sanity_readout_on_exp148_config_fragment.json",
+    "candidate_groups": "corr_prune_sanity_readout_on_exp148_candidate_groups.json"
+  }
+}

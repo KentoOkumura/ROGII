@@ -1,0 +1,166 @@
+experiment:
+  name: exp328_time_varying_gr_affine_calibration_hmm
+  description: >-
+    Low-priority design-frozen two-pass exact-HMM audit that estimates one
+    causal time-varying GR affine schedule a_t,b_t from the current well and a
+    frozen parent HMM path, without Type Well group priors or joint-state grid
+    expansion.
+  route: pf_beam
+  status: closed_without_run_upstream_exp307_chain_failed
+  created_at: "2026-07-21"
+  updated_at: "2026-07-22"
+
+lineage:
+  parent: exp308_imputed_gr_confidence_downweight
+  steering: ../../.steering/20260721-exp328-time-varying-gr-affine-calibration-hmm
+  references:
+    - exp211_affine_calibrated_gr_observation_pfbeam
+    - exp216_affine_shift_landscape_ruler_readout
+    - exp295_prefix_anchored_wholewell_gr_alignment_ssm
+    - exp318_typewell_group_time_varying_calibration_ssm
+  diff_summary: >-
+    Adds a single deterministic two-pass causal calibration schedule to the
+    promoted exp308 observation model. Unlike exp318, no same-Type-Well group
+    prior is used. Unlike a joint HMM, the base path is frozen, one affine
+    schedule is filtered and frozen, and exact HMM is rerun once.
+
+closure:
+  closed_at: "2026-07-22"
+  reason: fixed_exp308_parent_closed_without_run
+  terminal: true
+  reopen_allowed: false
+  successor_policy: >-
+    Do not attach this experiment to the exp338 successor chain. The causal
+    affine hypothesis now has the independently approved design-only successor
+    exp345_exp209_time_varying_gr_affine_calibration_hmm directly parented to
+    exp209; this closed experiment remains historical and is never reparented.
+  explicit_successor: exp345_exp209_time_varying_gr_affine_calibration_hmm
+
+implementation: {enabled: false, scope: closed_design_history, inference_enabled: false, submission_enabled: false}
+
+validation:
+  strategy: low_priority_runtime_gated_prefix_mask_two_pass_hmm_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  dependency_policy:
+    required_parent: exp308_imputed_gr_confidence_downweight
+    required_parent_status: all_promotion_gates_passed
+    scheduling_policy: run_only_after_exp323_to_exp327_primary_decisions
+    fail_closed_on_dependency_mismatch: true
+  prefix_mask_backtest:
+    horizon_rows: 640
+    minimum_visible_prefix_rows: 160
+    source_policy: current_well_only
+    truth_join_policy: mask_tvt_then_freeze_base_path_affine_schedule_and_prediction_before_scoring
+  leakage_policy:
+    - Static initialization uses current-well visible TVT_input prefix pairs only.
+    - Suffix updates use observed GR, Type Well GR at the frozen base-HMM mean path, base-HMM TVT std, and exp308 missing weights only.
+    - Unknown-suffix TVT, error, formation, oracle branch, and same-Type-Well donor calibration are forbidden before schedule and prediction freeze.
+    - Exactly one calibration pass and one variant HMM pass are allowed; iterative truth-driven refits are forbidden.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+
+model:
+  name: causal_two_pass_time_varying_gr_affine_exact_hmm
+  estimator: none
+  base_path:
+    source: exact_exp308_parent_posterior_mean_and_std
+    rerun_for_full_suffix_stage: false_use_saved_parent_oof
+    calibration_iterations: 1
+  affine_state:
+    state: [intercept_b, log_scale_a]
+    transition: local_level_random_walk
+    filter: deterministic_causal_extended_kalman_filter_no_smoother
+    initial_fit: robust_current_well_visible_prefix_affine
+    minimum_prefix_pairs: 40
+    minimum_typewell_gr_std: 5.0
+    slope_bounds: [0.25, 4.0]
+    maximum_prefix_rmse: 60.0
+    trim_quantile: 0.90
+    robust_iterations: 2
+    process_noise: outer_train_empirical_bayes_once_per_fold
+    process_noise_estimator: median_squared_adjacent_robust_prefix_state_increment
+    process_noise_shrinkage: n_div_n_plus_100_toward_global_outer_train_median
+    observation_mean: exp_log_scale_times_typewell_gr_at_frozen_base_mean_plus_intercept
+    observation_variance: parent_sigma_gr_squared_plus_typewell_local_gradient_squared_times_base_tvt_std_squared
+    missing_weight_policy: divide_observation_precision_by_exact_exp308_weight
+    freeze_before_variant_hmm: true
+    fallback: static_parent_identity_observation
+  variant_hmm:
+    state_gr_formula: exp_log_scale_a_t_times_typewell_gr_state_plus_intercept_b_t
+    active_variants: [one_pass_causal_affine_schedule]
+  runtime_gate:
+    stable_sha256_microbenchmark_wells: 32
+    maximum_projected_hours: 8.5
+  stage_0_prefix_mask:
+    enabled_after_implementation: false
+    matched_parent_and_variant_hmm_runs: 1546
+    pass_requires_all:
+      minimum_rmse_gain_ft: 0.05
+      minimum_improved_folds: 4
+      require_gr_nll_improvement: true
+      require_boundary_jump_p95_max_sigma: 3.0
+      require_hidden_like_non_regression: true
+      maximum_worst_well_regression_ft: 0.25
+      maximum_projected_runtime_hours: 8.5
+      maximum_fallback_fraction: 0.50
+  stage_1_full_suffix:
+    enabled_after_implementation: false
+    enable_condition: stage_0_all_gates_pass_and_separate_user_approval
+    new_variant_hmm_well_runs: 773
+  fixed_parent:
+    sigma_gr: exact_exp308
+    missing_weight: exact_exp308
+    transition: exact_exp308
+    grid: exact_exp308
+    momentum: 0.998
+    output: posterior_mean
+  forbidden:
+    - typewell_group_prior
+    - bidirectional_calibration_smoother
+    - joint_tvt_rate_affine_state_grid
+    - more_than_one_calibration_iteration
+    - affine_parameter_grid
+    - changing_transition
+    - prediction_blend
+
+execution_contract:
+  stage_0_microbenchmark: {wells: 32, matched_hmm_runs: 64, boosters: 0}
+  stage_0_full_if_runtime_pass: {scientific_variants: 1, matched_hmm_runs: 1546, model_configs: 0, trained_folds: 0, boosters: 0}
+  stage_1_if_pass: {scientific_variants: 1, new_hmm_well_runs: 773, model_configs: 0, trained_folds: 0, boosters: 0}
+  full_suffix_parent_control_retraining: false
+
+promotion_gates:
+  minimum_rmse_gain_vs_parent_ft: 0.05
+  minimum_improved_folds: 4
+  require_1000_plus_non_regression: true
+  require_hidden_like_spatial_non_regression: true
+  require_hidden_like_typewell_purged_non_regression: true
+  require_by_well_p95_delta_max: 0.0
+  maximum_worst_well_regression_ft: 0.25
+
+execution: {implementation_approved: false, kaggle_push_approved: false, active_stage: closed_without_run, run_microbenchmark: false, run_stage_0: false, run_stage_1: false, run_inference: false, create_submission: false}
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle: {enable_gpu: false, enable_internet: false, runtime_limit_seconds: 30600}
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_outer_fold_well_order
+  stochastic_components: []
+  parallel_rng_policy: deterministic_linear_algebra_fixed_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: true, prediction_sha: true, submission_sha: false}
+inference: {enabled: false, create_submission: false}
+notes:
+  - Design frozen on 2026-07-21 as the final low-priority item after prior static-affine negative results.
+  - exp318 remains the separate stopped group-prior branch and is not modified.
+  - Closed permanently on 2026-07-22; the independent exp209-direct revisit is exp345_exp209_time_varying_gr_affine_calibration_hmm.

@@ -1,0 +1,79 @@
+{
+  "experiment": "exp294_calibrated_typewell_gapfill_known_prefix_selfgr_hmm",
+  "status": "stage0_completed_fail_branch_closed",
+  "route": "ensemble",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "key_idea": "Compare exp223 linear interpolation with robust-affine calibrated Type Well GR only at pseudo-masked known-prefix donor cells, without changing observed GR or raw eligibility masks.",
+  "stage0": {
+    "status": "completed_fail",
+    "audit_variants": 1,
+    "result": {
+      "elapsed_seconds": 160.32,
+      "wells": 773,
+      "blocks": 2319,
+      "rows": 3865,
+      "control_rmse": 8.138530741261997,
+      "variant_rmse": 12.84218584362299,
+      "rmse_delta": 4.703655102360994,
+      "rmse_relative_improvement": -0.5779489261512114,
+      "rmse_improving_reporting_folds": 0,
+      "by_well_rmse_p95_delta": 15.494310655067158,
+      "control_mae": 5.151894537752876,
+      "variant_mae": 8.963970940578491,
+      "finite_output_coverage": 1.0,
+      "zncc_delta": null,
+      "zncc_note": "Undefined because every fold-external natural run quantile was q25/q50/q90 = 1/1/3 rows, below the preregistered minimum length 4.",
+      "hard_gate_passed": false,
+      "technical_checks_passed": 6,
+      "performance_checks_failed": 5,
+      "improved_wells": 157,
+      "worse_wells": 610,
+      "same_wells": 6,
+      "stage1_authorized": false
+    }
+  },
+  "stage1": {
+    "status": "closed_stage0_guard_fail",
+    "hmm_variants": 1,
+    "hmm_well_runs": 773,
+    "executed_hmm_variants": 0,
+    "executed_hmm_well_runs": 0,
+    "result": null
+  },
+  "training": {
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "gpu": false
+  },
+  "implementation_validation": {
+    "jupytext_test": "passed",
+    "python_syntax": "passed",
+    "ruff": "passed",
+    "validate_exp": "passed",
+    "validate_template": "passed",
+    "dedicated_tests_passed": 11,
+    "repository_tests_passed": 298
+  },
+  "implementation_source": "exp294_calibrated_typewell_gapfill_known_prefix_selfgr_hmm_train.ipynb",
+  "kaggle_train": {
+    "kernel_id": "kentookumura/exp294-typewell-gapfill-selfgr-stage0-train",
+    "version": 1,
+    "id_no": 127890033,
+    "status": "COMPLETE"
+  },
+  "artifacts": {
+    "manifest_sha256": "b003790cbbce60d9f12554c2b11cd46476387369113ff1b07e3044a740f3bca3",
+    "input_manifest_sha256": "62cb5af49b74a352a3a75448166ab5165d520265d229fbb05471eb73e6f0c9bf",
+    "feature_schema_sha256": "b48ac632409f8932996abf9c50ee3c72b26c9e470e78f1c79f2548b3fe413b0c",
+    "pseudo_mask_decompressed_sha256": "92fe1685ddc2e931f6ad334ebb0965a18b8a8c3984477a4e42603b8257e49e33",
+    "heldout_prediction_decompressed_sha256": "fe147623888c880ab51e8326099e5848e3069488b0d3ca7a1d3ab9b668e7f451",
+    "kernel_log_sha256": "53d457aa8862c2b107b38e7db7d44d4d63b0c30f0cd57adfb1db44d5d42dda96",
+    "all_manifest_entries_verified": true
+  },
+  "next_action": "Close this branch without Stage 1, a rescue grid, inference, or submission.",
+  "notes": "Kaggle CPU version 1 completed with a scientific guard failure. Technical and leakage checks passed, but all five performance checks failed. The Type Well affine gap-fill was substantially worse than exp223 linear interpolation, so the preregistered fail action closes the branch."
+}

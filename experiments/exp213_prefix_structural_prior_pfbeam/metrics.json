@@ -1,0 +1,158 @@
+{
+  "experiment": "exp213_prefix_structural_prior_pfbeam",
+  "status": "completed_train_side_diagnostic_no_submit",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "route": "pf_beam",
+  "parent": "prefix_structural_prior_pfbeam backlog",
+  "kaggle_train_v1": {
+    "kernel_id": "kentookumura/exp213-prefix-structural-prior-pfbeam-train",
+    "url": "https://www.kaggle.com/code/kentookumura/exp213-prefix-structural-prior-pfbeam-train",
+    "version": 1,
+    "status": "complete",
+    "runtime_seconds_summary": 3415.408933401108,
+    "runtime_seconds_log_last": 3632.211126174,
+    "output_dir": "experiments/exp213_prefix_structural_prior_pfbeam/kaggle/output/train_v1"
+  },
+  "validation": {
+    "strategy": "train_well_pseudotail_prefix_structural_prior_pfbeam_audit",
+    "score_rows": "TVT_input_missing_equivalent_exp063_rows",
+    "rows": 478958,
+    "wells": 64,
+    "target_wells": "max_64_target_free_selection",
+    "exp072_cache_rows": 3783989,
+    "exp072_cache_wells": 773,
+    "exp072_cache_decompressed_sha256": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350",
+    "reference_candidates_present": ["pf_ancc", "pf_z"]
+  },
+  "planned_variants": [
+    "raw",
+    "structural_slope_only",
+    "structural_weak",
+    "structural_base"
+  ],
+  "planned_boosters": 0,
+  "planned_folds": 0,
+  "primary_baseline": {
+    "candidate": "pf_raw_lik_mean",
+    "rmse": 21.08127934390305,
+    "mae": 14.491598,
+    "within10": 0.513446
+  },
+  "best_candidate_by_rmse": {
+    "candidate": "oracle_best_variant_candidate",
+    "is_oracle_diagnostic": true,
+    "rmse": 13.940250796588172,
+    "mae": 7.9334581264008275,
+    "within10": 0.7404678489554408,
+    "delta_rmse_vs_primary_baseline": -7.1410285473148765
+  },
+  "best_non_oracle_candidate_by_rmse": {
+    "candidate": "exp072_pf_ancc",
+    "rmse": 17.494197129514692,
+    "mae": 10.454962780612417,
+    "within10": 0.6684907653698237,
+    "delta_rmse_vs_primary_baseline": -3.5870822143883565,
+    "max_well_regression_vs_primary": 46.664212559992826
+  },
+  "key_candidates": {
+    "beam_raw_top1": {
+      "rmse": 18.339187521089787,
+      "mae": 13.121684,
+      "within10": 0.509375
+    },
+    "beam_structural_base_top1": {
+      "rmse": 18.312677317400368,
+      "mae": 13.115792960643208,
+      "within10": 0.5076624672727045,
+      "delta_rmse_vs_beam_raw_top1": -0.026510203689419143,
+      "changed_rows_vs_raw": 12108,
+      "improved_wells_vs_primary": 35,
+      "worsened_wells_vs_primary": 29,
+      "max_well_regression_vs_primary": 15.387903936815183
+    },
+    "beam_structural_base_top3_oracle": {
+      "rmse": 18.287587,
+      "mae": 13.066916,
+      "within10": 0.510761,
+      "delta_rmse_vs_beam_raw_top3_oracle": -0.032945
+    },
+    "pf_structural_weak_lik_mean": {
+      "rmse": 28.230909,
+      "mae": 18.833653,
+      "within10": 0.453543,
+      "delta_rmse_vs_pf_raw_lik_mean": 7.149629
+    },
+    "pf_structural_base_lik_mean": {
+      "rmse": 29.564037,
+      "mae": 20.534350,
+      "within10": 0.392231,
+      "delta_rmse_vs_pf_raw_lik_mean": 8.482757
+    },
+    "pf_structural_slope_only_lik_mean": {
+      "rmse": 30.621856,
+      "mae": 21.033016,
+      "within10": 0.407257,
+      "delta_rmse_vs_pf_raw_lik_mean": 9.540576
+    }
+  },
+  "pf_diagnostics": {
+    "raw": {
+      "gr_sigma": 13.897758962125387,
+      "ess_mean": 175.9683301448822,
+      "resampling_rate": 0.05134624333004467,
+      "log_likelihood_mean": -1731.8460922750671,
+      "beam_path_spread_mean": 0.021084003358607377
+    },
+    "structural_weak": {
+      "gr_sigma": 13.897758962125387,
+      "ess_mean": 176.33450508117676,
+      "resampling_rate": 0.06600422883639112,
+      "log_likelihood_mean": -3531.5212076514717,
+      "beam_path_spread_mean": 0.020705266289768706
+    },
+    "structural_base": {
+      "gr_sigma": 13.897758962125387,
+      "ess_mean": 176.07567143440247,
+      "resampling_rate": 0.07257726660463959,
+      "log_likelihood_mean": -3898.479931001738,
+      "beam_path_spread_mean": 0.04724822978741334
+    },
+    "structural_slope_only": {
+      "gr_sigma": 13.897758962125387,
+      "ess_mean": 176.1441617012024,
+      "resampling_rate": 0.0756848179444205,
+      "log_likelihood_mean": -3927.3673672512787,
+      "beam_path_spread_mean": 0.021178550552525703
+    }
+  },
+  "artifacts": {
+    "candidate_metrics": "experiments/exp213_prefix_structural_prior_pfbeam/kaggle/output/train_v1/artifacts/exp213_prefix_structural_prior_pfbeam_candidate_metrics.csv",
+    "filter_delta_metrics": "experiments/exp213_prefix_structural_prior_pfbeam/kaggle/output/train_v1/artifacts/exp213_prefix_structural_prior_pfbeam_filter_delta_metrics.csv",
+    "bucket_metrics": "experiments/exp213_prefix_structural_prior_pfbeam/kaggle/output/train_v1/artifacts/exp213_prefix_structural_prior_pfbeam_bucket_metrics.csv",
+    "by_well": "experiments/exp213_prefix_structural_prior_pfbeam/kaggle/output/train_v1/artifacts/exp213_prefix_structural_prior_pfbeam_by_well.csv",
+    "group_metrics": "experiments/exp213_prefix_structural_prior_pfbeam/kaggle/output/train_v1/artifacts/exp213_prefix_structural_prior_pfbeam_group_metrics.csv",
+    "pf_diagnostics": "experiments/exp213_prefix_structural_prior_pfbeam/kaggle/output/train_v1/artifacts/exp213_prefix_structural_prior_pfbeam_pf_diagnostics.csv",
+    "row_candidates": "experiments/exp213_prefix_structural_prior_pfbeam/kaggle/output/train_v1/artifacts/exp213_prefix_structural_prior_pfbeam_row_candidates.csv.gz",
+    "summary": "experiments/exp213_prefix_structural_prior_pfbeam/kaggle/output/train_v1/artifacts/exp213_prefix_structural_prior_pfbeam_summary.json",
+    "target_wells": "experiments/exp213_prefix_structural_prior_pfbeam/kaggle/output/train_v1/artifacts/exp213_prefix_structural_prior_pfbeam_target_wells.csv",
+    "well_status": "experiments/exp213_prefix_structural_prior_pfbeam/kaggle/output/train_v1/artifacts/exp213_prefix_structural_prior_pfbeam_well_status.csv"
+  },
+  "sha256": {
+    "candidate_metrics": "22a51c7f3541c52941f77ca1db566eaf1836c65cb794bd65357fcef11d753884",
+    "filter_delta_metrics": "db9f97287daf987d3a5ce5da971ab6d23239b5cb6a5dd9a54494120775090feb",
+    "bucket_metrics": "ddc436cb3b922e17361c1c2eb938f110e39d6e67d60141a21d894f8282af1e8b",
+    "by_well": "120859cdaec1c16901e7db0d91d73024b863649228f52c03bfe77396220688ae",
+    "group_metrics": "7d6be0e5db3c4af3e49e7f1acd7ab476002582ab3ec3934caa775264fddcaa20",
+    "pf_diagnostics": "40b2f0636e93f6bf6676e680540924547acb68de93328996bb1e3d615985077b",
+    "target_wells": "b430641fc305cb56a9332ec4f41ee2497db4bbd269310c969d3754721ad5eac6",
+    "well_status": "8b833d55d19acdfa2f2b8063701323e09f47994bcd4bb0e634cc533ac8da5192",
+    "row_candidates_raw_gzip": "4c9be159f89e5bd0ab619c6ed407110604def56b3df61fa4c53370b0ebf3db0e",
+    "row_candidates_decompressed": "138e6fb9116630325ebe6bccc136955f472fb787e92c88f6eebdf8f7608ee3b6",
+    "summary": "7db43ed018833c173a1793908db24a30fb3cbf2a8bc4c70d58834cc13c9dec2b"
+  },
+  "decision": "no_direct_replacement_no_inference_no_submit",
+  "notes": "Prefix structural prior gives only a tiny Beam improvement and strongly worsens PF/likPF. Keep as diagnostic/top-K confidence material only."
+}

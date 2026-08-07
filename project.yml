@@ -1,0 +1,45 @@
+competition:
+  name: ROGII - Wellbore Geology Prediction
+  platform: kaggle
+  slug: rogii-wellbore-geology-prediction
+  url: https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction
+  is_code_competition: true
+
+paths:
+  data_dir: data
+  experiments_dir: experiments
+  docs_dir: docs
+  submissions_dir: submissions
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  processed_dir: data/processed
+  target_column: TVT
+  group_column: well_id
+  score_rows: TVT_input_isna
+
+defaults:
+  seed: 42
+  metric: rmse
+  primary_validation: GroupKFold by well_id; score only rows where TVT_input is NaN
+  n_folds: 5
+
+submission:
+  sample_file: data/raw/sample_submission.csv
+  output_file: submission.csv
+  id_column: id
+  target_columns:
+    - tvt
+  allow_extra_columns: false
+
+metadata:
+  owner: kentookumura
+  notes: "Notebook-only code competition. Official metric page states RMSE; API metadata labels the metric as Mean Squared Error."
+
+runtime:
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    time_limit_hours: 9

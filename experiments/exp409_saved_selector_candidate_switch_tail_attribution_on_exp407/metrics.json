@@ -1,0 +1,86 @@
+{
+  "experiment": "exp409_saved_selector_candidate_switch_tail_attribution_on_exp407",
+  "route": "ml_model",
+  "status": "completed_tail_consistency_gate_failed_closed",
+  "created_at": "2026-07-26",
+  "parent": "exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264",
+  "comparator": "exp264_exp263_candidate_confidence_dual_selector_corrected_stage_b_v5",
+  "diagnostic": "saved_oof_candidate_switch_tail_attribution",
+  "models": 0,
+  "boosters": 0,
+  "prediction_rows_generated": 0,
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "kaggle_execution_performed": true,
+  "kaggle_execution_approved": true,
+  "kaggle_kernel": {
+    "id": "kentookumura/exp409-selector-switch-tail-attribution-train",
+    "version": 1,
+    "id_no": 128678587,
+    "url": "https://www.kaggle.com/code/kentookumura/exp409-selector-switch-tail-attribution-train",
+    "runtime": "cpu",
+    "internet": false,
+    "status": "complete",
+    "gate_output_elapsed_seconds": 179.259,
+    "pushed_config_sha256": "79735dbc65f4d1ddb30188da2598cdc5768d318fdc531cdcd15d9e15a21dd1f1"
+  },
+  "preexecution_push_rejections": [
+    {
+      "kernel_id": "kentookumura/exp409-saved-selector-candidate-switch-tail-attribution-on-exp407-train",
+      "error": "SaveKernel 400",
+      "kernel_created": false,
+      "resolution": "use matching 45-character canonical id/title exp409-selector-switch-tail-attribution-train"
+    }
+  ],
+  "implementation_validation": {
+    "dedicated_tests_passed": 9,
+    "py_compile": "passed",
+    "ruff_f821_f811_f401_e501": "passed",
+    "jupytext_roundtrip": "passed",
+    "jupytext_cells": 17,
+    "strict_experiment_validation": "passed",
+    "canonical_notebook_adopted": true
+  },
+  "input_readiness": {
+    "exp407_candidate_score_oof_kaggle_kernel_output_available": true,
+    "parent_exp264_corrected_stage_b_v5_oof_local_available": true,
+    "parent_exp264_corrected_stage_b_v5_oof_kaggle_private_input_created": true,
+    "parent_oof_dataset_source": "kentookumura/exp409-exp264-stage-b-v5-oof-input"
+  },
+  "diagnostic_result": {
+    "technical_status": "passed",
+    "rows": 3783989,
+    "switched_rows": 1289588,
+    "switched_row_rate": 0.3408012021176594,
+    "transition_count": 121,
+    "forbidden_truth_read_count": 0,
+    "overall": {
+      "parent_rmse": 8.587004386703422,
+      "exp407_rmse": 8.66814102464331,
+      "delta_rmse": 0.08113663793988835,
+      "delta_sse": 5297677.254151344
+    },
+    "distance_1000_plus_delta_rmse": 0.09123188081872513,
+    "hidden_like_spatial_delta_rmse": 0.1037590194668816,
+    "hidden_like_typewell_purged_delta_rmse": 0.07905226513054942,
+    "gate_passed": false,
+    "consistent_transition_count": 0,
+    "cause_transition": null,
+    "worst_well": "52f1e77a",
+    "worst_well_rank1_positive_transition": "exp226_k16__selfgr_hmm_a070 -> likpf_mean__exact_hmm",
+    "worst_well_rank1_positive_excess_sse_share": 0.859865,
+    "cause_matches_worst_well": false
+  },
+  "artifact_sha256": {
+    "selection_freeze.parquet": "84b0ad77cd45e5a1b58d7e65f67a1087b45dbe831c04eece8eddd3e71e6e0d3b",
+    "selection_freeze_manifest.json": "3aece4d272c0987bd1a61f8fc4fc8538509dde4d450fb5806ad62e7553396ff5",
+    "selector_transition_row_attribution.parquet": "3ebb9c1df15f5fa91f2895837b4fcf3ccf4888d8c5a8472905372d0df3dc7499",
+    "tail_consistency_gate.json": "a08fcf5a5476fbae7262482c7ccfffaf8bbcf3a130205bbb2d4b1395ef9741e6",
+    "truth_read_ledger.csv": "b30f74a2ce0fcf28ecfef228b83819fc40c2857cfc4aaa8e65daad95d1bca8f1",
+    "reproducibility_manifest.json": "c31f23f2c4347f3ce15daaa746929c4df1f8c3b736509447097aa7d36e87e9c8"
+  },
+  "decision": "diffuse_or_nonreproducible_candidate_switch_cause",
+  "exp407_status_change": "none_exp407_remains_scientific_fail_closed",
+  "notes": "Private CPU v1 completed. No model, booster, prediction, inference, or submission was generated; exp409 is closed without selector rescue."
+}

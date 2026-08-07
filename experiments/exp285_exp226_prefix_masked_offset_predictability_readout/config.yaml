@@ -1,0 +1,289 @@
+experiment:
+  name: exp285_exp226_prefix_masked_offset_predictability_readout
+  description: >-
+    Mask the final 640 rows of each eligible official known prefix, replay the
+    group-safe exp226 geometry-only path from the shortened prefix, freeze
+    prefix-observable offset summaries, and audit whether they predict the
+    official evaluation-suffix exp226 residual before any correction is built.
+  route: pf_beam
+  status: train_side_readout_completed_guard_failed_branch_closed
+  created_at: "2026-07-19"
+  updated_at: "2026-07-19"
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.group_column
+    - validation.score_rows
+
+lineage:
+  parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  negative_references:
+    - exp279_exp226_geop_centered_exact_hmm_redecode
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe
+  supporting_diagnostic: exp280_exp226_shift_likelihood_separability_readout
+  diff_summary: >-
+    Replays only exp226 geometry from a fixed shortened known prefix. The
+    masked-known offset summary is frozen before official suffix truth is
+    attached. This is an independent prefix predictability readout, not a
+    rescue of the exp281 always-on residual-offset HMM.
+
+validation:
+  strategy: fixed_prefix_masked_exp226_offset_predictability_readout
+  metric: well_level_spearman_and_sign_balanced_accuracy
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: official_evaluation_suffix_post_freeze_readout_only
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  eligibility:
+    require_last_known_block_contiguous: true
+    pseudo_mask_rows: 640
+    minimum_visible_rows_before_cut: 512
+    minimum_eligible_wells: 750
+    observed_design_time_eligible_wells: 766
+  scopes:
+    official_horizon_rows: [256, 512, 640]
+    near_distance_ft: [0.0, 250.0]
+    long_tail_min_distance_ft: 1000.0
+    hidden_like_roles:
+      - hidden_like_spatial
+      - hidden_like_typewell_purged
+  guards:
+    required_official_oof_rows: 3783989
+    required_official_oof_wells: 773
+    required_eligible_wells: 750
+    required_fold_count: 5
+    required_target_well_donor_exclusion_coverage: 1.0
+    required_pseudo_mask_identity_coverage: 1.0
+    required_pseudo_path_finite_coverage: 1.0
+    required_pseudo_summary_finite_coverage: 1.0
+    required_masked_tvt_input_access_before_path_freeze: 0
+    required_official_truth_access_before_summary_freeze: 0
+    primary_pair: pseudo_offset_median_to_official_full_suffix_offset_median
+    minimum_primary_spearman_pooled: 0.30
+    minimum_primary_positive_folds: 5
+    minimum_primary_spearman_0p20_folds: 4
+    minimum_primary_sign_balanced_accuracy_pooled: 0.60
+    maximum_primary_permutation_pvalue: 0.01
+    supporting_pairs:
+      - pseudo_offset_slope_to_official_offset_slope
+      - pseudo_block_drift_rate_to_official_block_drift_rate
+    minimum_supporting_pair_spearman_pooled: 0.20
+    minimum_supporting_pair_positive_folds: 4
+    minimum_passing_supporting_pair_count: 1
+    require_positive_primary_spearman_scopes:
+      - near_0_250_ft
+      - long_tail_1000_plus_ft
+      - hidden_like_spatial
+      - hidden_like_typewell_purged
+  leakage_policy:
+    - The complete validation well is excluded from donor fields, kappa fitting, and donor ANCC surface samples.
+    - Saved exp226 fold kappa is reused and is never refit on the validation well or pseudo suffix.
+    - Every TVT_input row after the pseudo cut is removed before the target replay receives the frame.
+    - The pseudo replay uses target X, Y, Z, and MD through the well end but never target TVT, GR, or ANCC.
+    - Masked-known TVT_input is attached only after the pseudo geometry path is frozen and hashed.
+    - Official suffix true TVT is attached only after the prefix offset summary is frozen and hashed.
+    - Cut, mask length, block definitions, summaries, permutation count, scopes, and guards cannot be tuned on this readout truth.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  prefix_column: TVT_input
+  id_column: id
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    target_free_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    post_freeze_target_columns: [well_id, row_idx, tvt_true]
+    forbidden_before_official_truth_stage: [tvt_true, tvt_pred, gr_delta, error, abs_error]
+  exp226_kappa_by_fold:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+    expected_sha256: 6cbded4c6ea157d141c4272a2e29c498515e3eaa6eff3ec4517078ae1d1aeff0
+    expected_terms: 12
+  hidden_like:
+    enabled: true
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+pseudo_mask:
+  masked_rows: 640
+  minimum_visible_rows_before_cut: 512
+  cut_policy: last_contiguous_known_row_minus_640
+  generator_mask_policy: set_all_tvt_input_rows_after_cut_to_missing
+  replay_horizon: all_rows_after_cut_through_well_end
+  score_zone: first_640_rows_after_cut_ending_at_official_known_end
+  cuts_per_well: 1
+
+geometry_replay:
+  mode: exp226_geometry_only_fold_safe_saved_kappa_at_pseudo_cut
+  source_truth_policy: other_fold_wells_only
+  target_input_columns: [well_id, X, Y, Z, MD, TVT_input]
+  target_forbidden_columns: [TVT, GR, ANCC]
+  target_truth_policy: never_read_before_prefix_summary_freeze
+  use_exp226_gr_correction: false
+  use_exp226_u_projection: false
+  params:
+    theta0: 118.4
+    k_segments: 16
+    local_linear_k: 50
+    local_linear_bandwidth: 500.0
+    local_linear_ridge: 1.0
+    smooth_rho: 10.0
+    gate: 0.35
+    field_min_proj: 0.3
+    kbins: [0.0, 750.0, 1500.0, 2500.0, 4000.0, 1.0e18]
+    kappa_regimes: [0.0, 1000.0, 1500.0, 2000.0]
+    rot_max_deg: 60.0
+    ancc_theta_bandwidth: 1500.0
+
+prefix_summary:
+  residual: masked_known_tvt_input_minus_frozen_pseudo_tvt_geop
+  total_rows: 640
+  block_count: 5
+  block_rows: 128
+  require_finite_fraction: 1.0
+  offset_median: median_all_640_residuals
+  offset_slope: intercept_ols_of_five_block_medians_on_block_center_md
+  block_drift_rate: last_minus_first_block_median_divided_by_center_md_span
+  diagnostics:
+    - first_block_median
+    - last_block_median
+    - raw_block_drift
+    - block_center_md_span
+    - residual_finite_fraction
+  clip: none
+  winsorize: none
+  sign_policy: nonnegative_is_positive_negative_is_negative
+
+official_target_summary:
+  residual: post_freeze_tvt_true_minus_saved_official_exp226_tvt_geop
+  full_suffix_blocks: five_contiguous_row_array_split_blocks
+  corresponding_summaries: [offset_median, offset_slope, block_drift_rate]
+  fixed_horizon_rows: [256, 512, 640]
+  distance_scopes_ft:
+    near: [0.0, 250.0]
+    long_tail: [1000.0, null]
+
+negative_control:
+  type: within_fold_well_assignment_permutation
+  permutations: 256
+  aggregation: independently_permute_each_fold_then_rejoin_for_one_pooled_spearman
+  seed: 42
+  seed_policy: stable_sha256_per_fold_and_permutation_local_rng
+  pvalue: add_one_exceedance_rate
+
+model:
+  name: none_prefix_masked_offset_predictability_readout
+  estimator: none_deterministic_diagnostic
+  active_readout_variants: [fixed_mask640_five_block_geometry_only]
+  active_variant_count: 1
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  booster_count: 0
+  hmm_regeneration_count: 0
+  pf_regeneration_count: 0
+  parent_control_retraining: false
+
+execution:
+  stage: train_side_readout_completed_guard_failed_branch_closed
+  active_readout_variants: 1
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  hmm_well_runs: 0
+  pf_well_runs: 0
+  control_or_parent_retraining: false
+  gpu: false
+  inference: false
+  submission: false
+  implementation_approved: true
+  implementation_approval_source: user_message_implement_2026_07_19
+  kaggle_push_approved: true
+  kaggle_push_approval_source: user_message_run_2026_07_19
+  kaggle_kernel_id: kentookumura/exp285-prefix-masked-offset-readout-train
+  kaggle_kernel_id_no: 127855223
+  successful_kaggle_version: 2
+  runtime_seconds: 77.49199318885803
+  scientific_guard_passed: false
+  process_order: fold_then_sorted_well_single_process
+  expected_artifacts:
+    - exp285_exp226_prefix_masked_offset_predictability_readout_contract.json
+    - exp285_exp226_prefix_masked_offset_predictability_readout_input_manifest.csv
+    - exp285_exp226_prefix_masked_offset_predictability_readout_mask_manifest.csv
+    - exp285_exp226_prefix_masked_offset_predictability_readout_target_free_pseudo_geop.csv.gz
+    - exp285_exp226_prefix_masked_offset_predictability_readout_prefix_offset_summary.csv
+    - exp285_exp226_prefix_masked_offset_predictability_readout_official_target_summary.csv
+    - exp285_exp226_prefix_masked_offset_predictability_readout_overall_metrics.csv
+    - exp285_exp226_prefix_masked_offset_predictability_readout_fold_metrics.csv
+    - exp285_exp226_prefix_masked_offset_predictability_readout_scope_metrics.csv
+    - exp285_exp226_prefix_masked_offset_predictability_readout_permutation_metrics.csv
+    - exp285_exp226_prefix_masked_offset_predictability_readout_by_well_metrics.csv
+    - exp285_exp226_prefix_masked_offset_predictability_readout_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp285-prefix-masked-offset-readout-train
+    train_kernel_title: exp285 prefix masked offset readout train
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: deterministic_real_readout_stable_sha256_permutation_only
+  stochastic_components: [stable_within_fold_permutation_negative_control_only]
+  parallel_rng_policy: single_process_sorted_wells_and_local_rng_per_fold_permutation
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Pseudo geometry and prefix summaries are frozen and hashed before official suffix truth is attached.
+    - This is a fixed-input deterministic diagnostic, not a prediction or submission anchor.
+
+inference:
+  enabled: false
+  mode: disabled_readout_only
+  selected_candidate: null
+  create_submission: false
+
+notes:
+  - Compact self-contained train and fail-closed inference notebooks are implemented under separate filenames.
+  - The compact train notebook is adopted as the canonical train notebook for the approved Kaggle CPU readout.
+  - The canonical inference notebook remains an untouched template stub because inference is disabled.
+  - A failed fixed readout cannot trigger cut, mask, block, summary, clip, threshold, or guard rescue.
+  - No correction, current-test generation, inference, or submission is authorized by this design.
+  - Version 2 completed all technical guards but failed every primary guard; the prefix-calibrated offset branch is closed without parameter rescue.

@@ -1,0 +1,139 @@
+experiment:
+  name: "exp079_public_artifact_replay_integrity_audit"
+  description: Integrity audit for public notebook replay candidates before any direct submission.
+  route: pf_beam
+  status: audit_completed
+  created_at: "2026-06-18"
+  updated_at: "2026-06-19"
+
+lineage:
+  parent: public_notebook_route_backlog
+  deterministic_anchor: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  pf_route_anchor: exp027_public_replay_needless090_sel15_spread3
+  diff_summary: Audits public notebook replay candidates for external artifact dependency, static visible-test CSV risk, code competition rerun compatibility, branch-level outputs, and pairwise submission distance before any submit attempt.
+
+validation:
+  strategy: target_free_public_artifact_integrity_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: TVT_input_isna
+  leakage_policy:
+    - No supervised training is performed in this experiment.
+    - Public notebook outputs are not submitted until inputs, branch CSVs, hashes, and sample compatibility are recorded.
+    - Static visible-test CSV and public-sample branches are treated as blocking risks until explained.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: public_artifact_replay_integrity_audit
+  estimator: none
+  params: {}
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - pilkwang/rogii-target-free-tvt-geosteering
+      - lightningv08/lb-7-776-rogii-ridge-sp
+    dataset_sources:
+      - pilkwang/rogii-model-package
+      - fleongg/rogii-claude-models-pub
+      - ravaghi/wellbore-geology-prediction-artifacts
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_used
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: false
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - This is an audit notebook, not a deterministic prediction anchor.
+    - External input files and submission-like CSVs are hashed; gzip files also record decompressed content SHA.
+
+audit:
+  mode: public_artifact_replay_integrity_audit
+  output_prefix: exp079_public_artifact_replay_integrity_audit
+  max_inventory_files: 5000
+  source_specs:
+    - name: pilkwang_target_free_tvt_geosteering
+      kernel: pilkwang/rogii-target-free-tvt-geosteering
+      kernel_output_slugs:
+        - rogii-target-free-tvt-geosteering
+      external_input_slugs:
+        - rogii-model-package
+        - rogii-claude-models-pub
+        - wellbore-geology-prediction-artifacts
+      required_input_slugs:
+        - rogii-target-free-tvt-geosteering
+        - rogii-model-package
+        - rogii-claude-models-pub
+        - wellbore-geology-prediction-artifacts
+      branch_files:
+        - submission.csv
+        - projected_ridge_pf_projection_submission.csv
+        - pretrained_lgbm_submission.csv
+        - model_package_gate_report.csv
+        - contract_guard_summary.csv
+      expected_checks:
+        - dataset_kernel_model_sources
+        - root_submission_csv_generation
+        - static_visible_csv_writer
+        - public_sample_branch
+        - id_merge_contract
+        - prediction_range
+        - exact_match_recovery_disabled
+        - guarded_overlap_override_disabled
+    - name: ridge_sp_lb_7776
+      kernel: lightningv08/lb-7-776-rogii-ridge-sp
+      kernel_output_slugs:
+        - lb-7-776-rogii-ridge-sp
+      required_input_slugs:
+        - lb-7-776-rogii-ridge-sp
+      branch_files:
+        - submission.csv
+      expected_checks:
+        - dataset_kernel_model_sources
+        - static_visible_csv_writer
+        - code_competition_rerun_compatibility
+    - name: fle3n_sp45_koolbox_family
+      source_paths: []
+      required_input_slugs: []
+      branch_files:
+        - submission.csv
+      expected_checks:
+        - dependency_slug_fixed_before_audit
+        - static_visible_csv_writer
+        - code_competition_rerun_compatibility
+  anchor_submission_paths:
+    - name: exp027_public_replay_anchor
+      path: /tmp/kaggle-output/exp027_public_replay_needless090_sel15_spread3/inference/submission.csv
+    - name: exp073_deterministic_ml_anchor
+      path: /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/inference_v2/submission.csv
+    - name: exp063_old_ml_public_anchor
+      path: /tmp/kaggle-output/exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit/inference_v2/submission.csv
+
+notes:
+  - First target is pilkwang/rogii-target-free-tvt-geosteering because it was the leading scoreAscending public notebook on 2026-06-13.
+  - Direct submit is explicitly out of scope until this audit records source hashes, branch-level submission compatibility, and pairwise distances.
+  - The fle3n/SP45/Koolbox family is represented as a placeholder until exact dependency slugs are fixed.

@@ -1,0 +1,251 @@
+{
+  "experiment": "exp030_public_sel15_pf_candidate_selector",
+  "status": "completed",
+  "updated_at": "2026-06-07T03:39:13.810173+00:00",
+  "source_experiment": "exp029_public_sel15_pf_oof_feature_generation",
+  "feature_file": "/home/kento/work/kaggle/ROGII/experiments/exp029_public_sel15_pf_oof_feature_generation/features/public_sel15_pf_oof_features.csv.gz",
+  "loaded_columns": [
+    "abs_pf_beam_diff",
+    "beam_pred",
+    "beam_spread",
+    "distance_bucket",
+    "eval_step",
+    "fold",
+    "gr_eval_availability",
+    "id",
+    "last_anchor_tvt",
+    "pf_lik_gap_best_second",
+    "pf_pred",
+    "pf_scale_12",
+    "pf_scale_3",
+    "pf_scale_5",
+    "pf_scale_8",
+    "pf_seed_mean",
+    "pf_seed_std",
+    "pf_selected_scale_pred",
+    "pf_weight_entropy",
+    "row_idx",
+    "selector_n_eval",
+    "selector_z_span",
+    "target_tvt",
+    "well_id"
+  ],
+  "rows": 1782279,
+  "wells": 773,
+  "raw_candidate": "public_pf_selector",
+  "control_candidates": [
+    "public_pf_selector",
+    "last_anchor"
+  ],
+  "raw_clean_cv": 15.172636,
+  "required_control_cv": 15.172636,
+  "best_same_oof_candidate": "pf090_hold010",
+  "best_same_oof_cv": 15.089532,
+  "leave_one_original_fold_out_selection_cv": 15.141132,
+  "well_hash_holdout_selection_cv": 15.13149,
+  "leave_one_original_fold_out_bucket_selection_cv": 15.157679,
+  "well_hash_holdout_bucket_selection_cv": 15.183372,
+  "selected_clean_cv": 15.141132,
+  "selector_supported": true,
+  "global_selection_supported": true,
+  "bucket_selection_supported": false,
+  "metric": "rmse",
+  "metrics": [
+    {
+      "candidate": "pf090_hold010",
+      "method": "blend",
+      "rmse": 15.089532,
+      "delta_vs_raw": -0.083104,
+      "rows": 1782279,
+      "selectable": true,
+      "well_wins_vs_raw": 370,
+      "well_losses_vs_raw": 403,
+      "params_json": "{\"selectable\":true,\"weights\":{\"last_anchor_tvt\":0.1,\"pf_pred\":0.9}}"
+    },
+    {
+      "candidate": "pf090_beam010",
+      "method": "blend",
+      "rmse": 15.08977,
+      "delta_vs_raw": -0.082866,
+      "rows": 1782279,
+      "selectable": true,
+      "well_wins_vs_raw": 377,
+      "well_losses_vs_raw": 396,
+      "params_json": "{\"selectable\":true,\"weights\":{\"beam_pred\":0.1,\"pf_pred\":0.9}}"
+    },
+    {
+      "candidate": "pf080_beam010_hold010",
+      "method": "blend",
+      "rmse": 15.095635,
+      "delta_vs_raw": -0.077001,
+      "rows": 1782279,
+      "selectable": true,
+      "well_wins_vs_raw": 359,
+      "well_losses_vs_raw": 414,
+      "params_json": "{\"selectable\":true,\"weights\":{\"beam_pred\":0.1,\"last_anchor_tvt\":0.1,\"pf_pred\":0.8}}"
+    },
+    {
+      "candidate": "pf080_hold020",
+      "method": "blend",
+      "rmse": 15.101364,
+      "delta_vs_raw": -0.071272,
+      "rows": 1782279,
+      "selectable": true,
+      "well_wins_vs_raw": 356,
+      "well_losses_vs_raw": 417,
+      "params_json": "{\"selectable\":true,\"weights\":{\"last_anchor_tvt\":0.2,\"pf_pred\":0.8}}"
+    },
+    {
+      "candidate": "public_pf_selector",
+      "method": "column",
+      "rmse": 15.172636,
+      "delta_vs_raw": 0.0,
+      "rows": 1782279,
+      "selectable": true,
+      "well_wins_vs_raw": 0,
+      "well_losses_vs_raw": 0,
+      "params_json": "{\"column\":\"pf_pred\",\"selectable\":true}"
+    },
+    {
+      "candidate": "pf_scale12_090_hold010",
+      "method": "blend",
+      "rmse": 15.410797,
+      "delta_vs_raw": 0.238161,
+      "rows": 1782279,
+      "selectable": true,
+      "well_wins_vs_raw": 395,
+      "well_losses_vs_raw": 378,
+      "params_json": "{\"selectable\":true,\"weights\":{\"last_anchor_tvt\":0.1,\"pf_scale_12\":0.9}}"
+    },
+    {
+      "candidate": "pf_scale_12",
+      "method": "column",
+      "rmse": 15.773869,
+      "delta_vs_raw": 0.601233,
+      "rows": 1782279,
+      "selectable": true,
+      "well_wins_vs_raw": 356,
+      "well_losses_vs_raw": 417,
+      "params_json": "{\"column\":\"pf_scale_12\",\"selectable\":true}"
+    },
+    {
+      "candidate": "pf_scale_8",
+      "method": "column",
+      "rmse": 15.83035,
+      "delta_vs_raw": 0.657714,
+      "rows": 1782279,
+      "selectable": true,
+      "well_wins_vs_raw": 352,
+      "well_losses_vs_raw": 421,
+      "params_json": "{\"column\":\"pf_scale_8\",\"selectable\":true}"
+    },
+    {
+      "candidate": "pf_selected_scale",
+      "method": "column",
+      "rmse": 15.849322,
+      "delta_vs_raw": 0.676686,
+      "rows": 1782279,
+      "selectable": true,
+      "well_wins_vs_raw": 341,
+      "well_losses_vs_raw": 432,
+      "params_json": "{\"column\":\"pf_selected_scale_pred\",\"selectable\":true}"
+    },
+    {
+      "candidate": "beam_tight_else_pf",
+      "method": "confidence_fallback",
+      "rmse": 15.867914,
+      "delta_vs_raw": 0.695277,
+      "rows": 1782279,
+      "selectable": true,
+      "well_wins_vs_raw": 244,
+      "well_losses_vs_raw": 428,
+      "params_json": "{\"base\":\"beam_pred\",\"fallback\":\"pf_pred\",\"selectable\":true,\"thresholds\":{\"max_abs_pf_beam_diff\":20.0,\"max_beam_spread\":5.0}}"
+    },
+    {
+      "candidate": "pf_conf_fallback_hold",
+      "method": "confidence_fallback",
+      "rmse": 16.137498,
+      "delta_vs_raw": 0.964862,
+      "rows": 1782279,
+      "selectable": true,
+      "well_wins_vs_raw": 81,
+      "well_losses_vs_raw": 171,
+      "params_json": "{\"base\":\"pf_pred\",\"fallback\":\"last_anchor_tvt\",\"selectable\":true,\"thresholds\":{\"max_abs_pf_beam_diff\":35.0,\"max_pf_seed_std\":12.0,\"min_gr_eval_availability\":0.25}}"
+    },
+    {
+      "candidate": "pf_seed_mean",
+      "method": "column",
+      "rmse": 16.252863,
+      "delta_vs_raw": 1.080227,
+      "rows": 1782279,
+      "selectable": true,
+      "well_wins_vs_raw": 333,
+      "well_losses_vs_raw": 440,
+      "params_json": "{\"column\":\"pf_seed_mean\",\"selectable\":true}"
+    },
+    {
+      "candidate": "pf_conf_fallback_beam",
+      "method": "confidence_fallback",
+      "rmse": 16.564288,
+      "delta_vs_raw": 1.391652,
+      "rows": 1782279,
+      "selectable": true,
+      "well_wins_vs_raw": 134,
+      "well_losses_vs_raw": 241,
+      "params_json": "{\"base\":\"pf_pred\",\"fallback\":\"beam_pred\",\"selectable\":true,\"thresholds\":{\"max_abs_pf_beam_diff\":30.0,\"max_beam_spread\":20.0,\"max_pf_seed_std\":10.0}}"
+    },
+    {
+      "candidate": "beam",
+      "method": "column",
+      "rmse": 18.122632,
+      "delta_vs_raw": 2.949996,
+      "rows": 1782279,
+      "selectable": true,
+      "well_wins_vs_raw": 268,
+      "well_losses_vs_raw": 505,
+      "params_json": "{\"column\":\"beam_pred\",\"selectable\":true}"
+    },
+    {
+      "candidate": "last_anchor",
+      "method": "column",
+      "rmse": 18.284054,
+      "delta_vs_raw": 3.111418,
+      "rows": 1782279,
+      "selectable": true,
+      "well_wins_vs_raw": 259,
+      "well_losses_vs_raw": 514,
+      "params_json": "{\"column\":\"last_anchor_tvt\",\"selectable\":true}"
+    }
+  ],
+  "selection_metrics": [
+    {
+      "candidate": "leave_one_original_fold_out_candidate_selection",
+      "rmse": 15.141132,
+      "rows": 1782279,
+      "control": "public_pf_selector"
+    },
+    {
+      "candidate": "well_hash_holdout_candidate_selection",
+      "rmse": 15.13149,
+      "rows": 1782279,
+      "control": "public_pf_selector"
+    },
+    {
+      "candidate": "leave_one_original_fold_out_bucket_selection",
+      "rmse": 15.157679,
+      "rows": 1782279,
+      "control": "public_pf_selector"
+    },
+    {
+      "candidate": "well_hash_holdout_bucket_selection",
+      "rmse": 15.183372,
+      "rows": 1782279,
+      "control": "public_pf_selector"
+    }
+  ],
+  "notes": "Global fixed candidate selection passed original-fold and well-hash checks; bucket/hard confidence selectors are diagnostic only. Best candidate is pf090_hold010.",
+  "cv": 15.141132,
+  "public_lb": null,
+  "private_lb": null,
+  "key_idea": "Audit row/bucket/well candidate selection over public sel15 PF/Beam OOF-like features; fixed pf090_hold010 improved held-out selection, bucket/hard selectors unstable."
+}

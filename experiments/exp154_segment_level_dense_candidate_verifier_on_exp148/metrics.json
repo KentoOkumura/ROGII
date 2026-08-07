@@ -1,0 +1,94 @@
+{
+  "experiment": "exp154_segment_level_dense_candidate_verifier_on_exp148",
+  "status": "submitted_public_lb_8p078_not_adopted",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "implemented_backlog": "segment_level_dense_candidate_verifier",
+  "kernel": {
+    "id": "kentookumura/exp154-segment-dense-verifier-train",
+    "version": 1,
+    "status": "KernelWorkerStatus.COMPLETE",
+    "url": "https://www.kaggle.com/code/kentookumura/exp154-segment-dense-verifier-train"
+  },
+  "rows": 3783989,
+  "wells": 773,
+  "base": {
+    "variant": "base_exp148_lgb_mean",
+    "rmse": 8.50128118189582,
+    "mae": 5.33565092086792,
+    "within10": 0.8563320347918559
+  },
+  "best_non_oracle": {
+    "variant": "verifier_dense50_tail1500_q90_min80_clip10_a025",
+    "rmse": 8.47227955477646,
+    "delta_rmse_vs_exp148": -0.02900162711936005,
+    "mae": 5.348756790161133,
+    "within10": 0.8551050227683008,
+    "within10_delta_vs_exp148": -0.0012270120235551,
+    "gate_rate": 0.05255776377785453,
+    "gate_wells": 165,
+    "max_well_regression_vs_exp148": 2.2873734651564313,
+    "improved_wells_vs_exp148": 75,
+    "worsened_wells_vs_exp148": 90
+  },
+  "oracle": {
+    "all_candidates_rmse": 3.342164943510641,
+    "dense_candidates_rmse": 10.971366038844979
+  },
+  "worst_sets": {
+    "pf_likpf_worst50_delta_rmse_vs_exp148": -0.480663,
+    "common_pf_ml_worst26_delta_rmse_vs_exp148": -0.618472,
+    "exp148_worst50_delta_rmse_vs_exp148": -0.292035
+  },
+  "bucket_guards": {
+    "near_000_050_delta_rmse_vs_exp148": 0.0,
+    "longtail_1000_plus_delta_rmse_vs_exp148": -0.035276,
+    "longtail_1000_plus_pf_dense_q4_delta_rmse_vs_exp148": -0.089011,
+    "mid_250_500_delta_rmse_vs_exp148": 0.014269,
+    "mid_500_1000_delta_rmse_vs_exp148": 0.026098
+  },
+  "rawtest_parity": {
+    "required_columns_present": true,
+    "gate_conditions_target_free": true,
+    "new_lightgbm_training": false,
+    "inference_port": true
+  },
+  "inference": {
+    "kernel": {
+      "id": "kentookumura/exp154-segment-dense-verifier-inference",
+      "version": 1,
+      "status": "KernelWorkerStatus.COMPLETE",
+      "url": "https://www.kaggle.com/code/kentookumura/exp154-segment-dense-verifier-inference"
+    },
+    "selected_variant": "verifier_dense50_tail1500_q90_min80_clip10_a025",
+    "output_path": "experiments/exp154_segment_level_dense_candidate_verifier_on_exp148/kaggle/output/inference_v1",
+    "rows": 14151,
+    "wells": 3,
+    "fallback_rows": 0,
+    "changed_rows_vs_exp148": 951,
+    "changed_rate_vs_exp148": 0.06720373118507526,
+    "changed_wells_vs_exp148": 1,
+    "delta_vs_exp148_abs_mean": 0.16800932586193085,
+    "delta_vs_exp148_abs_p95": 2.5,
+    "delta_vs_exp148_abs_max": 2.5,
+    "prediction_min": 11590.2021484375,
+    "prediction_max": 12240.267578125,
+    "prediction_mean": 11905.387279733433,
+    "prediction_std": 278.7124043891035,
+    "submission_sha256": "fb6a2be0eb9082974f23806690ffea7552215717b1f6a83d406d6f0da2db1d54",
+    "submit_check": "PASS"
+  },
+  "submission": {
+    "ref": 54142393,
+    "description": "exp154 segment dense verifier on exp148",
+    "status": "SubmissionStatus.COMPLETE",
+    "submitted_at_utc": "2026-06-28 14:14:56.697000",
+    "public_lb": 8.078,
+    "private_lb": null,
+    "delta_public_lb_vs_exp148": 0.118,
+    "adopted": false
+  },
+  "decision": "submitted_not_adopted_public_lb_worse_than_exp148",
+  "public_lb": 8.078,
+  "private_lb": null
+}

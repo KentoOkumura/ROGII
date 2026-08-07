@@ -1,0 +1,316 @@
+experiment:
+  name: exp291_prefix_masked_typewell_gr_multimode_safe_beam
+  description: >-
+    Exclude same-well self-GR, retain every eligible Type Well GR local shift
+    mode together with the safe exp226 base, and audit a fixed safe-anchored
+    multi-checkpoint commit policy in a known-prefix masked backtest.
+  hypothesis: >-
+    Retaining every eligible Type Well GR local mode with an unpruned safe base
+    and requiring persistent checkpoint evidence reduces exp284 false switches.
+  route: pf_beam
+  status: train_side_backtest_completed_guard_failed_branch_closed
+  phase: completed_fixed_contract_closed
+  created_at: "2026-07-19"
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.group_column
+    - validation.score_rows
+
+lineage:
+  parent: exp284_prefix_masked_wrong_mode_branch_recovery_backtest
+  geometry_reference: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  emission_reference: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  shift_bank_reference: exp280_exp226_shift_likelihood_separability_readout
+  negative_references:
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe
+    - exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout
+    - exp285_exp226_prefix_masked_offset_predictability_readout
+  diff_summary: >-
+    Replaces exp284's early Type Well top-1 choice plus same-well self-GR top-3
+    candidates with all eligible fixed-bank Type Well GR local modes. The safe
+    base is never pruned, and an alternative is committed only after the same
+    mode persistently beats safe at fixed checkpoints and passes the fixed veto.
+
+validation:
+  strategy: fixed_prefix_masked_typewell_gr_multimode_safe_beam_backtest
+  metric: h256_safe_anchored_selection_rmse_and_false_switch
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  fold_source: exp226_saved_oof_fold_assignment
+  score_rows: masked_known_prefix_rows_after_fixed_cut
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  guards:
+    minimum_eligible_wells: 750
+    required_mask_identity_coverage: 1.0
+    required_safe_candidate_coverage: 1.0
+    required_all_local_modes_retained_coverage: 1.0
+    required_self_gr_candidate_count: 0
+    required_branch_finite_coverage: 1.0
+    required_evidence_finite_coverage: 1.0
+    required_post_cut_truth_access_before_freeze: 0
+    minimum_safe_alternative_auc_each_fold: 0.60
+    minimum_balanced_choice_accuracy_pooled: 0.60
+    minimum_balanced_choice_accuracy_each_fold_exclusive: 0.50
+    minimum_all_modes_gain_vs_safe_h256_ft: 0.10
+    minimum_all_modes_gain_vs_safe_folds: 4
+    minimum_all_modes_gain_vs_top1_h256_ft: 0.05
+    minimum_all_modes_gain_vs_top1_folds: 3
+    maximum_safe_unique_best_false_switch_rate: 0.05
+    require_h512_gain_not_below_h256: true
+    require_real_better_than_matched_shuffle_pooled: true
+    minimum_real_vs_matched_shuffle_nonregressing_folds: 5
+  leakage_policy:
+    - TVT_input rows after the pseudo cut are masked before candidate or evidence generation.
+    - Raw true TVT after the cut is unavailable until all target-free artifacts have frozen content SHA values.
+    - Candidate shifts use only visible pre-cut rows, a fixed shift bank, and Type Well GR.
+    - Policy selection is frozen before truth-best, RMSE, recovery, or false-switch labels are attached.
+    - Cut, bank, local-maximum rule, horizons, likelihood, veto, and guards cannot be tuned on this backtest truth.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    safe_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    forbidden_columns: [tvt_pred, gr_delta, tvt_true, error, abs_error]
+  exp226_kappa_by_fold:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+    expected_sha256: 6cbded4c6ea157d141c4272a2e29c498515e3eaa6eff3ec4517078ae1d1aeff0
+    expected_terms: 12
+  hidden_like:
+    enabled: true
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+pseudo_mask:
+  masked_rows: 640
+  minimum_visible_rows_before_cut: 512
+  cut_policy: last_contiguous_known_row_minus_640
+  visible_shift_score_rows: 128
+  checkpoints_rows: [128, 256, 512]
+  primary_horizon_rows: 256
+  cuts_per_well: 1
+
+candidate_bank:
+  sources: [safe_base, typewell_gr_local_modes]
+  forbidden_sources: [same_well_self_gr, ncc, self_gr_donor, self_gr_shuffle]
+  always_keep_safe_base: true
+  safe_shift_ft: 0.0
+  shift_bank_ft: [-80.0, -40.0, -20.0, -10.0, -5.0, -2.0, 0.0, 2.0, 5.0, 10.0, 20.0, 40.0, 80.0]
+  minimum_alternative_abs_shift_ft: 10.0
+  local_maximum_policy: score_greater_or_equal_to_full_bank_neighbors_endpoints_compare_one_side
+  local_maximum_fallback: safe_only
+  tie_policy: shift_bank_order
+  retain_policy: all_eligible_local_maxima_without_topk_cap
+  dedup_policy: exact_shift_value
+  branch_path_policy: safe_base_plus_constant_shift
+  reference_path_on_visible_score_rows: observed_visible_tvt_input
+  emission: exp209_gaussian_raw_gr_typewell
+
+geometry_replay:
+  mode: exp226_fold_safe_donor_field_saved_kappa_at_pseudo_cut
+  source_truth_policy: outer_train_wells_only
+  target_truth_policy: never_read_before_all_target_free_artifacts_frozen
+  params:
+    theta0: 118.4
+    k_segments: 16
+    local_linear_k: 50
+    local_linear_bandwidth: 500.0
+    local_linear_ridge: 1.0
+    smooth_rho: 10.0
+    gate: 0.35
+    field_min_proj: 0.3
+    kbins: [0.0, 750.0, 1500.0, 2500.0, 4000.0, 1.0e18]
+    rot_max_deg: 60.0
+    ancc_theta_bandwidth: 1500.0
+
+evidence:
+  checkpoints_rows: [128, 256, 512]
+  primary_horizon_rows: 256
+  primary_score: mean_cumulative_exp209_gaussian_raw_gr_typewell_log_likelihood
+  emission:
+    sigma_mode: visible_prefix_residual_std
+    sigma_clip: [10.0, 60.0]
+    log_likelihood_clip: 600.0
+    missing_gr_policy: interpolate_within_allowed_window_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+  geometry_veto:
+    maximum_anchor_shift_ft: 80.0
+    typewell_extension_ft: 40.0
+    require_finite_path_and_steps: true
+  commit:
+    h256: same_alternative_strictly_beats_safe_and_passes_veto_at_h128_and_h256_else_safe
+    h512: same_alternative_strictly_beats_safe_and_passes_veto_at_h128_h256_h512_else_safe
+    multiple_passing_alternatives: maximum_current_checkpoint_evidence_then_shift_bank_order
+    score_margin: 0.0
+    tie_or_nonfinite_policy: safe
+    candidate_pruning: none
+
+policies:
+  primary: safe_plus_all_typewell_modes
+  fixed:
+    - safe_base_only
+    - safe_plus_top1_typewell_mode
+    - safe_plus_all_typewell_modes
+    - safe_plus_matched_count_shuffled_modes
+  matched_shuffle:
+    source: fixed_shift_bank_eligible_slots
+    preserve_count_per_event: true
+    score_blind: true
+    sample_without_replacement: true
+    allow_accidental_real_mode_overlap: true
+    seed: 42
+    seed_policy: stable_sha256_per_well_cut_source_local_rng
+
+model:
+  name: none_prefix_masked_multimode_backtest
+  estimator: none_deterministic_diagnostic
+  active_contract_count: 1
+  fixed_policy_count: 4
+  active_variant_count: 1
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  booster_count: 0
+  hmm_regeneration_count: 0
+  pf_regeneration_count: 0
+  parent_control_retraining: false
+
+execution:
+  stage: train_side_backtest_completed_guard_failed_branch_closed
+  implementation: true
+  active_contract_count: 1
+  fixed_policy_count: 4
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  hmm_well_runs: 0
+  pf_well_runs: 0
+  control_or_parent_retraining: false
+  gpu: false
+  inference: false
+  submission: false
+  kaggle_push_approved: true
+  implementation_authorized: true
+  implementation_authorized_at: "2026-07-19"
+  implementation_authorization_source: user_message_exp291_implementation
+  canonical_notebook_adopted: true
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  kaggle_run_authorized_at: "2026-07-19"
+  kaggle_run_authorization_source: user_message_execute
+  kaggle_run_authorized_scope: one_fixed_contract_cpu_train_run
+  progress_every_wells: 10
+  process_order: fold_then_sorted_well_single_process
+  failure_policy: close_without_parameter_k_window_shift_horizon_margin_rescue
+  result:
+    guard_passed: false
+    decision: close_without_parameter_rescue
+    eligible_wells: 766
+    ineligible_wells: 7
+    runtime_seconds: 6805.497161626816
+    safe_h256_rmse: 4.82748347302165
+    top1_h256_rmse: 18.713109608883688
+    all_modes_h256_rmse: 22.199818424918465
+    matched_shuffle_h256_rmse: 17.360717911476897
+    gain_vs_safe_h256_ft: -17.372334951896814
+    gain_vs_top1_h256_ft: -3.4867088160347777
+    false_switch_rate: 0.34946236559139787
+    pairwise_evidence_auc_pooled: 0.6727374188311688
+    balanced_choice_accuracy_pooled: 0.5769074675324675
+  expected_artifacts:
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam_contract.json
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam_mask_manifest.csv
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam_target_free_shift_scores.csv.gz
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam_target_free_candidate_bank.csv.gz
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam_target_free_branch_paths.csv.gz
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam_target_free_evidence.csv.gz
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam_target_free_policy_selection.csv.gz
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam_overall_metrics.csv
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam_fold_metrics.csv
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam_pairwise_metrics.csv
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam_by_well_metrics.csv
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam_input_manifest.csv
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp291-typewell-multimode-safe-beam-backtest-train
+    train_kernel_title: exp291 typewell multimode safe beam backtest train
+    train_kernel_version: 1
+    train_kernel_id_no: 127882960
+    train_kernel_url: https://www.kaggle.com/code/kentookumura/exp291-typewell-multimode-safe-beam-backtest-train
+    pushed_at: "2026-07-19T21:07:00+09:00"
+    completed_at: "2026-07-19T23:00:58+09:00"
+    runtime_seconds: 6805.497161626816
+    final_status: COMPLETE
+    kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_id: null
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: deterministic_real_modes_stable_sha256_matched_shuffle_control
+  stochastic_components: [matched_count_shuffled_modes_negative_control_only]
+  parallel_rng_policy: single_process_sorted_wells_local_rng_per_event_for_shuffle_only
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Target-free candidate, branch, evidence, and selection content SHA values are frozen before post-cut truth attachment.
+    - This is a controlled diagnostic and is not a prediction, model, or submission anchor.
+
+inference:
+  enabled: false
+  mode: disabled_backtest_only
+  selected_candidate: null
+  create_submission: false
+
+notes:
+  - The compact self-contained train notebook implementation is complete and statically validated.
+  - The user execution request authorizes canonical train adoption and one fixed-contract Kaggle CPU run.
+  - Canonical inference remains unchanged; inference and submission are disabled.
+  - Kaggle CPU version 1 completed under the fixed contract and passed every technical guard.
+  - Scientific and safety guards failed; the branch is closed without same-backtest parameter rescue.
+  - No decoder, inference, prediction, or submission was produced.
+
+next_action: >-
+  Keep exp291 closed without same-backtest parameter rescue and do not build
+  a decoder, inference, prediction, or submission from this branch.

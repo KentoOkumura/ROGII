@@ -1,0 +1,90 @@
+experiment:
+  name: "exp122_exact_override_negative_control"
+  description: "Negative-control audit for exact-match recovery and guarded overlap override in the Pilkwang replay."
+  route: pf_beam  # ml_model, pf_beam, or ensemble
+  status: implemented
+  created_at: "2026-06-25"
+
+lineage:
+  parent: "exp079_public_artifact_replay_integrity_audit + exp064_train_test_well_id_assert_probe"
+  diff_summary: "Read Pilkwang replay risk flags, exp079 branch summaries, exp064 hidden well-id overlap probe, and optional exact/guard output files. This experiment does not train or submit a model."
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation: {}
+
+# Common paths and submission columns come from project.yml.
+data: {}
+
+model:
+  name: diagnostic_audit
+  params:
+    optional_layers:
+      - exact_match_recovery
+      - guarded_overlap_override
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    bootstrap_files:
+      - "evidence/pilkwang/rogii-ridge-pf-blend-model-package-experiments.ipynb"
+      - "evidence/exp079/summary.json"
+      - "evidence/exp079/submission_summary.csv"
+      - "evidence/exp079/pairwise_distances.jsonl"
+      - "evidence/exp064/metrics.json"
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: none_deterministic_file_audit
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - No PF/Beam generation, model fitting, GPU training, or submission generation is performed.
+    - The output is a deterministic audit over local/Kaggle files that exist in the run environment.
+
+audit:
+  notebook_candidates:
+    - "experiments/exp122_exact_override_negative_control/evidence/pilkwang/rogii-ridge-pf-blend-model-package-experiments.ipynb"
+    - "evidence/pilkwang/rogii-ridge-pf-blend-model-package-experiments.ipynb"
+    - "docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_20260611/pilkwang__rogii-ridge-pf-blend-model-package-experiments/rogii-ridge-pf-blend-model-package-experiments.ipynb"
+    - "docs/notebooks/rogii-wellbore-geology-prediction/date_run_recent_20260611/pilkwang__rogii-ridge-pf-blend-model-package-experiments/rogii-ridge-pf-blend-model-package-experiments.ipynb"
+    - "docs/notebooks/rogii-wellbore-geology-prediction/vote_top_20260611/pilkwang__rogii-ridge-pf-blend-model-package-experiments/rogii-ridge-pf-blend-model-package-experiments.ipynb"
+  exp079_summary_json_candidates:
+    - "experiments/exp122_exact_override_negative_control/evidence/exp079/summary.json"
+    - "evidence/exp079/summary.json"
+    - "/tmp/kaggle-output/exp079_public_artifact_replay_integrity_audit/train_v4/artifacts/exp079_public_artifact_replay_integrity_audit_summary.json"
+    - "experiments/exp079_public_artifact_replay_integrity_audit/artifacts/exp079_public_artifact_replay_integrity_audit_summary.json"
+  exp079_submission_summary_candidates:
+    - "experiments/exp122_exact_override_negative_control/evidence/exp079/submission_summary.csv"
+    - "evidence/exp079/submission_summary.csv"
+    - "/tmp/kaggle-output/exp079_public_artifact_replay_integrity_audit/train_v4/artifacts/exp079_public_artifact_replay_integrity_audit_submission_summary.csv"
+    - "experiments/exp079_public_artifact_replay_integrity_audit/artifacts/exp079_public_artifact_replay_integrity_audit_submission_summary.csv"
+  exp079_pairwise_jsonl_candidates:
+    - "experiments/exp122_exact_override_negative_control/evidence/exp079/pairwise_distances.jsonl"
+    - "evidence/exp079/pairwise_distances.jsonl"
+    - "/tmp/kaggle-output/exp079_public_artifact_replay_integrity_audit/train_v4/artifacts/exp079_public_artifact_replay_integrity_audit_pairwise_distances.jsonl"
+    - "experiments/exp079_public_artifact_replay_integrity_audit/artifacts/exp079_public_artifact_replay_integrity_audit_pairwise_distances.jsonl"
+  exp064_metrics_candidates:
+    - "experiments/exp122_exact_override_negative_control/evidence/exp064/metrics.json"
+    - "evidence/exp064/metrics.json"
+    - "experiments/exp064_train_test_well_id_assert_probe/metrics.json"
+  guard_output_roots:
+    - "/tmp/kaggle-output/exp079_public_artifact_replay_integrity_audit/train_v4"
+    - "/kaggle/input/notebooks/pilkwang/rogii-target-free-tvt-geosteering"
+    - "/kaggle/working"
+
+notes:
+  - "same-well exact/override layers are diagnostic only and must not be used as hidden-safe improvement evidence."

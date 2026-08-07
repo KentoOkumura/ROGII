@@ -1,0 +1,338 @@
+experiment:
+  name: exp509_exp413_strict_public_core_final_slot
+  description: >-
+    Build the private-generalization-first final submission slot by applying
+    the frozen exp497 deployment weight to saved exp413 and strict public-core
+    current-test predictions, without changing exp497's failed scientific gate.
+  route: ensemble
+  status: implementation_complete_candidate_notebook_not_adopted
+  created_at: "2026-08-04"
+  updated_at: "2026-08-04"
+  inference_enabled: false
+
+lineage:
+  parent: exp413_scale5_likpf_full_replacement_on_exp335
+  auxiliary: exp497_strict_public_core_fold_safe_ensemble_on_exp413
+  steering: ../../.steering/20260804-exp509-exp413-strict-public-core-final-slot
+  diff_summary: >-
+    Do not retrain or regenerate either parent. Reuse the saved exp413 and
+    strict public-core current-test components and apply the preregistered
+    exp497 median deployment weight 0.13716473330712417. Treat the output as
+    a user-directed final-slot reference override, not a scientific promotion.
+
+implementation:
+  approved: true
+  approval_source: user_message_implement_exp509_2026_08_04
+  approval_scope: candidate_source_notebook_contract_tests_and_docs_only
+  code_created: true
+  compact_inference_candidate_created: true
+  compact_inference_candidate_notebook_created: true
+  compact_inference_candidate_source_lines: 694
+  compact_inference_candidate_source_sha256: cc4dab6ad31e1ccdcc2cff5d44e38bb8253194ddc94867e11fe7ee2d22b4af5c
+  compact_inference_candidate_notebook_sha256: f24c796b2bfadb925750c420a79bd429c9f096178557dea479f5dc202e630bee
+  canonical_train_notebook_is_template_placeholder: true
+  canonical_inference_notebook_is_template_placeholder: true
+  canonical_inference_notebook_adopted: false
+  kaggle_package_created: false
+  kaggle_run_approved: false
+  inference_run_approved: false
+  submission_approved: false
+
+validation:
+  strategy: reuse_exp497_stage_e_meta5_evidence_without_reopening_gate
+  metric: rmse
+  group_column: well
+  score_rows: TVT_input_isna
+  new_cv_run: false
+  scientific_decision_source: exp497_preregistered_all_and_gate
+  scientific_decision: failed_not_promoted
+  reference_evidence:
+    exp413_cv: 7.884802794404715
+    exp413_public_lb: 7.201
+    exp497_candidate_cv: 7.87448814999802
+    exp497_gain_ft: 0.010314644406695
+    exp497_nonworse_folds: 3
+    exp497_by_well_p95_delta_ft: 0.700720
+    exp497_worst_well_delta_ft: 7.541588
+  leakage_policy:
+    - Use only the strict public-core component produced without public-specific overlays.
+    - Never read Gold, guarded-contact, same-well lookup, public well IDs, or public output values.
+    - Join components by id one-to-one and restore sample order.
+    - Do not tune the fixed weight from current-test differences or Public LB.
+
+data:
+  sample_contract: dynamic_competition_sample_id_order_and_nonempty_wells
+  exp413_current_test:
+    source_experiment: exp413_scale5_likpf_full_replacement_on_exp335
+    prediction_file: exp413_current_test_predictions.csv.gz
+    expected_raw_gzip_sha256: 52ffb49110673f90b9b83b2e296e09b4ad0839164eda9ec13a91859937ebf136
+    expected_decompressed_sha256: 875a1334ae3c90f841414f8f98d8877fb06234e17e0fd0b8d46385170a584dc4
+  exp497_strict_public_core_current_test:
+    source_experiment: exp497_strict_public_core_fold_safe_ensemble_on_exp413
+    required_stage: stage_i_current_test_version_4_complete
+    required_component: strict_public_core_prediction_before_exp413_blend
+    prediction_sha256: 27641aa6d28204a855b38e4debf0059031727b701066df75e19dad9902378885
+    blend_prediction_sha256: c939c9f8edf83628f610d1ec85988aeb0d7e7ebcd168d5d5aa2e0805fbe56f72
+    prediction_file_sha256: 6abd8b1d2c73d88cd8d8cfa0863cc9d08e89dbd97d1d7892d278c0d23e83f98e
+    model_set_sha256: dcc2166f4bd5731364efe0b3fb848a46cf87f8133cbe78890658a1062c604626
+    ridge_weights_sha256: 34aa73067d6e67b98eb72c40035b5065d6721674af89982a1089f1d803a6c727
+    missing_input_policy: fail_closed_no_substitution_no_inference_time_training
+  exp497_stage_e:
+    weight_sha256: 5e5dfc1f6adff2b433118adc8083cf0652e8a6b8725942b17dfa84882d91b7ba
+    promotion_gate_sha256: 95c82331e89171a735f858b0f6be36f6af035b95206aff0dc31a4b73d24c332e
+
+public_core:
+  source: exp497_stage_i_v4_saved_models
+  public_lb_specific_processing_enabled: false
+  pf:
+    particles: 500
+    seeds: 128
+    stable_seed_required: true
+
+ensemble:
+  contract_file: ensemble_contract.yaml
+  output_contract: output_contract.md
+  id: exp413_plus_strict_public_core_fixed_median_weight
+  exp413_weight: 0.8628352666928758
+  strict_public_core_weight: 0.13716473330712417
+  formula: exp413_weight_times_exp413_plus_public_core_weight_times_strict_public_core
+  arithmetic_dtype: float64
+  weight_source: median_of_exp497_five_meta_fold_weights
+  meta_fold_public_core_weights:
+    - 0.17194009634180468
+    - 0.08782587089682156
+    - 0.13465228591526224
+    - 0.13716473330712417
+    - 0.213671022298501
+  weight_refit: false
+  row_gate: false
+  well_gate: false
+  confidence_gate: false
+  conditional_router: false
+  final_postprocess: none
+
+model:
+  name: fixed_saved_prediction_convex_blend
+  params:
+    learned_model: false
+    arithmetic_dtype: float64
+
+prohibited:
+  - gold_visible_prefix_overlay
+  - guarded_contact_override
+  - same_well_train_test_lookup
+  - public_well_id_rule
+  - weight_grid_or_refit
+  - public_lb_tuning
+  - row_or_well_conditional_router
+  - final_savgol_or_warmup_or_projection
+  - parent_or_auxiliary_retraining
+  - parent_or_auxiliary_regeneration
+
+technical_gate:
+  all_and: true
+  input_sha_exact: true
+  id_one_to_one: true
+  sample_id_order_exact: true
+  duplicate_ids_zero: true
+  nonfinite_predictions_zero: true
+  weights_constant_all_rows: true
+  weights_sum_exactly_one: true
+  exp413_serialization_max_abs: 1.0e-3
+  visible_strict_public_core_max_abs: 2.0e-3
+  visible_exp413_max_abs: 2.0e-2
+  visible_blend_max_abs: 2.0e-2
+  visible_parity_policy: component_specific_historical_equivalence
+  formula_parity_max_abs: 1.0e-12
+  component_and_output_sha_recorded: true
+  decision_if_fail: fail_close_without_input_weight_or_postprocess_rescue
+
+submission_portfolio:
+  slot: 1
+  role: private_generalization_first_non_single_anchor
+  anchor_update_allowed: false
+  submission_requires_separate_approval: true
+
+execution_contract:
+  scientific_variants: 1
+  trained_models: 0
+  model_configs: 0
+  folds: 0
+  total_boosters: 0
+  pf_runs: dynamic_hidden_test_component_regeneration_only
+  beam_runs: dynamic_hidden_test_component_regeneration_only
+  loaded_exp497_boosters: 40
+  loaded_exp497_ridge_models: 2
+  loaded_exp413_boosters: 75
+  weight_refit: 0
+  parent_or_control_retraining: 0
+  gpu_training_runs: 0
+  runtime: kaggle_private_t4_internet_off_if_separately_approved
+
+inference:
+  mode: hidden_safe_saved_model_final_slot_candidate
+  selected_train_anchor_unchanged: exp413
+  generate_submission_csv: true
+  external_submission: false
+  saved_model_deployment:
+    approved: true
+    mode: exp509_hidden_safe_saved_model_final_slot
+    candidate_source: exp509_exp413_strict_public_core_final_slot_compact_selfcontained_inference.py
+    candidate_notebook: exp509_exp413_strict_public_core_final_slot_compact_selfcontained_inference.ipynb
+    canonical_notebook_adopted: false
+    accelerator: kaggle_gpu
+    exp497_booster_training_count: 0
+    exp497_saved_lightgbm_count: 24
+    exp497_saved_catboost_count: 16
+    exp497_saved_booster_count: 40
+    exp497_saved_ridge_count: 2
+    exp413_booster_training_count: 0
+    exp413_saved_booster_count: 75
+    public_test_exp413_sidecar_allowed: false
+    dynamic_exp413_runtime_source: exp510_exp413_hidden_safe_runtime.py
+    dynamic_exp413_runtime_sha256: 0eea5b11d6852d0c2170914e993d6aba1204c02f2de00c3a809b299c028ef1dd
+    dynamic_exp413_parent_source_sha256: 0f6fc81e56556aa6db828584ab2a2e58dde9db9cc4b54d6c12fa60e1c68f1388
+    model_source_path_token: exp497-strict-public-core-current-test-inference
+    public_runtime_path_token: exp072-exp063-full-replay-feature-cache-train
+    prediction_chunk_size: 250000
+    visible_strict_public_core_max_abs: 2.0e-3
+    visible_exp413_max_abs: 2.0e-2
+    visible_blend_max_abs: 2.0e-2
+    visible_parity_policy: component_specific_historical_equivalence
+    deployment_weight: 0.13716473330712417
+    meta_fold_weights:
+      - 0.17194009634180468
+      - 0.08782587089682156
+      - 0.13465228591526224
+      - 0.13716473330712417
+      - 0.213671022298501
+    generate_submission_csv: true
+    external_submission: false
+    model_source_kernel: kentookumura/exp497-strict-public-core-current-test-inference
+    model_source_kernel_version: 4
+    model_source_kernel_id_no: 129586103
+    serialized_model_set_sha256: dcc2166f4bd5731364efe0b3fb848a46cf87f8133cbe78890658a1062c604626
+    artifact_sha256:
+      model_manifest: dfbfcfee1390de321e3aaca2add97284da5db7a5e1da52f42bfa885a9143a22f
+      ridge_weights: 34aa73067d6e67b98eb72c40035b5065d6721674af89982a1089f1d803a6c727
+      weights: 90a03811116e91607d82c0aedb4dccca5645572152a62f96ad9972c1d11120c3
+      selector_policy: bdb763d04d0c81fbccf99c3ef3900f8b023487419bb5b576e22d8af9b6365141
+      feature_schema: ac8ceb67a34eef0517b0c293bbfdb0cf1ab382dc2cc82c6e080f466cd59fb098
+      reproducibility_manifest: cd0278a607bf37c2a36aff1e1fa3bcca5b59d2af2e167790ab68fc49119b83f9
+
+stages:
+  stage_i_saved_model_inference:
+    implemented: true
+    notebook_kind: inference
+    canonical_notebook_adopted: false
+    accelerator: kaggle_gpu
+    fitted_boosters: 0
+    loaded_exp497_boosters: 40
+    loaded_exp497_ridge_models: 2
+    loaded_exp413_boosters: 75
+    exp413_retraining: 0
+    weight_refit: 0
+    submission_enabled: true
+    external_submission_enabled: false
+
+runtime:
+  authoritative_platform: kaggle_notebook
+  internet_enabled: false
+  local_notebook_execution_allowed: false
+  use_amp: false
+  num_workers: 4
+  batch_size: 0
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    inference_kernel_id: kentookumura/exp509-strict-public-core-final-slot-inference
+    inference_title: exp509 strict public core final slot inference
+    inference:
+      enable_gpu: true
+      machine_shape: NvidiaTeslaT4
+    inference_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp497-strict-public-core-current-test-inference
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp073-full-replay-repro-guard-infer
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp226-k16-kappa-repro-inference
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp413-scale5-likpf-replacement-preflight
+      - kentookumura/exp413-scale5-likpf-selector-train
+      - kentookumura/exp413-scale5-likpf-signed-train
+      - kentookumura/exp413-scale5-likpf-downstream-train
+    bootstrap_dependency_files:
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - source: experiments/exp510_exp413_exact_public_preoverride_hedge/exp510_exp413_hidden_safe_runtime.py
+        destination: exp510_exp413_hidden_safe_runtime.py
+      - source: experiments/exp413_scale5_likpf_full_replacement_on_exp335/settings.py
+        destination: exp413_runtime/settings.py
+      - source: experiments/exp413_scale5_likpf_full_replacement_on_exp335/config.yaml
+        destination: exp413_runtime/config.yaml
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/config.yaml
+        destination: exp413_runtime/inputs/parent_exp264_config.yaml
+      - source: experiments/exp335_signed_residual_meta_on_exp264/config.yaml
+        destination: exp413_runtime/inputs/parent_exp335_config.yaml
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/candidate_contract.yaml
+        destination: exp413_runtime/inputs/exp264_candidate_contract.yaml
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_a_v4/artifacts/feature_catalog.csv
+        destination: exp413_runtime/inputs/exp264_stage_a_feature_catalog.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_a_v4/artifacts/feature_schema.json
+        destination: exp413_runtime/inputs/exp264_stage_a_feature_schema.json
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+        destination: exp413_runtime/inputs/exp218_clean_273_allowlist.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_feature_availability.csv
+        destination: exp413_runtime/inputs/exp218_feature_availability.csv
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: exp413_runtime/inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: exp413_runtime/inputs/exp218_source/config.yaml
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/settings.py
+        destination: exp413_runtime/inputs/exp218_source/settings.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/learned_likelihood_rawtest_feature_generator_parity.py
+        destination: exp413_runtime/inputs/exp145_source/learned_likelihood_rawtest_feature_generator_parity.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/pf_multi_observation_likelihood_probe.py
+        destination: exp413_runtime/inputs/exp145_source/pf_multi_observation_likelihood_probe.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/config.yaml
+        destination: exp413_runtime/inputs/exp145_source/config.yaml
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/settings.py
+        destination: exp413_runtime/inputs/exp145_source/settings.py
+      - source: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+        destination: exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_builder.py
+        destination: exp413_runtime/inputs/exp263_source/candidate_cache_builder.py
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_contract.py
+        destination: exp413_runtime/inputs/exp263_source/candidate_cache_contract.py
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_loader.py
+        destination: exp413_runtime/inputs/exp263_source/candidate_cache_loader.py
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/config.yaml
+        destination: exp413_runtime/inputs/exp263_source/config.yaml
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: exp413_runtime/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_upstream_per_well_seed_then_fixed_float64_id_order
+  stochastic_components:
+    - upstream_dynamic_exp413_pf_beam
+    - upstream_strict_public_core_pf_beam
+  parallel_rng_policy: upstream_immutable_per_well_seed_no_global_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    upstream_model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  deterministic_promotion: rerun_prediction_and_submission_sha_match_required
+
+notes:
+  - Candidate source/notebook and tests are implemented; canonical notebook adoption and Kaggle execution remain separately gated.
+  - exp497 scientific promotion remains failed and exp413 remains the ML anchor.

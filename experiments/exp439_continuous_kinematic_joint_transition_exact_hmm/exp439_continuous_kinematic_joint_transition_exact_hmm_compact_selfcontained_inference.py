@@ -1,0 +1,150 @@
+# ---
+# jupyter:
+#   jupytext:
+#     formats: ipynb,py:percent
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.17.2
+#   kernelspec:
+#     display_name: Python 3
+#     language: python
+#     name: python3
+# ---
+
+# %% [markdown]
+# # exp439 continuous-kinematic joint-transition exact HMM — inference guard
+#
+# exp439 completed fixed32 Stage 0 with a preregistered moment-feasibility
+# technical FAIL. Inference, hidden-test HMM regeneration, submission creation,
+# Stage 1, and same-experiment rescue are permanently disabled.
+
+# %% [markdown]
+# ## Contents
+#
+# 1. Imports and notebook-safe config loading
+# 2. Disabled inference contract
+# 3. Guarded orchestration
+
+# %% [markdown]
+# ## 1. Imports and notebook-safe config loading
+
+# %%
+from __future__ import annotations
+
+import json
+from collections.abc import Mapping
+from pathlib import Path
+from typing import Any
+
+import yaml
+
+EXPERIMENT_NAME = "exp439_continuous_kinematic_joint_transition_exact_hmm"
+PACKAGE_DIR = Path.cwd()
+
+
+def get_nested(mapping: Mapping[str, Any], dotted_key: str, default: Any = None) -> Any:
+    value: Any = mapping
+    for part in dotted_key.split("."):
+        if not isinstance(value, Mapping) or part not in value:
+            return default
+        value = value[part]
+    return value
+
+
+def find_project_root(start: Path = PACKAGE_DIR) -> Path:
+    for candidate in (start, *start.parents):
+        if (candidate / "project.yml").is_file():
+            return candidate
+    return start
+
+
+def load_config() -> dict[str, Any]:
+    root = find_project_root()
+    candidates = (
+        root / "experiments" / EXPERIMENT_NAME / "config.yaml",
+        PACKAGE_DIR / "config.yaml",
+    )
+    for path in candidates:
+        if path.is_file():
+            value = yaml.safe_load(path.read_text()) or {}
+            if not isinstance(value, dict):
+                raise ValueError(f"{path} must contain a YAML mapping")
+            if get_nested(value, "experiment.name") == EXPERIMENT_NAME:
+                return value
+    raise FileNotFoundError("exp439 config.yaml was not found")
+
+
+# %% [markdown]
+# ## 2. Disabled inference contract
+
+# %%
+def validate_inference_disabled(config: Mapping[str, Any]) -> dict[str, Any]:
+    if get_nested(config, "experiment.name") != EXPERIMENT_NAME:
+        raise ValueError("wrong exp439 config")
+    contract = {
+        "implementation_approved": bool(
+            get_nested(config, "runtime.implementation_approved", False)
+        ),
+        "stage0_run_approved": bool(
+            get_nested(config, "runtime.run_approved", False)
+        ),
+        "stage1_approved": bool(
+            get_nested(config, "runtime.stage1_approved", False)
+        ),
+        "inference_enabled": bool(
+            get_nested(config, "runtime.inference_enabled", False)
+        ),
+        "submission_enabled": bool(
+            get_nested(config, "runtime.submission_enabled", False)
+        ),
+        "create_submission": bool(
+            get_nested(config, "execution.create_submission", False)
+        ),
+    }
+    if not contract["implementation_approved"]:
+        raise RuntimeError("exp439 Stage 0 implementation is not approved")
+    forbidden = {
+        key: value
+        for key, value in contract.items()
+        if key
+        in {
+            "stage1_approved",
+            "inference_enabled",
+            "submission_enabled",
+            "create_submission",
+        }
+        and value
+    }
+    if forbidden:
+        raise ValueError(f"exp439 inference contract was unlocked: {forbidden}")
+    return contract
+
+
+def run_inference(config: Mapping[str, Any]) -> None:
+    validate_inference_disabled(config)
+    raise RuntimeError(
+        "exp439 inference is disabled after the Stage 0 moment-feasibility "
+        "technical FAIL."
+    )
+
+
+# %% [markdown]
+# ## 3. Guarded orchestration
+
+# %%
+CONFIG = load_config()
+INFERENCE_CONTRACT = validate_inference_disabled(CONFIG)
+print(
+    json.dumps(
+        {
+            "experiment": EXPERIMENT_NAME,
+            "status": get_nested(CONFIG, "experiment.status"),
+            "inference_contract": INFERENCE_CONTRACT,
+            "message": "Inference and submission remain fail-closed.",
+        },
+        indent=2,
+        sort_keys=True,
+    )
+)

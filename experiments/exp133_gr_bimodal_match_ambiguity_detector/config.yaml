@@ -1,0 +1,166 @@
+experiment:
+  name: "exp133_gr_bimodal_match_ambiguity_detector"
+  description: Detect +/-15-25ft GR match decoys and multi-peak ambiguity as target-free confidence and uncertainty diagnostics.
+  route: pf_beam
+  status: completed_train_side_diagnostic_no_submit
+  created_at: "2026-06-26"
+  updated_at: "2026-06-26"
+
+lineage:
+  parent: gr_bimodal_match_ambiguity_detector backlog
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  diagnostic_parents:
+    - exp073_gpu_reproducibility_guard_for_exp063_full_replay
+    - exp092_u_projection_correction_disagreement_fullrun
+    - exp099_pf_multi_observation_likelihood_probe
+    - exp126_exp073_exp092_pf_beam_pseudotail_failure_map
+    - exp131_gr_shape_descriptor_matching_ablation
+    - exp132_multi_scale_gr_observation_likelihood
+  implementation_source: gr_bimodal_match_ambiguity_detector.py
+  diff_summary: >
+    Keeps the exp072 PF/Beam/likPF candidate surface and exp073/exp092 OOF predictions fixed,
+    then builds target-free GR score curves around each candidate at +/-15/20/25ft shifts.
+    It writes ambiguity, flat-match, top1-top2 margin, entropy, peak-spacing, decoy-gap,
+    and midpoint/mode-commit diagnostic proxy outputs. It does not train LightGBM, rerun PF/Beam,
+    port inference, or submit.
+
+validation:
+  strategy: train_side_gr_bimodal_ambiguity_diagnostic
+  metric: rmse
+  secondary_metrics:
+    - ambiguous_flag_error_lift
+    - flat_match_error_lift
+    - top1_top2_margin_bucket
+    - score_entropy_bucket
+    - mode_commit_vs_midpoint_proxy
+    - exp073_exp092_likpf_error_by_ambiguity
+    - worst_well_diagnostic
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: exp072_full_replay_train_pseudotail_rows
+  leakage_policy:
+    - Existing PF/Beam/likPF candidates are read from exp072's raw-train-only deterministic feature cache.
+    - exp073 and exp092 predictions are train-side OOF predictions and are used only for error readouts.
+    - GR ambiguity features use raw horizontal GR, finite prefix TVT_input, candidate TVT values, and row index only.
+    - Evaluation-zone true TVT is used only for metrics, oracle/error readouts, and bucket summaries.
+    - The detector is not allowed to choose the true mode; mode-commit and midpoint outputs are diagnostic proxies only.
+    - No LightGBM, candidate selector, hidden branch, inference port, or submission is produced in this experiment.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_feature_cache:
+    - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v1/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema:
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp073_predictions:
+    - /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/train_v2/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp073-full-replay-repro-guard-train/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+  exp092_predictions:
+    - /tmp/exp092_train_output_check/artifacts/exp092_u_projection_correction_disagreement_fullrun_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp092-uproj-corr-disagree-train/artifacts/exp092_u_projection_correction_disagreement_fullrun_predictions.csv.gz
+
+model:
+  name: none_gr_bimodal_match_ambiguity_detector
+  estimator: none
+  exp073_model: lgb_mean
+  exp092_model: lgb1
+  exp092_reference_model: lgb_mean
+  base_prediction: last_known_tvt
+  gr_bimodal_ambiguity:
+    candidate_columns:
+      - pred_last_anchor
+      - pred_pf_ancc
+      - pred_beam_mean
+      - pred_likpf_mean
+      - pred_sc_ens
+      - pred_hyb
+      - pred_exp073_lgb_mean
+      - pred_exp092_lgb1
+      - pred_exp092_lgb_mean
+    score_shifts_ft: [-25, -20, -15, 0, 15, 20, 25]
+    window_offsets_rows: [-24, -12, -6, 0, 6, 12, 24]
+    gr_rolling_window: 5
+    gr_scale: 18.0
+    z_scale: 2.0
+    derivative_scale: 5.0
+    energy_scale: 5.0
+    min_peak_score: 0.25
+    peak_delta_score: 0.05
+    margin_threshold: 0.06
+    entropy_threshold: 0.82
+    top2_ratio_threshold: 0.88
+    flat_score_range: 0.04
+    decoy_spacing_min_ft: 12.0
+    decoy_spacing_max_ft: 28.0
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp073-full-replay-repro-guard-train
+      - kentookumura/exp092-uproj-corr-disagree-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_gr_ambiguity_diagnostic
+  stochastic_components:
+    - upstream_exp072_pf_beam_likpf_feature_cache
+    - upstream_exp073_lightgbm_oof_predictions
+    - upstream_exp092_lightgbm_oof_predictions
+  parallel_rng_policy: no_parallel_rng_in_exp133
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This experiment has no RNG and no model fitting.
+    - Source gzip cache and prediction content SHA are recorded using decompressed CSV bytes.
+    - It is a train-side diagnostic and feature-cache producer, not a deterministic submission anchor.
+
+audit:
+  mode: gr_bimodal_match_ambiguity_detector
+  output_prefix: exp133_gr_bimodal_match_ambiguity_detector
+  max_prediction_rows: null
+  max_feature_rows: null
+  expected_train_artifacts:
+    - exp133_gr_bimodal_match_ambiguity_detector_row_context.csv.gz
+    - exp133_gr_bimodal_match_ambiguity_detector_candidate_metrics.csv
+    - exp133_gr_bimodal_match_ambiguity_detector_bucket_metrics.csv
+    - exp133_gr_bimodal_match_ambiguity_detector_well_metrics.csv
+    - exp133_gr_bimodal_match_ambiguity_detector_grbm_well_input_summary.csv
+    - exp133_gr_bimodal_match_ambiguity_detector_gr_bimodal_ambiguity_train_features.csv.gz
+    - exp133_gr_bimodal_match_ambiguity_detector_gr_bimodal_ambiguity_feature_schema.csv
+    - exp133_gr_bimodal_match_ambiguity_detector_summary.json
+    - README.md
+
+inference:
+  mode: disabled_diagnostic_only
+  selected_variant: null
+  notes:
+    - This experiment has no inference port and writes only a no-submission summary if inference is run accidentally.
+    - A positive result should feed a later exp092 add-only confidence feature or guard experiment.
+
+notes:
+  - Implements the backlog item gr_bimodal_match_ambiguity_detector.
+  - Does not ask the detector to choose the true datum mode.
+  - Does not tune decoy spacing or thresholds on Public LB.
+  - Separates flat GR score wells from genuinely bimodal wells.

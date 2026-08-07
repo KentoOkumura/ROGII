@@ -1,0 +1,327 @@
+experiment:
+  name: exp390_parallel_strip_surface_registration_readout
+  description: >-
+    Register nearly parallel horizontal wells into a query-centric along-track
+    and cross-track strip coordinate, interpolate outer-train S=TVT+Z at the
+    same along-track position with a two-sided robust cross-track fit, and audit
+    one exp226-fallback physical candidate without target GR or Formation.
+  route: pf_beam
+  status: stage0_failed_closed_sparse_two_sided_support
+  created_at: "2026-07-24"
+  updated_at: "2026-07-24"
+  inference_enabled: false
+
+lineage:
+  parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  comparison_references:
+    - exp114_spatial_neighbor_prior_signal_audit
+    - exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit
+    - exp201_typewell_spatial_tvt_error_readout
+    - exp273_two_dimensional_formation_gradient_transition
+    - exp383_all_tvt_stratigraphic_vector_drift_field
+  execution_order:
+    after_result_review:
+      - exp383_all_tvt_stratigraphic_vector_drift_field
+  diff_summary: >-
+    Keep the exp226 outer-five-fold identity, saved OOF control, score rows, and
+    fallback prediction fixed. Replace well-level XY neighbors and generic 2D
+    vector interpolation with an explicit query-centric strip coordinate:
+    match outer-train donor surfaces at the same along-track coordinate, fit
+    S=a(s)+b(s)n only with two-sided support, calibrate one vertical gauge from
+    the known target prefix, and use the strip path only where all preregistered
+    support checks pass. No GR, target Formation, residual copying, model,
+    selector, soft blend, inference, or submission is included.
+
+validation:
+  strategy: exp226_outer5_groupfold_parallel_strip_truth_late_readout
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  control:
+    experiment: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    candidate: v6_k16_geometry_gr_u_projection
+    regenerate: false
+    cv_rmse_ft: 9.427109596582213
+    public_lb: 9.837
+    oof_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  report_scopes:
+    - near_0_250
+    - mid_250_1000
+    - 1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  distance_buckets_ft: [0, 50, 100, 250, 500, 1000]
+  leakage_policy:
+    - Outer-valid wells are absent from donor geometry, donor surfaces, pair eligibility, strip fits, and threshold estimation.
+    - Target suffix TVT, target raw Formation columns, and target GR are unread before strip predictions and their logical SHA are frozen.
+    - Target TVT_input is used only for one prefix vertical-gauge intercept and rolling-origin diagnostics.
+    - Donor S=TVT+Z comes only from outer-train wells in the active fold.
+    - Visible three-well sample-test behavior cannot select any pair, support, fit, calibration, smoothing, fallback, or gate setting.
+    - Truth-derived row, block, or well oracle results are diagnostic only and cannot produce a persisted selector or prediction.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  coordinate_columns: [MD, X, Y, Z]
+  structural_surface_formula: S=TVT+Z
+  donor_allowed_columns: [well_id, row_idx, MD, X, Y, Z, TVT]
+  target_allowed_pre_freeze_columns: [well_id, row_idx, MD, X, Y, Z, TVT_input]
+  target_forbidden_pre_freeze_columns:
+    - TVT
+    - GR
+    - ANCC
+    - ASTNU
+    - ASTNL
+    - EGFDU
+    - EGFDL
+    - BUDA
+  parent_exp226:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+  hidden_like:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+
+model:
+  name: deterministic_parallel_strip_surface_registration_readout
+  fitted_model: false
+  estimator: deterministic_query_centric_strip_registration_and_robust_cross_track_fit
+
+strip_coordinate:
+  query_axis:
+    estimator: pca_first_component_on_full_query_xy
+    axial_angle_modulo_pi: true
+    canonical_sign: largest_absolute_component_positive
+    normal_formula: "e_n=(-e_sy,e_sx)"
+  pair_eligibility:
+    axial_angle_mismatch_deg_max: 5.0
+    projected_along_track_overlap_min: 0.80
+    median_abs_cross_track_distance_ft_max: 2000.0
+    projected_s_monotone_step_fraction_min: 0.99
+    self_donor_exclusion: true
+    maximum_unique_donor_wells: 16
+    minimum_unique_donor_wells: 4
+    minimum_positive_side_wells: 1
+    minimum_negative_side_wells: 1
+    stable_order: [median_abs_cross_track_distance, donor_well_id]
+  query_nodes:
+    grid_md_ft: 64
+    donor_interpolation_coordinate: projected_global_s
+    donor_interpolation: linear_inside_observed_range_only
+    donor_range_extrapolation: forbidden
+  surface_fit:
+    response: donor_S_equals_TVT_plus_Z_at_query_s
+    formula: S_equals_a_plus_b_times_n
+    cross_track_bandwidth_ft: 1000.0
+    weight_formula: exp_negative_n_squared_over_two_bandwidth_squared
+    robust_loss: huber
+    huber_delta: 1.345
+    irls_iterations: 5
+    slope_ridge_trace_ratio: 1.0e-6
+    donor_stable_order: [absolute_n, donor_well_id]
+    along_track_smoothing: centered_node_median
+    along_track_smoothing_nodes: 5
+    edge_smoothing: available_nodes_only
+  prefix_calibration:
+    response: TVT_input_plus_Z_minus_S_strip
+    estimator: deterministic_huber_intercept
+    huber_delta: 1.345
+    iterations: 5
+    minimum_finite_prefix_rows: 64
+    fitted_terms: [vertical_gauge_intercept]
+    forbidden_terms: [slope, scale, warp, rowwise_offset]
+  candidate:
+    name: parallel_strip_two_sided_fallback_exp226
+    valid_row_prediction: calibrated_S_strip_minus_Z
+    invalid_row_prediction: exact_saved_exp226_oof
+    one_sided_prediction: forbidden
+    soft_blend: false
+    clipping: false
+    candidate_mean: false
+
+stages:
+  stage0_target_free:
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_outer_fold_runs: 5
+    finite_fallback_prediction_coverage_min: 1.0
+    two_sided_strip_row_coverage_min: 0.50
+    two_sided_strip_well_coverage_min: 0.75
+    eligible_node_unique_donor_p05_min: 4
+    eligible_pair_angle_p95_deg_max: 5.0
+    eligible_pair_overlap_p05_min: 0.80
+    target_suffix_truth_reads_max: 0
+    target_raw_formation_reads_max: 0
+    target_gr_reads_max: 0
+    source_valid_overlap_max: 0
+    resource_audit_wells: 16
+    projected_runtime_seconds_max: 7200
+    projected_peak_rss_gb_max: 16
+    fail_action: close_without_pair_support_bandwidth_smoothing_or_one_sided_rescue
+  stage1_prefix_rolling_origin:
+    heldout_prefix_rows: 512
+    minimum_known_prefix_rows: 1024
+    score_scope: strip_eligible_heldout_prefix_rows_only
+    exp226_fallback_usage: forbidden_control_not_available_on_prefix_rows
+    baseline: vertical_only_anchor
+    baseline_formula: TVT_cut_plus_Z_cut_minus_Z_row
+    rmse_gain_ft_min: 0.25
+    positive_fold_count_min: 4
+    eligible_heldout_coverage_min: 0.50
+    real_minus_circular_control_gain_ft_min: 0.10
+    circular_control: donor_s_circular_shift_512_rows
+    fail_action: close_without_calibration_window_or_control_rescue
+  stage2_truth_late:
+    scientific_support:
+      pooled_rmse_gain_vs_exp226_ft_min: 0.25
+      positive_fold_count_min: 4
+      eligible_rows_rmse_gain_vs_exp226_ft_min: 0.50
+      distance_1000_plus_rmse_gain_ft_min: 0.25
+      near_0_250_regression_tolerance_ft: 0.05
+      hidden_like_spatial_regression_tolerance_ft: 0.0
+      hidden_like_typewell_purged_regression_tolerance_ft: 0.0
+    promotion_safety:
+      improved_or_equal_wells_gte_worse_wells: true
+      by_well_delta_p95_max_ft: 0.0
+      worst_well_delta_max_ft: 0.25
+    report_only_oracle_blocks_rows: [1, 128, 256, 512, -1]
+    persist_oracle_prediction: false
+    persist_truth_derived_selector: false
+    fail_action: close_without_threshold_bandwidth_calibration_fallback_blend_or_selector_rescue
+
+dependency_gate:
+  exp383:
+    experiment: exp383_all_tvt_stratigraphic_vector_drift_field
+    review_before_implementation: true
+    demote_or_close_if:
+      stage0_pass: true
+      stage1_gain_vs_exp226_ft_min: 1.0
+      hidden_like_pass: true
+      promotion_safety_pass: true
+    retain_as_independent_p1_if:
+      - vector_condition_fail
+      - donor_dispersion_fail
+      - surface_support_fail
+      - direct_score_fail
+    exp383_result_may_change_exp390_fixed_parameters: false
+
+runtime:
+  accelerator: cpu
+  internet: false
+  use_amp: false
+  scientific_variants: 1
+  active_candidates: 1
+  reporting_folds: 5
+  query_well_strip_solves: 773
+  fitted_models: 0
+  model_configs: 0
+  trained_folds: 0
+  lightgbm_boosters: 0
+  hmm_runs: 0
+  pf_runs: 0
+  beam_runs: 0
+  parent_control_regeneration: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp390-parallel-strip-registration-train
+    train_kernel_title: exp390 parallel strip registration train
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+execution:
+  design_authorized: true
+  design_authorization_source: user_message_create_backlog_experiment_directory_and_steering_2026_07_24
+  implementation_authorized: true
+  implementation_approval_source: user_message_implement_exp390_2026_07_24
+  canonical_notebook_adoption_authorized: true
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  kaggle_package_authorized: true
+  kaggle_push_authorized: true
+  kaggle_execution_authorized: true
+  kaggle_execution_approval_source: user_message_run_exp390_2026_07_24
+  full_run_authorized: false
+  preflight_max_wells: 16
+  inference_enabled: false
+  submission_enabled: false
+  current_mode: stage0_resource_preflight
+  stage: kaggle_cpu_preflight_completed_stage0_failed_closed
+  completed_kernel_version: 2
+  completed_kernel_numeric_id: 128480051
+  full_run_blocked_by_stage0: true
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_fold_query_donor_pair_node_fit_and_row_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_results_sorted_by_immutable_well_pair_node_and_row_keys
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Record the fold manifest, geometry summary, eligible-pair table, query-node donor table, fit diagnostics, prefix calibration, prediction, and solver-contract logical SHA.
+    - Raw gzip SHA may be recorded, but decompressed prediction content SHA is the primary evidence.
+    - A first successful run is not a deterministic anchor; require an identical successful rerun of pair, node, fit, and prediction logical SHA.
+    - Before any future push, verify private CPU internet-off metadata and embedded config/source/bootstrap SHA.
+
+artifacts:
+  planned:
+    - exp390_parallel_strip_surface_registration_readout_fold_manifest.csv
+    - exp390_parallel_strip_surface_registration_readout_role_read_ledger.csv
+    - exp390_parallel_strip_surface_registration_readout_geometry_summary.csv
+    - exp390_parallel_strip_surface_registration_readout_eligible_pairs.csv
+    - exp390_parallel_strip_surface_registration_readout_query_node_donors.parquet
+    - exp390_parallel_strip_surface_registration_readout_strip_fit_diagnostics.csv
+    - exp390_parallel_strip_surface_registration_readout_prefix_calibration.csv
+    - exp390_parallel_strip_surface_registration_readout_stage0_guard.json
+    - exp390_parallel_strip_surface_registration_readout_prefix_rolling_metrics.csv
+    - exp390_parallel_strip_surface_registration_readout_oof_predictions.csv.gz
+    - exp390_parallel_strip_surface_registration_readout_candidate_metrics.csv
+    - exp390_parallel_strip_surface_registration_readout_scope_metrics.csv
+    - exp390_parallel_strip_surface_registration_readout_by_well.csv
+    - exp390_parallel_strip_surface_registration_readout_oracle_scope_metrics.csv
+    - exp390_parallel_strip_surface_registration_readout_summary.json
+    - exp390_parallel_strip_surface_registration_readout_sha_manifest.csv
+
+forbidden_actions:
+  - canonical_notebook_adoption_package_push_or_run_without_separate_user_approval
+  - outer_valid_well_as_donor_or_pair_threshold_source
+  - target_suffix_truth_raw_formation_or_gr_read_before_prediction_freeze
+  - nearest_well_tvt_residual_or_gr_waveform_copy
+  - one_sided_strip_extrapolation
+  - angle_distance_overlap_donor_count_bandwidth_smoothing_huber_or_calibration_grid
+  - soft_blend_clipping_candidate_mean_or_truth_derived_selector
+  - parent_exp226_control_regeneration
+  - fitted_ml_hmm_pf_or_beam
+  - current_test_generation
+  - inference_or_submission
+
+notes:
+  - Compact self-contained train and fail-closed inference candidates are implemented; the compact train is adopted as the canonical train notebook, while canonical inference remains the unchanged template scaffold.
+  - The 2026-07-24 run instruction authorizes canonical train adoption, Kaggle package, push, and the 16-well Stage 0 preflight. Full run, inference, and submission remain unauthorized.
+  - The route is pf_beam because this is a deterministic physical path candidate, although no fitted PF or Beam run is part of the experiment.
+  - exp390 is independent from exp383 scientifically. The user explicitly authorized the Stage 0 preflight while exp383 remains unresolved; fixed scientific parameters are unchanged.

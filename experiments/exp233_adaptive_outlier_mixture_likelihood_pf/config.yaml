@@ -1,0 +1,305 @@
+experiment:
+  name: "exp233_adaptive_outlier_mixture_likelihood_pf"
+  description: >
+    Full exp072-compatible likelihood-PF audit that adds a small state-neutral
+    Uniform-GR outlier mixture only on rows selected by the frozen target-free gate.
+  route: pf_beam
+  status: completed_train_side_rejected_no_inference_no_submit
+  created_at: "2026-07-11"
+  updated_at: "2026-07-13"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  references:
+    - exp232_adaptive_robust_likelihood_pf
+    - exp214_public_raw_gr_residual_scale_control
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp200_pf_step_delta_soft_prior_full_replay_replacement
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - KAGGLE_DIRECTION.md adaptive_outlier_mixture_likelihood_pf
+  implementation_source: adaptive_outlier_mixture_likelihood_pf.py
+  diff_summary: >
+    Keeps exp072's raw typewell-GR surface state, 500 particles, 128 seeds,
+    transition, stable per-well variant seed policy, and ESS resampling threshold
+    fixed. The T=1 Gaussian control is reconstructed from the exp209 enriched
+    comparison cache as hmm_mean_tvt - hmm_minus_likpf_mean and is not
+    regenerated. exp232's target-free gate is retained unchanged. Only gate-on
+    particle updates change to a predeclared state-neutral Uniform-GR mixture;
+    all gate-off updates use the exp072 Gaussian likelihood exactly.
+
+validation:
+  strategy: full_train_exp072_pseudotail_target_free_adaptive_outlier_mixture_pf
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within10
+    - particle_interval_coverage_sampled
+    - first_sampled_particle_loss
+    - pf_effective_sample_size
+    - pf_resampling_rate
+    - gate_rate
+    - mixture_rate
+    - hidden_like_rmse
+    - worst_well_regression_vs_exp072
+    - temperature_artifact_comparison
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  success_criteria:
+    - Mixture variants improve or preserve exp072 likpf_mean RMSE without a material 1000_plus, hidden-like, or worst-well regression.
+    - Mixture variants improve sampled particle p05-p95 coverage relative to completed exp232 temperature variants, with no RMSE/worst-well regression.
+    - Mixture rate equals gate rate and gate-outside rows use the exact baseline Gaussian particle observation likelihood.
+  leakage_policy:
+    - The exp072 cache supplies true TVT only for train-side scoring, interval coverage, and first-loss readout.
+    - Gate inputs use only raw evaluation GR, typewell GR, the observed prefix, and pre-update particle state.
+    - Uniform GR support and epsilon are fixed before execution and never use true TVT, target delta, true error, oracle candidates, Public LB, or seed-level aggregation weight.
+    - The exp209 reconstructed T=1 output is a comparison reference; no Gaussian control cache is regenerated.
+    - Exp232 artifacts are required for acceptance. They may be unavailable only during the user-approved parallel initial train; this is recorded as pending rather than silently ignored.
+    - Raw-test regeneration, inference, and submission are not part of this train-side experiment.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp209_enriched_likpf_control_local: experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+  exp209_enriched_likpf_control_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+  exp072_reference_candidates:
+    - likpf_mean
+    - pf_ancc
+    - beam_mean
+    - pf_z
+
+model:
+  name: adaptive_outlier_mixture_likelihood_pf
+  estimator: none_pfbeam_generation_audit
+  target: exp072_target_for_scoring_only
+  validation_surface:
+    selection_mode: all_eligible_wells
+    max_target_wells: null
+    well_include: []
+    min_known_prefix_rows: 160
+    min_eval_rows: 64
+  outlier_mixture:
+    component: raw_gr_uniform_state_neutral
+    uniform_gr_min: 0.0
+    uniform_gr_max: 500.0
+    variants:
+      - name: mix_eps_0p02
+        epsilon: 0.02
+      - name: mix_eps_0p05
+        epsilon: 0.05
+    notes:
+      - The finite current-train raw GR range is 13.8802 to 487.0329; support is predeclared as [0, 500].
+      - L_uniform=sqrt(2*pi)*gr_sigma/(uniform_gr_max-uniform_gr_min) is constant across particles within a row.
+      - A broad Gaussian component is forbidden because it would still prefer particle states.
+  runtime:
+    particles: 500
+    seed_count: 128
+    seed_aggregation: mean
+    resample_threshold: 0.5
+    init_spread: 4.5
+    momentum: 0.998
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_pos_noise: 0.10
+    resample_velocity_noise: 0.001
+    grid_step: 0.2
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+  gate:
+    enabled: true
+    innovation_threshold: 2.5
+    change_point_window: 32
+    change_point_threshold: 3.0
+    novelty_short_window: 8
+    novelty_long_window: 64
+    novelty_threshold: 2.5
+    ess_ratio_threshold: 0.25
+    max_weight_threshold: 0.10
+    min_corroborating_signals: 1
+    history_scale_floor: 5.0
+    notes:
+      - This is the exp232 target-free gate with the same thresholds and pre-update inputs.
+      - Innovation is computed from the propagated, pre-update weighted particle GR expectation.
+      - Change point and novelty use only current and previous raw evaluation GR rows.
+      - ESS ratio and max weight are from the pre-update particle posterior.
+      - High innovation plus one other signal is required; no gate persistence or target-derived threshold is used.
+  interval_audit:
+    enabled: true
+    selected_well_count: 64
+    selection_policy: stable_sha256_well_order
+    row_stride: 64
+    include_gate_rows: true
+    quantiles: [0.05, 0.95]
+
+comparison:
+  baseline_candidate: exp072_likpf_mean
+  temperature_experiment:
+    enabled: true
+    required_for_acceptance: true
+    allow_pending_during_parallel_train: true
+    row_candidates_filename: exp232_adaptive_robust_likelihood_pf_row_candidates.csv.gz
+    row_candidates_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp232-adaptive-robust-likelihood-pf-train/artifacts/exp232_adaptive_robust_likelihood_pf_row_candidates.csv.gz
+      - /kaggle/input/exp232-adaptive-robust-likelihood-pf-train/artifacts/exp232_adaptive_robust_likelihood_pf_row_candidates.csv.gz
+      - experiments/exp232_adaptive_robust_likelihood_pf/artifacts/exp232_adaptive_robust_likelihood_pf_row_candidates.csv.gz
+    required_candidate_columns:
+      - pf_temp_t2_mean
+      - pf_temp_t4_mean
+    required_artifacts:
+      - exp232_adaptive_robust_likelihood_pf_candidate_metrics.csv
+      - exp232_adaptive_robust_likelihood_pf_distance_bucket_metrics.csv
+      - exp232_adaptive_robust_likelihood_pf_hidden_like_metrics.csv
+      - exp232_adaptive_robust_likelihood_pf_by_well.csv
+      - exp232_adaptive_robust_likelihood_pf_interval_metrics.csv
+      - exp232_adaptive_robust_likelihood_pf_row_candidates.csv.gz
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+
+audit:
+  mode: adaptive_outlier_mixture_likelihood_pf_full_train_audit
+  output_prefix: exp233_adaptive_outlier_mixture_likelihood_pf
+  primary_baseline: exp072_likpf_mean
+  path_jump_threshold_ft: 8.0
+  expected_train_artifacts:
+    - exp233_adaptive_outlier_mixture_likelihood_pf_candidate_metrics.csv
+    - exp233_adaptive_outlier_mixture_likelihood_pf_distance_bucket_metrics.csv
+    - exp233_adaptive_outlier_mixture_likelihood_pf_hidden_like_metrics.csv
+    - exp233_adaptive_outlier_mixture_likelihood_pf_by_well.csv
+    - exp233_adaptive_outlier_mixture_likelihood_pf_pf_diagnostics.csv
+    - exp233_adaptive_outlier_mixture_likelihood_pf_gate_diagnostics.csv
+    - exp233_adaptive_outlier_mixture_likelihood_pf_interval_metrics.csv
+    - exp233_adaptive_outlier_mixture_likelihood_pf_first_sampled_loss_by_well.csv
+    - exp233_adaptive_outlier_mixture_likelihood_pf_target_wells.csv
+    - exp233_adaptive_outlier_mixture_likelihood_pf_well_status.csv
+    - exp233_adaptive_outlier_mixture_likelihood_pf_row_candidates.csv.gz
+    - exp233_adaptive_outlier_mixture_likelihood_pf_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp209-joint-exact-parity-train
+
+execution:
+  split_strategy: full_eligible_wells_one_mixture_variant_per_cpu_kernel
+  full_eligible_well_surface_required: true
+  active_outlier_mixture_variants: null
+  variant_runs:
+    - variant: mix_eps_0p02
+      epsilon: 0.02
+      notebook_kind: train_variant0
+      kernel_id: kentookumura/exp233-outlier-mixture-pf-e02
+      title: exp233 outlier mixture pf e02
+    - variant: mix_eps_0p05
+      epsilon: 0.05
+      notebook_kind: train_variant1
+      kernel_id: kentookumura/exp233-outlier-mixture-pf-e05
+      title: exp233 outlier mixture pf e05
+  artifact_handling:
+    - Each kernel writes the standard exp233 artifact names inside its own Kaggle output namespace.
+    - Keep downloaded e02/e05 outputs in distinct source directories until id/well/row_idx alignment and merge checks complete.
+    - Both full-well outputs and the required ID-aligned exp232 comparison are now available; neither mixture variant met the acceptance guards.
+  notes:
+    - The base config leaves active_outlier_mixture_variants null; each variant notebook deep-copies it and sets its own one-element active list before validation and PF execution.
+    - This is a runtime-only split after the v2 cancellation. It does not alter particles, seeds, gate, transition, resampling, Uniform support, epsilon, control, or eligible wells.
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_well_variant_seed_index_with_numba_single_worker
+  stochastic_components:
+    - likelihood_pf_particle_propagation
+    - likelihood_pf_resampling
+  parallel_rng_policy: numba_kernel_uses_per_well_variant_stable_seed_base_no_thread_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is a CPU-only train-side PF audit; it is not a deterministic submission anchor.
+    - The exp072 ML cache, exp209 reconstructed control, exp115 split, and available exp232 comparison artifacts are recorded when available.
+    - Candidate row output records a decompressed content SHA.
+
+inference:
+  mode: disabled_rejected_train_side
+  selected_candidate: null
+  notes:
+    - No inference or submission is generated by this implementation.
+    - The completed train-side results fail the RMSE, long-tail, and worst-well guards; no raw-test port is proposed.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog adaptive_outlier_mixture_likelihood_pf as a mixture-only experiment.
+  - Temperature is intentionally absent; exp232 remains the separate temperature-only comparison experiment.
+  - No LightGBM, folds, boosters, parent control rerun, or Beam variants are included.
+  - v2 executed both mixture variants in one CPU kernel and was cancelled after a timeout report. The approved retry uses two independent full-well CPU kernels, one per variant.
+  - The dedicated e02/e05 kernel sessions remained unavailable after cancellation; the existing canonical exp233 kernel ran variant0 as v3 and variant1 as v4 without changing scientific settings.
+
+results:
+  decision: rejected_train_side
+  reason: >
+    Both state-neutral Uniform-GR mixture variants materially regress against the
+    exp209-reconstructed exp072 likpf_mean comparison control in overall RMSE,
+    1000_plus RMSE, and worst-well regression. The ID-aligned epsilon=0.05 run is
+    also worse than the recovered temperature T=2 output.
+  canonical_kernel: kentookumura/exp233-adaptive-outlier-mixture-likpf-train
+  split_runs:
+    mix_eps_0p02:
+      kernel_version: 3
+      status: complete
+      runtime_seconds: 32369.847880363464
+      rmse: 13.519962656874812
+      delta_rmse_vs_exp072_likpf_mean: 1.9250649846571088
+      rmse_1000_plus: 14.75920972918308
+      worst_well_regression: 44.48536390801355
+      gate_all_seed_rows: 659
+      gate_any_seed_rows: 4641
+    mix_eps_0p05:
+      kernel_version: 4
+      status: complete
+      runtime_seconds: 24345.639946699142
+      rmse: 13.55017306854338
+      delta_rmse_vs_exp072_likpf_mean: 1.9552753963256766
+      rmse_1000_plus: 14.799418368466547
+      worst_well_regression: 46.711288332682784
+      gate_all_seed_rows: 677
+      gate_any_seed_rows: 4662
+  id_aligned_temperature_comparison:
+    temperature_variant: temp_t2
+    temperature_kernel: kentookumura/exp232-adaptive-robust-pf-t2
+    temperature_kernel_version: 2
+    shared_input_control_schema_content_sha: true
+    mixture_rmse_minus_temperature_rmse: 0.020285959520670027
+    conclusion: mix_eps_0p05_is_worse_than_temp_t2

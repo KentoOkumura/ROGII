@@ -1,0 +1,310 @@
+experiment:
+  name: "exp370_triggered_reset_rejuvenation_pf"
+  description: >-
+    Rejuvenate exactly ten percent of exp072 particles near fold-safe horizontal
+    GR-atlas proposals only when GR change and particle collapse coincide.
+  route: pf_beam
+  status: completed_stage0_failed_close_without_rejuvenation_pf
+  created_at: "2026-07-23"
+  updated_at: "2026-07-25"
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  steering: ../../.steering/20260723-exp370-triggered-reset-rejuvenation-pf
+  references:
+    - exp231_peer_atlas_emission
+    - exp241_containment_audit
+    - exp242_two_regime_rate_noise_pf
+    - KAGGLE_DIRECTION.md
+  diff_summary: >-
+    Formalize the held change_point_atlas_particle_rejuvenation_pf backlog.
+    A one-seed baseline diagnostic pass must first show target-free trigger
+    quality and fold-safe atlas top-3 coverage. Only then may one 500-particle,
+    128-seed treatment reinject 50 particles at a trigger. Atlas emission and
+    direct atlas TVT replacement remain forbidden.
+
+validation:
+  strategy: diagnostic_trigger_atlas_coverage_then_triggered_rejuvenation_pf
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: unknown_suffix_only
+  stage_0:
+    name: one_seed_trigger_and_fold_safe_atlas_proposal_readout
+    particles: 500
+    diagnostic_seed_count: 1
+    diagnostic_pf_seed_well_runs: 773
+    bad_event_horizon_rows: 128
+    trigger:
+      gr_change_robust_z_quantile_from_known_prefix: 0.995
+      maximum_ess_fraction: 0.20
+      combine: logical_and
+      refractory_rows: 512
+      negative_control_shift_rows: 512
+    atlas:
+      donor_scope: outer_train_wells_only
+      query_window_rows: 256
+      patch_points: 32
+      source_stride_rows: 32
+      tvt_bin_width_ft: 2.0
+      maximum_patches_per_well_bin: 6
+      minimum_source_wells_per_bin: 2
+      similarity: zero_mean_normalized_cross_correlation
+      top_k: 3
+      minimum_tvt_separation_ft: 10.0
+      stable_tie_break: higher_zncc_then_lower_tvt
+    freeze_before_truth:
+      - fold_assignment_and_atlas_manifest
+      - per_seed_trigger_rows
+      - atlas_top3_proposals
+      - proposal_scores
+    bad_event_label_after_freeze: exp072_likpf_horizon_rmse_ge_10ft
+    negative_control: within_well_circular_shift_of_trigger_rows
+    all_required:
+      minimum_trigger_bad_event_auc: 0.60
+      minimum_auc_gain_over_circular: 0.05
+      trigger_row_fraction_range: [0.001, 0.10]
+      minimum_atlas_top3_within10_coverage: 0.60
+      minimum_coverage_gain_over_base_likpf: 0.10
+      minimum_passing_folds: 4
+      require_positive_both_hidden_like_directions: true
+  stage_1:
+    enabled_only_after_stage_0_pass_and_separate_user_approval: true
+    particles: 500
+    seed_count: 128
+    well_count: 773
+    pf_seed_well_runs: 98944
+    all_required:
+      minimum_rmse_gain_vs_exp072_likpf_mean_ft: 0.05
+      minimum_improved_folds: 4
+      maximum_1000_plus_regression_ft: 0.02
+      maximum_hidden_like_spatial_regression_ft: 0.02
+      maximum_hidden_like_typewell_purged_regression_ft: 0.02
+      maximum_by_well_p95_regression_ft: 0.02
+      maximum_worst_well_regression_ft: 0.25
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  horizontal_required_prefreeze_columns: [MD, Z, GR, TVT_input]
+  horizontal_truth_columns: [TVT]
+  typewell_required_columns: [TVT, GR]
+  hidden_like:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    late_join_only: true
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    patterns:
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+  parent_control:
+    candidate: likpf_mean
+    direct_rmse_ft: 11.594897672
+    usage: saved_prediction_only_no_full_pf_control_replay
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+      - experiments/exp072_exp063_full_replay_feature_cache/artifacts
+    safe_columns: [id, well, last_known_tvt, likpf_mean_d]
+    delta_column: likpf_mean_d
+    anchor_column: last_known_tvt
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_decompressed_sha256: 0503de0512302b06309d26e09fc06ba5095db0ef4d610b1508afe8c8d07ca536
+
+model:
+  name: triggered_atlas_reset_rejuvenation_likelihood_pf
+  estimator: stochastic_likelihood_pf
+  state: [position, rate, rejuvenation_source_age]
+  trigger:
+    gr_change_quantile: 0.995
+    maximum_ess_fraction: 0.20
+    refractory_rows: 512
+  rejuvenation:
+    particle_total: 500
+    normal_resampled_particles: 450
+    reinjected_particles: 50
+    fraction: 0.10
+    atlas_top_k: 3
+    proposal_particle_counts: [17, 17, 16]
+    proposal_position_jitter_ft: 0.10
+    proposal_rate_center: current_weighted_rate_median
+    proposal_rate_jitter: 0.001
+    source_age_rows: 128
+    source_age_effect_on_dynamics: none_diagnostic_only
+  fixed_from_exp072:
+    seed_count: 128
+    seed_aggregation: mean
+    momentum: 0.998
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_threshold: 0.5
+    gaussian_gr_likelihood: true
+    resample_position_noise: 0.10
+    resample_velocity_noise: 0.001
+    initial_position_jitter_ft: 4.5
+    typewell_grid_step_ft: 0.2
+    typewell_support_pad_ft: 100.0
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+    initial_rate_window_rows: 30
+    initial_rate_min_valid_steps: 3
+    initial_rate_fallback: 0.0
+  forbidden:
+    - global_or_gr_only_reinjection
+    - reinjection_fraction_grid
+    - atlas_emission
+    - direct_atlas_tvt_replacement
+    - validation_truth_error_or_oracle_trigger
+    - unlimited_particle_or_atlas_candidate_count
+    - rate_prediction_from_prefix_or_geometry
+    - blend_or_selector
+    - full_parent_pf_control_replay
+
+runtime:
+  device: cpu
+  use_gpu: false
+  use_amp: false
+  num_workers: 1
+  maximum_seconds: 30600
+  kaggle:
+    competition_slug: rogii-wellbore-geology-prediction
+    enable_gpu: false
+    enable_internet: false
+    train_run_on_push: false
+    train_kernel_id: kentookumura/exp370-triggered-reset-rejuvenation-pf-train
+    train_title: exp370 triggered reset rejuvenation pf train
+    kernel_sources:
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp209-joint-exact-parity-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_experiment_fold_well_family_seed_index
+  stochastic_components:
+    - baseline_particle_initialization_and_propagation
+    - systematic_resampling
+    - normal_resampling_jitter
+    - atlas_proposal_position_and_rate_jitter
+  parallel_rng_policy: per_fold_well_seed_stream_independent_of_thread_schedule
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Atlas is built separately per outer fold; raw test uses all train wells.
+    - Raw train and raw test PF generation are separate and content-SHA recorded.
+
+execution:
+  implementation_approved: true
+  implementation_approval_source: user_message_implement_exp370
+  implementation_approved_at: "2026-07-25"
+  implementation_scope: stage0_only
+  kaggle_push_approved: true
+  kaggle_execution_approved: true
+  kaggle_execution_approval_source: user_message_execute_exp370
+  kaggle_execution_approved_at: "2026-07-25"
+  active_stage: completed_stage0_failed_closed
+  kaggle_kernel_status: COMPLETE
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+  stage_0_counts:
+    scientific_variants: 0
+    diagnostic_pf_replays: 1
+    reporting_folds: 5
+    particles: 500
+    seeds: 1
+    wells: 773
+    seed_well_runs: 773
+    full_parent_pf_control_replays: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+  stage_1_counts:
+    scientific_variants: 1
+    reporting_folds: 5
+    pf_treatment_replays: 1
+    full_pf_control_replays: 0
+    particles: 500
+    seeds: 128
+    wells: 773
+    seed_well_runs: 98944
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+
+results:
+  version_1:
+    status: technical_failed_before_scientific_stage
+    technical_pass: false
+    scientific_pass: null
+    issue: competition_mount_resolver_selected_test_directory
+    diagnostic_pf_seed_well_runs: 0
+    boosters: 0
+  version_2:
+    status: stage0_failed_close_without_rejuvenation_pf
+    technical_pass: true
+    scientific_pass: false
+    stage0_pass: false
+    stage1_eligible: false
+    runtime_seconds: 671.3419711589813
+    rows: 3783989
+    wells: 773
+    eligible_trigger_rows: 3685818
+    accepted_triggers: 13
+    trigger_row_fraction: 0.000003527032533890713
+    trigger_bad_event_auc: 0.49999848516664125
+    circular_bad_event_auc: 0.49999848517040246
+    auc_gain_over_circular: -0.000000000003761213562825105
+    atlas_top3_within10_coverage: 0.07692307692307693
+    base_likpf_within10_coverage: 0.8461538461538461
+    coverage_gain_over_base_likpf: -0.7692307692307692
+    mean_best_atlas_abs_error_ft: 263.1115534855769
+    mean_base_abs_error_ft: 5.726230685527508
+    passing_folds: 0
+    required_passing_folds: 4
+    proposal_rows: 39
+    diagnostic_pf_seed_well_runs: 773
+    full_parent_pf_control_replays: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    contract_sha256: 4546b84c6ca6c3fa71fee3378d46b38101ece3bac1da94f817ea87712abcf875
+    summary_sha256: 3ce97d6b11d8bec962b67df600b0e67f17f8cb82d2a465b48ee343517d652075
+    gate_report_sha256: 941564dfb9b596111982a47f7b33d1d1c9308c93a3995ae2c7bd61b02fe00821
+    decision: stage0_failed_close_without_rejuvenation_pf
+
+inference:
+  enabled: false
+  mode: disabled_stage0_failed_closed
+  create_submission: false
+
+notes:
+  - Design frozen on hold on 2026-07-23.
+  - Stage 0 compact self-contained implementation was approved on 2026-07-25.
+  - Stage 0 canonical Notebook adoption, private Kaggle CPU push, and execution were approved on 2026-07-25.
+  - Kaggle CPU version 1 failed closed before scientific work because the competition train mount resolver selected test.
+  - Kaggle CPU version 2 completed all 773 diagnostic seed-well runs and failed every scientific gate.
+  - Stage 1 is ineligible; inference and submission remain disabled.

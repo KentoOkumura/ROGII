@@ -1,0 +1,367 @@
+experiment:
+  name: exp416_roughening_x10_likpf_full_oof_ablation
+  description: >-
+    Design-frozen one-factor full-OOF likelihood-PF ablation that keeps the
+    exp072 500-particle x 128-seed kernel unchanged except for multiplying both
+    resampling roughening noises by 10.
+  hypothesis: >-
+    The exp410 target-late improvement from roughening x10 generalizes across
+    all 773 train wells because additional post-resampling diversity preserves
+    or recaptures the correct particle basin without introducing unacceptable
+    fold, hidden-like, or well-tail regressions.
+  route: pf_beam
+  status: train_side_roughening_x10_full_oof_gate_failed_closed
+  created_at: "2026-07-27"
+  updated_at: "2026-07-28"
+  inference_enabled: false
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  evidence:
+    - exp410_likpf_particle_resampling_basin_audit
+  references:
+    - exp243_pf_seed_medoids
+    - exp400_all_well_1p3_sigma_gr_likelihood_pf
+    - exp404_scale5_sigma_gr_likelihood_pf_ablation
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - docs/06_reproducibility.md
+  steering: ../../.steering/20260727-exp416-roughening-x10-likpf-full-oof-ablation
+  diff_summary: >-
+    Rerun only one treatment on all 773 train wells: exp072 resampling position
+    roughening 0.10 -> 1.00 ft and rate roughening 0.001 -> 0.010. Reuse the
+    saved exp072 likpf_mean as the control with zero control PF reruns. Keep GR
+    scale, initialization, transition noise, ESS threshold, systematic
+    resampling, particle/seed counts, stable seeds, and arithmetic seed
+    aggregation unchanged. This experiment does not test seed aggregation.
+
+implementation:
+  enabled: true
+  scope: train_side_candidate_audit_only
+  design_approval_received: true
+  design_approval_source: user_message_2026_07_27_create_two_backlogs_experiments_steering_design_only
+  implementation_approval_received: true
+  implementation_approval_source: user_message_2026_07_27_implement_exp416
+  scaffold_created: true
+  notebook_placeholders_only: false
+  canonical_notebook_is_placeholder: false
+  canonical_notebooks_remain_placeholders: false
+  canonical_inference_notebook_remains_placeholder: true
+  train_notebook_candidate_state: compact_selfcontained_adopted_as_canonical_train
+  canonical_notebook_adopted: true
+  jupytext_source_created: true
+  compact_train_notebook_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  training_enabled: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: full_train_single_treatment_exp072_roughening_x10_ablation
+  metric: rmse
+  metric_weighting: unweighted_suffix_rows
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  primary_control: exp072_likpf_mean
+  primary_candidate: likpf_roughening_x10_mean
+  gain_definition: rmse_control_minus_rmse_candidate
+  saved_control_rmse_ft: 11.594897672217703
+  truth_attachment: after_candidate_prediction_and_logical_content_sha_freeze
+  leakage_policy:
+    - PF generation may read horizontal MD, Z, GR, TVT_input, and the paired Type Well but not horizontal suffix TVT.
+    - Candidate IDs, prediction bytes, logical SHA, and resource ledger are frozen before suffix truth, error, fold, or hidden-like role is read.
+    - exp226 supplies only well, row, suffix-offset, and reporting-fold identity.
+    - exp115 supplies only fixed hidden-like role identity after prediction freeze.
+    - exp410 sentinel membership, cause, episode, error, or oracle information is never an input or activation gate.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  observed_log_column: GR
+  id_column: id
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  exp072_control:
+    source: exp072_exp063_full_replay_feature_cache
+    kernel_source: kentookumura/exp072-exp063-full-replay-feature-cache-train
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    saved_prediction_components: [last_known_tvt, likpf_mean_d]
+    reconstruction: last_known_tvt_plus_likpf_mean_d
+    expected_raw_gzip_sha256: 14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18
+    expected_decompressed_sha256: 99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts
+      - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts
+      - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v2_stream/artifacts
+  exp209_reconstructed_control:
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    filename: exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    reconstruction_columns: [hmm_mean_tvt, hmm_minus_likpf_mean]
+    reconstruction: float32(hmm_mean_tvt - hmm_minus_likpf_mean)
+    use: exact_row_level_parity_control_for_reconstructed_exp072_likpf_mean
+    expected_raw_gzip_sha256: b50b4d1ee483b101d911a3bb3715a047836c028c1b29b9f986be0abeaebcb64b
+    expected_decompressed_sha256: ee3b548b0d38f78966742542e86fa31b7e64698d4762b924c924a5895d2ee3f4
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    kernel_source: kentookumura/exp226-k16-kappa-repro-train
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    forbidden_decoder_columns: [tvt_geop, tvt_pred, gr_delta, tvt_true, error, abs_error]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    allowed_roles:
+      hidden_like_spatial: [train, valid]
+      hidden_like_typewell_purged: [train, valid, purged_train_excluded]
+    expected_role_counts:
+      hidden_like_spatial:
+        train: 573
+        valid: 200
+      hidden_like_typewell_purged:
+        train: 557
+        valid: 200
+        purged_train_excluded: 16
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    candidates:
+      - assets
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+  persistent_episodes:
+    source: exp410_likpf_particle_resampling_basin_audit
+    filename: pf_persistent_offset_episodes.csv
+    expected_sha256: 0bffbc6bd6d89fdbfa11aa86419df8dbd84b1819af717413f0ae3bfa82799804
+    expected_selected_episodes: 16
+    expected_selected_episode_rows: 55104
+    candidates:
+      - assets
+      - experiments/exp410_likpf_particle_resampling_basin_audit/assets
+      - /kaggle/input/notebooks/kentookumura/exp410-likpf-particle-resampling-basin-audit-train/assets
+      - /kaggle/input/exp410-likpf-particle-resampling-basin-audit-train/assets
+  counterfactual_sentinel_wells:
+    source: exp410_likpf_particle_resampling_basin_audit
+    filename: pf_counterfactual_sentinel_wells.csv
+    expected_sha256: 7e8491d4e1cde59caaed12c638451615b8f113c42811dd7f70f356afe0cf9a04
+    expected_wells: 12
+    candidates:
+      - assets
+      - experiments/exp410_likpf_particle_resampling_basin_audit/assets
+      - /kaggle/input/notebooks/kentookumura/exp410-likpf-particle-resampling-basin-audit-train/assets
+      - /kaggle/input/exp410-likpf-particle-resampling-basin-audit-train/assets
+
+model:
+  name: exp072_likelihood_pf_roughening_x10_single_ablation
+  estimator: likelihood_weighted_particle_filter
+  fitted_model: false
+  active_variants:
+    - roughening_x10
+  replay:
+    split_key: train
+    observation_likelihood: raw_gr_gaussian_exp072
+    transition: classic_exp072_surface_state
+    seed_aggregation: arithmetic_mean
+  pf:
+    particles: 500
+    seeds: 128
+    seed_indices: [0, 127]
+    typewell_grid_step_ft: 0.2
+    initial_position_spread_ft: 4.5
+    initial_rate_spread: 0.01
+    momentum: 0.998
+    rate_noise: 0.002
+    position_noise: 0.005
+    control_rough_position: 0.10
+    control_rough_rate: 0.001
+    candidate_rough_position: 1.00
+    candidate_rough_rate: 0.010
+    roughening_multiplier: 10.0
+    resample_threshold_fraction: 0.5
+    resampling: systematic
+    emission: capped_gaussian
+    emission_clip_z2: 600.0
+    gr_sigma_clip: [10.0, 60.0]
+    typewell_tvt_pad_ft: 100.0
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    output_dtype: float32
+
+guards:
+  technical:
+    require_all_input_sha_matches: true
+    require_expected_rows: 3783989
+    require_expected_wells: 773
+    require_expected_folds: [0, 1, 2, 3, 4]
+    require_id_row_order_fold_identity: true
+    require_all_wells_completed_without_fallback: true
+    require_finite_candidate_coverage: 1.0
+    require_saved_control_rmse_parity_atol_ft: 0.00001
+    require_exp209_control_row_parity_atol_ft: 0.00001
+    require_seed_policy_parity_with_exp072: true
+    require_only_roughening_parameter_diff: true
+    require_candidate_roughening_ratio: 10.0
+    roughening_ratio_absolute_tolerance: 1.0e-12
+    maximum_truth_error_fold_hidden_reads_before_candidate_freeze: 0
+    require_execution_count_match: true
+  scientific:
+    minimum_direct_rmse_gain_vs_exp072_ft: 0.05
+    minimum_improved_folds: 4
+    minimum_raw_gr_observed_gain_ft: 0.05
+    maximum_raw_gr_missing_regression_ft: 0.0
+    maximum_long_tail_1000_plus_regression_ft: 0.0
+    maximum_hidden_like_spatial_regression_ft: 0.0
+    maximum_hidden_like_typewell_purged_regression_ft: 0.0
+    maximum_by_well_delta_p95_ft: 0.0
+    maximum_worst_well_regression_ft: 0.25
+    minimum_persistent_offset_sse_reduction_fraction: 0.05
+    require_all_checks: true
+  decision:
+    pass_action: eligible_for_separate_fail_closed_inference_implementation_design
+    fail_action: roughening_x10_rejected_close_without_rescue
+  forbidden:
+    - roughening_multiplier_search
+    - separate_position_or_rate_roughening_ablation
+    - process_noise_or_ess_threshold_change
+    - particle_or_seed_count_change
+    - gr_sigma_or_initial_spread_change
+    - seed_aggregation_change
+    - target_late_well_or_row_gate
+    - parent_pf_control_rerun
+    - same_oof_rescue
+    - inference_or_submission_without_separate_approval
+
+execution:
+  stage: train_side_roughening_x10_full_oof_gate_failed_closed
+  design_approved: true
+  implementation_approved: true
+  implementation_approval_scope: user_message_2026_07_27_implement_exp416
+  execution_approval_scope: user_message_2026_07_27_execute_exp416
+  canonical_notebook_adoption_approved: true
+  kaggle_package_approved: true
+  kaggle_push_approved: true
+  train_run_approved: true
+  probe_run_approved: false
+  inference_approved: false
+  submission_approved: false
+  selected_stage: null
+  selected_shard_index: null
+  merge_shard_dirs:
+    - /kaggle/input/notebooks/kentookumura/exp416-rough-x10-shard-0-v1
+    - /kaggle/input/notebooks/kentookumura/exp416-rough-x10-shard-1
+    - /kaggle/input/notebooks/kentookumura/exp416-rough-x10-shard-2
+    - /kaggle/input/notebooks/kentookumura/exp416-rough-x10-shard-3-v1
+  run_train: true
+  run_inference: false
+  create_submission: false
+  submit_to_kaggle: false
+  scientific_variants: 1
+  candidate_pf_well_runs: 773
+  parent_pf_control_reruns: 0
+  seeds_per_well: 128
+  seed_well_trajectories: 98944
+  particles_per_seed: 500
+  particle_starts: 49472000
+  reporting_folds: 5
+  well_shard_count: 4
+  shard_policy: deterministic_lpt_suffix_rows
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  hmm_well_runs: 0
+  beam_well_runs: 0
+  gpu_runs: 0
+
+runtime:
+  device: cpu
+  use_amp: false
+  num_workers: 1
+  numba_num_threads: 1
+  conservative_seconds_per_shard: 14400
+  hard_seconds_per_shard: 32400
+  maximum_peak_rss_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    run_on_push: true
+    kernel_id: null
+    kernel_version: null
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+    train_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+    train_aggregate_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp416-rough-x10-shard-0-v1
+      - kentookumura/exp416-rough-x10-shard-1
+      - kentookumura/exp416-rough-x10-shard-2
+      - kentookumura/exp416-rough-x10-shard-3-v1
+    inference_kernel_sources: []
+    bootstrap_dependency_files:
+      - source: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: assets/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - source: experiments/exp410_likpf_particle_resampling_basin_audit/assets/pf_persistent_offset_episodes.csv
+        destination: assets/pf_persistent_offset_episodes.csv
+      - source: experiments/exp410_likpf_particle_resampling_basin_audit/assets/pf_counterfactual_sentinel_wells.csv
+        destination: assets/pf_counterfactual_sentinel_wells.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: exp072_sha256_likpf_train_well_modulo_plus_one_then_seed_index
+  stochastic_components:
+    - likelihood_pf_particle_initialization
+    - likelihood_pf_particle_propagation
+    - likelihood_pf_systematic_resampling
+    - likelihood_pf_resampling_roughening
+  parallel_rng_policy: stable_per_well_seed_numba_single_worker_shard_order_independent
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  probe_well: 00bbac68
+  probe_source:
+    filename: exp416_roughening_x10_likpf_full_oof_ablation_merged_candidate_predictions.csv.gz
+    candidates: []
+  probe_report: null
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Candidate replay must reproduce the exp072 seed labels and RNG call order; only roughening amplitudes change.
+    - Every shard records well identity, suffix row count, runtime, peak RSS, code/config SHA, and prediction logical SHA.
+    - A deterministic anchor claim is forbidden until all shards and a rerun parity check pass.
+
+inference:
+  enabled: false
+  mode: disabled_train_side_implementation_only
+  selected_candidate: null
+  notes:
+    - Raw-test regeneration, submission creation, and Kaggle submission are outside the approved scope.

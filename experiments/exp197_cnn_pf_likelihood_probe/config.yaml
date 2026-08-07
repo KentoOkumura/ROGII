@@ -1,0 +1,197 @@
+experiment:
+  name: "exp197_cnn_pf_likelihood_probe"
+  description: Train-side CNN/SDF local GR likelihood probe over fixed PF/Beam candidates.
+  route: pf_beam
+  status: implemented_pending_kaggle_train
+  created_at: "2026-07-04"
+  updated_at: "2026-07-04"
+
+lineage:
+  parent: cnn_pf_likelihood_probe backlog
+  cache_parent: exp099_pf_multi_observation_likelihood_probe
+  diagnostic_parents:
+    - exp099_pf_multi_observation_likelihood_probe
+    - exp111_learned_pf_observation_likelihood_probe
+    - exp112_learned_pf_likelihood_weight_or_feature_followup
+    - exp179_cnn_sdf_mtp_heatmap_probe
+    - exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe
+  discussion_source: docs/discussions/rogii-wellbore-geology-prediction-699853-multi-trajectory-prediction-mtp-with-deep-cnn-for-welllog-inversion-fullcsv.md
+  implementation_source: exp197_cnn_pf_likelihood_probe_train.py
+  diff_summary: Uses exp099 fixed PF/Beam/likPF candidates and raw train GR/typewell windows to train a candidate-level CNN/SDF likelihood scorer. The scorer predicts within10 and expected error for each frozen candidate and is compared with point-GR likelihood, exp099 multi-observation score, exp111 learned likelihood, and likPF baseline. It does not inject learned likelihood into live PF weights, rerun PF/Beam, create raw-test features, or submit.
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation:
+  strategy: one_fold_well_groupkfold_candidate_level_cnn_likelihood_probe
+  metric: candidate_auc
+  secondary_metrics:
+    - logloss
+    - brier
+    - top1_rmse_tvt
+    - topk_within10_coverage
+    - weighted_prediction_rmse
+    - effective_sample_size
+    - candidate_switch_rate
+    - worst_well_rmse
+    - real_vs_shuffled_margin
+    - real_vs_no_gr_margin
+  seed: 42
+  n_folds: 5
+  run_folds: 1
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp099_rows
+  leakage_policy:
+    - Fixed candidate TVT values and target-free multi-observation features are read from exp099 train pseudo-tail cache.
+    - Local CNN windows use horizontal GR, typewell GR, observed TVT_input prefix mask, and candidate TVT values only.
+    - Evaluation-tail true TVT is used only for supervised labels and metrics inside GroupKFold held-out wells.
+    - Real-GR, shuffled-GR, and no-GR variants share the same well split and row sample schedule.
+    - Multi-observation score and point-GR likelihood are metrics baselines, not scalar model inputs, so negative controls test the CNN image signal.
+    - This experiment is train-side diagnostic only; raw-test parity and worst-well guards are required before any follow-up.
+
+# Common paths and submission columns come from project.yml.
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp111_artifact_dir_local: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts
+  exp111_oof_likelihood_long: exp111_learned_pf_observation_likelihood_probe_oof_likelihood_long.csv.gz
+
+model:
+  name: candidate_level_cnn_sdf_pf_likelihood_probe
+  target:
+    - candidate_within10_binary
+    - candidate_abs_error
+  base_prediction: likpf_mean
+  estimator: pytorch_conv2d_candidate_likelihood
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+    - name: beam_mean
+      column: beam_mean
+    - name: likpf_mean
+      column: likpf_mean
+    - name: sc_ens
+      column: sc_ens
+    - name: hyb
+      column: hyb
+  active_variants:
+    - real_gr
+    - shuffled_gr
+    - no_gr
+  scalar_context_columns:
+    - md_since
+    - eval_len
+    - pf_ancc_std
+    - likpf_mean_d
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+  architecture:
+    channels: [32, 64, 64]
+    kernel_size: 3
+    scalar_hidden: 32
+    fusion_hidden: 96
+    dropout: 0.05
+    use_group_norm: true
+  training:
+    horizontal_window_rows: 96
+    typewell_window_bins: 64
+    tvt_window_half_width_ft: 128.0
+    history_scale_ft: 200.0
+    candidate_scale_ft: 200.0
+    error_scale_ft: 40.0
+    center_target_tolerance_ft: 10.0
+    max_train_rows_per_fold: 40000
+    max_valid_rows_per_fold: 12000
+    min_prefix_observed_rows: 16
+    epochs: 3
+    learning_rate: 0.001
+    weight_decay: 0.0001
+    gradient_clip_norm: 1.0
+    error_loss_weight: 0.35
+    require_cuda: true
+    min_cuda_capability_major: 7
+    dataloader_shuffle: true
+  weighting:
+    temperatures:
+      - 0.10
+      - 0.20
+      - 0.50
+
+runtime:
+  use_amp: false
+  num_workers: 0
+  batch_size: 128
+  kaggle:
+    enable_gpu: true
+    machine_shape: NvidiaTeslaT4
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_global_seed_plus_sha256_stable_row_subsample_and_shuffled_gr_roll
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072_via_exp099
+    - pytorch_cuda_conv_training
+    - adamw_optimizer
+    - dataloader_shuffle_with_seeded_generator
+  parallel_rng_policy: num_workers_zero_no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a GPU train-side diagnostic, not a deterministic submission anchor.
+    - Candidate row sampling is deterministic for a fixed fold, variant, and seed.
+    - Real-GR, shuffled-GR, and no-GR controls use identical sampled rows and candidate sets.
+
+audit:
+  mode: cnn_pf_likelihood_probe
+  output_prefix: exp197_cnn_pf_likelihood_probe
+  baselines:
+    - likpf_mean_single
+    - point_gr_likelihood_top1
+    - exp099_multiobs_score_top1
+    - exp111_learned_probability_top1
+  expected_train_artifacts:
+    - exp197_cnn_pf_likelihood_probe_candidate_index.csv.gz
+    - exp197_cnn_pf_likelihood_probe_oof_candidate_likelihood.csv.gz
+    - exp197_cnn_pf_likelihood_probe_candidate_metrics.csv
+    - exp197_cnn_pf_likelihood_probe_topk_metrics.csv
+    - exp197_cnn_pf_likelihood_probe_weighted_metrics.csv
+    - exp197_cnn_pf_likelihood_probe_continuity_metrics.csv
+    - exp197_cnn_pf_likelihood_probe_by_well.csv
+    - exp197_cnn_pf_likelihood_probe_bucket_metrics.csv
+    - exp197_cnn_pf_likelihood_probe_training_history.csv
+    - exp197_cnn_pf_likelihood_probe_feature_schema.csv
+    - exp197_cnn_pf_likelihood_probe_model_manifest.json
+    - exp197_cnn_pf_likelihood_probe_summary.json
+
+inference:
+  mode: not_selected_train_side_diagnostic_only
+  selected_variant: null
+  notes:
+    - No inference notebook should be pushed for submission from this experiment.
+    - A positive result should become a raw-test parity audit or conservative feature-only follow-up, not immediate PF weight replacement.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog item cnn_pf_likelihood_probe.
+  - Does not rerun PF/Beam, replace live particle weights, use validation true TVT in candidate windows, or submit.

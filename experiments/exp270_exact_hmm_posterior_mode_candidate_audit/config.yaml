@@ -1,0 +1,266 @@
+experiment:
+  name: exp270_exact_hmm_posterior_mode_candidate_audit
+  description: >-
+    Audits target-free posterior mode readouts from the raw exp209 exact HMM:
+    posterior mean, marginal MAP, global joint-state Viterbi, and exact joint-state
+    top-5 paths deduplicated by their TVT grid-index sequence.
+  route: pf_beam
+  status: completed_train_side_direct_negative_oracle_diagnostic_only_no_inference_no_submit
+  created_at: "2026-07-17"
+  inference_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.metric
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  references:
+    - exp205_exact_hmm_smoother_exp072_compatible_cache_audit
+    - exp223_hmm_self_gr_emission
+    - exp236_lgb_unary_hmm_decode_readout_ablation
+    - exp243_pf_seed_medoids
+    - exp252_pf_seed_medoids_on_exp250
+    - exp266_exp072_worst_well_rescue_readout
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md exact_hmm_posterior_mode_candidate_audit
+  implementation_source:
+    - exp270_exact_hmm_posterior_mode_candidate_audit_train.py
+    - exp270_exact_hmm_posterior_mode_candidate_audit_train_variant0.py
+    - exp270_exact_hmm_posterior_mode_candidate_audit_train_variant1.py
+  diff_summary: >-
+    Keeps the exp209 exact-HMM grid, transition grammar, Gaussian GR emission,
+    known-prefix calibration, initial position/rate priors, and missing-GR
+    handling fixed. Only posterior readout changes: marginal MAP, global
+    Viterbi, and joint-state top-5 paths are added beside the posterior-mean
+    control. Joint paths with an identical TVT grid-index sequence are
+    deduplicated after exact top-5 decoding. No self-GR emission, ML unary,
+    PF seed candidate, blend, selector, inference, or submission is included.
+
+validation:
+  strategy: full_train_exact_hmm_posterior_mode_candidate_audit
+  metric: rmse_tvt_and_candidate_bank_oracle_headroom
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  success_criteria:
+    - Generated posterior mean aligns exactly by id with the saved exp209 HMM control and stays within the configured absolute tolerance.
+    - Exact top-5 DP matches exhaustive enumeration on small trellises.
+    - Posterior mean, marginal MAP, Viterbi, unique TVT top-K, path diagnostics, and oracle scopes are recorded.
+    - Row/block/well oracle headroom is separated from direct candidate metrics and no oracle prediction is persisted.
+  leakage_policy:
+    - Decoder inputs are raw horizontal/typewell GR, MD, Z, and known TVT_input prefix only.
+    - Unknown-suffix true TVT is absent from forward-backward, decoder, candidate rank, and TVT-path deduplication.
+    - Unknown-suffix true TVT is attached by id only after every candidate path for the well is frozen.
+    - Oracle scopes and focus-well analysis are train-side diagnostics only.
+    - Well sharding uses only a stable SHA256 hash of well id and is independent of truth, errors, candidates, and runtime.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  exp209_hmm_control:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    candidates:
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    prediction_column: hmm_mean_tvt
+    parity_atol_ft: 0.00001
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+  shard_outputs:
+    - shard_index: 0
+      filename: exp270_exact_hmm_posterior_mode_candidate_audit_shard0_candidates.csv.gz
+      path_diagnostics_filename: exp270_exact_hmm_posterior_mode_candidate_audit_shard0_path_diagnostics.csv
+      pairwise_filename: exp270_exact_hmm_posterior_mode_candidate_audit_shard0_pairwise_path_distance.csv
+      well_manifest_filename: exp270_exact_hmm_posterior_mode_candidate_audit_shard0_well_manifest.csv
+      expected_rows: 1792363
+      expected_wells: 363
+      expected_raw_sha256: 067b3572d598bcfd334817bdd494368df5a36e1bcf28d33a531efa075fef17f1
+      expected_decompressed_sha256: 93e0aeac70b1e84d139aab05f9a1d6abd577d2a07388367cf2dac362e8f68b6d
+      expected_path_diagnostics_sha256: 9d9a1dc21fc294b40c0802ba202a609bc8ea3242b2ab08c262970af00dea4e81
+      expected_pairwise_path_distance_sha256: da52dc5ea94976f44f2de97b8c501752c67d922cf74725b3d258977e48428f07
+      expected_well_manifest_sha256: 5b900f119b0bdd4fecc8287485ca323f20c6278d61dc6f7e7492ce07ae235d13
+      candidates:
+        - experiments/exp270_exact_hmm_posterior_mode_candidate_audit/artifacts/exp270_exact_hmm_posterior_mode_candidate_audit_shard0_candidates.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp270-exact-hmm-mode-audit-shard0/artifacts/exp270_exact_hmm_posterior_mode_candidate_audit_shard0_candidates.csv.gz
+        - /kaggle/input/exp270-exact-hmm-mode-audit-shard0/artifacts/exp270_exact_hmm_posterior_mode_candidate_audit_shard0_candidates.csv.gz
+    - shard_index: 1
+      filename: exp270_exact_hmm_posterior_mode_candidate_audit_shard1_candidates.csv.gz
+      path_diagnostics_filename: exp270_exact_hmm_posterior_mode_candidate_audit_shard1_path_diagnostics.csv
+      pairwise_filename: exp270_exact_hmm_posterior_mode_candidate_audit_shard1_pairwise_path_distance.csv
+      well_manifest_filename: exp270_exact_hmm_posterior_mode_candidate_audit_shard1_well_manifest.csv
+      expected_rows: 1991626
+      expected_wells: 410
+      expected_raw_sha256: c3c1c1bb244e57522585f9e5fd05811dae1f8296d2159f627e5a447eb4577803
+      expected_decompressed_sha256: 831cbfb5adfe09f98059f4e2a192d7913331f6c57c437fadc989f01e3c91aee5
+      expected_path_diagnostics_sha256: 4a97b37a04e3a63f53cd14929a8c5ff3f06d9b037c2d364fee888f5504f309c3
+      expected_pairwise_path_distance_sha256: adf78761056275f3720768b8f3fcf1e7ad20abb846d3f19e3a87cd557556ff43
+      expected_well_manifest_sha256: 1abd20eea0453db8c2f3c926ad195195154314ac5a642f6264fce6594c2b17b2
+      candidates:
+        - experiments/exp270_exact_hmm_posterior_mode_candidate_audit/artifacts/exp270_exact_hmm_posterior_mode_candidate_audit_shard1_candidates.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp270-exact-hmm-mode-audit-shard1/artifacts/exp270_exact_hmm_posterior_mode_candidate_audit_shard1_candidates.csv.gz
+        - /kaggle/input/exp270-exact-hmm-mode-audit-shard1/artifacts/exp270_exact_hmm_posterior_mode_candidate_audit_shard1_candidates.csv.gz
+
+model:
+  name: exact_hmm_posterior_mode_candidate_bank
+  estimator: none_candidate_generation_audit
+  target: train_unknown_suffix_tvt_for_post_generation_scoring_only
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+  decoder:
+    joint_top_k: 5
+    deduplicate_by: tvt_grid_index_sequence
+    backfill_after_dedup: false
+    tie_break: score_then_stable_ascending_transition_and_terminal_state_order
+    persist_rate_paths: false
+    persist_full_posterior: false
+    max_backpointer_bytes: 6000000000
+
+candidate_bank:
+  fixed_candidates:
+    - posterior_mean
+    - marginal_map
+  path_candidate_prefix: topk_path_
+  global_viterbi_alias: topk_path_1
+  maximum_unique_path_candidates: 5
+  candidate_order:
+    - posterior_mean
+    - marginal_map
+    - topk_path_1
+    - topk_path_2
+    - topk_path_3
+    - topk_path_4
+    - topk_path_5
+
+audit:
+  output_prefix: exp270_exact_hmm_posterior_mode_candidate_audit
+  oracle_block_rows: [128, 256, 512]
+  distance_buckets_ft: [50, 100, 250, 500, 1000]
+  focus_wells: [11d0f5ac]
+  unique_best_tie_atol_ft: 0.000000001
+  path_edge_margin_grid_points: 2
+  persist_oracle_predictions: false
+  persist_selector: false
+  persist_candidate_blend: false
+  expected_artifacts:
+    - exp270_exact_hmm_posterior_mode_candidate_audit_candidates.csv.gz
+    - exp270_exact_hmm_posterior_mode_candidate_audit_candidate_schema.csv
+    - exp270_exact_hmm_posterior_mode_candidate_audit_decoder_manifest.json
+    - exp270_exact_hmm_posterior_mode_candidate_audit_candidate_metrics.csv
+    - exp270_exact_hmm_posterior_mode_candidate_audit_distance_bucket_metrics.csv
+    - exp270_exact_hmm_posterior_mode_candidate_audit_hidden_like_metrics.csv
+    - exp270_exact_hmm_posterior_mode_candidate_audit_by_well.csv
+    - exp270_exact_hmm_posterior_mode_candidate_audit_path_diagnostics.csv
+    - exp270_exact_hmm_posterior_mode_candidate_audit_pairwise_path_distance.csv
+    - exp270_exact_hmm_posterior_mode_candidate_audit_unique_best.csv
+    - exp270_exact_hmm_posterior_mode_candidate_audit_oracle_scope_metrics.csv
+    - exp270_exact_hmm_posterior_mode_candidate_audit_focus_well.csv
+    - exp270_exact_hmm_posterior_mode_candidate_audit_input_manifest.csv
+    - exp270_exact_hmm_posterior_mode_candidate_audit_summary.json
+
+execution:
+  canonical_train_mode: aggregate
+  shard_count: 2
+  shard_policy: sha256_exp270_well_shard_modulo_2
+  active_hmm_variants: 1
+  total_hmm_well_runs: 773
+  expected_target_wells: 773
+  outer_workers: 1
+  numba_num_threads: 4
+  progress_every_wells: 2
+  streaming_candidate_write: true
+  stream_flush_every_wells: 10
+  parity_chunksize_rows: 100000
+  frame_write_chunksize_rows: 100000
+  binary_hash_chunk_bytes: 8388608
+  gzip_compresslevel: 1
+  gzip_mtime: 0
+  max_wells_per_shard: null
+  lightgbm_config_count: 0
+  fold_count: 0
+  total_boosters: 0
+  control_or_parent_retraining: false
+  cpu_exact_hmm_control_regenerated_for_required_posterior: true
+  gpu: false
+  inference: false
+  submission: false
+  kaggle_push_approved: true
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp270-exact-hmm-mode-audit-shard0
+      - kentookumura/exp270-exact-hmm-mode-audit-shard1
+    train_variant0_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+    train_variant1_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_exact_hmm_decoder_stable_sha256_well_shard_only
+  stochastic_components: []
+  parallel_rng_policy: no_rng_two_operational_shards_outer_workers1_numba_threads4
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Exact HMM forward-backward and top-K decoding consume no random numbers.
+    - Stable SHA256 determines only the operational well shard and never changes a candidate value.
+    - The decoder manifest SHA covers the scientific HMM and decoder config because no fitted model exists.
+    - Raw and decompressed gzip SHA are both recorded; decompressed content SHA is primary.
+    - Numba parallel floating arithmetic may vary at tiny precision, so this train-side audit is not promoted to a deterministic submission anchor.
+
+inference:
+  enabled: false
+  mode: disabled_train_side_candidate_bank_audit_only
+  create_submission: false
+  selected_candidate: null
+
+notes:
+  - The posterior-mean control is regenerated because the same forward-backward pass is required to expose posterior modes; this is one CPU HMM variant and not GPU model retraining.
+  - Joint top-5 is exact before TVT-path deduplication. Deduplication may leave fewer than five unique TVT candidates and no approximate backfill is allowed.
+  - Oracle predictions exist only transiently while diagnostics are computed and are never persisted as deployable candidates.

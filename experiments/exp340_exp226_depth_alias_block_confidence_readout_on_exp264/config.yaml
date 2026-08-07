@@ -1,0 +1,263 @@
+experiment:
+  name: exp340_exp226_depth_alias_block_confidence_readout_on_exp264
+  description: >-
+    Design-frozen zero-booster readout of target-free depth-alias confidence
+    families derived from the fixed exp280 shift likelihood bank on exp264.
+  route: ensemble
+  status: stage_0_completed_guard_failed
+  created_at: "2026-07-22"
+  updated_at: "2026-07-23"
+
+lineage:
+  parent: exp264_exp263_candidate_confidence_dual_selector
+  steering: ../../.steering/20260722-exp340-exp226-depth-alias-block-confidence-readout-on-exp264
+  references:
+    - exp280_exp226_shift_likelihood_separability_readout
+    - exp236_exact_hmm_posterior_bimodality_audit
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe
+    - exp286_geop_hmm_sparse_addonly_candidate_on_exp264
+  diff_summary: >-
+    Keeps every candidate and prediction frozen. Seven preregistered confidence
+    families summarize the exp280 likelihood surface before any truth or error join.
+
+implementation:
+  enabled: true
+  scope: zero_booster_stage_0_readout
+  train_notebook_state: compact_selfcontained
+  canonical_notebook_replacement_authorized_by_request: true
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: frozen_block_confidence_then_late_error_attribution
+  metric: block_rmse_and_auc
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  expected_blocks: 7787
+  expected_folds: [0, 1, 2, 3, 4]
+  fold_source: exp280_exp226_group_safe_fold
+  exp264_outer_fold_policy: provenance_only_not_required_to_equal_exp226_fold
+  truth_alignment_atol_ft: 0.001
+  score_rows: nonoverlapping_512_row_blocks
+  primary_unit: block
+  auc_unit: row_weighted_block_score
+  auc_label: exp264_row_abs_error_ge_10ft
+  auc_definition: >-
+    Repeat each frozen block risk score over that block's rows and compute the
+    exact tie-aware ROC AUC against abs(exp264 prediction - truth) >= 10 ft.
+  truth_attachment: after_feature_quantile_and_content_sha_freeze
+  report_scopes:
+    - pooled
+    - fold
+    - distance_1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  leakage_policy:
+    - Confidence features and fold-specific Q1/Q4 boundaries are frozen before truth or error is read.
+    - No candidate, prediction, selector, threshold, or correction is fitted.
+
+data:
+  exp280_source:
+    experiment: exp280_exp226_shift_likelihood_separability_readout
+    score_filename: exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+    score_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+      - /kaggle/input/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+      - /tmp/exp280-output-v1/artifacts/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+      - "**/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz"
+    score_decompressed_sha256: c6e9e39a5fd3944f7516e68bdd6b9d27430a47f0bfbe3c50d39f5369791d99c3
+    score_content_sha256: 4a546cfe5f9291168bdb4dcb912182b079e0343af845f76005f6a7100ac3aa46
+    contract_filename: exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+    contract_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+      - /kaggle/input/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+      - /tmp/exp280-output-v1/artifacts/exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+      - "**/exp280_exp226_shift_likelihood_separability_readout_score_contract.json"
+    scientific_contract_sha256: 60d32ba96e0f71fc1f02f53d9e274e97d96516549ee27c87ea40bbb666af7978
+  exp264_source:
+    experiment: exp264_exp263_candidate_confidence_dual_selector
+    filename: stage_d_oof_predictions.parquet
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-tvt-train/artifacts/stage_d_oof_predictions.parquet
+      - /kaggle/input/exp264-exp263-confidence-dual-selector-tvt-train/artifacts/stage_d_oof_predictions.parquet
+      - /tmp/exp264-stage-d-v3-oof/artifacts/stage_d_oof_predictions.parquet
+      - "**/stage_d_oof_predictions.parquet"
+    expected_sha256: b11c5005ca566f76588f4e1735386c15b8f016b874701a82e1c0741c8b839ae2
+    prediction_column: selector_compact_addonly__lgb_mean__pred_tvt
+    expected_rmse: 8.460811237612477
+  exp226_source:
+    experiment: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  hidden_like_assignment:
+    experiment: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    well_column: well_id
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+  block_size: 512
+  shifts_ft: [-80, -40, -20, -10, -5, -2, 0, 2, 5, 10, 20, 40, 80]
+
+model:
+  name: exp226_depth_alias_block_confidence_readout
+  estimator: none
+  target_free_families:
+    - top1_top2_margin
+    - softmax_entropy
+    - likelihood_weighted_shift_std
+    - zero_shift_rank
+    - absolute_top1_shift
+    - top1_shift_jump_from_previous_block
+    - three_block_sign_inconsistency
+  family_contract:
+    top1_top2_margin:
+      formula: largest_likelihood_minus_second_largest_likelihood
+      risk_transform: negative
+    softmax_entropy:
+      formula: natural_log_entropy_of_unit_temperature_softmax_likelihood
+      risk_transform: identity
+    likelihood_weighted_shift_std:
+      formula: population_std_of_shift_ft_under_unit_temperature_softmax_likelihood
+      risk_transform: identity
+    zero_shift_rank:
+      formula: zero_shift_likelihood_rank_minus_one_divided_by_twelve
+      risk_transform: identity
+    absolute_top1_shift:
+      formula: absolute_likelihood_top1_shift_ft
+      risk_transform: identity
+    top1_shift_jump_from_previous_block:
+      formula: absolute_top1_shift_change_with_first_block_zero
+      risk_transform: identity
+    three_block_sign_inconsistency:
+      formula: pairwise_disagreement_share_among_nonzero_signs_in_current_and_previous_two_blocks
+      risk_transform: identity
+  attribution:
+    quantiles: [0.25, 0.75]
+    quantile_fit_scope: each_fold_target_free_blocks_only
+    quartile_assignment: risk_le_q25_vs_risk_ge_q75
+    primary_metric: q4_minus_q1_exp264_block_rmse
+    secondary_labels:
+      - exp264_block_abs_error_ge_10ft
+      - exp226_beats_exp264_block_rmse_by_ge_0p25ft
+    negative_control:
+      name: stable_sha256_circular_block_order
+      applies_to:
+        - top1_shift_jump_from_previous_block
+        - three_block_sign_inconsistency
+      construction: >-
+        Rotate each well's top1-shift sequence by a nonzero SHA256-derived
+        offset, then recompute the same order-dependent family.
+      comparison_metric: row_weighted_abs_error_ge_10ft_auc
+  pass_requires_all_per_family:
+    minimum_feature_coverage: 0.99
+    minimum_q4_minus_q1_mean_rmse_ft: 0.50
+    require_q4_minus_q1_median_positive: true
+    minimum_positive_folds: 4
+    require_1000_plus_positive: true
+    require_hidden_like_spatial_positive: true
+    require_hidden_like_typewell_purged_positive: true
+    minimum_pooled_auc_abs_error_ge_10ft: 0.60
+    minimum_folds_auc_gt_half: 4
+    require_real_better_than_circular_pooled: true
+    minimum_folds_real_better_than_circular: 4
+  forbidden:
+    - candidate_change
+    - prediction_change
+    - mode_switch
+    - selector_training
+    - same_oof_threshold_search
+    - inference
+    - submission
+
+execution_contract:
+  readout_families: 7
+  controls: 1
+  models: 0
+  hmm_well_runs: 0
+  trained_folds: 0
+  boosters: 0
+  parent_control_retraining: false
+
+execution:
+  implementation_approved: true
+  implementation_approved_at: "2026-07-23"
+  kaggle_push_approved: false
+  kaggle_execution_approved_at: "2026-07-23 21:09:03 JST"
+  kaggle_execution_completed: true
+  kaggle_execution_completed_at: "2026-07-23 21:12 JST"
+  kaggle_kernel_id: kentookumura/exp340-exp226-alias-readout-on-exp264-train
+  kaggle_kernel_version: 1
+  kaggle_kernel_id_no: 128356047
+  active_stage: stage_0_completed_guard_failed
+  run_stage_0: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    train_run_on_push: false
+    train_kernel_sources:
+      - kentookumura/exp280-exp226-shift-likelihood-readout-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-tvt-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_block_order_and_sha256_control_rotation
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_aggregation_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: false, submission_sha: false}
+
+inference: {enabled: false, create_submission: false}
+
+notes:
+  - Design frozen on 2026-07-22; zero-booster Stage 0 implementation completed on 2026-07-23.
+  - Kaggle Stage 0 version 1 completed on 2026-07-23; all seven families failed the frozen scientific AND gate.
+  - A PASS only qualifies a separately designed add-only experiment and never creates a correction in exp340.
+
+artifacts:
+  output_prefix: exp340_exp226_depth_alias_block_confidence_readout_on_exp264
+  expected_train:
+    - exp340_exp226_depth_alias_block_confidence_readout_on_exp264_contract.json
+    - exp340_exp226_depth_alias_block_confidence_readout_on_exp264_input_manifest.json
+    - exp340_exp226_depth_alias_block_confidence_readout_on_exp264_feature_schema.json
+    - exp340_exp226_depth_alias_block_confidence_readout_on_exp264_target_free_block_features.parquet
+    - exp340_exp226_depth_alias_block_confidence_readout_on_exp264_fold_quantile_boundaries.csv
+    - exp340_exp226_depth_alias_block_confidence_readout_on_exp264_freeze_manifest.json
+    - exp340_exp226_depth_alias_block_confidence_readout_on_exp264_post_freeze_block_readout.csv.gz
+    - exp340_exp226_depth_alias_block_confidence_readout_on_exp264_family_scope_metrics.csv
+    - exp340_exp226_depth_alias_block_confidence_readout_on_exp264_family_fold_metrics.csv
+    - exp340_exp226_depth_alias_block_confidence_readout_on_exp264_family_gate.csv
+    - exp340_exp226_depth_alias_block_confidence_readout_on_exp264_summary.json
+    - exp340_exp226_depth_alias_block_confidence_readout_on_exp264_sha_manifest.csv
+  expected_inference: []

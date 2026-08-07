@@ -1,0 +1,53 @@
+{
+  "experiment": "exp383_all_tvt_stratigraphic_vector_drift_field",
+  "status": "stage0_resource_fail_closed",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "control_experiment": "exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction",
+  "control_cv": 9.427109596582213,
+  "control_public_lb": 9.837,
+  "implementation": true,
+  "canonical_notebook_adopted": true,
+  "contract_tests": {
+    "passed": 15,
+    "failed": 0
+  },
+  "kaggle_run": true,
+  "kaggle_execution_authorized": false,
+  "execution_mode": "stage0_resource_preflight",
+  "preflight_max_wells": 16,
+  "kernel_id": "kentookumura/exp383-tvt-vector-drift-field-train",
+  "kernel_id_no": 128459031,
+  "kernel_version": 1,
+  "kaggle_execution_status": "KernelWorkerStatus.ERROR",
+  "failure": {
+    "classification": "code_and_resource",
+    "first_error": "pandas.errors.MergeError: Merge keys are not unique in either left or right dataset; not a one-to-one merge",
+    "failed_stage": "fold_0_multiscale_donor_surface_join",
+    "failed_before_truth_join": true,
+    "observed_processing_seconds_before_error": 22055.465020338,
+    "donor_windows_by_fold": [209467, 207822, 209218, 209423, 207506],
+    "projected_surface_stage_seconds": 109866.7866487867,
+    "projected_surface_stage_hours": 30.518551846885195,
+    "runtime_gate_seconds_max": 30600,
+    "runtime_gate_ratio": 3.5904178643394347
+  },
+  "local_fix": {
+    "status": "implemented_not_retried",
+    "summary": "Attach a scale-aware globally unique donor query_id before surface evaluation and join surface payload by that node ID.",
+    "tests_passed": 15
+  },
+  "full_run": false,
+  "stage1_opened": false,
+  "closure": {
+    "confirmed": true,
+    "confirmed_at": "2026-07-25",
+    "source": "user_message_close_exp383_and_downstream",
+    "allow_retry": false
+  },
+  "monitoring": false,
+  "notes": "Version 1 failed before truth join. The join bug is fixed locally, but the measured five-fold donor-surface projection is 3.59x over the fixed runtime gate, so no retry or full run is allowed."
+}

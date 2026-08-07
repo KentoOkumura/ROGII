@@ -1,0 +1,101 @@
+{
+  "experiment": "exp458_acceleration_state_exact_runtime_engine_audit",
+  "status": "stage0a_fail_closed_parent_numerical_parity",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "runtime_exact_equivalence_preflight",
+  "hypothesis": "The frozen exp444 posterior can be reproduced by the exact-equivalent scaled probability-space outer4 engine within the fixed runtime and RSS limits.",
+  "key_idea": "Keep the exp444 scientific contract unchanged and audit one scaled probability-space, factorized, exact-bit-cached, four-well-parallel CPU engine against saved fixed4 output.",
+  "created_at": "2026-07-30",
+  "updated_at": "2026-07-30",
+  "implementation": {
+    "completed": true,
+    "canonical_train_notebook_adopted": true,
+    "tests_passed": 10,
+    "executed_train_source_sha256": "ae2efea3caaca5ece40bb267f1ae9bcc08cdae9b1b9b9f82d1d6c0f5c33b345b",
+    "small_dense_prediction_max_abs_error_ft": 3.637978807091713e-12,
+    "small_dense_acceleration_posterior_max_abs_error": 3.3306690738754696e-16
+  },
+  "kaggle_run": {
+    "kernel_id": "kentookumura/exp458-accel-state-exact-runtime-eng-audit-train",
+    "kernel_version": 2,
+    "kernel_id_no": 129168013,
+    "kernel_status": "COMPLETE",
+    "private": true,
+    "cpu_only": true,
+    "internet_enabled": false,
+    "version_1_status": "ERROR_after_two_repeats_summary_numpy_bool_serialization",
+    "execution_contract": {
+      "scientific_variants": 1,
+      "runtime_engine_candidates": 1,
+      "stage0a_repeat_count": 2,
+      "stage0a_candidate_hmm_well_runs_per_repeat": 4,
+      "stage0a_total_candidate_hmm_well_runs": 8,
+      "parent_control_hmm_well_runs": 0,
+      "lightgbm_configs": 0,
+      "trained_ml_folds": 0,
+      "boosters": 0,
+      "fitted_models": 0,
+      "pf_runs": 0,
+      "beam_runs": 0,
+      "gpu_runs": 0
+    }
+  },
+  "result": {
+    "all_pass": false,
+    "stage0b_eligible": false,
+    "repeat_decode_wall_seconds": [
+      72.25045829899997,
+      72.755703128
+    ],
+    "slower_repeat_decode_wall_seconds": 72.755703128,
+    "speedup_vs_exp444": 10.258353117513426,
+    "projected_fixed32_seconds": 582.045625024,
+    "projected_full_seconds": 14114.606406832,
+    "process_tree_peak_rss_gb": 13.033187866210938,
+    "finite_coverage": 1.0,
+    "maximum_normalization_error": 4.085620730620576e-14,
+    "parent_parity": {
+      "prediction_mean_max_abs_error_ft": 0.00010413506242912263,
+      "prediction_mean_threshold_ft": 1e-05,
+      "prediction_mean_pass": false,
+      "prediction_std_max_abs_error_ft": 6.35657412058066e-05,
+      "prediction_std_threshold_ft": 1e-05,
+      "prediction_std_pass": false,
+      "acceleration_posterior_max_abs_error": 8.97726402104837e-06,
+      "acceleration_posterior_threshold": 1e-07,
+      "acceleration_posterior_pass": false,
+      "rate_diagnostic_max_abs_error": 1.0862973659972464e-06,
+      "rate_diagnostic_threshold": 5e-06,
+      "rate_diagnostic_pass": true
+    },
+    "repeat_prediction_sha_pass": true,
+    "repeat_posterior_sha_pass": true,
+    "repeat_diagnostic_sha_pass": true,
+    "runtime_gate_pass": true,
+    "rss_gate_pass": true,
+    "worker_thread_gate_pass": true,
+    "leakage_gate_pass": true
+  },
+  "reproducibility": {
+    "deterministic_anchor": false,
+    "scientific_contract_sha256": "f4a0bbbcc8b9cb44a55cff29e07f49ed251e11a896b3e877b4e2d6f9d08f4972",
+    "runtime_engine_contract_sha256": "cb14a4f1dfc1d5de03a6e9329402fef476918b7ffb235552e9cd9d98d6c71451",
+    "prediction_decompressed_sha256": "99c3fc141b39188e21dc1b8fef1c55998ef3878a6a0b0a7922f82ddeedf1aefb",
+    "acceleration_posterior_decompressed_sha256": "4299cbbdfb2aa9b54e4d372d4abba7479ecafaf06628bb5ec5ee22c42c4dffe9",
+    "diagnostic_decompressed_sha256": "0220cd1408695e77c6d60d64e7849bb86a4e5037b8af4db8c81c47fd4c83457d",
+    "runtime_manifest_sha256": "6faad84d378268145735726de8272b3226a9c9456b4486cdc79b80255dafb869",
+    "summary_sha256": "831bc1602ba3e04a266481b29c8436abc257ea8e9f024c39674728f0dd6de3c7",
+    "model_sha256": null,
+    "submission_sha256": null
+  },
+  "artifacts": {
+    "downloaded_metrics": "kaggle/output/train_v2/metrics.json",
+    "downloaded_log": "kaggle/output/train_v2/exp458-accel-state-exact-runtime-eng-audit-train.log",
+    "downloaded_stage0a_artifacts": "kaggle/output/train_v2/artifacts"
+  },
+  "next_action": "Terminal close exp458. Do not run Stage 0B/1, inference, submission, or a favorable retry. If needed, use only saved v2 and exp444 artifacts for a separate target-free long-trellis first-divergence study.",
+  "notes": "Runtime acceleration succeeded, but three frozen parent numerical-parity gates failed. exp444 remains terminally closed on its original runtime projection."
+}

@@ -1,0 +1,288 @@
+experiment:
+  name: exp253_prefix_verified_bounded_candidate_controller
+  description: Evaluate existing candidates on masked visible prefixes and apply only a bounded correction toward a verified candidate.
+  route: ensemble
+  status: completed_stage1_guard_failed_inference_forbidden
+  created_at: '2026-07-15'
+
+lineage:
+  parent: exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218
+  candidate_parent: exp072_exp063_full_replay_feature_cache
+  related:
+    - exp036_test_time_prefix_calibration_audit
+    - exp087_prefix_backtest_tvt_confidence
+    - exp244_bidirectional_prediction_start_pseudotail_augmentation
+  diff_summary: >
+    Add only the visible-prefix candidate evaluation and bounded correction layer
+    from yusuketogashi/rogii-another-approach. Keep the exp238 base, exp072
+    candidate families, PF/Beam implementations, and model artifacts fixed.
+    Exclude contact reconstruction, heel calibration, affine GR correction,
+    bimodal correction, new candidate generation, and model retraining.
+
+validation:
+  strategy: legal_masked_prefix_replay_then_official_tail_readout
+  metric: rmse
+  group_column: well
+  seed: 42
+  diagnostic_folds: 5
+  diagnostic_fold_policy: stable_sha256_well_mod5
+  hidden_like_assignment_file: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  distance_buckets:
+    - {name: '000_050', min_md_since: 0, max_md_since: 50}
+    - {name: '050_100', min_md_since: 50, max_md_since: 100}
+    - {name: '100_250', min_md_since: 100, max_md_since: 250}
+    - {name: '250_500', min_md_since: 250, max_md_since: 500}
+    - {name: '500_1000', min_md_since: 500, max_md_since: 1000}
+    - {name: '1000_plus', min_md_since: 1000, max_md_since: null}
+  stage0_contract:
+    min_scored_well_fraction: 0.90
+    min_candidates_per_well: 5
+    require_three_cuts: true
+    require_nonfinite_zero: true
+    require_alpha_cap: true
+    require_move_cap: true
+  adoption_guard:
+    require_global_improvement: true
+    require_near_nonworse: true
+    require_longtail_nonworse: true
+    require_hidden_like_spatial_nonworse: true
+    require_hidden_like_typewell_purged_nonworse: true
+    min_improved_folds: 3
+    require_worst_well: false
+    max_worst_well_regression: 0.25
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  input_target_column: TVT_input
+  id_column: id
+  submission_target_column: tvt
+  official_candidate_cache:
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    kaggle_source: kentookumura/exp072-exp063-full-replay-feature-cache-train
+  base_oof:
+    filename: exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218_final_oof_predictions.csv.gz
+    prediction_column: lgb_mean_pred_tvt
+    kaggle_source: kentookumura/exp238-nested-rank-slot-exp218-train
+  base_inference:
+    filename: submission.csv
+    kaggle_source: kentookumura/exp238-nested-rank-slot-exp218-inference
+
+model:
+  name: prefix_verified_bounded_candidate_controller
+  estimator: none
+  active_variants: [balanced_prefix_verified_controller]
+  model_configs: 0
+  folds_trained: 0
+  boosters: 0
+  parent_control_retraining: false
+  candidates:
+    default: likpf_mean
+    allowed:
+      - last_anchor_tvt
+      - pf_ancc
+      - pf_z
+      - beam_mean
+      - beam_med
+      - sc_ens
+      - hyb
+      - likpf_mean
+      - tvt_dense
+    forbidden_prefixes: [contact_, surface_, poly_, affine_, heel_, bimodal_]
+  prefix:
+    cut_fractions: [0.50, 0.65, 0.75]
+    min_known_rows: 140
+    min_prefix_rows_at_cut: 50
+    min_holdout_rows: 35
+    score_std_weight: 0.10
+    consistency_min_improvement: 0.25
+  controller:
+    profile: balanced_fixed_from_public_notebook
+    min_gain: 0.55
+    max_best_score: 12.0
+    min_consistency: 0.50
+    alpha_base: 0.08
+    alpha_gain_scale: 0.20
+    alpha_margin_scale: 0.06
+    alpha_quality_bonus: 0.04
+    alpha_cap: 0.40
+    clip_base: 10.0
+    clip_gain: 4.5
+    clip_max: 30.0
+    delta_soft: 30.0
+    delta_p95_hard: 75.0
+    ramp_min_rows: 80.0
+    ramp_fraction: 0.12
+  forbidden:
+    - new_candidate_family
+    - contact_reconstruction
+    - same_well_train_copy
+    - heel_calibration
+    - affine_gr_observation_replacement
+    - bimodal_direct_correction
+    - target_or_error_selected_candidate
+    - parameter_grid
+    - model_training
+
+audit:
+  active_mode: stage1_full_audit
+  stage0_max_wells: 32
+  stage1_max_wells: null
+  stage1_enabled: true
+  stage1_shard:
+    count: 4
+    active_index: 0
+    policy: stable_sha256_experiment_stage1_well_shard_modulo
+  output_prefix: exp253_prefix_verified_bounded_candidate_controller
+  expected_outputs:
+    - exp253_prefix_verified_bounded_candidate_controller_request_manifest.csv
+    - exp253_prefix_verified_bounded_candidate_controller_cut_scores.csv
+    - exp253_prefix_verified_bounded_candidate_controller_well_report.csv
+    - exp253_prefix_verified_bounded_candidate_controller_metrics.csv
+    - exp253_prefix_verified_bounded_candidate_controller_by_well.csv
+    - exp253_prefix_verified_bounded_candidate_controller_oof.csv.gz
+    - exp253_prefix_verified_bounded_candidate_controller_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  allow_local: false
+  kaggle:
+    enabled: true
+    internet: false
+    push_requires_user_approval: true
+    train_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp238-nested-rank-slot-exp218-train
+    train_variant0_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp238-nested-rank-slot-exp218-train
+    train_variant1_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp238-nested-rank-slot-exp218-train
+    train_variant2_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp238-nested-rank-slot-exp218-train
+    train_variant3_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp238-nested-rank-slot-exp218-train
+    train_aggregate_kernel_sources:
+      - kentookumura/exp253-prefix-bounded-controller-s0
+      - kentookumura/exp253-prefix-bounded-controller-s1
+      - kentookumura/exp253-prefix-bounded-controller-s2
+      - kentookumura/exp253-prefix-bounded-controller-s3
+    inference_kernel_sources:
+      - kentookumura/exp253-prefix-bounded-controller-aggregate
+      - kentookumura/exp238-nested-rank-slot-exp218-inference
+    train:
+      enable_gpu: false
+    train_variant0:
+      enable_gpu: false
+    train_variant1:
+      enable_gpu: false
+    train_variant2:
+      enable_gpu: false
+    train_variant3:
+      enable_gpu: false
+    train_aggregate:
+      enable_gpu: false
+    inference:
+      enable_gpu: false
+    bootstrap_dependency_files:
+      - source: experiments/exp072_exp063_full_replay_feature_cache/public_notebook_replay_audit.py
+        destination: public_notebook_replay_audit.py
+      - source: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: inherit_exp072_stable_sha256_per_request_well
+  stochastic_components: [pf_ancc, pf_z, likelihood_pf]
+  parallel_rng_policy: single_process_n_jobs_1_for_pf_replay
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Beam and controller are deterministic; PF families inherit the exp072 Numba RNG implementation.
+    - Rerun content-SHA equality is required before calling the controller deterministic.
+    - Stage 0 and Stage 1 use n_jobs=1 to avoid thread-scheduling-dependent global RNG consumption.
+
+notes:
+  - Assumption: likpf_mean is the fixed default candidate because it is an existing raw-test-regenerable path and requires no new selector candidate.
+  - This experiment implements one backlog item only: prefix candidate evaluation plus bounded correction.
+
+results:
+  decision: completed_stage1_not_adopted
+  kernel: kentookumura/exp253-prefix-bounded-controller-train
+  kernel_version: 2
+  runtime_seconds: 3313.4760959148407
+  stage0_pass: true
+  adoption_guard_pass: false
+  overall_base_rmse: 6.769362622625077
+  overall_controller_rmse: 6.570761195472415
+  overall_delta_rmse: -0.1986014271526617
+  worst_well: 052d64df
+  worst_well_regression: 1.1247995989726385
+  inference_allowed: false
+  stage1_execution:
+    authorized_at: '2026-07-15'
+    shard_count: 4
+    shard_well_counts: [203, 208, 179, 183]
+    projected_hours_per_shard: [5.84, 5.98, 5.15, 5.26]
+    scientific_variants: 1
+    model_configs: 0
+    folds: 0
+    boosters: 0
+    parent_control_retraining: false
+    status: aggregate_complete_guard_failed
+    kernel_version: 1
+    kernel_ids:
+      - kentookumura/exp253-prefix-bounded-controller-s0
+      - kentookumura/exp253-prefix-bounded-controller-s1
+      - kentookumura/exp253-prefix-bounded-controller-s2
+      - kentookumura/exp253-prefix-bounded-controller-s3
+    kernel_id_nos: [127330449, 127330452, 127330448, 127330451]
+    request_counts: [609, 624, 537, 549]
+    runtime_seconds: [20843.71636581421, 21961.97226691246, 30765.422635793686, 31860.518672943115]
+    technical_pass: [true, true, true, true]
+    request_errors: [0, 0, 0, 0]
+    aggregate:
+      kernel: kentookumura/exp253-prefix-bounded-controller-aggregate
+      kernel_version: 1
+      kernel_id_no: 127430343
+      runtime_seconds: 73.39567542076111
+      selected_wells: 773
+      rows: 3783989
+      request_count: 2319
+      stage1_pass: true
+      adoption_guard_pass: false
+      adoption_supported: false
+      inference_allowed: false
+      overall_base_rmse: 7.9367008450637115
+      overall_controller_rmse: 8.205455485395397
+      overall_delta_rmse: 0.26875464033168583
+      near_delta_rmse: -0.002746371350180743
+      longtail_delta_rmse: 0.3079831948989167
+      hidden_like_spatial_delta_rmse: 0.28287325531001173
+      hidden_like_typewell_purged_delta_rmse: 0.2675431585492376
+      improved_folds: 0
+      applied_wells: 361
+      improved_wells: 150
+      unchanged_wells: 412
+      worse_wells: 211
+      worst_well: fcfcc902
+      worst_well_regression: 10.310640702934634
+      max_alpha: 0.38
+      max_abs_move: 20.62957007987007
+      aggregate_config_sha256: 411147972e864aadc2c41886e637c48a049986cfb965ffa29efa87e288596573
+      controller_oof_decompressed_sha256: a66296559152eed8b3b9a753c0965ad5db2f693a28576d51b05861487dd03b22

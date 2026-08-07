@@ -1,0 +1,208 @@
+experiment:
+  name: exp272_continuous_well_divergence_risk_readout_on_exp267
+  description: >-
+    exp267のtarget-free 18次元well署名をK=3へ離散化せず、outer-trainだけでfitした
+    continuous divergence axisとexp264 Stage B OOF candidate scoreのactual MAE / calibration
+    biasの単調関係を0 boosterで監査する。
+  route: ensemble
+  status: actual_candidate_mae_readout_only_exp264_calibration_invalidated
+  created_at: "2026-07-17"
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+lineage:
+  parent: exp267_well_segment_candidate_divergence_signature_cluster_on_exp265
+  score_source: exp264_exp263_candidate_confidence_dual_selector_stage_b_v2
+  references:
+    - exp265_target_free_pairwise_candidate_divergence_soft_experts_on_exp264
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md continuous_well_divergence_risk_readout_on_exp267
+  diff_summary: >-
+    exp267のfixed-thirds 18署名とexp264 OOF scoreを固定入力にし、KMeans、semantic cluster、
+    soft membershipを廃止する。12個のrange/gap特徴をouter-train robust scaling後に等重み平均した
+    連続軸を主判定とし、全18特徴PCA1はscore非依存のreport-only sensitivityとして保存する。
+    selector学習、hard routing、inference、submissionは行わない。
+
+validation:
+  strategy: outer5_continuous_well_divergence_monotonic_risk_readout
+  metric: fold_spearman_and_stratified_well_bootstrap_interval
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_isna
+  leakage_policy:
+    - continuous axisのmedian、RobustScaler、clip、PCAは各foldのouter-train wellsだけでfitする。
+    - primary axisの12特徴と等重み式はscoreを開く前に固定し、outer-valid scoreで変更しない。
+    - PCA1の符号はouter-train target-free primary axisだけで固定し、actual errorやcalibrationを使わない。
+    - actual MAE、predicted absolute error、calibration biasはaxis fit完了後のreadoutにだけ使う。
+    - PCA1とcandidate別結果はreport-onlyでprimary guardを救済しない。
+
+data:
+  exp267_kernel: kentookumura/exp267-well-segment-divergence-cluster-train
+  exp267_kernel_version: 2
+  exp267_signature_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp267-well-segment-divergence-cluster-train/artifacts/well_segment_signatures.parquet
+    - /kaggle/input/exp267-well-segment-divergence-cluster-train/artifacts/well_segment_signatures.parquet
+    - experiments/exp267_well_segment_candidate_divergence_signature_cluster_on_exp265/kaggle/output/train_v2/artifacts/well_segment_signatures.parquet
+    - /tmp/kaggle-output/exp267_well_segment_candidate_divergence_signature_cluster_on_exp265/train_v2/artifacts/well_segment_signatures.parquet
+    - "**/well_segment_signatures.parquet"
+  exp267_expected_signature_sha256: 7c452a927a106dc837e81fa0cff629b04ad0c91cfa95120db1fb38008179d9b2
+  exp267_expected_signature_logical_sha256: bb193a6a540675a469c52c2cb8abb572a2e5827a2bec0ee6262b866ca593decf
+  exp264_stage_b_dataset: kentookumura/exp264-stage-b-selector-oof-v2
+  exp264_stage_b_source_kernel_version: 2
+  exp264_candidate_score_patterns:
+    - /kaggle/input/exp264-stage-b-selector-oof-v2/candidate_score_oof.parquet
+    - /tmp/kaggle-output/exp264_exp263_candidate_confidence_dual_selector/train_v2/artifacts/candidate_score_oof.parquet
+    - "**/candidate_score_oof.parquet"
+  exp264_expected_candidate_score_sha256: e51bb6747c71ed38a550b72a119558241220bdddab3fa9bdc2a21e0587445a5a
+
+candidate_bank:
+  primitive_ids:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+  candidate_count: 6
+  aggregation: equal_candidate_weight_within_well
+
+axes:
+  primary: fixed_range_gap_axis
+  primary_feature_count: 12
+  primary_metrics:
+    - bank_range_mean
+    - bank_range_p90
+    - pair_abs_gap_mean
+    - pair_abs_gap_p90
+  primary_formula: mean_of_12_outer_train_robust_scaled_clipped_features
+  sensitivity: pca1_axis
+  sensitivity_feature_count: 18
+  sensitivity_decision_role: report_only_cannot_rescue_primary_guard
+  pca_orientation: outer_train_spearman_with_fixed_range_gap_axis
+
+preprocessing:
+  imputation: outer_train_median
+  scaler: robust
+  quantile_range: [25.0, 75.0]
+  scaled_clip: [-10.0, 10.0]
+  pca_solver: full
+
+readout:
+  outcomes:
+    - actual_mae
+    - calibration_bias
+  scopes:
+    - candidate_bank_mean
+    - candidate
+  axis_quantiles: 10
+  persist_row_predictions: false
+  update_cv_or_lb_anchor: false
+
+bootstrap:
+  method: outer_fold_stratified_well_resampling_with_replacement
+  seed: 272042
+  n_resamples: 5000
+  interval: 0.95
+  parallel_workers: 1
+
+model:
+  name: none_zero_booster_continuous_risk_readout
+  trains_new_boosters: false
+  variants: 0
+  lightgbm_configs: 0
+  folds_trained: 0
+  total_boosters: 0
+  parent_control_retraining: false
+
+execution:
+  stage: continuous_well_divergence_risk_readout
+  run_approved: false
+  kaggle_push_requires_user_approval: true
+  inference_enabled: false
+  submission_enabled: false
+  variants: 0
+  lightgbm_configs: 0
+  folds_trained: 0
+  total_boosters: 0
+  parent_control_retraining: false
+
+guards:
+  technical:
+    expected_rows_per_candidate: 3783989
+    expected_wells: 773
+    expected_folds: 5
+    expected_features: 18
+    expected_primary_features: 12
+    expected_candidates: 6
+    expected_well_candidate_rows: 4638
+  monotonic_risk:
+    primary_axis_only: fixed_range_gap_axis
+    required_same_direction_folds: 5
+    actual_mae_expected_direction: positive
+    calibration_bias_expected_direction: negative
+    sign_epsilon: 1.0e-12
+    min_actual_mae_bootstrap_lower: 0.05
+    max_calibration_bias_bootstrap_upper: -0.05
+    pca1_can_rescue: false
+    candidate_specific_can_rescue: false
+
+artifacts:
+  required:
+    - well_continuous_divergence_axes.parquet
+    - well_candidate_risk_metrics.csv
+    - well_divergence_readout_by_well.csv
+    - well_divergence_spearman.csv
+    - well_divergence_bootstrap_intervals.csv
+    - well_divergence_quantile_metrics.csv
+    - continuous_axis_preprocessors.json
+    - continuous_well_divergence_risk_readout.png
+    - readout_summary.json
+    - reproducibility_manifest.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 500000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp267-well-segment-divergence-cluster-train
+    train_dataset_sources:
+      - kentookumura/exp264-stage-b-selector-oof-v2
+    inference_kernel_sources: []
+    inference_dataset_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_scope_seed_for_single_thread_stratified_bootstrap
+  stochastic_components:
+    - well_bootstrap_resampling
+  parallel_rng_policy: local_numpy_generator_per_scope_single_thread
+  feature_sha_policy: input_byte_and_logical_sha_output_logical_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    preprocessor_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - PCA svd_solver fullは乱数を使わず、符号はouter-train target-free primary axisで固定する。
+    - bootstrapだけがstochasticで、scope名からstable seedを作る。
+    - Kaggle rerun前はdeterministic diagnostic anchorと呼ばない。
+
+inference:
+  enabled: false
+  mode: disabled_train_side_readout_only
+  create_submission: false
+
+notes:
+  - exp267のK=3 branchはclosedのままで、cluster救済やparameter gridを行わない。
+  - guard PASSでもこの実験内ではfeature追加やselector学習をせず、別add-only候補の設計根拠に限定する。

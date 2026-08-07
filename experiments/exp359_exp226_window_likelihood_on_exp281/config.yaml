@@ -1,0 +1,342 @@
+experiment:
+  name: exp359_exp226_window_likelihood_on_exp281
+  description: >-
+    Independent sparse exp226 window-likelihood rank audit and conditional
+    exp281 residual-offset exact-HMM evaluation without an exp323 dependency.
+  route: pf_beam
+  status: stage_0_completed_guard_failed_closed
+  created_at: "2026-07-23"
+  updated_at: "2026-07-25"
+
+lineage:
+  parent: exp281_exp226_residual_offset_exact_hmm_transition_probe
+  steering: ../../.steering/20260723-exp359-exp226-window-likelihood-on-exp281
+  stage_0_control: exp280_exp226_shift_likelihood_separability_readout
+  history: exp325_exp226_window_likelihood_hmm_tempering
+  references:
+    - exp305_acf_tempered_log_likelihood
+    - exp343_exp226_residual_offset_student_t_emission
+  diff_summary: >-
+    Removes the exp323 transition dependency. It keeps the full exp281
+    residual-offset decoder fixed and adds only a preregistered sparse,
+    normalized exp226 window potential at fixed stride centers. Stage 0
+    implements only the target-free window-rank audit and does not run an HMM.
+
+implementation:
+  enabled: true
+  scope: stage_0_rank_audit_only
+  train_notebook_state: compact_selfcontained_canonical_adopted
+  inference_notebook_state: fail_closed_compact_candidate_created_canonical_placeholder_unchanged
+  canonical_notebook_replacement_authorized: true
+  canonical_notebook_adopted: true
+  compact_selfcontained_source_created: true
+  stage_1_implemented: false
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: independent_window_shift_rank_then_grouped_exp281_hmm_audit
+  metric: mrr_top3_then_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  expected_exp280_blocks: 7787
+  expected_folds: [0, 1, 2, 3, 4]
+  score_rows: full_500_row_unknown_suffix_windows_at_fixed_stride_centers
+  truth_attachment: after_window_score_eligibility_lambda_and_control_content_sha_freeze
+  leakage_policy:
+    - Window identities, relative shifts, GR profiles, score surfaces, eligibility, lambda, and controls are frozen before truth or error is joined.
+    - Unknown-suffix TVT, error, abs_error, oracle rank, and worst-well identity are forbidden from score generation.
+    - Saved exp280 Gaussian scores are mapped by each 500-row window center to the containing fixed 512-row block; partial block scores are never reconstructed.
+  stage_0_pass_requires_all:
+    required_score_finite_coverage: 1.0
+    required_row_identity_coverage: 1.0
+    required_control_rank_parity: 1.0
+    minimum_pooled_mrr_gain: 0.01
+    minimum_pooled_top3_gain: 0.01
+    minimum_improved_folds_mrr: 4
+    minimum_improved_folds_top3: 4
+    require_real_above_shuffle_all_folds: true
+    require_1000_plus_positive_direction: true
+    require_hidden_like_spatial_positive_direction: true
+    require_hidden_like_typewell_purged_positive_direction: true
+    minimum_eligible_window_fraction: 0.25
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  exp280_gaussian_control:
+    experiment: exp280_exp226_shift_likelihood_separability_readout
+    score_filename: exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+    score_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+      - /kaggle/input/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+      - /tmp/exp280-output-v1/artifacts/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz
+      - "**/exp280_exp226_shift_likelihood_separability_readout_target_free_shift_scores.csv.gz"
+    score_decompressed_sha256: c6e9e39a5fd3944f7516e68bdd6b9d27430a47f0bfbe3c50d39f5369791d99c3
+    score_content_sha256: 4a546cfe5f9291168bdb4dcb912182b079e0343af845f76005f6a7100ac3aa46
+    contract_filename: exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+    contract_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+      - /kaggle/input/exp280-exp226-shift-likelihood-readout-train/artifacts/exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+      - /tmp/exp280-output-v1/artifacts/exp280_exp226_shift_likelihood_separability_readout_score_contract.json
+      - "**/exp280_exp226_shift_likelihood_separability_readout_score_contract.json"
+    scientific_contract_sha256: 60d32ba96e0f71fc1f02f53d9e274e97d96516549ee27c87ea40bbb666af7978
+    block_rows: 512
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    safe_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    forbidden_score_columns: [tvt_pred, gr_delta, tvt_true, error, abs_error]
+    truth_columns: [well_id, row_idx, tvt_true]
+  exp281_oof:
+    expected_decompressed_sha256: 3a99b1d9604da27952ef029f56a9eec42c477f3d78d1fdf3763301df03867386
+    expected_content_sha256: d7f902b856a78bb040a2fa0cfe3ed94daad5caf26449459b40d0b150eb65e440
+    direct_rmse: 9.827419940583813
+  exp226_direct_rmse_ceiling: 9.427109596582213
+  hidden_like:
+    enabled: true
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+model:
+  name: exp226_sparse_window_likelihood_on_exp281
+  estimator: none_deterministic_diagnostic
+  window_potential:
+    source_algorithm: exp226_gr_correction_score_only
+    window_rows: 500
+    stride_rows: 125
+    shifts_ft: [-80.0, -40.0, -20.0, -10.0, -5.0, -2.0, 0.0, 2.0, 5.0, 10.0, 20.0, 40.0, 80.0]
+    profile_grid_step_ft: 0.5
+    minimum_finite_gr_fraction: 0.50
+    minimum_profile_bins: 7
+    minimum_relative_path_span_ft: 4.0
+    score_weights: {correlation: 2.0, mse: 0.5, level: 0.1}
+    correlation_transform: fisher_arctanh_clip_0p95
+    sigma_mode: exp226_affine_known_prefix_residual_std
+    sigma_clip: [5.0, 60.0]
+    normalization: subtract_state_mean_divide_state_std
+    state_std_floor: 0.000001
+    posterior_sd_source: fixed_13_shift_softmax_of_normalized_window_scores
+    lambda_formula: stride_over_window_times_clipped_one_point_one_minus_point_one_two_posterior_sd
+    lambda_clip: [0.3, 1.0]
+    overlap_normalization: stride_div_window
+    placement: fixed_stride_window_centers_only
+    ineligible_lambda: 0.0
+    typewell_out_of_range_policy: ineligible_candidate
+  stage_0:
+    active_variants: [fixed_sparse_exp226_window_potential]
+    active_variant_count: 1
+    gaussian_control: sha_pinned_saved_exp280_aggregate
+    control_alignment: window_center_to_containing_exp280_512_row_block
+    negative_control: stable_sha256_within_well_window_permutation
+  stage_1:
+    implemented: false
+    enabled_condition: stage_0_all_gates_pass_and_separate_user_approval
+    active_variants: [fixed_sparse_exp226_window_potential]
+    hmm_well_runs: 773
+    pass_requires_all:
+      minimum_rmse_gain_vs_exp281_ft: 0.05
+      minimum_improved_folds: 4
+      require_1000_plus_non_regression: true
+      require_hidden_like_spatial_non_regression: true
+      require_hidden_like_typewell_purged_non_regression: true
+      require_by_well_p95_non_regression: true
+      maximum_worst_well_regression_ft: 0.25
+      maximum_direct_rmse_for_promotion: 9.427109596582213
+  fixed_parent:
+    shape: exp226_tvt_geop
+    coordinate: residual_offset
+    relative_path: exp226_tvt_geop_within_window
+    row_gaussian_emission_transition_sigma_grid_momentum_prior_output: exact_exp281
+  forbidden:
+    - exp323_or_exp338_dependency
+    - exp305_or_exp343_input
+    - window_stride_score_or_lambda_grid
+    - dense_rowwise_factor
+    - transition_or_sigma_change
+    - exp226_delta_or_final_prediction
+    - prediction_blend
+
+audit:
+  output_prefix: exp359_exp226_window_likelihood_on_exp281
+  window_policy: full_windows_from_suffix_start_fixed_stride
+  score_aggregation: exp226_profile_correlation_mse_level
+  tie_policy: config_shift_bank_order
+  control_alignment: center_suffix_offset_integer_division_by_512
+  scopes:
+    long_tail_min_md_since_ft: 1000.0
+  coverage:
+    maximum_quantization_error_ft: 20.0
+  expected_artifacts:
+    - exp359_exp226_window_likelihood_on_exp281_score_contract.json
+    - exp359_exp226_window_likelihood_on_exp281_target_free_window_scores.csv.gz
+    - exp359_exp226_window_likelihood_on_exp281_window_readout.csv.gz
+    - exp359_exp226_window_likelihood_on_exp281_scope_metrics.csv
+    - exp359_exp226_window_likelihood_on_exp281_fold_metrics.csv
+    - exp359_exp226_window_likelihood_on_exp281_by_well_metrics.csv
+    - exp359_exp226_window_likelihood_on_exp281_well_manifest.csv
+    - exp359_exp226_window_likelihood_on_exp281_input_manifest.csv
+    - exp359_exp226_window_likelihood_on_exp281_gate.json
+    - exp359_exp226_window_likelihood_on_exp281_summary.json
+
+execution_contract:
+  stage_0:
+    scientific_scores: 1
+    saved_control_scores: 1
+    reporting_folds: 5
+    hmm_well_runs: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+  stage_1_if_pass:
+    scientific_variants: 1
+    hmm_well_runs: 773
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+  parent_control_retraining: false
+
+execution:
+  implementation_approved: true
+  implementation_approval_source: user_request_2026_07_25
+  kaggle_push_approved: true
+  kaggle_push_approval_source: user_request_2026_07_25_execute
+  active_stage: stage_0_completed_guard_failed_closed
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  numba_num_threads: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    train_run_on_push: false
+    train_kernel_id: kentookumura/exp359-exp226-window-likelihood-on-exp281-train
+    train_title: exp359 exp226 window likelihood on exp281 train
+    train_kernel_version: 1
+    train_kernel_id_no: 128528648
+    train_url: https://www.kaggle.com/code/kentookumura/exp359-exp226-window-likelihood-on-exp281-train
+    train_last_status: KernelWorkerStatus.COMPLETE
+    train_last_status_checked_at_utc: "2026-07-25 02:03:41 UTC"
+    stage_0_generated_at_utc: "2026-07-25T02:00:47.919160+00:00"
+    stage_0_runtime_seconds: 4523.211266517639
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp280-exp226-shift-likelihood-readout-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+outcome:
+  decision: stage_0_failed_close_without_rescue
+  guard_passed: false
+  stage_1_eligible: false
+  rows: 3783989
+  wells: 773
+  candidate_windows: 27561
+  eligible_windows: 10628
+  eligible_window_fraction: 0.38561735786074525
+  eligible_wells: 729
+  aligned_control_blocks: 7326
+  technical_control:
+    score_finite_coverage: 1.0
+    row_identity_coverage: 1.0
+    saved_control_rank_parity: 1.0
+    quantization_coverage: 1.0
+    real_above_shuffle_folds: 5
+  window_posterior:
+    mean_sd_ft: 26.5115837579042
+    mean_lambda: 0.075
+    lambda_minimum: 0.075
+    lambda_maximum: 0.075
+    lambda_unique_count: 1
+  overall:
+    window_mrr: 0.37290353083540895
+    control_mrr: 0.3951676655736686
+    window_minus_control_mrr: -0.022264134738259667
+    window_top3_rate: 0.4144712081294693
+    control_top3_rate: 0.44796763266842304
+    window_minus_control_top3_rate: -0.03349642453895374
+    window_minus_shuffle_mrr: 0.12463593128111386
+    window_minus_shuffle_top3_rate: 0.18046669175762137
+  improved_folds: {mrr: 0, top3: 0}
+  scope_window_minus_control_mrr:
+    long_tail_1000_plus: -0.015922152104981047
+    hidden_like_spatial: -0.018404308583851614
+    hidden_like_typewell_purged: -0.017773923002681158
+  scope_window_minus_control_top3_rate:
+    long_tail_1000_plus: -0.02483014206300188
+    hidden_like_spatial: -0.019949220166848025
+    hidden_like_typewell_purged: -0.015250544662309351
+  execution_counts:
+    scientific_scores: 1
+    saved_control_scores: 1
+    reporting_folds: 5
+    hmm_well_runs: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+    parent_control_reruns: 0
+  reproducibility:
+    scientific_contract_sha256: 43aa952498f2fd1474bcca8c7bf651a854b2fc6f671384936ab67c795afd671a
+    target_free_score_content_sha256: 8a4c5623c5836a734dcd6bd44ff5b214546afaa7316ae1fdb882f0ce6f344c4a
+    window_readout_content_sha256: 617cfd7ee7239f6df71a6effbf50f8fc1fcf10943ffed495385aef81520dd1d9
+    gate_file_sha256: 956d194661828ab9766f9d632288130579c39df2e9b1fe8d3cb287bd9b1a9d05
+    fold_metrics_file_sha256: 5f3eaa7aee9bab139a21988701a56985a73171647e4520e151902fb2ad747f2e
+    scope_metrics_file_sha256: 4f29d2e6c61835767fd9957523b1df52449b30a0f1e81df024b7dbaedb412b30
+    summary_file_sha256: 99d9eec7e00773c685dda07997f45742e041399f5f0386b74b545b5cde0c1964
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_real_scores_stable_sha256_negative_control_permutation
+  stochastic_components:
+    - deterministic_negative_control_permutation_only
+  parallel_rng_policy: single_process_local_rng_per_well_window_no_global_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+
+inference:
+  enabled: false
+  mode: disabled_stage_0_rank_audit_only
+  create_submission: false
+
+notes:
+  - Stage 0 implementation, canonical train adoption, and one private Kaggle CPU run completed on 2026-07-25.
+  - Stage 0 failed the frozen scientific gate and the branch is closed without Stage 1, inference, or submission.
+  - The canonical inference notebook remains a placeholder and the compact inference candidate remains fail-closed.
+  - Exp305 and exp343 are negative references only and cannot be inputs or rescue grids.
+  - Exp281 failed promotion, so Stage 1 has an additional exp226 direct-RMSE ceiling.

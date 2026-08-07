@@ -1,0 +1,102 @@
+{
+  "experiment": "exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout",
+  "status": "kaggle_cpu_v2_completed_scientific_guard_failed",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "candidate_recall_and_future_branch_separability",
+  "design": {
+    "max_alternative_branches": 3,
+    "primary_horizon_rows": 256,
+    "diagnostic_horizons_rows": [128, 512],
+    "active_variants": 1,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "hmm_regenerations": 0,
+    "pf_regenerations": 0
+  },
+  "implementation": {
+    "train_source_lines": 2291,
+    "train_notebook_cells": 23,
+    "inference_source_lines": 105,
+    "inference_notebook_cells": 8,
+    "exp283_tests_passed": 8,
+    "ruff": "passed",
+    "py_compile": "passed",
+    "jupytext_roundtrip": "passed",
+    "strict_validate_exp": "passed"
+  },
+  "run": {
+    "kernel_id": "kentookumura/exp283-self-gr-topk-future-evidence-readout-train",
+    "kernel_id_no": 127849798,
+    "kernel_version": 2,
+    "machine": "CPU",
+    "internet": false,
+    "runtime_seconds": 1331.4081461429596,
+    "canonical_rows": 3783989,
+    "canonical_wells": 773,
+    "events": 4397,
+    "proposals": 13191,
+    "evidence_rows": 103624,
+    "technical_passed": true,
+    "scientific_passed": false,
+    "proposal": {
+      "top3_within10": 0.7552876961564703,
+      "shuffled_top3_within10": 0.7220832385717535,
+      "top3_within10_lift_vs_shuffled": 0.033204457584716796,
+      "positive_lift_folds": 5,
+      "mrr_within10": 0.5958987188234401,
+      "shuffled_mrr_within10": 0.5770601167462663
+    },
+    "verifier": {
+      "branch_choice_auc": 0.6221683869352767,
+      "fold_aucs": [
+        0.6139382828916193,
+        0.6380572188955422,
+        0.6052655557173525,
+        0.6131392943767391,
+        0.6387425653429293
+      ],
+      "base_rmse_h256": 8.221612996641252,
+      "selected_rmse_h256": 14.606586214573555,
+      "selected_rmse_gain_ft": -6.384973217932304,
+      "selected_gain_by_fold_ft": [
+        -8.096628474429828,
+        -6.502113415065796,
+        -5.571779714073237,
+        -5.966413597281035,
+        -5.893710647752268
+      ],
+      "nonregressing_folds": 0,
+      "shuffled_selected_rmse_h256": 14.369927793549069,
+      "oracle_best_rmse_h256": 6.5471822780574405,
+      "base_unique_best_events": 2435,
+      "base_unique_best_false_switch_rate": 0.55564681724846
+    },
+    "scopes": {
+      "hidden_like_spatial_gain_ft": -7.174193906465307,
+      "hidden_like_typewell_purged_gain_ft": -7.125766486602259,
+      "longtail_1000_plus_gain_ft": -5.883771309576549
+    },
+    "by_well": {
+      "event_wells": 768,
+      "positive_gain_wells": 108,
+      "zero_gain_wells": 23,
+      "negative_gain_wells": 637,
+      "median_gain_ft": -3.511736637776587,
+      "worst_well": "af7a59ce",
+      "worst_well_gain_ft": -48.60153775463421
+    },
+    "freeze": {
+      "truth_attachment_before_freeze": 0,
+      "event_content_sha256": "e4e5c1595398bbe0e3c89916abd5ea0ec89e036b51963ff6ca6ef607569fbbed",
+      "proposal_content_sha256": "2d1d38ac956ef960642eb1b796283782ccf5d1047b91f960d34b3973784ac31d",
+      "evidence_content_sha256": "61e261ad14527220614ebcbaedfb6a43031f02ab9717635d6069112e4bba8455"
+    },
+    "summary_sha256": "8de2db0b5d73f31fc66171893f3355db267376ff39392050ca880ac2bf82fe99",
+    "decision": "close_without_rescue_grid_or_decoder_connection"
+  },
+  "notes": "Technical execution is trustworthy. Proposal recall and pairwise AUC passed, but fixed evidence-based selection catastrophically regressed RMSE and false-switch safety, so the branch is closed without inference or submission."
+}

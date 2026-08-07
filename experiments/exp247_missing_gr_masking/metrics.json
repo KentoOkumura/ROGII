@@ -1,0 +1,119 @@
+{
+  "experiment": "exp247_missing_gr_masking",
+  "status": "completed_rejected",
+  "decision": "reject_uniform_missing_gr_mask_close_branch",
+  "cv": 8.322894657994638,
+  "control_cv": 8.327728213107555,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "kaggle": {
+    "kernel": "kentookumura/exp247-missing-gr-masking-train",
+    "version": 1,
+    "id_no": 127064272,
+    "status": "COMPLETE"
+  },
+  "runtime": {
+    "seconds": 11409.172,
+    "processed_wells": 773,
+    "processed_rows": 3783989,
+    "active_variant_count": 1,
+    "lightgbm_config_count": 0,
+    "fold_training_count": 0,
+    "booster_count": 0,
+    "parent_control_retraining": false,
+    "gpu": false,
+    "internet": false,
+    "outer_workers": 2,
+    "numba_threads": 2
+  },
+  "primary_metrics": {
+    "overall": {
+      "control_rmse": 8.327728213107555,
+      "mask_rmse": 8.322894657994638,
+      "delta_rmse_mask_minus_control": -0.004833555112917054,
+      "delta_mae_mask_minus_control": 0.04273193779021334,
+      "delta_within10_mask_minus_control": 0.00022066660341768518
+    },
+    "raw_gr_missing": {
+      "rows": 1200837,
+      "control_rmse": 8.258335070448139,
+      "mask_rmse": 8.253294361720876,
+      "delta_rmse_mask_minus_control": -0.00504070872726281,
+      "delta_mae_mask_minus_control": 0.0662779846799042,
+      "delta_within10_mask_minus_control": 0.0004929894731757756
+    },
+    "missing_run_1_31": {
+      "rows": 1198183,
+      "control_rmse": 8.255837996437247,
+      "mask_rmse": 8.251989132642347,
+      "delta_rmse_mask_minus_control": -0.003848863794900126,
+      "delta_mae_mask_minus_control": 0.06717689553813155,
+      "delta_within10_mask_minus_control": 0.00039643359987584503
+    },
+    "post_gap_1_128_delta_rmse": -0.004778530661946334,
+    "post_gap_129_256_delta_rmse": -0.0018156258212345122,
+    "post_gap_257_plus_delta_rmse": 0.004187494790716784,
+    "distance_1000_plus_delta_rmse": -0.00632832978609521,
+    "prediction_changed_rows": 3782870,
+    "prediction_changed_wells": 773,
+    "divergence_segments": 1797,
+    "longest_divergence_segment_rows": 10052
+  },
+  "hidden_like": {
+    "verification_like_spatial": {
+      "rows": 972463,
+      "control_rmse": 9.572230856047295,
+      "mask_rmse": 9.578192456170195,
+      "delta_rmse_mask_minus_control": 0.005961600122899924,
+      "delta_mae_mask_minus_control": 0.04740661467486351,
+      "delta_within10_mask_minus_control": -0.0015959476093178049
+    },
+    "verification_like_typewell_purged": {
+      "rows": 976449,
+      "control_rmse": 9.54537524894512,
+      "mask_rmse": 9.54050581365668,
+      "delta_rmse_mask_minus_control": -0.004869435288441082,
+      "delta_mae_mask_minus_control": 0.040814350799106336,
+      "delta_within10_mask_minus_control": -0.0009370689098969764
+    }
+  },
+  "by_well": {
+    "improved": 386,
+    "worsened": 387,
+    "equal": 0,
+    "median_delta_rmse": 0.00006358355039104424,
+    "worst_well": "c66be2b8",
+    "worst_well_delta_rmse": 2.5769806442305754,
+    "worst_well_delta_mae": 2.030790328222791,
+    "worst_well_longest_missing_run": 8
+  },
+  "finite_coverage": {
+    "control_prediction_rows": 3783989,
+    "control_std_rows": 3783989,
+    "control_finite_wells": 773,
+    "mask_prediction_rows": 3783989,
+    "mask_std_rows": 3783989,
+    "mask_finite_wells": 773
+  },
+  "input_sha256": {
+    "config": "ff459e3aa20dee883a37d3f488148ac5b675c77c8b847a6f08899316c094fcc2",
+    "control_cache_raw": "8027ac8840d1048cfbda8377bcbae6a9b47b50ad7765da38eebb7f1df57d0a54",
+    "control_cache_decompressed": "ceca23fbd6b2f85a4e2d7e351f6922de41dd244f8eff2a03c282aed742dcd2b8",
+    "lgb_oof_source_raw": "12f2980972c19ef72a88b198efa0f5329ee3614a21b269f1bebc5a37b3ac21b5",
+    "hidden_like_assignment": "5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597",
+    "raw_file_inventory": "2e805509d70da0bf7c9e26d74d46ceb6690b9fc20c50cf07928dc2614fb68f88"
+  },
+  "post_run_local_config_sha256": "66f4a070a2465fca93cf1160d97b950195356058a63773b19c7d38e3ecd088b8",
+  "output_sha256": {
+    "prediction_raw": "626c903d89c85b58b823254a3069b8c86bc6d32dbf490bf3945ded0a2b9d2a81",
+    "prediction_decompressed": "a3ac4983c52d77cb324c981bca072e8a8aef86d8efbd8c23e0cc0271eef4f339",
+    "row_audit_raw": "da171cff90a91a91e3b3e520756b8e392405726052e5e9f70d20629d1609f3c0",
+    "row_audit_decompressed": "1a7a706c053a7b5105e8559862b8e407315d7ac651910bfdaab6808c990fc421",
+    "group_metrics": "ca04f0c82721f78ba35c03b41c3e4cfc4868815981215bc9efb9d1814efaea3b",
+    "by_well": "04d8c2e8dc9aa19d8c7094353fb3fc3c9e9191b2ae26cae914ea4ae3a3078e86",
+    "finite_coverage": "7f0cf11e8c407c7b232690fc4a69194835c8d48ae0c69b8586f2c5b71024a9e5",
+    "divergence_segments": "f24d1e376319c099f9ff5020a4faae4db9d8d78aafba3544369da76a92d36553"
+  },
+  "notes": "Kaggle CPU v1 completed. Tiny and inconsistent RMSE gains were outweighed by MAE, hidden-like spatial, and worst-well regressions. Uniform masking and run-length-gated follow-ups are closed; no inference or submission was produced. Unquoted YAML bucket labels were numericized in artifact display only; edges and row assignments were unaffected."
+}

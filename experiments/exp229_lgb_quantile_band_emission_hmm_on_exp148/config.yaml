@@ -1,0 +1,372 @@
+experiment:
+  name: "exp229_lgb_quantile_band_emission_hmm_on_exp148"
+  description: Use LightGBM quantile bands from the exp148 feature surface as row-wise HMM emission uncertainty instead of exp221 fixed sigma.
+  route: ensemble
+  status: completed_train_side_rejected_no_inference_no_submit
+  created_at: "2026-07-09"
+  updated_at: "2026-07-12"
+
+lineage:
+  parent: lgb_quantile_band_emission_hmm_on_exp148 backlog
+  references:
+    - exp148_learned_likelihood_fulltrain_addonly_on_exp092
+    - exp193_typewell_late_interval_context_features_addonly_on_exp148
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+    - exp218_gr_wavelet_rotation_confidence_features_on_exp148
+    - KAGGLE_DIRECTION.md lgb_quantile_band_emission_hmm_on_exp148
+  implementation_source:
+    - quantile_lgb_train.py
+    - exact_hmm_smoother.py
+    - quantile_band_hmm_audit.py
+  diff_summary: >
+    Splits the backlog into two Kaggle notebooks. The train notebook fits
+    exp148-surface LightGBM quantile models for q16/q50/q84 and writes a
+    corrected quantile band with row-wise sigma. The train_aggregate notebook
+    injects q50 as the HMM Gaussian center and the clipped quantile-band sigma
+    as per-row emission uncertainty, then reuses the exp221 readout against
+    exp148, exp193, exp072 likPF, hidden-like buckets, by-well regressions, and
+    step-delta smoothness.
+
+validation:
+  strategy: groupkfold_by_well_exp148_quantile_oof_then_train_side_hmm_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  success_criteria:
+    - Quantile q50 OOF should be competitive enough that HMM improvements are interpretable versus exp148 lgb_mean.
+    - Quantile-band HMM should improve or at least not materially regress versus exp221 fixed-sigma HMM overall.
+    - Near rows, 1000_plus, exp115 hidden-like subgroups, and mid buckets should not show material regression.
+    - Worst-well regression versus exp148 and exp221 must be checked before any inference port.
+    - Quantile crossing, sigma floor/cap rates, and band coverage must be recorded.
+  leakage_policy:
+    - Quantile LightGBM uses GroupKFold by well and only OOF predictions for HMM train-side audit.
+    - Quantile band width is computed from model predictions only; true TVT is used only for readout metrics.
+    - Parent/control exp148 or exp193 boosters are not retrained in this experiment.
+    - HMM lambda and sigma floor/cap are fixed config grids, not row-wise label-tuned values.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  learned_likelihood_rawtest_feature_schema_local: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/kaggle/output/inference_v3/artifacts/exp145_learned_likelihood_rawtest_feature_generator_parity_feature_schema.csv
+  learned_likelihood_rawtest_summary_local: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/kaggle/output/inference_v3/artifacts/exp145_learned_likelihood_rawtest_feature_generator_parity_summary.json
+  exp099_artifact_dir_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp111_artifact_dir_local: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts
+  exp111_feature_schema: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_feature_schema.csv
+  exp111_model_manifest: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_model_manifest.json
+  exp112_artifact_dir_local: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts
+  exp112_feature_schema: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+
+model:
+  name: lgb_quantile_band_emission_hmm
+  estimator: lightgbm_quantile_plus_exact_hmm
+  target: target
+  base_prediction: last_known_tvt
+  lgb_config_family: exp063_public_pixiux_lgb0_lgb1_lgb2
+  u_projection:
+    anchor_definition: local_prefix_u0_equals_T0_plus_Z0
+    degree: 3
+    robust_iters: 3
+    clip_sigma: 4.0
+    include_lgb_oof_features: false
+    sources:
+      pf_ancc:
+        value_column: pf_ancc
+        enabled: true
+      pf_z:
+        value_column: pf_z
+        enabled: true
+      beam_mean:
+        delta_column: beam_mean_d
+        enabled: true
+      beam_med:
+        delta_column: beam_med_d
+        enabled: true
+      likpf_mean:
+        delta_column: likpf_mean_d
+        enabled: true
+  learned_likelihood_features:
+    prefix: ll_
+    direct_columns:
+      - learned_prob_top1_index
+      - learned_error_top1_index
+      - learned_prob_top1_value
+      - learned_prob_top2_value
+      - learned_prob_margin_top1_top2
+      - learned_prob_entropy
+      - learned_error_top1_value
+      - learned_error_top2_value
+      - learned_error_margin_top2_top1
+      - learned_prob_likpf_rank
+      - learned_error_likpf_rank
+      - learned_prob_top3_contains_likpf
+      - learned_error_top3_contains_likpf
+      - candidate_tvt_std
+      - candidate_tvt_range
+      - learned_prob_pf_ancc
+      - learned_pred_abs_error_pf_ancc
+      - multiobs_score_pf_ancc
+      - multiobs_mae_pf_ancc
+      - multiobs_ncc_pf_ancc
+      - learned_prob_beam_mean
+      - learned_pred_abs_error_beam_mean
+      - multiobs_score_beam_mean
+      - multiobs_mae_beam_mean
+      - multiobs_ncc_beam_mean
+      - learned_prob_likpf_mean
+      - learned_pred_abs_error_likpf_mean
+      - multiobs_score_likpf_mean
+      - multiobs_mae_likpf_mean
+      - multiobs_ncc_likpf_mean
+      - learned_prob_sc_ens
+      - learned_pred_abs_error_sc_ens
+      - multiobs_score_sc_ens
+      - multiobs_mae_sc_ens
+      - multiobs_ncc_sc_ens
+      - learned_prob_hyb
+      - learned_pred_abs_error_hyb
+      - multiobs_score_hyb
+      - multiobs_mae_hyb
+      - multiobs_ncc_hyb
+    candidate_tvt_columns:
+      - candidate_tvt_pf_ancc
+      - candidate_tvt_beam_mean
+      - candidate_tvt_likpf_mean
+      - candidate_tvt_sc_ens
+      - candidate_tvt_hyb
+    weighted_tvt_columns:
+      - learned_prob_weighted_tvt
+      - learned_error_weighted_tvt
+  feature_ablation:
+    active_variants:
+      - name: exp148_quantile_surface
+        enabled: true
+        description: exp148 learned-likelihood add-only surface used for q16/q50/q84 quantile residual models.
+        feature_groups:
+          - projection_correction
+          - u_disagreement
+          - learned_likelihood_confidence
+  training:
+    active_modes:
+      - gpu_quantile_lgb1_q16_q50_q84
+    modes:
+      gpu_quantile_lgb1_q16_q50_q84:
+        description: Single exp063-family lgb1 config trained for q16/q50/q84, 5 folds, 15 boosters.
+        use_gpu: true
+        selected_config_indices:
+          - 1
+        early_stopping_rounds: 250
+        common_overrides:
+          deterministic: true
+          force_col_wise: true
+          gpu_use_dp: true
+          num_threads: 8
+  quantile_lgb:
+    alphas:
+      - 0.16
+      - 0.50
+      - 0.84
+    low_alpha: 0.16
+    mid_alpha: 0.50
+    high_alpha: 0.84
+    band_to_sigma_divisor: 2.0
+    sigma_floor: 6.0
+    sigma_cap: 30.0
+    max_train_rows: null
+    save_models: true
+    save_predictions: true
+    top_n_importance: 50
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+  notes:
+    - The quantile train notebook produces q16/q50/q84 OOF and saved boosters.
+    - The train_aggregate notebook uses only q_mid_tvt and sigma_tvt from the OOF band for HMM train-side audit.
+
+lgb_emission:
+  enabled: true
+  active_sources:
+    - exp229_quantile_band
+  lambda_grid:
+    - 0.25
+  sigma_floor_grid:
+    - 6.0
+  sigma_cap_grid:
+    - 30.0
+  emission_clip: 600.0
+  max_variants: 1
+  timeout_recovery:
+    source_kernel_version: 2
+    reason: >
+      The three-lambda CPU audit reached only 652 completed wells (654 started)
+      near the Kaggle 12-hour limit, so no final cache or comparison artifact
+      was written.
+    partial_well_count: 652
+    selected_variant: hmm_lgb_exp229_quantile_band_band_sf0600_sc3000_l0250
+    rationale: >
+      Lambda 0.25 had the lowest partial mean well RMSE (6.316158) and was
+      best on 358 of 652 completed wells, ahead of lambda 0.50 (6.355612,
+      91 wells) and lambda 1.00 (6.385539, 203 wells).
+  deferred_lambda_grid:
+    - 0.50
+    - 1.00
+  sources:
+    exp229_quantile_band:
+      description: exp229 q16/q50/q84 corrected quantile band; q50 is center and sigma_tvt is row-wise emission sigma.
+      id_column: id
+      prediction_column: q_mid_tvt
+      sigma_column: sigma_tvt
+      candidates:
+        - /kaggle/input/notebooks/kentookumura/exp229-lgb-quantile-band-exp148-train/artifacts/exp229_lgb_quantile_band_emission_hmm_on_exp148_quantile_predictions.csv.gz
+        - /kaggle/input/exp229-lgb-quantile-band-exp148-train/artifacts/exp229_lgb_quantile_band_emission_hmm_on_exp148_quantile_predictions.csv.gz
+        - experiments/exp229_lgb_quantile_band_emission_hmm_on_exp148/artifacts/exp229_lgb_quantile_band_emission_hmm_on_exp148_quantile_predictions.csv.gz
+    exp148_lgb_mean:
+      description: exp148 GPU train v1 lgb_mean OOF prediction.
+      id_column: id
+      prediction_column: null
+      model_filter: lgb_mean
+      candidates:
+        - /kaggle/input/notebooks/kentookumura/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+        - /kaggle/input/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+        - /tmp/kaggle-output/exp148_train_v1/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+        - experiments/exp148_learned_likelihood_fulltrain_addonly_on_exp092/artifacts/viewer/exp148_lgb_mean_oof_viewer.csv
+    exp193_lgb_mean:
+      description: exp193 typewell late interval context add-only lgb_mean OOF prediction.
+      id_column: id
+      prediction_column: pred_tvt
+      model_filter: lgb_mean
+      candidates:
+        - /kaggle/input/notebooks/kentookumura/exp193-typewell-late-context-exp148-train/artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_predictions.csv.gz
+        - /kaggle/input/exp193-typewell-late-context-exp148-train/artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_predictions.csv.gz
+        - experiments/exp193_typewell_late_interval_context_features_addonly_on_exp148/kaggle/output/train_v1/artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_predictions.csv.gz
+
+feature_cache:
+  exp072:
+    variant: pixiux_likpf_public_replay
+    deterministic_pf: true
+    seed_policy: stable_sha256_per_well
+    output_prefix: exp063_full_replay_feature_cache
+    n_jobs: 8
+    pf_seeds: 128
+    pf_particles: 500
+    fast: false
+    max_wells: null
+    keep_frame_for_comparison: false
+  hmm:
+    variant: lgb_quantile_band_emission_hmm
+    output_prefix: exp229_lgb_quantile_band_emission_hmm_on_exp148
+    expected_feature_count: 7
+    fast: false
+    max_wells: null
+    outer_workers: 2
+    expected_artifacts:
+      - exp229_lgb_quantile_band_emission_hmm_on_exp148_lgb_quantile_band_emission_hmm_train_features.csv.gz
+      - exp229_lgb_quantile_band_emission_hmm_on_exp148_feature_schema.csv
+      - exp229_lgb_quantile_band_emission_hmm_on_exp148_by_well_generation_summary.csv
+      - exp229_lgb_quantile_band_emission_hmm_on_exp148_summary.json
+
+comparison:
+  output_prefix: exp229_lgb_quantile_band_hmm
+  baseline_feature_cache:
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /tmp/kaggle-output/exp072_train_v2/artifacts/exp063_full_replay_feature_cache_train_features.csv.gz
+    - experiments/exp072_exp063_full_replay_feature_cache/kaggle/output/train_v2/artifacts/exp063_full_replay_feature_cache_train_features.csv.gz
+  hmm_feature_cache:
+    - /kaggle/working/artifacts/exp229_lgb_quantile_band_emission_hmm_on_exp148_lgb_quantile_band_emission_hmm_train_features.csv.gz
+    - experiments/exp229_lgb_quantile_band_emission_hmm_on_exp148/artifacts/exp229_lgb_quantile_band_emission_hmm_on_exp148_lgb_quantile_band_emission_hmm_train_features.csv.gz
+  baseline_candidate_columns:
+    - likpf_mean
+  lgb_baseline_sources:
+    - exp148_lgb_mean
+    - exp193_lgb_mean
+    - exp229_quantile_band
+  primary_baselines:
+    - exp148_lgb_mean
+    - exp193_lgb_mean
+  uncertainty_bins: 10
+  step_delta_thresholds:
+    - 5.0
+    - 10.0
+    - 25.0
+  write_enriched_cache: false
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+
+runtime:
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    machine_shape: NvidiaTeslaT4
+    train_aggregate:
+      enable_gpu: false
+      machine_shape: None
+    train_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp145-train
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp112-learned-pf-likelihood-followup-train
+    train_aggregate_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp148-train
+      - kentookumura/exp193-typewell-late-context-exp148-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp229-lgb-quantile-band-exp148-train
+    inference_kernel_sources: []
+    copy_repository_src: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_groupkfold_seed_for_quantile_subsample; HMM no RNG
+  stochastic_components:
+    - LightGBM GPU training
+  parallel_rng_policy: HMM has no RNG; LightGBM uses fixed config seeds; optional train-row subsampling uses local default_rng(42)
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - docs/06_reproducibility.md checked on 2026-07-09.
+    - This is not a deterministic submission anchor until inference is implemented and rerun evidence exists.
+
+notes:
+  - Initial push guard for quantile train is 1 active variant x 1 LightGBM config x 3 quantiles x 5 folds = 15 boosters.
+  - No parent/control retraining is included.
+  - HMM audit is CPU-only logic but depends on the quantile train output dataset.
+  - HMM timeout recovery runs lambda=0.25 only; lambda=0.50/1.00 are deferred to separate runs.

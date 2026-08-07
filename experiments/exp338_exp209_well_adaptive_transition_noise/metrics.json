@@ -1,0 +1,159 @@
+{
+  "experiment": "exp338_exp209_well_adaptive_transition_noise",
+  "status": "train_side_adaptive_sig_r_gate_failed_closed",
+  "updated_at": "2026-07-23",
+  "route": "pf_beam",
+  "cv": 14.062348052437676,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "parent": "exp209_exp072_exp205_joint_exact_parity_fast_cache_generation",
+  "formula_reference": "exp309_well_adaptive_transition_noise",
+  "execution": {
+    "scientific_variants": 1,
+    "hmm_well_runs": 773,
+    "rows": 3783989,
+    "wells": 773,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "pf_well_runs": 0,
+    "beam_well_runs": 0,
+    "boosters": 0,
+    "parent_control_retraining": 0,
+    "runtime_seconds": 11376.512313604355,
+    "prediction_frozen_at_seconds": 11276.093342065811
+  },
+  "overall": {
+    "direct": {
+      "candidate_rmse": 14.062348052437676,
+      "control_rmse": 11.938287234887435,
+      "delta_rmse_candidate_minus_control": 2.124060817550241,
+      "improvement_ft": -2.124060817550241,
+      "folds_improved": 0,
+      "fold_deltas": [
+        3.7389005586326736,
+        1.4294822943913381,
+        2.866298472404079,
+        0.14895168803790604,
+        2.4543919004648433
+      ]
+    },
+    "fixed_likpf_50_50": {
+      "candidate_rmse": 11.184021746721717,
+      "control_rmse": 10.269692505026358,
+      "delta_rmse_candidate_minus_control": 0.9143292416953592
+    }
+  },
+  "required_scopes": {
+    "md_since_1000_plus_delta": 2.3773986647535725,
+    "hidden_like_spatial_delta": 3.278598240816672,
+    "hidden_like_typewell_purged_delta": 3.362722713313005,
+    "by_well_candidate_rmse_p95": 30.215993485792644,
+    "by_well_control_rmse_p95": 25.425746549947814,
+    "by_well_rmse_p95_delta": 4.790246935844831,
+    "worst_well_id": "a645da9a",
+    "worst_well_rmse_delta": 54.81883754730505
+  },
+  "promotion_gate": {
+    "passed": false,
+    "decision": "adaptive_sig_r_failed_close_without_rescue",
+    "failure_action": "close_without_sig_r_grid_shrinkage_change_sig_p_momentum_rate_grid_pf_beam_inference_or_submission",
+    "primary_direct_gate_passed": false,
+    "fixed_likpf_50_50_guard_passed": false,
+    "technical_gate_passed": false
+  },
+  "technical": {
+    "input_preflight_passed": true,
+    "parent_dependency_gate_passed": true,
+    "baseline_metric_parity_passed": true,
+    "finite_coverage": 1.0,
+    "audit_finite_coverage": 1.0,
+    "id_mismatches": 0,
+    "posterior_normalization_max_abs_error": 3.774758283725532e-15,
+    "sig_r_fallback_fraction": 0.0,
+    "sig_r_total_clip_fraction": 1.0,
+    "sig_r_final_value_all_wells": 0.004,
+    "maximum_total_clip_fraction": 0.5,
+    "baseline_metric_parity": {
+      "exp209_raw_hmm": {
+        "actual": 11.938287234887435,
+        "expected": 11.9382872349,
+        "absolute_difference": 1.2565948281917372e-11,
+        "passed": true
+      },
+      "exp209_likpf": {
+        "actual": 11.594894395642696,
+        "expected": 11.5948976722,
+        "absolute_difference": 3.276557304587868e-06,
+        "passed": true
+      },
+      "exp209_hmm_likpf_50_50": {
+        "actual": 10.269692505026358,
+        "expected": 10.2696961466,
+        "absolute_difference": 3.6415736417438893e-06,
+        "passed": true
+      }
+    }
+  },
+  "sha256": {
+    "scientific_contract": "4d21c3f89a190833b1c201bfc9f3867c638943e4f1ec99f6a2a9d101ec7c6760",
+    "scientific_contract_file_raw": "5c2837779b3fa72b5bbb9f68280972653a574e4f0a22bd6a772fe75412b9d302",
+    "input_control_manifest_raw": "99e12e4f0c2099e687fad5eba63f1fe43e04cc624effa37d877304e3ebdfc131",
+    "prediction_content": "bf426bcf5b0452004ca0a3d6626c1f7e476f005740a8a283b1f035e782286838",
+    "prediction_raw_gzip": "0177e2a738309b97cdc170c2851b36422b7752108b4adedb37240a85f6225e08",
+    "transition_audit_content": "eaa3956f62b7ca592e97ac9175f4a2ad2c18c4772068a8cd4713318686d19aca",
+    "transition_audit_raw_gzip": "51e67534e70f5d8d2eb80d755c786452466b7e72ba8caf72ff114fac9e1bd53c",
+    "promotion_gate_raw": "5e99d8298be9bc3643a1f03864de29c639b3791d497e1f34c451c3b0c482d2cd",
+    "overall_fold_scope_metrics_raw": "c7c92a13dea24f307b058c258a97951f98c91d7e56547b20f1424c5fcca0d51d",
+    "diagnostic_scope_metrics_raw": "1735510892bede583def664f97cbd98f27651f6bc430e8280a21a0f577cc1123",
+    "by_well_metrics_raw": "24dc1632bbfdfa8441f7b8c42a059600f7340d83bed5a6b2e494742007db82f5",
+    "runtime_raw": "5461fb0d94faca9ffbf1f59cca0b17377f9242f9240da7a379bea89ac0369b28"
+  },
+  "static_validation": {
+    "dedicated_tests": 12,
+    "dedicated_tests_passed": 12,
+    "exp209_synthetic_posterior_parity_atol": 1e-10,
+    "jupytext_test_passed": true,
+    "py_compile_passed": true,
+    "ruff_f821_passed": true,
+    "strict_experiment_validation_passed": true,
+    "template_validation_passed": true
+  },
+  "kaggle": {
+    "kernel_id": "kentookumura/exp338-exp209-well-adaptive-transition-noise-train",
+    "kernel_version": 3,
+    "kernel_id_no": 128226900,
+    "status": "complete",
+    "generated_at_utc": "2026-07-23T00:40:27.171017+00:00",
+    "enable_gpu": false,
+    "enable_internet": false,
+    "run_history": {
+      "version_1": {
+        "status": "error",
+        "hmm_well_runs_completed": 0,
+        "cause": "expected locally augmented flat exp209 metrics keys in raw Kaggle metrics"
+      },
+      "version_2": {
+        "status": "error",
+        "hmm_well_runs_completed": 773,
+        "error_elapsed_seconds": 19666.731,
+        "cause": "late role contract rejected exp115 purged_train_excluded"
+      },
+      "version_3": {
+        "status": "complete",
+        "hmm_well_runs_completed": 773,
+        "runtime_seconds": 11376.512313604355,
+        "promotion_gate_passed": false
+      }
+    }
+  },
+  "successor_policy": {
+    "on_fail": "close_without_successor",
+    "result": "satisfied_version_3_gate_failed",
+    "never_reopen": ["exp323", "exp324", "exp325", "exp326", "exp327", "exp328"],
+    "exp328_revalidation": "exp345_exp209_time_varying_gr_affine_calibration_hmm is independent and unaffected"
+  },
+  "inference_approved": false,
+  "submission_approved": false,
+  "notes": "Version 3 completed, but all scientific gates and the clip-fraction technical gate failed. All wells mapped to sig_r=0.004, so the branch is closed without rescue, inference, submission, or successor creation."
+}

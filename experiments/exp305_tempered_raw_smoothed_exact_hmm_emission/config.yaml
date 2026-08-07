@@ -1,0 +1,231 @@
+experiment:
+  name: exp305_tempered_raw_smoothed_exact_hmm_emission
+  description: >-
+    Design-frozen train-side exact-HMM audit that weakly tempers the raw GR
+    emission with the exp304-selected stationary db4 level-3 SWT emission and
+    evaluates the posterior mean plus a fixed saved-likPF 50/50 blend.
+  route: pf_beam
+  status: train_side_tempered_exact_hmm_gate_failed_closed
+  created_at: "2026-07-21"
+  updated_at: "2026-07-21"
+
+lineage:
+  parent: exp304_gr_denoiser_emission_separability_readout
+  methodology_parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  hidden_like_reference: exp115_hidden_like_spatial_holdout_from_ppt
+  reserved_contract: ../exp304_gr_denoiser_emission_separability_readout/reserved_followup_contract.md
+  steering: ../../.steering/20260721-exp305-tempered-raw-smoothed-exact-hmm-emission
+  diff_summary: >-
+    Keeps the exp304-selected SWT series and the exp209 state grid, transition,
+    prior, known-prefix raw sigma, missing policy, and posterior-mean decoder
+    fixed. The only scientific change is ell_beta = 0.85 * ell_raw + 0.15 *
+    ell_swt. Saved raw-HMM, likPF, and raw-HMM/likPF controls are not rerun.
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.score_rows
+
+validation:
+  strategy: train_side_fixed_control_tempered_exact_hmm_paired_readout
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  truth_attachment: after_tempered_prediction_and_content_sha_are_frozen
+  fold_improvement_minimum: 4
+  leakage_policy:
+    - Horizontal true TVT, error, abs_error, and formation are unavailable during HMM generation.
+    - True TVT and diagnostic scopes are joined only after prediction content SHA is frozen.
+    - No raw-test prediction, inference, selector, oracle gate, or submission is generated.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp304_selected_series:
+    kernel_source: kentookumura/exp304-gr-denoiser-separability-train
+    kernel_version: 1
+    filename: exp304_gr_denoiser_emission_separability_readout_denoised_gr_series.csv.gz
+    manifest_filename: exp304_gr_denoiser_emission_separability_readout_denoised_gr_manifest.json
+    summary_filename: exp304_gr_denoiser_emission_separability_readout_summary.json
+    scientific_contract_filename: exp304_gr_denoiser_emission_separability_readout_scientific_contract.json
+    input_manifest_filename: exp304_gr_denoiser_emission_separability_readout_input_manifest.json
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp304-gr-denoiser-separability-train/artifacts
+      - /kaggle/input/exp304-gr-denoiser-separability-train/artifacts
+      - /tmp/kaggle-output/exp304_gr_denoiser_emission_separability_readout/train_v1/artifacts
+    expected_data_rows: 6659300
+    expected_selected_denoiser: swt_db4_l3
+    expected_silent_fallback_count: 0
+    expected_content_sha256: a4acb72d60b833b12b2560db1e5dc3a113ae6ecf4137efbccf78c278582a0988
+    expected_scientific_contract_sha256: 8822df968200b74ea9969b0bc023ec127debbff01933bdc89ff3db9844d55064
+    expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+    require_nonzero_file_size: true
+    require_manifest_raw_decompressed_content_sha_match: true
+  saved_controls:
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    hmm_cache_filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    exp072_cache_filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+    expected_hmm_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    expected_exp209_v5_exp072_cache_decompressed_sha256: 0503de0512302b06309d26e09fc06ba5095db0ef4d610b1508afe8c8d07ca536
+    raw_hmm_prediction_column: hmm_mean_tvt
+    likpf_prediction_column: likpf_mean_d
+    likpf_prediction_representation: delta_from_last_known_tvt
+  fold_assignment:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    safe_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    truth_columns: [well_id, row_idx, tvt_true]
+    expected_exp226_oof_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  hidden_like_assignment:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+model:
+  name: tempered_raw_swt_exact_hmm_posterior_mean_audit
+  estimator: none
+  target: TVT
+  active_scientific_variants:
+    - tempered_raw_swt_beta015
+  active_variant_count: 1
+  lightgbm_config_count: 0
+  fold_training_count: 0
+  booster_count: 0
+  parent_control_retraining: false
+  emission:
+    raw_weight: 0.85
+    swt_weight: 0.15
+    formula: ell_beta_equals_raw_weight_times_ell_raw_plus_swt_weight_times_ell_swt
+    sigma_source: known_prefix_raw_gr_residual_std
+    sigma_clip: [10.0, 60.0]
+    log_likelihood_clip: 600.0
+    recompute_sigma_from_swt: false
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+    decoder: posterior_mean
+    hmm_well_runs: 773
+  blend:
+    enabled: true
+    tempered_hmm_weight: 0.50
+    saved_likpf_weight: 0.50
+    weight_grid: false
+
+audit:
+  saved_baselines:
+    raw_hmm_rmse: 11.9382872349
+    saved_likpf_rmse: 11.5948976722
+    raw_hmm_likpf_50_50_rmse: 10.2696961466
+    metric_absolute_tolerance: 1.0e-6
+  promotion:
+    direct_minimum_rmse_improvement_ft: 0.05
+    blend_minimum_rmse_improvement_ft: 0.05
+    minimum_folds_improved: 4
+    required_non_degradation_scopes:
+      - md_since_1000_plus
+      - hidden_like_spatial
+      - hidden_like_typewell_purged
+      - by_well_rmse_p95
+    non_degradation_float_tolerance_ft: 1.0e-6
+    worst_well_delta_rmse_max_ft: 0.25
+    finite_coverage_min: 1.0
+    id_mismatch_max: 0
+    failure_action: close_without_rescue_and_keep_reserved_pf_transfer_closed
+  expected_outputs:
+    - exp305_tempered_raw_smoothed_exact_hmm_emission_scientific_contract.json
+    - exp305_tempered_raw_smoothed_exact_hmm_emission_input_control_manifest.json
+    - exp305_tempered_raw_smoothed_exact_hmm_emission_predictions.csv.gz
+    - exp305_tempered_raw_smoothed_exact_hmm_emission_by_well_runtime.csv
+    - exp305_tempered_raw_smoothed_exact_hmm_emission_overall_fold_scope_metrics.csv
+    - exp305_tempered_raw_smoothed_exact_hmm_emission_by_well_metrics.csv
+    - exp305_tempered_raw_smoothed_exact_hmm_emission_promotion_gate.json
+    - exp305_tempered_raw_smoothed_exact_hmm_emission_summary.json
+
+execution:
+  implementation_approved: true
+  kaggle_push_approved: true
+  run_train: true
+  run_inference: false
+  create_submission: false
+  kaggle_kernel_id: kentookumura/exp305-tempered-raw-swt-exact-hmm-emission-train
+  kaggle_kernel_version: 3
+  kaggle_kernel_url: https://www.kaggle.com/code/kentookumura/exp305-tempered-raw-swt-exact-hmm-emission-train
+
+runtime:
+  use_amp: false
+  outer_workers: 2
+  numba_num_threads: 2
+  runtime_limit_seconds: 30600
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp304-gr-denoiser-separability-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_sorted_wells_saved_likpf_only
+  stochastic_components:
+    - Saved exp072 likPF was generated upstream with stable SHA256 per-well seeds and is not rerun here.
+  parallel_rng_policy: exact_hmm_has_no_rng_outer_workers_2_numba_threads_2_recorded
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a train-side scientific candidate, not a deterministic submission anchor.
+    - Record raw gzip SHA separately and use decompressed prediction content SHA as primary evidence.
+    - Rebuild and inspect the Kaggle bootstrap only after implementation and push approval.
+
+inference:
+  enabled: false
+  mode: disabled_train_side_tempered_exact_hmm_audit_only
+  create_submission: false
+
+notes:
+  - Design frozen on 2026-07-21; implementation and the fixed Kaggle CPU train run were explicitly approved.
+  - The approved run is exactly one scientific variant and 773 exact-HMM well-runs with zero model, LightGBM config, trained fold, PF, Beam, booster, or parent/control reruns.
+  - Any change to beta, SWT, HMM, control, blend, scope, or gate requires steering revision before implementation.

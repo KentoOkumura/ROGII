@@ -1,0 +1,131 @@
+experiment:
+  name: exp008_gr_ncc_matcher
+  description: Add inference-safe typewell/horizontal GR multi-scale NCC features to the residual model
+  route: ml_model
+  status: completed
+  created_at: "2026-06-01"
+  updated_at: "2026-06-01"
+
+lineage:
+  parent: exp007_hard_well_router
+  diff_summary: Replace router expansion with add-only typewell GR NCC features and compare them against exp002 all-GR and exp003 no-GR controls
+
+validation:
+  # Shared metric, fold count, seed, group, and score-row defaults come from project.yml.
+  leakage_policy:
+    - Same well is never split across train and validation folds.
+    - Target-derived features use only the known TVT_input prefix.
+    - Evaluation-zone TVT is used only as the residual target during training/CV.
+    - GR NCC features use only horizontal GR, typewell TVT/GR, MD, and known TVT_input prefix.
+    - Train-only formation columns are not used.
+
+data: {}
+
+model:
+  name: hgb_last_anchor_residual_gr_ncc
+  primary_strategy: drift_hgb
+  drift_strategy: drift_hgb
+  feature_set: all
+  strategies:
+    - last_anchor
+    - drift_hgb
+  params:
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+    gr_slope_window: 200
+    max_abs_gr_slope: 2.0
+    gr_roll_short: 25
+    gr_roll_long: 100
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  drift_model:
+    estimator: HistGradientBoostingRegressor
+    params:
+      max_iter: 180
+      learning_rate: 0.05
+      max_leaf_nodes: 31
+      min_samples_leaf: 80
+      l2_regularization: 0.05
+      max_bins: 255
+  training:
+    max_train_rows_per_fold: 300000
+    max_train_rows_final: 450000
+    max_train_rows_per_well: 800
+  gr_ncc:
+    enabled: false
+    min_valid_fraction: 0.30
+    min_abs_prior_slope: 0.005
+    fallback_abs_prior_slope: 0.03
+    allow_reverse: true
+    candidates:
+      - name: w25_r150
+        window: 25
+        radius: 150
+        shift_step: 10
+      - name: w75_r300
+        window: 75
+        radius: 300
+        shift_step: 20
+  rationale:
+    - exp002 all-GR remains the Public LB anchor at 12.533 but has weaker CV than no-GR.
+    - exp003 no-GR gives the best single-model CV at 13.882944 but loses Public LB signal.
+    - exp007 router did not transfer enough to Public LB, so this experiment tests GR as an aligned typewell signal instead of raw rolling/delta features.
+    - The NCC features are add-only and inference-safe because hidden evaluation TVT is not used to align the typewell curve.
+
+ablation:
+  baseline_experiment: exp002_drift_minimal
+  baseline_cv: 14.124569
+  baseline_public_lb: 12.533
+  alternate_experiment: exp003_residual_ablation
+  alternate_cv: 13.882944
+  alternate_public_lb: 12.852
+  comparison_experiment: exp007_hard_well_router
+  comparison_cv: 13.921559
+  comparison_public_lb: 12.675
+  parent_experiment: exp007_hard_well_router
+  parent_cv: 13.921559
+  selected_variant: gr_ncc_no_gr_multi
+  variants:
+    - name: control_exp002_all
+      variable: control
+      description: Re-run exp002 all-GR settings as the raw-GR control row.
+      overrides: {}
+    - name: control_exp003_no_gr
+      variable: feature_set
+      description: Re-run exp003 selected no-GR feature set as the strongest CV control row.
+      overrides:
+        model:
+          feature_set: no_gr_signal
+    - name: gr_ncc_no_gr_multi
+      variable: gr_ncc
+      description: Add multi-scale typewell/horizontal GR NCC features to the exp003 no-GR feature set.
+      overrides:
+        model:
+          feature_set: no_gr_signal_plus_gr_ncc
+          gr_ncc:
+            enabled: true
+    - name: gr_ncc_all_multi
+      variable: gr_ncc
+      description: Add the same NCC features on top of the exp002 all-GR feature set.
+      overrides:
+        model:
+          feature_set: all_plus_gr_ncc
+          gr_ncc:
+            enabled: true
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: 30
+  save_well_metrics: true
+  save_oof_predictions: false
+
+notes:
+  - Submission target column is lowercase tvt, while train target is uppercase TVT.
+  - Do not use train-only formation columns directly at inference.
+  - Train notebook writes ablation_metrics.csv, well_metrics.csv, fold_metrics.csv, and fold_model_training.csv with variant names.
+  - Inference applies ablation.selected_variant.
+  - NCC shift search is centered on the known-prefix recent TVT slope, with bounded typewell TVT shift and optional reverse direction.

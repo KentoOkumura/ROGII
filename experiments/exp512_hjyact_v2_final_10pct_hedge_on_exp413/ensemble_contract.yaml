@@ -1,0 +1,39 @@
+contract_version: 1
+candidate_id: exp512_hjyact_v2_final_equal_blend
+route: ensemble
+legacy_directory_suffix: 10pct_hedge
+components:
+  exp413:
+    generator: embedded_exp510_hidden_safe_exp413_runtime
+    static_prediction_sidecar_allowed: false
+    expected_visible_prediction_content_sha256: 875a1334ae3c90f841414f8f98d8877fb06234e17e0fd0b8d46385170a584dc4
+    accepted_visible_numerical_witness_content_sha256: 3a9bbd1f7e6ab93189c90b4c9c0da9d6a2858746028e93b25fe2a10c7be68d87
+    numerical_max_abs_tolerance_ft: 0.02
+    numerical_rmse_tolerance_ft: 0.001
+    witness_max_abs_ft: 0.0165
+    witness_rmse_ft: 0.0007530119954096194
+    well_parallel_n_jobs: 4
+  hjyact_v2_final:
+    source_kernel: hjyact/ultimate-pf-config-strategy-a-reproducible-score
+    source_version: 2
+    source_run_id: 337064157
+    profile: vp_balanced_modelpkg_005
+    model_package_correction_enabled: false
+    sp45_well_parallel_n_jobs: 4
+    static_prediction_sidecar_allowed: false
+    expected_visible_submission_sha256: b192d3f348ae00680dc4df942b95cef5fd708c636a741f77dfb6b6e89b9ded4a
+final_formula:
+  exp413_weight: 0.50
+  hjyact_v2_final_weight: 0.50
+  dtype: float64
+  max_abs_tolerance_ft: 1.0e-9
+  postprocess_after_blend: none
+weight_fit_allowed: false
+conditional_routing: false
+candidate_reuse:
+  process_local: true
+  fallback_to_duplicate_generation: false
+  shared_node_generation_count_per_well: 1
+  route_specific_pf_must_not_be_shared: true
+technical_fail_policy: fail_closed_outside_exact_or_preaudited_numerical_witness
+external_submission_authorized: false

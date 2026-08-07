@@ -1,0 +1,187 @@
+experiment:
+  name: "exp111_learned_pf_observation_likelihood_probe"
+  description: Train-side smoke audit for learned PF observation likelihood calibration over fixed PF/Beam/likPF candidates.
+  route: pf_beam
+  status: implemented
+  created_at: "2026-06-22"
+  updated_at: "2026-06-22"
+
+lineage:
+  parent: exp099_pf_multi_observation_likelihood_probe
+  cache_parent: exp099_pf_multi_observation_likelihood_probe
+  diagnostic_parents:
+    - exp093_pf_candidate_coverage_then_ranker_audit
+    - exp099_pf_multi_observation_likelihood_probe
+    - exp101_pf_candidate_ranker_or_nway_classifier
+  implementation_source: learned_pf_observation_likelihood_probe.py
+  diff_summary: Uses the exp099 v2 wide multi-observation likelihood cache as a fixed input, converts five PF/Beam/likPF candidates to candidate-long rows, and learns calibrated within10 / expected-error observation likelihood. It does not select a TVT path as a submission candidate, retrain PF, or produce inference output.
+
+validation:
+  strategy: train_well_pseudotail_candidate_likelihood_smoke
+  metric: rmse
+  secondary_metrics:
+    - logloss
+    - brier
+    - calibration_bin_observed_within10
+    - topk_within10_coverage
+    - diagnostic_top1_rmse
+    - bucket_auc
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Candidate values and target-free multi-observation features are read from exp099 v2 train-side pseudo-tail cache.
+    - Labels are within5/within10 and absolute error against train pseudo-tail true TVT; they are used only inside GroupKFold train-side validation.
+    - Validation is grouped by well. The smoke run trains only the first fold but uses the full held-out wells for scoring.
+    - Learned probability and expected error are evaluated as likelihood / confidence signals, not as direct hidden-test predictions.
+    - This experiment does not create a submission candidate; positive results require PF-weight or ML-feature follow-up with raw-test parity.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+
+model:
+  name: lightgbm_pf_observation_likelihood_smoke
+  target:
+    - candidate_within10_binary
+    - candidate_abs_error
+  base_prediction: none_no_direct_selector
+  estimator:
+    - lightgbm_binary_within10_classifier
+    - lightgbm_l1_expected_error_regressor
+
+likelihood:
+  mode: learned_pf_observation_likelihood_probe
+  max_rows: null
+  run_folds: 1
+  max_train_rows_per_fold: 350000
+  include_candidate_values: false
+  log_period: 100
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+    - name: beam_mean
+      column: beam_mean
+    - name: likpf_mean
+      column: likpf_mean
+    - name: sc_ens
+      column: sc_ens
+    - name: hyb
+      column: hyb
+  row_context_columns:
+    - last_known_tvt
+    - pf_ancc_std
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+    - eval_len
+    - md_since
+    - likpf_mean_d
+  multiobs_global_columns:
+    - multiobs_score_max
+    - multiobs_score_mean
+    - multiobs_score_gap
+    - multiobs_top1_source_id
+    - multiobs_top1_mae
+    - multiobs_top1_ncc
+  optional_columns:
+    - multiobs_top1
+    - multiobs_softmax_t0p15
+    - multiobs_softmax_t0p3
+    - likpf_multiobs_blend_w0p25
+    - likpf_multiobs_blend_w0p5
+  classifier_lgbm:
+    params:
+      n_estimators: 500
+      learning_rate: 0.045
+      num_leaves: 63
+      min_child_samples: 180
+      subsample: 0.85
+      subsample_freq: 1
+      colsample_bytree: 0.85
+      reg_alpha: 0.1
+      reg_lambda: 1.0
+      n_jobs: -1
+      verbose: -1
+  error_lgbm:
+    params:
+      n_estimators: 500
+      learning_rate: 0.04
+      num_leaves: 63
+      min_child_samples: 180
+      subsample: 0.85
+      subsample_freq: 1
+      colsample_bytree: 0.85
+      reg_alpha: 0.1
+      reg_lambda: 1.0
+      n_jobs: -1
+      verbose: -1
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_groupkfold_lightgbm_seed_and_local_rng_for_row_subsample
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - lightgbm_histogram_training
+    - candidate_long_training_row_subsample
+  parallel_rng_policy: no_parallel_rng_in_feature_generation
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    model_manifest_sha: true
+    oof_likelihood_sha: true
+    submission_sha: false
+  notes:
+    - This is a train-side likelihood smoke audit, not a deterministic submission anchor.
+    - Candidate-long model training samples row indices with a fixed local RNG seed per fold to cap memory.
+
+audit:
+  mode: learned_pf_observation_likelihood_probe
+  output_prefix: exp111_learned_pf_observation_likelihood_probe
+  baselines:
+    - baseline_multiobs_score
+    - baseline_multiobs_ncc
+    - baseline_negative_multiobs_mae
+    - likpf_mean_single_diagnostic
+  expected_train_artifacts:
+    - exp111_learned_pf_observation_likelihood_probe_metrics.csv
+    - exp111_learned_pf_observation_likelihood_probe_topk_metrics.csv
+    - exp111_learned_pf_observation_likelihood_probe_calibration.csv
+    - exp111_learned_pf_observation_likelihood_probe_bucket_metrics.csv
+    - exp111_learned_pf_observation_likelihood_probe_oof_likelihood_long.csv.gz
+    - exp111_learned_pf_observation_likelihood_probe_feature_importance.csv
+    - exp111_learned_pf_observation_likelihood_probe_feature_importance_mean.csv
+    - exp111_learned_pf_observation_likelihood_probe_feature_schema.csv
+    - exp111_learned_pf_observation_likelihood_probe_model_manifest.json
+    - exp111_learned_pf_observation_likelihood_probe_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - No inference notebook candidate is selected by this implementation.
+    - If learned likelihood improves candidate AUC and topK coverage, create a follow-up PF-weight alpha ablation or ML add-only feature audit in the same experiment lineage.
+
+notes:
+  - Implements the first smoke stage of pf_candidate_generation_likelihood_upgrade.
+  - Does not use learned likelihood as row-wise argmax prediction, soft average, direct TVT regression, or submission candidate.

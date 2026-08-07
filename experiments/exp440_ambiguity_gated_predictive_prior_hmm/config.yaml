@@ -1,0 +1,356 @@
+experiment:
+  name: "exp440_ambiguity_gated_predictive_prior_hmm"
+  description: "Stage 0 FAILを維持したfull 773-well確認でもparent exp209比1.053776 ft悪化、positive fold 1/5、全安全scopeとwell tailがFAILしたためno-rescueでterminal close。"
+  route: pf_beam
+  status: stage1_full_oof_failed_closed
+  created_at: "2026-07-29"
+  updated_at: "2026-07-30"
+  inference_enabled: false
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  references:
+    - exp133_gr_bimodal_match_ambiguity_detector
+    - exp236_exact_hmm_posterior_bimodality_audit
+    - exp363_sticky_gr_reliability_exact_hmm
+    - exp408_hmm_message_rate_basin_audit
+    - exp411_predictive_filtered_rate_innovation_destick
+    - exp435_tvt_memoryless_u_rate_dzonly_hmm
+    - docs/06_reproducibility.md
+  implementation_source:
+    - experiments/exp408_hmm_message_rate_basin_audit/exp408_hmm_message_rate_basin_audit_compact_selfcontained_train.py
+    - experiments/exp236_exact_hmm_posterior_bimodality_audit/posterior_bimodality_audit.py
+    - experiments/exp411_predictive_filtered_rate_innovation_destick/exp411_predictive_filtered_rate_innovation_destick_compact_selfcontained_train.py
+  diff_summary: >
+    Keep the complete exp209 state, transition, prior, GR preprocessing,
+    Gaussian emission family and scale, grid, forward-backward algorithm, and
+    posterior-mean readout. On raw-GR-observed rows only, compute the ordinary
+    provisional filtered TVT marginal from the candidate predictive prior and
+    parent emission. If that marginal satisfies the unchanged exp236
+    bimodality thresholds, replace only that row's emission exponent 1.0 with
+    0.0. This retains the transitioned predictive distribution; it does not
+    set TVT_t equal to a previous point estimate. No GMM or robust emission is
+    introduced.
+
+validation:
+  strategy: fixed32_mechanism_gate_then_separately_authorized_full_773_well_oof
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_wells: 773
+  expected_rows: 3783989
+  expected_folds: [0, 1, 2, 3, 4]
+  high_missing_fraction_min: 0.30
+  leakage_policy:
+    - Ambiguity uses only the candidate predictive message, parent GR emission, and raw-GR-observed flag.
+    - True TVT, error, fold, hidden-like role, persistent episode, and cause labels are prohibited before ambiguity schedule, prediction, and diagnostic SHA freeze.
+    - The exp236 thresholds are reused unchanged and are not selected on exp440 outcomes.
+    - Stage 0 fixed32 is mechanism-only and must not be reported as CV or promotion evidence.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  id_column: id
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  fixed32_manifest:
+    filename: stage0_fixed32_manifest.csv
+    local: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+    expected_sha256: fbbc62b7cb79e16a7fb436f3a9d11f8975e935ad2475a17e2dec4fd7b142e4d6
+    persistent_wells: 16
+    matched_control_wells: 16
+    total_wells: 32
+    expected_suffix_rows: 156088
+  persistent_episodes:
+    filename: persistent_offset_episodes.csv
+    local: experiments/exp408_hmm_message_rate_basin_audit/assets/persistent_offset_episodes.csv
+    expected_sha256: 031067fa77c195b77920a0997401310fbdd16532a2d0e99a9c3b5044de28913c
+    join_policy: after_schedule_prediction_and_diagnostic_freeze_only
+  exp408_episode_causes:
+    filename: exp408_hmm_message_rate_basin_audit_episode_summary.csv
+    local: experiments/exp408_hmm_message_rate_basin_audit/artifacts/kaggle_v3/exp408_hmm_message_rate_basin_audit_episode_summary.csv
+    expected_sha256: b230ffc759e6ee4891f22809b3f3c8a8796681fb461ec0b7215b94a352bf0ab0
+    join_policy: after_schedule_prediction_and_diagnostic_freeze_only
+  exp209_saved_control:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    prediction_column: hmm_mean_tvt
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    regenerate: false
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts
+    patterns:
+      - "**/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz"
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    kernel_source: kentookumura/exp226-k16-kappa-repro-train
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    truth_columns: [well_id, row_idx, tvt_true, fold]
+    forbidden_pre_freeze_columns: [tvt_true, tvt_geop, tvt_pred, error, abs_error]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    local: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_role_counts:
+      hidden_like_spatial: {train: 573, valid: 200}
+      hidden_like_typewell_purged: {train: 557, valid: 200, purged_train_excluded: 16}
+
+model:
+  name: ambiguity_gated_predictive_prior_exact_hmm
+  estimator: deterministic_exact_forward_backward
+  state:
+    - tvt_position
+    - u_rate
+  fixed_from_exp209:
+    position_grid_step_ft: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    momentum: 0.998
+    emission_family: gaussian_typewell_gr
+    emission_lambda_clear: 1.0
+    sigma_mode: known_prefix_zero_fill_population_std
+    sigma_clip:
+      - 10.0
+      - 60.0
+    start_sigma_ft: 0.75
+    initial_rate_sigma: 0.01
+    band_pad_ft: 100.0
+    rate_center: zero
+    output: smoothed_posterior_mean_and_std
+  active_scientific_variants:
+    - ambiguity_gated_predictive_prior_hold
+  candidate:
+    ambiguity_source: causal_provisional_filtered_tvt_position_marginal
+    eligibility: raw_gr_observed_only
+    ambiguous_emission_lambda: 0.0
+    clear_emission_lambda: 1.0
+    candidate_filtered_if_ambiguous: transitioned_predictive_joint_distribution
+    hard_previous_tvt_point_freeze: false
+    schedule_iteration: single_causal_forward_pass_no_backward_or_truth_feedback
+    backward_policy: reuse_frozen_forward_ambiguity_schedule
+  ambiguity_contract:
+    source: exp236_exact_hmm_posterior_bimodality_audit
+    min_peak_height: 0.02
+    min_top2_mass: 0.10
+    min_top2_to_top1_mass_ratio: 0.25
+    min_peak_separation_ft: 6.0
+    min_valley_depth: 0.30
+  forbidden:
+    - gmm_student_t_huber_or_other_emission_family_change
+    - continuous_or_soft_emission_lambda
+    - ambiguity_threshold_grid_or_same_oof_selection
+    - hard_previous_tvt_point_freeze
+    - transition_rate_prior_grid_sigma_or_missing_gr_change
+    - blend_selector_well_gate_or_row_gate
+    - same_oof_rescue
+
+gates:
+  stage0_fixed32:
+    role: mechanism_preflight_only_not_cv_or_promotion
+    scientific_variants: 1
+    candidate_hmm_well_runs: 32
+    parent_hmm_well_runs: 0
+    reporting_folds: 5
+    technical:
+      expected_wells: 32
+      expected_rows: 156088
+      expected_persistent_wells: 16
+      expected_control_wells: 16
+      expected_folds: 5
+      finite_coverage_min: 1.0
+      posterior_normalization_max_error: 1.0e-6
+      no_ambiguity_parent_parity_max_abs_ft: 1.0e-6
+      ambiguous_activation_fraction_min: 0.001
+      ambiguous_activation_fraction_max: 0.10
+      ambiguous_active_wells_min: 8
+      truth_role_fold_episode_reads_before_freeze_max: 0
+      projected_stage1_runtime_seconds_max: 30600
+      peak_rss_gb_max: 25
+    mechanism:
+      predictive_better_rate_on_ambiguous_rows_min: 0.55
+      predictive_better_positive_folds_min: 4
+      ambiguous_row_sse_reduction_min_fraction: 0.05
+      persistent_episode_sse_reduction_min_fraction: 0.05
+      persistent_improved_wells_min: 10
+      persistent_improving_folds_min: 4
+      matched_control_pooled_rmse_delta_max_ft: 0.02
+      matched_control_by_well_delta_p95_max_ft: 0.25
+    fail_action: stage0_fail_closed_without_ambiguity_lambda_threshold_or_transition_rescue
+  stage1_full_oof:
+    prerequisite: stage0_all_technical_and_mechanism_gates_pass_and_separate_user_approval
+    scientific_variants: 1
+    candidate_hmm_well_runs: 773
+    parent_hmm_well_runs: 0
+    direct_rmse_gain_vs_exp209_min_ft: 0.02
+    positive_fold_count_min: 4
+    ambiguous_row_sse_reduction_min_fraction: 0.05
+    required_nonworse_scopes:
+      - raw_gr_observed
+      - raw_gr_missing
+      - high_missing_fraction
+      - md_1000_plus
+      - hidden_like_spatial
+      - hidden_like_typewell_purged
+    by_well_delta_p95_max_ft: 0.0
+    worst_well_regression_max_ft: 0.25
+    fail_action: close_without_blend_selector_continuous_gate_or_same_oof_rescue
+
+execution:
+  selected_stage: stage1_full_oof_completed
+  implementation_authorized: true
+  implementation_approval_source: user_message_implement_exp440_2026_07_29
+  stage0_approval_source: user_message_execute_exp440_2026_07_29
+  canonical_notebook_adoption_authorized: true
+  kaggle_package_authorized: true
+  stage0_run_authorized: true
+  rerun_authorized: false
+  stage1_run_authorized: true
+  stage1_rerun_authorized: false
+  stage1_prerequisite_override_authorized: true
+  stage1_approval_source: user_message_2026_07_30_nen_no_tame_full_wells
+  stage1_override_reason: user_explicitly_requested_full_wells_despite_stage0_fail_closed
+  inference_authorized: false
+  submission_authorized: false
+  run_hmm: true
+  create_prediction: true
+  create_submission: false
+  scientific_variants: 1
+  stage0_candidate_hmm_well_runs: 32
+  stage1_candidate_hmm_well_runs: 773
+  parent_control_hmm_well_runs: 0
+  lightgbm_configs: 0
+  trained_ml_folds: 0
+  boosters: 0
+  fitted_models: 0
+  pf_runs: 0
+  beam_runs: 0
+  gpu_runs: 0
+  stage1_well_shard_count: 4
+  stage1_shard_policy: deterministic_lpt_suffix_rows
+  stage1_merge_shard_dirs:
+    - /kaggle/input/notebooks/kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s0
+    - /kaggle/input/notebooks/kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s1
+    - /kaggle/input/notebooks/kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s2
+    - /kaggle/input/notebooks/kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s3
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  numba_num_threads: 1
+  target: kaggle_private_cpu
+  hard_runtime_limit_seconds: 32400
+  conservative_stage1_seconds_per_shard: 9000
+  peak_rss_limit_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    planned_kernel_id: kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-train
+    planned_title: exp440 ambiguity gated predictive prior hmm train
+    train_kernel_version: 1
+    train_kernel_id_no: 129064462
+    train_status: KernelWorkerStatus.COMPLETE
+    train_started_at: "2026-07-29 14:07:11 UTC"
+    train_completed_at_derived: "2026-07-29 14:32:00 UTC"
+    train_complete_observed_at: "2026-07-29 21:01:13 UTC"
+    train_runtime_seconds: 1464.045394482
+    train_peak_rss_gb: 1.0582504272460938
+    train_decision: stage0_fail_closed_without_ambiguity_lambda_threshold_or_transition_rescue
+    train_url: https://www.kaggle.com/code/kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-train
+    push_attempts: 2
+    first_push_failure: >-
+      HTTP 400 SaveKernel before kernel creation while the self-contained
+      package also embedded the unused repository src tree. The package was
+      regenerated with --no-src, reducing the notebook from 1,317,934 to
+      914,607 bytes without changing scientific code, config, or fixed assets.
+    bootstrap_files: []
+    bootstrap_dependency_files:
+      - source: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+        destination: assets/stage0_fixed32_manifest.csv
+      - source: experiments/exp408_hmm_message_rate_basin_audit/assets/persistent_offset_episodes.csv
+        destination: assets/persistent_offset_episodes.csv
+      - source: experiments/exp408_hmm_message_rate_basin_audit/artifacts/kaggle_v3/exp408_hmm_message_rate_basin_audit_episode_summary.csv
+        destination: assets/exp408_hmm_message_rate_basin_audit_episode_summary.csv
+      - source: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: assets/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+    train_variant0_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+    train_variant1_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+    train_variant2_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+    train_variant3_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+    train_aggregate_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s0
+      - kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s1
+      - kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s2
+      - kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s3
+    stage1_shards:
+      - {kernel: kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s0, version: 1, status: KernelWorkerStatus.COMPLETE, wells: 193, rows: 946128, elapsed_seconds: 5603.734178324, peak_rss_gb: 1.5707511901855469}
+      - {kernel: kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s1, version: 1, status: KernelWorkerStatus.COMPLETE, wells: 193, rows: 946017, elapsed_seconds: 8695.082837760001, peak_rss_gb: 1.4987106323242188}
+      - {kernel: kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s2, version: 1, status: KernelWorkerStatus.COMPLETE, wells: 193, rows: 946112, elapsed_seconds: 8162.895694197, peak_rss_gb: 1.5092811584472656}
+      - {kernel: kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-s3, version: 1, status: KernelWorkerStatus.COMPLETE, wells: 194, rows: 945732, elapsed_seconds: 5549.29588244, peak_rss_gb: 1.5273208618164062}
+    stage1_merge:
+      kernel: kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-merge
+      version: 1
+      status: KernelWorkerStatus.COMPLETE
+      complete_observed_at: "2026-07-30 09:30:19 UTC"
+      elapsed_seconds: 292.18146922200003
+      peak_rss_gb: 4.773448944091797
+      decision: close_without_blend_selector_continuous_gate_or_same_oof_rescue
+      url: https://www.kaggle.com/code/kentookumura/exp440-ambiguity-gated-predictive-prior-hmm-merge
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_fixed_well_row_position_rate_and_message_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_worker_count_and_deterministic_well_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    ambiguity_schedule_sha: true
+    diagnostic_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - First run is not a deterministic anchor; an independent schedule and prediction SHA rerun is required.
+    - Freeze ambiguity schedule, prediction, and diagnostic content before reading truth, fold, hidden-like role, or episode labels.
+    - Model and submission SHA are not applicable because this experiment trains no model and produces no submission.
+
+inference:
+  mode: disabled_stage1_full_oof_failed_closed
+  selected_variant: null
+  notes:
+    - Raw-test regeneration, inference, submission, and promotion are prohibited until Stage 0 and Stage 1 pass under separate approvals.
+
+notes:
+  - Current phase is late; exp440 is P3 behind exp434 P1 and the exp436-derived fixed-five P3 contract, and ahead of P4 attribution-only work.
+  - Strong negative evidence from exp408, exp133, and exp363 is retained; design completion is not scientific support.
+  - Kaggle version 1 uses the exact self-contained notebook with only unused repository src files omitted from the bootstrap bundle.
+  - Stage 0 passed 13/15 technical gates and 2/8 mechanism gates; the user explicitly authorized a full-well confirmation on 2026-07-30 without changing the failed Stage-0 interpretation.
+  - Full OOF uses four deterministic LPT CPU shards so every one of the 773 wells is decoded exactly once while preserving the existing 9-hour per-kernel hard guard.
+  - Stage 1 technical gates all passed, but candidate RMSE was 12.992063 versus exp209 11.938287 and every preregistered scientific safety family failed; the branch is terminally closed without inference or submission.

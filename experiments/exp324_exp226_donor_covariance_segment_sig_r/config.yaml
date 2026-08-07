@@ -1,0 +1,139 @@
+experiment:
+  name: exp324_exp226_donor_covariance_segment_sig_r
+  description: >-
+    Design-frozen two-stage audit that converts fold-safe exp226 local donor
+    dispersion into a K16 segment-wise exact-HMM rate diffusion sig_r,t while
+    keeping the exp323 time-varying rate-prior mean fixed.
+  route: pf_beam
+  status: closed_without_run_upstream_exp307_chain_failed
+  created_at: "2026-07-21"
+  updated_at: "2026-07-22"
+
+lineage:
+  parent: exp323_time_varying_exp226_dip_rate_prior
+  steering: ../../.steering/20260721-exp324-exp226-donor-covariance-segment-sig-r
+  references:
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp309_well_adaptive_transition_noise
+  diff_summary: >-
+    Changes only the rate-transition diffusion from one parent well-level
+    sig_r to a deterministic K16 schedule estimated from the weighted robust
+    dispersion of the exact exp226 donors. The exp323 prior mean and every
+    observation, grid, momentum, position, and decoder setting remain fixed.
+
+closure:
+  closed_at: "2026-07-22"
+  reason: fixed_exp323_parent_closed_without_run
+  terminal: true
+  reopen_allowed: false
+  successor_policy: >-
+    Create a new-number equivalent only after exp338 passes and its separately
+    created new exp323-equivalent also passes all promotion gates.
+
+implementation: {enabled: false, scope: closed_design_history, inference_enabled: false, submission_enabled: false}
+
+validation:
+  strategy: conditional_grouped_two_stage_transition_variance_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  score_rows: unknown_suffix_truth_only_after_sigma_schedule_freeze
+  dependency_policy:
+    required_parent: exp323_time_varying_exp226_dip_rate_prior
+    required_parent_status: all_stage_0_and_stage_1_promotion_gates_passed
+    fail_closed_on_dependency_mismatch: true
+  leakage_policy:
+    - Donor identities, weights, projected rates, effective sample size, covariance, fallback, and segment schedule are frozen without validation-well suffix truth.
+    - Validation wells and same-fold validation wells are excluded from donor statistics.
+    - Truth transition residuals are read only for Stage 0 calibration scoring after schedule SHA freeze.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+
+model:
+  name: exp226_donor_covariance_segment_sig_r_exact_hmm
+  estimator: none
+  segment_scale:
+    k_segments: 16
+    donor_selection: exact_exp226_local_linear_k50_bandwidth500_outer_fold_safe
+    donor_quantity: projected_delta_tvt_plus_delta_z_div_delta_md
+    center: exp226_local_linear_projected_rate
+    robust_scale: 1.4826_times_weighted_mad_about_center
+    effective_sample_size: squared_sum_weights_div_sum_squared_weights
+    minimum_effective_donors: 10
+    shrinkage_alpha: n_eff_div_n_eff_plus_50
+    shrinkage_space: log
+    parent_scale: exp323_parent_well_sig_r
+    formula: exp_weighted_log_mean_of_parent_sig_r_and_segment_donor_scale
+    clip: [0.001, 0.004]
+    row_schedule: piecewise_constant_inside_k16_segment
+    fallback: exact_parent_well_sig_r
+  stage_0_calibration_readout:
+    enabled_after_implementation: false
+    standardized_residual: actual_rate_minus_exp323_mu_div_sig_r_t_sqrt_delta_md
+    compare_against: exp323_constant_well_sig_r
+    pass_requires_all:
+      minimum_transition_nll_gain_fraction: 0.01
+      minimum_improved_folds: 4
+      require_68_and_95_coverage_error_non_regression: true
+      require_1000_plus_nll_non_regression: true
+      require_hidden_like_nll_non_regression: true
+      maximum_fallback_fraction: 0.50
+      maximum_total_clip_fraction: 0.50
+  stage_1_exact_hmm:
+    enabled_after_implementation: false
+    enable_condition: stage_0_all_gates_pass_and_separate_user_approval
+    active_variants: [k16_donor_covariance_sig_r]
+  fixed_parent:
+    rate_prior_mean: exact_exp323_schedule
+    observation_model: exact_exp323_parent
+    sig_p: exact_exp323_parent
+    n_rates: 41
+    rate_span: 0.10
+    momentum: 0.998
+    output: posterior_mean
+  forbidden:
+    - changing_rate_prior_mean
+    - changing_momentum
+    - changing_sigma_gr_or_lambda
+    - suffix_truth_variance_fit
+    - donor_distance_grid
+    - blend
+
+execution_contract:
+  stage_0: {diagnostic_variants: 1, hmm_well_runs: 0, model_configs: 0, trained_folds: 0, boosters: 0}
+  stage_1_if_pass: {scientific_variants: 1, hmm_well_runs: 773, model_configs: 0, trained_folds: 0, boosters: 0}
+  parent_control_retraining: false
+
+promotion_gates:
+  minimum_rmse_gain_vs_parent_ft: 0.05
+  minimum_improved_folds: 4
+  require_1000_plus_non_regression: true
+  require_hidden_like_spatial_non_regression: true
+  require_hidden_like_typewell_purged_non_regression: true
+  require_by_well_p95_delta_max: 0.0
+  maximum_worst_well_regression_ft: 0.25
+
+execution: {implementation_approved: false, kaggle_push_approved: false, active_stage: closed_without_run, run_stage_0: false, run_stage_1: false, run_inference: false, create_submission: false}
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle: {enable_gpu: false, enable_internet: false, runtime_limit_seconds: 30600}
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_outer_fold_well_segment_donor_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: true, submission_sha: false}
+inference: {enabled: false, create_submission: false}
+notes:
+  - Design frozen on 2026-07-21; blocked on exp323 promotion.
+  - Sigma changes uncertainty only; the exp323 rate-prior mean is immutable.
+  - Closed permanently on 2026-07-22; a future equivalent must use a new experiment number under the exp338 successor chain.

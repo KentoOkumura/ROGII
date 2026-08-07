@@ -1,0 +1,727 @@
+experiment:
+  name: exp497_strict_public_core_fold_safe_ensemble_on_exp413
+  description: >-
+    Build a strict fold-safe OOF trajectory from the generalizable public
+    SP45/physical-selector/projection/independent-learned structure after
+    removing Public-LB-specific overlays, then combine it with the frozen
+    exp413 OOF using a meta-fold constant convex blend.
+  route: ensemble
+  status: saved_model_inference_kaggle_v2_complete_validated_gate_fail_preserved
+  created_at: "2026-08-01"
+  updated_at: "2026-08-04"
+  inference_enabled: true
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.n_folds
+    - validation.score_rows
+
+lineage:
+  parent: exp413_scale5_likpf_full_replacement_on_exp335
+  public_source_slug: raunakdey07/rogii-stacked-ensemble
+  public_source_id_no: 128237178
+  public_source_sha256: 88c7b99e234fdbd5620c0045df294d9167eac84e56f538ceb3f2449a677a5454
+  public_source_port_reference: exp082_public_artifact_replay_followup
+  ensemble_negative_reference: exp494_exp413_cat_xgb_physics_bounded_stack
+  steering: ../../.steering/20260801-exp497-strict-public-core-fold-safe-ensemble-on-exp413
+  diff_summary: >-
+    Keep the public pipeline's physical candidate family, well-shape selector
+    concept, residual ML branch, robust U projection, independent learned
+    trajectory, warmup, and trajectory smoothing. Refit selector thresholds,
+    mappings, and internal constant weights only inside outer-train/inner OOF.
+    Exclude public well IDs, fixed branch shifts, Q0522, A27, same-well contact,
+    visible-prefix routing, bimodal public hedge, model-package correction,
+    precomputed submissions, and public-output copies. Keep exp413 frozen until
+    an OOF-level constant blend with a maximum public-core weight of 0.30.
+
+implementation:
+  approved: true
+  approval_source:
+    - user_message_implement_exp497_2026_08_01
+    - user_message_execute_exp497_2026_08_01
+    - user_message_use_kaggle_gpu_not_colab_2026_08_01
+    - user_message_proceed_to_inference_after_gate_fail_2026_08_03
+    - user_message_save_model_weights_and_rerun_2026_08_04
+  approval_scope: stage0_plus_stage_p_m1_m2_e_and_stage_i_override_kaggle_run
+  model_serialization_rerun_approved: true
+  model_serialization_approval_source: user_message_save_model_weights_and_rerun_2026_08_04
+  code_created: true
+  contracts_created: true
+  notebooks_are_design_placeholders: false
+  compact_train_candidate_created: true
+  compact_inference_candidate_created: true
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: true
+  current_test_inference_notebook_adopted: true
+  current_test_inference_kaggle_package_created: true
+  saved_model_inference_approved: true
+  saved_model_inference_approval_source: user_message_proceed_to_inference_creation_2026_08_04
+  saved_model_inference_candidate_created: true
+  saved_model_inference_candidate_notebook_created: true
+  saved_model_inference_candidate_source_sha256: ece799a5cfac758e7c1ab9db9a87d5f00896305d234d370132c6adbcef418eb0
+  saved_model_inference_candidate_notebook_sha256: f3735987969e3ee87c8405d206789ae2eb67e88bf874d91af1ee3316a1c93a3f
+  saved_model_inference_core_sha256: 0d9a9d80c691e5765043e8ffd6fc756914b5934e023912f3eaa1fb96baf940cd
+  saved_model_inference_v2_source_sha256: f268aae5e67d6fb5f05d1ea8b8696b786f6f1c00cd29474089776f3b7bfc565f
+  saved_model_inference_v2_notebook_sha256: 94b6e791d4c096f27de74dce3a1c7d5b4f7cfa6383fe2291f67ce52dad65ad8c
+  saved_model_inference_candidate_source_lines: 343
+  kaggle_package_created: true
+  kaggle_run_approved: true
+  inference_implemented: true
+  submission_implemented: true
+
+validation:
+  strategy: exp413_outer5_groupkfold_strict_public_core_nested_inner4_then_meta5_constant_blend
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  outer_folds: 5
+  inner_folds: 4
+  meta_folds: 5
+  group_column: well
+  score_rows: TVT_input_isna
+  expected_rows: 3783989
+  expected_wells: 773
+  fold_source: exp413_saved_outer_fold
+  parent_oof_source: exp413_saved_final_tvt_oof
+  leakage_policy:
+    - Keep all outer-valid wells out of model fit, early stopping, Ridge meta fit, selector fit, internal weight fit, and spatial imputer pools.
+    - Build outer-train model meta inputs from inner OOF predictions only.
+    - Build outer-valid model meta inputs from the four inner-model ensemble only.
+    - Freeze target-free physical and learned feature surfaces before reading outer-valid truth or errors.
+    - Do not use exp413 final370, selector scores, signed scores, or predictions inside the public-core branch.
+    - Join exp413 only after strict_public_core_oof is frozen.
+    - Fit final constant blend weights on the other four OOF folds and apply to the held meta fold.
+    - Never use Public LB, public well IDs, public row counts, public output values, or submission SHA for selection.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  public_core_contract: public_core_contract.yaml
+  ensemble_contract: ensemble_contract.yaml
+  output_contract: output_contract.md
+  public_source_inventory: public_source_inventory.yaml
+  public_source_audit: public_source_audit.json
+  exp072_public_base:
+    source_experiment: exp072_exp063_full_replay_feature_cache
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_feature_count_with_stale_likpf_mean_d: 196
+    expected_feature_count_after_stale_drop: 195
+    expected_sha256: 14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18
+    file: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    stale_columns_to_drop: [likpf_mean_d]
+  hidden_like_assignment:
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    file: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  public_source_py:
+    expected_sha256: 88c7b99e234fdbd5620c0045df294d9167eac84e56f538ceb3f2449a677a5454
+    expected_bytes: 300695
+    expected_lines: 6209
+    patterns:
+      - inputs/exp497_public_source/rogii-stacked-ensemble.py
+      - /kaggle/input/**/rogii-stacked-ensemble.py
+  parent_exp413:
+    expected_cv: 7.884802794404715
+    expected_public_lb: 7.201
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_outer_folds: 5
+    expected_final_oof_sha256: 9bd2d17778b3b27d771b12cbff72def8b87e6cdf14062e1c0ba192434cef4a9d
+    expected_fold_metrics_sha256: 82e70b6674f218f2892d6e5f70e327dfcbbdaf0fa5e431c4e07231009e9e2d8f
+    expected_scope_metrics_sha256: c89add97cd4cae628b79774615a717e4cfbffe7b65a4a68c58b2c2e2737948ed
+    expected_hidden_like_metrics_sha256: eafa3546e4ea5c0d180d380f7fe2c39b5cac970ea4c8097b68b077017da1f1b8
+    expected_by_well_sha256: e82c6908ed2caa9b3e5c1664bc66a3226b3bc6d9284f4863bd4fa941ae32d080
+    prediction_column: scale5_x1p0_full_replacement__lgb_mean__pred_tvt
+    root_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp413-scale5-likpf-downstream-train/artifacts
+      - experiments/exp413_scale5_likpf_full_replacement_on_exp335/kaggle/output/stage_d/artifacts
+    files:
+      oof: stage_d_oof_predictions.parquet
+      fold_metrics: stage_d_fold_metrics.csv
+      scope_metrics: stage_d_scope_metrics.csv
+      hidden_like_metrics: stage_d_hidden_like_metrics.csv
+      by_well: stage_d_by_well.csv
+    control_retraining_allowed: false
+
+public_core:
+  active_variants:
+    - strict_public_core
+  public_lb_specific_processing_enabled: false
+  physical_selector:
+    candidate_variants:
+      - pf_scale_5_hold_0p20
+      - pf_scale_3_hold_0p15
+      - pf_scale_12_beam_0p20_hold_0p15
+      - pf_scale_5_hold_0p15
+      - pf_scale_5_beam_0p05_hold_0p05
+      - pf_scale_12_beam_0p20_hold_0p05
+      - pf_scale_8_hold_0p20
+    bin_features: [n_eval, z_span]
+    bin_policy: outer_train_n_eval_median_and_z_span_tertiles
+    minimum_bin_wells: 40
+    fallback: outer_train_global_variant_winner
+    public_fixed_thresholds_allowed: false
+    public_fixed_bin_map_allowed: false
+  pf:
+    particles: 500
+    seeds: 128
+    scales: [3.0, 5.0, 8.0, 12.0]
+    selector_gr_sigma_multiplier: 1.0
+    learned_gr_sigma_multiplier: 1.3
+    stable_seed_required: true
+  sp45_residual_branch:
+    target: tvt_minus_last_known_tvt
+    lightgbm_configs: 3
+    catboost_configs: 2
+    outer_folds: 5
+    inner_folds: 4
+    planned_boosters: 100
+    planned_ridge_models: 5
+    positive_ridge_alpha: 1.66
+  sp45_anchor:
+    ridge_weight_bounds: [0.15, 0.45]
+    weight_fit: outer_train_inner_oof_only
+  projection:
+    coordinate: U_equals_TVT_plus_Z
+    normalized_md: true
+    degree: 3
+    robust_iterations: 4
+    blend_weight_bounds: [0.50, 1.00]
+    weight_fit: outer_train_inner_oof_only
+  learned_branch:
+    target: tvt_minus_last_known_tvt
+    lightgbm_configs: 3
+    catboost_configs: 2
+    outer_folds: 5
+    inner_folds: 4
+    planned_boosters: 100
+    planned_ridge_models: 5
+    positive_ridge_alpha: 1.66
+    spatial_imputer_policy: exclude_outer_valid_wells
+    warmup_tau_md: 85.0
+    savgol_window: 61
+    savgol_poly: 3
+    learned_vs_scale5_weight_bounds: [0.50, 0.80]
+    weight_fit: outer_train_inner_oof_only
+  internal_blend:
+    projected_sp45_weight_bounds: [0.50, 0.80]
+    weight_fit: outer_train_inner_oof_only
+
+ensemble:
+  family: exp413_plus_strict_public_core_constant_convex
+  meta_fit: leave_one_outer_fold_out
+  intercept: false
+  public_core_weight_bounds: [0.0, 0.30]
+  deployment_weight: median_of_five_meta_fold_weights
+  row_gate: false
+  well_gate: false
+  confidence_gate: false
+  conditional_router: false
+  same_oof_global_refit: false
+
+inference:
+  mode: post_gate_failure_prediction_only_diagnostic_override
+  selected_train_anchor_unchanged: exp413
+  current_test_cardinality: dynamic_sample_ids_and_nonempty_wells
+  public_core_full_train_fit:
+    scientific_variants: 1
+    branches: 2
+    inner_folds: 4
+    lightgbm_configs_per_branch: 3
+    catboost_configs_per_branch: 2
+    lightgbm_boosters: 24
+    catboost_boosters: 16
+    total_boosters: 40
+    ridge_models: 2
+  exp413_retraining: 0
+  exp413_reinference: 0
+  exp413_current_test_prediction_file: exp413_current_test_predictions.csv.gz
+  exp413_current_test_prediction_sha256: 52ffb49110673f90b9b83b2e296e09b4ad0839164eda9ec13a91859937ebf136
+  exp413_current_test_prediction_decompressed_sha256: 875a1334ae3c90f841414f8f98d8877fb06234e17e0fd0b8d46385170a584dc4
+  meta_fold_weights:
+    - 0.17194009634180468
+    - 0.08782587089682156
+    - 0.13465228591526224
+    - 0.13716473330712417
+    - 0.213671022298501
+  deployment_weight: 0.13716473330712417
+  deployment_weight_policy: median_of_five_stage_e_meta_fold_weights
+  stage_e_meta_fold_weights_sha256: 5e5dfc1f6adff2b433118adc8083cf0652e8a6b8725942b17dfa84882d91b7ba
+  generate_submission_csv: false
+  external_submission: false
+  saved_model_deployment:
+    approved: true
+    approval_source: user_message_proceed_to_inference_creation_2026_08_04
+    mode: hidden_safe_saved_model_inference
+    candidate_source: exp497_strict_public_core_fold_safe_ensemble_on_exp413_compact_selfcontained_inference.py
+    candidate_notebook: exp497_strict_public_core_fold_safe_ensemble_on_exp413_compact_selfcontained_inference.ipynb
+    canonical_source: exp497_strict_public_core_fold_safe_ensemble_on_exp413_inference.py
+    canonical_notebook: exp497_strict_public_core_fold_safe_ensemble_on_exp413_inference.ipynb
+    canonical_notebook_adopted: true
+    canonical_source_sha256: f268aae5e67d6fb5f05d1ea8b8696b786f6f1c00cd29474089776f3b7bfc565f
+    canonical_notebook_sha256: 94b6e791d4c096f27de74dce3a1c7d5b4f7cfa6383fe2291f67ce52dad65ad8c
+    accelerator: kaggle_gpu
+    exp497_booster_training_count: 0
+    exp497_saved_lightgbm_count: 24
+    exp497_saved_catboost_count: 16
+    exp497_saved_booster_count: 40
+    exp497_saved_ridge_count: 2
+    exp413_booster_training_count: 0
+    exp413_saved_booster_count: 75
+    public_test_exp413_sidecar_allowed: false
+    dynamic_exp413_runtime_source: exp510_exp413_hidden_safe_runtime.py
+    dynamic_exp413_runtime_sha256: 0eea5b11d6852d0c2170914e993d6aba1204c02f2de00c3a809b299c028ef1dd
+    dynamic_exp413_parent_source_sha256: 0f6fc81e56556aa6db828584ab2a2e58dde9db9cc4b54d6c12fa60e1c68f1388
+    prediction_chunk_size: 250000
+    visible_strict_public_core_max_abs: 2.0e-3
+    visible_blend_max_abs: 2.0e-2
+    visible_parity_policy: component_specific_historical_equivalence
+    isolate_exp413_intermediate_submission: true
+    deployment_weight: 0.13716473330712417
+    generate_submission_csv: true
+    external_submission: false
+    kaggle_execution:
+      approved: true
+      approval_source: user_message_execute_2026_08_04
+      kernel_id: kentookumura/exp497-strict-public-core-saved-inference
+      kernel_version: 1
+      kernel_id_no: 129666751
+      push_status: success
+      initial_status: QUEUED
+      final_status: ERROR
+      failure_elapsed_seconds: 661.575
+      failure_class: visible_saved_model_parity_guard
+      strict_public_core_max_abs: 0.0012812500008294592
+      blend_max_abs: 0.01419531250030559
+      configured_tolerance: 0.001
+      dynamic_exp413_decompressed_content_sha256: 3a9bbd1f7e6ab93189c90b4c9c0da9d6a2858746028e93b25fe2a10c7be68d87
+      visible_exp413_reference_decompressed_sha256: 875a1334ae3c90f841414f8f98d8877fb06234e17e0fd0b8d46385170a584dc4
+      external_submission_performed: false
+      accelerator: NvidiaTeslaT4
+      internet_enabled: false
+      continuous_monitoring: false
+      external_submission: false
+    kaggle_execution_v2:
+      approved: true
+      approval_source: user_message_rerun_2026_08_04
+      kernel_id: kentookumura/exp497-strict-public-core-saved-inference
+      intended_kernel_version: 2
+      actual_kernel_version: 2
+      kernel_id_no: 129666751
+      accelerator: NvidiaTeslaT4
+      internet_enabled: false
+      external_submission: false
+      push_status: success
+      initial_status: RUNNING
+      final_status: COMPLETE
+      completion_verified: true
+      continuous_monitoring: false
+      output_retrieved: true
+      rows: 14151
+      wells: 3
+      kernel_body_elapsed_seconds: 684.077
+      saved_model_inference_elapsed_seconds: 33.509
+      dynamic_exp413_runtime_seconds: 391.418
+      test_feature_elapsed_seconds: 231.471
+      loaded_exp497_boosters: 40
+      loaded_exp497_ridge_models: 2
+      loaded_exp413_boosters: 75
+      fitted_boosters: 0
+      exp497_retraining: 0
+      exp413_retraining: 0
+      visible_strict_public_core_max_abs: 0.0012812500008294592
+      visible_strict_public_core_tolerance: 0.002
+      visible_blend_max_abs: 0.01419531250030559
+      visible_blend_tolerance: 0.02
+      visible_exp413_max_abs: 0.016499999999723514
+      visible_parity_passed: true
+      sample_id_order_match: true
+      duplicate_ids: 0
+      null_or_nonfinite_values: 0
+      submission_check: pass_no_fail_no_warn
+      submission_generated: true
+      external_submission_performed: false
+      submission_sha256: 04ca2e2f80f45bced1e22bd68a58002b4cb7c7e5b19510932375cdccafa6680a
+      prediction_decompressed_sha256: db120520f8575409c1ff3043fbc4b381a3d92cedc9850b083fbda3ed47d2dc7c
+      strict_public_core_prediction_sha256: 2ba49e4442e789d83033fdd95659aaf4aca019b6ddb9875f66728e7d1569ce3c
+      blend_prediction_sha256: a16d00d97c1156f532146cd7fb469b9614f39efdab0fe462ae6a4f049155ddef
+      dynamic_exp413_decompressed_content_sha256: 3a9bbd1f7e6ab93189c90b4c9c0da9d6a2858746028e93b25fe2a10c7be68d87
+      exp413_intermediate_submission_sha256: 04e6da90cee4325fb01bf7ce49bd87b91b16cf675cfb9d4cdaec77904aee5908
+      package_notebook_sha256: f566a26bc8b3a0792b987f47b307de2d16bd16eb348c6dc8c7dd34b72c30f127
+      remote_metadata_verified: true
+      remote_v2_markers_verified: true
+    model_source_kernel: kentookumura/exp497-strict-public-core-current-test-inference
+    model_source_kernel_version: 4
+    model_source_kernel_id_no: 129586103
+    required_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp497-strict-public-core-current-test-inference
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp073-full-replay-repro-guard-infer
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp226-k16-kappa-repro-inference
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp413-scale5-likpf-replacement-preflight
+      - kentookumura/exp413-scale5-likpf-selector-train
+      - kentookumura/exp413-scale5-likpf-signed-train
+      - kentookumura/exp413-scale5-likpf-downstream-train
+    bootstrap_contract_source: exp510_exp413_exact_public_preoverride_hedge_runtime_v4
+    serialized_model_set_sha256: dcc2166f4bd5731364efe0b3fb848a46cf87f8133cbe78890658a1062c604626
+    artifact_sha256:
+      model_manifest: dfbfcfee1390de321e3aaca2add97284da5db7a5e1da52f42bfa885a9143a22f
+      ridge_weights: 34aa73067d6e67b98eb72c40035b5065d6721674af89982a1089f1d803a6c727
+      weights: 90a03811116e91607d82c0aedb4dccca5645572152a62f96ad9972c1d11120c3
+      selector_policy: bdb763d04d0c81fbccf99c3ef3900f8b023487419bb5b576e22d8af9b6365141
+      feature_schema: ac8ceb67a34eef0517b0c293bbfdb0cf1ab382dc2cc82c6e080f466cd59fb098
+      reproducibility_manifest: cd0278a607bf37c2a36aff1e1fa3bcca5b59d2af2e167790ab68fc49119b83f9
+
+model:
+  name: strict_public_core_nested_dual_branch_plus_exp413_meta5
+  feature_surface: public_core_independent_from_exp413_final370
+  final_form: constant_convex_blend
+
+training_contract:
+  scientific_variants: 1
+  ml_branches: 2
+  configs_per_branch: 5
+  lightgbm_configs_per_branch: 3
+  catboost_configs_per_branch: 2
+  outer_folds: 5
+  inner_folds: 4
+  planned_lightgbm_boosters: 120
+  planned_catboost_boosters: 80
+  planned_total_boosters: 200
+  planned_ridge_models: 10
+  exp413_parent_retraining: 0
+  exp413_selector_retraining: 0
+  exp413_signed_selector_retraining: 0
+  exp413_tvt_model_retraining: 0
+  source_feature_counts:
+    sp45_residual_base: 195
+    learned_base_before_likelihood_pf: 195
+    learned_likelihood_pf_added: 10
+    learned_total: 205
+  physical_execution_inventory:
+    expected_wells: 773
+    selector_likelihood_pf_seed_banks: 773
+    learned_likelihood_pf_seed_banks: 773
+    likelihood_pf_total_seed_banks: 1546
+    seeds_per_bank: 128
+    particles_per_seed: 500
+    likelihood_pf_total_seed_well_runs: 197888
+    likelihood_pf_total_particle_starts: 98944000
+    pf_ancc_well_runs: 773
+    pf_ancc_particles_per_well: 600
+    pf_z_well_runs: 773
+    pf_z_particles_per_well: 600
+    selector_beam_configs: 14
+    selector_beam_well_runs: 10822
+    learned_beam_configs: 7
+    learned_beam_well_runs: 5411
+    total_beam_well_runs: 16233
+    ncc_windows: 3
+    ncc_well_window_runs: 2319
+    formation_plane_pool_fits: 5
+    dense_ancc_pool_fits: 5
+    fold_surface_well_queries_per_pool_family: 3865
+  exact_pf_beam_run_count_requires_stage0_source_inventory: false
+  push_requires_separate_user_approval: true
+
+stage0:
+  implemented: true
+  executable_candidate: exp497_strict_public_core_fold_safe_ensemble_on_exp413_compact_selfcontained_train.py
+  canonical_notebook_adopted: false
+  kaggle_run_approved: true
+  approved_scope: stage0_source_parent_fold_execution_feature_preflight_no_route_run
+  outputs:
+    - stage_0_source_audit.json
+    - stage_0_input_fold_row_manifest.json
+    - stage_0_inner_fold_manifest.csv
+    - stage_0_spatial_pool_ledger.csv
+    - stage_0_execution_inventory.json
+    - stage_0_feature_schema_plan.json
+    - stage_0_preflight.json
+  stop_after_preflight: true
+
+stages:
+  stage_p:
+    implemented: true
+    notebook_kinds:
+      - pfbeam_features_fold0
+      - pfbeam_features_fold1
+      - pfbeam_features_fold2
+      - pfbeam_features_fold3
+      - pfbeam_features_fold4
+    accelerator: cpu
+    shards: 5
+    shard_key: exp413_outer_fold
+    model_count: 0
+  stage_m:
+    implemented: true
+    notebook_kinds: [train_fold0, train_fold1, train_fold2, train_fold3, train_fold4]
+    accelerator: kaggle_gpu
+    boosters_per_shard: 40
+    ridge_models_per_shard: 2
+    total_boosters: 200
+    parent_retraining: 0
+  stage_e:
+    implemented: true
+    notebook_kind: train_aggregate
+    accelerator: cpu
+    model_count: 0
+    inference_enabled: false
+  stage_i:
+    implemented: true
+    notebook_kind: current_test_inference
+    accelerator: kaggle_gpu
+    mode: prediction_only_diagnostic_override
+    lightgbm_boosters: 24
+    catboost_boosters: 16
+    total_boosters: 40
+    ridge_models: 2
+    serialize_booster_models: true
+    serialized_lightgbm_models: 24
+    serialized_catboost_models: 16
+    serialize_ridge_weights: true
+    serialization_reload_parity_max_abs: 1.0e-5
+    exp413_retraining: 0
+    exp413_reinference: 0
+    submission_enabled: false
+  stage_i_saved_model_inference:
+    implemented: true
+    notebook_kind: inference
+    canonical_notebook_adopted: true
+    accelerator: kaggle_gpu
+    fitted_boosters: 0
+    loaded_exp497_boosters: 40
+    loaded_exp497_ridge_models: 2
+    loaded_exp413_boosters: 75
+    exp413_retraining: 0
+    submission_enabled: true
+    external_submission_enabled: false
+    status: complete_validated
+    kaggle_kernel_version: 2
+    kaggle_initial_status: RUNNING
+    kaggle_final_status: COMPLETE
+    rows: 14151
+    wells: 3
+    saved_model_inference_elapsed_seconds: 33.509
+    visible_parity_passed: true
+    submission_sha256: 04ca2e2f80f45bced1e22bd68a58002b4cb7c7e5b19510932375cdccafa6680a
+
+promotion_gate:
+  pooled_rmse_gain_min_ft: 0.03
+  nonworse_folds_required: 5
+  fixed_scope_max_delta_ft: 0.0
+  by_well_p95_max_delta_ft: 0.25
+  worst_well_max_delta_ft: 0.25
+  positive_public_core_weight_folds_required: 5
+  public_core_weight_max: 0.30
+  all_conditions_required: true
+  fail_decision: fail_close_strict_public_core_without_same_oof_rescue
+
+forbidden:
+  - fixed_public_well_id_rule
+  - q0522
+  - a27
+  - fixed_branch_shift
+  - same_well_contact_reconstruction
+  - visible_prefix_candidate_calibration
+  - visible_prefix_final_overlay
+  - public_tuned_bimodal_hedge
+  - model_package_correction
+  - pretrained_full_train_boosters_for_oof
+  - precomputed_submission_fallback
+  - public_output_copy
+  - public_lb_weight_or_threshold_tuning
+  - row_or_well_conditional_router
+  - same_oof_rescue
+  - exp413_retraining
+
+runtime:
+  authoritative_platform: kaggle_notebook
+  internet_enabled: false
+  gpu_required_for_model_stages: true
+  use_amp: false
+  partition_by_outer_fold: true
+  keep_both_full_feature_surfaces_in_ram: false
+  local_notebook_execution_allowed: false
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    inference_kernel_id: kentookumura/exp497-strict-public-core-saved-inference
+    inference_title: exp497 strict public core saved inference
+    inference:
+      enable_gpu: true
+      machine_shape: NvidiaTeslaT4
+    inference_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp497-strict-public-core-current-test-inference
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp073-full-replay-repro-guard-infer
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp226-k16-kappa-repro-inference
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp413-scale5-likpf-replacement-preflight
+      - kentookumura/exp413-scale5-likpf-selector-train
+      - kentookumura/exp413-scale5-likpf-signed-train
+      - kentookumura/exp413-scale5-likpf-downstream-train
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp413-scale5-likpf-downstream-train
+    bootstrap_dependency_files:
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - source: experiments/exp510_exp413_exact_public_preoverride_hedge/exp510_exp413_hidden_safe_runtime.py
+        destination: exp510_exp413_hidden_safe_runtime.py
+      - source: experiments/exp413_scale5_likpf_full_replacement_on_exp335/settings.py
+        destination: exp413_runtime/settings.py
+      - source: experiments/exp413_scale5_likpf_full_replacement_on_exp335/config.yaml
+        destination: exp413_runtime/config.yaml
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/config.yaml
+        destination: exp413_runtime/inputs/parent_exp264_config.yaml
+      - source: experiments/exp335_signed_residual_meta_on_exp264/config.yaml
+        destination: exp413_runtime/inputs/parent_exp335_config.yaml
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/candidate_contract.yaml
+        destination: exp413_runtime/inputs/exp264_candidate_contract.yaml
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_a_v4/artifacts/feature_catalog.csv
+        destination: exp413_runtime/inputs/exp264_stage_a_feature_catalog.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_a_v4/artifacts/feature_schema.json
+        destination: exp413_runtime/inputs/exp264_stage_a_feature_schema.json
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+        destination: exp413_runtime/inputs/exp218_clean_273_allowlist.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_feature_availability.csv
+        destination: exp413_runtime/inputs/exp218_feature_availability.csv
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: exp413_runtime/inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: exp413_runtime/inputs/exp218_source/config.yaml
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/settings.py
+        destination: exp413_runtime/inputs/exp218_source/settings.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/learned_likelihood_rawtest_feature_generator_parity.py
+        destination: exp413_runtime/inputs/exp145_source/learned_likelihood_rawtest_feature_generator_parity.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/pf_multi_observation_likelihood_probe.py
+        destination: exp413_runtime/inputs/exp145_source/pf_multi_observation_likelihood_probe.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/config.yaml
+        destination: exp413_runtime/inputs/exp145_source/config.yaml
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/settings.py
+        destination: exp413_runtime/inputs/exp145_source/settings.py
+      - source: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+        destination: exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_builder.py
+        destination: exp413_runtime/inputs/exp263_source/candidate_cache_builder.py
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_contract.py
+        destination: exp413_runtime/inputs/exp263_source/candidate_cache_contract.py
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_loader.py
+        destination: exp413_runtime/inputs/exp263_source/candidate_cache_loader.py
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/config.yaml
+        destination: exp413_runtime/inputs/exp263_source/config.yaml
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: exp413_runtime/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    pfbeam_features:
+      enable_gpu: false
+    pfbeam_features_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp413-scale5-likpf-downstream-train
+    pfbeam_features_fold0:
+      enable_gpu: false
+    pfbeam_features_fold1:
+      enable_gpu: false
+    pfbeam_features_fold2:
+      enable_gpu: false
+    pfbeam_features_fold3:
+      enable_gpu: false
+    pfbeam_features_fold4:
+      enable_gpu: false
+    pfbeam_features_fold0_kernel_sources: &stage_p_sources
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp413-scale5-likpf-downstream-train
+    pfbeam_features_fold1_kernel_sources: *stage_p_sources
+    pfbeam_features_fold2_kernel_sources: *stage_p_sources
+    pfbeam_features_fold3_kernel_sources: *stage_p_sources
+    pfbeam_features_fold4_kernel_sources: *stage_p_sources
+    train_fold0:
+      enable_gpu: true
+    train_fold1:
+      enable_gpu: true
+    train_fold2:
+      enable_gpu: true
+    train_fold3:
+      enable_gpu: true
+    train_fold4:
+      enable_gpu: true
+    train_fold0_kernel_sources: &stage_m_sources
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp413-scale5-likpf-downstream-train
+      - kentookumura/exp497-strict-public-core-stage-p-fold0
+      - kentookumura/exp497-strict-public-core-stage-p-fold1
+      - kentookumura/exp497-strict-public-core-stage-p-fold2
+      - kentookumura/exp497-strict-public-core-stage-p-fold3
+      - kentookumura/exp497-strict-public-core-stage-p-fold4
+    train_fold1_kernel_sources: *stage_m_sources
+    train_fold2_kernel_sources: *stage_m_sources
+    train_fold3_kernel_sources: *stage_m_sources
+    train_fold4_kernel_sources: *stage_m_sources
+    train_aggregate:
+      enable_gpu: false
+    train_aggregate_kernel_sources:
+      - kentookumura/exp413-scale5-likpf-downstream-train
+      - kentookumura/exp497-strict-public-core-m-fold0
+      - kentookumura/exp497-strict-public-core-m-fold1
+      - kentookumura/exp497-strict-public-core-m-fold2
+      - kentookumura/exp497-strict-public-core-m-fold3
+      - kentookumura/exp497-strict-public-core-m-fold4
+    current_test_inference:
+      enable_gpu: true
+    current_test_inference_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp413-scale5-likpf-current-test-inference
+      - kentookumura/exp497-strict-public-core-stage-p-fold0
+      - kentookumura/exp497-strict-public-core-stage-p-fold1
+      - kentookumura/exp497-strict-public-core-stage-p-fold2
+      - kentookumura/exp497-strict-public-core-stage-p-fold3
+      - kentookumura/exp497-strict-public-core-stage-p-fold4
+      - kentookumura/exp497-strict-public-core-stage-e
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_stage_split_fold_family_well_seed_index
+  stochastic_components:
+    - selector_likelihood_pf
+    - learned_likelihood_pf
+    - pf_ancc
+    - pf_z
+    - lightgbm
+    - catboost
+  parallel_rng_policy: precompute_local_seeds_and_never_use_worker_global_rng
+  gzip_sha_policy: decompressed_content_sha_is_primary
+  record:
+    kernel_version: true
+    source_sha: true
+    input_sha: true
+    fold_manifest_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    candidate_content_sha: true
+    model_manifest_sha: true
+    component_oof_sha: true
+    blend_weight_sha: true
+    final_oof_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Public output byte parity is not a goal because the source RNG is replaced with stable per-well seeds.
+    - Keep deterministic_anchor false until an independent rerun reproduces feature, model, and OOF evidence.
+
+notes:
+  - Stage 0 compact preflight implementation was authorized on 2026-08-01.
+  - Stage P/M1/M2/E implementation, Kaggle package, and Kaggle run were authorized on 2026-08-01.
+  - The user explicitly required Kaggle GPU and prohibited Colab for this execution.
+  - This experiment tests output diversity before any public-core component is integrated into exp413.

@@ -1,0 +1,216 @@
+experiment:
+  name: exp353_typewell_group_quality_feature_preflight
+  description: >-
+    Independent zero-booster preflight for six fold-safe Type Well group quality
+    features before any exp148 add-only LightGBM training.
+  route: ml_model
+  status: completed_stage_0_gate_failed_closed
+  created_at: "2026-07-23"
+  updated_at: "2026-07-23"
+
+lineage:
+  parent: exp148_learned_likelihood_fulltrain_addonly_on_exp092
+  steering: ../../.steering/20260723-exp353-typewell-group-quality-feature-preflight
+  references:
+    - exp311_typewell_group_prefix_suffix_gr_calibration_readout
+    - exp314_label_derived_typewell_gr_quality_addonly
+  diff_summary: >-
+    Reframes the old exp314 feature idea as a Stage 0 zero-booster stability and
+    error-association readout that does not require exp311 or exp313 promotion.
+    The six-column schema is fixed and Stage 1 remains separately gated.
+
+implementation:
+  enabled: true
+  scope: stage_0_compact_selfcontained_zero_booster_preflight
+  train_notebook_state: compact_selfcontained_canonical_adopted
+  canonical_notebook_adopted: true
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: exp148_grouped_outer5_typewell_quality_preflight
+  metric: feature_stability_and_exp148_error_association_then_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  control: saved_exp148_oof_no_retrain
+  fit_scope: outer_train_wells_only
+  truth_attachment: after_group_prior_and_feature_content_sha_freeze
+  leakage_policy:
+    - Outer-valid well ids must have zero overlap with every group-prior fit table.
+    - Outer-valid rows are joined by Type Well content only.
+    - Unknown-suffix target statistics, direct calibrated GR, TVT correction, and well-id features are forbidden.
+
+data:
+  expected_wells: 773
+  expected_rows: 3783989
+  train_root_candidates:
+    - data/raw/train
+  exp065_membership:
+    filename: common_typewell_cluster_assignments.csv
+    expected_raw_sha256: dcda8588cc1dd9261bafae7de00c890393e38b8a0ca0eb86fbba18a2cffc4a50
+    candidates:
+      - experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/common_typewell_cluster_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp065-typewell-supertype-cluster-cv-audit-train/artifacts/common_typewell_cluster_assignments.csv
+      - /kaggle/input/exp065-typewell-supertype-cluster-cv-audit-train/artifacts/common_typewell_cluster_assignments.csv
+  exp148_artifacts:
+    expected_kernel_id: kentookumura/exp148-train
+    expected_kernel_version: 1
+    expected_summary_raw_sha256: 18d4491f70629d49bb9d9f4ca9c77ca8479d69df6f8c715d317c0e7eaa56ea86
+    expected_by_well_raw_sha256: 3fd88c32de63c5df14756ef4ea55f0fb3dd8b050eaa2aa87b97c3e7bd5f2dc87
+    expected_lgb_mean_rmse: 8.50128118189582
+    expected_wells: 773
+    variant: learned_likelihood_confidence_addonly
+    mode: gpu_repro_guard_dp_threads8
+    model: lgb_mean
+    root_candidates:
+      - experiments/exp148_learned_likelihood_fulltrain_addonly_on_exp092/kaggle/output/train_v1/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp148-train/artifacts
+      - /kaggle/input/exp148-train/artifacts
+    filenames:
+      summary: exp148_learned_likelihood_fulltrain_addonly_on_exp092_summary.json
+      by_well: exp148_learned_likelihood_fulltrain_addonly_on_exp092_by_well.csv
+
+model:
+  name: exp148_typewell_group_quality_addonly_preflight
+  features:
+    add_only:
+      - typewell_group_log_support_wells
+      - typewell_group_log_support_rows
+      - typewell_group_residual_sigma
+      - typewell_group_fit_rmse
+      - typewell_group_bias_abs_gr50
+      - typewell_group_prior_available
+    fallback: global_outer_train_prior_with_availability_zero
+    posthoc_column_selection: false
+  calibration:
+    typewell_group: native_overlap_1
+    group_method: native_overlap
+    group_threshold: "1"
+    overlap_rows_min: 32
+    tvt_duplicate_reducer: median
+    interpolation: linear_no_extrapolation
+    huber_delta: 1.345
+    huber_max_iterations: 50
+    huber_tolerance: 1.0e-8
+    identity_shrinkage_support_k: 200.0
+    group_aggregate: equal_well_median
+    minimum_peer_wells: 1
+    minimum_peer_effective_rows: 32
+  stage_0:
+    controls: [real_native_group, stable_group_label_shuffle_within_fold]
+    pass_requires_all:
+      minimum_coverage: 0.90
+      maximum_fallback_fraction: 0.10
+      require_all_features_finite: true
+      minimum_residual_sigma_vs_exp148_well_rmse_spearman: 0.15
+      minimum_positive_folds: 4
+      minimum_exp148_rmse_q4_minus_q1_ft: 0.25
+      minimum_real_minus_shuffle_spearman: 0.05
+  stage_1:
+    enabled_condition: stage_0_all_gates_pass_and_separate_user_approval
+    active_variants: [typewell_group_quality_6_addonly]
+    configs: [lgb0, lgb1, lgb2]
+    folds: 5
+    boosters: 15
+    control_retrain: false
+    pass_requires_all:
+      minimum_lgb_mean_rmse_gain_vs_exp148_ft: 0.03
+      minimum_improved_folds: 4
+      require_all_distance_buckets_non_regression: true
+      require_hidden_like_spatial_non_regression: true
+      require_hidden_like_typewell_purged_non_regression: true
+      maximum_worst_well_regression_ft: 0.25
+  forbidden:
+    - same_readout_feature_selection
+    - group_definition_grid
+    - calibrated_gr_value
+    - direct_tvt_correction
+    - hard_group_router
+
+artifacts:
+  output_prefix: exp353_typewell_group_quality_feature_preflight
+  expected_stage_0_artifacts:
+    - exp353_typewell_group_quality_feature_preflight_fold_manifest.csv
+    - exp353_typewell_group_quality_feature_preflight_group_membership.csv
+    - exp353_typewell_group_quality_feature_preflight_outer_train_well_quality.csv
+    - exp353_typewell_group_quality_feature_preflight_group_quality_priors.csv
+    - exp353_typewell_group_quality_feature_preflight_feature_manifest.csv
+    - exp353_typewell_group_quality_feature_preflight_feature_schema.csv
+    - exp353_typewell_group_quality_feature_preflight_error_association.csv
+    - exp353_typewell_group_quality_feature_preflight_fold_metrics.csv
+    - exp353_typewell_group_quality_feature_preflight_gate.json
+    - exp353_typewell_group_quality_feature_preflight_input_manifest.json
+    - exp353_typewell_group_quality_feature_preflight_scientific_contract.json
+    - exp353_typewell_group_quality_feature_preflight_summary.json
+
+execution_contract:
+  stage_0: {preflight_variants: 1, negative_controls: 1, folds: 5, model_configs: 0, trained_folds: 0, boosters: 0}
+  stage_1_if_pass: {scientific_variants: 1, model_configs: 3, trained_folds: 5, boosters: 15, control_boosters: 0}
+  parent_control_retraining: false
+
+execution:
+  implementation_approved: true
+  implementation_approved_at: "2026-07-23"
+  kaggle_push_approved: true
+  kaggle_push_approved_at: "2026-07-23"
+  active_stage: stage_0_failed_closed_without_rescue
+  run_stage_0: true
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle:
+    enable_gpu: false
+    enable_gpu_stage_0: false
+    enable_gpu_stage_1_if_approved: true
+    enable_internet: false
+    runtime_limit_seconds: 1800
+    train_run_on_push: true
+    train_kernel_id: kentookumura/exp353-typewell-quality-preflight-train
+    train_title: exp353 typewell quality preflight train
+    train_kernel_version: 1
+    train_kernel_id_no: 128362932
+    train_kernel_sources:
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+      - kentookumura/exp148-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stage0_then_inherit_exp148_fixed_model_seeds
+  stochastic_components:
+    - stage_1_lightgbm_gpu_if_separately_approved
+  parallel_rng_policy: stable_group_well_order_then_fixed_exp148_threads_and_seeds
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Stage 0 records no model or prediction SHA; Stage 1 would record 15 model and OOF SHAs.
+    - Raw-test feature regeneration remains outside the approved design-only scope.
+
+inference: {enabled: false, create_submission: false}
+
+notes:
+  - The user approved advancing after exp352 showed positive average signal; this authorizes only the CPU Stage 0 implementation and run recorded here.
+  - Stage 0 uses raw row counts to reconstruct the saved exp148 GroupKFold assignment before opening exp148 error.
+  - The exp065 native-overlap membership and exp148 summary/by-well control are SHA pinned.
+  - Stage 1 reserves one variant, three configs, five folds, and 15 new boosters with zero control boosters.
+  - Stage 1, raw-test feature regeneration, inference, and submission remain separately gated and disabled.
+  - Stage 0 version 1 failed the fixed residual-sigma correlation, quartile-lift, and real-minus-shuffle gates.
+  - The branch is closed without feature selection, gate tuning, Stage 1, rerun, inference, or submission.

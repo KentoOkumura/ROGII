@@ -1,0 +1,510 @@
+experiment:
+  name: exp496_exp486_absolute_geometry_fixed13_selector_on_exp264
+  description: >-
+    Add the saved exp486 absolute-geometry likelihood-PF prediction as the
+    thirteenth candidate to the corrected exp264 fixed12 dual selector. The
+    existing candidates, fixed fallback, objectives, folds, and model settings
+    remain unchanged. The compact Stage A/C implementation and contract tests
+    are complete; the fixed Stage A/C Kaggle CPU run is approved.
+  route: ensemble
+  status: completed_train_side_rejected_no_submit
+  created_at: "2026-07-31"
+  updated_at: "2026-07-31"
+  inference_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.n_folds
+    - validation.score_rows
+
+lineage:
+  parent: exp264_exp263_candidate_confidence_dual_selector
+  candidate_parent: exp486_exp226_geometry_residual_likelihood_pf
+  fixed_bank_source: exp263_last_anchor_better_candidate_confidence_pair_cache
+  implementation_reference: exp392_exp389_fixed13_dual_selector_on_exp264
+  steering: ../../.steering/20260731-exp496-exp486-absolute-geometry-fixed13-selector-on-exp264
+  diff_summary: >-
+    Change only the primary candidate inventory from corrected exp264 fixed12
+    to fixed12 plus exp486_absolute_geometry_likpf. Add the saved exp486
+    absolute-geometry prediction and five target-free mechanism confidence
+    fields after global key join. Keep the residual variant, exp486 HMM blend,
+    new pair formulas, and the seven-candidate fixed fallback out of scope.
+    Do not change objectives, folds, sampling, LightGBM parameters, thresholds,
+    downstream TVT, inference, or submission.
+
+implementation:
+  approved: true
+  approval_source: user_message_implement_exp496
+  code_created: true
+  contracts_created: true
+  canonical_notebooks_are_placeholders: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_is_placeholder: true
+  compact_train_candidate: exp496_exp486_absolute_geometry_fixed13_selector_on_exp264_compact_selfcontained_train.py
+  compact_train_notebook_candidate: exp496_exp486_absolute_geometry_fixed13_selector_on_exp264_compact_selfcontained_train.ipynb
+  compact_inference_guard_candidate: exp496_exp486_absolute_geometry_fixed13_selector_on_exp264_compact_selfcontained_inference.py
+  compact_inference_guard_notebook_candidate: exp496_exp486_absolute_geometry_fixed13_selector_on_exp264_compact_selfcontained_inference.ipynb
+  dedicated_test: ../../tests/test_exp496_exp486_absolute_geometry_fixed13_selector.py
+  kaggle_package_created: true
+  kaggle_run_approved: true
+  inference_implemented: false
+  submission_implemented: false
+
+validation:
+  strategy: outer5_groupkfold_fixed13_selector_then_inner4_nested_stacking
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  outer_folds: 5
+  inner_folds: 4
+  group_column: well
+  score_rows: TVT_input_isna
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_score_candidates: 13
+  expected_primary_candidates: 12
+  expected_fixed_fallback_candidates: 7
+  fold_source: exp263_selector_outer_fold_after_global_exp486_key_join
+  leakage_policy:
+    - Read exp486 candidate and mechanism data through the frozen allowlists only.
+    - Do not read exp486 truth, error, residual prediction, control, role, scope, by-well, or gate fields before feature freeze.
+    - Audit the upstream exp226 group-safe OOF contract, but never use its fold ID as a selector feature.
+    - Globally join exp486 by well_id,row_idx and repartition by the exp263 selector outer fold.
+    - Exclude outer-valid wells from inner assignment, fit, and early stopping.
+    - Build outer-train compact rows from inner OOF scores only.
+    - Build outer-valid compact rows from the four inner-model ensemble only.
+    - Read parent exp264 scores only after all fixed13 selector scores and choices freeze.
+    - Compute add-one oracle and incumbent-reranking readouts post-freeze and diagnostic-only.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  exp263_stage0:
+    expected_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+    expected_catalog_sha256: 7cd748661b719bfcfb1ed21b9fe314366b1c089cc0dd224a9e4cbd4ba7e9e6e0
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts
+      - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts
+      - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1/artifacts
+  exp263_stage0_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts
+    - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts
+    - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1/artifacts
+  exp263_stage0_manifest_patterns:
+    - "**/cache_manifest.json"
+  exp263_expected_stage0_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+  exp263_expected_catalog_sha256: 7cd748661b719bfcfb1ed21b9fe314366b1c089cc0dd224a9e4cbd4ba7e9e6e0
+  exp486_source:
+    source_experiment: exp486_exp226_geometry_residual_likelihood_pf
+    source_kernel: kentookumura/exp486-exp226-geometry-residual-likpf-train
+    source_kernel_version: 4
+    frozen_dataset: kentookumura/exp486-v2-stage1-frozen-targetfree
+    expected_scientific_contract_sha256: 62dcb499c0c9c9320091fa28663771493847dd6f46f03737015d1373dddc5f8e
+    expected_exp226_geometry_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    expected_rows: 3783989
+    expected_wells: 773
+    freeze_manifest:
+      filename: exp486_exp226_geometry_residual_likelihood_pf_stage1_freeze_manifest.json
+      expected_raw_sha256: 47ce46149c55b1d853aab08572c6254064fa9ad92751522640b855ef287677cc
+      patterns:
+        - /kaggle/input/exp486-v2-stage1-frozen-targetfree/exp486_exp226_geometry_residual_likelihood_pf_stage1_freeze_manifest.json
+        - /kaggle/input/datasets/kentookumura/exp486-v2-stage1-frozen-targetfree/exp486_exp226_geometry_residual_likelihood_pf_stage1_freeze_manifest.json
+        - "**/exp486_exp226_geometry_residual_likelihood_pf_stage1_freeze_manifest.json"
+    prediction:
+      filename_gzip: exp486_exp226_geometry_residual_likelihood_pf_stage1_predictions.csv.gz
+      filename_unpacked: exp486_exp226_geometry_residual_likelihood_pf_stage1_predictions.csv
+      expected_gzip_raw_sha256: 0fe0cdda02c49eaa80ab668cb8e68e5b3e02b98f46a5105be6818497f2b65de3
+      expected_decompressed_payload_sha256: 05f692238c53711172f5e4e430eb46766cd26f2e3dac92472cb211b5639153e6
+      expected_upstream_logical_sha256: 70a5ac662c9c58fe54d050f1350ed08e912ecb4edc6362e98e3c3663cd704ea8
+      value_column: likpf_scale5_absolute_geometry_unary
+      allowlist_columns:
+        - id
+        - well_id
+        - row_idx
+        - suffix_offset
+        - likpf_scale5_absolute_geometry_unary
+      patterns:
+        - /kaggle/input/exp486-v2-stage1-frozen-targetfree/exp486_exp226_geometry_residual_likelihood_pf_stage1_predictions.csv
+        - /kaggle/input/datasets/kentookumura/exp486-v2-stage1-frozen-targetfree/exp486_exp226_geometry_residual_likelihood_pf_stage1_predictions.csv
+        - "**/exp486_exp226_geometry_residual_likelihood_pf_stage1_predictions.csv*"
+    absolute_ledger:
+      filename_gzip: exp486_exp226_geometry_residual_likelihood_pf_stage1_absolute_ledger.csv.gz
+      filename_unpacked: exp486_exp226_geometry_residual_likelihood_pf_stage1_absolute_ledger.csv
+      expected_gzip_raw_sha256: 3f7381f1265d9b5bc9f0b9a68d4a3a088a620bfc04d674faca0d608390ea7b96
+      expected_decompressed_payload_sha256: ef76d89fef9529d11501a5c17999e95e22d45006c0fd1e6b80e71d674b6c5a80
+      allowlist_columns:
+        - id
+        - well_id
+        - row_idx
+        - suffix_offset
+        - geometry_residual_mean
+        - geometry_residual_std
+        - geometry_log_factor_mean
+        - effective_sample_size
+        - resampled_seed_fraction
+      patterns:
+        - /kaggle/input/exp486-v2-stage1-frozen-targetfree/exp486_exp226_geometry_residual_likelihood_pf_stage1_absolute_ledger.csv
+        - /kaggle/input/datasets/kentookumura/exp486-v2-stage1-frozen-targetfree/exp486_exp226_geometry_residual_likelihood_pf_stage1_absolute_ledger.csv
+        - "**/exp486_exp226_geometry_residual_likelihood_pf_stage1_absolute_ledger.csv*"
+    forbidden_columns_and_sources:
+      - likpf_scale5_slow_residual_offset
+      - true_tvt
+      - TVT
+      - TVT_input
+      - likpf_scale_5_x1p0
+      - saved_exp209_hmm
+      - fold
+      - role
+      - error
+      - abs_error
+      - oracle_candidate
+      - scientific_gate
+      - by_well_metrics
+  parent_exp264_stage_c:
+    kernel_id: kentookumura/exp264-exp263-confidence-dual-selector-train
+    kernel_version: 6
+    expected_score_file_sha256: a10b7848127f01bef522f4b17dfd1640c9784956892dc24fc1159e3869500abc
+    expected_hard_primary_oof_rmse: 8.652531955610227
+    expected_hard_primary_fold_rmse:
+      - 8.991720025343861
+      - 8.426634924939929
+      - 8.900503340840876
+      - 8.426473003260869
+      - 8.499558672015853
+    expected_fixed_fallback_oof_rmse: 8.238331546485645
+    score_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-train/artifacts/nested_outer_valid_candidate_score.parquet
+      - /kaggle/input/exp264-exp263-confidence-dual-selector-train/artifacts/nested_outer_valid_candidate_score.parquet
+      - "**/nested_outer_valid_candidate_score.parquet"
+  exp251_selected_feature_schema_patterns:
+    - inputs/exp251_v4_selected_feature_schema.csv
+    - experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/kaggle/output/train_v4_selected/artifacts/exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv
+    - "**/exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv"
+  exp251_expected_selected_feature_count: 295
+  hidden_like_assignment:
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    patterns:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+  hidden_like_assignment_patterns:
+    - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  hidden_like_assignment_expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  candidate_contract: candidate_contract.yaml
+  feature_contract: feature_contract.yaml
+  output_contract: output_contract.md
+
+candidate_bank:
+  parent_score_candidates: 12
+  added_candidate: exp486_absolute_geometry_likpf
+  score_candidates: 13
+  primary_candidates: 12
+  fixed_fallback_candidates: 7
+  added_candidate_domain: primary_only
+  fixed_fallback_unchanged: true
+  residual_variant_included: false
+  exp486_fixed_hmm_blend_included: false
+  new_pair_formulas: 0
+  candidate_id_encoding: declared_order_one_hot_13
+  ordinal_candidate_index_feature: false
+
+features:
+  parent_surface: exp264_corrected_stage_a_v4_raw_test_safe_88
+  schema_mode: refreeze_before_truth_after_single_candidate_addition
+  groups: [ctx, cand, conf, bank, formula, id]
+  missing_policy: native_nan_plus_validity_flags
+  permitted_mechanical_drops: [all_missing, constant, exact_duplicate]
+  post_truth_feature_selection_allowed: false
+  raw_context_allowlist: [MD, X, Y, Z, GR]
+  raw_context:
+    horizontal_numeric_allowlist: [MD, X, Y, Z, GR]
+    add_delta_from_last_known_row: true
+    add_typewell_summary: true
+    forbidden_columns: [TVT, TVT_input, target, true_tvt]
+  audit:
+    base_rows_per_fold: 10000
+    correlation_long_rows: 50000
+    pearson_abs_threshold: 0.999
+    spearman_abs_threshold: 0.999
+  added_candidate_native_confidence:
+    - geometry_residual_mean
+    - geometry_residual_std
+    - geometry_log_factor_mean
+    - effective_sample_size
+    - resampled_seed_fraction
+  universal_proxy_groups:
+    - candidate_availability_and_coverage
+    - candidate_anchor_distance
+    - candidate_local_shape
+    - candidate_bank_disagreement
+    - candidate_family_and_kind_one_hot
+  shape_windows: [32, 128, 512]
+
+model:
+  name: exp486_absolute_geometry_fixed13_dual_objective_candidate_long_lightgbm
+  active_variants: [absolute_geometry_fixed13_addone]
+  trains_new_boosters: true
+  objectives:
+    - name: pred_abs_error
+      estimator: lightgbm_regression_l1
+      label: candidate_abs_error
+    - name: p_within10
+      estimator: lightgbm_binary
+      label: candidate_within10
+  training:
+    max_train_base_rows_per_outer_fold: 60000
+    max_valid_base_rows_for_early_stopping: 30000
+    predict_base_row_chunk_size: 20000
+    num_boost_round: 1200
+    early_stopping_rounds: 80
+    log_evaluation_period: 100
+  lightgbm_common:
+    learning_rate: 0.035
+    num_leaves: 63
+    min_child_samples: 80
+    subsample: 0.85
+    subsample_freq: 1
+    colsample_bytree: 0.85
+    reg_alpha: 0.1
+    reg_lambda: 1.0
+    n_jobs: 8
+    deterministic: true
+    force_col_wise: true
+    verbosity: -1
+  selector_stage:
+    enabled_after_separate_implementation_and_run_approval: true
+    variants: 1
+    objectives: 2
+    outer_folds: 5
+    inner_folds: 4
+    planned_cpu_selector_boosters: 40
+    parent_control_retraining: false
+    expected_compact_partitions: 25
+    expected_compact_rows: 18919945
+    expected_outer_valid_score_long_rows: 49191857
+  nested_downstream_stage:
+    enabled: true
+    variants: 1
+    objectives: 2
+    outer_folds: 5
+    inner_folds: 4
+    planned_cpu_selector_boosters: 40
+    parent_control_retraining: false
+    expected_compact_partitions: 25
+    expected_compact_rows: 18919945
+    expected_outer_valid_score_long_rows: 49191857
+  downstream_tvt_stage:
+    enabled: false
+    planned_gpu_boosters: 0
+
+guards:
+  technical:
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_candidates: 13
+    expected_models: 40
+    expected_compact_partitions: 25
+    expected_compact_rows: 18919945
+    expected_outer_valid_score_long_rows: 49191857
+    require_exp486_payload_and_upstream_sha: true
+    require_exp486_candidate_and_mechanism_finite: true
+    require_exp486_exp263_global_key_parity: true
+    require_upstream_exp226_group_safe_oof_contract: true
+    forbid_upstream_fold_as_model_feature: true
+    require_truth_error_oracle_control_gate_reads_before_feature_freeze: 0
+    require_fixed_fallback_prediction_and_error_parity_max_abs_ft: 0.0
+  selector_score:
+    improve_outer_train_prior_pooled: true
+    minimum_improved_folds_each_metric: 4
+    metrics: [expected_error_mae, within10_logloss, within10_brier]
+  integration:
+    added_candidate: exp486_absolute_geometry_likpf
+    minimum_added_candidate_primary_top1_fraction: 0.005
+    minimum_positive_usage_folds: 4
+    maximum_pooled_delta_rmse_vs_parent_fixed12_selector: 0.0
+    minimum_improved_folds_vs_parent_fixed12_selector: 4
+    maximum_scope_delta_rmse_ft: 0.02
+    high_missing_fraction_threshold: 0.30
+    required_scopes:
+      - raw_gr_observed
+      - raw_gr_missing
+      - missing_fraction_high
+      - distance_0_250
+      - distance_1000_plus
+      - hidden_like_spatial
+      - hidden_like_typewell_purged
+    maximum_by_well_p95_delta_rmse_ft: 0.25
+    maximum_worst_well_delta_rmse_ft: 0.25
+    require_all_checks: true
+    failure_decision: FAIL_CLOSE_EXP486_ABSOLUTE_FIXED13_SELECTOR
+    same_oof_rescue_allowed: false
+  diagnostic_only:
+    addone_oracle_granularities: [h512, whole_well]
+    candidate_usage_vs_well_delta: true
+    incumbent_choice_change_when_added_candidate_not_top1: true
+    zero_added_candidate_usage_well_outcome: true
+    score_margin_entropy_reranking: true
+    score_margin_definition: primary_pred_abs_error_top2_minus_top1
+    entropy_definition: all_candidate_p_within10_normalized_shannon_entropy
+    diagnostic_quantile_bins: 4
+    affects_scientific_gate: false
+
+execution:
+  stage: stage_a_stage_c_completed_scientific_fail_terminal_close
+  implementation_approved: true
+  implementation_authorization_source: user_message_implement_exp496
+  run_approved: true
+  run_approved_at: "2026-07-31"
+  run_authorization_source: user_message_execute_exp496
+  approved_scope: fixed13_stage_a_plus_stage_c_1_variant_2_objectives_5_outer_4_inner_40_cpu_boosters_no_control_retraining
+  approval_required: true
+  active_variants: 1
+  lightgbm_objectives: 2
+  outer_folds: 5
+  inner_folds: 4
+  planned_cpu_selector_boosters: 40
+  planned_cpu_boosters: 40
+  trained_cpu_selector_boosters: 40
+  parent_control_retraining: false
+  candidate_pf_rerun_well_runs: 0
+  hmm_well_runs: 0
+  beam_well_runs: 0
+  gpu_boosters: 0
+  downstream_tvt_training: false
+  inference: false
+  submission: false
+  next_action: terminal_close_without_same_oof_rescue_or_inference
+
+results:
+  source: kaggle_cpu_version_1_logs_and_selected_output
+  decision: FAIL_CLOSE_EXP486_ABSOLUTE_FIXED13_SELECTOR
+  technical_gate_passed: true
+  leakage_gate_passed: true
+  selector_score_guard_passed: true
+  scientific_gate_passed: false
+  hard_primary_oof_rmse: 8.461357621859406
+  parent_fixed12_hard_oof_rmse: 8.652531955610227
+  delta_hard_primary_vs_parent_ft: -0.19117433375082094
+  fixed_fallback_oof_rmse: 8.238331546485645
+  improved_folds_vs_parent: 4
+  fold_hard_primary_rmse:
+    - 8.749310055811218
+    - 8.39698123654541
+    - 8.222563261744643
+    - 8.532922141679462
+    - 8.395314771429616
+  exp486_top1_fraction: 0.11104974142366693
+  exp486_positive_usage_folds: 5
+  required_scope_checks_passed: 7
+  required_scope_checks_total: 7
+  improved_wells: 416
+  regressed_wells: 357
+  by_well_p95_delta_rmse_ft: 1.1093598616556692
+  worst_well: 14fee784
+  worst_well_delta_rmse_ft: 9.361781277659858
+  fixed_fallback_error_parity_max_abs_ft: 0.0
+  runtime_seconds: 3945.563001373
+  same_oof_rescue_allowed: false
+  downstream_tvt_training: false
+  inference: false
+  submission: false
+  selected_output_dir: kaggle/output/train_v1/artifacts
+  logs_path: kaggle/output/train_v1/logs.json
+  logs_sha256: 40a731b6cf3c4e42c7d752be93ee85e28ff5ba60e3b0891a012820d15d19eb44
+  feature_schema_sha256: 7ad9e6b092df00195eeddb526adf09360ca9e681affeb3ad3be484174d1bb2cc
+  model_manifest_sha256: d4ac1528ab9b1336fd52a5498ef445edfc260bac7e88c5acbe4a05595136a977
+  compact_manifest_sha256: 7bacee14f7e4aabb6b6a821b269083438f93e6405e08f104ebcb7c34c926b2ac
+  outer_valid_candidate_score_sha256: 07588f6d7d51970ece0b6b4e5ab5fdf22529052c66538aeccbfc21ad2e95003e
+  scientific_gate_sha256: 60e73bd63ea6ed9cf7c86d2a83439a7c69d9a0d86e68010dc6db97379fa6d5fa
+
+artifacts:
+  output_prefix: exp496_exp486_absolute_geometry_fixed13_selector_on_exp264
+  planned:
+    - exp496_input_contract.json
+    - exp496_exp486_prediction_manifest.json
+    - exp496_exp486_selector_fold_repartition.json
+    - raw_context_availability_audit.csv
+    - feature_catalog.csv
+    - feature_schema.json
+    - feature_duplicate_correlation_audit.csv
+    - confidence_coverage_by_candidate_fold.csv
+    - exp251_v4_feature_mapping.csv
+    - compact_meta_schema.json
+    - stage_a_summary.json
+    - nested_fold_manifest.csv
+    - nested_selector_model_manifest.json
+    - nested_compact_partition_manifest.csv
+    - nested_compact_manifest.json
+    - nested_outer_valid_candidate_score.parquet
+    - nested_selector_metrics.json
+    - nested_feature_importance_by_objective_outer_inner.csv
+    - exp496_feature_importance_summary.csv
+    - exp496_feature_importance_top20.png
+    - exp496_fixed13_vs_fixed12_scope_metrics.csv
+    - exp496_fixed13_candidate_usage.csv
+    - exp496_fixed13_vs_fixed12_by_well.csv
+    - exp496_incumbent_reranking_diagnostic.csv
+    - exp496_incumbent_reranking_summary.json
+    - exp496_postfreeze_addone_novelty.csv
+    - exp496_postfreeze_addone_novelty.json
+    - exp496_scientific_gate.json
+    - exp496_summary.json
+    - reproducibility_manifest.json
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  batch_size: 20000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    planned_kernel_id: kentookumura/exp496-exp486-fixed13-selector-train
+    planned_kernel_title: exp496 exp486 fixed13 selector train
+    kernel_version: 1
+    kernel_id_no: 129287597
+    pushed_at: "2026-07-31"
+    completed_at: "2026-07-31"
+    status: COMPLETE
+    dataset_sources:
+      - kentookumura/exp486-v2-stage1-frozen-targetfree
+    kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-train
+    bootstrap_dependency_files:
+      - source: experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/kaggle/output/train_v4_selected/artifacts/exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv
+        destination: inputs/exp251_v4_selected_feature_schema.csv
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_global_lightgbm_seed_and_stable_sha256_sampling_keys
+  stochastic_components:
+    - lightgbm_row_and_column_sampling
+    - candidate_long_row_sampling
+  parallel_rng_policy: stable_key_sampling_before_parallel_fit_no_global_rng_in_workers
+  feature_sha_policy: decompressed_content_sha_for_gzip_and_logical_or_file_sha_for_parquet
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    candidate_score_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Saved exp486 PF output is reused; no stochastic PF generation occurs in exp496.
+    - Do not treat exp496 as a deterministic submission anchor.
+
+notes:
+  - Design frozen on 2026-07-31 at the user's request.
+  - Compact implementation and contract tests were approved by the user and completed on 2026-07-31.
+  - The user approved canonical train Notebook adoption and the fixed Stage A/C Kaggle CPU run on 2026-07-31.
+  - Downstream TVT, current-test candidate generation, inference, and submission remain unapproved.
+  - Exp486 direct scientific gate failure remains unchanged.
+  - Version 1 improved pooled RMSE and all seven fixed scopes but failed both by-well tail guards; close without same-OOF rescue.

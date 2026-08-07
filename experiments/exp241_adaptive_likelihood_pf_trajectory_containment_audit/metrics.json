@@ -1,0 +1,65 @@
+{
+  "experiment": "exp241_adaptive_likelihood_pf_trajectory_containment_audit",
+  "status": "completed_partial_train_side_rejected_no_shard1_no_inference_no_submit",
+  "route": "pf_beam",
+  "metric": "train_side_rmse",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "execution": {
+    "active_treatment_count": 1,
+    "pf_control_replay_count": 1,
+    "pf_treatment_replay_count": 1,
+    "total_pf_replays": 2,
+    "well_shard_count": 4,
+    "active_well_shard_index": 0,
+    "particles": 500,
+    "seeds": 128,
+    "lightgbm_config_count": 0,
+    "fold_count": 0,
+    "total_boosters": 0,
+    "gpu": false
+  },
+  "partial_results_shards_0_2_3": {
+    "complete_wells": 574,
+    "total_wells": 773,
+    "coverage_fraction": 0.742561,
+    "rows": 2813393,
+    "saved_exp072_likpf_mean_rmse": 11.323679,
+    "paired_t1_control_rmse": 13.235174,
+    "gated_t2_rmse": 13.223203,
+    "gated_t2_minus_paired_t1_rmse": -0.011971,
+    "gated_t2_minus_saved_exp072_rmse": 1.899524,
+    "paired_t1_minus_saved_exp072_rmse": 1.911495,
+    "rmse_1000_plus": {
+      "saved_exp072_likpf_mean": 12.406563,
+      "paired_t1_control": 14.444841,
+      "gated_t2": 14.432237,
+      "gated_t2_minus_paired_t1": -0.012604
+    },
+    "hidden_like_gated_t2_minus_paired_t1": {
+      "verification_like_spatial": 0.012390,
+      "verification_like_typewell_purged": 0.011157
+    },
+    "worst_well_max_gated_t2_minus_paired_t1": 1.666805,
+    "event_count": 38946,
+    "mean_absolute_path_divergence_ft": {
+      "horizon_8": 0.127775,
+      "horizon_1024": 1.399960,
+      "end": 3.123176
+    },
+    "mean_terminal_absolute_divergence_ft_end": 5.430025,
+    "mean_max_absolute_divergence_ft_end": 10.475701,
+    "mean_cumulative_rmse_delta_end": -0.016838,
+    "positive_rmse_delta_rate_end": 0.496585,
+    "provisional_guard": {
+      "overall": "pass",
+      "1000_plus": "pass",
+      "hidden_like": "fail",
+      "worst_well": "fail",
+      "late_divergence": "fail"
+    }
+  },
+  "decision": "reject_direct_robust_likelihood_and_close_partial_audit",
+  "notes": "Kaggle CPU shards 0, 2, and 3 completed, covering 574/773 wells. The user closed the experiment without shard 1 on 2026-07-13, so no strict four-shard merge is claimed. Inference and submission were not run."
+}

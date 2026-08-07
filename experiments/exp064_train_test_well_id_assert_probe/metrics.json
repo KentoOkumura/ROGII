@@ -1,0 +1,51 @@
+{
+  "experiment": "exp064_train_test_well_id_assert_probe",
+  "status": "completed",
+  "cv": null,
+  "public_lb": 11551.955,
+  "private_lb": null,
+  "metric": "status",
+  "route": "pf_beam",
+  "probe": {
+    "expected_public_test_wells": [
+      "000d7d20",
+      "00bbac68",
+      "00e12e8b"
+    ],
+    "public_sample_policy": "allow_exact_expected_overlap",
+    "hidden_policy": "assert_no_train_test_well_id_overlap",
+    "assertion_message": "HIDDEN_TRAIN_TEST_WELL_ID_OVERLAP_DETECTED"
+  },
+  "kaggle_inference": {
+    "kernel": "kentookumura/exp064-train-test-well-id-assert-probe-inference",
+    "kernel_version": 1,
+    "kernel_url": "https://www.kaggle.com/code/kentookumura/exp064-train-test-well-id-assert-probe-inference",
+    "status": "completed_public_sample_run",
+    "output_dir": "/tmp/kaggle-output/exp064_train_test_well_id_assert_probe/inference_v1",
+    "submission": "/tmp/kaggle-output/exp064_train_test_well_id_assert_probe/inference_v1/submission.csv",
+    "submit_check": "passed",
+    "probe_summary": {
+      "phase": "public_sample",
+      "status": "public_sample_overlap_allowed",
+      "train_well_count": 773,
+      "test_well_count": 3,
+      "overlap_well_count": 3,
+      "overlap_wells": [
+        "000d7d20",
+        "00bbac68",
+        "00e12e8b"
+      ]
+    }
+  },
+  "hidden_code_submission": {
+    "status": "complete",
+    "ref": 53627058,
+    "public_lb": 11551.955,
+    "private_lb": null,
+    "submitted_at": "2026-06-13 06:10:34.433000",
+    "interpretation": "assertion did not fail, so no exact overlap among exposed train/test horizontal-well filename prefixes was detected by the probe on the scoring test"
+  },
+  "notes": "Code submission ref=53627058 completed with Public LB 11551.955; assertion did not fail, so no exact overlap among exposed train/test horizontal-well filename prefixes was detected by the probe on the scoring test. It does not rule out same physical wells under anonymized filenames. Placeholder zero submission; diagnostic only.",
+  "key_idea": "train/test well_id assert status probe",
+  "updated_at": "2026-06-13T06:33:10.234906+00:00"
+}

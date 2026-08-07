@@ -1,0 +1,83 @@
+{
+  "experiment": "exp261_lightgbm_extra_trees_ablation_on_exp218",
+  "status": "train_completed_guard_failed",
+  "route": "ml_model",
+  "cv": 8.755217123821655,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "parent": {
+    "experiment": "exp218_gr_wavelet_rotation_confidence_features_on_exp148",
+    "lgb_mean_rmse": 8.475793751656624,
+    "oof_decompressed_sha256": "5f3fc95182eea348f3545771e67778ce191e7ba468eee7b267f4993369422976",
+    "feature_schema_sha256": "aaf5f13f1e7c5236cd332dcebfdbf98e9c08247465833232e79ce3ff56362b49",
+    "model_manifest_sha256": "904570def0d6ad0140f3df95c8bb38f31823295fd191206290e3833b5b2cc237"
+  },
+  "implementation": {
+    "changed_parameter": {"extra_trees": true},
+    "selected_plan": "full_family",
+    "run_approved": true,
+    "approved_scope": "full_family_1_variant_3_configs_5_folds_15_boosters_no_control_retraining",
+    "single_train_notebook": true,
+    "active_variants": 1,
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "boosters": 15,
+    "control_retraining": false,
+    "feature_count": 380,
+    "inference_enabled": false,
+    "submission_enabled": false
+  },
+  "train_v1": {
+    "kernel": "kentookumura/exp261-lgb-extra-trees-exp218-train",
+    "kernel_version": 1,
+    "kernel_id_no": 127462163,
+    "elapsed_seconds": 19931.364,
+    "parent_full_family_parity": {
+      "mean_absolute_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "reconstructed_rmse": 8.475793751656624,
+      "frozen_oof_rmse": 8.475793751656624
+    },
+    "primary_parent_rmse": 8.475793751656624,
+    "primary_extra_trees_rmse": 8.755217123821655,
+    "primary_delta_rmse": 0.27942337216503077,
+    "config_metrics": {
+      "lgb0": {"parent_rmse": 8.55716571185676, "extra_trees_rmse": 8.864913263844967, "delta_rmse": 0.30774755198820714, "correlation": 0.9999903703867328},
+      "lgb1": {"parent_rmse": 8.512227651282087, "extra_trees_rmse": 8.75162358028195, "delta_rmse": 0.23939592899986373, "correlation": 0.9999956349425883},
+      "lgb2": {"parent_rmse": 8.524447601269644, "extra_trees_rmse": 8.757903288939195, "delta_rmse": 0.23345568766955083, "correlation": 0.9999956170708975},
+      "selected_config_mean": {"parent_rmse": 8.475793751656624, "extra_trees_rmse": 8.755217123821655, "delta_rmse": 0.27942337216503077, "correlation": 0.9999955034224391}
+    },
+    "selected_mean_fold_delta_rmse": [-0.07709759668865779, 0.05680110077845413, 0.11426829846378261, 0.6755492560260379, 0.5881579342331715],
+    "stress": {
+      "distance_1000_plus_delta_rmse": 0.3157747176514061,
+      "hidden_like_spatial_delta_rmse": 0.2433185475550097,
+      "hidden_like_typewell_purged_delta_rmse": 0.2503902154819251,
+      "worst_well": "389ae58f",
+      "worst_well_regression": 11.324422836303711
+    },
+    "best_fixed_blend": {
+      "extra_weight": 0.25,
+      "overall_rmse": 8.507711648307808,
+      "delta_rmse": 0.0319178966511835
+    },
+    "guard": {
+      "primary_overall_improvement": false,
+      "rows_1000_plus_non_worse": false,
+      "hidden_like_spatial_non_worse": false,
+      "hidden_like_typewell_purged_non_worse": false,
+      "worst_well_regression_within_limit": false,
+      "improved_folds_at_least_minimum": false,
+      "improved_folds": 1,
+      "adoption_supported": false
+    },
+    "sha256": {
+      "feature_content": "f6ff78f6a95e47b0ed8e76a22c31d3403d0a9e78471b7d64f37eef7a2a398e29",
+      "oof_decompressed": "021fd47ac556b7ce98f7991b0c97aa6996b359f07c07a7e6a339c84d84100f00",
+      "model_manifest": "d76ca02ad54184310eafb2758bd287a48cf20cbd95911db5eaef103c8e8de476",
+      "summary": "34cb4c1d62076f0f62f402a52975b159ae1c966ddfff12fcbdf24384f6705ad4"
+    },
+    "local_output": "experiments/exp261_lightgbm_extra_trees_ablation_on_exp218/kaggle/output/train_v1"
+  },
+  "notes": "Regression LightGBM extra_trees=True is rejected: all three configs and all adoption guards failed. No inference or submission. Selector exp262 remains an independent experiment."
+}

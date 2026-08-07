@@ -1,0 +1,178 @@
+experiment:
+  name: exp121_tabicl_artifact_diversity_audit
+  description: CPU-only diversity audit for TabICL and saved artifact-stack predictions against existing anchors.
+  route: ensemble
+  status: planned
+  created_at: "2026-06-25"
+  updated_at: "2026-06-25"
+
+lineage:
+  parent: tabicl_artifact_diversity_audit backlog
+  anchor_parents:
+    - exp027_public_replay_needless090_sel15_spread3
+    - exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit
+    - exp073_gpu_reproducibility_guard_for_exp063_full_replay
+    - exp082_public_artifact_replay_followup
+  implementation_source: tabicl_artifact_diversity_audit.py
+  diff_summary: >
+    Audits TabICL and saved artifact-stack prediction CSVs as diversity sources.
+    It does not rerun TabICL, train a model, or create a submission candidate.
+    The output is an inventory plus pairwise/by-well distances against exp027,
+    exp063, exp073, and exp082 anchors when those files are available.
+
+validation:
+  strategy: target_free_submission_diversity_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - p95_abs
+    - max_abs
+    - by_well_pairwise_rmse
+    - candidate_missing_rate
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  leakage_policy:
+    - No supervised training is performed.
+    - Test prediction CSVs are used only for target-free pairwise diagnostics.
+    - OOF error correlation is recorded only when fold-safe OOF predictions with true labels are explicitly available.
+    - Public notebook replay adoption and submission decisions are out of scope.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: tabicl_artifact_diversity_audit
+  estimator: none
+  params: {}
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    bootstrap_files:
+      - anchor_inputs/anchor_exp027_public_replay_sel15.csv
+      - anchor_inputs/anchor_exp063_old_ml_public_replay.csv
+      - anchor_inputs/anchor_exp073_deterministic_ml.csv
+      - anchor_inputs/anchor_exp082_fle3n_final_source_port.csv
+    kernel_sources:
+      - thbdh5765/rogii-v10-fresh-artifact-infer
+      - kojimar/rogii-inference-stack-with-pf-beam-and-tabicl
+      - needless090/score-10-081-score-lb-32-rank
+      - kentookumura/exp027-public-replay-needless090-sel15-spread3
+      - kentookumura/exp063-ravaghi-pixiux-strict-replay-infer
+      - kentookumura/exp073-full-replay-repro-guard-infer
+      - kentookumura/exp082-fle3n-final-source-infer
+    dataset_sources:
+      - needless090/rogii-tabicl-mirror
+      - thbdh5765/rogii-v10-fresh-artifacts
+      - fleongg/rogii-claude-models-pub
+      - ravaghi/wellbore-geology-prediction-artifacts
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_used
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: false
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - CPU-only audit; TabICL inference is not executed.
+    - gzip candidate hashes record decompressed content SHA.
+    - This experiment is not a deterministic prediction anchor.
+
+audit:
+  output_prefix: tabicl_artifact_diversity_audit
+  max_files_per_source: 3000
+  max_candidates_per_source: 80
+  candidate_name_keywords:
+    - submission
+    - tabicl
+    - artifact
+    - fresh
+    - pretrained
+    - blend
+    - projection
+  source_roots:
+    - name: needless_tabicl_mirror
+      role: candidate_source
+      family: tabicl
+      paths:
+        - kaggle://needless090/rogii-tabicl-mirror
+        - kaggle://datasets/needless090/rogii-tabicl-mirror
+        - /tmp/kaggle-output/source-check/needless090-rogii-tabicl-mirror
+    - name: thbdh_v10_fresh_artifacts
+      role: candidate_source
+      family: tabicl_artifact_stack
+      paths:
+        - kaggle://thbdh5765/rogii-v10-fresh-artifacts
+        - kaggle://datasets/thbdh5765/rogii-v10-fresh-artifacts
+        - /tmp/kaggle-output/source-check/thbdh5765-rogii-v10-fresh-artifacts
+    - name: thbdh_v10_fresh_artifact_infer_output
+      role: candidate_source
+      family: tabicl_artifact_stack
+      paths:
+        - kaggle://thbdh5765/rogii-v10-fresh-artifact-infer
+        - kaggle://kernels/thbdh5765/rogii-v10-fresh-artifact-infer
+        - /tmp/kaggle-output/source-check/thbdh5765-rogii-v10-fresh-artifact-infer
+    - name: kojimar_pf_beam_tabicl_stack_output
+      role: candidate_source
+      family: pf_beam_tabicl_stack
+      paths:
+        - kaggle://kojimar/rogii-inference-stack-with-pf-beam-and-tabicl
+        - kaggle://kernels/kojimar/rogii-inference-stack-with-pf-beam-and-tabicl
+        - /tmp/kaggle-output/source-check/kojimar-rogii-inference-stack-with-pf-beam-and-tabicl
+    - name: needless_sel15_tabicl_public_output
+      role: candidate_source
+      family: pf_beam_tabicl_stack
+      paths:
+        - kaggle://needless090/score-10-081-score-lb-32-rank
+        - kaggle://kernels/needless090/score-10-081-score-lb-32-rank
+        - /tmp/kaggle-output/source-check/needless090-score-10-081-score-lb-32-rank
+    - name: exp082_fle3n_final_source_port
+      role: reference_source
+      family: existing_ensemble_artifact
+      paths:
+        - /tmp/kaggle-output/exp082_public_artifact_replay_followup/fle3n_final_source_inference_v1
+        - /tmp/kaggle-output/source-check/fleongg-fle3n-rogii-v4
+  explicit_submissions:
+    - name: anchor_exp027_public_replay_sel15
+      role: anchor
+      family: pf_beam_public_replay
+      path: anchor_inputs/anchor_exp027_public_replay_sel15.csv
+      required: false
+    - name: anchor_exp063_old_ml_public_replay
+      role: anchor
+      family: ml_public_replay
+      path: anchor_inputs/anchor_exp063_old_ml_public_replay.csv
+      required: false
+    - name: anchor_exp073_deterministic_ml
+      role: anchor
+      family: ml_deterministic_anchor
+      path: anchor_inputs/anchor_exp073_deterministic_ml.csv
+      required: false
+    - name: anchor_exp082_fle3n_final_source_port
+      role: anchor
+      family: ensemble_public_replay
+      path: anchor_inputs/anchor_exp082_fle3n_final_source_port.csv
+      required: false
+
+notes:
+  - GPU is intentionally disabled because this experiment reads saved CSVs only.
+  - Missing mounted sources are recorded as audit findings rather than runtime failures.

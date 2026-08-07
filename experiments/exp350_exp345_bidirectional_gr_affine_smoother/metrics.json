@@ -1,0 +1,191 @@
+{
+  "cv": 14.367548323818495,
+  "experiment": "exp350_exp345_bidirectional_gr_affine_smoother",
+  "forward_schedule_sha256": {
+    "bytes": 43577740,
+    "content_sha256": "682e75d6cbed11b96e3b687f66a5c851399ae39250d5147ec3544601892a72cb",
+    "data_rows": 494720,
+    "decompressed_sha256": "682e75d6cbed11b96e3b687f66a5c851399ae39250d5147ec3544601892a72cb",
+    "path": "/kaggle/working/artifacts/exp350_exp345_bidirectional_gr_affine_smoother_stage_0_full_forward_affine_schedule.csv.gz",
+    "raw_sha256": "1cf94e2b5e9e88017aa5b4a5baa5d05dd9a2ef10a529167e394c694b35610375"
+  },
+  "metric": "rmse",
+  "model_sha256": null,
+  "notes": "Train-side Stage 0 full-well bidirectional smoother audit only; no Stage 1, inference, or submission is generated.",
+  "kaggle": {
+    "kernel": "kentookumura/exp350-bidirectional-gr-affine-smoother-train",
+    "kernel_id_no": 128274195,
+    "kernel_version": 1,
+    "status": "COMPLETE",
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "by_well_summary": {
+    "vs_masked_exp209_parent": {
+      "improved_wells": 403,
+      "worsened_wells": 370,
+      "median_delta_ft": -0.008671745251461749,
+      "p95_delta_ft": 1.3464265922090854,
+      "best_well": "0dc835f3",
+      "best_delta_ft": -17.935115258555445,
+      "worst_well": "8995c945",
+      "worst_delta_ft": 20.88737418678505
+    },
+    "vs_exp345_causal": {
+      "improved_wells": 431,
+      "worsened_wells": 342,
+      "median_delta_ft": -0.011538109356929,
+      "p95_delta_ft": 0.7452617024859434,
+      "best_delta_ft": -5.9505223977431925,
+      "worst_well": "8995c945",
+      "worst_delta_ft": 24.79874361846526
+    }
+  },
+  "evidence_sha256": {
+    "promotion_gate_raw": "2f003dfd46cda4efcd25c1e2555bf68a77db78273342f2425809c5a109d94616",
+    "paired_metrics_raw": "ed0a660f3f72bb1fb0c917293bda433e1085d924ba0ada35c5a17dbff9568a4f",
+    "by_well_metrics_raw": "b73bcb2b50b7614890633e6df224537331d77d2e5103182b72fb0e3081c234de",
+    "numerical_audit_raw": "bedffaf4bc551c706e2a1d5a540fdbf9a29dc3bc17bf6cb626912eb40add24a9",
+    "scientific_contract_content": "a2e831138f3387744983c034c9f77de82f2b50b2651519d64ec39269119dfd1a",
+    "input_manifest_raw": "6a275517dd7edb51004c00f1e9b13484e4393a0e32c6a6efc43f69a82dbd8866",
+    "freeze_manifest": "57d7a6207225281c8e4b5a517db1c286f3682b3bffda4b05036516826e471df6"
+  },
+  "overall_vs_exp345_causal": {
+    "baseline_rmse": 14.33154269727665,
+    "candidate_rmse": 14.367548323818495,
+    "comparison": "vs_exp345_causal",
+    "delta_rmse_candidate_minus_baseline": 0.03600562654184536,
+    "improvement_ft": -0.03600562654184536,
+    "rows": 494720,
+    "scope": "overall",
+    "wells": 773
+  },
+  "overall_vs_masked_exp209_parent": {
+    "baseline_rmse": 14.50104778333667,
+    "candidate_rmse": 14.367548323818495,
+    "comparison": "vs_masked_exp209_parent",
+    "delta_rmse_candidate_minus_baseline": -0.1334994595181751,
+    "improvement_ft": 0.1334994595181751,
+    "rows": 494720,
+    "scope": "overall",
+    "wells": 773
+  },
+  "prediction_sha256": {
+    "bytes": 28380239,
+    "content_sha256": "5b66ee9cfa76fce320a5806849e49c5f711b6dbafde617567adc211cda4de3f1",
+    "data_rows": 494720,
+    "decompressed_sha256": "5b66ee9cfa76fce320a5806849e49c5f711b6dbafde617567adc211cda4de3f1",
+    "path": "/kaggle/working/artifacts/exp350_exp345_bidirectional_gr_affine_smoother_stage_0_full_predictions.csv.gz",
+    "raw_sha256": "bd31207de4a8d0e691ff28619e2d47a46b7e69487108c310d2bee632220f37ed"
+  },
+  "private_lb": null,
+  "promotion_gate": {
+    "decision": "stage_0_failed_close_without_rescue",
+    "passed": false,
+    "scientific_gate": {
+      "diagnostic_only": {
+        "gr_reconstruction_nll_smoother": 4.640710856275497,
+        "role": "diagnostic_only_because_smoother_uses_current_and_future_gr"
+      },
+      "passed": false,
+      "tail_and_boundary": {
+        "boundary_jump_p95_sigma": 0.8397623429414837,
+        "by_well_median_delta_vs_parent": -0.008671745251461749,
+        "by_well_p95_delta_vs_parent": 1.3464265922090854,
+        "maximum_boundary_jump_p95_sigma": 3.0,
+        "maximum_median_delta": 0.0,
+        "maximum_p95_delta": 0.0,
+        "maximum_worst_well_delta": 0.25,
+        "passed": false,
+        "worst_well_delta_vs_parent": 20.88737418678505
+      },
+      "vs_exp345_causal": {
+        "baseline_rmse": 14.33154269727665,
+        "candidate_rmse": 14.367548323818495,
+        "folds_improved": 2,
+        "hidden_like_non_regression": {
+          "hidden_like_spatial": true,
+          "hidden_like_typewell_purged": true
+        },
+        "improvement_ft": -0.03600562654184536,
+        "minimum_folds_improved": 4,
+        "minimum_improvement_ft": 0.02,
+        "passed": false
+      },
+      "vs_masked_exp209_parent": {
+        "baseline_rmse": 14.50104778333667,
+        "candidate_rmse": 14.367548323818495,
+        "folds_improved": 5,
+        "hidden_like_non_regression": {
+          "hidden_like_spatial": true,
+          "hidden_like_typewell_purged": true
+        },
+        "improvement_ft": 0.1334994595181751,
+        "minimum_folds_improved": 4,
+        "minimum_improvement_ft": 0.05,
+        "passed": true
+      }
+    },
+    "stage": "stage_0_full",
+    "technical_gate": {
+      "all_saved_exp345_sha_verified": true,
+      "covariance_contraction_max_positive_eigenvalue": 2.6859414757433867e-17,
+      "covariance_contraction_threshold": 1e-08,
+      "covariance_minimum_eigenvalue_before_floor": 3.4312655069652784e-06,
+      "covariance_minimum_eigenvalue_threshold": -1e-08,
+      "expected_hmm_run_counts": {
+        "one_pass_bidirectional_rts_affine_schedule_on_exp209": 773
+      },
+      "expected_hmm_runs": 773,
+      "expected_prediction_rows": 494720,
+      "expected_prediction_wells": 773,
+      "finite_predictions": true,
+      "forward_schedule_parity_max_abs": 7.070433127864817e-11,
+      "forward_schedule_parity_tolerance": 1e-10,
+      "hmm_run_counts": {
+        "one_pass_bidirectional_rts_affine_schedule_on_exp209": 773
+      },
+      "hmm_runs": 773,
+      "maximum_output_scale_clip_fraction": 0.01,
+      "maximum_runtime_seconds": 30600.0,
+      "output_scale_clip_fraction": 0.0,
+      "passed": true,
+      "posterior_normalization_max_abs_error": 2.886579864025407e-15,
+      "prediction_rows": 494720,
+      "prediction_wells": 773,
+      "runtime_seconds": 2749.356610059738,
+      "saved_control_metric_parity": {
+        "exp345_causal": {
+          "absolute_difference": 0.0,
+          "actual": 14.33154269727665,
+          "expected": 14.33154269727665,
+          "passed": true,
+          "tolerance": 1e-10
+        },
+        "masked_exp209_parent": {
+          "absolute_difference": 0.0,
+          "actual": 14.50104778333667,
+          "expected": 14.50104778333667,
+          "passed": true,
+          "tolerance": 1e-10
+        }
+      },
+      "terminal_covariance_max_abs_error": 0.0,
+      "terminal_state_max_abs_error": 0.0,
+      "terminal_tolerance": 1e-12
+    }
+  },
+  "public_lb": null,
+  "route": "pf_beam",
+  "smoothed_schedule_sha256": {
+    "bytes": 42638595,
+    "content_sha256": "3c5a4268ee08e94b79b7a8fb971b2a678a45cde9edae6743e67db8cb881ac88b",
+    "data_rows": 494720,
+    "decompressed_sha256": "3c5a4268ee08e94b79b7a8fb971b2a678a45cde9edae6743e67db8cb881ac88b",
+    "path": "/kaggle/working/artifacts/exp350_exp345_bidirectional_gr_affine_smoother_stage_0_full_smoothed_affine_schedule.csv.gz",
+    "raw_sha256": "d8e13518a1533640f768177fd6952f724d60a440d6e261a41e531246264fe423"
+  },
+  "stage": "stage_0_full",
+  "status": "stage_0_failed_closed",
+  "submission_sha256": null
+}

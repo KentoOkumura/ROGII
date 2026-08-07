@@ -1,0 +1,236 @@
+experiment:
+  name: exp411_predictive_filtered_rate_innovation_destick
+  description: >-
+    Stage-0 exact-HMM implementation that accumulates target-free
+    predictive-to-filtered rate innovation and temporarily transfers fixed
+    stay probability to the indicated adjacent rate state.
+  route: pf_beam
+  status: stage0_fail_closed
+  created_at: "2026-07-26"
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  evidence_parent: exp408_hmm_message_rate_basin_audit
+  diff_summary: >-
+    Change only the existing three-state rate transition on triggered rows.
+    Position transition, GR emission, state support, priors, smoothing, and
+    posterior-mean readout remain identical to exp209.
+
+design:
+  phase: late
+  priority: P2
+  risk: medium
+  implementation_enabled: true
+  implementation_approval_source: user_message_implement_exp411_2026_07_26
+  stage_0_execution_approved: true
+  stage_1_execution_approved: false
+  inference_enabled: false
+  submission_enabled: false
+  assumption: >-
+    Predictive-to-filtered rate innovation accumulates in the needed physical
+    rate direction at least 32 rows before persistent datum offset onset.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  parent_hmm_cache_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+  exp408_row_ledger_decompressed_sha256: 74bb3c6b5593c3e01065b9feb81d4f76ee5133eef67a8e8972df22eb61ad2ffb
+  stage_0_manifest:
+    filename: stage0_fixed32_manifest.csv
+    local: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+    expected_sha256: fbbc62b7cb79e16a7fb436f3a9d11f8975e935ad2475a17e2dec4fd7b142e4d6
+  stage_0_manifest_metadata:
+    filename: stage0_fixed32_manifest_metadata.json
+    local: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest_metadata.json
+  persistent_episodes:
+    filename: persistent_offset_episodes.csv
+    local: experiments/exp408_hmm_message_rate_basin_audit/assets/persistent_offset_episodes.csv
+    expected_sha256: 031067fa77c195b77920a0997401310fbdd16532a2d0e99a9c3b5044de28913c
+  exp209_saved_control:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    prediction_column: hmm_mean_tvt
+    row_index_source: parsed_from_id_suffix_after_exact_well_prefix
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts
+    patterns:
+      - "**/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz"
+  stage_0:
+    persistent_wells: 16
+    matched_control_wells: 16
+    total_wells: 32
+    persistent_fold_counts:
+      "0": 4
+      "1": 3
+      "2": 3
+      "3": 3
+      "4": 3
+    persistent_sort_key: sha256_exp411_persistent_well
+    control_sort_key: sha256_exp411_control_well
+    control_match:
+      - fold
+      - suffix_row_count_quartile
+      - raw_gr_missing_quartile
+      - prefix_row_count_quartile
+
+model:
+  name: predictive_filtered_rate_innovation_directional_destick
+  parent_hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    rate_step: 0.005
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    emission: gauss
+    rate_center: zero
+  trigger:
+    statistic: two_sided_cusum_filtered_minus_predictive_rate_cells
+    innovation_scale_rate_step: 0.005
+    drift_allowance_rate_cells: 0.01
+    positive_threshold_rate_cells: 1.0
+    negative_threshold_rate_cells: 1.0
+    tie_tolerance: 1.0e-12
+    activation_transitions: 32
+    refractory_rows: 128
+    reset_cusum_on_trigger: true
+    allow_overlapping_trigger: false
+    allow_direction_flip_while_active: false
+    cusum_updates_during_active_and_refractory: true
+  treatment:
+    stay_mass_transfer_fraction: 0.10
+    target: signed_adjacent_rate_state
+    add_rate_states: false
+    edge_policy: no_op_for_outward_source_state
+    freeze_schedule_before_backward: true
+    first_affected_transition: row_after_trigger
+
+validation:
+  strategy: stage_0_fixed32_then_stage_1_full_773
+  reporting_folds: 5
+  truth_join: after_trigger_schedule_and_prediction_freeze
+  stage_0:
+    use_rmse_as_promotion_gate: false
+    technical:
+      posterior_reference_tolerance: 1.0e-10
+      zero_active_saved_prediction_tolerance_ft: 1.0e-5
+      normalization_max_abs_error: 1.0e-5
+      finite_coverage: 1.0
+      active_row_fraction_min: 0.001
+      active_row_fraction_max: 0.25
+      persistent_active_wells_min: 8
+      full_runtime_projection_max_seconds: 30600
+      peak_rss_max_gb: 25
+    mechanism:
+      future_rate_direction_definition: median_next32_minus_median_past32_physical_interval_rate
+      future_rate_direction_agreement_min: 0.60
+      passing_folds_min: 4
+      per_fold_direction_agreement_strictly_above: 0.50
+      pre_onset_lead_rows_min: 32
+      pre_onset_trigger_coverage_min: 0.50
+      lead_time_eligible_episodes_min: 8
+      control_active_row_fraction_max: 0.10
+      persistent_minus_control_active_well_fraction_min: 0.20
+  stage_1:
+    direct_gain_vs_exp209_min_ft: 0.05
+    improving_folds_min: 4
+    persistent_episode_sse_reduction_min: 0.05
+    required_nonworse_scopes:
+      - md_1000_plus
+      - hidden_like_spatial
+      - hidden_like_typewell_purged
+      - raw_gr_observed
+      - raw_gr_missing
+      - fixed_likpf_hmm_50_50
+    by_well_delta_p95_max_ft: 0.25
+    worst_well_delta_max_ft: 5.0
+    active_row_fraction_min: 0.001
+    active_row_fraction_max: 0.25
+    require_active_well_all_folds: true
+    direct_replacement_baseline_rmse: 8.238331667
+
+execution:
+  run_stage: stage_0_fixed32
+  kaggle_execution_authorized: true
+  kaggle_execution_approval_source: user_message_execute_exp411_2026_07_27
+  active_treatment_variants: 1
+  stage_0_hmm_well_runs: 32
+  parent_control_hmm_reruns: 0
+  planned_stage_0_treatment_variants: 1
+  planned_stage_0_hmm_well_runs: 32
+  planned_stage_1_treatment_variants: 1
+  planned_stage_1_hmm_well_runs: 773
+  parent_control_regeneration_stage_0: false
+  parent_control_regeneration_stage_1: false
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  models: 0
+  pf_well_runs: 0
+  beam_well_runs: 0
+  gpu_runs: 0
+
+runtime:
+  target: kaggle_private_cpu
+  enable_gpu: false
+  enable_internet: false
+  num_workers: 1
+  numba_threads_per_worker: 4
+  hard_runtime_limit_seconds: 32400
+  peak_rss_limit_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp411-pred-filtered-rate-innovation-destick-train
+    train_title: exp411 pred filtered rate innovation destick train
+    bootstrap_files:
+      - assets/stage0_fixed32_manifest.csv
+      - assets/stage0_fixed32_manifest_metadata.json
+    bootstrap_dependency_files:
+      - source: experiments/exp408_hmm_message_rate_basin_audit/assets/persistent_offset_episodes.csv
+        destination: assets/persistent_offset_episodes.csv
+    train_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: null
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_well_row_sort
+  stochastic_components: []
+  parallel_rng_policy: no_rng_well_parallel_only
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    sample_manifest_sha: true
+    scientific_contract_sha: true
+    trigger_schedule_sha: true
+    prediction_sha: true
+    metrics_sha: true
+    submission_sha: false
+  notes:
+    - No model or submission is generated.
+    - Kaggle package loose files and bootstrap payload must match before push.
+
+prohibited:
+  - mode_id_lock
+  - global_sig_r_change
+  - gr_weight_change
+  - position_sigma_or_exact_mean_change
+  - momentum_change
+  - backward_or_multiplicity_change
+  - viterbi_or_map_replacement
+  - threshold_duration_gamma_grid
+  - inference
+  - submission

@@ -1,0 +1,350 @@
+experiment:
+  name: exp290_piecewise_datum_physical_smoother
+  description: >
+    Infer one bounded piecewise-constant datum posterior on top of the fixed
+    group-safe exp226 geometry using known-prefix calibration, robust Type Well
+    GR likelihood, and uncertainty-only Type Well/spatial hyperpriors.
+  route: pf_beam
+  status: stage0_guard_failed_branch_closed
+  phase: stage0_scientific_guard_failed
+  created_at: "2026-07-19"
+  target_public_lb: 6.5
+
+lineage:
+  parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  comparison:
+    - exp169_prefix_based_offset_correction
+    - exp201_typewell_neighbor_bias_direction_readout
+    - exp280_exp226_shift_likelihood_separability_readout
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe
+    - exp285_exp226_prefix_masked_offset_predictability_readout
+    - exp289_fault_aware_transductive_geological_potential
+  diff_summary: >
+    Keeps the exp226 group-safe geometry as an internal deterministic term but
+    replaces geometry-only output with one hierarchical semi-Markov posterior
+    over a bounded absolute datum. It does not blend, select, or postprocess
+    saved exp226/HMM/ML predictions.
+
+validation:
+  scheme: group_kfold_by_well
+  n_splits: 5
+  group_column: well_id
+  fold_source: exp226_saved_oof_fold_assignment
+  evaluation_mask: TVT_input_isna
+  metric: rmse
+  allowed_outer_valid_columns: [MD, X, Y, Z, GR, TVT_input]
+  allowed_auxiliary_table_columns: [Type_Well_group, Type_Well_TVT, Type_Well_GR]
+  forbidden_before_prediction_freeze:
+    - TVT_on_evaluation_rows
+    - ANCC
+    - ASTNU
+    - ASTNL
+    - EGFDU
+    - EGFDL
+    - BUDA
+    - target_error
+    - oracle_rank
+    - exp281_prediction
+  pseudo_cut_horizons_rows: [512, 256, 128]
+  pseudo_cut_validation_window_rows: 128
+  pseudo_cut_reliability_policy: earlier_pseudocuts_only_for_stage0_all_three_for_final_suffix
+  pseudo_cut_truth_policy: held_known_tvt_masked_until_prediction_content_sha_freeze
+  official_truth_join_policy: after_oof_prediction_content_sha_freeze
+  report_scopes:
+    - overall
+    - fold
+    - distance_bucket
+    - prefix_length_bucket
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+    - by_well
+    - well_bias
+    - persistent_abs_error_ge10_episode
+    - posterior_entropy_bucket
+    - reset_probability_bucket
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  prefix_column: TVT_input
+  row_order: MD_ascending_with_original_row_tiebreak
+  anchor: last_finite_TVT_input_row
+  base_geometry:
+    contract: exp226_group_safe_tvt_geop_generation
+    role: internal_fixed_geometry_term
+    regeneration: fold_safe_for_oof_raw_test_compatible_for_inference
+    saved_exp226_prediction_role: parity_and_comparison_only
+  typewell:
+    mapping_scope: raw_test_available_group_mapping
+    template_axes: [TVT, GR]
+    group_identity: exact_raw_typewell_file_sha256
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  exp226_kappa_by_fold:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+    expected_sha256: 6cbded4c6ea157d141c4272a2e29c498515e3eaa6eff3ec4517078ae1d1aeff0
+    expected_terms: 12
+  exp226_oof_reference:
+    rmse: 9.427109596582213
+    decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+
+physics:
+  equation: "TVT_w(t) = g_w(t) + delta_w(t)"
+  base_geometry: exp226_group_safe_tvt_geop
+  output: one_posterior_mean_prediction
+  geometry_replay:
+    mode: exp226_geometry_only_fold_safe_saved_kappa_at_each_pseudocut
+    pseudo_cut_anchor_datum_location_ft: 0.0
+    source_truth_policy: outer_train_wells_only
+    target_input_columns: [MD, X, Y, Z, GR, TVT_input]
+    target_forbidden_columns: [TVT, ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+    params:
+      theta0: 118.4
+      k_segments: 16
+      local_linear_k: 50
+      local_linear_bandwidth: 500.0
+      local_linear_ridge: 1.0
+      smooth_rho: 10.0
+      gate: 0.35
+      field_min_proj: 0.3
+      kbins: [0.0, 750.0, 1500.0, 2500.0, 4000.0, 1.0e18]
+      rot_max_deg: 60.0
+      ancc_theta_bandwidth: 1500.0
+  state_space:
+    state: absolute_datum_correction_ft
+    minimum_ft: -15.0
+    maximum_ft: 15.0
+    step_ft: 0.5
+    state_count: 61
+    cumulative_random_walk: false
+    checkpoint_stride_rows: 64
+    minimum_segment_duration_rows: 256
+    duration_representation: four_locked_checkpoint_phases_plus_eligible_geometric_phase
+    duration_phase_count_per_offset: 5
+    expanded_state_count: 305
+    row_projection: linear_interpolation_of_posterior_mean_between_checkpoints
+  transition:
+    stay: same_absolute_state
+    reset: bounded_absolute_state_change
+    reset_jump_prior: zero_centered_laplace
+    reset_jump_scale_ft: 4.0
+    base_reset_hazard_per_row: 0.00048828125
+    maximum_event_hazard_per_row: 0.015625
+    event_gate:
+      windows_rows: [128, 256, 512]
+      components: [shift_likelihood_sign_consistency, posterior_entropy_drop, geometry_curvature]
+      aggregation: equal_weight_robust_rank_mean
+      minimum_consistent_shift_windows: 2
+      threshold_source: outer_train_pseudocuts_only_frozen_before_official_suffix
+      outer_train_quantile: 0.75
+      checkpoint_hazard_mapping: linear_between_base_and_maximum_above_frozen_gate
+  observations:
+    prefix:
+      family: student_t
+      degrees_of_freedom: 4
+      value: TVT_input_minus_base_geometry
+      location: latent_absolute_datum
+      scale_estimator: current_well_prefix_mad_with_hierarchical_shrinkage
+    gr:
+      family: student_t
+      degrees_of_freedom: 4
+      template_coordinate: base_geometry_plus_latent_absolute_datum
+      affine_calibration: known_prefix_huber_fit_only
+      scale_estimator: known_prefix_mad
+      scale_clip: [10.0, 60.0]
+      likelihood_reduction: mean_log_likelihood_per_64_row_block
+      temperature: current_well_pseudocut_reliability
+  hierarchy:
+    current_well_parameters: [prefix_datum_location, prefix_noise, gr_affine_scale, gr_affine_offset, gr_noise, pseudocut_reliability]
+    pseudocut_horizons_rows: [512, 256, 128]
+    pseudocut_validation_window_rows: 128
+    stage0_reliability_scope: temporally_earlier_frozen_pseudocuts_only
+    final_suffix_reliability_scope: all_three_known_prefix_pseudocuts
+    pseudocut_nll_reference: fixed_zero_datum_exp226_geometry
+    pseudocut_reliability_formula: "clip(exp(-median_nll_excess), 0.10, 1.00)"
+    pseudocut_nll_aggregation: mean_student_t_nll_model_minus_base_per_window
+    pooled_prior: outer_train_masked_prefix_backtests
+    typewell_prior:
+      parameters: [prefix_noise_log_scale, reset_hazard_log_scale, jump_scale_log_scale, gr_noise_log_scale]
+      minimum_group_wells: 8
+      small_group_policy: precision_shrink_to_pooled
+      datum_mean_or_jump_sign_allowed: false
+    spatial_prior:
+      standardized_space: outer_train_median_mad_xy
+      neighbors: 16
+      exclude_self_well: true
+      stable_tiebreak: [distance, source_well_id, source_row_id]
+      role: hyperprior_variance_only
+      datum_mean_or_jump_sign_allowed: false
+    combine_order: [pooled, typewell, spatial, current_well_prefix]
+    combine_method: precision_weighted_empirical_bayes
+    missing_group_policy: widen_same_model_pooled_prior
+  solver:
+    method: exact_log_space_semi_markov_forward_backward
+    dtype: float64
+    output_statistic: posterior_mean
+    viterbi_output_allowed: false
+    candidate_bank_allowed: false
+    nonfinite_policy: fail_closed_no_fallback
+
+stages:
+  stage0:
+    name: known_prefix_pseudotail_identifiability_audit
+    implementation_status: completed_scientific_guard_failed
+    active_contracts: 1
+    ml_configs: 0
+    trained_folds: 0
+    boosters: 0
+    control_retraining: 0
+    output_scope: known_prefix_pseudotails_only
+    guards:
+      pooled_rmse_improvement_ft_min: 0.20
+      correction_sign_accuracy_abs_base_error_ge5_min: 0.58
+      fold_improvement_count_min: 4
+      well_rmse_p95_must_not_worsen: true
+    failure_policy: close_without_parameter_or_group_rescue
+  stage1:
+    name: hierarchical_piecewise_datum_posterior_mean
+    implementation_status: closed_stage0_scientific_guard_failed
+    active_variants: 1
+    ml_configs: 0
+    trained_folds: 0
+    boosters: 0
+    control_retraining: 0
+    comparison_oof:
+      experiment: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+      rmse: 9.427109596582213
+    raw_test_shadow_entry_guards:
+      direct_oof_rmse_max: 8.0
+      fold_improvement_count_min: 4
+      distance_1000_plus_must_not_worsen: true
+      hidden_like_spatial_must_not_worsen: true
+      hidden_like_typewell_purged_must_not_worsen: true
+      well_rmse_p95_max: 15.0
+      worst_well_rmse_max: 45.0
+    standalone_inference_guards:
+      direct_oof_rmse_max: 7.0
+      fold_improvement_count_min: 5
+      hidden_like_spatial_must_improve: true
+      hidden_like_typewell_purged_must_improve: true
+      well_rmse_p95_max: 13.0
+      worst_well_rmse_max: 40.0
+    failure_policy: no_parameter_rescue_no_inference_no_submission
+
+model:
+  name: hierarchical_piecewise_datum_physical_smoother
+  family: standalone_physical_semi_markov_state_space_model
+  implementation_status: stage0_only
+  trains_ml_model: false
+  single_model: true
+  params: {}
+
+oracle_policy:
+  enabled: false
+  diagnostic_context_only:
+    per_well_constant_bias_oracle_rmse: 5.7775908563
+    capped_15ft_bias_oracle_rmse: 6.3880769132
+  forbidden_metrics: [row_best_of_n, segment_best_of_n, block_best_of_n, well_best_of_n, truth_nearest_shift]
+  forbidden_outputs: [oracle_prediction, oracle_path, oracle_selected_candidate]
+  diagnostic_oracle_is_achievability_claim: false
+
+runtime:
+  platform: kaggle_notebook
+  device: cpu
+  use_amp: false
+  dtype: float64
+  num_workers: 1
+  blas_threads: 1
+  enable_gpu: false
+  enable_internet: false
+  kaggle_time_limit_hours: 9.0
+  required_runtime_margin_hours: 1.5
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp290-piecewise-datum-physical-smoother-train
+    train_kernel_title: exp290 piecewise datum physical smoother train
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+    inference_kernel_sources: []
+
+execution:
+  stage: stage0_completed_scientific_guard_failed
+  active_variants: 1
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  control_or_parent_retraining: false
+  implementation_approved: true
+  implementation_approval_source: user_message_implement_exp290_2026_07_19
+  kaggle_push_approved: true
+  kaggle_push_approval_source: user_message_run_exp290_2026_07_19
+  kaggle_kernel_version: 1
+  kaggle_kernel_id_no: 127881061
+  inference: false
+  submission: false
+  expected_future_artifacts:
+    - exp290_piecewise_datum_physical_smoother_contract.json
+    - exp290_piecewise_datum_physical_smoother_input_manifest.csv
+    - exp290_piecewise_datum_physical_smoother_pseudocut_manifest.csv
+    - exp290_piecewise_datum_physical_smoother_outer_train_calibration.csv
+    - exp290_piecewise_datum_physical_smoother_outer_train_event_evidence.csv
+    - exp290_piecewise_datum_physical_smoother_hyperprior_manifest.csv
+    - exp290_piecewise_datum_physical_smoother_spatial_neighbor_manifest.csv
+    - exp290_piecewise_datum_physical_smoother_event_evidence.csv
+    - exp290_piecewise_datum_physical_smoother_state_space_manifest.json
+    - exp290_piecewise_datum_physical_smoother_stage0_predictions.csv.gz
+    - exp290_piecewise_datum_physical_smoother_stage0_metrics.json
+    - exp290_piecewise_datum_physical_smoother_stage0_fold_metrics.csv
+    - exp290_piecewise_datum_physical_smoother_stage0_by_well_metrics.csv
+    - exp290_piecewise_datum_physical_smoother_stage0_summary.json
+
+inference:
+  enabled: false
+  mode: blocked_until_stage1_guard_and_separate_user_approval
+  create_submission: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_fold_well_row_typewell_neighbor_state_order
+  stochastic_components: []
+  parallel_rng_policy: canonical_single_process_no_rng
+  feature_sha_policy: logical_content_sha_and_decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    fold_map_sha: true
+    base_geometry_schema_sha: true
+    base_geometry_content_sha: true
+    typewell_mapping_sha: true
+    spatial_neighbor_content_sha: true
+    pseudocut_content_sha: true
+    hyperprior_content_sha: true
+    state_space_manifest_sha: true
+    posterior_summary_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - CPU float64, stable ordering, fixed threads, and logsumexp library version are part of the canonical contract.
+    - Deterministic anchor remains false until Kaggle rerun parity and raw-test regeneration parity are demonstrated.
+    - The canonical design uses exact dynamic programming and no PF particles or seed bagging.
+
+notes:
+  - Stage 0 compact self-contained train was adopted as the canonical train notebook and completed on Kaggle CPU kernel version 1.
+  - Stage 0 passed every technical guard but failed the fixed scientific guard; the branch is closed without parameter or group rescue.
+  - Stage 1, inference, and submission remain disabled and will not be pursued from exp290.
+  - exp289 is a sibling spatial-topology hypothesis and never enters this model.

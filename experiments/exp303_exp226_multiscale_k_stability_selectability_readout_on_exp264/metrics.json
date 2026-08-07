@@ -1,0 +1,118 @@
+{
+  "experiment": "exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264",
+  "status": "technical_pass_scientific_fail",
+  "route": "ml_model",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "roc_auc",
+  "kaggle": {
+    "kernel_id": "kentookumura/exp303-k-stability-readout-train",
+    "kernel_version": 1,
+    "kernel_id_no": 128080983,
+    "runtime_seconds_from_log": 142.124839,
+    "private": true,
+    "gpu": false,
+    "internet": false
+  },
+  "execution": {
+    "fixed_readouts": 1,
+    "evaluation_folds": 5,
+    "models": 0,
+    "trained_folds": 0,
+    "lightgbm_configs": 0,
+    "boosters": 0,
+    "candidate_regeneration": 0,
+    "parent_retraining": 0,
+    "inference": false,
+    "submission": false
+  },
+  "technical_checks": {
+    "feature_coverage": true,
+    "duplicate_blocks_zero": true,
+    "truth_access_before_freeze_zero": true,
+    "exp302_prediction_sha_match": true,
+    "exp264_candidate_score_sha_match": true,
+    "score_recompute": true,
+    "technical_passed": true
+  },
+  "scientific": {
+    "scientific_passed": false,
+    "scientific_checks": {
+      "pooled_h512_auc": false,
+      "fold_direction": false,
+      "top_bottom_positive_rate_lift": false,
+      "top_bottom_mean_benefit_delta": false,
+      "subgroup_direction": false
+    },
+    "folds_with_auc_above_0p5": 1,
+    "action": "close_without_rescue_grid"
+  },
+  "pooled": {
+    "blocks": 7787,
+    "wells": 773,
+    "positive_blocks": 2596,
+    "positive_rate": 0.3333761397200462,
+    "auc": 0.4888054440555673,
+    "mean_k16_benefit_ft": -0.9307502612551127,
+    "q20": 0.4266556461137355,
+    "q80": 0.7146399544078356,
+    "bottom_rows": 1558,
+    "top_rows": 1558,
+    "bottom_positive_rate": 0.33697047496790755,
+    "top_positive_rate": 0.3087291399229782,
+    "positive_rate_lift": 0.9161904761904762,
+    "bottom_mean_k16_benefit_ft": -0.4625013909031875,
+    "top_mean_k16_benefit_ft": -1.6680331890509161,
+    "mean_k16_benefit_delta_ft": -1.2055317981477287,
+    "direction_pass": false
+  },
+  "folds": [
+    {"fold": 0, "blocks": 1558, "wells": 155, "auc": 0.4952930947695969, "positive_rate_lift": 0.9894736842105264, "mean_k16_benefit_delta_ft": -1.4420618849703495, "direction_pass": false},
+    {"fold": 1, "blocks": 1558, "wells": 155, "auc": 0.4491100762791761, "positive_rate_lift": 0.6666666666666665, "mean_k16_benefit_delta_ft": -3.2406282062415186, "direction_pass": false},
+    {"fold": 2, "blocks": 1556, "wells": 154, "auc": 0.496653122006705, "positive_rate_lift": 0.9405940594059404, "mean_k16_benefit_delta_ft": -1.2461432673254693, "direction_pass": false},
+    {"fold": 3, "blocks": 1558, "wells": 155, "auc": 0.4777732683982684, "positive_rate_lift": 0.9684210526315791, "mean_k16_benefit_delta_ft": -0.6272972227916427, "direction_pass": false},
+    {"fold": 4, "blocks": 1557, "wells": 154, "auc": 0.5205491798353662, "positive_rate_lift": 1.117117117117117, "mean_k16_benefit_delta_ft": 0.6468167605723923, "direction_pass": true}
+  ],
+  "subgroups": [
+    {"scope": "distance_1000_plus", "blocks": 6242, "wells": 771, "auc": 0.48871242724183206, "positive_rate_lift": 0.9333333333333332, "mean_k16_benefit_delta_ft": -0.9543585974319305, "direction_pass": false},
+    {"scope": "hidden_like_spatial", "blocks": 2001, "wells": 200, "auc": 0.47984332533972823, "positive_rate_lift": 0.9411764705882353, "mean_k16_benefit_delta_ft": -1.1965170832794356, "direction_pass": false},
+    {"scope": "hidden_like_typewell_purged", "blocks": 2009, "wells": 200, "auc": 0.4900456370238871, "positive_rate_lift": 0.9930555555555556, "mean_k16_benefit_delta_ft": -0.9144676856898539, "direction_pass": false}
+  ],
+  "reproducibility": {
+    "input_manifest_sha256": "9089d8ded32a7c30ae1504a345993d654a8630ce600ba335a17b1cee99c840ba",
+    "feature_schema_file_sha256": "ca56361d0aef8a8ffe127418ceadd1cf666dcdeaafd13246a7be19ddfe0e69a7",
+    "feature_content_sha256": "964da0fa966cf24f1f2d3755cf365767f19c37a62c7fab46be819528196a38ea",
+    "block_content_sha256": "55fd6db94a7b4120cde515238e743a273c047aef26f772b32972a4e4cf851267",
+    "truth_content_sha256": "c3db553e89c7495cbcc01d99a38ab2b301bacf3e6fc8fa4dffe930eb93b35982",
+    "score_recompute_max_abs": 0.0,
+    "deterministic_anchor": false
+  },
+  "artifact_sha256": {
+    "block_readout.csv": "c073f8a0cc63b5f2f10b368fe6a23e2e8aef54c6a275fe9d1f888086a73bb5a7",
+    "by_well.csv": "30769c8fa414800aea45a3e81ba797a3473169616662fcce889d3ef21d74d6df",
+    "contract.json": "7d390517ec89d48bed88559367d7d86fd61c610e8989015aa4a27b8a05bd35e4",
+    "empirical_preprocessor_manifest.json": "8b99c2f79f75492777e4733a7b29d2ca0c0434ac510c0cd5a96696b2cc70f41b",
+    "feature_schema.json": "ca56361d0aef8a8ffe127418ceadd1cf666dcdeaafd13246a7be19ddfe0e69a7",
+    "fold_readout.csv": "fdcfa5f1f4387a3d27c5bafb8af0aa1310737eee43e27bd0af67b47cdda2a14f",
+    "freeze_manifest.json": "fb048df5e1f9c1ad66bc9960a2db0b28989ea94f1a03c0cfdd59e4bb8119aab1",
+    "input_manifest.json": "9089d8ded32a7c30ae1504a345993d654a8630ce600ba335a17b1cee99c840ba",
+    "post_freeze_truth_manifest.csv": "8a13cc416be78bdd7dded19367f90f020a64efa31d3160a15c574bd10e9a0d77",
+    "scope_readout.csv": "84ff511043e134a681bd8fac6377a0badb2f0f005843e7d17e95872b2c0deef1",
+    "summary.json": "e7b76c68191273d2798968d5b87e6f1a6ef4cca1401b981e4c74143f1399649e",
+    "target_free_h512_blocks.parquet": "2d7ce47dd0382f27968fe4034c0f68a0158a4c8731560b27135be175e72327e6",
+    "target_free_row_features.parquet": "18845f6ef6753cfa9387bb207607e62e5c948a7b9fa06ed97460706526f79ff7",
+    "sha_manifest.csv": "81382837a2024e76088495d6f84c9c25a9a4775c1ae6602d3b7e714d9bd5c928"
+  },
+  "validation": {
+    "dedicated_tests": "12 passed",
+    "py_compile": "passed",
+    "ruff": "passed",
+    "jupytext_roundtrip": "passed",
+    "strict_experiment_validation": "passed",
+    "template_validation": "passed",
+    "repository_tests": "405 passed, 1 skipped, 2 unrelated exp296 stale-expectation failures",
+    "truth_free_input_loader_preflight": "3783989 rows, 773 wells, finite coverage 1.0"
+  },
+  "notes": "Technical contract passed, but every preregistered scientific guard failed. Close without score-direction, feature-weight, horizon, boundary-width, or threshold rescue. No model, inference, prediction correction, output archive download, or submission was produced."
+}

@@ -1,0 +1,161 @@
+experiment:
+  name: "exp177_beam_topk_bimodal_gate_posthoc_audit"
+  description: "No-training posthoc audit that gates exp173 Beam top-K posterior, top2, and weighted-mean paths only on target-free bimodal diagnostics."
+  route: pf_beam
+  status: completed_train_side_rejected_no_submit
+  created_at: "2026-07-03"
+  updated_at: "2026-07-03"
+
+lineage:
+  parent: exp173_beam_topk_path_posterior_audit
+  feature_cache_parent: exp072_exp063_full_replay_feature_cache
+  diagnostic_parents:
+    - exp171_bimodal_posterior_pfbeam_candidate_audit
+    - exp173_beam_topk_path_posterior_audit
+  implementation_source: beam_topk_bimodal_gate_posthoc_audit.py
+  diff_summary: >
+    Implements the beam_topk_bimodal_gate_posthoc_audit backlog. It reads the
+    fixed exp173 top-K path diagnostics and candidate outputs, keeps likpf_mean
+    as the default prediction, and replaces only rows that satisfy target-free
+    bimodal / low-cost-gap / high-entropy gates. It does not train a model,
+    regenerate Beam paths, create an inference port, or submit.
+
+validation:
+  strategy: fixed_exp173_topk_posthoc_gate_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within10
+    - changed_rows
+    - changed_wells
+    - changed_subset_rmse
+    - near_000_050_rmse
+    - longtail_1000_plus_rmse
+    - beam_likpf_gap_top_quartile_rmse
+    - mode_separation_bucket_rmse
+    - max_well_regression_vs_likpf_mean
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp173_rows
+  leakage_policy:
+    - exp173 top-K diagnostics and candidate predictions are fixed upstream train-side outputs.
+    - Gates use only target-free columns such as top1/top2 separation, cost gap, entropy, and spread.
+    - True TVT is used only for scoring posthoc policies and worst-well diagnostics.
+    - Thresholds are fixed to configured quantiles and are not selected from true TVT error labels.
+    - Positive train-side results remain diagnostic until raw-test parity and guard review are done.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp173_artifacts:
+    topk_diagnostics:
+      filename: exp173_beam_topk_path_posterior_audit_topk_diagnostics.csv.gz
+      path_candidates:
+        - experiments/exp173_beam_topk_path_posterior_audit/artifacts/exp173_beam_topk_path_posterior_audit_topk_diagnostics.csv.gz
+        - experiments/exp173_beam_topk_path_posterior_audit/kaggle/output/train_v2/artifacts/exp173_beam_topk_path_posterior_audit_topk_diagnostics.csv.gz
+        - /kaggle/input/exp173-beam-topk-path-posterior-audit-train/artifacts/exp173_beam_topk_path_posterior_audit_topk_diagnostics.csv.gz
+    topk_paths:
+      filename: exp173_beam_topk_path_posterior_audit_topk_paths.csv.gz
+      path_candidates:
+        - experiments/exp173_beam_topk_path_posterior_audit/artifacts/exp173_beam_topk_path_posterior_audit_topk_paths.csv.gz
+        - experiments/exp173_beam_topk_path_posterior_audit/kaggle/output/train_v2/artifacts/exp173_beam_topk_path_posterior_audit_topk_paths.csv.gz
+        - /kaggle/input/exp173-beam-topk-path-posterior-audit-train/artifacts/exp173_beam_topk_path_posterior_audit_topk_paths.csv.gz
+    candidate_wide:
+      filename: exp173_beam_topk_path_posterior_audit_candidate_wide.csv.gz
+      path_candidates:
+        - experiments/exp173_beam_topk_path_posterior_audit/artifacts/exp173_beam_topk_path_posterior_audit_candidate_wide.csv.gz
+        - experiments/exp173_beam_topk_path_posterior_audit/kaggle/output/train_v2/artifacts/exp173_beam_topk_path_posterior_audit_candidate_wide.csv.gz
+        - /kaggle/input/exp173-beam-topk-path-posterior-audit-train/artifacts/exp173_beam_topk_path_posterior_audit_candidate_wide.csv.gz
+    candidate_metrics:
+      filename: exp173_beam_topk_path_posterior_audit_candidate_metrics.csv
+      path_candidates:
+        - experiments/exp173_beam_topk_path_posterior_audit/artifacts/exp173_beam_topk_path_posterior_audit_candidate_metrics.csv
+        - experiments/exp173_beam_topk_path_posterior_audit/kaggle/output/train_v2/artifacts/exp173_beam_topk_path_posterior_audit_candidate_metrics.csv
+        - /kaggle/input/exp173-beam-topk-path-posterior-audit-train/artifacts/exp173_beam_topk_path_posterior_audit_candidate_metrics.csv
+
+model:
+  name: beam_topk_bimodal_gate_posthoc_audit
+  estimator: none_posthoc_grid
+  target: true_tvt_for_scoring_only
+  base_prediction: likpf_mean
+  replacement_family:
+    - exp173_top2_commit
+    - exp173_topk_weighted_mean
+    - exp173_posterior_mean
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp173-beam-topk-path-posterior-audit-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: deterministic_posthoc_grid_no_rng
+  stochastic_components:
+    - upstream_exp072_pf_beam_likpf_cache
+    - upstream_exp173_beam_topk_generation
+  parallel_rng_policy: no_rng_in_exp177
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is a deterministic posthoc grid over fixed exp173 Kaggle outputs.
+    - It is not a deterministic submission anchor and does not create submission.csv.
+
+audit:
+  mode: beam_topk_bimodal_gate_posthoc_audit
+  output_prefix: exp177_beam_topk_bimodal_gate_posthoc_audit
+  primary_baseline: likpf_mean
+  beam_baseline: beam_mean
+  max_rows: null
+  max_wells: null
+  top_n_detailed_policies: 16
+  max_regression_guard_rmse: 0.25
+
+gate:
+  beam_variants:
+    - beam_topk_raw_bw32
+    - beam_topk_sm5_bw32
+    - beam_topk_sm11_bw64
+  replacement_suffixes:
+    - top2_commit
+    - topk_weighted_mean
+    - posterior_mean_t1
+    - posterior_mean_t2
+    - posterior_mean_t4
+    - posterior_mean_t8
+    - posterior_mean_t16
+  quantiles:
+    sep: [0.75, 0.90]
+    cost: [0.10, 0.25]
+    entropy: [0.75, 0.90]
+    spread: [0.75, 0.90]
+  and_policies:
+    - [sep_ge_q75, cost_le_q25]
+    - [sep_ge_q90, cost_le_q10]
+    - [sep_ge_q75, entropy_ge_q75]
+    - [sep_ge_q90, entropy_ge_q90]
+    - [spread_ge_q75, cost_le_q25]
+    - [sep_ge_q75, spread_ge_q75, cost_le_q25]
+    - [sep_ge_q75, spread_ge_q75, entropy_ge_q75, cost_le_q25]
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog beam_topk_bimodal_gate_posthoc_audit.
+  - Expected compute is a CPU-only fixed-output audit; LightGBM configs, folds, boosters, and Beam regeneration are all zero.

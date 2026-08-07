@@ -1,0 +1,54 @@
+{
+  "experiment": "exp229_lgb_quantile_band_emission_hmm_on_exp148",
+  "status": "completed_train_side_rejected_no_inference_no_submit",
+  "cv": 8.684401098734789,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "route": "ensemble",
+  "seed": 42,
+  "kaggle": {
+    "quantile_train_kernel": "kentookumura/exp229-lgb-quantile-band-exp148-train",
+    "quantile_train_version": 3,
+    "hmm_audit_kernel": "kentookumura/exp229-quantile-band-hmm-exp148-audit",
+    "hmm_audit_version": 3
+  },
+  "quantile_train": {
+    "rows": 3783989,
+    "wells": 773,
+    "features": 294,
+    "boosters": 15,
+    "elapsed_seconds": 10374.504,
+    "q50_rmse": 8.684997693339485,
+    "band_coverage": 0.5252380490535252,
+    "crossing_any_rate": 0.03863383323788732,
+    "sigma_floor_rate": 0.7672646511393135,
+    "sigma_cap_rate": 0.0,
+    "prediction_gzip_sha256": "4e93b79e4686d11d94e0af74110f421cc7652f20443c61cec8de84173945d9b1",
+    "model_manifest_sha256": "a7c0503b26258228a4b37350c8c2045f0e7f7ddc919068ca7253a0b01d349bbc"
+  },
+  "hmm_audit": {
+    "candidate": "hmm_lgb_exp229_quantile_band_band_sf0600_sc3000_l0250",
+    "lambda": 0.25,
+    "sigma_floor": 6.0,
+    "sigma_cap": 30.0,
+    "rows": 3783989,
+    "wells": 773,
+    "feature_count": 7,
+    "elapsed_seconds": 11320.273,
+    "hmm_generation_elapsed_seconds": 11165.761,
+    "rmse": 8.684401098734789,
+    "mae": 5.088581187714929,
+    "within10": 0.8526758402310366,
+    "delta_rmse_vs_exp148_lgb_mean": 0.1831101144352214,
+    "delta_rmse_vs_exp193_lgb_mean": 0.227725045644398,
+    "train_features_decompressed_sha256": "330d6fc3192b93c26a9ba022486fa5fe0a64d9bd923892f9454e6fad47c55a05",
+    "audit_summary_sha256": "2a620bd72784edbec84d5ec5ad47dd026242a4a33994cb9f36c14ac5c492551f"
+  },
+  "baselines": {
+    "exp148_lgb_mean_rmse": 8.501290984299567,
+    "exp193_lgb_mean_rmse": 8.45667605309039,
+    "exp221_fixed_sigma_hmm_rmse": 8.32773695096078
+  },
+  "decision": "Quantile q50 was weaker than both point-prediction baselines, and the row-wise sigma was mostly clamped at its floor. The selected HMM candidate is not eligible for inference or submission."
+}

@@ -1,0 +1,141 @@
+experiment:
+  name: "exp103_pf_z_xy_likpf_ensemble_parity"
+  description: Train-side parity audit that reruns pf_z_xy_slope as a 128-seed likelihood-weighted PF ensemble; direct replacement is rejected, but xy_likpf_scale_12 and quality/delta/path-smoothness columns remain guarded selector candidates and ML add-only feature candidates.
+  route: pf_beam
+  status: completed_train_side_audit
+  created_at: "2026-06-21"
+  updated_at: "2026-06-22"
+
+lineage:
+  parent: exp100_pf_z_unified_velocity_observation_prior
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  comparison_parents:
+    - exp072_exp063_full_replay_feature_cache
+    - exp099_pf_multi_observation_likelihood_probe
+  implementation_source: pf_z_xy_likpf_ensemble_parity.py
+  diff_summary: Converts exp100's best pf_z_xy_slope idea from a single-seed standalone candidate into a lik_pf-style 128-seed ensemble with likelihood-weighted scale outputs. It reads exp072's fixed train feature cache and compares available exp072 pf_z / likpf candidates against xy_likpf_mean / xy_likpf_scale_* using identical candidate metrics.
+
+validation:
+  strategy: train_well_pseudotail_candidate_parity_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_1ft
+    - within_2ft
+    - within_5ft
+    - within_10ft
+    - bucket_rmse_by_md_since
+    - bucket_rmse_by_row_idx
+    - worst_well_rmse
+    - path_switch_count
+    - mean_abs_step
+    - p95_abs_acceleration
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp072_rows
+  leakage_policy:
+    - Existing exp072 pf_z and likpf candidates are read from the raw-train-only feature cache.
+    - xy_likpf uses raw horizontal/typewell files, finite prefix TVT_input rows, GR, MD, Z, X, and Y only.
+    - XY rate prior coefficients are fitted only from prefix rows as d(TVT_input + Z)/dMD against dZ/dMD and dXY/dMD.
+    - Evaluation-zone true TVT is materialized only as last_known_tvt + target for scoring.
+    - This is train-side diagnostic only; no inference candidate or submission is produced.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+model:
+  name: pf_z_xy_likpf_ensemble_parity
+  estimator: none_particle_filter_candidate_audit
+  target: true_tvt_for_scoring_only
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  xy_likpf:
+    n_particles: 500
+    n_seeds: 128
+    n_jobs: 4
+    scales: [3.0, 5.0, 8.0, 12.0]
+    init_spread: 4.5
+    gr_grid_step: 0.1
+    momentum: 0.998
+    velocity_noise: 0.002
+    position_noise: 0.005
+    rough_position: 0.1
+    rough_rate: 0.001
+    resample_threshold: 0.5
+    min_fit_rows: 10
+    initial_rate_tail_rows: 30
+    rate_sigma_default: 0.10
+    rate_sigma_multiplier: 2.5
+    rate_likelihood_power: 1.0
+    gr_sigma_default: 30.0
+
+runtime:
+  use_amp: false
+  num_workers: 4
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_seed_from_experiment_xy_likpf_well
+  stochastic_components:
+    - xy_likpf_particle_initialization
+    - xy_likpf_process_noise
+    - xy_likpf_resampling
+    - upstream_exp072_pf_beam_likpf_cache
+  parallel_rng_policy: well_level_thread_pool_with_stable_per_well_seed
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_file_sha: true
+    exp072_cache_sha: true
+    candidate_wide_sha: true
+    candidate_long_sha: true
+    metrics_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it is a train-side parity audit.
+    - Source gzip cache decompressed content SHA is recorded in summary JSON.
+
+audit:
+  mode: pf_z_xy_likpf_ensemble_parity
+  output_prefix: exp103_pf_z_xy_likpf_ensemble_parity
+  max_rows: null
+  max_wells: null
+  save_candidate_long: true
+  progress_interval_wells: 25
+  thresholds_ft: [1, 2, 5, 10]
+  bucket_edges_md_since: [0, 50, 100, 250, 500, 1000]
+  bucket_edges_row_idx: [0, 100, 250, 500, 1000]
+  expected_train_artifacts:
+    - exp103_pf_z_xy_likpf_ensemble_parity_candidate_metrics.csv
+    - exp103_pf_z_xy_likpf_ensemble_parity_bucket_metrics.csv
+    - exp103_pf_z_xy_likpf_ensemble_parity_by_well.csv
+    - exp103_pf_z_xy_likpf_ensemble_parity_xy_likpf_quality.csv
+    - exp103_pf_z_xy_likpf_ensemble_parity_candidate_wide.csv.gz
+    - exp103_pf_z_xy_likpf_ensemble_parity_candidate_long.csv.gz
+    - exp103_pf_z_xy_likpf_ensemble_parity_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_candidate: null
+  notes:
+    - No inference notebook candidate is selected in this experiment.
+    - If xy_likpf_scale_* beats exp072 likpf_mean and does not regress worst-well or near-prefix buckets, port the exact ensemble to inference inside this same experiment before any submit decision.
+
+notes:
+  - Implements the follow-up requested after exp100: 128 seed化, likelihood-weighted scale ensemble, pf_mean / pf_scale_* equivalent outputs, and exp072 pf_z / likpf candidate metric parity.

@@ -1,0 +1,164 @@
+{
+  "experiment": "exp192_typewell_late_range_hard_window_pct50_full_cache_replacement",
+  "route": "pf_beam",
+  "status": "completed_supported_for_downstream_replacement_test",
+  "decision": "supported_as_direct_cache_candidate_no_submit",
+  "mode": "typewell_late_hard_window_pct50_full_public_replay_train_feature_cache",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "feature_cache": {
+    "variant": "pixiux_likpf_hard_window_pct50_public_replay",
+    "rows": 3783989,
+    "wells": 773,
+    "feature_count": 196,
+    "expected_feature_count": 196,
+    "hard_window": {
+      "name": "pct50",
+      "enabled": true,
+      "min_typewell_pct": 0.5,
+      "max_typewell_pct": 1.0,
+      "min_rows_after_filter": 3,
+      "grid_run": false
+    },
+    "runtime_seconds": 13275.591,
+    "feature_generation_seconds": 11643.326,
+    "raw_gzip_sha256": "1040d7d3b9254b5a36d2a3f7fd526ae28e3ddd5b29059926b44bbe9d84436e6a",
+    "decompressed_sha256": "a86dff450b108e4481208a5f5699f8624eaf736cb6eb6aa735d39b4044c6f0e1",
+    "decompressed_bytes": 7428711117,
+    "line_count": 3783990,
+    "data_rows": 3783989,
+    "header_columns": 199,
+    "schema_sha256": "ad59c4f998433bdd9105effa081ec620fd7f6ced5f9dc32d68b97d4c757f6ed0",
+    "summary_sha256": "f7c244621a197068b948e6753076f898c4171ed9a6b1086745d93567b4eb6b50"
+  },
+  "kaggle_train": {
+    "status": "complete",
+    "kernel": "kentookumura/exp192-typewell-hard-window-pct50-train",
+    "version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp192-typewell-hard-window-pct50-train",
+    "id_no": 125911807,
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "direct_comparison_vs_exp072": {
+    "rows_checked": 3783989,
+    "unique_wells": 773,
+    "id_mismatches": 0,
+    "missing_typewell_range_wells": 0,
+    "overall_metrics": [
+      {
+        "candidate": "pf_ancc",
+        "exp072_rmse": 14.493061,
+        "exp192_rmse": 13.821178,
+        "delta_rmse": -0.671884,
+        "exp072_mae": 8.921569,
+        "exp192_mae": 8.05343,
+        "delta_mae": -0.868139,
+        "exp072_within10": 0.691732,
+        "exp192_within10": 0.734461,
+        "delta_within10": 0.04273
+      },
+      {
+        "candidate": "pf_z",
+        "exp072_rmse": 17.788174,
+        "exp192_rmse": 19.705112,
+        "delta_rmse": 1.916938,
+        "exp072_mae": 10.677493,
+        "exp192_mae": 11.543506,
+        "delta_mae": 0.866013,
+        "exp072_within10": 0.647655,
+        "exp192_within10": 0.641448,
+        "delta_within10": -0.006206
+      },
+      {
+        "candidate": "beam_mean",
+        "exp072_rmse": 15.774328,
+        "exp192_rmse": 15.677016,
+        "delta_rmse": -0.097311,
+        "exp072_mae": 10.898586,
+        "exp192_mae": 10.92674,
+        "delta_mae": 0.028153,
+        "exp072_within10": 0.591629,
+        "exp192_within10": 0.589523,
+        "delta_within10": -0.002106
+      },
+      {
+        "candidate": "beam_sm5",
+        "exp072_rmse": 16.313542,
+        "exp192_rmse": 16.15293,
+        "delta_rmse": -0.160612,
+        "exp072_mae": 11.300928,
+        "exp192_mae": 11.317035,
+        "delta_mae": 0.016107,
+        "exp072_within10": 0.575622,
+        "exp192_within10": 0.573482,
+        "delta_within10": -0.00214
+      },
+      {
+        "candidate": "beam_cons",
+        "exp072_rmse": 16.023008,
+        "exp192_rmse": 15.991019,
+        "delta_rmse": -0.031989,
+        "exp072_mae": 11.106713,
+        "exp192_mae": 11.152096,
+        "delta_mae": 0.045382,
+        "exp072_within10": 0.582883,
+        "exp192_within10": 0.580808,
+        "delta_within10": -0.002074
+      },
+      {
+        "candidate": "beam_med",
+        "exp072_rmse": 15.987519,
+        "exp192_rmse": 15.952364,
+        "delta_rmse": -0.035156,
+        "exp072_mae": 11.060277,
+        "exp192_mae": 11.105301,
+        "delta_mae": 0.045024,
+        "exp072_within10": 0.584002,
+        "exp192_within10": 0.581875,
+        "delta_within10": -0.002127
+      },
+      {
+        "candidate": "likpf_mean",
+        "exp072_rmse": 11.594898,
+        "exp192_rmse": 11.544812,
+        "delta_rmse": -0.050086,
+        "exp072_mae": 7.067633,
+        "exp192_mae": 7.063503,
+        "delta_mae": -0.004129,
+        "exp072_within10": 0.772802,
+        "exp192_within10": 0.774188,
+        "delta_within10": 0.001386
+      }
+    ],
+    "guard_notes": [
+      "likpf_mean improved globally and in 396 wells, but 375 wells worsened and max well regression is +30.263337 RMSE.",
+      "pf_ancc improved strongly globally but still has max well regression +49.512070 RMSE.",
+      "pf_z worsened globally by +1.916938 RMSE, so full replacement should be tested through downstream ML before any inference or submit.",
+      "true_typewell_pct lt_0p50 rows worsened for pf_ancc, beam_mean, and likpf_mean, confirming early-range exception risk."
+    ],
+    "comparison_sha256": {
+      "overall_metrics": "f7250d78e4637dba7a102bfc5d5f8f37ddf58c546a5db888b4dfbc3f7f2c332d",
+      "distance_bucket_metrics": "546001218856dba3f01007fdc81b9b023bf838323b24dd07f5d010ef760ae525",
+      "true_typewell_pct_metrics": "a11f952052e3898c554eed93362e3c538f6f03f5b5415669c95e65a1b581c9f7",
+      "by_well_delta": "527b5d9d065e2448620e472a3e365867b511a5ad73782fb1106c5489e534d87a",
+      "summary": "a051bd2ef1dc41ced8a43908bd88e33e52551886ef806757d8fc084c2eac1b76"
+    }
+  },
+  "artifacts": [
+    "artifacts/exp192_typewell_late_range_hard_window_pct50_full_cache_replacement_full_replay_cache_pixiux_likpf_hard_window_pct50_public_replay_train_features.csv.gz",
+    "artifacts/exp192_typewell_late_range_hard_window_pct50_full_cache_replacement_full_replay_cache_feature_schema.csv",
+    "artifacts/exp192_typewell_late_range_hard_window_pct50_full_cache_replacement_full_replay_cache_summary.json",
+    "artifacts/exp192_vs_exp072_overall_metrics.csv",
+    "artifacts/exp192_vs_exp072_distance_bucket_metrics.csv",
+    "artifacts/exp192_vs_exp072_true_typewell_pct_metrics.csv",
+    "artifacts/exp192_vs_exp072_by_well_delta.csv",
+    "artifacts/exp192_vs_exp072_summary.json"
+  ],
+  "notes": [
+    "Implemented from exp186 corrected full replay cache code.",
+    "Existing exp072 full replay cache was not a generation input; it was used only for direct comparison after generation.",
+    "No LightGBM, inference, submission, or Public LB was produced."
+  ]
+}

@@ -1,0 +1,88 @@
+experiment:
+  name: "exp044_stratified_groupkfold_cv_audit"
+  description: Audit a signed-azimuth / TVT / spatial stratified well GroupKFold split and re-summarize available OOF predictions by stress buckets
+  route: ml_model  # ml_model or pf_beam
+  status: implemented
+  created_at: "2026-06-09"
+
+lineage:
+  parent: exp026_pseudo_tail_bucket_shrink_inference_submit
+  diff_summary: >
+    Add a diagnostic-only StratifiedGroupKFold split over train wells using signed azimuth,
+    median known TVT, centroid location, eval length, and GR coverage. This does not replace
+    the primary GroupKFold CV and does not create a submission.
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation:
+  strategy: StratifiedGroupKFold stress report by well_id; score only configured OOF rows
+  leakage_policy:
+    - Fold assignment is well-level; no horizontal well is split across train and validation.
+    - Target-derived median TVT is used only as a validation stratification diagnostic, never as a model feature.
+    - Train-only formation columns are not used.
+    - Existing OOF artifacts are re-aggregated only; this experiment does not fit a new predictor.
+
+# Common paths and submission columns come from project.yml.
+data: {}
+
+model:
+  name: stratified_groupkfold_cv_audit
+  params: {}
+
+audit:
+  purpose: stress_report_only
+  parent_clean_cv_anchor: exp025_pseudo_tail_postprocess_cv_audit fixed exp014_bucket_shrink_params 12.870780
+  ml_route_public_lb_anchor: exp039_ravaghi_single_lgbm_inference_submit 11.740
+  pf_route_public_lb_anchor: exp027_public_replay_needless090_sel15_spread3 8.781
+  chunk_rows: 250000
+  binning:
+    azimuth_bins: 4
+    tvt_bins: 4
+    spatial_x_bins: 3
+    spatial_y_bins: 3
+    eval_length_bins: 3
+    gr_bins: 3
+  distance_buckets:
+    - name: rows_0_49
+      max_step: 49
+    - name: rows_50_249
+      max_step: 249
+    - name: rows_250_999
+      max_step: 999
+    - name: rows_1000_2499
+      max_step: 2499
+    - name: rows_2500_plus
+      max_step: 1000000000
+  postprocess_bucket_shrink:
+    name: exp014_bucket_shrink_params
+    buckets:
+      - name: rows_0_49
+        max_step: 49
+        alpha: 0.20
+      - name: rows_50_249
+        max_step: 249
+        alpha: 0.5917180252647632
+      - name: rows_250_999
+        max_step: 999
+        alpha: 1.15
+      - name: rows_1000_2499
+        max_step: 2499
+        alpha: 1.15
+      - name: rows_2500_plus
+        max_step: 1000000000
+        alpha: 1.0490770312511664
+  oof_sources:
+    - name: exp013_lightgbm_no_gr
+      path: data/external/kaggle-output/exp013_model_diversity_or_postprocess/train/artifacts/row_oof_predictions.csv
+      variant: lightgbm_no_gr
+    - name: exp017_dtw_dwt_no_gr
+      path: data/external/kaggle-output/exp017_deterministic_dtw_addonly/train/artifacts/row_oof_predictions.csv
+      variant: dtw_dwt_no_gr
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+
+notes:
+  - Diagnostic experiment only; no inference candidate or competition submission is produced.
+  - Stratified folds are for robustness analysis before XGBoost/LGBM micro-tune and spatial/typewell follow-ups.

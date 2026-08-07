@@ -1,0 +1,95 @@
+{
+  "experiment": "exp070_gpu_reproducibility_guard_for_exp063",
+  "status": "invalid_as_repro_guard_valid_as_lb_candidate_needs_ref_sha_attribution",
+  "cv": 9.73150619943287,
+  "public_lb": null,
+  "private_lb": null,
+  "public_lb_observation": {
+    "status": "user_reported_record_update_needs_attribution",
+    "candidate_completed_refs": [
+      {
+        "ref": 53669416,
+        "public_lb": 8.548,
+        "date": "2026-06-14 10:15:57.953000"
+      },
+      {
+        "ref": 53669453,
+        "public_lb": 8.515,
+        "date": "2026-06-14 10:17:16.053000"
+      }
+    ],
+    "interpretation": "If either candidate ref is exp070, exp070 is a strong LB candidate despite being invalid for the exp063 full-replay reproducibility guard. Keep public_lb null until ref, kernel version, and submission SHA are verified."
+  },
+  "metric": "rmse",
+  "train": {
+    "gpu_v4": {
+      "status": "complete",
+      "mode": "gpu_repro_guard_dp_threads8",
+      "model": "lgb_mean",
+      "cv": 9.73150619943287,
+      "elapsed_seconds": 6900.889,
+      "rows": 3783989,
+      "wells": 773,
+      "features": 65,
+      "prediction_sha256": "09ccb9edd59cd50057da0ee7738229749996219708f36e6c45f870d0efd026a5",
+      "source_feature_sha256": "4ebf8f4fec0be09fba5c9c585d3699a78fbc6511b16b066098a7ca65362c5f90",
+      "model_count": 15
+    },
+    "cpu_v2": {
+      "status": "complete",
+      "mode": "cpu_deterministic_threads8",
+      "model": "lgb_mean",
+      "cv": 9.764917679392632,
+      "elapsed_seconds": 6308.689,
+      "rows": 3783989,
+      "wells": 773,
+      "features": 65,
+      "prediction_sha256": "e09344e4fe0a8158150c60e018cb12867107b870e1bbb262dc9b46f0e8a3d557",
+      "source_feature_sha256": "4ebf8f4fec0be09fba5c9c585d3699a78fbc6511b16b066098a7ca65362c5f90",
+      "model_count": 15
+    }
+  },
+  "inference": {
+    "v1": {
+      "status": "complete",
+      "mode": "gpu_repro_guard_dp_threads8",
+      "model": "lgb_mean",
+      "model_count": 15,
+      "test_rows": 14151,
+      "submission_rows": 14151,
+      "predicted_rows": 14151,
+      "fallback_rows": 0,
+      "elapsed_seconds": 122.117,
+      "feature_generation_seconds": 94.557,
+      "test_feature_source_kind": "raw_test_regenerated_exp063_public_replay",
+      "test_feature_sha256": "e69bfaa3ac1f8d02e5070ec2186b1f1da9163fead1e6d5883ca42db0a22cc303",
+      "prediction_sha256": "ad795b6637ac1b48bb27cc67ae142f396f04e57319f0670701b9fa01a7f60b13",
+      "submission_sha256": "9d26b8b80df859b0e137e14e9fc3dba4acaf68252ebc2e87dc40153541be291b"
+    },
+    "cpu_v1": {
+      "status": "running",
+      "mode": "cpu_deterministic_threads8",
+      "model": "lgb_mean",
+      "kernel": "kentookumura/exp070-cpu-repro-guard-exp063-infer",
+      "kernel_source": "kentookumura/exp070-cpu-repro-guard-exp063-train",
+      "enable_gpu": false,
+      "regenerate_test_features": true,
+      "notes": "CPU train booster inference package was pushed to Kaggle as version 1 and is running. It regenerates exp063 PF/Beam/likelihood-PF test features from current raw test files."
+    }
+  },
+  "submit_check": {
+    "status": "pass",
+    "submission": "/tmp/kaggle-output/exp070_gpu_reproducibility_guard_for_exp063/infer_v1/submission.csv",
+    "sample": "data/raw/sample_submission.csv",
+    "rows": 14151,
+    "columns": 2,
+    "notes": "No duplicate IDs, no empty/NaN/Inf-like values, header matches sample_submission.csv, row count matches sample_submission.csv."
+  },
+  "decision": {
+    "status": "invalid_as_repro_guard_valid_as_lb_candidate",
+    "reason": "Invalid for the original exp063 reproducibility guard because exp070 used the compact tracker output with 65 features instead of the exp063 full public replay 196-feature surface.",
+    "lb_reinterpretation": "User reported that exp070 updated the Public LB record. Kaggle submissions around the report showed completed scores 8.548 (ref 53669416) and 8.515 (ref 53669453), both better than exp027 8.781 and exp063 8.811. Exact ref-to-artifact attribution still needs verification because descriptions were empty.",
+    "replacement": "Use exp072 train-side full replay feature cache, then implement a corrected full-replay LightGBM GPU reproducibility guard. Separately keep exp070's compact 65-feature surface as an LB candidate after verifying ref, kernel version, and submission SHA. Downstream inference must regenerate PF/Beam/likelihood-PF features from current raw test inside the inference notebook."
+  },
+  "notes": "GPU train v4, CPU train v2, and GPU raw-test-regenerating inference v1 completed on Kaggle. Exp070 is invalid/superseded for the original exp063 reproducibility purpose because it used 65 compact tracker features instead of the full 196-feature exp063 public replay surface. However, after the user-reported Public LB record update, exp070 should be kept as a compact-surface LB candidate pending ref/SHA attribution. CPU raw-test-regenerating inference v1 has been pushed and is running with enable_gpu=false. GPU train v4 lgb_mean CV is 9.731506199; CPU train v2 lgb_mean CV is 9.764917679. CPU runtime was 6308.689 sec versus GPU runtime 6900.889 sec for this deterministic LightGBM setup. GPU inference v1 regenerated exp063 PF/Beam/likelihood-PF test features from current raw test files and produced submission.csv with no fallback rows."
+}

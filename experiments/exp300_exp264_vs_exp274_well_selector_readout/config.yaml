@@ -1,0 +1,116 @@
+experiment:
+  name: exp300_exp264_vs_exp274_well_selector_readout
+  description: >-
+    Diagnostic OOF readout comparing corrected exp264 Stage D v3 with the
+    previous submitted ML anchor exp274, including by-well error, long-tail
+    row buckets, target-free/oracle well characteristics, and corrected Stage
+    C v6 selector behavior, including switch-window and previous-candidate
+    hold attribution plus oracle candidate-ranking versus Stage D attribution.
+  route: ml_model
+  status: completed_diagnostic_only
+  created_at: "2026-07-20"
+
+lineage:
+  parent: exp264_exp263_candidate_confidence_dual_selector
+  comparison: exp274_catboost_final_regressor_swap_on_exp238
+  diff_summary: >-
+    No model fit or prediction generation. Join the saved corrected exp264
+    Stage D v3 OOF and strict nested Stage C v6 selector diagnostics with the
+    saved exp274 raw CatBoost OOF. PF/HMM/Beam candidates contribute only as
+    already-saved exp264 selector features and are not regenerated.
+
+validation:
+  strategy: cross_experiment_saved_oof_diagnostic
+  metric: rmse
+  n_folds: 5
+  group_column: well
+  rows: 3783989
+  wells: 773
+  comparison_note: >-
+    exp274 and exp264 differ in outer-fold assignment for 63 wells. Report the
+    full cross-experiment comparison and the 710-well matched-fold subset;
+    neither is a causal ablation or a replacement CV anchor.
+
+data:
+  exp274_oof: artifacts/source_inputs/exp274_catboost_final_regressor_swap_on_exp238_oof_predictions.csv.gz
+  exp274_by_well: artifacts/source_inputs/exp274_catboost_final_regressor_swap_on_exp238_by_well.csv
+  exp264_stage_d_surface: corrected_stage_d_v3_selector_compact_addonly_lgb_mean
+  exp264_stage_c_surface: corrected_stage_c_v6_strict_nested_outer_valid
+  exp264_stage_c_candidate_score: >-
+    artifacts/source_inputs/exp264_stage_c_v6/artifacts/
+    nested_outer_valid_candidate_score.parquet
+  exp264_stage_c_candidate_score_sha256: a10b7848127f01bef522f4b17dfd1640c9784956892dc24fc1159e3869500abc
+  selector_manifest: >-
+    ../exp264_exp263_candidate_confidence_dual_selector/kaggle/output/
+    oof_selector_confidence_probe_v3/artifacts/
+    exp264_exp263_candidate_confidence_dual_selector_oof_selector_confidence_probe_plot_manifest.csv
+  selector_summary: >-
+    ../exp264_exp263_candidate_confidence_dual_selector/kaggle/output/
+    oof_selector_confidence_probe_v3/artifacts/
+    exp264_exp263_candidate_confidence_dual_selector_oof_selector_confidence_probe_summary.json
+
+readout:
+  severity_thresholds_ft: [0.0, 0.25, 1.0, 3.0, 5.0]
+  distance_buckets_ft: [0, 50, 100, 250, 500, 1000]
+  relative_tail_bins: 10
+  selector_primary_objective: pred_abs_error
+  selector_secondary_objective: p_within10
+  target_free_and_oracle_features_are_separate: true
+  hard_primary_top1_is_final_prediction: false
+  switch_definition: primary_hard_top1_differs_from_previous_row_within_well
+  switch_windows_rows: [0, 1, 5, 25, 100]
+  run_counterfactual: previous_run_candidate_held_over_current_run_actual_tvt_oracle
+  oracle_candidate_definition: minimum_actual_abs_error_among_primary_11
+  oracle_tie_tolerance_ft: 0.00001
+  attribution_identity: >-
+    stage_d_minus_exp274_equals_oracle_minus_exp274_plus_selected_minus_oracle_plus_stage_d_minus_selected
+
+model:
+  name: no_new_model_oof_readout
+  params:
+    estimator: none
+    trains_model: false
+    trained_boosters: 0
+
+runtime:
+  device: cpu
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    train_run_on_push: false
+    inference_run_on_push: false
+    enable_gpu: false
+    enable_internet: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_primary_readout_random_state_42_for_auxiliary_auc_only
+  stochastic_components:
+    - auxiliary_spatial_kmeans_random_state_42
+    - auxiliary_stratified_cv_shuffle_random_state_42
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: false
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Local CPU aggregation of saved Kaggle OOF artifacts; no new Kaggle run.
+    - Input and output SHA are recorded in artifacts/selector_readout_summary.json.
+    - Diagnostic only; do not update ML, ensemble, or deterministic anchors.
+    - Previous-candidate hold uses actual TVT and is hard-path attribution only.
+    - Oracle candidate selection uses actual TVT and is a non-deployable ranking diagnostic.
+    - No model, new prediction, inference output, or submission is generated.
+
+notes:
+  - exp274 remains train-side rejected despite being the previous submitted ML anchor.
+  - Selector candidate dominance is a per-well summary of row-level hard top1 scores, not the Stage D final routing decision.
+  - exp274 has no selector, so the switch readout concerns within-exp264 candidate changes only.
+  - Switch suppression is not supported by the aggregate counterfactual.
+  - Selector ranking regret, not aggregate Stage D response, is the dominant gt3-well error term.
+  - Actual TVT/error-derived features are oracle diagnostics and are forbidden as deployable router inputs.

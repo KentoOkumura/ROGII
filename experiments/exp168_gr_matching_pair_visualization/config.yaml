@@ -1,0 +1,119 @@
+experiment:
+  name: "exp168_gr_matching_pair_visualization"
+  description: Visualize the actual horizontal GR windows and matched typewell GR windows used by target-free GR shift-scan matching.
+  route: pf_beam
+  status: implemented
+  created_at: "2026-07-02"
+
+lineage:
+  parent: exp167_fft_denoised_gr_matching_audit
+  references:
+    - .steering/20260702-exp167-fft-denoised-gr-matching-audit
+    - experiments/exp167_fft_denoised_gr_matching_audit
+  diff_summary: >
+    Adds a Kaggle-first diagnostic visualization notebook for GR matching pairs.
+    It reuses the exp167 known-prefix linear TVT prior and typewell GR shift scan,
+    but focuses on saving scored pair metadata, waveform overlay PNGs, and an HTML
+    index. It does not train a model, generate PF/Beam candidates, replace
+    predictions, or create a submission.
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation: {}
+
+# Common paths and submission columns come from project.yml.
+data:
+  train_dir: data/raw/train
+
+model:
+  name: none_gr_matching_pair_visualization
+  params: {}
+
+audit:
+  mode: gr_matching_pair_visualization
+  output_prefix: exp168_gr_matching_pair_visualization
+  max_wells: 16
+  well_include: []
+  min_prefix_rows: 80
+  max_eval_rows_per_region_per_well: 32
+  prefix_backtest_tail_rows: 256
+  prefix_slope_window_rows: 80
+  slope_clip: [-3.0, 3.0]
+  shift_min_ft: -220.0
+  shift_max_ft: 220.0
+  shift_step_ft: 5.0
+  local_offsets_rows: [-36, -24, -12, -6, 0, 6, 12, 24, 36]
+  typewell_smooth_window: 5
+  ncc_weight: 8.0
+  score_temperature: 6.0
+  oof:
+    enabled: true
+    filename: exp098_selector_rank_slot_features_on_exp073_predictions.csv.gz
+    local_path: experiments/exp098_selector_rank_slot_features_on_exp073/kaggle/output/train_v1/artifacts/exp098_selector_rank_slot_features_on_exp073_predictions.csv.gz
+    model: lgb1
+    label: exp098_lgb1_oof_abs_error
+    max_good_bad_rows: 12
+  max_examples_per_filter_region: 6
+  max_total_figures: 64
+  context_half_window_rows: 220
+  typewell_context_half_window_ft: 160.0
+  top_k_alternatives: 6
+  alternative_min_shift_separation_ft: 10.0
+  true_near_min_window_ft: 5.0
+  filters:
+    - name: raw
+      kind: raw
+    - name: rolling_median_11
+      kind: rolling_median
+      window: 11
+    - name: savgol_31_p2
+      kind: savgol
+      window: 31
+      polyorder: 2
+    - name: fft_notch_top2
+      kind: fft_notch
+      max_peaks: 2
+      min_period_ft: 6.0
+      max_period_ft: 120.0
+      notch_width_bins: 2
+  artifacts:
+    - exp168_gr_matching_pair_visualization_scored_pairs.csv.gz
+    - exp168_gr_matching_pair_visualization_selected_pairs.csv
+    - exp168_gr_matching_pair_visualization_oof_bucket_summary.csv
+    - exp168_gr_matching_pair_visualization_index.html
+    - exp168_gr_matching_pair_visualization_good_bad_oof_index.html
+    - exp168_gr_matching_pair_visualization_global_local_index.html
+    - exp168_gr_matching_pair_visualization_wrong_depth_index.html
+    - exp168_gr_matching_pair_visualization_summary.json
+    - figures/*.png
+    - simple_overlay/*.png
+    - global_local/*.png
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  kaggle:
+    train_kernel_sources:
+      - kentookumura/exp098-selector-rank-slot-features-on-exp073-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_deterministic_linspace_sampling
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - No ML model, PF/Beam generation, prediction replacement, or submission is produced.
+    - True TVT is used only for train-side evaluation and plot markers, not for matching.
+
+notes:
+  - This notebook is intended for Kaggle execution and visual inspection of GR matching pair quality.

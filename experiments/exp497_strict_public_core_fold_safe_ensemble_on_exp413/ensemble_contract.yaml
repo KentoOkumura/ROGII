@@ -1,0 +1,51 @@
+contract: exp413_strict_public_core_meta5_v1
+inputs:
+  parent:
+    experiment: exp413_scale5_likpf_full_replacement_on_exp335
+    prediction: saved_final_tvt_oof
+    expected_sha256: 9bd2d17778b3b27d771b12cbff72def8b87e6cdf14062e1c0ba192434cef4a9d
+    retrain: false
+  auxiliary:
+    experiment: exp497_strict_public_core_fold_safe_ensemble_on_exp413
+    prediction: strict_public_core_oof
+
+join:
+  keys: [well_id, row_idx, fold]
+  expected_rows: 3783989
+  expected_wells: 773
+  missing_allowed: 0
+  duplicate_allowed: 0
+
+meta_fit:
+  folds: 5
+  policy: fit_on_other_four_outer_oof_folds_apply_to_held_fold
+  form: pred_equals_one_minus_w_times_exp413_plus_w_times_public_core
+  public_core_weight_min: 0.0
+  public_core_weight_max: 0.30
+  intercept: false
+  row_features: false
+  well_features: false
+  deployment_weight: median_of_meta_fold_weights
+  full_oof_refit: false
+
+gate:
+  pooled_rmse_gain_min_ft: 0.03
+  nonworse_folds_required: 5
+  fixed_scope_max_delta_ft: 0.0
+  by_well_p95_max_delta_ft: 0.25
+  worst_well_max_delta_ft: 0.25
+  positive_auxiliary_weight_folds_required: 5
+  all_required: true
+  fail_decision: fail_close_strict_public_core_without_same_oof_rescue
+
+forbidden:
+  - conditional_weight
+  - row_gate
+  - well_gate
+  - confidence_router
+  - worst_well_id_rule
+  - global_same_oof_weight_refit
+  - weight_grid_rescue
+  - public_lb_tuning
+  - inference_before_gate_pass
+  - submission_before_separate_approval

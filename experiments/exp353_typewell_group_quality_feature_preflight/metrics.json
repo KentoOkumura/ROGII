@@ -1,0 +1,42 @@
+{
+  "experiment": "exp353_typewell_group_quality_feature_preflight",
+  "status": "completed_stage_0_gate_failed_closed",
+  "route": "ml_model",
+  "stage": "stage_0_zero_booster_preflight",
+  "cv": {
+    "passed": false,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "coverage": 0.9805950840879689,
+    "fallback_fraction": 0.019404915912031084,
+    "all_features_finite": true,
+    "outer_valid_truth_rows_before_feature_freeze": 0,
+    "real_residual_sigma_vs_exp148_well_rmse_spearman": 0.0061344681089145,
+    "shuffle_residual_sigma_vs_exp148_well_rmse_spearman": 0.0653007982208189,
+    "real_minus_shuffle_spearman": -0.0591663301119044,
+    "positive_folds": 4,
+    "q4_minus_q1_exp148_well_rmse_ft": 0.20270100600058338
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "feature_stability_and_exp148_error_association",
+  "runtime_seconds": 112.10795949199996,
+  "kernel": {
+    "id": "kentookumura/exp353-typewell-quality-preflight-train",
+    "version": 1,
+    "id_no": 128362932,
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "execution_contract": {
+    "preflight_variants": 1,
+    "negative_controls": 1,
+    "folds": 5,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "parent_control_retraining": 0
+  },
+  "feature_manifest_freeze_sha256": "6a90ee2aa35029c4910e93c7476aa5cff1cce82af0e17fce41d7e34e85e256fe",
+  "notes": "Fixed Stage 0 gate failed. Stage 1, feature rescue, rerun, inference, and submission were not run."
+}

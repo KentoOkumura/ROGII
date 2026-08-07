@@ -1,0 +1,61 @@
+{
+  "experiment": "exp097_modelpkg_tiny_gate_on_exp073",
+  "status": "submitted_complete_public_lb_8_766",
+  "route": "ml_model",
+  "cv": null,
+  "public_lb": 8.766,
+  "private_lb": null,
+  "kernel": "kentookumura/exp097-modelpkg-tiny-gate-on-exp073-inference",
+  "kernel_version": 3,
+  "selected_variant": "modelpkg_gate_g005_s4p0",
+  "selected_passes_all_guards": true,
+  "selected_summary": {
+    "gmax": 0.005,
+    "scale": 4.0,
+    "rows": 14151,
+    "wells": 3,
+    "raw_modelpkg_diff_abs_p95": 33.56686985145825,
+    "raw_modelpkg_diff_abs_max": 36.55725321857244,
+    "gate_weight_mean": 0.000494346927176972,
+    "gate_weight_max": 0.004924425718363915,
+    "correction_abs_mean": 0.005103153544641586,
+    "correction_abs_p95": 0.008829179972899743,
+    "correction_abs_max": 0.009999850660132247,
+    "prediction_min": 11593.667021557858,
+    "prediction_max": 12241.687490392356,
+    "prediction_mean": 11905.651154989653,
+    "prediction_std": 279.2946341533747,
+    "prediction_sha256": "3250801c6937e3deb77d35b5aea1a3f2bcbf8cf10eca7ecfb24080f11c6f7e0e",
+    "selected_submission_sha256": "2ba63b33524cfd0593f4114f019d8ab45fee2edb26b4e31698ccea3b80f473ad"
+  },
+  "exp073_base_generation": {
+    "status": "inference_completed",
+    "train_imputer_wells": 773,
+    "test_wells": 3,
+    "elapsed_seconds": 133.038,
+    "feature_sha256": "3718aa6fc85946acaff067534374e2f87c19d9992bab7e83c4a95ea527bb62f4"
+  },
+  "hidden_safe_behavior": {
+    "generate_exp073_base_on_current_test": true,
+    "disable_modelpkg_on_row_mismatch": true,
+    "fallback_status": "modelpkg_disabled_base_submission_written",
+    "fallback_note": "If the precomputed public model-package CSV does not cover current sample_submission ids, inference writes exp073 base-only instead of throwing a row-alignment exception."
+  },
+  "submission": {
+    "path": "/tmp/kaggle-output/exp097_modelpkg_tiny_gate_on_exp073/inference_v3/submission.csv",
+    "rows": 14151,
+    "columns": "id,tvt",
+    "sha256": "9467e55c136d09063a284d8b31cf412a66130963b07642d28194e303d8ac2175",
+    "submit_check": "pass",
+    "ref": 53897072,
+    "status": "complete",
+    "public_lb": 8.766
+  },
+  "artifacts": {
+    "output_dir": "/tmp/kaggle-output/exp097_modelpkg_tiny_gate_on_exp073/inference_v3",
+    "summary": "/tmp/kaggle-output/exp097_modelpkg_tiny_gate_on_exp073/inference_v3/artifacts/exp097_modelpkg_tiny_gate_on_exp073_inference_summary.json",
+    "variant_metrics": "/tmp/kaggle-output/exp097_modelpkg_tiny_gate_on_exp073/inference_v3/artifacts/exp097_modelpkg_tiny_gate_on_exp073_variant_metrics.csv",
+    "selected_submission": "/tmp/kaggle-output/exp097_modelpkg_tiny_gate_on_exp073/inference_v3/artifacts/exp097_modelpkg_tiny_gate_on_exp073_modelpkg_gate_g005_s4p0_submission.csv"
+  },
+  "notes": "Kaggle inference v3 completed and submission checks passed. Code submission ref=53897072 completed with Public LB 8.766. v1 code submission failed on hidden rerun because public output-copy inputs do not match hidden sample rows. v3 regenerates exp073 base for current test rows and falls back to exp073 base-only when model-package precomputed CSV row alignment fails."
+}

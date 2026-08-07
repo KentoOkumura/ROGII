@@ -1,0 +1,84 @@
+{
+  "experiment": "exp367_stratified_signed_curvature_pf",
+  "route": "pf_beam",
+  "status": "completed_stage0_failed_close_without_rescue",
+  "created_at": "2026-07-23",
+  "updated_at": "2026-07-25",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "signed_path_gr_separability_then_rmse",
+  "stage0": {
+    "passed": false,
+    "decision": "stage0_failed_close_without_rescue",
+    "technical_gate_passed": true,
+    "scientific_gate_passed": false,
+    "input_wells": 773,
+    "scored_wells": 772,
+    "blocks": 13631,
+    "rows_with_block_overlap": 6979072,
+    "overall": {
+      "top1_accuracy": 0.469591,
+      "zero_first_top1_accuracy": 0.008510,
+      "top1_gain_vs_zero_first": 0.461081,
+      "circular_top1_accuracy": 0.464016,
+      "real_minus_circular_top1": 0.005576,
+      "mrr": 0.687550,
+      "zero_first_mrr": 0.410779,
+      "mrr_gain_vs_zero_first": 0.276771,
+      "selected_path_rmse_ft": 90.506527,
+      "zero_path_rmse_ft": 91.336129,
+      "selected_path_rmse_gain_vs_zero_ft": 0.829601
+    },
+    "passing_folds": 2,
+    "reporting_folds": 5,
+    "scope_rmse_gain_vs_zero_ft": {
+      "1000_plus": 0.911161,
+      "hidden_like_spatial": 0.306996,
+      "hidden_like_typewell_purged": 0.447147
+    },
+    "checks": {
+      "overall_top1_at_least_0p40": true,
+      "overall_mrr_gain_at_least_0p01": true,
+      "real_minus_circular_top1_at_least_0p03": false,
+      "passing_folds_at_least_4": false,
+      "1000_plus_positive_direction": true,
+      "hidden_like_spatial_positive_direction": true,
+      "hidden_like_typewell_purged_positive_direction": true
+    },
+    "stage1_eligible": false
+  },
+  "runtime_seconds": 267.914282461,
+  "kaggle": {
+    "kernel_id": "kentookumura/exp367-stratified-signed-curvature-pf-train",
+    "kernel_version": 1,
+    "id_no": 128528103,
+    "url": "https://www.kaggle.com/code/kentookumura/exp367-stratified-signed-curvature-pf-train",
+    "cpu_only": true,
+    "internet_enabled": false
+  },
+  "execution_contract": {
+    "fixed_signed_paths": 3,
+    "reporting_folds": 5,
+    "pf_seed_well_runs": 0,
+    "pf_control_replays": 0,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "stage1_pf_runs": 0
+  },
+  "content_sha256": {
+    "scientific_contract": "c5893932790ac5194dc62ff84e5dda103cff2f3270c1bc96ea026f3c159ccb44",
+    "candidate_paths_decompressed": "7d3301c309494845ffcd7f24fa1863f5c551d455ed9282110ba2a6482a227386",
+    "block_gr_scores_decompressed": "a7b5cc9d538e1eb040e42086477a06157d42cbec0b61aac79c1f28b221258b0a",
+    "input_manifest": "a7db4af17bd3b39b8a7459c1f7c3ed14355682ca543274d2a27c53ddb6300edd",
+    "freeze_manifest": "9e3da3d462fdf77cf5177ce37793566938d50be34f610dfaf9397f235a811f3c",
+    "postfreeze_block_readout_decompressed": "b6e82ee2b2ae77e56bc5e999a988592f8b6587e62e4d42c70cd1e703487f502c",
+    "scope_metrics": "847413d64d8937baf6836f4c4e0c5231d23d0fb0ababf6b08f6be585c8740cc8",
+    "fold_metrics": "8ff5225f5b410aeb791e47359ab13ac8e3a69bdd491b7d90aa7673b9bba7971b",
+    "gate_report": "338d78383fb01faef993de57d1b235f81eea02b92c79f7093ac517f3a8bfec4d",
+    "summary": "c0057e0af9e6e16013991e1534d4656e444f591f14fdea1b561ab4067548731d",
+    "kaggle_log": "a3272196ebc84a409a88cb04d38f6a3a448a0a421c86be32158c16f875cfcf53"
+  },
+  "notes": "Kaggle CPU version 1 completed. Technical gates passed, but real-minus-circular top1 was 0.005576 against 0.03 and only 2/5 folds passed. Stage 1 is ineligible; no rescue, inference, or submission."
+}

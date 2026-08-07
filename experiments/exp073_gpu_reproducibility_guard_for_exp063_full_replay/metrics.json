@@ -1,0 +1,204 @@
+{
+  "experiment": "exp073_gpu_reproducibility_guard_for_exp063_full_replay",
+  "status": "deterministic_ml_anchor_pending_optional_lb",
+  "route": "ml_model",
+  "parent": "exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "cv": 9.526374749390682,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "expected_feature_count": 196,
+  "active_mode": "gpu_repro_guard_dp_threads8",
+  "kaggle_train": {
+    "kernel_id": "kentookumura/exp073-full-replay-repro-guard-train",
+    "kernel_version": 2,
+    "enable_gpu": true,
+    "kernel_source": "kentookumura/exp072-exp063-full-replay-feature-cache-train",
+    "status": "COMPLETED",
+    "url": "https://www.kaggle.com/code/kentookumura/exp073-full-replay-repro-guard-train",
+    "output_path": "/tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/train_v2",
+    "elapsed_seconds": 8246.788,
+    "rows": 3783989,
+    "wells": 773,
+    "features": 196,
+    "exp072_source_sha256": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18",
+    "exp072_schema_sha256": "700d38149f583c3ab6574ea7b163c3c8709c2514b675bea381d822f82f4809b8",
+    "exp072_summary_sha256": "133f9be7a6bcf8606e18b7d41f4d24d84e1d8e0f128660717b21fea4fad46b7f",
+    "model_manifest_count": 15,
+    "model_manifest_sha_count": 15,
+    "pooled_metrics": {
+      "lgb_mean": {
+        "rmse_tvt": 9.526374749390682,
+        "prediction_sha256": "238b7cfec82454096961cd58e2f504ee2d96fc191aa357890b55bd13aacd9c6b"
+      },
+      "lgb1": {
+        "rmse_tvt": 9.570466226132597,
+        "prediction_sha256": "0a1f0caddc2f644cb71de0fd930b693d7b2271380142af65f9490a22a95f4e1b"
+      },
+      "lgb2": {
+        "rmse_tvt": 9.57705015515117,
+        "prediction_sha256": "455a12d42a84e86e0365beef4e7c2bf996887411c00ab79c641a8cd24facb074"
+      },
+      "lgb0": {
+        "rmse_tvt": 9.664291131259999,
+        "prediction_sha256": "4add67e488f44115130fa35bfba7f2c1ecaf073653952b0a79f92b3a53bc3bb1"
+      }
+    }
+  },
+  "kaggle_train_cpu": {
+    "kernel_id": "kentookumura/exp073-full-replay-repro-guard-train-cpu",
+    "kernel_version": 1,
+    "enable_gpu": false,
+    "kernel_source": "kentookumura/exp072-exp063-full-replay-feature-cache-train",
+    "active_mode": "cpu_deterministic_threads8",
+    "status": "COMPLETED",
+    "package_path": "experiments/exp073_gpu_reproducibility_guard_for_exp063_full_replay/kaggle/train_cpu",
+    "url": "https://www.kaggle.com/code/kentookumura/exp073-full-replay-repro-guard-train-cpu",
+    "pull_check_path": "/tmp/kaggle-pull/exp073-full-replay-repro-guard-train-cpu-v1",
+    "output_probe_path": "/tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/train_cpu_v1_probe",
+    "output_path": "/tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/train_cpu_v1",
+    "elapsed_seconds": 11020.783,
+    "rows": 3783989,
+    "wells": 773,
+    "features": 196,
+    "exp072_source_sha256": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18",
+    "model_manifest_count": 15,
+    "model_manifest_sha_count": 15,
+    "pooled_metrics": {
+      "lgb_mean": {
+        "rmse_tvt": 9.540138463736211,
+        "prediction_sha256": "c62fb008e8b51c7f3e74fb29899f56596eefa26bf651e16b3f80fab5b2c81ecb"
+      },
+      "lgb2": {
+        "rmse_tvt": 9.568678984737119,
+        "prediction_sha256": "c79994c5d31874ceeb8125a77d0420ca9f47dba24e59da66ef5b281813754f8e"
+      },
+      "lgb1": {
+        "rmse_tvt": 9.589965477772088,
+        "prediction_sha256": "e98b7eaeb110ec63b7201712542bf80cf1a79bd535f3df6d54fea1b6f872978b"
+      },
+      "lgb0": {
+        "rmse_tvt": 9.689599715432188,
+        "prediction_sha256": "bc15013f33cfb3fa4e53febb314b5cd88c968044f05b441581203291d0358fb9"
+      }
+    },
+    "cpu_minus_gpu_rmse": {
+      "lgb_mean": 0.013763714345529365,
+      "lgb1": 0.019499251639491177,
+      "lgb2": -0.008371170414051221,
+      "lgb0": 0.02530858417218873
+    }
+  },
+  "inference": {
+    "kernel_id": "kentookumura/exp073-full-replay-repro-guard-infer",
+    "kernel_version": 2,
+    "status": "COMPLETED",
+    "deterministic_pf": true,
+    "seed_policy": "stable_sha256_per_well",
+    "regenerate_test_features": true,
+    "kernel_source": "kentookumura/exp073-full-replay-repro-guard-train",
+    "output_path": "/tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/inference_v1",
+    "selected_mode": "gpu_repro_guard_dp_threads8",
+    "selected_model": "lgb_mean",
+    "model_count": 15,
+    "test_rows": 14151,
+    "test_wells": 3,
+    "features": 196,
+    "fallback_rows": 0,
+    "test_feature_sha256": "8cd0134a646dcd6340e48b579d4a9f099b1bff5ed592133391708b1e7f4f99d0",
+    "prediction_sha256": "2e47e986c013acfafaa01c652d47649778db5616e40dc3130e4e12dede7b7502",
+    "submission_sha256": "7335854727543eff5db04873154394acae83274b18e73ed68d76491c4504788b",
+    "prediction_min": 11593.671875,
+    "prediction_max": 12241.693359375,
+    "prediction_mean": 11905.656258143197,
+    "prediction_std": 279.3037397081349,
+    "elapsed_seconds": 154.516,
+    "elapsed_feature_seconds": 114.538,
+    "submission_path": "/tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/inference_v1/submission.csv",
+    "submit_check": "PASS"
+  },
+  "inference_rerun_check": {
+    "versions": [
+      1,
+      2
+    ],
+    "raw_gzip_feature_sha256": {
+      "v1": "8cd0134a646dcd6340e48b579d4a9f099b1bff5ed592133391708b1e7f4f99d0",
+      "v2": "4ef4339522a1ba255ca5f9c02bbe7cfc7a96ba2c66541c87e3fbf710d4bec91b",
+      "stable": false
+    },
+    "feature_csv_content_sha256": {
+      "v1": "e3567a64807a16c3c4d80fe6bca2611ba3fe8d13b4b20be4540e8d1ac354965c",
+      "v2": "e3567a64807a16c3c4d80fe6bca2611ba3fe8d13b4b20be4540e8d1ac354965c",
+      "stable": true
+    },
+    "prediction_csv_content_sha256": {
+      "v1": "f3f04e56f3035191d651e330d26ee48e819f42cf0497acecefc88fe985cdc219",
+      "v2": "f3f04e56f3035191d651e330d26ee48e819f42cf0497acecefc88fe985cdc219",
+      "stable": true
+    },
+    "prediction_sha256": {
+      "v1": "2e47e986c013acfafaa01c652d47649778db5616e40dc3130e4e12dede7b7502",
+      "v2": "2e47e986c013acfafaa01c652d47649778db5616e40dc3130e4e12dede7b7502",
+      "stable": true
+    },
+    "submission_sha256": {
+      "v1": "7335854727543eff5db04873154394acae83274b18e73ed68d76491c4504788b",
+      "v2": "7335854727543eff5db04873154394acae83274b18e73ed68d76491c4504788b",
+      "stable": true
+    },
+    "submission_byte_identical": true,
+    "submit_check_v2": "PASS",
+    "note": "Raw gzip file SHA differs across reruns, but decompressed feature content, decompressed prediction content, prediction SHA, and submission CSV bytes are stable."
+  },
+  "inference_cpu": {
+    "kernel_id": "kentookumura/exp073-full-replay-repro-guard-infer-cpu",
+    "kernel_version": 2,
+    "status": "COMPLETED",
+    "enable_gpu": false,
+    "package_path": "experiments/exp073_gpu_reproducibility_guard_for_exp063_full_replay/kaggle/inference_cpu",
+    "url": "https://www.kaggle.com/code/kentookumura/exp073-full-replay-repro-guard-infer-cpu",
+    "pull_check_path": "/tmp/kaggle-pull/exp073-full-replay-repro-guard-infer-cpu-v2",
+    "output_path": "/tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/inference_cpu_v2",
+    "kernel_source": "kentookumura/exp073-full-replay-repro-guard-train-cpu",
+    "selected_mode": "cpu_deterministic_threads8",
+    "selected_model": "lgb_mean",
+    "model_count": 15,
+    "test_rows": 14151,
+    "test_wells": 3,
+    "features": 196,
+    "submission_rows": 14151,
+    "predicted_rows": 14151,
+    "fallback_rows": 0,
+    "deterministic_pf": true,
+    "seed_policy": "stable_sha256_per_well",
+    "regenerate_test_features": true,
+    "feature_generation_use_gpu": "cpu",
+    "elapsed_seconds": 150.987,
+    "elapsed_feature_seconds": 107.535,
+    "test_feature_sha256": "79eea169e1e9bb138fcf9ce579deb3c12ee01e95a6ad0eef73411ef1aab7386d",
+    "feature_csv_content_sha256": "aae82190b23af9ec0d2a9d064a87bdf5fd39cbc427da4a1515d313b3cd3e815e",
+    "prediction_csv_content_sha256": "fcb41e5d807826369c14c14a9b4f4b28c590e9d9bc2d7d7226d173ef1c395e43",
+    "prediction_sha256": "b16035e8432b6dea7e8d29b1fcd8e91d51bb3257d13afa7bd6f5133f8340fee5",
+    "submission_sha256": "ce17f22241de85e301cae0c6241630ff50bdef8b7b685afbe6ddcd937dc46df2",
+    "prediction_min": 11593.6787109375,
+    "prediction_max": 12241.5869140625,
+    "prediction_mean": 11905.530481572085,
+    "prediction_std": 279.22334054084666,
+    "submission_path": "/tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/inference_cpu_v2/submission.csv",
+    "submit_check": "PASS",
+    "cpu_minus_gpu_submission": {
+      "abs_mean": 0.19847654593756625,
+      "abs_max": 0.982421875,
+      "mean": -0.12577657111246554
+    },
+    "v1_failure": {
+      "status": "FAILED",
+      "reason": "The copied CPU inference notebook still contained a bootstrap support ZIP with the old GPU inference config, so it selected mode gpu_repro_guard_dp_threads8 while reading the CPU train manifest.",
+      "error": "ValueError: No saved models for mode=gpu_repro_guard_dp_threads8 model=lgb_mean"
+    },
+    "note": "CPU inference v2 loads CPU deterministic train boosters and regenerates raw-test PF/Beam/likelihood-PF features with stable per-well seeds. It completed after rebuilding the notebook bootstrap support ZIP with CPU config."
+  },
+  "notes": "Treat exp073 as the current deterministic ML anchor pending optional LB. GPU train v2 completed using exp072 deterministic v2 cache SHA 14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18. Best pooled GPU CV is lgb_mean RMSE 9.526374749390682 with OOF prediction SHA 238b7cfec82454096961cd58e2f504ee2d96fc191aa357890b55bd13aacd9c6b. CPU deterministic train v1 completed on the same cache with lgb_mean RMSE 9.540138463736211 and OOF prediction SHA c62fb008e8b51c7f3e74fb29899f56596eefa26bf651e16b3f80fab5b2c81ecb; CPU minus GPU lgb_mean RMSE is +0.013763714345529365, so CPU is close but not bitwise/metric-identical. Deterministic GPU inference v1/v2 rerun check passed at content/submission level: feature CSV content SHA e3567a64807a16c3c4d80fe6bca2611ba3fe8d13b4b20be4540e8d1ac354965c, prediction SHA 2e47e986c013acfafaa01c652d47649778db5616e40dc3130e4e12dede7b7502, and submission SHA 7335854727543eff5db04873154394acae83274b18e73ed68d76491c4504788b were stable. CPU inference v2 completed with CPU boosters, prediction SHA b16035e8432b6dea7e8d29b1fcd8e91d51bb3257d13afa7bd6f5133f8340fee5, and submission SHA ce17f22241de85e301cae0c6241630ff50bdef8b7b685afbe6ddcd937dc46df2; CPU minus GPU submission abs mean is 0.19847654593756625 and abs max is 0.982421875. Raw gzip feature SHA can differ, so use decompressed content SHA rather than .csv.gz file SHA for feature determinism. Train v1 had been manually stopped before metrics; logs confirmed it read exp072's 196-feature cache and did not run PF/Beam generation."
+}

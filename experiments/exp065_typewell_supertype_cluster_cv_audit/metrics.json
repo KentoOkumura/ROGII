@@ -1,0 +1,203 @@
+{
+  "experiment": "exp065_typewell_supertype_cluster_cv_audit",
+  "status": "completed",
+  "purpose": "common_typewell_discovery",
+  "created_at": "2026-06-13T07:38:48.643413+00:00",
+  "split": "train",
+  "wells": 773,
+  "valid_signatures": 773,
+  "exact_unique_groups": 752,
+  "exact_duplicate_wells": 34,
+  "ncc_pair_rows": 196830,
+  "dtw_pair_rows": 20000,
+  "native_overlap_pair_rows": 10713,
+  "native_exact_containment_pair_rows": 10697,
+  "target_unique_groups_reference": 57,
+  "nearest_thresholds_to_target_group_count": [
+    {
+      "method": "native_overlap",
+      "threshold": "0.99",
+      "unique_groups": 54,
+      "multi_well_groups": 41,
+      "wells_in_multi_well_groups": 760,
+      "max_group_size": 71,
+      "distance_to_target": 3
+    },
+    {
+      "method": "native_overlap",
+      "threshold": "0.995",
+      "unique_groups": 54,
+      "multi_well_groups": 41,
+      "wells_in_multi_well_groups": 760,
+      "max_group_size": 71,
+      "distance_to_target": 3
+    },
+    {
+      "method": "native_overlap",
+      "threshold": "0.999",
+      "unique_groups": 54,
+      "multi_well_groups": 41,
+      "wells_in_multi_well_groups": 760,
+      "max_group_size": 71,
+      "distance_to_target": 3
+    },
+    {
+      "method": "native_overlap",
+      "threshold": "1",
+      "unique_groups": 54,
+      "multi_well_groups": 41,
+      "wells_in_multi_well_groups": 760,
+      "max_group_size": 71,
+      "distance_to_target": 3
+    },
+    {
+      "method": "shifted_ncc",
+      "threshold": "0.95",
+      "unique_groups": 200,
+      "multi_well_groups": 81,
+      "wells_in_multi_well_groups": 654,
+      "max_group_size": 189,
+      "distance_to_target": 143
+    }
+  ],
+  "cluster_metrics": [
+    {
+      "method": "exact_hash",
+      "threshold": "byte_hash",
+      "unique_groups": 752,
+      "multi_well_groups": 13,
+      "wells_in_multi_well_groups": 34,
+      "max_group_size": 10
+    },
+    {
+      "method": "shifted_ncc",
+      "threshold": "0.95",
+      "unique_groups": 200,
+      "multi_well_groups": 81,
+      "wells_in_multi_well_groups": 654,
+      "max_group_size": 189
+    },
+    {
+      "method": "shifted_ncc",
+      "threshold": "0.97",
+      "unique_groups": 398,
+      "multi_well_groups": 105,
+      "wells_in_multi_well_groups": 480,
+      "max_group_size": 52
+    },
+    {
+      "method": "shifted_ncc",
+      "threshold": "0.98",
+      "unique_groups": 562,
+      "multi_well_groups": 103,
+      "wells_in_multi_well_groups": 314,
+      "max_group_size": 15
+    },
+    {
+      "method": "shifted_ncc",
+      "threshold": "0.99",
+      "unique_groups": 698,
+      "multi_well_groups": 58,
+      "wells_in_multi_well_groups": 133,
+      "max_group_size": 10
+    },
+    {
+      "method": "shifted_ncc",
+      "threshold": "0.995",
+      "unique_groups": 720,
+      "multi_well_groups": 41,
+      "wells_in_multi_well_groups": 94,
+      "max_group_size": 10
+    },
+    {
+      "method": "dtw",
+      "threshold": "0.92",
+      "unique_groups": 445,
+      "multi_well_groups": 86,
+      "wells_in_multi_well_groups": 414,
+      "max_group_size": 40
+    },
+    {
+      "method": "dtw",
+      "threshold": "0.94",
+      "unique_groups": 669,
+      "multi_well_groups": 63,
+      "wells_in_multi_well_groups": 167,
+      "max_group_size": 10
+    },
+    {
+      "method": "dtw",
+      "threshold": "0.96",
+      "unique_groups": 731,
+      "multi_well_groups": 33,
+      "wells_in_multi_well_groups": 75,
+      "max_group_size": 10
+    },
+    {
+      "method": "dtw",
+      "threshold": "0.98",
+      "unique_groups": 751,
+      "multi_well_groups": 14,
+      "wells_in_multi_well_groups": 36,
+      "max_group_size": 10
+    },
+    {
+      "method": "dtw",
+      "threshold": "0.995",
+      "unique_groups": 752,
+      "multi_well_groups": 13,
+      "wells_in_multi_well_groups": 34,
+      "max_group_size": 10
+    },
+    {
+      "method": "native_overlap",
+      "threshold": "1",
+      "unique_groups": 54,
+      "multi_well_groups": 41,
+      "wells_in_multi_well_groups": 760,
+      "max_group_size": 71
+    },
+    {
+      "method": "native_overlap",
+      "threshold": "0.999",
+      "unique_groups": 54,
+      "multi_well_groups": 41,
+      "wells_in_multi_well_groups": 760,
+      "max_group_size": 71
+    },
+    {
+      "method": "native_overlap",
+      "threshold": "0.995",
+      "unique_groups": 54,
+      "multi_well_groups": 41,
+      "wells_in_multi_well_groups": 760,
+      "max_group_size": 71
+    },
+    {
+      "method": "native_overlap",
+      "threshold": "0.99",
+      "unique_groups": 54,
+      "multi_well_groups": 41,
+      "wells_in_multi_well_groups": 760,
+      "max_group_size": 71
+    }
+  ],
+  "artifacts": {
+    "well_index": "/kaggle/working/artifacts/typewell_well_index.csv",
+    "ncc_pairs": "/kaggle/working/artifacts/typewell_shifted_ncc_pairs.csv",
+    "dtw_pairs": "/kaggle/working/artifacts/typewell_dtw_pairs.csv",
+    "native_overlap_pairs": "/kaggle/working/artifacts/typewell_native_overlap_pairs.csv",
+    "cluster_assignments": "/kaggle/working/artifacts/common_typewell_cluster_assignments.csv",
+    "cluster_summary": "/kaggle/working/artifacts/common_typewell_cluster_summary.csv",
+    "cluster_metrics": "/kaggle/working/artifacts/common_typewell_cluster_metrics.csv",
+    "signatures": "/kaggle/working/features/typewell_gr_signatures.npy"
+  },
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "native_overlap_group_count",
+  "max_wells": null,
+  "notes": "Kaggle train v1 completed. Native row-lag overlap finds 10713 candidate pairs and 10697 exact containment pairs; exact native overlap clusters into 54 groups / 41 multi-well groups / 760 wells / max group 71. Example 028d7b28 vs 0dd99dc5: lag 218 rows = 109 ft, 1774 rows exact GR match, left_contained_in_right. This reproduces the shifted/trimmed typewell hypothesis better than resampled NCC/DTW.",
+  "key_idea": "Discover common typewell groups using native typewell row-lag overlap plus exact hash, shifted NCC, and constrained DTW; Kaggle train v1 completed.",
+  "updated_at": "2026-06-13T07:40:19.126616+00:00"
+}

@@ -1,0 +1,362 @@
+experiment:
+  name: exp398_all_well_1p3_sigma_gr_exact_hmm
+  description: >-
+    Train-side audit that keeps the exp209 absolute-TVT Gaussian exact HMM
+    unchanged except for multiplying the already-clipped well-level sigma_gr
+    by 1.3 for every well. The saved exp209 Gaussian prediction is the
+    control and is not rerun.
+  route: pf_beam
+  status: train_side_all_well_sigma_x1p3_gate_failed_closed
+  created_at: "2026-07-25"
+  updated_at: "2026-07-25"
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260725-exp398-all-well-1p3-sigma-gr-exact-hmm
+  sibling_reference: exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm
+  references:
+    - exp072_likelihood_pf_baseline
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm
+    - exp389_exp209_huber_exact_hmm_emission
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md
+  diff_summary: >-
+    Change only the exp209 well-level GR scale from clipped sigma_gr to
+    1.3 times clipped sigma_gr for all 773 wells, without a second clip.
+    Keep the absolute-TVT coordinate, grid, rate states, transitions, priors,
+    Gaussian capped emission, missing-GR handling, Type Well GR, momentum,
+    likelihood weight, and posterior-mean output unchanged. Do not reuse the
+    failed exp397 prefix selector.
+
+implementation:
+  enabled: true
+  scope: train_side_candidate_audit_only
+  train_notebook_state: canonical_compact_selfcontained
+  inference_notebook_state: fail_closed_compact_selfcontained_candidate
+  canonical_notebook_adopted: true
+  jupytext_source_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  global_sigma_multiplier_implemented: true
+  post_run_sigma_audit_tolerance_fix_implemented: true
+
+validation:
+  strategy: exp209_absolute_tvt_exact_hmm_saved_control_global_sigma_x1p3
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  missing_fraction_buckets:
+    low: [0.0, 0.10]
+    mid: [0.10, 0.30]
+    high: [0.30, 1.0]
+    boundary_policy: left_closed_right_open_except_final_closed
+  truth_attachment: after_candidate_prediction_and_logical_content_sha_freeze
+  saved_controls:
+    gaussian_exact_hmm:
+      experiment: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+      rmse: 11.938287234887435
+      prediction_column: hmm_mean_tvt
+      decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+      rerun: false
+    gaussian_fixed_likpf_hmm_blend:
+      rmse: 10.269696146642758
+      likpf_weight: 0.5
+      hmm_weight: 0.5
+  leakage_policy:
+    - Candidate predictions and their logical content SHA are frozen before unknown-suffix truth, errors, fold scopes, or hidden-like roles are joined.
+    - exp226 is used only for well, row, suffix-offset, and fold identity; tvt_geop and prediction columns are forbidden decoder inputs.
+    - Saved Gaussian and LikPF predictions are reporting controls and fixed-blend inputs only.
+    - Public LB is not used to select the multiplier, clip, gates, or any rescue.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  saved_controls:
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    hmm_cache_filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    exp072_cache_filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+    raw_hmm_prediction_column: hmm_mean_tvt
+    likpf_anchor_column: last_known_tvt
+    likpf_delta_column: likpf_mean_d
+    expected_hmm_prediction_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    expected_exp072_cache_decompressed_sha256: 0503de0512302b06309d26e09fc06ba5095db0ef4d610b1508afe8c8d07ca536
+  exp209_hmm_control:
+    prediction_column: hmm_mean_tvt
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+  exp072_likpf_control:
+    prediction_definition: last_known_tvt_plus_likpf_mean_d
+    expected_decompressed_sha256: 0503de0512302b06309d26e09fc06ba5095db0ef4d610b1508afe8c8d07ca536
+  exp226_reporting_fold:
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    forbidden_decoder_columns: [tvt_geop, tvt_pred, gr_delta, tvt_true, error, abs_error]
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    truth_columns: [well_id, row_idx, tvt_true]
+    forbidden_decoder_columns: [tvt_geop, tvt_pred, gr_delta, tvt_true, error, abs_error]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    allowed_roles:
+      hidden_like_spatial: [train, valid]
+      hidden_like_typewell_purged: [train, valid, purged_train_excluded]
+    expected_role_counts:
+      hidden_like_spatial:
+        train: 573
+        valid: 200
+      hidden_like_typewell_purged:
+        train: 557
+        valid: 200
+        purged_train_excluded: 16
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+model:
+  name: exp209_absolute_tvt_exact_hmm_all_well_sigma_x1p3
+  estimator: deterministic_exact_forward_backward
+  active_variants: [all_well_sigma_gr_x1p3_on_exp209_absolute_tvt]
+  promotion_candidate: all_well_sigma_gr_x1p3_on_exp209_absolute_tvt
+  emission:
+    control_family: gaussian
+    control_formula: "-0.5 * min(z^2, 600)"
+    candidate_family: gaussian
+    candidate_formula: "-0.5 * min(z^2, 600)"
+    emission_clip_z2: 600.0
+    normalization_constant: omitted_as_state_independent
+    additional_clip: none
+    temperature: 1.0
+    likelihood_weight: 1.0
+  sigma:
+    base_estimator: known_prefix_zero_fill_population_std
+    base_clip: [10.0, 60.0]
+    multiplier: 1.3
+    application_scope: all_wells
+    application_order: clip_base_then_multiply_exactly_once
+    post_multiplier_clip: null
+    effective_range: [13.0, 78.0]
+  fixed_hmm:
+    coordinate: absolute_tvt
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    band_pad: 100.0
+    grid_contract: exp209_typewell_range_last_known_tvt_band_pad_100ft
+    grid_step_ft: 0.35
+    rate_states: 41
+    rate_center: zero
+    rate_span_contract: max_0p10_abs_prefix_initial_rate_plus_0p04
+    sig_r: 0.002
+    sig_p: 0.02
+    lam: 1.0
+    start_sig: 0.75
+    r0_sig: 0.01
+    momentum: 0.998
+    sigma_mode: known_prefix_zero_fill_population_std_then_global_x1p3
+    sigma_clip: [10.0, 60.0]
+    sigma_multiplier: 1.3
+    post_multiplier_clip: null
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+    output: posterior_mean
+    emission: capped_gaussian
+    emission_clip_z2: 600.0
+    evaluation_gr_policy: interpolate_both_directions_then_typewell_mean
+  execution_count:
+    scientific_variants: 1
+    hmm_well_runs: 773
+    gaussian_parent_hmm_reruns: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    pf_runs: 0
+    beam_runs: 0
+
+guards:
+  technical:
+    require_all_input_sha_matches: true
+    require_saved_control_rmse_parity_atol_ft: 0.00001
+    require_expected_rows: 3783989
+    require_expected_wells: 773
+    require_id_row_order_fold_identity: true
+    require_finite_candidate_coverage: 1.0
+    require_posterior_normalization: true
+    require_all_well_status_pass: true
+    sigma_csv_roundtrip_absolute_tolerance: 1.0e-12
+    maximum_truth_rows_accessed_before_candidate_freeze: 0
+  scientific:
+    minimum_direct_rmse_gain_vs_gaussian_ft: 0.05
+    minimum_improved_folds: 4
+    minimum_raw_gr_observed_gain_ft: 0.05
+    maximum_raw_gr_missing_regression_ft: 0.0
+    maximum_high_missing_well_regression_ft: 0.0
+    maximum_long_tail_1000_plus_regression_ft: 0.0
+    maximum_hidden_like_spatial_regression_ft: 0.0
+    maximum_hidden_like_typewell_purged_regression_ft: 0.0
+    maximum_by_well_delta_p95_ft: 0.0
+    maximum_worst_well_regression_ft: 0.25
+    maximum_fixed_likpf_hmm_blend_regression_ft: 0.0
+    require_all_checks: true
+  decision:
+    pass_action: eligible_for_separate_implementation_of_fail_closed_inference
+    fail_action: all_well_sigma_x1p3_failed_close_without_rescue
+  forbidden:
+    - exp397_prefix_selector_or_threshold
+    - exp226_tvt_geop_or_exp281_residual_offset_coordinate
+    - gaussian_parent_hmm_rerun
+    - multiplier_or_clip_search
+    - likelihood_temperature_or_emission_clip_search
+    - huber_student_t_or_mixture_same_run
+    - well_or_row_adaptive_sigma
+    - missing_weight_change
+    - transition_rate_grid_or_prior_change
+    - blend_weight_search
+    - same_oof_rescue
+    - inference_or_submission_without_separate_approval
+
+references:
+  exp209_raw_hmm_rmse: 11.938287234887435
+  exp209_likpf_rmse: 11.5948976722
+  exp209_hmm_likpf_50_50_rmse: 10.269696146642758
+  exp397_stage_0_poor_multiplier_wells: 8
+  exp397_stage_0_decision: stage_0_failed_close_without_rescue
+
+promotion_gates:
+  minimum_rmse_gain_vs_exp209_raw_hmm_ft: 0.05
+  minimum_improved_folds: 4
+  minimum_raw_observed_row_rmse_gain_ft: 0.05
+  require_raw_missing_row_non_regression: true
+  require_high_missing_fraction_well_non_regression: true
+  require_1000_plus_non_regression: true
+  require_hidden_like_spatial_non_regression: true
+  require_hidden_like_typewell_purged_non_regression: true
+  require_by_well_p95_delta_max: 0.0
+  maximum_worst_well_regression_ft: 0.25
+  require_fixed_likpf_50_50_non_regression: true
+  baseline_metric_absolute_tolerance: 1.0e-5
+  non_regression_tolerance_ft: 0.0
+
+execution_contract:
+  scientific_variants: 1
+  hmm_well_runs: 773
+  model_configs: 0
+  lightgbm_configs: 0
+  trained_folds: 0
+  pf_well_runs: 0
+  beam_well_runs: 0
+  boosters: 0
+  parent_control_retraining: false
+
+execution:
+  stage: kaggle_cpu_v1_completed_failed_closed
+  implementation_approved: true
+  implementation_approval_scope: user_message_wants_all_well_sigma_1p3_experiment
+  canonical_notebook_adoption_approved: true
+  canonical_notebook_adoption_approval_scope: user_message_execute_exp398
+  kaggle_package_approved: true
+  kaggle_package_approval_scope: user_message_execute_exp398
+  kaggle_push_approved: false
+  kaggle_push_was_approved_for_version_1: true
+  train_run_approved: false
+  train_run_was_approved_for_version_1: true
+  train_run_approval_scope: user_message_execute_exp398
+  run_hmm: false
+  inference_approved: false
+  submission_approved: false
+  run_inference: false
+  create_submission: false
+  submit_to_kaggle: false
+  planned_scope: one_all_well_sigma_x1p3_variant_773_hmm_wells_zero_control_reruns
+  planned_runtime_seconds_min: 11520
+  planned_runtime_seconds_max: 30600
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  numba_num_threads: 2
+  batch_size: 1
+  kaggle:
+    enable_internet: false
+    enable_gpu: false
+    runtime_limit_seconds: 30600
+    train_kernel_id: kentookumura/exp398-all-well-sigma1p3-exact-hmm-train
+    train_title: exp398 all well sigma1p3 exact hmm train
+    train_package_created_at_utc: "2026-07-25 04:13:14 UTC"
+    train_pushed_at_utc: "2026-07-25 04:15:04 UTC"
+    train_kernel_version: 1
+    train_kernel_id_no: 128542706
+    train_run_on_push: false
+    train_run_on_push_executed_version_1: true
+    train_last_status: COMPLETE
+    train_completed_at_utc: "2026-07-25 09:37:12 UTC"
+    train_last_checked_at_utc: "2026-07-25 10:21:29 UTC"
+    train_runtime_seconds: 19324.104064941406
+    train_url: https://www.kaggle.com/code/kentookumura/exp398-all-well-sigma1p3-exact-hmm-train
+    kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_fixed_sorted_well_row_grid_rate_and_variant_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_and_fixed_outer_worker_numba_threads_if_implemented
+  feature_sha_policy: raw_gzip_sha_plus_decompressed_and_logical_prediction_content_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This design does not claim a deterministic submission anchor because inference is not implemented.
+    - Follow docs/06_reproducibility.md when implementation and execution are separately approved.
+
+inference:
+  enabled: false
+  mode: terminally_disabled_after_train_side_gate_failure
+  create_submission: false
+
+notes:
+  - This is a new fixed-global intervention, not a rescue or reinterpretation of exp397.
+  - The compact self-contained train is adopted as the canonical train notebook.
+  - Kaggle private CPU package/push/run was authorized by the user on 2026-07-25.
+  - Kaggle CPU version 1 completed and the fixed scientific gates failed.
+  - The executed technical multiplier audit was a false negative caused by a zero-tolerance
+    comparison after CSV round-trip; all 773 recorded multipliers equal 1.3 and the maximum
+    independently reconstructed scale error is 2.1316282072803006e-14.
+  - The local source now uses a 1.0e-12 CSV round-trip tolerance. This audit-only fix was not
+    rerun because the scientific candidate regressed by 0.7723770067893767 ft overall.
+  - Inference and submission are terminally disabled for this branch.

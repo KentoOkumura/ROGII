@@ -1,0 +1,154 @@
+{
+  "ambiguity": {
+    "ambiguity_score_mean": 0.48863860964775085,
+    "ambiguous_rate": 0.5668565630912781,
+    "flat_rate": 0.4328453242778778,
+    "top1_top2_margin_mean": 0.03670743480324745
+  },
+  "best_candidate_by_rmse": {
+    "abs_error_p90": 13.912109375,
+    "abs_error_p95": 19.2431640625,
+    "bias": -0.05762655660510063,
+    "candidate": "pred_exp092_lgb1",
+    "mae": 5.980980396270752,
+    "rmse": 9.322479895503927,
+    "rows": 3783989,
+    "wells": 773,
+    "within_10ft": 0.8220470514052762,
+    "within_5ft": 0.6029956746703017
+  },
+  "cv": "best reference exp092_lgb1 RMSE 9.322479896; direct proxies rejected: mode_commit 73.891128, midpoint 66.623786, likpf_midpoint_blend 21.681648",
+  "experiment": "exp133_gr_bimodal_match_ambiguity_detector",
+  "feature_cache": {
+    "feature_columns": [
+      "grbm_top1_score",
+      "grbm_top2_score",
+      "grbm_top1_top2_margin",
+      "grbm_top2_ratio",
+      "grbm_score_entropy",
+      "grbm_peak_count",
+      "grbm_peak_spacing_ft",
+      "grbm_candidate_std",
+      "grbm_candidate_range",
+      "grbm_bimodality_score",
+      "grbm_ambiguity_score",
+      "grbm_ambiguous_flag",
+      "grbm_flat_score_flag",
+      "grbm_top1_tvt",
+      "grbm_top2_tvt",
+      "grbm_midpoint_proxy",
+      "grbm_mode_commit_proxy",
+      "grbm_topzero_tvt",
+      "grbm_likpf_midpoint_blend",
+      "grbm_averaging_weight",
+      "grbm_top1_source_id",
+      "grbm_top2_source_id",
+      "grbm_top1_smooth_mae",
+      "grbm_top1_ncc",
+      "grbm_local_spectral_energy",
+      "grbm_gap_to_shift_15ft_any",
+      "grbm_gap_to_shift_15ft_topzero",
+      "grbm_gap_to_shift_20ft_any",
+      "grbm_gap_to_shift_20ft_topzero",
+      "grbm_gap_to_shift_25ft_any",
+      "grbm_gap_to_shift_25ft_topzero",
+      "grbm_zero_score_pred_last_anchor",
+      "grbm_zero_score_pred_pf_ancc",
+      "grbm_zero_score_pred_beam_mean",
+      "grbm_zero_score_pred_likpf_mean",
+      "grbm_zero_score_pred_sc_ens",
+      "grbm_zero_score_pred_hyb",
+      "grbm_zero_score_pred_exp073_lgb_mean",
+      "grbm_zero_score_pred_exp092_lgb1",
+      "grbm_zero_score_pred_exp092_lgb_mean"
+    ],
+    "feature_count": 40,
+    "outputs": {
+      "train_feature_schema": "exp133_gr_bimodal_match_ambiguity_detector_gr_bimodal_ambiguity_feature_schema.csv",
+      "train_features": "exp133_gr_bimodal_match_ambiguity_detector_gr_bimodal_ambiguity_train_features.csv.gz"
+    },
+    "rows": 3783989,
+    "sha256": {
+      "train_feature_schema": "4612012736f6936bafc745d4ff3b54b92a128712de89b0a32360f3416d40889c",
+      "train_features": "cb0e9af9b55ba941b79c78eb3480f2d78207414edd7e62786e8485e81ed70f26",
+      "train_features_decompressed": "acdb77139e7f73efda4d8fe5dc29799823c4e46a687af5030e70a9dbe0b8d50a"
+    },
+    "variant": "gr_bimodal_ambiguity",
+    "wells": 773
+  },
+  "metric": "gr_bimodal_match_ambiguity_diagnostic",
+  "outputs": {
+    "bucket_metrics": "exp133_gr_bimodal_match_ambiguity_detector_bucket_metrics.csv",
+    "candidate_metrics": "exp133_gr_bimodal_match_ambiguity_detector_candidate_metrics.csv",
+    "readme": "README.md",
+    "row_context": "exp133_gr_bimodal_match_ambiguity_detector_row_context.csv.gz",
+    "summary": "exp133_gr_bimodal_match_ambiguity_detector_summary.json",
+    "train_feature_schema": "exp133_gr_bimodal_match_ambiguity_detector_gr_bimodal_ambiguity_feature_schema.csv",
+    "train_features": "exp133_gr_bimodal_match_ambiguity_detector_gr_bimodal_ambiguity_train_features.csv.gz",
+    "well_input_summary": "exp133_gr_bimodal_match_ambiguity_detector_grbm_well_input_summary.csv",
+    "well_metrics": "exp133_gr_bimodal_match_ambiguity_detector_well_metrics.csv"
+  },
+  "recommendation": "diagnostic_only_review_ambiguity_buckets_before_ml_feature_followup",
+  "route": "pf_beam",
+  "rows": 3783989,
+  "source": {
+    "feature_cache": {
+      "columns": [
+        "id",
+        "well",
+        "target",
+        "last_known_tvt",
+        "pf_ancc",
+        "pf_ancc_std",
+        "beam_mean_d",
+        "beam_std_d",
+        "sc_ens_d",
+        "hyb_d",
+        "likpf_mean_d",
+        "md_since",
+        "eval_len"
+      ],
+      "decompressed_content_sha256": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350",
+      "path": "/kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz",
+      "raw_file_sha256": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18",
+      "rows": 3783989,
+      "schema_path": "/kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_feature_schema.csv",
+      "schema_sha256": "700d38149f583c3ab6574ea7b163c3c8709c2514b675bea381d822f82f4809b8",
+      "wells": 773
+    },
+    "predictions": {
+      "exp073": {
+        "decompressed_content_sha256": "fd6c68050058c40b4960f3ff2af9905bfcb1c12d540c71e331d0aa85ca9756a4",
+        "path": "/kaggle/input/notebooks/kentookumura/exp073-full-replay-repro-guard-train/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz",
+        "raw_file_sha256": "986e26c5c6617ade714623d44433e9beacdb2b1027d46c4a4e70825bc8ab87fc",
+        "rows": 3783989,
+        "selector_col": "model",
+        "selector_value": "lgb_mean",
+        "wells": 773
+      },
+      "exp092_lgb1": {
+        "decompressed_content_sha256": "6dc3d53d6cb5621b86360929d638f2a5d853c58ea3e7a53d3da86e614e5f2f69",
+        "path": "/kaggle/input/notebooks/kentookumura/exp092-uproj-corr-disagree-train/artifacts/exp092_u_projection_correction_disagreement_fullrun_predictions.csv.gz",
+        "raw_file_sha256": "67617007921e762868063c27e1bfa6156622c4357b3c922b6b37eda3c21235b9",
+        "rows": 3783989,
+        "selector_col": "model",
+        "selector_value": "lgb1",
+        "wells": 773
+      },
+      "exp092_lgb_mean": {
+        "decompressed_content_sha256": "6dc3d53d6cb5621b86360929d638f2a5d853c58ea3e7a53d3da86e614e5f2f69",
+        "path": "/kaggle/input/notebooks/kentookumura/exp092-uproj-corr-disagree-train/artifacts/exp092_u_projection_correction_disagreement_fullrun_predictions.csv.gz",
+        "raw_file_sha256": "67617007921e762868063c27e1bfa6156622c4357b3c922b6b37eda3c21235b9",
+        "rows": 3783989,
+        "selector_col": "model",
+        "selector_value": "lgb_mean",
+        "wells": 773
+      },
+      "joined_rows": 3783989,
+      "joined_wells": 773
+    }
+  },
+  "status": "completed_train_side_diagnostic_no_submit",
+  "updated_at": "2026-06-26T12:12:35.059665+00:00",
+  "wells": 773
+}

@@ -1,0 +1,267 @@
+experiment:
+  name: exp259_coordinate_equivariance_path_warp_augmentation
+  description: Audit exact coordinate equivariance and physically consistent path-warp training views before augmenting a learned candidate ranker.
+  route: ensemble
+  status: completed_train_side_guard_failed_no_inference_no_submit
+  created_at: "2026-07-15"
+  updated_at: "2026-07-16"
+
+lineage:
+  parent: exp251_raw_test_safe_dual_objective_candidate_ranker
+  candidate_parent: exp237_hmm_exp226_candidate_selector_on_exp183
+  learned_likelihood_parent: exp111_learned_pf_observation_likelihood_probe
+  coordinate_feature_reference: exp165_coordinate_frame_normalization_features_on_exp148
+  ml_reference_anchor: exp218_gr_wavelet_rotation_confidence_features_on_exp148
+  negative_augmentation_reference: exp248_candidate_perturbation_augmentation_for_likelihood_ranker
+  implementation_source: src/coordinate_path_augmentation.py
+  diff_summary: >
+    Adds a reusable raw-well augmentation engine that separates exact heel-centered
+    coordinate symmetries from approximate MD/TVT/XYZ path warps. The default stage
+    performs no model or candidate training. It checks exact inverse consistency,
+    preserves the official-start prefix for approximate views, resamples horizontal
+    GR from the transformed TVT path and same typewell, regenerates local geometry,
+    prefix, FFT, and Haar-DWT diagnostics, and rejects views outside a real-train
+    distribution envelope. Direct PF/HMM replacement, CNN/MTP flips, inference, and
+    submission remain disabled.
+
+validation:
+  strategy: train_well_transform_contract_audit_before_outer_groupkfold_training
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_isna
+  leakage_policy:
+    - The default transform audit fits no model and makes no prediction.
+    - Transform kind and parameters are selected only from SHA256(seed, well, kind, view_slot).
+    - Python hash(), global RNG, validation error, oracle rank, hidden-like role, and Public LB are not used for transform selection.
+    - Approximate warps are zero at the official-start anchor and leave the known prefix unchanged.
+    - Approximate horizontal GR is resampled from the same typewell at transformed true TVT only for train-side synthetic views.
+    - True TVT slope is a synthetic-distribution diagnostic only and is never exposed as a model feature.
+    - A later outer-fold train stage must fit the distribution envelope on outer-train wells only and score clean outer-valid wells only.
+    - Absolute spatial and KNN features are outside the exact local-coordinate equivariance contract.
+    - Existing PF, Beam, HMM, dense, geometry, exp218, exp251 parent, and control models are not retrained or regenerated.
+    - Synthetic paths are never direct PF/HMM replacements or selectable submission candidates.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  exp251_selected_feature_schema_name: exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv
+  exp251_summary_name: exp251_raw_test_safe_dual_objective_candidate_ranker_summary.json
+  exp251_metrics_name: exp251_raw_test_safe_dual_objective_candidate_ranker_metrics.csv
+  exp251_candidate_metrics_name: exp251_raw_test_safe_dual_objective_candidate_ranker_candidate_metrics.csv
+  exp251_bucket_metrics_name: exp251_raw_test_safe_dual_objective_candidate_ranker_bucket_metrics.csv
+  exp251_subgroup_metrics_name: exp251_raw_test_safe_dual_objective_candidate_ranker_subgroup_metrics.csv
+  exp251_by_well_name: exp251_raw_test_safe_dual_objective_candidate_ranker_by_well.csv
+
+execution:
+  stage: train_exact_datum_after_transform_audit
+  allowed_stages:
+    - transform_audit_only
+    - train_exact_datum_after_transform_audit
+  max_wells: null
+  preview_wells: 3
+  view_slots_per_transform: 1
+  model_training_enabled: true
+  training_stage_implemented: true
+  inference_enabled: false
+  submission_enabled: false
+
+augmentation:
+  keep_clean_original_view: true
+  compose_transforms: false
+  expose_augmentation_metadata_to_model: false
+  exact_transforms:
+    - heel_center_translation
+    - lateral_reflection
+    - yaw_rotation
+    - tvt_datum_shift
+  approximate_transforms:
+    - md_stretch
+    - tvt_shear
+    - xy_plane_tilt
+    - low_frequency_spline_warp
+    - smooth_xyz_control_perturbation
+  parameter_grid:
+    heel_center_translation: {}
+    lateral_reflection: {}
+    yaw_rotation:
+      angle_degrees: [-135.0, -90.0, -45.0, 45.0, 90.0, 135.0, 180.0]
+    tvt_datum_shift:
+      shift_ft: [-40.0, -20.0, 20.0, 40.0]
+    md_stretch:
+      factor: [0.97, 1.03]
+    tvt_shear:
+      tail_delta_ft: [-40.0, -20.0, 20.0, 40.0]
+    xy_plane_tilt:
+      slope_x: [-0.01, -0.005, 0.005, 0.01]
+      slope_y: [-0.01, -0.005, 0.005, 0.01]
+    low_frequency_spline_warp:
+      amplitude_ft: [-40.0, -20.0, 20.0, 40.0]
+      middle_sign: [-1.0, 1.0]
+    smooth_xyz_control_perturbation:
+      amplitude_ft: [5.0, 10.0, 20.0]
+      sign_x: [-1.0, 1.0]
+      sign_y: [-1.0, 1.0]
+      sign_z: [-1.0, 1.0]
+  guard:
+    inverse_tolerance: 1.0e-7
+    anchor_tolerance: 1.0e-9
+    lower_quantile: 0.005
+    upper_quantile: 0.995
+    relative_margin: 0.25
+    min_typewell_coverage: 0.95
+  training:
+    variant: exact_tvt_datum_shift
+    parent_control_variant: raw_test_regenerated_copcf
+    enabled_stage: train_exact_datum_after_transform_audit
+    keep_clean_original_view: true
+    synthetic_well_fraction: 0.25
+    eligible_exact_transforms:
+      - tvt_datum_shift
+    diagnostic_only_exact_transforms:
+      - heel_center_translation
+      - lateral_reflection
+      - yaw_rotation
+    diagnostic_only_reason: selected_295_schema_contains_no_raw_xy_or_local_geometry_columns_so_rigid_xy_views_are_feature_identical
+    disabled_transforms:
+      - md_stretch
+      - tvt_shear
+      - xy_plane_tilt
+      - low_frequency_spline_warp
+      - smooth_xyz_control_perturbation
+    absolute_tvt_feature_columns:
+      - last_known_tvt
+      - candidate_mean
+      - blend_likpf_hmm_w500
+      - hmm_selfgr_boost_only_a070_c100_mean_tvt
+      - exp226_v6_k16_geometry_gr_u_projection
+      - candidate_tvt
+      - view_candidate_mean
+    selected_feature_schema_sha256: 7a9217d6ed96f5f1e569dbefff2a1fb17751405d6ddccae5e5d9dbf12da787ae
+    expected_selected_feature_count: 295
+    expected_well_count: 773
+    exact_delta_tolerance: 1.0e-5
+    feature_identical_rigid_view_training_forbidden: true
+    success_criteria:
+      overall_rmse: 0.0
+      candidate_logloss: 0.0
+      distance_1000_plus_rmse: 0.0
+      exp115_spatial_rmse: 0.0
+      exp115_typewell_purged_rmse: 0.0
+      worst_well_regression: 0.25
+
+model:
+  name: exact_datum_augmented_raw_test_safe_dual_objective_candidate_ranker
+  target: candidate_within10_and_absolute_error
+  base_prediction: candidate_selected_tvt
+  estimator:
+    - lightgbm_within10_classifier
+    - lightgbm_candidate_error_ranker
+  trains_new_boosters: true
+  active_variants:
+    - exact_tvt_datum_shift
+  planned_lightgbm_configs: 2
+  planned_folds: 5
+  planned_boosters: 10
+  control_retraining: false
+  control_retraining_reason: exp251_raw_test_regenerated_copcf_295_feature_control_is_trained_separately_and_reused_as_a_fixed_reference
+  parent_retraining: false
+  future_train_contract:
+    status: completed_guard_failed_rejected
+    candidate_bank: exp237_fixed_11
+    raw_test_safe_feature_contract: exp251_selected_295
+    required_clean_control: false
+    fixed_control_source: exp251_raw_test_regenerated_copcf_current_training
+    candidate_objectives:
+      - within10_classifier
+      - expected_error_regressor
+
+outputs:
+  directory: artifacts
+  prefix: exp259_coordinate_equivariance_path_warp_augmentation
+  files:
+    - exp259_coordinate_equivariance_path_warp_augmentation_real_well_summary.csv
+    - exp259_coordinate_equivariance_path_warp_augmentation_distribution_envelope.json
+    - exp259_coordinate_equivariance_path_warp_augmentation_transform_manifest.csv.gz
+    - exp259_coordinate_equivariance_path_warp_augmentation_transform_summary.csv
+    - exp259_coordinate_equivariance_path_warp_augmentation_preview_rows.csv.gz
+    - exp259_coordinate_equivariance_path_warp_augmentation_summary.json
+    - exp259_coordinate_equivariance_path_warp_augmentation_training_metrics.csv
+    - exp259_coordinate_equivariance_path_warp_augmentation_training_candidate_metrics.csv
+    - exp259_coordinate_equivariance_path_warp_augmentation_training_bucket_metrics.csv
+    - exp259_coordinate_equivariance_path_warp_augmentation_training_subgroup_metrics.csv
+    - exp259_coordinate_equivariance_path_warp_augmentation_training_by_well.csv
+    - exp259_coordinate_equivariance_path_warp_augmentation_training_oof_predictions.csv.gz
+    - exp259_coordinate_equivariance_path_warp_augmentation_training_augmentation_inventory.csv
+    - exp259_coordinate_equivariance_path_warp_augmentation_training_equivariance_guards.csv
+    - exp259_coordinate_equivariance_path_warp_augmentation_training_feature_importance_mean.csv
+    - exp259_coordinate_equivariance_path_warp_augmentation_training_feature_schema.csv
+    - exp259_coordinate_equivariance_path_warp_augmentation_training_model_manifest.json
+    - exp259_coordinate_equivariance_path_warp_augmentation_training_control_reference.json
+    - exp259_coordinate_equivariance_path_warp_augmentation_training_summary.json
+
+runtime:
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources: []
+    train_kernel_sources:
+      - kentookumura/exp251-rawtest-safe-dualobj-candidate-ranker-train
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp109-typewell-neighbor-prior-train
+      - kentookumura/exp114-spatial-neighbor-prior-signal-audit-train
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp073-full-replay-repro-guard-infer-cpu
+      - kentookumura/exp226-k16-kappa-repro-inference
+    bootstrap_dependency_files:
+      - source: experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/settings.py
+        destination: parent_exp251/settings.py
+      - source: experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/config.yaml
+        destination: parent_exp251/config.yaml
+      - source: experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/hmm_exp226_candidate_selector_on_exp183.py
+        destination: parent_exp251/hmm_exp226_candidate_selector_on_exp183.py
+      - source: experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/candidate_ranker_engine.py
+        destination: parent_exp251/candidate_ranker_engine.py
+      - source: experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  deterministic:
+    stable_seed: sha256_seed_well_transform_viewslot_parameter
+    sorted_wells: true
+    sorted_transforms: true
+    global_rng_forbidden: true
+    python_hash_forbidden: true
+    parent_sampling_seed_namespace: exp251_raw_test_safe_dual_objective_candidate_ranker
+    parent_model_seed_variant: raw_test_regenerated_copcf
+  execution_authority: kaggle_notebook
+
+submission:
+  enabled: false
+  reason: exact_datum_training_failed_hidden_like_and_maximum_well_regression_guards
+
+overrides:
+  project_defaults: []
+
+notes:
+  - Default transform_audit_only stage is 0 variants x 0 configs x 0 folds = 0 boosters.
+  - The implemented optional train stage is 1 variant x 2 objectives x 5 folds = 10 CPU boosters.
+  - The separately executed exp251 295-feature clean model is the fixed control; exp259 did not retrain it and used the pinned version-3 selected-schema SHA.
+  - Rigid XY exact transforms remain audit-only because the selected 295-feature ranker schema contains no raw XY or local-geometry columns and would receive feature-identical duplicate rows.
+  - Only exact TVT datum shift is train-active; all approximate transforms including md_stretch remain disabled.
+  - Exact transformations are checked after applying their inverse.
+  - Approximate transformations keep the known prefix unchanged and resample only evaluation-tail GR.
+  - Full augmented well CSVs are not persisted; only well-level manifests and small previews are saved.
+  - exp165 coordinate features worsened exp148 by 0.048650420, but training-time raw-well augmentation remains a separate hypothesis.
+  - exp248 mixed seven candidate perturbations at nearly one synthetic row per clean row and failed all guards; exp258 therefore audits one transform at a time before any training.
+  - Kaggle training version 1 completed with fixed-Viterbi RMSE 8.427125551, improving the exp251 clean control by 0.075086454 ft.
+  - Adoption remains unsupported because exp115 spatial and typewell-purged RMSE worsened by 0.067319432 and 0.045377256 ft, and the maximum per-well regression was 6.370552990 ft.

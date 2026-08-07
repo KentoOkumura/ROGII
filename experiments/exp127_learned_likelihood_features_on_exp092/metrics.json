@@ -1,0 +1,115 @@
+{
+  "experiment": "exp127_learned_likelihood_features_on_exp092",
+  "status": "completed_train_side_supported_no_submit",
+  "route": "ml_model",
+  "parent": "exp092_u_projection_correction_disagreement_fullrun",
+  "learned_likelihood_parent": "exp112_learned_pf_likelihood_weight_or_feature_followup",
+  "cv": "shared-row lgb_mean RMSE 9.727317518 vs control 9.847052694; delta -0.119735177; no submit",
+  "public_lb": null,
+  "private_lb": null,
+  "key_idea": "Add exp112 target-free learned likelihood confidence features to the exp092 U-projection LightGBM surface on shared rows.",
+  "updated_at": "2026-06-27",
+  "kernel": {
+    "id": "kentookumura/exp127-train",
+    "url": "https://www.kaggle.com/code/kentookumura/exp127-train",
+    "version": 1,
+    "status": "complete",
+    "output_dir": "experiments/exp127_learned_likelihood_features_on_exp092/kaggle/output/train_v1",
+    "elapsed_seconds": 7133.981
+  },
+  "shared_row_filter": {
+    "base_rows_before_shared_filter": 3783989,
+    "base_wells_before_shared_filter": 773,
+    "exp112_rows": 757738,
+    "exp112_wells": 155,
+    "shared_rows": 757738,
+    "shared_wells": 155,
+    "dropped_base_rows": 3026251,
+    "dropped_base_wells": 618
+  },
+  "metrics": {
+    "pooled_rmse_tvt": {
+      "exp092_shared_row_control": {
+        "lgb0": 10.022150358689863,
+        "lgb1": 9.865476964861402,
+        "lgb2": 9.872184866866426,
+        "lgb_mean": 9.847052694118261
+      },
+      "learned_likelihood_confidence_addonly": {
+        "lgb0": 9.867141369258535,
+        "lgb1": 9.773581370077832,
+        "lgb2": 9.75364352688699,
+        "lgb_mean": 9.7273175175513
+      }
+    },
+    "delta_addonly_minus_control": {
+      "lgb0": -0.15500898943132668,
+      "lgb1": -0.0918955947835709,
+      "lgb2": -0.11854133997943705,
+      "lgb_mean": -0.11973517656695876
+    },
+    "by_well_lgb_mean_delta_summary": {
+      "count": 155,
+      "mean": -0.042303,
+      "std": 0.407455,
+      "min": -2.155674,
+      "p25": -0.223428,
+      "median": -0.048879,
+      "p75": 0.199447,
+      "max": 1.071012
+    },
+    "bucket_lgb_mean_rmse": {
+      "000_050": {
+        "control": 1.119195,
+        "addonly": 1.048999
+      },
+      "050_100": {
+        "control": 1.526222,
+        "addonly": 1.464316
+      },
+      "100_250": {
+        "control": 2.287615,
+        "addonly": 2.240981
+      },
+      "250_500": {
+        "control": 3.667959,
+        "addonly": 3.611293
+      },
+      "500_1000": {
+        "control": 5.6069,
+        "addonly": 5.530842
+      },
+      "1000_plus": {
+        "control": 10.804847,
+        "addonly": 10.674558
+      }
+    }
+  },
+  "feature_summary": {
+    "control_features": 240,
+    "addonly_features": 294,
+    "generated_learned_likelihood_features": 54,
+    "configured_direct_columns": 40,
+    "weighted_tvt_columns": 2,
+    "candidate_tvt_columns": 5
+  },
+  "sha256": {
+    "metrics_csv": "6e05bc6bff630a64fdf409df17e76fc5332abaf7bf4ec588ea7268feaf6e7f20",
+    "by_well_csv": "3f0f4cf6ba3ba651c899d32f0e97b4209654218e2157c9d1e40ada2b13420837",
+    "bucket_metrics_csv": "4c91e37938ef667ff36faed70056ee17de2656f4d848c10a718637ed20627dcf",
+    "feature_schema_csv": "ccc2110c36fb00839f9019f73f27579a3fd887bbccba62dbef6471e52cd66c97",
+    "feature_importance_mean_csv": "5fb0468fab6999ea3e3746e2cf2479e69502cd3eec4faa31aee21a153460b463",
+    "summary_json": "73b901eaed43bf168dae2769982ed6342314d48bc0dba30cce54c481dc401bda",
+    "model_manifest": "420ba0e933030b891df9fadf644b5bea779cf435eb1aeed372fbc144fb976d7e",
+    "predictions_csv_gz": "6f1f5f36214255019d815af33d19360f13b916a82f5331436cd8dd6a5d48a55e",
+    "predictions_decompressed": "7c11f3ee25c21c7b92f86c65773521f327ad66d98577c9da3b75b9c00d1508a2",
+    "exp072_feature_source": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18",
+    "exp112_raw_source": "08ae4c576cfb5f33275307447e8463cd4c75f5b68a9707593f6321125855e59c",
+    "exp112_decompressed_source": "56c0f62238abfc89f05e5700341344c15815bd3a5f93e5b0a6a079a661b9411e"
+  },
+  "decision": {
+    "direct_submission_candidate": "not_selected",
+    "train_side_shared_row_result": "supported",
+    "reason": "learned likelihood add-only features improved shared-row control, but the evidence is limited to the 155-well exp112 feature subset and still needs hidden-like stress plus raw-test/full-train feature parity before inference or submission"
+  }
+}

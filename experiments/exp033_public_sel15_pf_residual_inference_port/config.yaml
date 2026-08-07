@@ -1,0 +1,77 @@
+experiment:
+  name: "exp033_public_sel15_pf_residual_inference_port"
+  description: Port the exp032 selected clipped Ridge PF residual correction into the public sel15 inference flow.
+  route: pf_beam
+  status: implemented
+  created_at: "2026-06-07"
+  updated_at: "2026-06-07"
+
+lineage:
+  parent: exp031_public_sel15_pf_hold_blend_inference_audit
+  diff_summary: Replace the hidden-well pf090_hold010 branch with exp032 selected ridge_residual_shrink0p5_clip20p0 correction on top of the public sel15 selector prediction.
+
+source_notebook:
+  ref: needless090/lb8-781-rogii-sel15-spread3
+  title: "[LB8.781]rogii-sel15-spread3"
+  archived_path: docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_latest/needless090__lb8-781-rogii-sel15-spread3/lb8-781-rogii-sel15-spread3.ipynb
+  archived_metadata: docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_latest/needless090__lb8-781-rogii-sel15-spread3/kernel-metadata.json
+  known_public_lb_from_title: 8.781
+  replay_policy: preserve_public_flow_except_selected_residual_correction_and_audit_outputs
+
+validation:
+  leakage_policy:
+    - Residual model training reads the exp029 pseudo-test artifact, where target_tvt is available only for train wells masked to look like test rows.
+    - Hidden/test correction features use MD, X, Y, Z, GR, typewell TVT/GR, selector/PF/Beam predictions, and known TVT_input prefix only.
+    - Hidden/test evaluation-zone TVT is never read.
+    - Visible public sample wells keep the original physical-model branch unchanged.
+    - The only ported residual candidate is exp032 selected ridge_residual_shrink0p5_clip20p0.
+
+data:
+  residual_feature_path: experiments/exp029_public_sel15_pf_oof_feature_generation/features/public_sel15_pf_oof_features.csv.gz
+
+model:
+  name: public_sel15_pf_residual_inference_port
+  params:
+    n_particles: 500
+    n_seeds: 128
+    selector_scales: [3.0, 5.0, 8.0, 12.0]
+    beam_configs: 14
+    base_prediction: public_sel15_selector
+    candidate: ridge_residual_shrink0p5_clip20p0
+    residual_estimator: ridge
+    ridge_alpha: 20.0
+    target_clip: 80.0
+    residual_shrink: 0.50
+    residual_clip: 20.0
+    max_train_rows: 500000
+    max_train_rows_per_bucket: 120000
+    random_seed: 42
+    apply_to: hidden_wells_only
+
+postprocess:
+  output_file: submission.csv
+  submit_check_required: true
+  audit_files:
+    - public_sel15_original_selector_submission.csv
+    - public_sel15_residual_corrected_diff.csv
+    - public_sel15_residual_corrected_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp029-sel15-pf-oof-train
+    expected_sources:
+      dataset_sources: []
+      kernel_sources:
+        - kentookumura/exp029-sel15-pf-oof-train
+      model_sources: []
+
+notes:
+  - CV is not computed in this inference port; supporting OOF-like evidence comes from exp032.
+  - exp032 selected candidate improved raw public PF and pf090_hold010 on original-fold and well-hash holdout, but one original fold regressed versus raw PF.
+  - Submit only after Kaggle output diff, range, changed wells, and submit-check are recorded.

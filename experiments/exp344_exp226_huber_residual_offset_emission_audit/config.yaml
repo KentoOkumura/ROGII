@@ -1,0 +1,130 @@
+experiment:
+  name: exp344_exp226_huber_residual_offset_emission_audit
+  description: >-
+    Conditional design-frozen two-stage audit of a fixed delta=1.345 Huber GR
+    emission on the exp226 shift bank and exp281 residual-offset exact HMM.
+  route: pf_beam
+  status: closed_without_run_exp342_dependency_pattern_not_matched
+  created_at: "2026-07-22"
+  updated_at: "2026-07-23"
+
+lineage:
+  parent: exp281_exp226_residual_offset_exact_hmm_transition_probe
+  steering: ../../.steering/20260722-exp344-exp226-huber-residual-offset-emission-audit
+  stage_0_source: exp280_exp226_shift_likelihood_separability_readout
+  required_dependency: exp342_exp226_student_t_residual_offset_emission_audit
+  diff_summary: >-
+    Replaces only Gaussian loss with fixed Huber delta=1.345. It is eligible
+    only when exp342 shows extreme-tail benefit but excessive Student-t flattening.
+
+implementation:
+  enabled: false
+  scope: closed_dependency_not_matched
+  train_notebook_state: placeholder_only
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: conditional_two_stage_shift_rank_then_grouped_exact_hmm_audit
+  metric: mrr_top3_then_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  dependency_policy:
+    required_experiment: exp342_exp226_student_t_residual_offset_emission_audit
+    allowed_pattern: extreme_residual_improved_but_overall_rank_failed_from_flattening
+    disallow_when_student_t_all_gates_pass: true
+    disallow_when_student_t_extreme_residual_failed: true
+    fail_closed_on_mismatch: true
+  truth_attachment: after_block_score_or_prediction_content_sha_freeze
+
+model:
+  name: exp226_huber_residual_offset_emission_audit
+  estimator: none
+  huber:
+    delta: 1.345
+    formula: half_z2_inside_delta_else_delta_abs_z_minus_half_delta
+    emission: negative_huber_loss
+    zscore_scale: exact_exp281_sigma
+  stage_0:
+    block_size: 512
+    shifts_ft: [-80, -40, -20, -10, -5, -2, 0, 2, 5, 10, 20, 40, 80]
+    gaussian_control: exact_exp280
+    negative_control: stable_circular_shift_bank
+    pass_requires_all:
+      minimum_pooled_mrr_gain: 0.01
+      minimum_pooled_top3_gain: 0.01
+      minimum_improved_folds_mrr: 4
+      minimum_improved_folds_top3: 4
+      require_all_stress_scopes_non_regression: true
+      require_real_shuffle_gap_improvement: true
+      require_extreme_residual_regret_improvement: true
+  stage_1:
+    enabled_condition: dependency_and_stage_0_all_gates_pass_and_separate_user_approval
+    active_variants: [huber_delta_1p345]
+    hmm_well_runs: 773
+    pass_requires_all:
+      minimum_rmse_gain_vs_exp281_ft: 0.05
+      minimum_improved_folds: 4
+      require_1000_plus_non_regression: true
+      require_hidden_like_spatial_non_regression: true
+      require_hidden_like_typewell_purged_non_regression: true
+      require_by_well_p95_non_regression: true
+      maximum_worst_well_regression_ft: 0.25
+      maximum_direct_rmse_for_promotion: 9.427109596582213
+  fixed_parent:
+    shape: exp226_tvt_geop
+    coordinate: residual_offset
+    sigma_missing_state_grammar_transition_prior_output: exact_exp281
+  forbidden:
+    - delta_grid
+    - log_likelihood_cap
+    - sigma_rescaling
+    - student_t_same_run
+    - missing_uncertainty
+    - acf_tempering
+    - blend
+
+execution_contract:
+  stage_0: {scientific_scores: 1, control_scores: 1, hmm_well_runs: 0, model_configs: 0, trained_folds: 0, boosters: 0}
+  stage_1_if_pass: {scientific_variants: 1, hmm_well_runs: 773, model_configs: 0, trained_folds: 0, boosters: 0}
+  parent_control_retraining: false
+
+execution:
+  implementation_approved: false
+  kaggle_push_approved: false
+  active_stage: closed_without_run_dependency_not_matched
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  numba_num_threads: 2
+  kaggle: {enable_gpu: false, enable_internet: false, runtime_limit_seconds: 30600}
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_fixed_shift_block_well_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: true, submission_sha: false}
+
+inference: {enabled: false, create_submission: false}
+
+notes:
+  - Design frozen on 2026-07-22; exp342 dependency was evaluated on 2026-07-23 and did not match.
+  - Huber is not an automatic rescue after any Student-t failure.
+  - exp342 improved the extreme-residual scope but did not show the required margin-flattening signal, so exp344 closed without implementation or execution.

@@ -1,0 +1,646 @@
+{
+  "schema_version": "2",
+  "task_summary": "Unknown-suffix TVT prediction is a whole-well structured regression problem scored by row-pooled RMSE, so persistent well-level errors dominate. At inference, measured depth/trajectory coordinates, horizontal GR, a known TVT_input prefix, a paired depth-indexed typewell including GR, and runtime sample IDs are known; suffix TVT and train-only formation columns are unknown. Rows depend through each well's prefix/suffix sequence and paired reference, while the current point outputs discard candidate identity, posterior mass, and path-level uncertainty. Every proposal must preserve runtime ID alignment and use only inference-available inputs, and must tolerate hidden changes in well count, suffix length, context coverage, distribution, memory, and runtime under the nine-hour offline limit.",
+  "evidence_cutoff": "2026-07-12",
+  "allowed_sources": [
+    "/home/kento/work/kaggle/ROGII/studies/kaggle_idea_forge_benchmark/rogii_source_hidden_packet_v1.md"
+  ],
+  "assumptions": [
+    "The exact hidden distributions of prefix length, suffix length, GR missingness, and typewell overlap are missing; all must be stress variables rather than fixed constants.",
+    "Any smoothness, monotonicity, or coordinate-warp relation beyond measured-depth row ordering is only a testable hypothesis and may be used only after train-fold EDA supports it.",
+    "The packet does not give per-well inference latency or peak memory for most reusable assets; compute estimates below are acceptance budgets to benchmark, not measured claims.",
+    "The local heatmap inference model and preprocessing can be packaged offline if an idea using new hidden heatmaps passes OOF tests; this availability must be verified before promotion.",
+    "All learned selectors, calibrators, refiners, and corruption statistics can be nested by whole-well folds so that a validation well never contributes labels to its own decision rule."
+  ],
+  "closure_ledger": [
+    {
+      "evidence_id": "E01",
+      "closed_instantiation": "not applicable: E01 is a trusted deterministic anchor rather than a failed instantiation.",
+      "not_closed": "Joint tail prediction, uncertainty-preserving decoding, and OOF correction of its persistent well-level errors.",
+      "reason": "CV 9.5264 and shippability support use as an anchor, while long correlated errors leave structured headroom."
+    },
+    {
+      "evidence_id": "E02",
+      "closed_instantiation": "Deploying the five-candidate truth-oracle choice as though it were an inference selector.",
+      "not_closed": "Target-free soft fusion, role-diverse candidate generation, and selector features validated on unseen wells.",
+      "reason": "Oracle-union RMSE 7.4340 proves coverage but explicitly does not prove selectability."
+    },
+    {
+      "evidence_id": "E03",
+      "closed_instantiation": "The tested local five-channel heatmap as a direct replacement point predictor, including the tested larger window and tested geometry-channel variant.",
+      "not_closed": "Heatmap logits as observation potentials, candidate proposals, uncertainty, or conditioning for a whole-well decoder.",
+      "reason": "Real GR has repeatable top-k signal, but top-10 oracle RMSE and zero worst-well coverage reject direct replacement."
+    },
+    {
+      "evidence_id": "E04",
+      "closed_instantiation": "Treating the truth-aware union improvement as evidence that a deployable selector already exists.",
+      "not_closed": "Nested target-free selection, soft posterior fusion, and global decoding of added candidates with explicit fallback.",
+      "reason": "The union sharply improves coverage and oracle RMSE, especially on long suffixes, but no target-free selector has demonstrated the gain."
+    },
+    {
+      "evidence_id": "E05",
+      "closed_instantiation": "Overlapping-window stitching and the tested learned full-tail probability-weighted point path or direct learned top paths.",
+      "not_closed": "Globally normalized K-best decoding, learned trust under OOF-like corruption, and using learned candidates only as conditional support.",
+      "reason": "The tested point paths are very weak, yet their unions improve the existing candidate oracle and rank-one calibration is visibly poor."
+    },
+    {
+      "evidence_id": "E06",
+      "closed_instantiation": "The tested raw additive same-well-prefix likelihood, stronger weighting, and previously tested direct candidate, hard-switch, and dense-gate roles.",
+      "not_closed": "Prefix-conditioned reference calibration with coverage fallback, provided its role and validation differ and runtime is brought under budget.",
+      "reason": "A weak term improves mean RMSE and every distance bucket, but heterogeneity, a +46.95-ft worst regression, and 10 h 50 m runtime make that instantiation undeployable."
+    },
+    {
+      "evidence_id": "E07",
+      "closed_instantiation": "The 500-particle, 128-seed, lag-64 ancestor-smoother implementation.",
+      "not_closed": "The causal effect of smoothing under an exactly seed-paired control, and non-particle global decoders.",
+      "reason": "It worsened accuracy and exceeded runtime, but seed namespace mismatch means smoothing alone was not identified."
+    }
+  ],
+  "idea_cards": [
+    {
+      "id": "I01",
+      "title": "Joint tail increment distribution with constrained decode",
+      "mechanism_family": "representation",
+      "origin_pass": "task_first",
+      "roles": [
+        "joint latent-state predictor",
+        "uncertainty-preserving decoder"
+      ],
+      "information_sources": [
+        "inference-available horizontal coordinates and GR",
+        "known TVT_input prefix",
+        "paired typewell coordinates and GR"
+      ],
+      "hypothesis": "Predicting a distribution over the complete suffix's relative TVT increments and a small number of joint modes, rather than independent TVT points, will reduce the long correlated misses that dominate row-pooled RMSE.",
+      "evidence_ids": [
+        "E01",
+        "E02"
+      ],
+      "changed_mechanism": "Replace rowwise point regression with a whole-tail latent increment object whose uncertainty is retained until a final conditional-mean or constrained-mode decode.",
+      "input_target_decode": "Input: padded whole-well available sequences plus prefix boundary state; target/objective: suffix increment sequence with masked distributional loss and a well-level accumulated-TV T consistency loss; output: mode weights and increment paths; decode: expected accumulated path after only train-supported constraints.",
+      "deployment_error_simulated": "Whole-well offset drift, persistent signed residuals, variable suffix lengths, shortened prefix context, and GR dropout are imposed at the input/mask level.",
+      "preserved_invariants": [
+        "Preserve runtime sample-ID order, measured-depth row order, the observed prefix TVT values, and the prefix/suffix boundary.",
+        "Intentionally break only inference-available observation availability and suffix-length masks; never alter suffix labels without regenerating targets.",
+        "Recompute increment targets, accumulated paths, masks, and any coordinate deltas after each accepted transform."
+      ],
+      "nearest_prior_attempt": "E01 deterministic row-feature ML point predictor.",
+      "exact_difference": "The output is a joint suffix distribution in relative increments and does not consume existing PF/beam or heatmap candidates; E01 emits one point per row.",
+      "counterevidence": "No packet evidence establishes that increment smoothness or a low-dimensional joint state is valid; the strong E01 point model may already capture most available signal.",
+      "cheap_test": "Within each training fold, decompose E01 OOF residuals into well-offset, low-frequency, and rowwise components and compare a no-label persistence/null model with a small masked joint model on two folds; proceed only if held-well low-frequency error is both material and predictable from available prefix/context.",
+      "full_test": "Run reproducible whole-well GroupKFold for the joint model, reporting row-pooled RMSE, worst-well and long-suffix buckets, fold variance, calibration of mode mass, inference peak memory, and fallback behavior beside E01.",
+      "kill_criterion": "Kill if the cheap model cannot improve E01 by at least 0.10 RMSE on held wells or if any long-suffix/worst-well bucket regresses by more than 5 ft; also kill if projected hidden runtime exceeds 7.5 hours or memory requires truncating a well.",
+      "reopen_criterion": "Reopen if E01 residual analysis later shows a stable, inference-observable low-rank mode that the tested increment parameterization omitted.",
+      "coverage_test": "Measure the fraction of rows and wells that receive a finite joint decode without truncation, stratified by prefix length, suffix length, and GR availability; require deterministic fallback to E01 outside support.",
+      "selectability_test": "Separately test whether entropy or mode margin predicts which decoded mode beats the conditional mean on nested held wells; mode choice must not use the held well's truth.",
+      "hidden_inference_contract": "Enumerate arbitrary runtime wells, build variable-length masks from current files, use no formation columns or saved public IDs, restore observed prefixes, align by sample ID one-to-one, run offline deterministically, and fall back to E01 for unsupported lengths or invalid outputs.",
+      "compute_estimate": "Cheap test: two folds and one compact joint model. Full acceptance budget: five-fold training plus a measured hidden projection below 7.5 hours, leaving submission I/O margin within nine hours.",
+      "is_parameter_only": false,
+      "novelty_level": "representation_change",
+      "confidence": "B"
+    },
+    {
+      "id": "I02",
+      "title": "Prefix-conditioned entity-specific typewell calibration",
+      "mechanism_family": "information",
+      "origin_pass": "evidence_inversion",
+      "roles": [
+        "same-well calibrator",
+        "entity-specific reference",
+        "coverage-gated fallback"
+      ],
+      "information_sources": [
+        "known horizontal-well prefix GR and TVT_input",
+        "paired typewell GR and depth index",
+        "global typewell-based reference"
+      ],
+      "hypothesis": "Same-well prefix GR is safer when used to calibrate the coordinate and reliability of the paired reference once per well, rather than as a raw rowwise additive likelihood; a global reference fallback can isolate low-coverage failures.",
+      "evidence_ids": [
+        "E06",
+        "E02"
+      ],
+      "changed_mechanism": "Estimate a prefix-only well calibration domain and reliability score, then expose the calibrated reference to a downstream decoder only inside measured support; outside support use the unchanged global reference.",
+      "input_target_decode": "Input: prefix GR/TVT_input and typewell GR/depth; target/objective: prefix-only alignment/calibration fit with regularization to identity; output: calibrated reference coordinates plus reliability/coverage; decode: existing global path mechanism with calibrated reference where reliable and fixed global fallback elsewhere.",
+      "deployment_error_simulated": "Short or missing prefixes, low GR variation, ambiguous/repeated matches, non-overlapping typewell ranges, and prefix corruption are explicitly masked during training and validation.",
+      "preserved_invariants": [
+        "Preserve observed prefix TVT values, within-table row order, and runtime ID mapping.",
+        "Intentionally perturb only GR availability or calibration shift; the global reference remains an immutable fallback.",
+        "Recompute reference lookup indices, overlap coverage, and reliability after every prefix mask or calibration transform."
+      ],
+      "nearest_prior_attempt": "E06 weak same-well-prefix additive likelihood and its stronger-weight variant.",
+      "exact_difference": "E06 injected a dense likelihood into every row; this proposal uses the prefix once to define an entity-specific reference coordinate/reliability domain and never overrides the global reference outside coverage.",
+      "counterevidence": "E06 worsened 312 wells, had a +46.95-ft worst regression, and exceeded the wall; earlier direct, hard-switch, and dense-gate roles also failed.",
+      "cheap_test": "Using only training folds, fit a simple regularized prefix-to-typewell calibration and test whether its prefix reconstruction error predicts held-out suffix improvement of the existing path prediction; include identity calibration and E06-like additive term as fixed controls without rerunning the expensive full path.",
+      "full_test": "Nested whole-well GroupKFold: learn calibration/reliability on outer-train wells, run the downstream path once per outer-held well, and report mean, 95th/worst well, distance buckets, coverage strata, determinism, and end-to-end runtime.",
+      "kill_criterion": "Kill if calibration reliability cannot identify a subset with at least 0.15 RMSE gain without more than 2-ft regression outside it, if worst-well regression exceeds 10 ft, or if projected inference remains above 7.5 hours.",
+      "reopen_criterion": "Reopen only with a new prefix-derived calibration representation whose reliability is validated on unseen wells and whose downstream path has a measured sub-wall implementation.",
+      "coverage_test": "Report calibration overlap and usable-prefix coverage by well and row, including empty/short/ambiguous/range-extrapolated cases; verify exact global-reference fallback outside coverage.",
+      "selectability_test": "Independently test whether prefix-only reconstruction error, overlap, and ambiguity select calibration benefit on held wells; do not count truth-aware benefit inside covered rows as selectability.",
+      "hidden_inference_contract": "Use only each runtime well's known prefix and paired typewell, fit calibration without suffix labels, handle arbitrary well counts and missing coverage, remain offline/deterministic, align to runtime IDs, and use a frozen global fallback.",
+      "compute_estimate": "Cheap calibration fit should be CPU-light on cached arrays. Full path must be profiled early because E06 measured 10 h 50 m; promotion requires a measured projection below 7.5 hours.",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "B"
+    },
+    {
+      "id": "I03",
+      "title": "OOF-error-matched corrupted-conditioning refiner",
+      "mechanism_family": "data_generation",
+      "origin_pass": "cross_pollination",
+      "roles": [
+        "imperfect-intermediate simulator",
+        "candidate trust refiner",
+        "copy-through guard"
+      ],
+      "information_sources": [
+        "existing five candidate OOF paths and scores",
+        "full-grid learned five-path OOF artifact and coverage flags",
+        "heatmap logits, ranks, entropy, margins, and OOF candidate windows",
+        "HMM/PF OOF uncertainty summaries"
+      ],
+      "hypothesis": "A downstream refiner trained first on candidate conditioning corrupted to reproduce real OOF amplitude, autocorrelation, bias, missingness, and rank inversion, then briefly fine-tuned on real OOF conditioning, will learn when not to copy a confident but wrong rank-one path.",
+      "evidence_ids": [
+        "E04",
+        "E05",
+        "E01"
+      ],
+      "changed_mechanism": "Connect OOF error measurement, structured corruption generation, corruption-pretraining, real-OOF fine-tuning, and clean held-well evaluation in one nested experiment.",
+      "input_target_decode": "Input: inference-available observations plus imperfect candidate paths/scores/uncertainty; target/objective: suffix TVT under candidate-error-matched corruptions with explicit no-copy auxiliary test; output: residual correction and trust distribution; decode: corrected conditional mean with E01 fallback when conditioning is unsupported.",
+      "deployment_error_simulated": "Per-candidate persistent bias, correlated drift, score-rank inversion, candidate dropout, coverage gaps, and mode swaps are sampled from outer-train OOF residual statistics by well and distance bucket.",
+      "preserved_invariants": [
+        "Preserve candidate count semantics, row order, runtime IDs, observed prefix, and genuine cross-candidate correlation not targeted by a corruption component.",
+        "Intentionally break candidate accuracy, calibration, rank, and availability only according to outer-train OOF estimates.",
+        "Recompute candidate residuals, ranks, margins, coverage flags, and refiner targets after corruption; never estimate corruption from the held well."
+      ],
+      "nearest_prior_attempt": "E05 probability-weighted learned point path and direct learned top paths.",
+      "exact_difference": "E05 trusted learned path probabilities directly; this proposal trains a separate trust/correction model under deployment-like imperfect intermediates and evaluates it on untouched held wells.",
+      "counterevidence": "The learned candidates alone have poor oracle and point RMSE, and their OOF error process may be too heterogeneous for simulated corruptions to match.",
+      "cheap_test": "On two outer folds, estimate candidate-error distributions on outer-train OOF only, pretrain a small refiner on corrupted conditioning, fine-tune on a disjoint outer-train subset with real OOF inputs, and compare against copy-through, E01, and a refiner trained on clean candidates.",
+      "full_test": "Five-fold nested GroupKFold with frozen corruption generators per outer fold; report RMSE, long-suffix and worst-well tails, calibration, candidate-dropout stress, copy-through rate, fold variance, runtime, and deterministic regeneration SHA.",
+      "kill_criterion": "Kill if synthetic-vs-real OOF error summaries mismatch by more than 20% in amplitude or lag correlation, if the refiner copies the top candidate on more than 90% of deliberately inverted cases, if held RMSE fails to beat E01 by 0.10, or if a tail bucket regresses by more than 5 ft.",
+      "reopen_criterion": "Reopen when a newly measured candidate error mode or coverage regime can be added to the corruption generator and verified on a disjoint held fold.",
+      "coverage_test": "Separately measure candidate support patterns and refiner finite-output coverage for all rows/wells, including zero heatmap coverage and dropped full-grid paths; require E01 fallback.",
+      "selectability_test": "Measure whether predicted trust ranks the actually best candidate or improves a soft conditional mean on outer-held wells; report this independently of truth-oracle union coverage.",
+      "hidden_inference_contract": "Package only the frozen refiner, candidate generators, corruption-free inference preprocessing, and E01 fallback; dynamically enumerate wells, use no training labels or formation columns, align one-to-one to sample IDs, and stay deterministic/offline under nine hours.",
+      "compute_estimate": "Cheap test reuses OOF artifacts and two compact folds. Full nested training is moderate; hidden inference adds one bounded refiner pass after candidate generation and must project below 7.5 hours end to end.",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "B"
+    },
+    {
+      "id": "I04",
+      "title": "Nested soft posterior over heterogeneous candidate support",
+      "mechanism_family": "fusion_uncertainty",
+      "origin_pass": "evidence_inversion",
+      "roles": [
+        "target-free soft fusion",
+        "candidate uncertainty estimator",
+        "anchor fallback"
+      ],
+      "information_sources": [
+        "five existing candidate OOF paths",
+        "ten local heatmap candidates with logits and uncertainty",
+        "E01 OOF anchor prediction",
+        "HMM/PF uncertainty and by-distance summaries"
+      ],
+      "hypothesis": "Because the existing-plus-heatmap union nearly brackets truth on covered rows, a nested selector that keeps posterior mass across candidates and outputs an RMSE-optimal conditional mean can capture some headroom without brittle hard top-one decisions.",
+      "evidence_ids": [
+        "E02",
+        "E03",
+        "E04",
+        "E05"
+      ],
+      "changed_mechanism": "Learn calibrated per-row/per-segment mixture weights and an abstention probability from target-free disagreement, ranks, margins, coverage, and distance, instead of choosing the oracle-best or trusting learned rank one.",
+      "input_target_decode": "Input: candidate values plus only inference-available scores, disagreement, coverage, distance, and observations; target/objective: outer-train OOF squared error with entropy/calibration regularization; output: candidate weights and abstention; decode: weighted conditional mean, with E01 on abstention or no support.",
+      "deployment_error_simulated": "Candidate dropout, heatmap noncoverage, rank inversion, long suffixes, and shifted score temperature are stressed without changing held labels.",
+      "preserved_invariants": [
+        "Preserve candidate identity, row/well grouping, sample-ID order, and observed prefix boundary.",
+        "Intentionally break candidate availability and score calibration in stress copies, never the ground-truth association within a held well.",
+        "Recompute normalized weights, disagreement, margins, abstention, and fallback masks after every dropout or score transform."
+      ],
+      "nearest_prior_attempt": "E05 probability-weighted learned full-tail point path and the unresolved truth-aware oracle union in E04.",
+      "exact_difference": "Weights are trained in a nested whole-well scheme across heterogeneous existing, heatmap, and anchor supports with explicit abstention; E05 used the learned head's own weak path probabilities and E04 used truth to pick.",
+      "counterevidence": "E04 explicitly has no demonstrated target-free selector, E05 shows severe rank miscalibration, and local heatmap coverage is zero for the worst well.",
+      "cheap_test": "Replay all saved OOF candidates with an outer-fold linear/monotone mixture and leave-one-candidate-family-out controls; compare hard top-one, uniform mean, soft mean, and E01 using only outer-train labels for fitting.",
+      "full_test": "Nested five-fold whole-well training, then regenerate every candidate as hidden inference would; report RMSE, oracle coverage, selector regret, calibration, residual correlation to E01, worst-well/tail buckets, runtime, and fallback frequency.",
+      "kill_criterion": "Kill if nested soft fusion improves E01 by less than 0.10 RMSE, selector regret captures under 10% of the oracle gap, worst-well error regresses over 5 ft, or candidate regeneration plus fusion projects above 7.5 hours.",
+      "reopen_criterion": "Reopen when a new target-free feature demonstrably predicts candidate regret on a strictly held group or a role-diverse candidate raises oracle coverage in an uncovered regime.",
+      "coverage_test": "Report truth-bracketing and finite candidate support separately for existing five, heatmap ten, their union, and fallback, by well and suffix bucket.",
+      "selectability_test": "On outer-held wells report selector regret, best-candidate rank, calibration, and gain over fixed soft baselines; never infer selectability from oracle union RMSE.",
+      "hidden_inference_contract": "Generate candidates from runtime files only, tolerate missing heatmap support, apply frozen outer-validated mixture logic, abstain to E01, align predictions to runtime sample IDs, and run offline/deterministically for arbitrary hidden well counts.",
+      "compute_estimate": "OOF replay is CPU-light. Full cost is dominated by hidden regeneration of candidate families; acceptance requires measured end-to-end projection below 7.5 hours and bounded per-well memory.",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "B"
+    },
+    {
+      "id": "I05",
+      "title": "Low-rank spline residual field around the ML anchor",
+      "mechanism_family": "representation",
+      "origin_pass": "cross_pollination",
+      "roles": [
+        "structured residual corrector",
+        "anchor-preserving decoder"
+      ],
+      "information_sources": [
+        "E01 deterministic OOF prediction",
+        "inference-available horizontal and typewell observations",
+        "known prefix residual diagnostics available at inference"
+      ],
+      "hypothesis": "Long correlated E01 errors can be represented by a few suffix-scale residual knots more reliably than by another unrestricted rowwise predictor.",
+      "evidence_ids": [
+        "E01",
+        "E06"
+      ],
+      "changed_mechanism": "Predict a distribution over a bounded number of residual control points and interpolate a correction field over the suffix, keeping E01 as the zero-correction prior.",
+      "input_target_decode": "Input: E01 path, prefix context, coordinates, GR, typewell features; target/objective: projected E01 residual control points plus reconstruction loss; output: knot means/scales; decode: spline-like residual field added to E01 with amplitude abstention.",
+      "deployment_error_simulated": "Persistent offsets, slowly varying drift, short prefixes, and uncertain knot scale are simulated from outer-train E01 OOF residual decompositions.",
+      "preserved_invariants": [
+        "Preserve E01 exactly when correction confidence is low, observed-prefix values, row order, and IDs.",
+        "Intentionally break only the anchor's suffix residual field according to outer-train OOF modes.",
+        "Recompute knots, interpolated corrections, uncertainty, and boundary continuity after masking or length transforms."
+      ],
+      "nearest_prior_attempt": "E01 rowwise ML anchor.",
+      "exact_difference": "This is a constrained, uncertainty-bearing whole-well residual object with an exact zero-correction fallback, not a retuned row model or candidate selector.",
+      "counterevidence": "The packet does not quantify the low-rank share of E01 residuals or show that prefix/context reveals its sign.",
+      "cheap_test": "Project E01 OOF residuals onto 1, 2, 4, and 8 knots using outer-train bases, measure held reconstruction oracle, then fit a small predictor for knot sign/magnitude on two folds.",
+      "full_test": "Five-fold GroupKFold with bases and predictor refit inside each fold, comparing no-correction, oracle knots, predicted knots, and E01 across tail and worst-well buckets.",
+      "kill_criterion": "Kill if four knots cannot explain at least 50% of squared E01 OOF residual energy or predicted correction improves under 0.10 RMSE, or if worst-well regression exceeds 5 ft.",
+      "reopen_criterion": "Reopen if residual EDA reveals a different compact basis with stronger held reconstruction and observable sign predictors.",
+      "coverage_test": "Check finite knot decode across every suffix length and explicit zero-correction fallback for out-of-range length or missing features.",
+      "selectability_test": "Separately test whether predicted knot uncertainty identifies wells where applying the correction beats zero correction on nested held wells.",
+      "hidden_inference_contract": "Run E01, construct the bounded knot representation for any suffix length, apply frozen correction only when supported, restore prefix/ID alignment, and operate offline deterministically with constant-size per-well state.",
+      "compute_estimate": "OOF projection is cheap; inference adds one compact per-well head and interpolation, targeted below 10% of E01 runtime and well below the nine-hour wall.",
+      "is_parameter_only": false,
+      "novelty_level": "representation_change",
+      "confidence": "B"
+    },
+    {
+      "id": "I06",
+      "title": "Global K-best path decode with heatmaps as observation potentials",
+      "mechanism_family": "candidate_generation",
+      "origin_pass": "cross_pollination",
+      "roles": [
+        "heatmap observation model",
+        "whole-well K-best decoder",
+        "diverse candidate generator"
+      ],
+      "information_sources": [
+        "local heatmap logits and candidate windows",
+        "paired typewell reference",
+        "inference-available trajectory coordinates",
+        "existing path transition structure"
+      ],
+      "hypothesis": "Local GR heatmaps are useful as sparse observation potentials inside one globally normalized dynamic program, even though greedy stitching and direct learned paths fail; whole-well decoding can resolve rank inversions using path consistency.",
+      "evidence_ids": [
+        "E03",
+        "E04",
+        "E05"
+      ],
+      "changed_mechanism": "Inject calibrated local logits into a single full-tail lattice and extract K-best globally consistent paths with explicit noncoverage emissions, rather than stitching overlapping local winners or probability-averaging full-tail heads.",
+      "input_target_decode": "Input: local heatmap logits, reference/geometry state, and coverage masks; target/objective: globally additive path score with train-supported transition constraints; output: K-best paths and score gaps; decode: retain the set for later fusion or use a separately validated soft posterior.",
+      "deployment_error_simulated": "Local rank-one inversion, missing windows, right-end extrapolation, ambiguous repeated GR, and long-tail score drift are injected into logits and masks.",
+      "preserved_invariants": [
+        "Preserve row order, local-logit coordinate meaning, prefix boundary, candidate identity, and sample IDs.",
+        "Intentionally break local observation rank and availability; transition structure is changed only after cheap EDA supports it.",
+        "Recompute global path scores, K-best uniqueness, coverage, and fallback after every mask/logit transform."
+      ],
+      "nearest_prior_attempt": "E05 overlapping local-path stitching and learned full-tail five-path head.",
+      "exact_difference": "All local evidence competes in one global path objective before any point prediction; E05 first committed to local/full-tail learned paths and then stitched or probability-weighted them.",
+      "counterevidence": "Stitched-only and learned-only oracle RMSE are very poor, top local coverage is zero in the worst well, and geometry/window modifications did not reliably improve top-3 coverage.",
+      "cheap_test": "On cached fold logits, run a coarse-state K-best decoder for two folds and compare K-best truth coverage, oracle RMSE, path uniqueness, and noncoverage against stitched and existing-five baselines before training any selector.",
+      "full_test": "Five-fold OOF regeneration with frozen calibration, then nested target-free fusion evaluation; report candidate coverage, selector regret, worst-well/tail behavior, state count, peak memory, and deterministic runtime.",
+      "kill_criterion": "Kill if K-best oracle fails to improve existing-five union by 0.30 RMSE or adds under 5% new-best rows, if more than 10% of paths are duplicates, or if projected runtime exceeds 7.5 hours before fusion.",
+      "reopen_criterion": "Reopen with a new observation representation that raises held K-best diversity/coverage without relying on truth-aware tuning.",
+      "coverage_test": "Measure within-10, oracle RMSE, new-best rate, full-grid support, and well-level zero-coverage separately for each K and suffix bucket.",
+      "selectability_test": "After freezing candidate generation, use nested held wells to test whether global score gaps or downstream soft fusion reduce selector regret; do not promote from coverage alone.",
+      "hidden_inference_contract": "Generate heatmaps and K-best paths from each runtime well only, support missing windows and arbitrary suffix sizes, bound state/memory, use deterministic tie-breaking, align sample IDs, and remain offline under nine hours.",
+      "compute_estimate": "Cheap cached-logit decode benchmarks state scaling. Full feasibility depends on I10-style caching/batching; promotion requires measured end-to-end candidate plus fusion projection below 7.5 hours.",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "B"
+    },
+    {
+      "id": "I07",
+      "title": "Formation-free latent alignment state posterior",
+      "mechanism_family": "representation",
+      "origin_pass": "task_first",
+      "roles": [
+        "latent alignment estimator",
+        "joint sequence decoder"
+      ],
+      "information_sources": [
+        "horizontal GR and coordinates",
+        "paired typewell GR and depth-indexed information",
+        "known prefix TVT_input"
+      ],
+      "hypothesis": "A latent relative-alignment state between horizontal well and typewell, trained only from inference-available inputs and TVT labels, may represent the task more faithfully than direct local TVT prediction.",
+      "evidence_ids": [
+        "E03",
+        "E06"
+      ],
+      "changed_mechanism": "Infer a posterior over alignment state transitions and map it to TVT only at decode, with no train-only formation columns and no existing point/candidate input.",
+      "input_target_decode": "Input: paired horizontal/typewell sequences and prefix boundary; target/objective: latent alignment states induced only from TVT supervision and available inputs, marginalized under sequence loss; output: state posterior; decode: posterior-mean TVT plus uncertainty and global fallback.",
+      "deployment_error_simulated": "Reference-range mismatch, GR ambiguity, missing prefix segments, variable suffix length, and local observation corruption.",
+      "preserved_invariants": [
+        "Preserve table row order, paired-well identity, prefix TVT observations, and sample IDs.",
+        "Intentionally break only observation availability and provisional alignment, not train-only formation labels because they are excluded entirely.",
+        "Recompute alignment masks, state transitions, decoded TVT, and coverage after each transform."
+      ],
+      "nearest_prior_attempt": "E03 local heatmap and E06 additive prefix likelihood.",
+      "exact_difference": "This predicts a whole-well latent alignment posterior from available paired sequences; E03 predicts local heatmap positions and E06 adds a weak prefix-derived likelihood to an existing HMM.",
+      "counterevidence": "Local GR signal has only partial coverage, stronger prefix weighting loses gains, and no packet evidence guarantees a unique horizontal-to-typewell alignment.",
+      "cheap_test": "Run train-fold invariant EDA for alignment uniqueness and reference overlap, then fit a coarse-state posterior on two folds without formation columns; compare latent oracle, posterior mean, and no-GR controls.",
+      "full_test": "Whole-well GroupKFold with masked availability stress, reporting RMSE, state entropy, coverage, tail/worst wells, and comparison to E01 and physical/path baselines.",
+      "kill_criterion": "Kill if coarse alignment posterior does not beat the no-GR control in top-k state coverage, if decoded RMSE is above 10.2697, or if state space projects above memory/runtime budget.",
+      "reopen_criterion": "Reopen if cheap EDA identifies a train-supported invariant that makes alignment substantially less ambiguous.",
+      "coverage_test": "Report reference-overlap, posterior finite support, top-k latent coverage, and fallback by well and suffix distance.",
+      "selectability_test": "Test whether posterior entropy/margin predicts decoded error on held wells separately from top-k latent coverage.",
+      "hidden_inference_contract": "Use no formation-only columns, enumerate paired runtime files dynamically, mask out-of-range states, fall back globally, preserve runtime sample order, and run deterministic/offline for arbitrary well counts.",
+      "compute_estimate": "Coarse two-fold state lattice first; full model only if profiled state-by-length scaling supports below 7.5 hours and bounded per-well memory.",
+      "is_parameter_only": false,
+      "novelty_level": "representation_change",
+      "confidence": "C"
+    },
+    {
+      "id": "I08",
+      "title": "EDA-gated invariant-preserving trajectory corruption",
+      "mechanism_family": "data_generation",
+      "origin_pass": "task_first",
+      "roles": [
+        "invariant discovery",
+        "synthetic augmenter",
+        "deployment-shift calibrator"
+      ],
+      "information_sources": [
+        "training horizontal coordinates, GR, prefix boundary, and TVT",
+        "paired typewell depth and GR",
+        "whole-well fold assignments"
+      ],
+      "hypothesis": "If train-fold EDA supports a stable relation among coordinate increments, TVT increments, and prefix boundary conditions, augmentations that preserve that relation while corrupting only observed GR/calibration can improve hidden robustness without inventing impossible labels.",
+      "evidence_ids": [
+        "E01",
+        "E03",
+        "E06"
+      ],
+      "changed_mechanism": "Discover invariants cheaply before augmentation, then synthesize only transforms that preserve verified target-coordinate relations; separately inject GR shift/dropout matching deployment uncertainty.",
+      "input_target_decode": "Input: available sequences and verified invariant statistics; target/objective: unchanged or exactly recomputed TVT under accepted transforms; output: augmented training examples for E01 or I01; decode: unchanged parent decoder.",
+      "deployment_error_simulated": "GR scale/offset drift, missing intervals, short prefix, typewell overlap loss, and supported coordinate resampling are varied independently.",
+      "preserved_invariants": [
+        "Preserve only relations whose train-fold variance, derivative, and boundary error pass a predeclared EDA threshold, plus row/ID order and known prefix consistency.",
+        "Intentionally break observed GR calibration and availability; do not perturb TVT independently of coordinates.",
+        "Recompute every coordinate delta, target increment, prefix mask, reference lookup, and boundary statistic after an accepted geometric transform."
+      ],
+      "nearest_prior_attempt": "E03 tested geometry-channel addition and larger local window.",
+      "exact_difference": "This changes the data-generating distribution under verified invariants and deployment corruptions; E03 added input channels/window size without invariant discovery or label-consistent synthesis.",
+      "counterevidence": "The tested geometry channel reduced top-3 coverage, and the packet states no explicit physical invariant beyond available coordinates.",
+      "cheap_test": "Within outer-train wells only, enumerate simple coordinate/TVT combinations and measure variance, derivative, and prefix-boundary error; create a tiny augmentation only if one relation is stable, then run two-fold E01 or compact-model ablation with transform-by-transform controls.",
+      "full_test": "Five-fold GroupKFold with augmentation parameters frozen inside folds, plus causal ablations for geometric transform, GR corruption, and prefix masking; report mean/tail RMSE, calibration, and clean-data regression.",
+      "kill_criterion": "Kill geometric augmentation if no candidate relation meets the predeclared stability threshold; kill the full idea if held RMSE gain is below 0.10 or clean/worst-well error regresses over 3/5 ft respectively.",
+      "reopen_criterion": "Reopen only when a new invariant candidate is derived from inference-available quantities and passes held-fold stability tests.",
+      "coverage_test": "Measure what fraction of wells/rows each transform can generate without extrapolation or invalid boundary conditions, with unaugmented fallback.",
+      "selectability_test": "Separately test whether transform-derived robustness scores predict error under held availability shifts; augmentation volume is not evidence of selectable benefit.",
+      "hidden_inference_contract": "No stochastic augmentation runs at inference; the trained model must use runtime inputs only, deterministic frozen preprocessing, dynamic IDs/wells, and an uncorrupted offline decode under nine hours.",
+      "compute_estimate": "EDA and two-fold causal ablation first. Full augmentation may at most double training examples; inference cost must remain within 10% of the parent model.",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "C"
+    },
+    {
+      "id": "I09",
+      "title": "Nested availability-distance-tail stress gate",
+      "mechanism_family": "validation",
+      "origin_pass": "task_first",
+      "roles": [
+        "deployment validator",
+        "leakage guard",
+        "portfolio kill gate"
+      ],
+      "information_sources": [
+        "whole-well fold assignments",
+        "OOF predictions and uncertainty summaries",
+        "by-well and distance metrics",
+        "runtime deployment contract"
+      ],
+      "hypothesis": "A nested validation matrix that independently shifts context availability, suffix distance, well difficulty, and candidate support will expose selector optimism and tail regressions hidden by mean GroupKFold RMSE before expensive ideas are promoted.",
+      "evidence_ids": [
+        "E03",
+        "E04",
+        "E06",
+        "E07"
+      ],
+      "changed_mechanism": "Add an outer whole-well decision layer and predeclared stress axes; all selection/blending is trained inside it and judged on row-pooled, well-tail, coverage, selectability, runtime, and determinism criteria.",
+      "input_target_decode": "Input: saved OOF predictions, fold assignments, availability masks, and metrics; target/objective: unbiased outer-held model/selector ranking under stress; output: accept/reject decision and failure tuple; decode: no prediction, only promotion gate.",
+      "deployment_error_simulated": "Short prefix, no prefix, reduced typewell overlap, heatmap dropout, 1000-ft-plus suffix, difficult/worst wells, arbitrary well count projection, and candidate-score perturbation.",
+      "preserved_invariants": [
+        "Preserve whole-well group isolation, sample IDs, original labels, and original row order in every validation replay.",
+        "Intentionally break one availability or score-calibration factor at a time for causal attribution.",
+        "Recompute coverage, selector regret, bucket membership, pooled RMSE, peak memory, and runtime projection after each stress."
+      ],
+      "nearest_prior_attempt": "Trusted whole-well GroupKFold plus individual distance/by-well diagnostics in E06/E07.",
+      "exact_difference": "The proposal nests every learned decision and crosses multiple hidden-shift axes with fixed kill rules; existing evidence reports useful diagnostics but not one reusable promotion gate.",
+      "counterevidence": "Hidden shift distributions are unknown, and aggressive synthetic masking may mis-rank a model if the stress is unrealistic.",
+      "cheap_test": "Replay E01, E02 candidates, E03 heatmaps, and E06 summaries through the fixed matrix without retraining; quantify whether conclusions differ from mean RMSE and whether any same-OOF selector optimism is detectable.",
+      "full_test": "Require each new idea's nested OOF predictions and inference profiler to pass the same matrix, with fold confidence intervals, worst-well changes, coverage/selectability separation, deterministic rerun, and runtime scaling.",
+      "kill_criterion": "Kill the stress axis if it cannot be constructed solely from inference-available masking or if rankings are unstable to reasonable threshold changes; kill this gate as an enabler if it changes no decision and detects no optimism across the supplied assets.",
+      "reopen_criterion": "Reopen when a newly observed availability/domain axis can be simulated without labels or leakage.",
+      "coverage_test": "For every model/candidate family, report finite prediction and candidate truth-bracketing coverage by stress cell, without substituting fallback success for native coverage.",
+      "selectability_test": "Independently fit any selector inside inner folds and report outer-held regret/calibration in each stress cell; oracle coverage never enters the selector feature set.",
+      "hidden_inference_contract": "The gate itself does not ship predictions; it approves only pipelines that enumerate hidden wells dynamically, use runtime sample IDs and inference-available inputs, run offline deterministically, and project below nine hours with margin.",
+      "compute_estimate": "Initial replay uses existing artifacts and should be CPU-light. Full use adds evaluation/profiling overhead during development but zero hidden inference cost.",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "A"
+    },
+    {
+      "id": "I10",
+      "title": "Parity-locked batched observation cache and K-best engine",
+      "mechanism_family": "compute_enabler",
+      "origin_pass": "task_first",
+      "roles": [
+        "deterministic compute enabler",
+        "exact-parity profiler",
+        "global-decoder unlock"
+      ],
+      "information_sources": [
+        "runtime horizontal/typewell arrays",
+        "local observation scores",
+        "existing path/PF state definitions",
+        "E06 and E07 measured runtimes"
+      ],
+      "hypothesis": "Precomputing reference/observation terms once per well and using a bounded-memory batched exact K-best dynamic program can bring same-well calibration and global candidate decoding under the wall while preserving scores and deterministic paths.",
+      "evidence_ids": [
+        "E06",
+        "E07",
+        "E04"
+      ],
+      "changed_mechanism": "Replace repeated per-particle/per-candidate observation evaluation with parity-checked array caches and batched K-best recurrence; speed is accepted only if I06 or I02 completes end to end with unchanged accuracy.",
+      "input_target_decode": "Input: per-well runtime arrays and frozen observation/transition definitions; target/objective: exact score/path parity plus lower wall time/memory; output: cached potentials, K-best paths, and profiler; decode: identical downstream predictions to reference computation.",
+      "deployment_error_simulated": "Variable well count, longest observed training suffixes, missing observation blocks, maximal state/candidate count, and repeated deterministic runs.",
+      "preserved_invariants": [
+        "Preserve observation scores, transition scores, tie-breaking, K-best ordering, output IDs, and downstream predictions within fixed numerical tolerance.",
+        "Intentionally change only execution order, caching, batching, and bounded-memory scheduling.",
+        "Recompute cache keys, masks, path backpointers, SHA, peak memory, and per-well timing for every runtime shape."
+      ],
+      "nearest_prior_attempt": "E06 10 h 50 m CPU path and E07 14.88-hour deterministic four-shard smoother.",
+      "exact_difference": "This is not another particle count or lag setting; it changes the computation graph to unlock entity calibration/global K-best algorithms and requires numerical/path parity plus end-to-end accuracy acceptance.",
+      "counterevidence": "The packet does not identify the actual bottleneck, and exact K-best state growth may remain too large even after caching.",
+      "cheap_test": "Profile a fixed stratified 50-well slice of the current observation/path computation, cache only the dominant repeated term, and require score/path parity, at least 3x wall-time gain, and no peak-memory increase before broader work.",
+      "full_test": "Run all 773 wells deterministically twice for parity, scaling, memory, and SHA; then execute one full OOF/inference-smoke accuracy run of I06 or I02 and compare its predictions and RMSE with the uncached reference where feasible.",
+      "kill_criterion": "Kill if the cheap cache gains under 3x, changes any discrete path or score beyond tolerance, raises peak memory over 25%, or still projects the unlocked end-to-end algorithm above 7.5 hours.",
+      "reopen_criterion": "Reopen only after profiling identifies a different dominant kernel with a parity-preserving bounded-memory optimization.",
+      "coverage_test": "Verify identical finite-state/path coverage for every profiled well and shape, including missing observations and longest suffixes; speed on only easy wells is insufficient.",
+      "selectability_test": "Not applicable to engine correctness: separately rerun the unlocked candidate selector on nested held wells and require unchanged selector regret and predictions; compute parity alone does not establish selectability.",
+      "hidden_inference_contract": "Build caches from runtime files only, cap batch memory, process wells incrementally, use deterministic tie-breaking, emit one prediction per runtime sample ID, make no network calls, and project below 7.5 hours.",
+      "compute_estimate": "Hard acceptance target is at least 3x on the profiled bottleneck and below 7.5 hours end to end; memory may rise by no more than 25% and must remain bounded per well.",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "B"
+    },
+    {
+      "id": "I11",
+      "title": "Candidate disagreement as an abstention signal for anchor correction",
+      "mechanism_family": "fusion_uncertainty",
+      "origin_pass": "evidence_inversion",
+      "roles": [
+        "uncertainty feature",
+        "conditional correction gate",
+        "ML anchor protector"
+      ],
+      "information_sources": [
+        "existing five candidate paths",
+        "heatmap candidate/logit disagreement",
+        "E01 prediction",
+        "coverage and distance flags"
+      ],
+      "hypothesis": "Even where weak candidates are not selectable as point paths, their disagreement with one another and E01 may identify persistent anchor failures or high-risk regions, enabling small bounded corrections or abstention.",
+      "evidence_ids": [
+        "E01",
+        "E04",
+        "E05"
+      ],
+      "changed_mechanism": "Use candidate sets only as uncertainty/conditioner features for a bounded correction around E01; never output a candidate directly and never hard-switch to the local rank-one path.",
+      "input_target_decode": "Input: E01 plus target-free candidate spread, cluster structure, score margins, coverage, and observations; target/objective: clipped E01 residual or abstention utility on inner OOF; output: bounded correction and uncertainty; decode: E01 plus correction only inside validated support.",
+      "deployment_error_simulated": "Candidate family dropout, misleading consensus, rank-one inversion, zero heatmap coverage, and long-distance disagreement.",
+      "preserved_invariants": [
+        "Preserve candidate identities, E01 as exact fallback, row/well grouping, and sample-ID alignment.",
+        "Intentionally break candidate membership or scores only for stress testing the gate.",
+        "Recompute disagreement clusters, margins, bounded correction, and abstention after each candidate perturbation."
+      ],
+      "nearest_prior_attempt": "E06 rejected dense-gate/hard-switch use of prefix signal and E05 direct probability-weighted paths.",
+      "exact_difference": "The candidate values cannot replace E01; only their cross-family disagreement conditions a clipped residual correction learned with nested OOF and explicit zero correction.",
+      "counterevidence": "No evidence says disagreement is correlated with E01 error sign, and candidate ranking is weak.",
+      "cheap_test": "Using saved OOF only, bin E01 error magnitude/sign by target-free disagreement features under leave-one-family-out perturbations, then fit a nested linear clipped corrector on two folds.",
+      "full_test": "Five-fold nested GroupKFold with candidate regeneration, causal feature-family ablations, calibration, residual-correlation, worst-well/tail, and runtime reporting.",
+      "kill_criterion": "Kill if disagreement does not predict E01 error magnitude out of fold, correction gain is under 0.05 RMSE, worst-well regression exceeds 3 ft, or the gate fires on over 80% of rows without calibration gain.",
+      "reopen_criterion": "Reopen if a new role-diverse candidate creates held-fold disagreement correlated with anchor residual sign or magnitude.",
+      "coverage_test": "Report where each disagreement feature is defined and where fallback alone is used, split by candidate-family availability and suffix distance.",
+      "selectability_test": "Test target-free correction firing and residual-sign accuracy on outer-held wells; do not use candidate oracle coverage as evidence for the gate.",
+      "hidden_inference_contract": "Regenerate only inference-available candidate summaries, apply a frozen bounded gate, fall back exactly to E01 for missing/unsupported data, align runtime IDs, and stay offline/deterministic under the wall.",
+      "compute_estimate": "OOF binning/linear proxy is cheap; full hidden cost inherits candidate generation and is accepted only with a below-7.5-hour end-to-end projection.",
+      "is_parameter_only": false,
+      "novelty_level": "role_change",
+      "confidence": "C"
+    },
+    {
+      "id": "I12",
+      "title": "Role-diverse leave-one-mechanism-out candidate factory",
+      "mechanism_family": "candidate_generation",
+      "origin_pass": "task_first",
+      "roles": [
+        "candidate diversity generator",
+        "oracle headroom screener",
+        "conditional ensemble input"
+      ],
+      "information_sources": [
+        "typewell-only path observations",
+        "same-well prefix-calibrated reference when covered",
+        "heatmap observation potentials",
+        "E01 residual-state proposal"
+      ],
+      "hypothesis": "Candidates that differ by observation source, reference frame, representation, and decoder will add more useful/noncorrelated coverage than additional seeds of one PF, provided each mechanism is screened by oracle gain before any selector is trained.",
+      "evidence_ids": [
+        "E02",
+        "E04",
+        "E05",
+        "E06"
+      ],
+      "changed_mechanism": "Generate one or two candidates from each genuinely different mechanism, run leave-one-mechanism-out oracle and residual-correlation screens, then pass only complementary candidates to a separate nested soft selector.",
+      "input_target_decode": "Input: inference-available observations routed through distinct reference/observation/representation/decoder mechanisms; target/objective: candidate set maximizing held oracle coverage subject to diversity and runtime; output: labeled candidate paths; decode: none until a separate target-free fusion passes.",
+      "deployment_error_simulated": "Remove one source family at a time, mask prefix/heatmap coverage, perturb observation calibration, and test long suffixes to expose shared failures.",
+      "preserved_invariants": [
+        "Preserve candidate mechanism labels, runtime ID/row order, observed prefix, and deterministic generation.",
+        "Intentionally break source availability one family at a time; do not count seed-only variation as diversity.",
+        "Recompute union oracle, new-best rate, residual correlations, coverage, runtime, and selector features after each leave-one-out removal."
+      ],
+      "nearest_prior_attempt": "E02 existing five PF/beam candidates and E04 existing-five plus ten heatmap truth-aware union.",
+      "exact_difference": "Diversity is explicitly across observation, reference, representation, and decoder mechanisms with leave-one-family-out accounting; the existing set's diversity axes are not established, and truth-aware union is not the final decoder.",
+      "counterevidence": "Added stitched/learned candidates have weak standalone oracle quality, same-well prefix harms many wells, and no selector has captured union headroom.",
+      "cheap_test": "Using existing artifacts, label candidates by known mechanism, compute leave-one-family-out oracle RMSE, new-best rate, and residual correlation by suffix bucket; prototype only the single missing diversity axis with the strongest uncovered bucket rationale.",
+      "full_test": "Regenerate accepted families in five-fold OOF, freeze the set before selector training, then evaluate I04-style nested soft fusion, runtime, worst-well behavior, and family ablations.",
+      "kill_criterion": "Drop any family with under 2% new-best rows and residual correlation above 0.95 to an existing family; kill the factory if the final union improves oracle under 0.30 RMSE or nested fusion captures under 10% of added oracle gap.",
+      "reopen_criterion": "Reopen when a candidate changes an unrepresented diversity axis and adds held oracle coverage in a previously uncovered bucket.",
+      "coverage_test": "Report standalone and union within-10/oracle/new-best coverage by mechanism, well, and suffix bucket, including zero-support rows.",
+      "selectability_test": "Only after freezing the set, train nested target-free fusion and report selector regret and incremental realized gain for each mechanism separately from oracle coverage.",
+      "hidden_inference_contract": "Ship only families with offline artifacts and measured bounded runtime, dynamically handle missing source coverage, preserve deterministic labels/ties, align runtime IDs, and keep full generation plus fusion below 7.5 hours.",
+      "compute_estimate": "Initial leave-one-out replay is cheap. Prototype at most one new mechanism at a time; the accepted set must meet the 7.5-hour end-to-end budget with per-well sequential memory bounds.",
+      "is_parameter_only": false,
+      "novelty_level": "representation_change",
+      "confidence": "C"
+    }
+  ],
+  "portfolio": [
+    {
+      "idea_id": "I01",
+      "slot": "exploration",
+      "why": "Task-first representation change that directly targets persistent whole-well errors without depending on current candidate selection."
+    },
+    {
+      "idea_id": "I02",
+      "slot": "safe",
+      "why": "Reuses the only demonstrated same-well prefix gain in a narrower calibration role with explicit coverage fallback and worst-well/runtime gates."
+    },
+    {
+      "idea_id": "I03",
+      "slot": "exploration",
+      "why": "Completes the imperfect-intermediate loop and directly attacks the observed rank-one inversion rather than trusting clean or oracle candidates."
+    },
+    {
+      "idea_id": "I04",
+      "slot": "orthogonal",
+      "why": "Attempts to realize the large union headroom through soft uncertainty while keeping coverage and target-free selectability as separate measurements."
+    },
+    {
+      "idea_id": "I10",
+      "slot": "compute_enabler",
+      "why": "A parity-locked speedup is required to make global K-best or calibrated-reference algorithms deployable; acceptance is tied to an end-to-end accuracy run."
+    }
+  ],
+  "rejected": [
+    {
+      "idea": "Deploy the truth-aware best of existing-five plus heatmap-ten candidates.",
+      "failed_gate": "Leaks suffix truth and confuses oracle coverage with target-free selectability.",
+      "reopen_condition": "A nested unseen-well selector or soft posterior must capture a predeclared fraction of oracle gap without truth features."
+    },
+    {
+      "idea": "Use the heatmap rank-one or probability-weighted learned full-tail path directly.",
+      "failed_gate": "E03/E05 show inadequate direct coverage, severe rank inversion, and RMSE 59.2721 for the tested probability-weighted path.",
+      "reopen_condition": "A new representation must improve held standalone path quality and calibration, not merely add more seeds or weights."
+    },
+    {
+      "idea": "Retune the raw additive same-well prefix likelihood or switch to it densely.",
+      "failed_gate": "Closest role is closed by E06: heterogeneous harm, +46.95-ft worst regression, prior hard/dense gate failures, and 10 h 50 m runtime.",
+      "reopen_condition": "Move the signal to a different role with unseen-well reliability, fixed fallback, and measured sub-wall runtime."
+    },
+    {
+      "idea": "Increase lag or particle count for ancestor smoothing without a seed-paired causal control.",
+      "failed_gate": "E07 is slower and worse, and its seed mismatch prevents attribution; a larger unpaired run would not identify smoothing.",
+      "reopen_condition": "First run an exact seed-paired minimal ablation with a strict cheap runtime and accuracy kill rule."
+    },
+    {
+      "idea": "Train with formation-related columns or cache public-test predictions.",
+      "failed_gate": "Those inputs are unavailable at hidden inference or public-example-specific, violating the deployment contract.",
+      "reopen_condition": "No reopen unless the same information is derived reproducibly from inference-available runtime inputs without public IDs or suffix labels."
+    }
+  ]
+}

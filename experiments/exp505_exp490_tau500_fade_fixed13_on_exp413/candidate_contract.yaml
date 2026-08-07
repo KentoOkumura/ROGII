@@ -1,0 +1,123 @@
+schema_version: 1.0.0
+implementation_status: stage_c_compact_implemented_run_not_approved
+source_of_truth: exp263_deployable12_plus_saved_exp490_tau500_fade_prediction
+expected_rows: 3783989
+expected_wells: 773
+
+score_candidates:
+  - {id: exp226_k16, kind: primitive, family: geometry}
+  - {id: selfgr_hmm_a070, kind: primitive, family: self_gr_hmm}
+  - {id: likpf_mean, kind: primitive, family: likelihood_pf}
+  - {id: exact_hmm, kind: primitive, family: exact_hmm}
+  - {id: pf_ancc, kind: primitive, family: particle_filter}
+  - {id: beam_mean, kind: primitive, family: beam}
+  - id: exp226_k16__selfgr_hmm_a070
+    kind: pair_mean_50
+    family: geometry_self_gr_hmm_pair
+    parents: [exp226_k16, selfgr_hmm_a070]
+    weights: [0.5, 0.5]
+  - id: exp226_k16__exact_hmm
+    kind: pair_mean_50
+    family: geometry_exact_hmm_pair
+    parents: [exp226_k16, exact_hmm]
+    weights: [0.5, 0.5]
+  - id: exp226_k16__likpf_mean
+    kind: pair_mean_50
+    family: geometry_likelihood_pf_pair
+    parents: [exp226_k16, likpf_mean]
+    weights: [0.5, 0.5]
+  - id: selfgr_hmm_a070__likpf_mean
+    kind: pair_mean_50
+    family: self_gr_hmm_likelihood_pf_pair
+    parents: [selfgr_hmm_a070, likpf_mean]
+    weights: [0.5, 0.5]
+  - id: likpf_mean__exact_hmm
+    kind: pair_mean_50
+    family: likelihood_pf_exact_hmm_pair
+    parents: [likpf_mean, exact_hmm]
+    weights: [0.5, 0.5]
+  - id: exp226_w500_50_50
+    kind: named_fixed
+    family: geometry_likelihood_pf_exact_hmm_fixed
+    parents: [exp226_k16, likpf_mean, exact_hmm]
+    weights: [0.5, 0.25, 0.25]
+  - id: exp490_tau500_fade_mean_reverting_hmm
+    kind: tau500_fade_geometry_centered_mean_reverting_offset_hmm
+    family: geometry_guided_exact_hmm_fade
+    source_experiment: exp490_geometry_centered_mean_reverting_offset_hmm
+    source_prediction_column: geometry_mean_reverting_hmm
+    parent_prediction_column: exp357_parent_prediction
+    distance_column: md_since
+    alpha: 1.0
+    tau_ft: 500.0
+    candidate_generation: saved_exp490_minus_exp357_tau500_fade
+    source_fold_used_as_model_feature: false
+    selector_join_policy: global_well_row_idx_then_exp263_fold_repartition
+    native_confidence:
+      geometry_mean_reverting_delta_mean: geometry_mean_reverting_delta_mean
+      geometry_mean_reverting_hmm_std: geometry_mean_reverting_hmm_std
+
+legal_domains:
+  primitive_pair_bank:
+    role: primary_meta_and_hard_select_domain
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_k16__selfgr_hmm_a070
+      - exp226_k16__exact_hmm
+      - exp226_k16__likpf_mean
+      - selfgr_hmm_a070__likpf_mean
+      - likpf_mean__exact_hmm
+      - exp490_tau500_fade_mean_reverting_hmm
+  primitive_fixed_bank:
+    role: unchanged_fixed_fallback_comparison_domain
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_w500_50_50
+
+candidate_id_model_encoding:
+  type: one_hot
+  order_source: score_candidates_declared_order
+  width: 13
+  keep_string_id_in_artifacts: true
+  ordinal_index_as_model_feature: false
+
+added_candidate_contract:
+  included: [exp490_tau500_fade_mean_reverting_hmm]
+  replaces: [exp490_geometry_mean_reverting_hmm]
+  raw_exp490_retained: false
+  new_pair_or_blend_candidates: []
+  fixed_fallback_changed: false
+
+confidence_contract:
+  native_confidence_required_for_added_candidate: true
+  native_confidence_finite_required: true
+  universal_proxy_required_for_every_candidate: true
+  universal_proxy_groups:
+    - candidate_availability_and_coverage
+    - candidate_anchor_distance
+    - candidate_local_shape
+    - candidate_bank_disagreement
+    - candidate_family_and_kind_one_hot
+
+forbidden_behaviors:
+  - use_exp490_truth_error_role_episode_fold_scope_gate_or_by_well_result_as_feature
+  - use_exp490_source_fold_id_as_selector_feature_or_split_source
+  - retain_raw_exp490_as_a_fourteenth_candidate
+  - change_tau_alpha_cutoff_or_fade_formula
+  - use_exp498_physics_or_exp499_well_router_features
+  - create_new_pair_blend_or_fixed_fallback_candidate
+  - tune_candidate_weight_usage_threshold_or_gate_on_same_oof
+  - train_parent_control_or_downstream_tvt
+  - rerun_parent_selector_or_candidate_hmm_pf_beam
+  - implement_stage_d_before_stage_c_pass_and_separate_approval
+  - run_inference_or_submission_before_separate_approval

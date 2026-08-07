@@ -1,0 +1,92 @@
+schema_version: "1.0.0"
+experiment: exp494_exp413_cat_xgb_physics_bounded_stack
+status: train_v4_memory_fix_ready
+
+parent:
+  experiment: exp413_scale5_likpf_full_replacement_on_exp335
+  expected_rows: 3783989
+  expected_wells: 773
+  outer_folds: 5
+  score_rows: TVT_input_isna
+  row_keys: [id, well, outer_fold]
+  target: residual_from_last_known_tvt
+  anchor: last_known_tvt
+  truth: actual_tvt
+  matrix_dtype: float32
+
+feature_surface:
+  clean_base_count: 273
+  nested_compact_count: 74
+  signed_compact_count: 23
+  final_count: 370
+  require_unique_names: true
+  require_exact_order: true
+  allow_schema_refreeze: false
+  allow_missing_column_fill: false
+  allow_feature_drop: false
+  stage_0_action: >-
+    Rebuild the exp413 final370 surface once from SHA-qualified Stage 0/C/S inputs,
+    then record logical schema SHA and per-fold train/valid float32 matrix content SHA.
+
+source_evidence:
+  stage_0:
+    kernel: kentookumura/exp413-scale5-likpf-replacement-preflight
+    version: 3
+    semantic_manifest_file_sha256: b3c98af2198b92756ac1db342e34bcf7bfc31ee54d9b2d85e5a01c0141fd34c7
+    semantic_manifest_logical_sha256: 8b2ff389467abb2480eeb00d55e8898fa777dbda5c0523b35ac7709bff425fdf
+  stage_c:
+    kernel: kentookumura/exp413-scale5-likpf-selector-train
+    version: 3
+    model_manifest_sha256: 7badcf45bccab0e2b0535ab7e7171e4c6cb7bf81e0bb115d5e283b1486b7b875
+    compact_manifest_sha256: 507429faa4fbc336dbc00e8edfee5a45788b8a58dbc2e15a440d5e7780d5f07f
+    compact_feature_count: 74
+  stage_s:
+    kernel: kentookumura/exp413-scale5-likpf-signed-train
+    version: 1
+    model_manifest_sha256: 84a0047667ce9209ce63e3b9e935ff6c379d2d38b1ae4262318db94a47aaca9f
+    compact_manifest_sha256: 7a4282a25d7e7887e314cd3d01b8a09c81ff91ba3c1b1cf62e3197079ac93323
+    compact_feature_count: 23
+  shared_fold_manifest_sha256: fa41084c5fcb4adffb88d44211b4cc5d2d2f46b5bd4d65828b6af941184b2a6d
+  stage_d:
+    kernel: kentookumura/exp413-scale5-likpf-downstream-train
+    version: 2
+    oof_filename: stage_d_oof_predictions.parquet
+    oof_sha256: 9bd2d17778b3b27d771b12cbff72def8b87e6cdf14062e1c0ba192434cef4a9d
+    model_manifest_filename: stage_d_model_manifest.json
+    model_manifest_sha256: 4b4f988154468ba6697cdd57c0a0c6bf7cc631e7b2bbe1f15fa8f51fdeb7c3df
+    metrics_filename: stage_d_metrics.json
+    metrics_sha256: 3ea2229b6174a1bc37960e425e05994645cfbedd3636f0d33a856aacf0f579e7
+    expected_model_count: 15
+    expected_oof_rmse: 7.884802794404715
+
+physical_candidate:
+  id: exp226_w500_50_50
+  source: exp413_scale5_replacement_candidate_bank
+  semantic_slot_id: likpf_mean
+  semantic_value_source: likpf_scale_5_x1p0
+  formula:
+    exp226_k16: 0.50
+    likpf_mean: 0.25
+    exact_hmm: 0.25
+  expected_oof_rmse: 8.070218793924594
+  public_lb: null
+  original_exp263_same_id_oof_rmse_context_only: 8.238331
+  original_exp263_same_id_public_lb_context_only: 7.800
+  original_exp263_evidence_transferable: false
+  alternative_ids_allowed: false
+
+stage_0_fail_closed:
+  - source_sha_mismatch
+  - row_or_well_count_mismatch
+  - row_key_duplicate_or_missing
+  - outer_fold_mismatch
+  - final370_name_order_or_dtype_mismatch
+  - exp413_oof_or_rmse_mismatch
+  - physical_candidate_semantic_or_formula_mismatch
+
+materialized_outputs_expected_after_implementation:
+  - final370_feature_schema.json
+  - final370_fold_matrix_manifest.json
+  - frozen_exp413_oof_manifest.json
+  - physical_candidate_oof.parquet
+  - stage_0_preflight.json

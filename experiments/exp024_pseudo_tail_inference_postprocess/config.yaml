@@ -1,0 +1,142 @@
+experiment:
+  name: exp024_pseudo_tail_inference_postprocess
+  description: Fit the exp023 best pseudo-tail distance-balanced LightGBM on full train data and generate an inference submission
+  route: ml_model
+  status: inference_completed
+  created_at: "2026-06-06"
+  updated_at: "2026-06-06"
+
+lineage:
+  parent: exp023_pseudo_tail_distance_augmentation
+  diff_summary: Reuse exp023 selected pseudo_tail_3_cutoffs_distance_balanced training recipe for final inference; start with raw pseudo-tail prediction before postprocess tuning.
+
+validation:
+  leakage_policy:
+    - Final inference fit uses only official train wells.
+    - Pseudo cutoffs are generated only inside train wells.
+    - Test predictions use only each test well's known TVT_input prefix.
+    - Train-only formation columns are not used.
+    - Raw pseudo-tail inference is generated before any unvalidated postprocess is submitted.
+
+data: {}
+
+model:
+  name: pseudo_tail_inference_postprocess
+  primary_strategy: drift_model
+  drift_strategy: drift_model
+  feature_set: no_gr_signal
+  strategies:
+    - last_anchor
+    - recent_linear
+    - drift_model
+  params:
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+    gr_slope_window: 200
+    max_abs_gr_slope: 2.0
+    gr_roll_short: 25
+    gr_roll_long: 100
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  drift_model:
+    estimator: LGBMRegressor
+    params:
+      n_estimators: 800
+      learning_rate: 0.03
+      num_leaves: 31
+      min_child_samples: 80
+      subsample: 0.9
+      colsample_bytree: 0.9
+      reg_lambda: 0.1
+      n_jobs: 2
+  training:
+    max_train_rows_per_fold: 300000
+    max_train_rows_final: 450000
+    max_train_rows_per_well: 800
+
+audit:
+  parent_experiment: exp023_pseudo_tail_distance_augmentation
+  parent_best_variant: pseudo_tail_3_cutoffs_distance_balanced
+  parent_best_cv: 12.942938
+  raw_anchor_experiment: exp013_model_diversity_or_postprocess
+  raw_anchor_variant: lightgbm_no_gr
+  raw_clean_cv: 13.549257
+  heldout_postprocess_cv: 13.535596
+  weighted_clean_cv: 13.470015
+  weighted_postprocess_cv: 13.415799
+  training_variants:
+    enabled: true
+    selected_variant: pseudo_tail_3_cutoffs_distance_balanced
+    variants:
+      - name: control_lightgbm_no_gr
+        cutoffs_per_well: 0
+        distance_balanced: false
+      - name: pseudo_tail_1_cutoff
+        cutoffs_per_well: 1
+        cutoff_quantiles: [0.65]
+        distance_balanced: false
+        max_rows_per_pseudo_tail: 350
+      - name: pseudo_tail_3_cutoffs
+        cutoffs_per_well: 3
+        cutoff_quantiles: [0.45, 0.65, 0.82]
+        distance_balanced: false
+        max_rows_per_pseudo_tail: 260
+      - name: distance_balanced_sampling
+        cutoffs_per_well: 0
+        distance_balanced: true
+        balanced_rows_per_bucket: 60000
+      - name: pseudo_tail_3_cutoffs_distance_balanced
+        cutoffs_per_well: 3
+        cutoff_quantiles: [0.45, 0.65, 0.82]
+        distance_balanced: true
+        max_rows_per_pseudo_tail: 260
+        balanced_rows_per_bucket: 60000
+  pseudo_tail:
+    min_prefix_rows: 200
+    min_pseudo_eval_rows: 250
+    cutoff_strategy: quantile
+  distance_buckets:
+    - name: rows_0_49
+      max_step: 49
+    - name: rows_50_249
+      max_step: 249
+    - name: rows_250_999
+      max_step: 999
+    - name: rows_1000_2499
+      max_step: 2499
+    - name: rows_2500_plus
+      max_step: 1000000000
+
+postprocess:
+  selected_method: raw
+  candidate_methods:
+    - raw
+  methods:
+    raw: {}
+    distance_bucket_shrink:
+      buckets:
+        - max_step: 49
+          alpha: 0.20
+        - max_step: 249
+          alpha: 0.5917180252647632
+        - max_step: 999
+          alpha: 1.15
+        - max_step: 2499
+          alpha: 1.15
+        - max_step: 1000000000
+          alpha: 1.0490770312511664
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: 30
+  kaggle:
+    kernel_sources: []
+
+notes:
+  - exp023 selected pseudo_tail_3_cutoffs_distance_balanced at CV 12.942938.
+  - This experiment starts with raw pseudo-tail inference; bucket shrink needs a separate OOF postprocess audit before being selected.
+  - Kaggle inference generated a submit-check passing raw pseudo-tail submission.csv with 14,151 rows.

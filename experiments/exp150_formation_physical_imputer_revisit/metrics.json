@@ -1,0 +1,59 @@
+{
+  "experiment": "exp150_formation_physical_imputer_revisit",
+  "status": "completed",
+  "created_at": "2026-06-27T00:00:00+00:00",
+  "kaggle_kernel": "kentookumura/exp150-formation-physical-imputer-revisit-train",
+  "kaggle_version": 1,
+  "runtime_seconds_from_log": 800.713653039,
+  "route": "ml_model",
+  "debug": false,
+  "n_wells": 765,
+  "score_rows": 3746966,
+  "cv": 28.23389701015109,
+  "metric": "TVT RMSE of prefix-calibrated physical contact candidate",
+  "public_lb": null,
+  "private_lb": null,
+  "best_candidate": {
+    "method": "well_plane_knn",
+    "candidate": "contact_best_prefix",
+    "rmse": 28.23389701015109,
+    "mae": 18.2813938515376,
+    "bias": -2.1912458917991327,
+    "abs_error_p95": 58.205021872151065,
+    "abs_error_p99": 109.28349741991862,
+    "well_rmse_mean": 20.287325089545828,
+    "well_rmse_p95": 52.06213263004956,
+    "well_rmse_max": 136.52671800693165,
+    "prefix_mae_best_median": 5.695418669664373,
+    "formation_pred_spread_median": 6.2906908136101265
+  },
+  "distance_buckets_best_candidate": {
+    "000_050": 7.518282,
+    "050_100": 8.00336,
+    "100_250": 8.691162,
+    "250_500": 10.03222,
+    "500_1000": 12.69065,
+    "1000_plus": 31.139509
+  },
+  "surface_proxy": {
+    "row_knn_xy_mean_surface_abs_error_mean": 17.969797961531818,
+    "well_plane_knn_mean_surface_abs_error_mean": 16.78896667975079,
+    "well_plane_knn_min_surface_abs_error_mean": 12.635103632418826
+  },
+  "artifacts": {
+    "candidate_metrics": "experiments/exp150_formation_physical_imputer_revisit/artifacts/candidate_metrics.csv",
+    "confidence_bucket_metrics": "experiments/exp150_formation_physical_imputer_revisit/artifacts/confidence_bucket_metrics.csv",
+    "distance_bucket_metrics": "experiments/exp150_formation_physical_imputer_revisit/artifacts/distance_bucket_metrics.csv",
+    "formation_prefix_calibration": "experiments/exp150_formation_physical_imputer_revisit/artifacts/formation_prefix_calibration.csv",
+    "surface_proxy_metrics": "experiments/exp150_formation_physical_imputer_revisit/artifacts/surface_proxy_metrics.csv",
+    "row_level_oof_features": "not_downloaded; Kaggle output download was interrupted after lightweight artifacts because the row-level CSV is large"
+  },
+  "sha256": {
+    "candidate_metrics_csv": "69b62f36ae402aa4c414328da93d39d2ec1977ba08d03054e9fd1ff5b254a316",
+    "confidence_bucket_metrics_csv": "f3452de4fe63e8f28734336a45e4136060e1d6181072f7a00b5279ff7b64167a",
+    "distance_bucket_metrics_csv": "0fcb590cc55234013c075bc12cd6e6dd71aec84396c1316f0651c3b8e131f30c",
+    "formation_prefix_calibration_csv": "8bde826aa2f4f1b538b9350478f685d9379cf8625b4bdb76b11811d04c18f2be",
+    "surface_proxy_metrics_csv": "8ca8b03402daf3185503ef060987ecee10ff1a078fd4166fe558a3bff1a350e0"
+  },
+  "conclusion": "Do not use as a direct TVT candidate or submission path. Surface/confidence diagnostics are coherent, especially formation_pred_spread and neighbor_dist, but direct RMSE is far weaker than current ML anchors."
+}

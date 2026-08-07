@@ -1,0 +1,401 @@
+experiment:
+  name: exp350_exp345_bidirectional_gr_affine_smoother
+  description: >-
+    Design-frozen offline fixed-interval affine-state smoothing audit that
+    replaces only the causal exp345 GR affine schedule with a deterministic
+    bidirectional extended RTS schedule using the full raw-GR sequence of each
+    well before one otherwise unchanged exp209 exact-HMM rerun.
+  route: pf_beam
+  status: stage_0_failed_closed
+  created_at: "2026-07-22"
+  updated_at: "2026-07-23"
+
+lineage:
+  parent: exp345_exp209_time_varying_gr_affine_calibration_hmm
+  root_parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260722-exp350-exp345-bidirectional-gr-affine-smoother
+  design_origin: user_proposed_full_well_gr_bidirectional_smoother_after_exp345
+  references:
+    - exp318_typewell_group_time_varying_calibration_ssm
+    - exp290_piecewise_datum_physical_smoother
+  diff_summary: >-
+    Keeps the frozen exp345 prefix initialization, state [intercept_b,
+    log_scale_a], random-walk transition, outer-train process noise, exp209
+    base path, observation variance, HMM grammar, and decoder. The only
+    scientific change is a deterministic fixed-interval extended RTS backward
+    pass over the full score-suffix raw-GR sequence after the exp345 forward
+    EKF. The smoothed affine schedule is frozen and used for exactly one new
+    exact-HMM candidate. Saved exp345 parent and causal predictions are controls;
+    neither control HMM is rerun.
+
+implementation:
+  enabled: true
+  scope: train_side_stage_0_full_only
+  train_notebook_state: canonical_compact_selfcontained_stage_0_completed_failed_closed
+  inference_notebook_state: scaffold_template_only
+  canonical_notebook_adopted: true
+  kaggle_package_prepared: true
+  kaggle_run_enabled: false
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: last640_prefix_mask_offline_fixed_interval_smoother_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  group_column: well_id
+  expected_wells: 773
+  expected_raw_rows: 3783989
+  expected_stage_0_score_rows: 494720
+  score_rows: last_640_rows_after_tvt_input_mask
+  prefix_mask_backtest:
+    horizon_rows: 640
+    minimum_visible_prefix_rows: 160
+    tvt_policy: mask_last_640_tvt_input_rows_before_any_candidate_generation
+    gr_policy: retain_full_raw_gr_because_full_well_gr_is_available_at_inference
+    smoother_interval: first_scored_row_through_last_row_of_current_well
+    truth_join_policy: freeze_base_forward_smoother_schedule_and_prediction_before_truth
+  dependency_policy:
+    required_parent: exp345_exp209_time_varying_gr_affine_calibration_hmm
+    required_parent_status: stage_0_full_failed_closed
+    required_parent_decision: stage_failed_close_without_rescue
+    fail_closed_on_dependency_mismatch: true
+    reopen_parent: false
+  leakage_policy:
+    - Full-well raw GR, MD, Z, and Type Well GR are allowed because they exist for every inference row.
+    - Last-640 TVT_input and every suffix true TVT, error, abs_error, formation, and oracle label are forbidden before prediction freeze.
+    - The exp345 masked parent mean and standard deviation are immutable base-path inputs; the bidirectional pass may not update TVT or rerun the parent.
+    - The exp345 outer-train process-noise table is reused by exact SHA and may not be re-estimated from held-out or score-row truth.
+    - Fold and hidden-like roles are attached only after the new schedule and prediction content SHA are frozen.
+    - Future raw GR is intentionally allowed, so the candidate is an offline full-well method and must not be described as streaming or causal.
+    - Exactly one forward affine filter, one backward smoother, and one candidate HMM pass are allowed; iterative calibration is forbidden.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  saved_exp345:
+    kernel_source: kentookumura/exp345-gr-affine-hmm-runtime-microbenchmark
+    kernel_version: 2
+    stage: stage_0_full
+    promotion_gate_filename: exp345_exp209_time_varying_gr_affine_calibration_hmm_stage_0_full_promotion_gate.json
+    prediction_filename: exp345_exp209_time_varying_gr_affine_calibration_hmm_stage_0_full_predictions.csv.gz
+    affine_schedule_filename: exp345_exp209_time_varying_gr_affine_calibration_hmm_stage_0_full_affine_schedule.csv.gz
+    process_noise_filename: exp345_exp209_time_varying_gr_affine_calibration_hmm_stage_0_full_process_noise.csv
+    mask_manifest_filename: exp345_exp209_time_varying_gr_affine_calibration_hmm_stage_0_full_mask_manifest.csv
+    paired_metrics_filename: exp345_exp209_time_varying_gr_affine_calibration_hmm_stage_0_full_paired_metrics.csv
+    expected_promotion_gate_raw_sha256: 39296d1b900463c27f1fd65fbaa265e3c1a3a6b9d42afd9322eb03ac6140525a
+    expected_prediction_raw_sha256: 8e038204dc5768dc68c77931f72bddf883f1afe67ed3461119892e80800467d0
+    expected_prediction_decompressed_sha256: f2ff65b78a66c88e9993f2c362fbd9db445061670980cfffccf449ef81d4bfbc
+    expected_affine_schedule_raw_sha256: 0470f6ee70d91eb9a7501f5b58c6c4e4de89e1eab0b9b1b6a94eb5342c8c10b9
+    expected_affine_schedule_decompressed_sha256: 51827246e6b7154ff39d3d6a8c07d1bd0dd43715090b9f11036b67960d9bf0f0
+    expected_process_noise_raw_sha256: 70d250d4b2d5bc34543da3feb52e4a6118848fd40d189306f7b73d17a3089321
+    expected_mask_manifest_raw_sha256: c1c33f57e3a0ea521e81dd1c9829a7e1da95e556bcabefd43fa79bfab04a4461
+    expected_paired_metrics_raw_sha256: 25ac09ed67108a18cc3427beb74b80434528f5ef2cd2547bd4004c099ca910f8
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp345-gr-affine-hmm-runtime-microbenchmark/artifacts
+      - /kaggle/input/exp345-gr-affine-hmm-runtime-microbenchmark/artifacts
+  saved_exp209:
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    hmm_cache_filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    expected_hmm_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    usage: stage_1_only_if_stage_0_passes_and_is_separately_approved
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    kernel_source: kentookumura/exp226-k16-kappa-repro-train
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    safe_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    truth_columns: [well_id, row_idx, tvt_true]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    usage: late_scoring_only
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    kernel_source: kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    required_nonempty_scopes: [hidden_like_spatial, hidden_like_typewell_purged]
+
+model:
+  name: offline_bidirectional_extended_rts_affine_exp209_exact_hmm
+  estimator: none
+  target: TVT
+  active_variants: [one_pass_bidirectional_rts_affine_schedule_on_exp209]
+  base_path:
+    stage_0_source: saved_exp345_masked_parent_hmm_mean_and_std
+    stage_1_source: saved_exp209_full_suffix_hmm_mean_and_std
+    parent_control_rerun: false
+    causal_control_rerun: false
+    calibration_iterations: 1
+    freeze_before_forward_filter: true
+  forward_affine_state:
+    contract: exact_exp345_causal_ekf_regeneration
+    state: [intercept_b, log_scale_a]
+    transition: local_level_random_walk
+    initial_fit: robust_current_well_visible_prefix_affine
+    minimum_prefix_pairs: 40
+    minimum_typewell_gr_std: 5.0
+    slope_bounds: [0.25, 4.0]
+    maximum_prefix_rmse: 60.0
+    trim_quantile: 0.90
+    robust_iterations: 2
+    process_noise: reuse_saved_exp345_outer_train_empirical_bayes_table
+    process_noise_estimator: median_squared_adjacent_robust_prefix_state_increment
+    process_noise_state_sequence: cumulative_robust_fit_every_40_finite_pairs_plus_final
+    process_noise_increment_normalization: squared_state_increment_per_source_row
+    process_noise_shrinkage_space: linear_variance
+    process_noise_numerical_floor: 1.0e-12
+    initial_covariance: trimmed_ols_covariance_transformed_to_intercept_and_log_scale
+    prefix_rmse_scope: retained_pairs_after_fixed_trim_iterations
+    schedule_state_timing: current_row_posterior_after_one_finite_raw_gr_update
+    gr_nll_policy: one_step_predictive_before_current_row_update
+    covariance_update: joseph_form
+    missing_raw_gr_update_policy: skip_update_propagate_state
+    parity_max_abs_tolerance: 1.0e-10
+  bidirectional_smoother:
+    algorithm: deterministic_fixed_interval_extended_rts
+    transition_matrix: identity_2x2
+    interval: entire_masked_score_suffix_of_each_well
+    observation_source: full_raw_gr_including_future_score_rows
+    predicted_state_source: exp350_regenerated_forward_ekf_records_after_exp345_schedule_parity
+    smoothing_gain: filtered_covariance_times_pinv_next_predicted_covariance
+    pseudoinverse_rcond: 1.0e-12
+    backward_order: last_score_row_to_first_score_row
+    terminal_policy: smoothed_terminal_equals_filtered_terminal
+    covariance_symmetrization: half_matrix_plus_transpose
+    covariance_negative_eigen_tolerance: 1.0e-8
+    covariance_numerical_floor: 1.0e-12
+    output_scale_policy: clip_exp_log_scale_to_exp345_bounds_after_smoothing
+    maximum_output_scale_clip_fraction: 0.01
+    missing_raw_gr_policy: no_measurement_update_but_backward_state_information_propagates
+    freeze_before_variant_hmm: true
+  variant_hmm:
+    state_gr_formula: exp_log_scale_a_smoothed_t_times_typewell_gr_state_plus_smoothed_intercept_b_t
+    active_variants: [one_pass_bidirectional_rts_affine_schedule_on_exp209]
+  fixed_exp209_hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    lam: 1.0
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    momentum: 0.998
+    emission: gaussian
+    emission_clip_z2: 600.0
+    sigma_mode: std
+    sigma_known_gr_policy: fill_missing_with_zero_before_population_std
+    sigma_clip: [10.0, 60.0]
+    missing_gr_weight: none_exact_weight_1
+    rate_center: zero
+    evaluation_gr_policy: interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp
+    effective_position_sigma_floor: 0.1225
+    output: posterior_mean
+  forbidden:
+    - changing_forward_filter_or_process_noise
+    - finite_only_or_robust_sigma_gr
+    - missing_gr_downweight
+    - well_adaptive_or_time_varying_sig_r
+    - changing_sig_p_momentum_grid_or_prior
+    - typewell_group_prior
+    - joint_tvt_rate_affine_state_grid
+    - more_than_one_forward_backward_calibration_pass
+    - affine_parameter_or_smoother_grid
+    - causal_bidirectional_prediction_blend
+    - row_or_well_gate
+    - truth_or_error_conditioned_smoothing
+
+references:
+  exp345_stage_0_parent_rmse: 14.50104778333667
+  exp345_stage_0_causal_rmse: 14.33154269727665
+  exp345_stage_0_causal_improvement_vs_parent_ft: 0.16950508606002046
+  exp345_stage_0_causal_folds_improved_vs_parent: 4
+  exp345_stage_0_causal_worst_well_delta_ft: 9.354827458796363
+  exp345_stage_0_causal_improved_wells: 373
+  exp345_stage_0_causal_worsened_wells: 400
+  exp345_stage_0_runtime_seconds_for_1546_hmm_runs: 4871.012860536575
+  exp209_full_raw_hmm_rmse: 11.9382872349
+
+promotion_gates:
+  technical:
+    require_all_saved_exp345_sha: true
+    require_forward_schedule_exact_parity: true
+    forward_schedule_max_abs_tolerance: 1.0e-10
+    require_saved_control_metric_parity: true
+    saved_control_metric_absolute_tolerance: 1.0e-10
+    expected_prediction_rows: 494720
+    expected_prediction_wells: 773
+    expected_new_hmm_runs: 773
+    require_finite_predictions: true
+    terminal_state_max_abs_tolerance: 1.0e-12
+    covariance_minimum_eigenvalue: -1.0e-8
+    covariance_contraction_max_positive_eigenvalue: 1.0e-8
+    maximum_output_scale_clip_fraction: 0.01
+    maximum_runtime_hours: 8.5
+  scientific:
+    minimum_improvement_vs_masked_exp209_parent_ft: 0.05
+    minimum_improvement_vs_exp345_causal_ft: 0.02
+    minimum_improved_folds_vs_masked_exp209_parent: 4
+    minimum_improved_folds_vs_exp345_causal: 4
+    require_hidden_like_scope_count: 2
+    require_hidden_like_non_regression_vs_parent: true
+    require_hidden_like_non_regression_vs_causal: true
+    require_by_well_median_delta_vs_parent_max: 0.0
+    require_by_well_p95_delta_vs_parent_max: 0.0
+    maximum_worst_well_regression_vs_parent_ft: 0.25
+    maximum_boundary_jump_p95_sigma: 3.0
+    gr_reconstruction_nll_role: diagnostic_only_because_smoother_uses_current_and_future_gr
+  decision_if_pass: stage_0_passed_wait_for_separate_stage_1_approval
+  decision_if_fail: stage_0_failed_close_without_rescue
+
+execution_contract:
+  current_design_only:
+    scientific_variants: 0
+    new_hmm_well_runs: 0
+    control_hmm_reruns: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+  stage_0_if_implemented_and_separately_approved:
+    scientific_variants: 1
+    forward_filter_wells: 773
+    bidirectional_smoother_wells: 773
+    new_hmm_well_runs: 773
+    parent_control_hmm_reruns: 0
+    causal_control_hmm_reruns: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    pf_runs: 0
+    beam_runs: 0
+    gpu_runs: 0
+  stage_1_only_if_stage_0_passes_and_is_separately_approved:
+    scientific_variants: 1
+    new_hmm_well_runs: 773
+    control_hmm_reruns: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+
+results:
+  kaggle_kernel: kentookumura/exp350-bidirectional-gr-affine-smoother-train
+  kaggle_kernel_id_no: 128274195
+  kaggle_kernel_version: 1
+  kaggle_status: COMPLETE
+  stage: stage_0_full
+  decision: stage_0_failed_close_without_rescue
+  technical_gate_passed: true
+  scientific_gate_passed: false
+  rows: 494720
+  wells: 773
+  runtime_seconds: 2749.356610059738
+  masked_exp209_parent_rmse: 14.50104778333667
+  exp345_causal_rmse: 14.33154269727665
+  bidirectional_candidate_rmse: 14.367548323818495
+  improvement_vs_parent_ft: 0.1334994595181751
+  improvement_vs_causal_ft: -0.03600562654184536
+  folds_improved_vs_parent: 5
+  folds_improved_vs_causal: 2
+  hidden_like_non_regression_vs_parent: true
+  hidden_like_non_regression_vs_causal: true
+  improved_wells_vs_parent: 403
+  worsened_wells_vs_parent: 370
+  by_well_median_delta_vs_parent_ft: -0.008671745251461749
+  by_well_p95_delta_vs_parent_ft: 1.3464265922090854
+  worst_well_vs_parent: 8995c945
+  worst_well_delta_vs_parent_ft: 20.88737418678505
+  prediction_decompressed_sha256: 5b66ee9cfa76fce320a5806849e49c5f711b6dbafde617567adc211cda4de3f1
+  forward_schedule_decompressed_sha256: 682e75d6cbed11b96e3b687f66a5c851399ae39250d5147ec3544601892a72cb
+  smoothed_schedule_decompressed_sha256: 3c5a4268ee08e94b79b7a8fb971b2a678a45cde9edae6743e67db8cb881ac88b
+  promotion_gate_raw_sha256: 2f003dfd46cda4efcd25c1e2555bf68a77db78273342f2425809c5a109d94616
+  stage_1_eligible: false
+
+relationship_policy:
+  exp345_remains_terminal_closed: true
+  exp345_artifacts_are_frozen_controls_only: true
+  exp338_relation: independent_sibling_of_exp345_not_a_dependency
+  automatic_successor_creation: false
+  stage_1_eligible: false
+  post_hoc_rescue_allowed: false
+
+execution:
+  design_approved: true
+  design_approval_scope: user_request_create_backlog_experiment_directory_and_steering_for_bidirectional_smoother
+  implementation_approved: true
+  canonical_notebook_adoption_approved: true
+  kaggle_package_approved: true
+  kaggle_push_approved: false
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+  active_stage: stage_0_completed_failed_closed
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  numba_num_threads: 2
+  dtype: float64
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    train_kernel_sources:
+      - kentookumura/exp345-gr-affine-hmm-runtime-microbenchmark
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    planned_kernel_sources:
+      - kentookumura/exp345-gr-affine-hmm-runtime-microbenchmark
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_fold_well_row_and_backward_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads_and_stable_well_output_sort
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Canonical implementation is deterministic CPU float64 with no sampling or learned model.
+    - Save raw and decompressed SHA for regenerated forward schedule, smoothed schedule, and candidate prediction.
+    - Freeze base path, forward state/covariance, smoothed schedule, numerical audit, and candidate prediction before any truth or scoring-role join.
+    - Do not treat this as a deterministic anchor until a separately approved rerun reproduces logical content SHA.
+    - At Kaggle package time, verify embedded config and source SHA plus GPU/internet metadata before push.
+
+inference:
+  enabled: false
+  mode: disabled_stage_0_scientific_gate_failed_closed
+  offline_full_well_required: true
+  create_submission: false
+
+notes:
+  - The user approved design creation only; scientific implementation is not approved.
+  - The full-well future-GR dependency is competition-compatible but deliberately offline and non-causal.
+  - There is no separate runtime microbenchmark because exp345 completed 1546 identical HMM well-runs in 1.3531 hours; Stage 0 still retains the hard 8.5-hour runtime gate.
+  - This experiment is low-priority P3 and does not displace current P1/P2 backlog items.

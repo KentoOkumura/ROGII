@@ -1,0 +1,406 @@
+experiment:
+  name: exp301_gauge_invariant_multiformation_edge_potential
+  description: >-
+    Reconstructs one gauge-invariant two-dimensional geological potential from
+    within-well edge differences of all six formation surfaces, then anchors the
+    field at the last known TVT_input row to emit one direct physical TVT candidate.
+  route: pf_beam
+  status: kaggle_cpu_v2_completed_stage0_fail_branch_closed
+  phase: completed_fail_closed_before_stage1
+  created_at: "2026-07-20"
+  inference_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.score_rows
+
+lineage:
+  parent: null
+  comparisons:
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp289_fault_aware_transductive_geological_potential
+    - exp293_physics_only_candidate_bank_headroom_contract
+  design_source: .steering/20260720-exp301-gauge-invariant-multiformation-edge-potential
+  reserved_followup_contract: reserved_followup_contract.md
+  references:
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md gauge_invariant_multiformation_edge_potential
+  diff_summary: >-
+    Starts an independent physical-model family. Unlike ANCC absolute-surface,
+    latent-datum, fault-risk, KNN drift, GR, and candidate-selector approaches,
+    it discards formation absolute levels and integrates only robust within-well
+    differences from all six formations into one smooth scalar potential.
+
+validation:
+  strategy: fixed_exp226_outer_groupkfold_gauge_invariant_edge_potential
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  trained_folds: 0
+  group_column: well_id
+  fold_source: exp226_saved_oof_well_fold_identity
+  score_rows: TVT_input_isna
+  expected_prediction_rows: 3783989
+  expected_wells: 773
+  transductive_scope: outer_train_donor_plus_outer_valid_geometry_only
+  allowed_outer_valid_columns: [well_id, row_index, MD, X, Y, Z, TVT_input]
+  forbidden_outer_valid_before_prediction_freeze:
+    - TVT
+    - GR
+    - ANCC
+    - ASTNU
+    - ASTNL
+    - EGFDU
+    - EGFDL
+    - BUDA
+    - target_error
+    - oracle_rank
+  fold_exclusion: entire_outer_valid_fold
+  inference_same_name_exclusion: exclude_matching_train_well_from_donors
+  truth_join_policy: after_prediction_content_sha_freeze
+  report_scopes:
+    - pooled
+    - fold
+    - distance_bucket
+    - distance_1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+    - by_well
+    - well_bias
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  id_column: id
+  sample_submission: data/raw/sample_submission.csv
+  submission_target_column: tvt
+  prefix_column: TVT_input
+  geometry_columns: [MD, X, Y, Z]
+  formation_columns: [ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+  row_order: MD_ascending_then_original_row_index
+  anchor: last_finite_TVT_input_row
+  raw_train_dir_patterns:
+    - data/raw/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+  raw_test_dir_patterns:
+    - data/raw/test
+    - /kaggle/input/rogii-wellbore-geology-prediction/test
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/test
+  raw_horizontal_glob: "*__horizontal_well.csv"
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    patterns:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    pre_freeze_columns: [well_id, fold]
+    post_freeze_columns: [well_id, row_idx, suffix_offset, tvt_true, tvt_pred, fold]
+  exp263_manifest:
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+      - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+      - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1/artifacts/cache_manifest.json
+      - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1_sample_partitions/artifacts/cache_manifest.json
+    expected_file_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+    expected_canonical_id_sha256: de07df322a8dc3a981b556ea78c3ddcecb2e708a31e986cfe05873109d4ae9d3
+  hidden_like_assignment:
+    patterns:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_file_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    well_column: well_id
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+physics:
+  name: gauge_invariant_multiformation_edge_potential
+  state: U_equals_TVT_plus_Z
+  observation_equation: delta_U_equals_delta_formation_surface
+  prediction_equation: >-
+    TVT_hat_r = TVT_input_anchor + Z_anchor
+    + Phi_XY_r - Phi_XY_anchor - Z_r
+  uses_absolute_formation_level: false
+  estimates_well_datum: false
+  uses_gr: false
+  uses_existing_prediction: false
+  uses_fault_cut: false
+  output: one_direct_physical_candidate
+
+stage0:
+  name: multiformation_edge_identity_and_geometry_support_audit
+  row_stride: 16
+  always_include_final_row: true
+  minimum_finite_formations_per_edge: 3
+  maximum_edge_identity_rmse_ft_each_formation: 0.02
+  maximum_edge_identity_rmse_ft_median6: 0.02
+  minimum_edges_with_three_finite_formations_fraction: 0.995
+  required_query_component_with_donor_fraction: 1.0
+  required_query_bilinear_basis_coverage: 1.0
+  failure_policy: stop_before_stage1_execution_and_close_branch
+
+solver:
+  grid_spacing_ft: 250.0
+  active_grid_chebyshev_halo_cells: 1
+  interpolation: bilinear
+  component_adjacency: four_neighbor
+  gauge_constraint: zero_mean_per_component
+  row_stride: 16
+  always_include_final_row: true
+  edge_response: median_of_finite_six_formation_differences
+  minimum_finite_formations_per_edge: 3
+  edge_scale: max_1p4826_crossformation_mad_and_0p02_ft
+  loss: huber
+  huber_delta: 1.345
+  regularizer: active_grid_xx_yy_xy_second_differences
+  lambda_candidates: [0.001, 0.01, 0.1]
+  lambda_selection: outer_train_only_stable_three_way_well_holdout_edge_huber_loss
+  lambda_tie_policy: choose_larger_lambda
+  inner_split: sha256_well_id_mod_3
+  dtype: float64
+  process_count: 1
+  irls_max_iterations: 20
+  irls_relative_objective_tolerance: 0.000001
+  missing_query_component_policy: fail_closed_no_fallback
+  second_difference_scaling: unscaled_discrete_grid_difference
+  linear_solver: scipy_sparse_kkt_spsolve_natural_ordering
+  inner_holdout_objective: mean_edge_huber_loss_weighted_by_heldout_edge_count
+  runtime_guards:
+    maximum_active_nodes_per_outer_fold: 500000
+    maximum_donor_edges_per_outer_fold: 500000
+    maximum_regularizer_rows_per_outer_fold: 2000000
+    maximum_constraint_matrix_nnz_per_outer_fold: 50000000
+    maximum_total_solver_fits: 50
+
+success_criteria:
+  stage1_requires_both_direct_and_candidate_novelty: true
+  stage1_technical:
+    expected_prediction_rows: 3783989
+    expected_wells: 773
+    required_duplicate_rows: 0
+    required_finite_prediction_coverage: 1.0
+  direct_quality:
+    baseline: exp226_saved_oof
+    baseline_rmse_ft: 9.427109596582213
+    maximum_pooled_rmse_ft: 9.2271095966
+    require_improvement_each_outer_fold: true
+    nonregression_scopes:
+      - distance_1000_plus
+      - hidden_like_spatial
+      - hidden_like_typewell_purged
+      - by_well_p95
+    maximum_worst_well_delta_ft: 0.25
+  candidate_novelty:
+    frozen_bank: exp293_stage1_deployable12
+    block_horizon_rows: 512
+    minimum_h512_oracle_rmse_improvement_ft: 0.10
+    minimum_improved_outer_folds: 4
+    minimum_strict_unique_best_block_fraction: 0.02
+    persist_oracle_prediction: false
+  failure_policy:
+    - close_branch_without_same_oof_rescue
+    - do_not_tune_grid_stride_lambda_formation_subset_huber_or_threshold_on_outer_valid_truth
+    - do_not_blend_or_fallback_to_existing_prediction
+
+candidate_novelty_audit:
+  frozen_bank: exp293_stage1_deployable12
+  candidate_order:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__exact_hmm
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+    - likpf_mean__exact_hmm
+    - exp226_w500_50_50
+  primitive_candidates:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+  pairs:
+    exp226_k16__selfgr_hmm_a070: [exp226_k16, selfgr_hmm_a070]
+    exp226_k16__exact_hmm: [exp226_k16, exact_hmm]
+    exp226_k16__likpf_mean: [exp226_k16, likpf_mean]
+    selfgr_hmm_a070__likpf_mean: [selfgr_hmm_a070, likpf_mean]
+    likpf_mean__exact_hmm: [likpf_mean, exact_hmm]
+  fixed_formula:
+    exp226_w500_50_50:
+      exp226_k16: 0.5
+      likpf_mean: 0.25
+      exact_hmm: 0.25
+  block_horizon_rows: 512
+  include_final_short_block: true
+  squared_error_tie_atol: 0.000000001
+  persist_oracle_prediction: false
+
+audit:
+  output_prefix: exp301_gauge_invariant_multiformation_edge_potential
+  work_chunk_rows: 100000
+  distance_buckets_ft:
+    000_050: [0.0, 50.0]
+    050_100: [50.0, 100.0]
+    100_250: [100.0, 250.0]
+    250_500: [250.0, 500.0]
+    500_1000: [500.0, 1000.0]
+    1000_plus: [1000.0, .inf]
+  expected_artifacts:
+    - exp301_gauge_invariant_multiformation_edge_potential_contract.json
+    - exp301_gauge_invariant_multiformation_edge_potential_input_manifest.csv
+    - exp301_gauge_invariant_multiformation_edge_potential_stage0_identity.csv
+    - exp301_gauge_invariant_multiformation_edge_potential_stage0_support.csv
+    - exp301_gauge_invariant_multiformation_edge_potential_lambda_selection.csv
+    - exp301_gauge_invariant_multiformation_edge_potential_solver_manifest.csv
+    - exp301_gauge_invariant_multiformation_edge_potential_oof_predictions.csv.gz
+    - exp301_gauge_invariant_multiformation_edge_potential_fold_metrics.csv
+    - exp301_gauge_invariant_multiformation_edge_potential_subgroup_metrics.csv
+    - exp301_gauge_invariant_multiformation_edge_potential_by_well.csv
+    - exp301_gauge_invariant_multiformation_edge_potential_candidate_novelty.csv
+    - exp301_gauge_invariant_multiformation_edge_potential_sha_manifest.csv
+    - exp301_gauge_invariant_multiformation_edge_potential_summary.json
+
+reserved_followups:
+  source_of_truth: reserved_followup_contract.md
+  proposal2:
+    name: implicit_horizon_evidence_on_exp293_bank
+    may_start_only_after: exp301_stage1_pass
+    route: pf_beam
+    status: reserved_not_numbered_not_implemented
+  proposal3:
+    name: implicit_horizon_prior_redecode_on_exp295
+    may_start_only_after:
+      - exp301_stage1_pass
+      - exp295_stage_b_promotion_pass
+    route: ensemble
+    status: reserved_not_numbered_not_implemented
+
+model:
+  name: deterministic_gauge_invariant_multiformation_edge_potential
+  estimator: robust_sparse_physical_inverse_problem
+  params: {}
+
+execution:
+  implementation: true
+  implementation_authorized: true
+  implementation_authorized_at: "2026-07-20"
+  implementation_authorization_source: user_message_implement_exp301
+  kaggle_execution_authorized: false
+  kaggle_execution_authorized_at: "2026-07-20"
+  kaggle_execution_authorization_source: user_message_run_exp301
+  kaggle_push_approved: false
+  one_run_authorization_consumed: true
+  kaggle_run_completed: true
+  active_kernel_id: kentookumura/exp301-gauge-edge-potential-train
+  active_kernel_version: 2
+  active_kernel_id_no: 128007163
+  failed_kernel_version: 1
+  failed_kernel_status: ERROR
+  failed_kernel_reason: eligible_edge_boolean_series_passed_instead_of_filtered_dataframe
+  technical_retry_v2_authorized: true
+  technical_retry_v2_authorization_source: original_user_run_request_before_any_solver_fit
+  technical_retry_v2_consumed: true
+  completed_kernel_version: 2
+  completed_kernel_id_no: 128007163
+  completed_kernel_status: COMPLETE
+  active_scientific_variants_if_implemented: 1
+  outer_evaluation_folds_if_implemented: 5
+  inner_lambda_candidates_per_outer_fold: 3
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  pf_beam_well_runs: 0
+  control_or_parent_retraining: false
+  gpu: false
+  inference: false
+  submission: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+outcome:
+  stage0_passed: false
+  stage1_executed: false
+  branch_closed: true
+  solver_fits: 0
+  prediction_rows_expected: 3783989
+  prediction_rows_generated: 0
+  failed_checks:
+    - query_component_donor_coverage_one
+    - active_component_donor_coverage_one
+  query_component_with_donor_coverage_by_fold:
+    fold_0: 0.986728888295
+    fold_1: 0.979238359970
+    fold_2: 0.979066006568
+    fold_3: 0.969525458029
+    fold_4: 0.995853286990
+  active_component_with_donor_coverage_by_fold:
+    fold_0: 0.96
+    fold_1: 0.92
+    fold_2: 0.92
+    fold_3: 0.96
+    fold_4: 0.98
+  pooled_query_component_with_donor_coverage: 0.982163697615
+  unsupported_query_geometry_rows: 90827
+  maximum_formation_identity_rmse_ft: 0.00813285168692
+  maximum_median6_identity_rmse_ft: 0.00786966640898
+  input_manifest_content_sha256: 8c213d886833a759ea193fcb0c5275e18187d37a9cb46e667663a6b86326f7ca
+  identity_content_sha256: 8fcf29d88693da05c2e36df13a96462a8ae0a3df8f07b46c69e19c1408f90d31
+  support_content_sha256: fa6ed7a88ab4a348130a8d3dd0e26c41df64c50152272c1c64706f0a0925cae5
+  next_branch: closed_no_inference_no_reserved_followup
+
+reproducibility:
+  rng: none
+  stable_order_keys: [fold, well_id, MD, original_row_index, edge_start, edge_end]
+  initial_process_count: 1
+  deterministic_anchor: false
+  hash_inputs:
+    - raw_files
+    - exp226_fold_map_and_oof
+    - exp293_candidate_manifest
+    - hidden_like_assignment
+  hash_content:
+    - safe_loader_schema
+    - donor_edge_logical_content
+    - active_grid_and_components
+    - lambda_selection
+    - sparse_solver_structure_and_solution
+    - oof_prediction
+  gzip_primary_evidence: decompressed_content_sha256
+
+forbidden_actions:
+  - local_notebook_execution
+  - kaggle_train_repush
+  - outer_valid_formation_or_gr_access
+  - outer_valid_truth_before_prediction_freeze
+  - formation_absolute_level_fit
+  - typewell_top_or_well_datum_fit
+  - fault_cut_or_fault_gate
+  - candidate_selector_or_blend
+  - existing_prediction_fallback
+  - same_oof_parameter_rescue
+  - reserved_followup_proposal2_or3
+  - inference_or_submission

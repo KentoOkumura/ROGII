@@ -1,0 +1,57 @@
+{
+  "experiment": "exp029_public_sel15_pf_oof_feature_generation",
+  "status": "all_wells_cutoff065_completed",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "local_smoke": {
+    "command": "uv run python experiments/exp029_public_sel15_pf_oof_feature_generation/public_sel15_pf_oof.py --allow-local --debug-n-wells 1 --n-seeds 2 --n-particles 20 --cutoffs 0.65",
+    "wells": 1,
+    "cutoffs": [
+      0.65
+    ],
+    "rows": 1847,
+    "n_particles": 20,
+    "n_seeds": 2,
+    "pf_rmse": 8.776856489632005,
+    "last_anchor_rmse": 10.200871675760345,
+    "beam_rmse": 10.532402018840061
+  },
+  "kaggle_smoke": {
+    "kernel": "kentookumura/exp029-sel15-pf-oof-train",
+    "version": 2,
+    "wells": 20,
+    "cutoffs": [
+      0.65
+    ],
+    "rows": 43542,
+    "n_particles": 250,
+    "n_seeds": 16,
+    "pf_rmse": 10.381203364411553,
+    "last_anchor_rmse": 16.266462921888003,
+    "beam_rmse": 15.154074002239378,
+    "download_dir": "/tmp/kaggle-output/exp029_public_sel15_pf_oof_feature_generation/train_v2"
+  },
+  "all_wells_cutoff065": {
+    "kernel": "kentookumura/exp029-sel15-pf-oof-train",
+    "version": 3,
+    "wells": 773,
+    "cutoffs": [
+      0.65
+    ],
+    "rows": 1782279,
+    "n_particles": 250,
+    "n_seeds": 16,
+    "pf_rmse": 15.172636103816133,
+    "last_anchor_rmse": 18.28405373557542,
+    "beam_rmse": 18.12263246440227,
+    "feature_file": "experiments/exp029_public_sel15_pf_oof_feature_generation/features/public_sel15_pf_oof_features.csv.gz",
+    "feature_file_size_mb": 241.83,
+    "well_summary_file": "experiments/exp029_public_sel15_pf_oof_feature_generation/artifacts/public_sel15_pf_oof_well_summary.csv",
+    "log_file": "experiments/exp029_public_sel15_pf_oof_feature_generation/artifacts/exp029-sel15-pf-oof-train-v3.log",
+    "download_dir": "/tmp/kaggle-output/exp029_public_sel15_pf_oof_feature_generation/train_v3"
+  },
+  "reference_oof_rows": 0,
+  "notes": "OOF-like public sel15 PF/Beam all-well cutoff 0.65 artifact completed; no meta model fitted yet."
+}

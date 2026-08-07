@@ -1,0 +1,91 @@
+{
+  "artifact_rows": {
+    "prefix_online_training_bucket_summary": 25,
+    "prefix_online_training_candidate_metrics": 7,
+    "prefix_online_training_fold_metrics": 25,
+    "prefix_online_training_online_rows": 773,
+    "prefix_online_training_selection": 10,
+    "prefix_online_training_well_holdout_metrics": 25,
+    "pseudo_tail_feature_importance": 500,
+    "pseudo_tail_source_summary": 3615
+  },
+  "best_same_oof_candidate": "online_weight_0_20",
+  "best_same_oof_cv": 12.844383,
+  "best_same_oof_delta_vs_control": -0.026396,
+  "clean_prefix_online_training_supported": false,
+  "control_candidate": "exp026_bucket_shrink_control",
+  "control_cv": 12.87078,
+  "cv": 12.87078,
+  "experiment": "exp037_test_time_prefix_online_training_audit",
+  "leave_one_original_fold_out_selection_cv": 12.999364,
+  "metric": "rmse",
+  "metrics": [
+    {
+      "candidate": "online_weight_0_20",
+      "control_rmse": 12.87078,
+      "delta_vs_control": -0.026396,
+      "method": "test_time_prefix_online_training",
+      "rmse": 12.844383,
+      "rows": 3783989
+    },
+    {
+      "candidate": "online_weight_0_05",
+      "control_rmse": 12.87078,
+      "delta_vs_control": -0.015552,
+      "method": "test_time_prefix_online_training",
+      "rmse": 12.855228,
+      "rows": 3783989
+    },
+    {
+      "candidate": "exp026_bucket_shrink_control",
+      "control_rmse": 12.87078,
+      "delta_vs_control": 0.0,
+      "method": "fixed_exp014_bucket_shrink",
+      "rmse": 12.87078,
+      "rows": 3783989
+    },
+    {
+      "candidate": "online_weight_0_10",
+      "control_rmse": 12.87078,
+      "delta_vs_control": 0.03882,
+      "method": "test_time_prefix_online_training",
+      "rmse": 12.9096,
+      "rows": 3783989
+    },
+    {
+      "candidate": "raw_pseudo_tail",
+      "control_rmse": 12.87078,
+      "delta_vs_control": 0.072158,
+      "method": "raw",
+      "rmse": 12.942938,
+      "rows": 3783989
+    },
+    {
+      "candidate": "leave_one_original_fold_out_online_candidate_selection",
+      "control_rmse": 12.87078,
+      "delta_vs_control": 0.128584,
+      "method": "heldout_candidate_selection",
+      "rmse": 12.999364,
+      "rows": 3783989
+    },
+    {
+      "candidate": "well_hash_holdout_online_candidate_selection",
+      "control_rmse": 12.87078,
+      "delta_vs_control": 0.099553,
+      "method": "heldout_candidate_selection",
+      "rmse": 12.970333,
+      "rows": 3783989
+    }
+  ],
+  "public_lb": null,
+  "raw_pseudo_tail_cv": 12.942938,
+  "rules_risk": "organizer approval for test-time online training was not confirmed",
+  "selected_method": "exp026_bucket_shrink_control",
+  "source_experiment": "exp026_pseudo_tail_bucket_shrink_inference_submit",
+  "source_variant": "pseudo_tail_3_cutoffs_distance_balanced",
+  "status": "completed",
+  "updated_at": "2026-06-08T01:22:59.133127+00:00",
+  "well_hash_holdout_selection_cv": 12.970333,
+  "key_idea": "Audit small-weight test-time online training from visible TVT_input prefix rows on exp026 fixed bucket-shrink control",
+  "notes": "Kaggle train v1 completed. Same-OOF best online_weight_0_20=12.844383 improved control by -0.026396, but original-fold selection 12.999364 and well-hash selection 12.970333 were worse; selected_method=exp026_bucket_shrink_control, no inference port."
+}

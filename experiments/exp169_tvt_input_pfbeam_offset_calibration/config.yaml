@@ -1,0 +1,196 @@
+experiment:
+  name: "exp169_tvt_input_pfbeam_offset_calibration"
+  description: Train-side audit for TVT_input prefix based offset calibration on fixed PF/Beam candidates.
+  route: pf_beam
+  status: completed_train_side_diagnostic_no_submit
+  created_at: "2026-07-02"
+  updated_at: "2026-07-03"
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  diagnostic_parents:
+    - exp087_prefix_backtest_tvt_confidence
+    - exp140_z_slope_posthoc_correction_on_pfbeam_candidates
+    - exp152_all_well_lightweight_multimode_beam_audit
+    - exp158_segment_continuity_selector_on_exp157
+  implementation_source: tvt_input_pfbeam_offset_calibration.py
+  replay_source: public_notebook_replay_audit.py
+  diff_summary: >
+    Replays PF/Beam candidates on a masked suffix of each well's observed TVT_input prefix,
+    estimates candidate-specific robust offset against the held-out TVT_input values, and
+    applies capped distance-faded offset corrections to fixed exp072 PF/Beam tail candidates.
+    No supervised model is trained and no submission is created.
+
+validation:
+  strategy: train_well_prefix_holdout_offset_backtest
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within10
+    - distance_bucket_rmse
+    - prefix_offset_coverage
+    - prefix_offset_iqr
+    - near_row_rmse
+    - longtail_rmse
+    - max_well_regression_vs_likpf_mean
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp072_rows
+  leakage_policy:
+    - Tail candidate evaluation reads existing exp072 train feature cache and uses true TVT only for scoring.
+    - Prefix offset calibration masks a suffix of observed TVT_input rows, regenerates PF/Beam on those rows, and compares regenerated candidates only with observed TVT_input.
+    - Evaluation-zone TVT, oracle candidate, true-error rank, and future hidden rows are not used to estimate offsets or choose gates.
+    - This experiment is train-side diagnostic only; raw-test parity and boundary guard review are required before inference port.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+model:
+  name: tvt_input_pfbeam_offset_calibration
+  estimator: none_posthoc_candidate_audit
+  target: true_tvt_for_scoring_only
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  offset_calibration:
+    prefix_holdout_rows: 256
+    min_known_prefix_rows: 80
+    min_calibration_rows: 32
+    recent_rows: 64
+    slope_clip_ft_per_1000md: 25.0
+    correction_grid:
+      base_candidates: [likpf_mean, beam_mean, pf_ancc]
+      offset_sources: [self, pfbeam_median]
+      estimators: [median]
+      alphas: [0.50, 1.00]
+      clip_ft: [10.0, 20.0]
+      near_guard_ft: [50.0]
+      fade_end_ft: [250.0]
+      max_iqr_ft: [20.0, 40.0]
+      min_rows: [32]
+      use_slope: [false, true]
+  replay_runtime:
+    n_jobs: 2
+    pf_seeds: 32
+    pf_particles: 300
+    use_likpf_prefix: true
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_seed_from_public_replay_helper_for_prefix_regeneration
+  stochastic_components:
+    - upstream_exp072_pf_beam_likpf_cache
+    - prefix_holdout_pf_beam_replay
+  parallel_rng_policy: public_replay_helper_uses_stable_per_well_seed
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    prefix_offset_sha: true
+    oof_prediction_sha: true
+    metrics_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it is a train-side diagnostic.
+    - Prefix replay uses observed TVT_input rows only and writes decompressed SHA for gzip outputs.
+
+audit:
+  mode: tvt_input_pfbeam_offset_calibration
+  output_prefix: exp169_tvt_input_pfbeam_offset_calibration
+  primary_baseline: likpf_mean
+  max_rows: null
+  max_wells: null
+  save_oof_top_k: 10
+  representative_wells:
+    - 91b301ce
+    - ba48188d
+    - fef8af96
+    - 1b1eba53
+    - 86454a6f
+  candidates:
+    - name: pf_ancc
+      role: selected_pf
+      source_columns: [pf_ancc]
+      transform: absolute
+    - name: beam_mean
+      role: selected_beam
+      source_columns: [beam_mean_d, beam_mean]
+      transform: base_plus_delta
+    - name: likpf_mean
+      role: likelihood_pf
+      source_columns: [likpf_mean_d, likpf_mean]
+      transform: base_plus_delta
+    - name: sc_ens
+      role: ncc_scale_ensemble
+      source_columns: [sc_ens_d, sc_ens]
+      transform: base_plus_delta
+    - name: hyb
+      role: public_hybrid
+      source_columns: [hyb_d, hyb]
+      transform: base_plus_delta
+    - name: pf_z
+      role: z_velocity_pf_auxiliary
+      source_columns: [pf_z]
+      transform: absolute
+  expected_train_artifacts:
+    - exp169_tvt_input_pfbeam_offset_calibration_candidate_metrics.csv
+    - exp169_tvt_input_pfbeam_offset_calibration_bucket_metrics.csv
+    - exp169_tvt_input_pfbeam_offset_calibration_by_well.csv
+    - exp169_tvt_input_pfbeam_offset_calibration_group_metrics.csv
+    - exp169_tvt_input_pfbeam_offset_calibration_prefix_offsets.csv
+    - exp169_tvt_input_pfbeam_offset_calibration_oof_predictions.csv.gz
+    - exp169_tvt_input_pfbeam_offset_calibration_feature_schema.csv
+    - exp169_tvt_input_pfbeam_offset_calibration_summary.json
+
+inference:
+  mode: not_selected_train_side_diagnostic_no_submit
+  selected_candidate: null
+  notes:
+    - No inference candidate is selected at implementation time.
+    - Positive train-side results must pass raw-test prefix replay parity and boundary discontinuity checks.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog tvt_input_pfbeam_offset_calibration.
+  - This differs from heel_calibrated_shift_scan_pfbeam_audit by calibrating generated TVT candidates posthoc, not GR likelihood inputs.
+
+visualization:
+  mode: all_interval_pfbeam_replay_plots
+  output_prefix: exp169_tvt_input_pfbeam_offset_calibration
+  well_ids:
+    - 91b301ce
+    - ba48188d
+    - fef8af96
+    - 1b1eba53
+    - 86454a6f
+    - 4e050c92
+  modes:
+    - exp169_holdout_tail
+    - full_known_backtest
+  full_known_anchor_rows: 80
+  max_points_per_plot: 6000
+  zip_plots: false
+  replay_runtime:
+    n_jobs: 2
+    pf_seeds: 32
+    pf_particles: 300
+    use_likpf: true

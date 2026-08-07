@@ -1,0 +1,325 @@
+experiment:
+  name: exp386_cycle_consistent_rgt_scenario_bank
+  description: >-
+    Build a topology-first, cycle-consistent relative-geologic-time graph from
+    outer-train TVT and six formation surfaces, then enumerate a deterministic
+    bank of physically distinct target-well paths without using target GR.
+  route: pf_beam
+  status: kaggle_cpu_v1_completed_stage0_fail_closed
+  created_at: "2026-07-24"
+  updated_at: "2026-07-24"
+
+lineage:
+  parent: independent_topology_first_rgt_physics_family
+  comparison_references:
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp293_fixed12_candidate_bank
+    - exp301_gauge_invariant_multiformation_edge_potential
+    - exp377_formation_relative_k16_slope_identifiability_readout
+    - exp383_all_tvt_stratigraphic_vector_drift_field
+  downstream_if_pass:
+    - exp387_prefix_gr_rgt_scenario_posterior
+  diff_summary: >-
+    Do not interpolate TVT rates or six formation surfaces independently.
+    Convert every outer-train row to an ordered relative-geologic-time
+    coordinate, solve one global multi-well correspondence graph with explicit
+    cycle consistency, and enumerate 8--32 deterministic target paths using
+    geometry and known TVT prefix only. Target GR is reserved for exp387.
+
+validation:
+  strategy: exp226_outer5_groupfold_topology_first_rgt_bank
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  control:
+    experiment: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    regenerate: false
+    cv_rmse_ft: 9.427109596582213
+    public_lb: 9.837
+    oof_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  report_scopes:
+    - near_0_250
+    - mid_250_1000
+    - 1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  leakage_policy:
+    - Outer-valid wells are absent from all RGT controls, graph nodes, and graph edges.
+    - Outer-valid/test raw formation columns and suffix true TVT are unread before the frozen scenario-bank SHA.
+    - Outer-valid/test GR is not used by scenario generation, scenario cost, diversity filtering, or Stage 0.
+    - Known TVT_input prefix may anchor the target gauge but may not tune graph or scenario settings.
+    - The visible three-well sample test may not select any graph, scenario, or gate setting.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  coordinate_columns: [MD, X, Y, Z]
+  observed_log_column_reserved_for_downstream: GR
+  formation_columns: [ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+  formation_order: [ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+  structural_position_formula: S=TVT+Z
+  outer_train_full_truth_tvt: true
+  target_allowed_pre_freeze_columns: [well_id, row_idx, MD, X, Y, Z, TVT_input]
+  target_forbidden_pre_freeze_columns:
+    - TVT
+    - GR
+    - ANCC
+    - ASTNU
+    - ASTNL
+    - EGFDU
+    - EGFDL
+    - BUDA
+  parent_exp226:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_oof_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+
+rgt:
+  coordinate:
+    family: ordered_formation_interval_coordinate
+    formation_levels:
+      ANCC: 0
+      ASTNU: 1
+      ASTNL: 2
+      EGFDU: 3
+      EGFDL: 4
+      BUDA: 5
+    within_interval_fraction: structural_position_linear_between_adjacent_surfaces
+    outer_interval_extrapolation: nearest_valid_interval_thickness
+    invalid_or_reversed_interval: unavailable
+    posthoc_formation_reordering: forbidden
+  graph_nodes:
+    md_window_ft: 64
+    md_stride_ft: 32
+    minimum_rows: 8
+    statistics:
+      - rgt_median
+      - rgt_slope_per_md
+      - structural_position_median
+      - formation_interval_thickness_vector
+      - trajectory_direction
+    stable_order: [fold, well_id, md_start, md_end]
+    linear_fit: deterministic_ordinary_least_squares
+  graph_edges:
+    outer_train_only: true
+    nearest_unique_wells: 24
+    maximum_nodes_per_source_well: 4
+    maximum_edge_candidates: 96
+    same_well_edges: false
+    compatibility:
+      - formation_interval_identity
+      - positive_local_rgt_progress
+      - outer_train_empirical_stretch_bounds
+      - trajectory_direction_consistency
+    stretch_bounds:
+      source: outer_train_leave_one_well_out
+      lower_quantile: 0.05
+      upper_quantile: 0.95
+      same_fold_valid_information: forbidden
+    cycle_basis: deterministic_fundamental_cycle_basis
+    cycle_residual_unit: formation_interval
+    cycle_penalty: huber
+    huber_delta: 0.10
+    huber_iterations: 5
+    solve_ridge: 1.0e-9
+    pair_aggregation: median_at_common_rgt
+    graph_cost:
+      spatial_distance_weight: 1.0
+      rgt_correspondence_weight: 1.0
+      log_stretch_ratio_weight: 1.0
+      trajectory_direction_weight: 1.0
+  target_path:
+    observations: [MD, X, Y, Z, TVT_input]
+    gr_usage: forbidden
+    prefix_constraint: hard_gauge_anchor
+    suffix_constraint: topology_geometry_and_empirical_rgt_dynamics_only
+    interpolation: monotone_piecewise_linear
+    control_stride_ft: 32
+    route_enumeration_limit: 128
+    minimum_known_prefix_rows: 1
+  scenario_bank:
+    generator: deterministic_k_shortest_cycle_consistent_paths
+    minimum_scenarios_per_well: 8
+    maximum_scenarios_per_well: 32
+    path_rms_separation_ft_min: 0.5
+    diversity_filter_order: [total_graph_cost, path_sha256]
+    stable_tie_order: [total_graph_cost, source_well_sequence, node_sequence, path_sha256]
+    prior_cost_components:
+      - graph_edge_cost
+      - cycle_residual_cost
+      - prefix_gauge_misfit
+      - rgt_stretch_cost
+    prior_cost_weights:
+      graph_edge_cost: 1.0
+      cycle_residual_cost: 1.0
+      prefix_gauge_misfit: 1.0
+      rgt_stretch_cost: 1.0
+    prefix_gauge_misfit_scale_ft: 25.0
+    oracle_granularity_rows: 512
+    posthoc_oracle_selection: forbidden
+    primary_prediction: none_bank_only
+  downstream_contract:
+    save_reference_gr_templates: true
+    target_gr_read_during_template_creation: false
+    reference_gr_source: outer_train_rows_mapped_through_frozen_rgt_path
+
+model:
+  name: deterministic_cycle_consistent_rgt_scenario_bank
+  fitted_model: false
+  estimator: deterministic_graph_and_k_shortest_paths
+
+gates:
+  stage0_target_free:
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_outer_fold_runs: 5
+    rgt_source_coverage_min: 0.95
+    graph_query_coverage_min: 0.95
+    scenario_bank_well_coverage_min: 0.98
+    scenario_count_p05_min: 8
+    finite_path_coverage_min: 1.0
+    cycle_residual_p95_max: 0.10
+    target_gr_reads_max: 0
+    valid_formation_reads_max: 0
+    valid_suffix_truth_reads_max: 0
+    source_valid_overlap_max: 0
+    resource_audit_wells: 16
+    projected_runtime_seconds_max: 30600
+    projected_peak_rss_gb_max: 25
+  stage1_prefix_rolling_origin:
+    heldout_prefix_rows: 512
+    minimum_known_prefix_rows: 1024
+    oracle_gain_vs_exp226_ft_min: 0.50
+    positive_fold_count_min: 4
+    candidate_coverage_min: 1.0
+  stage2_truth_late_scenario_bank:
+    scenario_oracle_rmse_max_ft: 5.50
+    positive_fold_count_min: 5
+    scenario_bank_well_coverage_min: 0.98
+    unique_scenario_well_fraction_min: 0.50
+    scope_oracle_regression_tolerance_ft: 0.0
+    fail_action: close_without_graph_edge_stretch_scenario_count_or_diversity_rescue
+
+runtime:
+  accelerator: cpu
+  internet: false
+  use_amp: false
+  scientific_variants: 1
+  scenario_count_min: 8
+  scenario_count_max: 32
+  reporting_folds: 5
+  fitted_models: 0
+  model_configs: 0
+  trained_folds: 0
+  lightgbm_boosters: 0
+  hmm_runs: 0
+  pf_runs: 0
+  beam_runs: 0
+  graph_fold_solves: 5
+  target_well_path_solves: 773
+  parent_control_regeneration: false
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp386-cycle-consistent-rgt-scenario-bank-train
+    train_kernel_title: exp386 cycle consistent rgt scenario bank train
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+
+execution:
+  design_authorized: true
+  design_authorization_source: user_message_create_backlog_experiments_and_steering
+  implementation_authorized: true
+  implementation_approval_source: user_message_implement_exp386_2026_07_24
+  compact_train_candidate_complete: true
+  compact_inference_candidate_complete: true
+  canonical_notebook_adoption_authorized: true
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: true
+  canonical_adoption_approval_source: user_message_execute_exp386_2026_07_24
+  kaggle_package_authorized: true
+  kaggle_push_authorized: true
+  kaggle_execution_authorized: true
+  kaggle_execution_approval_source: user_message_execute_exp386_2026_07_24
+  inference_enabled: false
+  submission_enabled: false
+  full_run_authorized: true
+  full_run_effective_after: stage0_resource_preflight_pass
+  preflight_max_wells: 16
+  current_mode: stage0_resource_preflight
+  stage: stage0_fail_closed
+  kaggle_train_kernel_version: 1
+  kaggle_train_kernel_id_no: 128478384
+  kaggle_train_push_utc: "2026-07-24 14:11:44 UTC"
+  kaggle_train_completion_confirmed_utc: "2026-07-24 14:59:39 UTC"
+  stage0_passed: false
+  full_run_gate_satisfied: false
+  full_run_executed: false
+  full_run_blocked_by: stage0_target_free_fail
+  terminal_decision: close_without_graph_edge_stretch_scenario_count_or_diversity_rescue
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_fold_well_node_edge_cycle_and_path_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_results_sorted_by_immutable_graph_and_path_keys
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Record fold manifests, RGT node and edge tables, cycle basis, path bank, reference-GR templates, and logical content SHA.
+    - A first successful run is not a deterministic anchor until an identical rerun confirms graph, scenario-bank, and prediction content SHA.
+    - Kaggle bootstrap metadata and embedded config must be checked before any future push.
+
+artifacts:
+  planned:
+    - exp386_cycle_consistent_rgt_scenario_bank_fold_manifest.csv
+    - exp386_cycle_consistent_rgt_scenario_bank_role_read_ledger.csv
+    - exp386_cycle_consistent_rgt_scenario_bank_rgt_nodes.parquet
+    - exp386_cycle_consistent_rgt_scenario_bank_graph_edges.parquet
+    - exp386_cycle_consistent_rgt_scenario_bank_cycle_manifest.json
+    - exp386_cycle_consistent_rgt_scenario_bank_target_paths.parquet
+    - exp386_cycle_consistent_rgt_scenario_bank_reference_gr_templates.parquet
+    - exp386_cycle_consistent_rgt_scenario_bank_stage0_guard.json
+    - exp386_cycle_consistent_rgt_scenario_bank_prefix_readout.csv
+    - exp386_cycle_consistent_rgt_scenario_bank_truth_late_oracle_metrics.csv
+    - exp386_cycle_consistent_rgt_scenario_bank_manifest.json
+    - exp386_cycle_consistent_rgt_scenario_bank_sha_manifest.csv
+
+forbidden_actions:
+  - target_gr_usage_in_scenario_generation
+  - outer_valid_or_test_raw_formation_read_before_freeze
+  - outer_valid_suffix_truth_read_before_freeze
+  - posthoc_best_scenario_prediction
+  - graph_edge_neighbor_stretch_scenario_count_or_diversity_grid
+  - exp226_or_other_parent_control_regeneration
+  - fitted_ml_hmm_pf_or_beam
+  - current_test_generation
+  - inference_or_submission
+
+notes:
+  - Compact self-contained train and fail-closed inference candidates are implemented.
+  - Canonical train and fail-closed inference notebooks are adopted.
+  - Kaggle CPU version 1 completed the 16-well Stage 0 preflight and failed closed.
+  - RGT source coverage, leakage, runtime, and memory passed; graph query coverage, scenario-bank coverage, finite paths, and cycle residual failed.
+  - The conditional full-run gate was not satisfied, so no full run was pushed.
+  - Inference and submission remain disabled.
+  - exp386 is an independent topology-first family, not an exp383/384 extension.
+  - exp387 is closed without implementation because its required exp386 scenario bank was empty.

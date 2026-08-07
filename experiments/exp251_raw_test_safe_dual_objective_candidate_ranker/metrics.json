@@ -1,0 +1,338 @@
+{
+  "experiment": "exp251_raw_test_safe_dual_objective_candidate_ranker",
+  "status": "completed_train_side_guard_failed_no_inference_no_submit",
+  "route": "ensemble",
+  "metric": "raw_test_feature_parity_then_fixed_viterbi_rmse",
+  "cv": 8.502212004569888,
+  "public_lb": null,
+  "private_lb": null,
+  "active_stage": "train_after_feature_audit",
+  "planned_cost": {
+    "active_variants": 1,
+    "lightgbm_configs": 2,
+    "folds": 5,
+    "boosters": 10,
+    "parent_control_retraining": false
+  },
+  "optional_train_cost": {
+    "active_variants": 1,
+    "lightgbm_configs": 2,
+    "folds": 5,
+    "boosters": 10,
+    "parent_control_retraining": false
+  },
+  "references": {
+    "exp248_original_only_fixed_viterbi_rmse": 8.421415096736327,
+    "exp218_rmse": 8.475793751656624,
+    "expected_parent_long_feature_count": 297
+  },
+  "implementation_revision": {
+    "variant": "raw_test_regenerated_copcf",
+    "status": "training_complete_guard_failed",
+    "feature_contract": {
+      "expected_parent_long_feature_count": 297,
+      "expected_selected_long_feature_count": 295,
+      "expected_regenerated_copcf_feature_count": 165,
+      "explicitly_excluded_features": [
+        "exp226_gr_delta",
+        "exp226_geop_tvt"
+      ]
+    },
+    "rawtest_generation": {
+      "reference": "full_train_excluding_all_rawtest_well_ids",
+      "train_contract": "cross_fitted_oof",
+      "typewell_cluster_assignment": "native_gr_overlap_to_train_cluster",
+      "rawtest_well_source_exclusion": "fail_closed",
+      "generated_base_copcf_feature_count": 41,
+      "generated_candidate_long_copcf_feature_count": 165
+    },
+    "local_evidence": {
+      "rawtest_rows": 14151,
+      "rawtest_wells": 3,
+      "partial_source_smoke_passed": true,
+      "max_generated_base_missing_rate": 0.0,
+      "full_train_source_local_run": "not_claimed_due_to_local_ram_constraint"
+    },
+    "prior_exp238_parity_audit": {
+      "copcf_generation_succeeded": true,
+      "leakage_safe_evidence": false,
+      "reason": "Each visible test well ID re-entered the exp238 full-train spatial neighbors; typewell source counts were also self-inclusive.",
+      "exp251_typewell_source_counts_after_exclusion": {
+        "000d7d20": 12,
+        "00bbac68": 40,
+        "00e12e8b": 12
+      }
+    },
+    "historical_result_scope": "The kaggle_feature_audit and kaggle_train sections below belong to the superseded 130-column variant. kaggle_feature_audit_v3 and kaggle_train_v4 are the corrected 295-column contract and result."
+  },
+  "kaggle_feature_audit_v3": {
+    "kernel": "kentookumura/exp251-rawtest-safe-dualobj-candidate-ranker-train",
+    "kernel_id_no": 127304533,
+    "version": 3,
+    "status": "feature_audit_completed_ready_for_training",
+    "execution_stage": "feature_audit_only",
+    "runtime_seconds": 694.3325560092926,
+    "execution_cost": {
+      "active_variants": 0,
+      "lightgbm_configs": 0,
+      "folds": 0,
+      "boosters": 0,
+      "parent_control_retraining": false,
+      "gpu": false
+    },
+    "candidate_count": 11,
+    "train_source_rows": 3783989,
+    "train_wells": 773,
+    "rawtest_rows": 14151,
+    "rawtest_wells": 3,
+    "feature_decision": {
+      "pass": true,
+      "parent_feature_count": 297,
+      "rawtest_generated_feature_count": 295,
+      "selected_feature_count": 295,
+      "excluded_feature_count": 2,
+      "regenerated_copcf_feature_count": 165,
+      "selected_regenerated_copcf_feature_count": 165,
+      "distribution_warning_count": 59,
+      "all_hard_checks_passed": true
+    },
+    "rawtest_copcf": {
+      "generated_base_feature_count": 41,
+      "source_rows_after_test_well_exclusion": 3769838,
+      "source_wells_after_exclusion": 770,
+      "excluded_rawtest_wells": [
+        "000d7d20",
+        "00bbac68",
+        "00e12e8b"
+      ],
+      "query_source_overlap": [],
+      "query_typewell_match_overlap": [],
+      "source_exclusion_passed": true,
+      "typewell_source_counts": {
+        "000d7d20": 12,
+        "00bbac68": 40,
+        "00e12e8b": 12
+      }
+    },
+    "sha256": {
+      "feature_audit": "c94d2de450271b84bca590531246df7143f67df867531266ebf84ba3ca947993",
+      "feature_audit_summary": "9a9879f1630810c19611ab224619d763547992bf71af465fbcc87b45bca88cbd",
+      "feature_contract": "d68cf0743cbc0a900a8f0ccf2f8dea92ec3709098972efa2475257bb2444acfa",
+      "selected_feature_schema": "7a9217d6ed96f5f1e569dbefff2a1fb17751405d6ddccae5e5d9dbf12da787ae",
+      "train_feature_sample_decompressed": "545482cb52308ec4fe092dee469a186096847b6d95947a0611ee1ad3792467d3",
+      "rawtest_feature_sample_decompressed": "e97c1286405f0d4923af1f0ab8389f99cc8d07cb50f57b187390c9ec46fc948c"
+    }
+  },
+  "kaggle_train_v4": {
+    "kernel": "kentookumura/exp251-rawtest-safe-dualobj-candidate-ranker-train",
+    "kernel_id_no": 127304533,
+    "version": 4,
+    "status": "completed_train_side_guard_failed",
+    "execution_stage": "train_after_feature_audit",
+    "runtime_seconds": {
+      "same_run_feature_audit": 1096.5550429821014,
+      "training_and_evaluation": 3579.8437485694885,
+      "notebook_last_log_time": 4718.377786686
+    },
+    "executed_cost": {
+      "active_variants": 1,
+      "lightgbm_configs": 2,
+      "folds": 5,
+      "boosters": 10,
+      "parent_control_retraining": false,
+      "gpu": false
+    },
+    "rows": 3783989,
+    "wells": 773,
+    "candidate_count": 11,
+    "selected_feature_count": 295,
+    "regenerated_copcf_feature_count": 165,
+    "model_count": 10,
+    "best_iterations": {
+      "within10_classifier": [422, 264, 246, 180, 254],
+      "expected_error_regressor": [550, 550, 231, 550, 542]
+    },
+    "metrics": {
+      "probability_rowwise_rmse": 8.479603434023124,
+      "expected_error_rowwise_rmse": 8.548425417721944,
+      "expected_error_fixed_viterbi_rmse": 8.502212004569888,
+      "expected_error_fixed_viterbi_mae": 5.010195640475237,
+      "expected_error_fixed_viterbi_within10": 0.8496853452798092,
+      "expected_error_fixed_viterbi_path_switch_count": 7107
+    },
+    "fold_fixed_viterbi_rmse": [
+      7.653335510820508,
+      9.472239430305429,
+      8.075131903075638,
+      9.01700913534903,
+      8.163005322362862
+    ],
+    "candidate_metrics": {
+      "auc": 0.9244587368529311,
+      "logloss": 0.32773553043155906,
+      "brier": 0.10374609932030995,
+      "expected_error_mae": 4.553844990243078,
+      "candidate_rows": 41623879
+    },
+    "decision": {
+      "adoption_supported": false,
+      "checks": {
+        "feature_audit_pass": true,
+        "overall_vs_exp218": false,
+        "distance_1000_plus": false,
+        "hidden_like_spatial": true,
+        "hidden_like_typewell_purged": true,
+        "worst_well": false
+      },
+      "delta_vs_exp248_original_only": 0.08079690783356064,
+      "delta_vs_exp218": 0.026418252913263274,
+      "delta_vs_superseded_130_feature_variant": 0.10012640808608353,
+      "distance_1000_plus_rmse": 9.326545504744729,
+      "hidden_like_spatial_rmse": 8.788133227810881,
+      "hidden_like_typewell_purged_rmse": 8.74611295810673,
+      "worst_well": "fb03ae90",
+      "worst_well_rmse": 58.00423602964172,
+      "worst_well_delta_vs_exp248": 0.7071518369609535,
+      "worst_well_excess_over_guard": 0.4571518369609535
+    },
+    "sha_validation": {
+      "diagnostic_artifacts_checked": 11,
+      "diagnostic_artifacts_all_match": true,
+      "models_checked": 10,
+      "imputers_checked": 5,
+      "models_and_imputers_all_match": true,
+      "feature_audit_sha_stable_vs_version3": true,
+      "feature_contract_sha_stable_vs_version3": true,
+      "selected_schema_sha_stable_vs_version3": true,
+      "oof_decompressed_sha256": "727b7f7b50084ea9597d894b2df8b4324d6b34b4191b57b4c32bd10e93b61829",
+      "model_manifest_sha256": "67b4f3805aa6cb1d592c73cb75344f1bd8bcca02797214ca22b70c88f62a2af8"
+    }
+  },
+  "kaggle_feature_audit": {
+    "kernel": "kentookumura/exp251-rawtest-safe-dualobj-candidate-ranker-train",
+    "version": 1,
+    "status": "complete",
+    "runtime_seconds": 773.835084438324,
+    "execution_cost": {
+      "active_variants": 0,
+      "lightgbm_configs": 0,
+      "folds": 0,
+      "boosters": 0
+    },
+    "candidate_count": 11,
+    "train_source_rows": 3783989,
+    "train_wells": 773,
+    "rawtest_rows": 14151,
+    "rawtest_wells": 3,
+    "feature_decision": {
+      "pass": true,
+      "parent_feature_count": 297,
+      "rawtest_generated_feature_count": 130,
+      "selected_feature_count": 130,
+      "excluded_feature_count": 167,
+      "distribution_warning_count": 38,
+      "all_hard_checks_passed": true,
+      "selected_schema_exact": true,
+      "selected_missing_guard_passed": true,
+      "selected_blacklist_empty": true
+    },
+    "selected_provenance_counts": {
+      "raw_test_base_cache": 5,
+      "raw_test_hmm_regeneration": 15,
+      "raw_test_multiobs_regeneration": 24,
+      "raw_test_candidate_derivation": 73,
+      "raw_test_candidate_set_context": 13
+    },
+    "sha256": {
+      "feature_audit": "096a8be848e8bdc961c0fab397cb22fe8cf6a032e80345e1e2021b445a9989ee",
+      "feature_contract": "019c999a7df3a05707a134e31bc2f16829b62c3d1183861e9d40acdec457bb8a",
+      "selected_feature_schema": "2a3bdff7ad5e7c944402145e16d9eabbccd262f1e1439670214ad3614e5afd1e",
+      "train_feature_sample_decompressed": "e18be866e371596c0eef2d58f01e6e70ef78e99da924ba2d7499db40e80bdb5e",
+      "rawtest_feature_sample_decompressed": "c2b64097b778fe6ac3c3def30b81c7d38defdf85f4d7ae669ee927317025cee1"
+    }
+  },
+  "kaggle_train": {
+    "kernel": "kentookumura/exp251-rawtest-safe-dualobj-candidate-ranker-train",
+    "kernel_id_no": 127304533,
+    "version": 2,
+    "status": "complete",
+    "execution_stage": "train_after_feature_audit",
+    "runtime_seconds": {
+      "same_run_feature_audit": 1098.5507333278656,
+      "training_and_evaluation": 3081.2202961444855,
+      "notebook_last_log_time": 4223.765303614
+    },
+    "executed_cost": {
+      "active_variants": 1,
+      "lightgbm_configs": 2,
+      "folds": 5,
+      "boosters": 10,
+      "parent_control_retraining": false,
+      "gpu": false
+    },
+    "rows": 3783989,
+    "wells": 773,
+    "candidate_count": 11,
+    "selected_feature_count": 130,
+    "model_count": 10,
+    "best_iterations": {
+      "within10_classifier": [522, 308, 265, 204, 225],
+      "expected_error_regressor": [541, 530, 547, 549, 550]
+    },
+    "metrics": {
+      "probability_rowwise_rmse": 8.682859887859657,
+      "expected_error_rowwise_rmse": 8.46486611205449,
+      "expected_error_fixed_viterbi_rmse": 8.402085596483804,
+      "expected_error_fixed_viterbi_mae": 4.9440794314131855,
+      "expected_error_fixed_viterbi_within10": 0.8522247289830917,
+      "expected_error_fixed_viterbi_path_switch_count": 7040
+    },
+    "fold_fixed_viterbi_rmse": [
+      7.489092656241791,
+      9.518581363150458,
+      8.025575213112521,
+      8.602642648896015,
+      8.239185104374709
+    ],
+    "candidate_metrics": {
+      "auc": 0.9254177867182727,
+      "logloss": 0.3254749770177262,
+      "brier": 0.10277297222800727,
+      "expected_error_mae": 4.481362878187755,
+      "candidate_rows": 41623879
+    },
+    "decision": {
+      "adoption_supported": false,
+      "checks": {
+        "feature_audit_pass": true,
+        "overall_vs_exp218": true,
+        "distance_1000_plus": true,
+        "hidden_like_spatial": true,
+        "hidden_like_typewell_purged": true,
+        "worst_well": false
+      },
+      "delta_vs_exp248_original_only": -0.01932950025252289,
+      "delta_vs_exp218": -0.07370815517282026,
+      "distance_1000_plus_rmse": 9.209531849741934,
+      "hidden_like_spatial_rmse": 8.761820393138704,
+      "hidden_like_typewell_purged_rmse": 8.732708436199308,
+      "worst_well": "fb03ae90",
+      "worst_well_rmse": 57.64288487996073,
+      "worst_well_delta_vs_exp248": 0.3458006872799686,
+      "worst_well_excess_over_guard": 0.0958006872799686
+    },
+    "sha_validation": {
+      "diagnostic_artifacts_checked": 11,
+      "diagnostic_artifacts_all_match": true,
+      "models_checked": 10,
+      "imputers_checked": 5,
+      "models_and_imputers_all_match": true,
+      "feature_artifacts_checked": 4,
+      "feature_artifacts_all_match": true,
+      "feature_audit_sha_stable_vs_version1": true,
+      "oof_decompressed_sha256": "d1b1349dc0954fbf38f1fba025067c1ed5d95dd450657f570dbdc0491a9284b3",
+      "model_manifest_sha256": "3c6d66c740537af783019436866b0cd4b4a0194fc045f92d0848c9e3af1529d0"
+    }
+  },
+  "notes": "The corrected 295-column Kaggle v3/v4 feature audit passed, including 165 regenerated copcf columns and zero raw-test-well source overlap. Kaggle CPU v4 completed ten boosters, but fixed-Viterbi RMSE 8.502212 failed overall, 1000+, and worst-well guards. The ranker is rejected; inference and submission remain disabled."
+}

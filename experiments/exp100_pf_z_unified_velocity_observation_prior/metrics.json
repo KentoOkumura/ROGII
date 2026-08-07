@@ -1,0 +1,73 @@
+{
+  "experiment": "exp100_pf_z_unified_velocity_observation_prior",
+  "route": "pf_beam",
+  "status": "completed_train_side_audit",
+  "metric": "train_well_pseudotail_pf_z_stage1_ablation",
+  "cv": "best pf_z_xy_slope RMSE 29.404162 / within10 0.655593; no inference port",
+  "notes": "Stage 1 PF z-prior ablation completed on Kaggle train v2. XY velocity prior improves standalone control but remains weaker than existing likpf_mean RMSE 11.594897; control is not strict exp072 pf_z parity.",
+  "updated_at": "2026-06-21",
+  "kernel": {
+    "id": "kentookumura/exp100-pf-z-unified-prior-train",
+    "version": 2,
+    "url": "https://www.kaggle.com/code/kentookumura/exp100-pf-z-unified-prior-train",
+    "runtime_sec": 3986.4207215309143,
+    "status": "KernelWorkerStatus.COMPLETE"
+  },
+  "rows": 3783989,
+  "wells": 773,
+  "best_variant": {
+    "variant": "pf_z_xy_slope",
+    "rmse": 29.404161525622794,
+    "mae": 10.959212270612854,
+    "bias": -0.981801063071685,
+    "within_1ft": 0.2231163991227247,
+    "within_2ft": 0.32384581456235734,
+    "within_5ft": 0.4911438696042721,
+    "within_10ft": 0.6555925506125942
+  },
+  "control": {
+    "variant": "pf_z_control",
+    "rmse": 163.3015514955003,
+    "mae": 92.15546572977038,
+    "bias": -23.55784787035008,
+    "within_10ft": 0.17925818494715498
+  },
+  "deltas_vs_control": {
+    "rmse": -133.8973899698775,
+    "within_10ft": 0.4763343656654393
+  },
+  "variant_ranking": [
+    {"variant": "pf_z_xy_slope", "rmse": 29.404161525622794, "within_10ft": 0.6555925506125942},
+    {"variant": "pf_z_xy_plus_prefix", "rmse": 30.157084906867845, "within_10ft": 0.43944863566923425},
+    {"variant": "pf_z_xy_plus_gr_calibrated", "rmse": 31.70012293486632, "within_10ft": 0.6378070078900884},
+    {"variant": "pf_z_xy_prefix_gr_calibrated", "rmse": 38.79622164872528, "within_10ft": 0.38997499761534503},
+    {"variant": "pf_z_prefix_slope", "rmse": 107.00701535487726, "within_10ft": 0.22421439413587003},
+    {"variant": "pf_z_prefix_plus_gr_calibrated", "rmse": 135.73457484003032, "within_10ft": 0.17992134843375653},
+    {"variant": "pf_z_control", "rmse": 163.3015514955003, "within_10ft": 0.17925818494715498},
+    {"variant": "pf_z_gr_calibrated", "rmse": 196.81129037470287, "within_10ft": 0.13737984063965302}
+  ],
+  "artifacts": {
+    "root": "experiments/exp100_pf_z_unified_velocity_observation_prior/kaggle/output/train_v2/artifacts",
+    "summary_json": "exp100_pf_z_unified_velocity_observation_prior_summary.json",
+    "variant_metrics": "exp100_pf_z_unified_velocity_observation_prior_variant_metrics.csv",
+    "bucket_metrics": "exp100_pf_z_unified_velocity_observation_prior_bucket_metrics.csv",
+    "by_well": "exp100_pf_z_unified_velocity_observation_prior_by_well.csv",
+    "candidate_wide": "exp100_pf_z_unified_velocity_observation_prior_candidate_wide.csv.gz",
+    "candidate_long": "exp100_pf_z_unified_velocity_observation_prior_candidate_long.csv.gz"
+  },
+  "sha256": {
+    "variant_metrics": "bc64dc86fa500721000b395fe8b70da51bde79d38b766063e0cdeac7ef7a0ccd",
+    "bucket_metrics": "23054da86702d791c67684f8dcde26c90551534b9502cd55460e273b975acc8a",
+    "by_well": "104090ab510afd2b3023d258d93861ece982a16f07a1d52b9454cf06d56c275a",
+    "well_fit_summary": "978242335cc0700d043f0de1aad2087a5cf46be677a9fd0e2d974d6e4fdf8e4c",
+    "candidate_wide": "2a6f24058b7b026248661cfd408aa8ada12d8183882b1299708f4393cc39595c",
+    "candidate_wide_decompressed": "0de40234e68e1cf956da0fafa08323a828865157052eb3af616faa677b0a0389",
+    "candidate_long": "78c8524ea113b4ddfc7a3998c0031d8d4dbd1adf11bcbe6d7cfbdae364fcca22",
+    "candidate_long_decompressed": "591675720c4f3af1c3368faab95c2ecf0bb31dbee62ee0c220271ffb61fe4139",
+    "summary_actual_local": "a862b5d8d327e8388507baec9b4b927dddc3e6e9fe36e2e68c92e8960b4fa721"
+  },
+  "decision": {
+    "recommendation": "do_not_port_to_inference",
+    "reason": "Best variant improves the standalone exp100 control but remains much weaker than existing PF/likelihood candidates such as exp099 likpf_mean RMSE 11.594897; control is not strict exp072 pf_z parity."
+  }
+}

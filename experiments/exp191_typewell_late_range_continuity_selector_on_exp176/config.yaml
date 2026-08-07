@@ -1,0 +1,294 @@
+experiment:
+  name: "exp191_typewell_late_range_continuity_selector_on_exp176"
+  description: "Smooth the exp176 typewell late-range prior candidate-error surface with exp158-style well-local Viterbi continuity constraints."
+  route: ensemble
+  status: completed_train_side_supported_no_submit
+  created_at: "2026-07-04"
+  updated_at: "2026-07-04"
+
+lineage:
+  parent: exp176_typewell_late_range_pfbeam_candidate_prior
+  continuity_parent: exp158_segment_continuity_selector_on_exp157
+  cache_parent: exp099_pf_multi_observation_likelihood_probe
+  feature_cache_parent: exp072_exp063_full_replay_feature_cache
+  diagnostic_parents:
+    - exp157_candidate_ranker_feature_enrichment
+    - exp158_segment_continuity_selector_on_exp157
+    - exp174_typewell_late_range_ml_posthoc_clip_audit
+    - exp176_typewell_late_range_pfbeam_candidate_prior
+    - exp186_typewell_late_range_pfbeam_generation_soft_prior
+  implementation_source: typewell_late_range_continuity_selector_on_exp176.py
+  diff_summary: >
+    Reconstructs exp176 OOF per-candidate score surfaces from saved LightGBM
+    boosters and applies the exp158 deterministic Viterbi / segment continuity
+    grid. The eight PF/Beam/dense candidates and exp176 target-free typewell
+    late-range prior features are preserved. No candidate is clipped, hard
+    invalidated, blended, or used as a direct submission path.
+
+validation:
+  strategy: exp176_oof_posthoc_segment_continuity_selector
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - switch_rate
+    - path_switch_count
+    - segment_length
+    - selection_distribution
+    - bucket_rmse
+    - worst_well_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Candidate values and target-free likelihood features are read from exp099 v2 and exp072 train-side pseudo-tail caches.
+    - exp176 OOF scores are reconstructed only from fold-held-out boosters and the saved exp176 feature schema.
+    - Dense candidates are reconstructed as last_known_tvt plus tvt_dense*_d columns, matching exp157/176.
+    - Typewell late-range features use raw train typewell TVT min/max and visible prefix last TVT only.
+    - Viterbi local costs use exp176 OOF predicted-error scores. Transition penalties use candidate path geometry and target-free guard features only.
+    - No validation/test true TVT, oracle candidate, or true error is used in Viterbi selection.
+    - This is a train-side posthoc audit; no inference port or submission candidate is selected.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp176_artifact_dir_local: experiments/exp176_typewell_late_range_pfbeam_candidate_prior/kaggle/output/train_v3/artifacts
+  exp176_model_manifest: exp176_typewell_late_range_pfbeam_candidate_prior_model_manifest.json
+  exp176_feature_schema: exp176_typewell_late_range_pfbeam_candidate_prior_feature_schema.csv
+
+model:
+  name: typewell_late_range_continuity_selector_on_exp176
+  target: posthoc_candidate_selection
+  base_prediction: likpf_mean
+  estimator: exp176_saved_lightgbm_booster_inference_only
+  trains_new_boosters: false
+  planned_lightgbm_configs: 0
+  planned_folds: 0
+  planned_boosters: 0
+  saved_parent_boosters_used: 15
+  control_or_parent_retraining: false
+
+selector:
+  mode: typewell_late_range_continuity_selector_on_exp176
+  default_candidate: likpf_mean
+  ranker_variant: lgb_candidate_error_ranker
+  allowed_switch_candidates:
+    - pf_ancc
+    - beam_mean
+    - sc_ens
+    - hyb
+    - tvt_dense
+    - tvt_densew
+    - tvt_dense50
+  max_rows: null
+  log_period: 10
+  max_train_rows_per_fold: 300000
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+    - name: beam_mean
+      column: beam_mean
+    - name: likpf_mean
+      column: likpf_mean
+    - name: sc_ens
+      column: sc_ens
+    - name: hyb
+      column: hyb
+    - name: tvt_dense
+      column: tvt_dense
+    - name: tvt_densew
+      column: tvt_densew
+    - name: tvt_dense50
+      column: tvt_dense50
+  context_columns:
+    - last_known_tvt
+    - pf_ancc_std
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+    - eval_len
+    - md_since
+    - likpf_mean_d
+  multiobs_feature_columns:
+    - multiobs_score_max
+    - multiobs_score_mean
+    - multiobs_score_gap
+    - multiobs_top1_source_id
+    - multiobs_top1_mae
+    - multiobs_top1_ncc
+    - multiobs_score_pf_ancc
+    - multiobs_mae_pf_ancc
+    - multiobs_ncc_pf_ancc
+    - multiobs_score_beam_mean
+    - multiobs_mae_beam_mean
+    - multiobs_ncc_beam_mean
+    - multiobs_score_likpf_mean
+    - multiobs_mae_likpf_mean
+    - multiobs_ncc_likpf_mean
+    - multiobs_score_sc_ens
+    - multiobs_mae_sc_ens
+    - multiobs_ncc_sc_ens
+    - multiobs_score_hyb
+    - multiobs_mae_hyb
+    - multiobs_ncc_hyb
+  optional_columns:
+    - multiobs_top1
+    - multiobs_softmax_t0p15
+    - multiobs_softmax_t0p3
+    - likpf_multiobs_blend_w0p25
+    - likpf_multiobs_blend_w0p5
+  feature_enrichment:
+    enabled: true
+    prefix: crfe_
+    max_missing_rate: 0.0
+    min_md_scale: 25.0
+    min_dense_scale: 10.0
+    near_md_threshold: 50.0
+    primary_dense_candidate: tvt_densew
+    auxiliary_candidate_columns:
+      - tvt_dense
+      - tvt_densew
+      - tvt_dense50
+    auxiliary_columns:
+      - tvt_dense_d
+      - tvt_densew_d
+      - tvt_dense50_d
+      - dense_std
+      - dense_dist
+      - pf_vs_dense
+    dense_delta_columns:
+      tvt_dense: tvt_dense_d
+      tvt_densew: tvt_densew_d
+      tvt_dense50: tvt_dense50_d
+    reference_candidates:
+      - likpf_mean
+      - beam_mean
+      - pf_ancc
+    base_feature_columns:
+      - tvt_dense_d
+      - tvt_densew_d
+      - tvt_dense50_d
+      - dense_std
+      - dense_dist
+      - pf_vs_dense
+  typewell_late_range_prior:
+    enabled: true
+    row_feature_prefix: tlp_
+    candidate_feature_prefix: candidate_tlp_
+    min_typewell_span: 1.0
+    max_context_missing_rate: 0.0
+    known_last_pct_min: [0.75, 0.80]
+    candidate_pct_lower_bounds: [0.50, 0.60, 0.70]
+    known_last_margins: [0.05, 0.10]
+  long_models:
+    row_feature_exclude_prefixes:
+      - tlp_
+  viterbi_grid:
+    switch_penalty: [0.0, 5.0, 10.0, 20.0, 40.0]
+    nondefault_bias: [0.0]
+    jump_penalty_weight: [0.0, 0.5, 1.0]
+    jump_free_ft: [25.0]
+    jump_scale_ft: 25.0
+    max_abs_delta_vs_default: [75.0, 150.0, 999999.0]
+    max_pf_ancc_std: [999999.0]
+    min_md_since: [0.0]
+    min_segment_len: [1, 12, 36, 96]
+  baselines:
+    - likpf_mean_single
+    - exp176_error_ranker_rowwise
+    - oracle
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp176-typewell-late-candidate-prior-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_exp176_groupkfold_and_sampled_long_frame_seed_no_new_random_viterbi
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - upstream_exp176_lightgbm_training
+    - upstream_exp176_candidate_long_training_row_subsample
+  parallel_rng_policy: no_new_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    exp176_model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - No new model is trained in exp191.
+    - Viterbi selection is deterministic given exp099 cache, exp072 dense cache, raw train typewell context, exp176 boosters, config, and row order.
+    - This is a train-side audit, not a deterministic submission anchor.
+
+audit:
+  mode: typewell_late_range_continuity_selector_on_exp176
+  output_prefix: exp191_typewell_late_range_continuity_selector_on_exp176
+  expected_train_artifacts:
+    - exp191_typewell_late_range_continuity_selector_on_exp176_metrics.csv
+    - exp191_typewell_late_range_continuity_selector_on_exp176_oof_predictions.csv.gz
+    - exp191_typewell_late_range_continuity_selector_on_exp176_selection_distribution.csv
+    - exp191_typewell_late_range_continuity_selector_on_exp176_by_well.csv
+    - exp191_typewell_late_range_continuity_selector_on_exp176_bucket_metrics.csv
+    - exp191_typewell_late_range_continuity_selector_on_exp176_viterbi_params.csv
+    - exp191_typewell_late_range_continuity_selector_on_exp176_score_summary.csv
+    - exp191_typewell_late_range_continuity_selector_on_exp176_exp176_model_manifest_resolved.csv
+    - exp191_typewell_late_range_continuity_selector_on_exp176_summary.json
+
+results:
+  kaggle_train_v1:
+    status: completed_train_side_audit
+    kaggle_kernel: kentookumura/exp191-typewell-late-continuity-train
+    kaggle_url: https://www.kaggle.com/code/kentookumura/exp191-typewell-late-continuity-train
+    rows: 3783989
+    wells: 773
+    runtime_seconds: 19747.140142679214
+    best_variant: viterbi_sw400_bias000_jw050_jf025_d075_std999999_md0000_seg012
+    best_rmse_tvt: 10.598006879875323
+    best_mae_tvt: 6.402336928494969
+    best_within_10ft: 0.7931106565056082
+    best_oracle_label_accuracy: 0.2650507176421496
+    delta_rmse_vs_likpf_mean: -0.9968907923423806
+    delta_rmse_vs_exp176_rowwise: -0.04328949078479738
+    delta_rmse_vs_exp158_best_viterbi: -0.19115637320388146
+    path_switch_count: 3620
+    path_switch_per_1000_rows: 0.9566624004456672
+    exp176_rowwise_path_switch_count: 261391
+    exp176_rowwise_path_switch_per_1000_rows: 69.07816063947332
+    max_well_regression_vs_exp176_rowwise: 1.4504474657515534
+    improved_wells_vs_exp176_rowwise: 417
+    worsened_wells_vs_exp176_rowwise: 356
+    recommendation: segment_viterbi_supported_for_continuity_audit
+    output_dir: kaggle/output/train_v1
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - Best train-side Viterbi variant is recorded for audit and downstream feature candidates, but no inference notebook candidate is selected by this implementation.
+    - Global OOF and path continuity are positive, while near-row buckets show small regressions, so direct inference and submission remain out of scope.
+    - Any downstream use should be a confidence or segment-stability feature surface, with raw-test parity, worst-well, near-row, 1000_plus, and hidden-like review before inference work.
+
+notes:
+  - Implements the KAGGLE_DIRECTION backlog item `typewell_late_range_continuity_selector_on_exp176`.
+  - Planned Kaggle train cost before push is 1 posthoc audit x 0 newly trained boosters; it reuses 15 saved exp176 boosters for OOF score reconstruction.
+  - This audit does not use selected_tvt as a direct replacement, blend, postprocess, hard candidate invalidation, or submission generation.

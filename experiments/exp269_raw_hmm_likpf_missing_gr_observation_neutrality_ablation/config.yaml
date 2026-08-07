@@ -1,0 +1,200 @@
+experiment:
+  name: exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation
+  description: >-
+    Stage-1 raw exact-HMM ablation that makes raw horizontal-GR missing
+    evaluation rows observation-neutral before deciding whether likelihood-PF
+    deserves a separately approved Stage 2.
+  route: pf_beam
+  status: completed_stage1_guard_failed_pf_closed
+  created_at: "2026-07-17"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.strategy
+    - validation.score_rows
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  artifact_ancestor: exp205_exact_hmm_smoother_exp072_compatible_cache_audit
+  references:
+    - exp247_missing_gr_masking
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - KAGGLE_DIRECTION.md raw_hmm_likpf_missing_gr_observation_neutrality_ablation
+  implementation_source: exact_hmm_smoother.py
+  diff_summary: >-
+    Keeps the exp209 raw typewell-GR exact-HMM grid, transition, initialization,
+    GR interpolation, sigma, and score rows fixed. The only prediction change is
+    that evaluation rows whose raw horizontal GR is non-finite receive zero GR
+    emission contribution. No self-GR descriptor or LightGBM unary is present.
+    The saved exp209/exp205 prediction is loaded as the control and is not regenerated.
+
+validation:
+  strategy: train_side_fixed_control_raw_hmm_missing_gr_neutrality_ablation
+  metric: rmse
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  success_criteria:
+    - Overall RMSE improves by at least 0.02 ft versus the fixed raw-HMM control.
+    - Raw-GR missing rows do not regress and observed rows regress by at most 0.02 ft.
+    - The 1000-plus distance group and both hidden-like groups regress by at most 0.02 ft.
+    - Worst-well RMSE regression is at most 0.25 ft.
+    - Prediction and posterior-standard-deviation finite coverage are 100 percent and ID mismatch is zero.
+  leakage_policy:
+    - The emission mask is exactly raw horizontal GR non-finiteness and never reads target, OOF error, focus-well role, hidden-like role, or oracle information.
+    - Unknown-suffix train TVT is used only after prediction generation for paired metrics and row audit.
+    - Visible test files are used only for GR missing-run distribution readout, not score evidence or model selection.
+    - No self-GR, LightGBM unary, raw-test prediction, likelihood-PF execution, selector, or submission is produced.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  control_prediction_column: hmm_mean_tvt
+  control_std_column: hmm_std
+  control_finite_column: hmm_finite
+  control_loglik_column: hmm_loglik
+  control_expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+  control_cache_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5_small/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp205-exact-hmm-smoother-cache-audit-train/artifacts/exp205_exact_hmm_smoother_exp072_compatible_cache_audit_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    - /kaggle/input/exp205-exact-hmm-smoother-cache-audit-train/artifacts/exp205_exact_hmm_smoother_exp072_compatible_cache_audit_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    - /tmp/kaggle-output/exp205_exact_hmm_smoother_exp072_compatible_cache_audit/train_v2_small/artifacts/exp205_exact_hmm_smoother_exp072_compatible_cache_audit_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+  hidden_like_candidates:
+    - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+model:
+  name: raw_exact_hmm_missing_gr_observation_neutrality
+  estimator: none
+  target: TVT
+  active_variants:
+    - raw_hmm_missing_gr_neutral
+  lightgbm_config_count: 0
+  fold_training_count: 0
+  booster_count: 0
+  parent_control_retraining: false
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+  gr_missing:
+    policy: raw_horizontal_gr_missing_rows_have_zero_gr_emission
+    apply_to: evaluation_suffix_only
+    missing_definition: not_finite_raw_horizontal_gr
+    self_gr_unary: false
+    lightgbm_unary: false
+    run_length_gate: false
+  notes:
+    - Every active HMM parameter is copied from the exp209 raw exact-HMM control.
+    - Interpolated GR is computed identically but its GR unary is discarded on raw-missing evaluation rows.
+
+audit:
+  output_prefix: exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation
+  max_wells: null
+  focus_well: 11d0f5ac
+  prediction_change_tolerance_ft: 1.0e-6
+  fixed_control_parity_tolerance_ft: 1.0e-5
+  stage1_guard:
+    overall_delta_rmse_max_ft: -0.02
+    raw_missing_delta_rmse_max_ft: 0.0
+    observed_delta_rmse_max_ft: 0.02
+    distance_1000_plus_delta_rmse_max_ft: 0.02
+    hidden_like_delta_rmse_max_ft: 0.02
+    worst_well_delta_rmse_max_ft: 0.25
+    prediction_finite_coverage_min: 1.0
+    std_finite_coverage_min: 1.0
+    id_mismatch_max: 0
+  distance_buckets:
+    edges: [-1.0, 49.0, 99.0, 249.0, 499.0, 999.0, 1.0e30]
+    labels: ["000_050", "050_100", "100_250", "250_500", "500_1000", "1000_plus"]
+  missing_run_buckets:
+    edges: [0, 4, 31, 127, 255, 999, 2147483647]
+    labels: ["1_4", "5_31", "32_127", "128_255", "256_999", "1000_plus"]
+  post_gap_buckets:
+    edges: [0, 128, 256, 2147483647]
+    labels: [post_gap_001_128, post_gap_129_256, post_gap_257_plus]
+  hidden_like_roles:
+    verification_like_spatial: verification_like_spatial_role
+    verification_like_typewell_purged: verification_like_typewell_purged_role
+  outputs:
+    row_audit_filename: exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation_row_audit.csv.gz
+    prediction_filename: exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation_predictions.csv.gz
+    raw_file_sha_filename: exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation_raw_file_sha.csv
+    missing_well_filename: exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation_missing_well_inventory.csv
+    missing_run_filename: exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation_missing_run_inventory.csv
+    control_readout_filename: exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation_control_missing_readout.csv
+    group_metrics_filename: exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation_group_metrics.csv
+    by_well_filename: exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation_by_well_metrics.csv
+    divergence_segment_filename: exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation_divergence_segments.csv
+    finite_coverage_filename: exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation_finite_coverage.csv
+    generation_well_filename: exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation_generation_by_well.csv
+    summary_filename: exp269_raw_hmm_likpf_missing_gr_observation_neutrality_ablation_summary.json
+
+runtime:
+  use_amp: false
+  outer_workers: 2
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp205-exact-hmm-smoother-cache-audit-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_raw_exact_hmm_missing_gr_neutrality_ablation
+  stochastic_components: []
+  parallel_rng_policy: sorted_wells_no_rng_thread_count_recorded
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    prediction_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - Stage 1 uses no RNG and is deterministic for fixed inputs, runtime versions, and thread settings.
+    - It is not promoted to a submission anchor because this experiment has no inference or submission output.
+
+pf_stage:
+  enabled: false
+  fail_close: true
+  eligibility_source: stage1_guard
+  requires_separate_user_approval: true
+  notes:
+    - No likelihood-PF code is executed by this implementation.
+    - Passing Stage 1 records eligibility only and does not authorize Stage 2.
+
+inference:
+  enabled: false
+  mode: train_side_stage1_only
+  create_submission: false
+  notes:
+    - Positive train-side evidence does not authorize current-test inference, likelihood-PF, or submission.

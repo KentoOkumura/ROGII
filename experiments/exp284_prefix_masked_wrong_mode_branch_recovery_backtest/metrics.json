@@ -1,0 +1,171 @@
+{
+  "experiment": "exp284_prefix_masked_wrong_mode_branch_recovery_backtest",
+  "status": "train_side_backtest_completed_guard_failed_branch_closed",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "h256_recovery_rmse_and_false_switch",
+  "design": {
+    "masked_rows": 640,
+    "observation_rows": 128,
+    "max_self_gr_alternatives": 3,
+    "primary_horizon_rows": 256,
+    "diagnostic_horizons_rows": [128, 512],
+    "active_variants": 1,
+    "fixed_policies": 5,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "hmm_regenerations": 0,
+    "pf_regenerations": 0
+  },
+  "implementation": {
+    "train_source_lines": 2427,
+    "train_sections": 10,
+    "train_notebook_cells": 22,
+    "train_source_sha256": "4c23556ccf09057f7c4206e4717876d0035be3bf5763750148a100b4fc1f0b0b",
+    "train_notebook_sha256": "83765e45922076a6b3c9a9995031396e8eb901a1ba95b783090ae556f1a2aa78",
+    "inference_source_lines": 127,
+    "inference_sections": 4,
+    "inference_notebook_cells": 11,
+    "inference_source_sha256": "94c88fa503e3286f6431185d32d5e0f1737daab90c98fbaeb71fe423ca00928e",
+    "inference_notebook_sha256": "d11cdba0228eee1fd76fe41776047145fb5781dc8b912981837f683aaa9dafd7",
+    "dedicated_tests_passed": 8,
+    "regular_notebooks_replaced": true,
+    "jupytext_sync_passed": true,
+    "py_compile_passed": true,
+    "ruff_f821_passed": true,
+    "ruff_full_passed": true,
+    "strict_experiment_validation_passed": true,
+    "repository_tests": {
+      "passed": 192,
+      "failed": 1,
+      "unrelated_existing_failure": "exp264 inference status expectation mismatch"
+    }
+  },
+  "dependency": {
+    "runtime_artifact_dependency_on_exp283": false,
+    "original_scientific_gate": "exp283_all_fixed_guards_pass",
+    "current_status": "user_authorized_independent_execution",
+    "gate_override_authorized": true,
+    "interpretation": "standalone_exp284_controlled_backtest_not_exp283_pass"
+  },
+  "run": {
+    "status": "train_side_backtest_completed_guard_failed",
+    "kernel_id": "kentookumura/exp284-masked-wrong-mode-recovery-backtest-train",
+    "kernel_version": 2,
+    "kernel_id_no": 127852894,
+    "pushed_at": "2026-07-19T16:07:14+09:00",
+    "generated_at_utc": "2026-07-19T10:22:40.992300+00:00",
+    "runtime_seconds": 11717.24375796318,
+    "executed_config_sha256": "0308717da5b5f490c5fcd9b53a553fa09a6976c871bfb57b0051e5de8f4296b9",
+    "packaged_notebook_sha256": "13bfeca741ec31d4f40f9e4b229770e75e83f73847851323b7e4ac5974c4ae88",
+    "eligible_wells": 766,
+    "ineligible_wells": 7,
+    "folds": [0, 1, 2, 3, 4],
+    "technical_guard_passed": true,
+    "scientific_guard_passed": false,
+    "decision": "close_without_parameter_rescue",
+    "technical_guard": {
+      "minimum_eligible_wells": true,
+      "all_expected_folds": true,
+      "mask_identity_coverage": true,
+      "branch_finite_coverage": true,
+      "evidence_finite_coverage": true,
+      "heldout_post_cut_truth_access_before_freeze": true,
+      "minimum_injected_abs_shift": true,
+      "fixed_branch_identity_coverage": true
+    },
+    "pairwise": {
+      "pooled_score_margin_auc": 0.6751532697547684,
+      "fold_score_margin_auc": {
+        "fold_0": 0.690068493150685,
+        "fold_1": 0.8336594911937377,
+        "fold_2": 0.7545045045045045,
+        "fold_3": 0.5094594594594595,
+        "fold_4": 0.5559360730593608
+      },
+      "auc_each_fold_guard_passed": false,
+      "pooled_choice_accuracy": 0.5900783289817232,
+      "fold_choice_accuracy": {
+        "fold_0": 0.6103896103896104,
+        "fold_1": 0.6535947712418301,
+        "fold_2": 0.5844155844155844,
+        "fold_3": 0.5816993464052288,
+        "fold_4": 0.5197368421052632
+      },
+      "choice_accuracy_pooled_guard_passed": false,
+      "choice_accuracy_each_fold_guard_passed": true
+    },
+    "recovery": {
+      "h256_rmse": {
+        "wrong_active_only": 37.55708483205124,
+        "safe_base_plus_wrong": 23.63392999283867,
+        "safe_base_plus_wrong_plus_selfgr_top3": 26.07223048494803,
+        "safe_base_plus_wrong_plus_shuffled_selfgr_top3": 25.52005715448213,
+        "no_injection_base_plus_selfgr_top3": 20.31439844423182
+      },
+      "full_gain_vs_wrong_h256_ft": 11.484854347103209,
+      "full_gain_vs_wrong_h512_ft": 11.454901409692383,
+      "full_gain_vs_pair_h256_ft": -2.4383004921093594,
+      "wrong_improved_folds": 5,
+      "pair_improved_folds": 0,
+      "gain_vs_wrong_h256_guard_passed": true,
+      "gain_vs_wrong_all_folds_guard_passed": true,
+      "gain_vs_pair_h256_guard_passed": false,
+      "gain_vs_pair_required_folds_guard_passed": false,
+      "h512_gain_not_below_h256_guard_passed": false
+    },
+    "safety": {
+      "no_injection_false_switch_rate": 0.3017241379310345,
+      "maximum_allowed_false_switch_rate": 0.05,
+      "real_nonregressing_vs_shuffled_folds": 3,
+      "no_injection_false_switch_guard_passed": false,
+      "real_better_than_shuffled_pooled_guard_passed": false,
+      "real_nonregressing_all_folds_guard_passed": false
+    },
+    "truth_attachment": {
+      "stage": "after_all_target_free_tables_persisted_and_content_hashed",
+      "heldout_post_cut_truth_access_before_freeze_count": 0
+    },
+    "artifacts": {
+      "local_metrics_root": "/tmp/kaggle-output/exp284_prefix_masked_wrong_mode_branch_recovery_backtest/train_v2_metrics",
+      "large_target_free_tables_downloaded": false,
+      "summary_sha256": "3d9863efa0f5e9ab297a0fcf21721a602b8ab51baf4b49522cb458ed21a79e3e",
+      "file_sha256": {
+        "by_well_metrics": "8ebd8542f68e8eef4a9af7e7997f32612becac31b8692cdd3111bb5e1a191a01",
+        "contract": "03d06cf1ec2dcf9f35ef9dd112430347a55940f3341c95c76a62cb7f9a31d94e",
+        "fold_metrics": "cbe7b823cde86e24c19a6ffc95d50dc100940cb4e30b2e9e3c728327dde69009",
+        "ineligible_wells": "04b30d6ba5be7a04ff7b3905925938b7dc1ca481f1c8ce5a5ea3b94d215568ae",
+        "input_manifest": "71b039ac136d70156cb814eff7422ec42cf5e593218b4afe775392c3474a61e4",
+        "mask_manifest": "74026afa909ba64738644f74521bc08ae29efb4b2afe8f13e90eb73042fd9fbf",
+        "overall_metrics": "d836b97793e685f96a7f2d8c9fbb725cf393ed862a1dcf2fd645317c72ced304",
+        "pairwise_metrics": "b025c18eab062e451d87745cd0858858cbf1f3fedb68603ce4a96289cdeab623"
+      },
+      "target_free_decompressed_sha256": {
+        "branch_paths": "267e12a16d3094b7ee25474c46fcb3aa21357a5783a9fec006aa0ba1a6c66b59",
+        "evidence": "771c89471ef9f1a3bb801dab3bccfff35661128e9fc2304ab03a915f7256ce3e",
+        "injection": "250d30ed6014ca0b439d7c6cf9aff6894d48bba25021b069007f99ff47844369",
+        "policy": "0cc2d65ce8f0421f6efd7c0133f98d20f7c4487ad5adb61443033cc1a24c81fc",
+        "proposals": "8455e3825d17da1281f0591a5b8a5b53ad3c595d264c4d939dd80b1902c07e52"
+      },
+      "target_free_rows": {
+        "branch_paths": 3137536,
+        "evidence": 18384,
+        "injection": 9958,
+        "policy": 11490,
+        "proposals": 4596
+      }
+    },
+    "version_1_failure": {
+      "observed_at": "2026-07-19T16:02:07+09:00",
+      "stage": "fold_0_first_target_horizontal_load",
+      "exception": "ValueError: Usecols do not match columns, columns expected but not found: ['id']",
+      "classification": "technical_input_schema_mismatch_before_evaluation",
+      "scientific_metrics_produced": false,
+      "fix": "synthesize deterministic audit-only id from well name and row index"
+    }
+  },
+  "notes": "Kaggle CPU version 2 completed all technical guards but failed the fixed pairwise, incremental-recovery, persistence, and safety guards. The branch is closed without parameter rescue, inference, or submission."
+}

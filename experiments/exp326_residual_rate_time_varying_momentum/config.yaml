@@ -1,0 +1,130 @@
+experiment:
+  name: exp326_residual_rate_time_varying_momentum
+  description: >-
+    Design-frozen audit that makes only the residual-rate AR(1) momentum
+    time-varying according to deterministic changes in the promoted exp323
+    dip-rate prior, while all process and observation scales remain fixed.
+  route: pf_beam
+  status: closed_without_run_upstream_exp307_chain_failed
+  created_at: "2026-07-21"
+  updated_at: "2026-07-22"
+
+lineage:
+  parent: exp323_time_varying_exp226_dip_rate_prior
+  steering: ../../.steering/20260721-exp326-residual-rate-time-varying-momentum
+  references:
+    - exp309_well_adaptive_transition_noise
+  diff_summary: >-
+    Changes only momentum from fixed 0.998 to a deterministic per-row schedule
+    in residual-rate coordinates. The parent mu_r,t, sig_r, sig_p, GR
+    likelihood, state grid, and posterior output remain identical.
+
+closure:
+  closed_at: "2026-07-22"
+  reason: fixed_exp323_parent_closed_without_run
+  terminal: true
+  reopen_allowed: false
+  successor_policy: >-
+    Create a new-number equivalent only after exp338 passes and its separately
+    created new exp323-equivalent also passes all promotion gates.
+
+implementation: {enabled: false, scope: closed_design_history, inference_enabled: false, submission_enabled: false}
+
+validation:
+  strategy: conditional_prefix_backtest_then_grouped_exact_hmm_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  dependency_policy:
+    required_parent: exp323_time_varying_exp226_dip_rate_prior
+    required_parent_status: all_promotion_gates_passed
+    fail_closed_on_dependency_mismatch: true
+  leakage_policy:
+    - The momentum schedule uses only the frozen parent mu_r,t, delta MD, and fixed parent sig_r.
+    - Prefix rate residuals may be used only for the masked-prefix Stage 0 score, never to tune the formula.
+    - Unknown-suffix truth is read only after the Stage 1 prediction is frozen.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+
+model:
+  name: residual_rate_time_varying_momentum_exact_hmm
+  estimator: none
+  momentum_schedule:
+    state_coordinate: delta_rate_equals_rate_minus_parent_mu_rate_t
+    base_momentum: 0.998
+    base_correlation_length: negative_median_delta_md_div_log_0p998
+    change_score: abs_delta_parent_mu_rate_div_parent_sig_r_sqrt_delta_md
+    change_score_clip: [0.0, 4.0]
+    correlation_length_formula: base_length_div_one_plus_change_score
+    momentum_formula: exp_negative_delta_md_div_correlation_length_t
+    fallback: 0.998
+    parameter_grid: false
+  stage_0_prefix_backtest:
+    enabled_after_implementation: false
+    score: residual_rate_one_step_gaussian_nll
+    compare_against: fixed_momentum_0p998
+    pass_requires_all:
+      minimum_nll_gain_fraction: 0.01
+      minimum_improved_folds: 4
+      minimum_activated_row_fraction: 0.01
+      maximum_activated_row_fraction: 0.50
+      required_finite_schedule_coverage: 1.0
+      require_long_prefix_non_regression: true
+  stage_1_exact_hmm:
+    enabled_after_implementation: false
+    enable_condition: stage_0_all_gates_pass_and_separate_user_approval
+    active_variants: [time_varying_residual_momentum]
+  fixed_parent:
+    rate_prior_mean: exact_exp323_schedule
+    sig_r: exact_exp323
+    sig_p: exact_exp323
+    observation_model: exact_exp323
+    n_rates: 41
+    rate_span: 0.10
+    output: posterior_mean
+  forbidden:
+    - changing_sig_r
+    - changing_mu_rate
+    - changing_sigma_gr_or_lambda
+    - momentum_grid
+    - posterior_feedback_momentum
+    - blend
+
+execution_contract:
+  stage_0: {diagnostic_variants: 1, hmm_well_runs: 0, model_configs: 0, trained_folds: 0, boosters: 0}
+  stage_1_if_pass: {scientific_variants: 1, hmm_well_runs: 773, model_configs: 0, trained_folds: 0, boosters: 0}
+  parent_control_retraining: false
+
+promotion_gates:
+  minimum_rmse_gain_vs_parent_ft: 0.05
+  minimum_improved_folds: 4
+  require_1000_plus_non_regression: true
+  require_hidden_like_spatial_non_regression: true
+  require_hidden_like_typewell_purged_non_regression: true
+  require_by_well_p95_delta_max: 0.0
+  maximum_worst_well_regression_ft: 0.25
+
+execution: {implementation_approved: false, kaggle_push_approved: false, active_stage: closed_without_run, run_stage_0: false, run_stage_1: false, run_inference: false, create_submission: false}
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle: {enable_gpu: false, enable_internet: false, runtime_limit_seconds: 30600}
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_deterministic_parent_schedule
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: true, submission_sha: false}
+inference: {enabled: false, create_submission: false}
+notes:
+  - Design frozen on 2026-07-21; no implementation approval.
+  - Momentum adaptation is valid only after rate is expressed as a residual about exp323 mu_r,t.
+  - Closed permanently on 2026-07-22; a future equivalent must use a new experiment number under the exp338 successor chain.

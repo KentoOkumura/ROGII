@@ -1,0 +1,366 @@
+experiment:
+  name: exp417_scale5_seed_aggregation_promotion_audit
+  description: >-
+    Design-frozen saved-OOF promotion audit that compares the exp072 arithmetic
+    mean over 128 likelihood-PF seeds with the fixed full-suffix likelihood
+    temperature-5 weighted mean generated from the identical exp404 x1.0 seed
+    bank.
+  hypothesis: >-
+    Replacing equal seed weights with the fixed temperature-5 likelihood
+    weights safely converts the across-seed basin headroom identified by exp410
+    into a general full-OOF gain without unacceptable fold, missing-GR,
+    hidden-like, long-tail, or well-tail regressions.
+  route: pf_beam
+  status: stage_a_failed_closed_no_rescue
+  created_at: "2026-07-27"
+  updated_at: "2026-07-28"
+  inference_enabled: false
+
+lineage:
+  parent: exp404_scale5_sigma_gr_likelihood_pf_ablation
+  scientific_control: exp072_exp063_full_replay_feature_cache
+  evidence:
+    - exp410_likpf_particle_resampling_basin_audit
+  references:
+    - exp243_pf_seed_medoids
+    - exp252_pf_seed_medoid_selectability_audit
+    - exp413_scale5_likpf_full_replacement_on_exp335
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - docs/06_reproducibility.md
+  steering: ../../.steering/20260727-exp417-scale5-seed-aggregation-promotion-audit
+  diff_summary: >-
+    Stage A performs no PF replay and no fitting. It reads the SHA-frozen
+    exp404 x1.0 trajectories and compares two readouts from the identical
+    500-particle x 128-seed bank: arithmetic mean versus one fixed
+    exp((loglik-max(loglik))/5) weighted mean. It does not change GR sigma,
+    PF dynamics, roughening, particles, seeds, or any prediction value. It is
+    distinct from exp404's x1.0-versus-x1.3 GR-sigma question and exp413's ML
+    replacement/retraining question.
+
+implementation:
+  enabled: true
+  scope: train_side_saved_oof_promotion_audit_only
+  design_approval_received: true
+  design_approval_source: user_message_2026_07_27_create_two_backlogs_experiments_steering_design_only
+  implementation_approval_received: true
+  implementation_approval_source: user_message_2026_07_28_implement_exp417
+  scaffold_created: true
+  notebook_placeholders_only: false
+  canonical_notebook_is_placeholder: false
+  canonical_notebook_adopted: true
+  canonical_notebook_adoption_source: user_message_2026_07_28_execute_exp417
+  jupytext_source_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  stage_a_run_completed: true
+  stage_a_run_status: complete
+  stage_a_promotion_gate_passed: false
+  stage_a_training_enabled: false
+  stage_a_audit_enabled: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: saved_oof_fixed_scale5_vs_arithmetic_seed_aggregation_promotion_audit
+  metric: rmse
+  metric_weighting: unweighted_suffix_rows
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  primary_control: likpf_mean_x1p0
+  primary_candidate: likpf_scale_5_x1p0
+  gain_definition: rmse_arithmetic_mean_minus_rmse_scale5
+  evidence_only_expected_control_rmse_ft: 11.594894395642696
+  evidence_only_expected_candidate_rmse_ft: 10.914522073
+  truth_attachment: after_saved_prediction_identity_and_logical_sha_freeze
+  batch_inference_semantics: >-
+    The aggregation uses the complete unknown-suffix GR sequence but no suffix
+    TVT. This is non-causal/offline in sequence terms and valid only because
+    Kaggle inference exposes the complete horizontal GR log before prediction.
+  leakage_policy:
+    - Stage A reads only already-frozen target-free prediction columns before truth, error, fold, or hidden-like role.
+    - Both readouts must come from the identical x1.0 PF seed bank and seed labels.
+    - Full-suffix log likelihood may use complete suffix GR but never suffix TVT, error, fold, hidden-like role, or Public LB.
+    - exp410 truth-best seed and target-late episode/cause fields are forbidden.
+    - Temperature 5 is fixed from existing evidence and is not selected in this experiment.
+
+data:
+  exp404_frozen_predictions:
+    source: exp404_scale5_sigma_gr_likelihood_pf_ablation
+    kernel_source: kentookumura/exp404-scale5-sigma-gr-likpf-ablation-train
+    source_kernel_version: 1
+    dataset_source: kentookumura/exp404-v1-frozen-predictions
+    filename: exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin
+    candidates:
+      - /kaggle/input/exp404-v1-frozen-predictions
+      - /tmp/exp404-failed-v1-output/artifacts
+    control_column: likpf_mean_x1p0
+    candidate_column: likpf_scale_5_x1p0
+    expected_raw_sha256: b3699432a691229da5a6562ce74e0b84f1bee3021bd80d650526906f5aa390f8
+    expected_decompressed_sha256: 00fe1b90fce84bd601b4b91442d9fc698200aafadd48658f7d8c26ec1fbe0d00
+    expected_logical_sha256: 5f4b6e715081b598b0a34607ad0c81339d0ecd5882ea3a45dd79f33123959a00
+    expected_schema_sha256: 2372de95ab154ddd2b1bfe545923233bc41f96104e66c32ab93e6f0fa99bee88
+    audit_filename: exp404_scale5_sigma_gr_likelihood_pf_ablation_well_gr_scale_seed_audit.csv
+    expected_audit_raw_sha256: bcd0634a760a8c3d6b5da33da878f33408cd37285633eb17498c8bb3cee0a390
+    contract_filename: exp404_scale5_sigma_gr_likelihood_pf_ablation_scientific_contract.json
+    expected_scientific_contract_sha256: 41c1f95ca8bd7d20eef00f244ced7d4dbc4b3571cc9fd4189c08d6831ef15b57
+    forbidden_columns:
+      - true_tvt
+      - tvt_true
+      - error
+      - abs_error
+      - fold
+      - verification_like_spatial_role
+      - verification_like_typewell_purged_role
+  exp072_control:
+    source: exp072_exp063_full_replay_feature_cache
+    kernel_source: kentookumura/exp072-exp063-full-replay-feature-cache-train
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts
+      - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts
+      - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v2_stream/artifacts
+    anchor_column: last_known_tvt
+    delta_column: likpf_mean_d
+    expected_rmse_ft: 11.594897672217703
+    expected_decompressed_sha256: 99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350
+  exp209_hmm_control:
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+    prediction_column: hmm_mean_tvt
+    expected_rmse_ft: 11.938287234887435
+    expected_fixed_hmm_likpf_50_50_rmse_ft: 10.269696146642758
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    kernel_source: kentookumura/exp226-k16-kappa-repro-train
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    truth_columns: [well_id, row_idx, tvt_true]
+    forbidden_decoder_columns: [tvt_geop, tvt_pred, gr_delta, error, abs_error]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    allowed_roles:
+      hidden_like_spatial: [train, valid]
+      hidden_like_typewell_purged: [train, valid, purged_train_excluded]
+    expected_role_counts:
+      hidden_like_spatial:
+        train: 573
+        valid: 200
+      hidden_like_typewell_purged:
+        train: 557
+        valid: 200
+        purged_train_excluded: 16
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+model:
+  name: fixed_scale5_likelihood_weighted_seed_aggregation_audit
+  estimator: none_saved_prediction_audit
+  fitted_model: false
+  pf_source_contract:
+    particles: 500
+    seeds: 128
+    seed_indices: [0, 127]
+    gr_scale_multiplier: 1.0
+    transition: classic_exp072_surface_state
+    rough_position: 0.10
+    rough_rate: 0.001
+    resample_threshold_fraction: 0.5
+  aggregation:
+    control:
+      name: arithmetic_seed_mean
+      formula: sum_seed_prediction_divided_by_128
+    candidate:
+      name: full_suffix_likelihood_temperature_5_weighted_seed_mean
+      temperature: 5.0
+      formula: normalized_exp_of_centered_seed_total_loglik_divided_by_temperature
+      target_free: true
+      causal_online: false
+      batch_inference_compatible: true
+    other_aggregations_enabled: false
+  execution_count:
+    saved_candidate_readouts: 1
+    scientific_candidates: 1
+    pf_well_runs: 0
+    parent_pf_control_reruns: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+    hmm_well_runs: 0
+    beam_well_runs: 0
+    gpu_runs: 0
+    reporting_folds: 5
+
+guards:
+  technical:
+    require_all_input_sha_matches: true
+    require_expected_rows: 3783989
+    require_expected_wells: 773
+    require_expected_folds: [0, 1, 2, 3, 4]
+    require_id_row_order_fold_identity: true
+    require_finite_control_and_candidate_coverage: 1.0
+    require_identical_x1p0_seed_bank: true
+    require_temperature: 5.0
+    temperature_absolute_tolerance: 1.0e-12
+    require_control_rmse_parity_vs_exp072_atol_ft: 0.00001
+    maximum_truth_error_fold_hidden_reads_before_prediction_freeze: 0
+    require_stage_a_pf_well_runs: 0
+    require_stage_a_model_or_booster_count: 0
+  scientific:
+    minimum_direct_rmse_gain_vs_arithmetic_mean_ft: 0.05
+    minimum_improved_folds: 4
+    minimum_raw_gr_observed_gain_ft: 0.05
+    maximum_raw_gr_missing_regression_ft: 0.0
+    maximum_high_missing_well_regression_ft: 0.0
+    maximum_long_tail_1000_plus_regression_ft: 0.0
+    maximum_hidden_like_spatial_regression_ft: 0.0
+    maximum_hidden_like_typewell_purged_regression_ft: 0.0
+    maximum_by_well_delta_p95_ft: 0.0
+    maximum_worst_well_regression_ft: 0.25
+    maximum_fixed_hmm_likpf_50_50_blend_regression_ft: 0.0
+    require_all_checks: true
+  decision:
+    pass_action: eligible_for_same_experiment_fail_closed_raw_test_inference_implementation_design
+    fail_action: fixed_scale5_seed_aggregation_rejected_close_without_rescue
+  forbidden:
+    - temperature_search
+    - scale_3_8_12_generation_or_selection
+    - best_seed_or_likelihood_weight_grid
+    - seed_median_or_particle_mode
+    - seed_medoid_selector_or_model
+    - roughening_or_process_noise_change
+    - gr_sigma_change
+    - particle_or_seed_count_change
+    - target_late_well_or_row_gate
+    - pf_control_or_candidate_rerun_in_stage_a
+    - exp413_ml_training_or_reclassification
+    - same_oof_rescue
+    - inference_or_submission_without_separate_approval
+
+execution:
+  stage: stage_a_failed_closed_no_rescue
+  design_approved: true
+  implementation_approved: true
+  implementation_approval_source: user_message_2026_07_28_implement_exp417
+  canonical_notebook_adoption_approved: true
+  kaggle_package_approved: true
+  kaggle_push_approved: true
+  stage_a_run_approved: true
+  stage_a_run_approval_source: user_message_2026_07_28_execute_exp417
+  run_stage_a: false
+  stage_a_completed: true
+  stage_a_result: failed_closed_no_rescue
+  stage_a_failed_checks:
+    - by_well_delta_p95
+    - worst_well_regression
+  inference_approved: false
+  submission_approved: false
+  stage_a:
+    saved_prediction_readouts: 1
+    scientific_candidates: 1
+    pf_well_runs: 0
+    parent_pf_control_reruns: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+    gpu_runs: 0
+  conditional_future_inference:
+    enabled: false
+    requires_stage_a_all_guards_pass: true
+    requires_separate_user_approval: true
+    planned_pf_replays_per_hidden_well: 1
+    planned_readouts_from_same_seed_bank:
+      - arithmetic_seed_mean_parity
+      - fixed_scale5_candidate
+    model_training: 0
+
+runtime:
+  device: cpu
+  use_amp: false
+  num_workers: 1
+  stage_a_expected_seconds_upper_bound: 900
+  maximum_peak_rss_gb: 16
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    run_on_push: false
+    kernel_id: kentookumura/exp417-scale5-seed-agg-promotion-audit-train
+    kernel_title: exp417 scale5 seed agg promotion audit train
+    kernel_slug_shortening_reason: >-
+      The full canonical name is 52 characters, so aggregation is abbreviated
+      to agg to fit Kaggle's 50-character limit while preserving semantics and
+      exact id/title slug identity.
+    kernel_id_no: 128917131
+    kernel_version: 1
+    train_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    train_dataset_sources:
+      - kentookumura/exp404-v1-frozen-predictions
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: inherited_frozen_exp404_exp072_stable_sha256_seed_bank
+  stochastic_components: []
+  parallel_rng_policy: stage_a_has_no_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Stage A is deterministic saved-artifact readout and must not regenerate PF trajectories.
+    - The exp404 raw, decompressed, logical, schema, and scientific-contract SHAs are mandatory.
+    - No deterministic inference anchor claim is allowed before a separately approved raw-test replay and rerun check.
+
+artifacts:
+  output_prefix: exp417_scale5_seed_aggregation_promotion_audit
+  planned:
+    - scientific_contract.json
+    - frozen_prediction_identity.json
+    - input_manifest.csv
+    - paired_metrics.csv
+    - by_well_metrics.csv
+    - parity_metrics.json
+    - promotion_gate.json
+    - artifact_manifest.csv
+    - summary.json
+
+inference:
+  enabled: false
+  mode: disabled_until_stage_a_all_guards_pass_and_separate_approval
+  selected_candidate: null
+  notes:
+    - If Stage A passes, inference implementation remains in exp417 and requires separate approval.
+    - Full-suffix GR use must be disclosed as batch/non-causal and reproduced identically on hidden test.

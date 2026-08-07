@@ -1,0 +1,68 @@
+{
+  "experiment": "exp095_prefix_u_line_residual_target",
+  "status": "completed_train_side_rejected",
+  "route": "ml_model",
+  "parent": "exp073_gpu_reproducibility_guard_for_exp063_full_replay",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "cv": "control dTVT 9.664066550786604; rejected prefix targets: alpha0p5 28.087914026914888, alpha1p0 33.47879414361529",
+  "control_cv": 9.664066550786604,
+  "rejected_prefix_target_cv": {
+    "prefix_u_line_alpha0p5": 28.087914026914888,
+    "prefix_u_line_alpha1p0": 33.47879414361529
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "expected_feature_count": 196,
+  "active_mode": "gpu_repro_guard_dp_threads8",
+  "active_targets": [
+    "dTVT",
+    "prefix_u_line_alpha1p0",
+    "prefix_u_line_alpha0p5"
+  ],
+  "max_lgb_models": 1,
+  "best_target": "dTVT",
+  "selected_for_inference": false,
+  "pooled_rmse": {
+    "dTVT_lgb0": 9.664066550786604,
+    "prefix_u_line_alpha1p0_lgb0": 33.47879414361529,
+    "prefix_u_line_alpha0p5_lgb0": 28.087914026914888
+  },
+  "prefix_line_diagnostics": {
+    "anchor_wells": 773,
+    "anchor_t0_vs_last_known_abs_max": 0.0,
+    "known_prefix_rows_min": 851,
+    "known_prefix_rows_max": 2392,
+    "prefix_alpha1_fallback_wells": 0,
+    "prefix_alpha1_fit_rows_min": 687,
+    "prefix_alpha1_slope_abs_p99": 0.08104548154323359,
+    "prefix_alpha0p5_fallback_wells": 0,
+    "prefix_alpha0p5_fit_rows_min": 809,
+    "prefix_alpha0p5_slope_abs_p99": 0.3407004165068813
+  },
+  "kaggle_train": {
+    "kernel_id": "kentookumura/exp095-prefix-u-line-residual-target-train",
+    "kernel_version": 1,
+    "status": "COMPLETE",
+    "url": "https://www.kaggle.com/code/kentookumura/exp095-prefix-u-line-residual-target-train",
+    "output_path": "/tmp/kaggle-output/exp095_prefix_u_line_residual_target/train_v1",
+    "elapsed_seconds": 8228.319
+  },
+  "artifacts": {
+    "metrics": "artifacts/exp095_prefix_u_line_residual_target_metrics.csv",
+    "by_well": "artifacts/exp095_prefix_u_line_residual_target_by_well.csv",
+    "bucket_metrics": "artifacts/exp095_prefix_u_line_residual_target_bucket_metrics.csv",
+    "target_summary": "artifacts/exp095_prefix_u_line_residual_target_target_summary.csv",
+    "feature_schema": "artifacts/exp095_prefix_u_line_residual_target_feature_schema.csv",
+    "model_manifest": "artifacts/exp095_prefix_u_line_residual_target_lgb_models/manifest.json",
+    "summary": "artifacts/exp095_prefix_u_line_residual_target_summary.json",
+    "predictions_external": "/tmp/kaggle-output/exp095_prefix_u_line_residual_target/train_v1/artifacts/exp095_prefix_u_line_residual_target_predictions.csv.gz",
+    "model_files_external": "/tmp/kaggle-output/exp095_prefix_u_line_residual_target/train_v1/artifacts/exp095_prefix_u_line_residual_target_lgb_models"
+  },
+  "notes": [
+    "Kaggle train v1 completed successfully.",
+    "Both prefix U-line residual targets are much worse than dTVT across pooled, fold, and distance-bucket metrics.",
+    "No prefix-line fallback occurred, so the failure is target definition rather than fallback coverage.",
+    "Inference is intentionally unselected; do not port this target."
+  ]
+}

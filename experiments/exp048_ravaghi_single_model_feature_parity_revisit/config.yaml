@@ -1,0 +1,405 @@
+experiment:
+  name: "exp048_ravaghi_single_model_feature_parity_revisit"
+  description: Revisit Ravaghi-derived single-model features under explicit feature/parity checks and direct public-PF success controls.
+  route: ml_model
+  status: completed
+  created_at: "2026-06-10"
+  updated_at: "2026-06-10"
+
+lineage:
+  parent: exp043_ravaghi_feature_family_ablation_matrix
+  supporting_artifact: exp029_public_sel15_pf_oof_feature_generation
+  diff_summary: Start from the exp043 same-split Ravaghi feature-family matrix, but revisit it as a parity audit. The experiment keeps train-side pseudo-test feature generation aligned with exp029 PF/Beam settings, records a feature parity report, evaluates raw predictions separately from fixed bucket shrink, and adds fixed anchor/PF blend postprocess candidates. A candidate is only supported if it beats both the weak base single-LGBM control and direct public-PF controls on original-fold and well-hash audits.
+
+validation:
+  leakage_policy:
+    - Input rows come from exp029 pseudo-test artifacts where each train well was masked after the cutoff before public sel15 PF/Beam features were generated.
+    - Splits are well-level only; the same well is never in train and validation for a candidate model.
+    - target_tvt is used only as the supervised label and scoring label.
+    - Error diagnostic columns pf_error, last_anchor_error, and beam_error are excluded from features.
+    - exp026_oof and exp026 bridge columns are excluded from model features to keep this a single-model feature ablation rather than a stack.
+    - Train-only formation columns such as ANCC, ASTNU, ASTNL, EGFDU, EGFDL, and BUDA are not read.
+    - Spatial/formation proxy features are 見えない test で使える geometry proxies derived from X/Y/Z/MD, cutoff metadata, last_anchor_tvt, public PF, and public beam predictions; they are not fitted from validation wells or direct formation tops.
+    - Exact Ravaghi beam paths are regenerated from each train well の途中以降を隠す cutoff using only horizontal-well GR/MD, typewell TVT/GR, and the visible prefix TVT_input.
+    - Ravaghi NCC/GR match features are regenerated from each train well の途中以降を隠す cutoff using only horizontal-well GR, typewell TVT/GR, known-prefix TVT_input, and public PF/beam predictions already present in the train well の途中以降を隠した疑似 test 生成物.
+    - Raw GR values are excluded from candidate features; only match score, candidate disagreement, and offset residual summaries are used.
+    - NCC and exact beam candidate values are used only as add-only model features; report controls keep direct beam/PF replacement separate.
+    - Candidate support requires improvement over the base single-LGBM control, public_pf_selector, and pf090_hold010 in both original-fold and well-hash audits; exp026 regenerated control is reported as an anchor, not used as a model feature.
+    - Raw predictions, fixed bucket shrink, anchor gates, and public-PF blends are kept as separate postprocess candidates so a fixed bucket shrink is not assumed to be the right policy.
+
+data:
+  feature_path: experiments/exp029_public_sel15_pf_oof_feature_generation/features/public_sel15_pf_oof_features.csv.gz
+  source_well_summary_path: experiments/exp029_public_sel15_pf_oof_feature_generation/artifacts/public_sel15_pf_oof_well_summary.csv
+
+model:
+  name: ravaghi_single_model_feature_parity_revisit
+  target: target_tvt_minus_last_anchor_tvt
+  base_prediction: last_anchor_tvt
+  estimator: LGBMRegressor
+  params:
+    n_estimators: 800
+    learning_rate: 0.03
+    num_leaves: 31
+    min_child_samples: 80
+    subsample: 0.9
+    colsample_bytree: 0.9
+    reg_lambda: 0.1
+    n_jobs: 2
+  prediction:
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  training:
+    max_train_rows_per_split: 300000
+    max_train_rows_per_bucket: 60000
+    seed: 42
+  feature_sets:
+    base_geometry:
+      - pseudo_cutoff_fraction
+      - cutoff_row
+      - row_idx
+      - prefix_length
+      - eval_step
+      - eval_fraction
+      - MD
+      - X
+      - Y
+      - Z
+      - gr_isna
+      - gr_prefix_availability
+      - gr_eval_availability
+      - last_anchor_tvt
+    pf_prediction:
+      - pf_pred
+      - pf_selected_scale_pred
+      - pf_scale_3
+      - pf_scale_5
+      - pf_scale_8
+      - pf_scale_12
+      - pf_seed_mean
+      - pf_seed_std
+      - pf_pred_minus_last_anchor
+      - pf_ancc_delta
+      - pf_ancc_abs_delta
+      - pf_vs_last_anchor
+      - abs_pf_vs_last_anchor
+    pf_uncertainty:
+      - pf_ancc_std
+      - pf_scale_mean_delta
+      - pf_scale_std
+      - pf_scale_range
+      - pf_selected_vs_scale_mean
+      - pf_scale_range_to_seed_std
+      - pf_likelihood_margin
+      - pf_lik_best
+      - pf_lik_mean
+      - pf_lik_std
+      - pf_weight_entropy
+      - pf_weight_top
+      - pf_weight_best_second_gap
+      - pf_effective_seeds
+      - selector_code
+      - selector_scale
+      - selector_beam_weight
+      - selector_hold_weight
+      - selector_n_eval
+      - selector_z_span
+      - pf_gr_sigma_mean
+      - pf_initial_rate_mean
+      - pf_mean_effective_particles
+      - pf_min_effective_particles
+      - pf_resample_count_mean
+    public_beam_aggregate:
+      - beam_pred
+      - beam_spread
+      - beam_min
+      - beam_max
+      - beam_final_cost_mean
+      - beam_final_cost_min
+      - pf_beam_diff
+      - abs_pf_beam_diff
+    beam_exact_paths:
+      - beam_exact_cons_delta
+      - beam_exact_loose_delta
+      - beam_exact_vcons_delta
+      - beam_exact_sm5_delta
+      - beam_exact_vloose_delta
+      - beam_exact_mid_delta
+      - beam_exact_stiff_delta
+      - beam_exact_mean_delta
+      - beam_exact_median_delta
+      - beam_exact_ref_delta
+    beam_exact_diagnostics:
+      - beam_exact_std
+      - beam_exact_range
+      - beam_exact_min_delta
+      - beam_exact_max_delta
+      - beam_exact_cons_sm5_gap
+      - beam_exact_cost_mean
+      - beam_exact_cost_min
+      - beam_exact_cost_std
+      - beam_exact_cost_gap_best_second
+    beam_exact_disagreement:
+      - beam_exact_mean_vs_public_beam
+      - abs_beam_exact_mean_vs_public_beam
+      - beam_exact_ref_vs_public_beam
+      - abs_beam_exact_ref_vs_public_beam
+      - beam_exact_mean_vs_pf
+      - abs_beam_exact_mean_vs_pf
+      - beam_exact_ref_vs_pf
+      - abs_beam_exact_ref_vs_pf
+    ncc_paths:
+      - ncc_sc8_delta
+      - ncc_sc15_delta
+      - ncc_sc25_delta
+      - ncc_sc_cons_delta
+      - ncc_sc_ens_delta
+    ncc_scores:
+      - ncc_sc8_score
+      - ncc_sc15_score
+      - ncc_sc25_score
+      - ncc_score_mean
+      - ncc_score_std
+      - ncc_score_min
+      - ncc_score_max
+      - ncc_score_gap_best_second
+      - ncc_best_scale
+      - ncc_sc_trust
+    ncc_disagreement:
+      - ncc_sc_range
+      - ncc_sc_std
+      - ncc_sc_ens_vs_public_beam
+      - abs_ncc_sc_ens_vs_public_beam
+      - ncc_sc_ens_vs_pf
+      - abs_ncc_sc_ens_vs_pf
+      - ncc_sc_cons_vs_public_beam
+      - abs_ncc_sc_cons_vs_public_beam
+      - ncc_sc_cons_vs_pf
+      - abs_ncc_sc_cons_vs_pf
+    gr_match_offsets:
+      - gr_match_prefix_rmse
+      - gr_match_cal_a
+      - gr_match_cal_b
+      - gr_vs_tw_anchor
+      - gr_vs_sc_ens
+      - gr_vs_public_beam
+      - gr_vs_pf
+      - gr_vs_anchor_m25
+      - gr_vs_anchor_p25
+      - gr_vs_sc_m25
+      - gr_vs_sc_p25
+      - gr_vs_beam_m25
+      - gr_vs_beam_p25
+      - gr_vs_pf_m25
+      - gr_vs_pf_p25
+    spatial_formation_proxy:
+      - spatial_xy_from_cutoff
+      - spatial_xyz_from_cutoff
+      - spatial_md_xy_ratio
+      - spatial_z_per_md
+      - spatial_abs_z_per_md
+      - spatial_path_azimuth_sin
+      - spatial_path_azimuth_cos
+      - spatial_first_x
+      - spatial_first_y
+      - spatial_first_z
+      - formation_z_proxy_delta
+      - formation_z_proxy_vs_pf
+      - formation_z_proxy_vs_beam
+  variants:
+    - name: base_geometry
+      feature_families: [base_geometry]
+    - name: base_plus_pf_prediction
+      feature_families: [base_geometry, pf_prediction]
+    - name: base_plus_pf_uncertainty
+      feature_families: [base_geometry, pf_uncertainty]
+    - name: base_plus_pf_prediction_uncertainty
+      feature_families: [base_geometry, pf_prediction, pf_uncertainty]
+    - name: base_plus_public_beam_aggregate
+      feature_families: [base_geometry, public_beam_aggregate]
+    - name: base_plus_exact_beam_disagreement
+      feature_families:
+        - base_geometry
+        - beam_exact_paths
+        - beam_exact_diagnostics
+        - beam_exact_disagreement
+    - name: base_plus_pf_exact_beam_disagreement
+      feature_families:
+        - base_geometry
+        - pf_prediction
+        - pf_uncertainty
+        - beam_exact_paths
+        - beam_exact_diagnostics
+        - beam_exact_disagreement
+    - name: base_plus_ncc_disagreement
+      feature_families:
+        - base_geometry
+        - ncc_paths
+        - ncc_scores
+        - ncc_disagreement
+    - name: base_plus_ncc_gr_match
+      feature_families:
+        - base_geometry
+        - ncc_paths
+        - ncc_scores
+        - ncc_disagreement
+        - gr_match_offsets
+    - name: base_plus_ncc_gr_match_pf_context
+      feature_families:
+        - base_geometry
+        - ncc_paths
+        - ncc_scores
+        - ncc_disagreement
+        - gr_match_offsets
+        - pf_uncertainty
+    - name: base_plus_spatial_formation_proxy
+      feature_families: [base_geometry, spatial_formation_proxy]
+    - name: base_plus_supported_ravaghi_core
+      feature_families:
+        - base_geometry
+        - pf_prediction
+        - pf_uncertainty
+        - beam_exact_paths
+        - beam_exact_diagnostics
+        - beam_exact_disagreement
+        - spatial_formation_proxy
+    - name: base_plus_all_ravaghi_families
+      feature_families:
+        - base_geometry
+        - pf_prediction
+        - pf_uncertainty
+        - public_beam_aggregate
+        - beam_exact_paths
+        - beam_exact_diagnostics
+        - beam_exact_disagreement
+        - ncc_paths
+        - ncc_scores
+        - ncc_disagreement
+        - gr_match_offsets
+        - spatial_formation_proxy
+
+postprocess:
+  selected_method: parity_selected_by_audit
+  candidate_methods:
+    - raw
+    - distance_bucket_shrink
+    - anchor_gate
+    - public_pf_blend
+  methods:
+    distance_bucket_shrink:
+      name: exp014_bucket_shrink_params
+      buckets:
+        - {name: rows_0_49, max_step: 49, alpha: 0.20}
+        - {name: rows_50_249, max_step: 249, alpha: 0.5917180252647632}
+        - {name: rows_250_999, max_step: 999, alpha: 1.15}
+        - {name: rows_1000_2499, max_step: 2499, alpha: 1.15}
+        - {name: rows_2500_plus, max_step: 1000000000, alpha: 1.0490770312511664}
+    anchor_gate:
+      name: fixed_anchor_to_single_model_gate
+      weights: [0.50, 0.70, 0.85]
+    public_pf_blend:
+      name: fixed_single_model_to_public_pf_blend
+      weights: [0.10, 0.20, 0.30]
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  chunk_rows: 500000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp029-sel15-pf-oof-train
+
+audit:
+  parent_exp026_clean_cv: 12.870780
+  parent_exp026_raw_cv: 12.942938
+  reference_control: base_geometry_bucket_shrink
+  required_controls:
+    - base_geometry_bucket_shrink
+    - public_pf_selector
+    - pf090_hold010
+  success_controls:
+    - public_pf_selector
+    - pf090_hold010
+  require_beat_success_controls: true
+  supported_candidate_markers:
+    - _raw
+    - _bucket_shrink
+    - _anchor_gate_w
+    - _pf_blend_w
+  report_controls:
+    - last_anchor
+    - public_pf_selector
+    - pf090_hold010
+    - beam
+  well_holdout_folds: 5
+  include_exp026_regenerated_control: true
+  source_feature_generation:
+    source_experiment: exp029_public_sel15_pf_oof_feature_generation
+    expected_cutoff_fraction: 0.65
+    expected_rows: 1782279
+    expected_wells: 773
+    expected_pf_n_particles: 250
+    expected_pf_n_seeds: 16
+    expected_selector_scales: [3.0, 5.0, 8.0, 12.0]
+    expected_beam_configs: 14
+  exp026_training:
+    primary_strategy: drift_model
+    drift_strategy: drift_model
+    feature_set: no_gr_signal
+    strategies:
+      - last_anchor
+      - recent_linear
+      - drift_model
+    params:
+      recent_slope_window: 200
+      recent_slope_shrink: 0.5
+      max_abs_recent_slope: 0.08
+      min_known_rows: 2
+      gr_slope_window: 200
+      max_abs_gr_slope: 2.0
+      gr_roll_short: 25
+      gr_roll_long: 100
+      residual_shrink: 0.85
+      max_abs_residual: 80.0
+    drift_model:
+      estimator: LGBMRegressor
+      params:
+        n_estimators: 800
+        learning_rate: 0.03
+        num_leaves: 31
+        min_child_samples: 80
+        subsample: 0.9
+        colsample_bytree: 0.9
+        reg_lambda: 0.1
+        n_jobs: 2
+    training:
+      max_train_rows_per_fold: 300000
+      max_train_rows_per_well: 800
+    training_variants:
+      selected_variant: pseudo_tail_3_cutoffs_distance_balanced
+      variants:
+        - name: pseudo_tail_3_cutoffs_distance_balanced
+          cutoffs_per_well: 3
+          cutoff_quantiles: [0.45, 0.65, 0.82]
+          distance_balanced: true
+          max_rows_per_pseudo_tail: 260
+          balanced_rows_per_bucket: 60000
+    pseudo_tail:
+      min_prefix_rows: 200
+      min_pseudo_eval_rows: 250
+      cutoff_strategy: quantile
+  distance_buckets:
+    - {name: rows_0_49, max_step: 49}
+    - {name: rows_50_249, max_step: 249}
+    - {name: rows_250_999, max_step: 999}
+    - {name: rows_1000_2499, max_step: 2499}
+    - {name: rows_2500_plus, max_step: 1000000000}
+
+notes:
+  - This experiment revisits exp043 with stricter support criteria: direct public PF controls must be beaten, not only base_geometry.
+  - It intentionally avoids direct GR values, train-only formation columns, direct PF/Beam replacement, Ridge/meta-stack inference ports, and learned routers.
+  - Exact beam and NCC paths are regenerated from train well の途中以降を隠した疑似 test train cutoffs rather than learned from target errors.
+  - Spatial/formation proxy features are geometry-only and do not fit formation tops from validation wells.
+  - Raw, fixed bucket-shrink, anchor-gate, and public-PF-blend CV are recorded separately for every LightGBM feature variant, plus family and feature-parity CSVs.

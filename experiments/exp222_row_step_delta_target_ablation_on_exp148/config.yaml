@@ -1,0 +1,247 @@
+experiment:
+  name: "exp222_row_step_delta_target_ablation_on_exp148"
+  description: CPU-only lgb0 ablation that keeps the exp148 learned-likelihood feature surface and trains row-to-row step delta targets reconstructed by well-wise cumulative sum.
+  route: ml_model
+  status: completed_train_side_rejected_no_submit
+  created_at: "2026-07-08"
+  updated_at: "2026-07-08"
+
+lineage:
+  parent: exp148_learned_likelihood_fulltrain_addonly_on_exp092
+  base_surface_parent: exp092_u_projection_correction_disagreement_fullrun
+  learned_likelihood_parent: exp145_learned_likelihood_rawtest_feature_generator_parity
+  learned_likelihood_model_parent: exp111_learned_pf_observation_likelihood_probe
+  parity_parent: exp145_learned_likelihood_rawtest_feature_generator_parity
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  comparison_parents:
+    - exp148_learned_likelihood_fulltrain_addonly_on_exp092
+    - exp193_typewell_late_interval_context_features_addonly_on_exp148
+    - exp198_exact_replacement_prune_on_exp148
+  implementation_source: row_step_delta_target_ablation_on_exp148.py
+  diff_summary: >
+    Keeps the exp148 feature surface, feature groups, GroupKFold-by-well split,
+    and LightGBM lgb0 config, but changes the supervised label from
+    TVT - last_known_tvt to same-well row-to-row target_step_delta. First
+    unknown rows use TVT_i - last_known_tvt; later rows use TVT_i - TVT_{i-1}.
+    OOF predictions are evaluated after well-wise cumulative reconstruction
+    last_known_tvt + cumsum(pred_step_delta). No previous model prediction,
+    OOF prediction, valid/test true TVT, oracle label, or error-rank feature is
+    added. This is train-side only until lgb0 passes distance, worst-well,
+    hidden-like, and cumulative-drift guards.
+
+validation:
+  strategy: groupkfold_by_well_exp148_surface_step_delta_target_lgb0_cpu
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: full_rows_between_exp072_exp092_surface_and_exp145_full_train_ml_feature_cache
+  leakage_policy:
+    - Exp072 full replay features are raw-train-only deterministic cache columns.
+    - Exp092 U-projection features use target-free PF/Beam/likelihood-PF candidate paths, row Z, MD distance, and known-prefix anchors.
+    - Exp145 learned likelihood features are generated target-free from exp111 saved learned likelihood transforms and exp099/full replay candidate features.
+    - The learned likelihood fold column is used only for inventory and is not a model feature.
+    - GroupKFold is grouped by well; a well never appears in train and validation in the same fold.
+    - Previous-row true TVT is used only to build the supervised step-delta label inside train-side evaluation.
+    - OOF and validation predictions reconstruct TVT only from predicted step deltas by well-wise cumulative sum.
+    - No previous model prediction, OOF prediction, hidden-tail true TVT, oracle best, true-error rank, or evaluation label is used as a feature.
+
+audit:
+  mode: train_side_target_ablation
+  fast: false
+  primary_metric: reconstructed_tvt_rmse
+  guards:
+    - overall lgb0 reconstructed TVT RMSE should be competitive with exp148/exp193/exp198 lgb0-style baselines before expanding to lgb1/lgb2.
+    - distance buckets 000_050, 1000_plus, and 2500_plus must not show material regression.
+    - worst-well and cumulative drift readouts must not show path accumulation failure.
+    - exp115 hidden-like stress should be checked before inference or submit.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_summary_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_summary.json
+  learned_likelihood_train_features_local: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/kaggle/output/train_v2/artifacts/exp145_learned_likelihood_rawtest_feature_generator_parity_full_train_ml_features.csv.gz
+  learned_likelihood_rawtest_features_local: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/kaggle/output/inference_v3/artifacts/exp145_learned_likelihood_rawtest_feature_generator_parity_rawtest_ml_features.csv.gz
+  learned_likelihood_train_feature_schema_local: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/kaggle/output/train_v2/artifacts/exp145_learned_likelihood_rawtest_feature_generator_parity_feature_schema.csv
+  learned_likelihood_rawtest_feature_schema_local: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/kaggle/output/inference_v3/artifacts/exp145_learned_likelihood_rawtest_feature_generator_parity_feature_schema.csv
+  learned_likelihood_train_summary_local: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/kaggle/output/train_v2/artifacts/exp145_learned_likelihood_rawtest_feature_generator_parity_summary.json
+  learned_likelihood_rawtest_summary_local: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/kaggle/output/inference_v3/artifacts/exp145_learned_likelihood_rawtest_feature_generator_parity_summary.json
+  exp099_artifact_dir_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp111_artifact_dir_local: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts
+  exp111_feature_schema: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_feature_schema.csv
+  exp111_model_manifest: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_model_manifest.json
+  exp112_artifact_dir_local: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts
+  exp112_feature_schema: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+
+model:
+  name: exp222_row_step_delta_target_ablation_on_exp148_lgbm
+  source_experiment: exp148_learned_likelihood_fulltrain_addonly_on_exp092
+  base_surface_experiment: exp092_u_projection_correction_disagreement_fullrun
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  learned_likelihood_feature_experiment: exp145_learned_likelihood_rawtest_feature_generator_parity
+  feature_source: exp072_exp063_full_replay_train_feature_cache_plus_exp145_full_train_ml_features
+  expected_base_feature_count: 196
+  target: target_step_delta
+  base_prediction: last_known_tvt
+  estimator: lightgbm
+  lgb_config_family: exp063_public_pixiux_lgb0_lgb1_lgb2
+  step_delta_target:
+    enabled: true
+    order_column: row_number
+    first_unknown_definition: target_tvt_i_minus_last_known_tvt
+    later_row_definition: target_tvt_i_minus_target_tvt_previous_row
+    reconstruction: last_known_tvt_plus_wellwise_cumsum_pred_step_delta
+    primary_metric: reconstructed_tvt_rmse
+  u_projection:
+    anchor_definition: local_prefix_u0_equals_T0_plus_Z0
+    degree: 3
+    robust_iters: 3
+    clip_sigma: 4.0
+    include_lgb_oof_features: false
+    sources:
+      pf_ancc:
+        value_column: pf_ancc
+        enabled: true
+      pf_z:
+        value_column: pf_z
+        enabled: true
+      beam_mean:
+        delta_column: beam_mean_d
+        enabled: true
+      beam_med:
+        delta_column: beam_med_d
+        enabled: true
+      likpf_mean:
+        delta_column: likpf_mean_d
+        enabled: true
+  learned_likelihood_features:
+    prefix: ll_
+    direct_columns:
+      - learned_prob_top1_index
+      - learned_error_top1_index
+      - learned_prob_top1_value
+      - learned_prob_top2_value
+      - learned_prob_margin_top1_top2
+      - learned_prob_entropy
+      - learned_error_top1_value
+      - learned_error_top2_value
+      - learned_error_margin_top2_top1
+      - learned_prob_likpf_rank
+      - learned_error_likpf_rank
+      - learned_prob_top3_contains_likpf
+      - learned_error_top3_contains_likpf
+      - candidate_tvt_std
+      - candidate_tvt_range
+      - learned_prob_pf_ancc
+      - learned_pred_abs_error_pf_ancc
+      - multiobs_score_pf_ancc
+      - multiobs_mae_pf_ancc
+      - multiobs_ncc_pf_ancc
+      - learned_prob_beam_mean
+      - learned_pred_abs_error_beam_mean
+      - multiobs_score_beam_mean
+      - multiobs_mae_beam_mean
+      - multiobs_ncc_beam_mean
+      - learned_prob_likpf_mean
+      - learned_pred_abs_error_likpf_mean
+      - multiobs_score_likpf_mean
+      - multiobs_mae_likpf_mean
+      - multiobs_ncc_likpf_mean
+      - learned_prob_sc_ens
+      - learned_pred_abs_error_sc_ens
+      - multiobs_score_sc_ens
+      - multiobs_mae_sc_ens
+      - multiobs_ncc_sc_ens
+      - learned_prob_hyb
+      - learned_pred_abs_error_hyb
+      - multiobs_score_hyb
+      - multiobs_mae_hyb
+      - multiobs_ncc_hyb
+    candidate_tvt_columns:
+      - candidate_tvt_pf_ancc
+      - candidate_tvt_beam_mean
+      - candidate_tvt_likpf_mean
+      - candidate_tvt_sc_ens
+      - candidate_tvt_hyb
+    weighted_tvt_columns:
+      - learned_prob_weighted_tvt
+      - learned_error_weighted_tvt
+  feature_ablation:
+    selected_variant: step_delta_target_lgb0
+    active_variants:
+      - name: exp148_fulltrain_control
+        description: Disabled by cost guard; use completed exp148 CPU/GPU CV and Public LB as comparison baselines unless an explicit control rerun is later approved.
+        feature_groups:
+          - projection_correction
+          - u_disagreement
+          - learned_likelihood_confidence
+        enabled: false
+      - name: step_delta_target_lgb0
+        description: Uses the unchanged exp148 feature set but trains lgb0 on row-to-row step delta and scores cumulative TVT reconstruction.
+        feature_groups:
+          - projection_correction
+          - u_disagreement
+          - learned_likelihood_confidence
+        enabled: true
+  training:
+    early_stopping_rounds: 250
+    max_train_rows: null
+    max_rows: null
+    save_models: true
+    save_predictions: true
+    top_n_importance: 60
+    lgb_config_indices: [0]
+    active_modes:
+      - cpu_deterministic_threads8
+    modes:
+      cpu_deterministic_threads8:
+        description: CPU deterministic LightGBM lgb0 target ablation with fixed thread count.
+        use_gpu: false
+        common_overrides:
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp145-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_lightgbm_config_seed_plus_groupkfold_seed42
+  stochastic_components:
+    - LightGBM histogram training and bagging under fixed config seed
+  parallel_rng_policy: no custom parallel RNG; LightGBM uses deterministic CPU flags and fixed thread count
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Train-side CV only; do not treat as deterministic submission anchor.
+    - Inference is intentionally not enabled until cumulative drift and hidden-like stress pass.
+
+notes:
+  - Planned CPU run is 1 enabled variant x 1 CPU mode x lgb0 x 5 folds = 5 boosters.
+  - Parent/control retraining is disabled; compare against recorded exp148, exp193, and exp198 metrics.

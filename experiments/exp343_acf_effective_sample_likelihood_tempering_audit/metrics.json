@@ -1,0 +1,91 @@
+{
+  "experiment": "exp343_acf_effective_sample_likelihood_tempering_audit",
+  "status": "stage_0_completed_guard_failed_closed",
+  "route": "pf_beam",
+  "stage": "stage_0_acf_stability",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "kernel": {
+    "id": "kentookumura/exp343-acf-effective-sample-tempering-train",
+    "id_no": 128358348,
+    "version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp343-acf-effective-sample-tempering-train",
+    "status": "COMPLETE",
+    "runtime_seconds": 273.66704466799996,
+    "runtime": "Kaggle CPU",
+    "enable_internet": false,
+    "enable_gpu": false,
+    "enable_tpu": false
+  },
+  "execution_contract": {
+    "diagnostic_variants": 1,
+    "reporting_folds": 5,
+    "hmm_well_runs": 0,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "parent_control_retraining": false
+  },
+  "pooled": {
+    "expected_wells": 773,
+    "actual_wells": 773,
+    "joint_evaluable_wells": 295,
+    "joint_evaluable_fraction": 0.3816300129366106,
+    "fallback_wells": 478,
+    "fallback_fraction": 0.6183699870633894,
+    "spearman_full_vs_tail": null,
+    "median_absolute_log_ratio": 0.0,
+    "stable_folds": 0,
+    "full_median_tau_eff": 4.0,
+    "tail_median_tau_eff": 4.0,
+    "full_upper_clip_fraction": 0.9974126778783958,
+    "tail_upper_clip_fraction": 1.0,
+    "full_fold_median_tau_ratio": 1.0,
+    "tail_fold_median_tau_ratio": 1.0
+  },
+  "gate": {
+    "passed": false,
+    "stage_1_eligible": false,
+    "decision": "stage_0_failed_close_without_rescue",
+    "checks": {
+      "well_count": true,
+      "joint_evaluable_fraction_at_least_0_90": false,
+      "fallback_fraction_at_most_0_10": false,
+      "spearman_at_least_0_70": false,
+      "median_absolute_log_ratio_at_most_log_1_5": true,
+      "stable_folds_at_least_4": false,
+      "pooled_median_tau_at_least_1_25": true,
+      "upper_clip_fraction_at_most_0_25": false,
+      "fold_median_tau_ratio_at_most_1_50": true
+    }
+  },
+  "fold_raw_tau_prior_ranges": {
+    "full_known_prefix": [9.7714364, 10.0399628],
+    "last_512_known_prefix_rows": [24.2582863, 25.1728468]
+  },
+  "artifacts_generated": true,
+  "content_sha256": {
+    "scientific_contract": "59faf92ce0130ec025fb5d244dfa35170aa338b56e77e87baba593fa071177a0",
+    "known_prefix_residuals": "58b9b269ab2374270463b000edb2a671197e5514dbb1dbc664cabb941cc12cea",
+    "acf_lag_readout": "2383489b6d6feefeda71c2ae4a35122a001145a7d175c06b2a78622eecd87512",
+    "tau_schedule": "42391a82f4228ecae79755050b1b589732ba8e7d319ca5f7d159aeeb8b3d7022",
+    "fold_priors": "3aad8f6ff19db33e6b318fd6c1184d69ea16725e7f8c45ea3794e57df938e200",
+    "stability_readout": "1498f587c511bbfa35aba80c8358fa42ff56979b8ba42d8ce3c3a19e45475940",
+    "fold_metrics": "9b77ba5df4fe697833037edab3119a2f6770db81a3f529e1d75b41c00acfd307",
+    "well_manifest": "8612ef9b445d3bbc8384aa697add3e439b266cf5611a40e65e1a7d162de78ae2"
+  },
+  "selected_download_sha256": {
+    "summary_and_metrics": "3ef65cdc1422e8c74cfb04b12e16e70978fb573693ea97dfb0cea08b3165d03a",
+    "gate": "ccd61a27a1209cbba7411d76d8fdd98e4e6d2dbe56f2e044225d9ccb254760e3",
+    "fold_metrics": "f8d42a1b7c34dfb02c995b3c3a6ea5700745d1025c3cff8e6d31657436946070",
+    "fold_priors": "664c683d95b75ce4eeef80569f83572325bb6427dd5e3eaa5439afdafbe71ac6",
+    "stability_readout": "de9cb872fd90ac74fd6d54b3815b6ccf4287e9c791c984acd44f1996f2c2af3b"
+  },
+  "stage_1_implemented": false,
+  "stage_1_executed": false,
+  "inference_enabled": false,
+  "inference_executed": false,
+  "submission_enabled": false,
+  "submission_created": false
+}

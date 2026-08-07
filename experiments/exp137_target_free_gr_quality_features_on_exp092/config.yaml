@@ -1,0 +1,213 @@
+experiment:
+  name: "exp137_target_free_gr_quality_features_on_exp092"
+  description: Add target-free GR quality and coverage confidence features to the exp092 U-projection LightGBM surface.
+  route: ml_model
+  status: completed_train_side_audit_rejected
+  created_at: "2026-06-26"
+  updated_at: "2026-06-27"
+
+lineage:
+  parent: exp092_u_projection_correction_disagreement_fullrun
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  comparison_parents:
+    - exp092_u_projection_correction_disagreement_fullrun
+    - exp065_typewell_supertype_cluster_cv_audit
+    - exp127_learned_likelihood_features_on_exp092
+    - exp130_pfbeam_normalized_diagnostic_score
+    - exp083_pf_beam_true_tvt_2d_well_eda
+    - exp126_exp073_exp092_pf_beam_pseudotail_failure_map
+  implementation_source: target_free_gr_quality_features_on_exp092.py
+  diff_summary: Keeps the exp092 U-projection correction plus disagreement feature surface and original residual target, then adds target-free GR coverage, missingness, interpolation-gap, prefix/eval mismatch, and exp065 native-overlap quality context features.
+
+validation:
+  strategy: groupkfold_by_well_exp092_surface_full_rows
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: exp072_full_replay_train_feature_cache_rows
+  leakage_policy:
+    - Exp072 full replay features are raw-train-only deterministic cache columns.
+    - Exp092 U-projection features use target-free PF/Beam/likelihood-PF candidate paths, row Z, MD distance, and known-prefix anchors.
+    - New GR quality features use only raw horizontal well MD/GR/TVT_input missingness and exp065 typewell overlap metadata.
+    - No raw GR value column, NCC/DTW waveform score, candidate TVT path, true validation TVT, oracle candidate choice, absolute error, or fold label is used to build the GR quality features.
+    - GroupKFold is grouped by well; a well never appears in train and validation in the same fold.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_summary_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_summary.json
+  exp065_assignments_local: experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/common_typewell_cluster_assignments.csv
+  exp065_native_pairs_local: experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/typewell_native_overlap_pairs.csv
+
+model:
+  name: exp137_target_free_gr_quality_features_on_exp092_lgbm
+  source_experiment: exp092_u_projection_correction_disagreement_fullrun
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  feature_source: exp072_exp063_full_replay_train_feature_cache_plus_target_free_gr_quality
+  expected_base_feature_count: 196
+  target: target
+  base_prediction: last_known_tvt
+  estimator: lightgbm
+  lgb_config_family: exp063_public_pixiux_lgb0_lgb1_lgb2
+  u_projection:
+    anchor_definition: local_prefix_u0_equals_T0_plus_Z0
+    degree: 3
+    robust_iters: 3
+    clip_sigma: 4.0
+    include_lgb_oof_features: false
+    sources:
+      pf_ancc:
+        value_column: pf_ancc
+        enabled: true
+      pf_z:
+        value_column: pf_z
+        enabled: true
+      beam_mean:
+        delta_column: beam_mean_d
+        enabled: true
+      beam_med:
+        delta_column: beam_med_d
+        enabled: true
+      likpf_mean:
+        delta_column: likpf_mean_d
+        enabled: true
+  target_free_gr_quality:
+    prefix: grq_
+    min_md_scale: 25.0
+    exp065_assignments_path: experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/common_typewell_cluster_assignments.csv
+    exp065_native_pairs_path: experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/typewell_native_overlap_pairs.csv
+    group_methods:
+      - name: native_overlap_0p999
+        method: native_overlap
+        threshold: "0.999"
+      - name: native_overlap_1
+        method: native_overlap
+        threshold: "1"
+      - name: exact_hash
+        method: exact_hash
+        threshold: byte_hash
+      - name: shifted_ncc_0p98
+        method: shifted_ncc
+        threshold: "0.98"
+      - name: dtw_0p94
+        method: dtw
+        threshold: "0.94"
+  feature_ablation:
+    selected_variant: target_free_gr_quality_addonly
+    active_variants:
+      - name: exp092_full_row_control
+        description: Exp092 U-projection correction plus disagreement feature surface retrained on all exp072 full replay rows.
+        feature_groups:
+          - projection_correction
+          - u_disagreement
+        enabled: true
+      - name: target_free_gr_quality_addonly
+        description: Adds target-free GR coverage, missingness, interpolation-gap, prefix/eval mismatch, and native-overlap quality features.
+        feature_groups:
+          - projection_correction
+          - u_disagreement
+          - target_free_gr_quality
+        enabled: true
+  training:
+    early_stopping_rounds: 250
+    max_train_rows: null
+    max_rows: null
+    active_model_indices:
+      - 0
+    save_models: true
+    save_predictions: true
+    top_n_importance: 60
+    active_modes:
+      - cpu_deterministic_threads8
+    modes:
+      gpu_repro_guard_dp_threads8:
+        description: GPU double precision plus fixed thread count and deterministic flags.
+        use_gpu: true
+        common_overrides:
+          gpu_use_dp: true
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+      cpu_deterministic_threads8:
+        description: CPU deterministic LightGBM control with fixed thread count.
+        use_gpu: false
+        common_overrides:
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_groupkfold_seed_no_new_pf_rng
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - lightgbm_training
+  parallel_rng_policy: LightGBM deterministic flags plus fixed n_jobs and num_threads; feature merge itself has no RNG.
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a train-side add-only feature audit, not a deterministic submission anchor.
+    - Inference and submission are disabled until OOF, worst-well, hidden-like stress, and raw-test feature parity are reviewed.
+    - exp127 and exp130 are recommended comparison results before interpreting this backlog, but they are not implementation blockers for this CPU train package.
+
+audit:
+  mode: target_free_gr_quality_features_on_exp092_on_exp092_surface
+  output_prefix: exp137_target_free_gr_quality_features_on_exp092
+  fast: false
+  reference_metrics:
+    exp092_full_lgb1_pooled_rmse: 9.322479895503927
+    exp092_full_public_lb: 8.350
+    exp126_exp092_lgb1_oof_rmse: 9.322480
+    exp126_likpf_mean_rmse: 11.594898
+  expected_train_artifacts:
+    - exp137_target_free_gr_quality_features_on_exp092_metrics.csv
+    - exp137_target_free_gr_quality_features_on_exp092_by_well.csv
+    - exp137_target_free_gr_quality_features_on_exp092_bucket_metrics.csv
+    - exp137_target_free_gr_quality_features_on_exp092_projection_feature_summary.csv
+    - exp137_target_free_gr_quality_features_on_exp092_diagnostic_feature_summary.csv
+    - exp137_target_free_gr_quality_features_on_exp092_feature_importance.csv
+    - exp137_target_free_gr_quality_features_on_exp092_feature_importance_mean.csv
+    - exp137_target_free_gr_quality_features_on_exp092_feature_importance_mean_top.png
+    - exp137_target_free_gr_quality_features_on_exp092_predictions.csv.gz
+    - exp137_target_free_gr_quality_features_on_exp092_feature_schema.csv
+    - exp137_target_free_gr_quality_features_on_exp092_lgb_models/manifest.json
+    - exp137_target_free_gr_quality_features_on_exp092_summary.json
+
+inference:
+  mode: disabled_train_side_feature_audit_only
+  selected_variant: null
+  notes:
+    - This experiment does not generate submission.csv.
+    - Raw-test feature parity for GR quality feature generation must be reviewed before any inference port.
+
+notes:
+  - Implements the KAGGLE_DIRECTION backlog item `target_free_gr_quality_features_on_exp092`.
+  - The GR quality features are confidence features only; they do not replace PF/Beam candidates or hard-switch predictions.

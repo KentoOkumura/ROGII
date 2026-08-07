@@ -1,0 +1,131 @@
+experiment:
+  name: "exp128_trajectory_local_typewell_self_gr_switch_audit"
+  description: Train-side audit for local switching between typewell GR observation cost and same-horizontal self-GR prefix matches inside one trajectory.
+  route: ensemble
+  status: completed_train_side_rejected_no_submit
+  created_at: "2026-06-25"
+  updated_at: "2026-06-25"
+
+lineage:
+  parent: exp099_pf_multi_observation_likelihood_probe
+  diagnostic_parents:
+    - exp091_self_gr_likelihood_pf_beam_probe
+    - exp093_pf_candidate_coverage_then_ranker_audit
+    - exp099_pf_multi_observation_likelihood_probe
+    - exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit
+    - exp120_typewell_geology_neighbor_prior_pf_likelihood_probe
+    - exp125_confidence_gate_continuity_rawtest_parity
+  implementation_source: trajectory_local_typewell_self_gr_switch_audit.py
+  diff_summary: Instead of selecting a global self-GR candidate or transferring other-horizontal same-typewell prefixes, this audit measures local typewell-vs-self GR costs on each trajectory window. It keeps likPF/PF candidates as the baseline trajectory, derives a same-horizontal prefix self-GR prior using only visible TVT_input prefix rows, and writes hard-switch / soft-blend candidates only when self-GR cost beats typewell cost by a configured gap. This is train-side diagnostic only and does not submit.
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation:
+  strategy: groupkfold_well_oof_local_typewell_self_gr_switch_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - switch_rate
+    - cost_gap
+    - bucket_rmse
+    - worst_well_rmse
+    - signal_correlation
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp099_rows
+  leakage_policy:
+    - Candidate generation uses exp099 train-side OOF/PF candidate cache and raw horizontal/typewell GR.
+    - Same-horizontal self-GR prior may use only the visible prefix before the pseudo predict start and finite TVT_input in that prefix.
+    - Evaluation-zone true TVT is used only after candidate generation for scoring.
+    - Typewell cost is computed from the candidate trajectory TVT values and typewell GR, not from target TVT.
+    - Local switch/blend decisions use typewell cost, self cost, prefix window coverage, and configured gap thresholds only.
+    - This experiment is a train-side audit; no raw-test parity, inference port, or submission is selected here.
+
+# Common paths and submission columns come from project.yml.
+data:
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+
+model:
+  name: trajectory_local_typewell_self_gr_switch_audit
+  target: true_tvt_for_scoring_only
+  base_candidates:
+    - likpf_mean
+    - pf_ancc
+    - beam_mean
+    - sc_ens
+    - hyb
+  local_switch:
+    typewell_cost_candidate: likpf_mean
+    window_radius_rows: 32
+    query_stride_rows: 8
+    prefix_stride_rows: 4
+    min_gr_valid_fraction: 0.70
+    min_prefix_window_count: 8
+    max_self_cost: 1.20
+    switch_gap_thresholds: [0.20, 0.35, 0.50]
+    blend_gap_thresholds: [0.15, 0.25, 0.35]
+    blend_weights: [0.25, 0.50]
+  notes:
+    - "`self_gr_prefix_prior_tvt` is scored for audit only and is not a submit candidate."
+    - Switch and blend variants are intentionally conservative because exp091 showed raw self-GR candidates are weak.
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 32
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: deterministic_single_process_window_scan_no_rng
+  stochastic_components:
+    - upstream_exp099_pf_beam_likelihood_cache
+  parallel_rng_policy: no_parallel_rng_in_exp128
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - The exp128 local switch audit itself uses no RNG and runs single-process.
+    - The upstream exp099 gzip cache decompressed content SHA is recorded as the main input evidence.
+    - This is not a deterministic submission anchor because there is no inference port or submission.
+
+audit:
+  mode: trajectory_local_typewell_self_gr_switch_audit
+  output_prefix: exp128_trajectory_local_typewell_self_gr_switch_audit
+  max_rows: null
+  max_wells: null
+  expected_train_artifacts:
+    - exp128_trajectory_local_typewell_self_gr_switch_audit_candidate_metrics.csv
+    - exp128_trajectory_local_typewell_self_gr_switch_audit_bucket_metrics.csv
+    - exp128_trajectory_local_typewell_self_gr_switch_audit_by_well.csv
+    - exp128_trajectory_local_typewell_self_gr_switch_audit_signal_metrics.csv
+    - exp128_trajectory_local_typewell_self_gr_switch_audit_window_diagnostics.csv
+    - exp128_trajectory_local_typewell_self_gr_switch_audit_oof_predictions.csv.gz
+    - exp128_trajectory_local_typewell_self_gr_switch_audit_feature_schema.csv
+    - exp128_trajectory_local_typewell_self_gr_switch_audit_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - If any switch/blend candidate improves likPF while keeping worst-well regression small, run a separate raw-test parity audit before inference work.
+    - Do not submit a self-GR switch candidate directly from this train-side audit.
+
+notes:
+  - Implements the backlog item `trajectory_local_typewell_self_gr_switch_audit`.
+  - Success requires target-free cost separation and worst-well stability, not same-OOF global RMSE alone.
+  - Kaggle train v1 completed, but soft-blend candidates had an unfair coverage drop from `0 * NaN` propagation when gate was zero. Treat v1 metrics as invalid and use v2+ only.
+  - Kaggle train v2 completed. No local switch/blend candidate improved over `likpf_mean`; self-GR cost was worse than typewell cost, so switch/gate never activated.

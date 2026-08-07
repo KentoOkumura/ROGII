@@ -1,0 +1,262 @@
+experiment:
+  name: exp354_typewell_group_candidate_family_prior_readout
+  description: >-
+    Independent zero-model readout testing whether a cross-fit Type Well
+    group-by-candidate-family error prior transfers to held-out wells.
+  route: ml_model
+  status: completed_stage_0_failed_close_without_rescue
+  created_at: "2026-07-23"
+  updated_at: "2026-07-23"
+
+lineage:
+  parent: exp293_physics_only_candidate_bank_headroom_contract
+  downstream_control: exp264_exp263_candidate_confidence_dual_selector
+  steering: ../../.steering/20260723-exp354-typewell-group-candidate-family-prior-readout
+  references:
+    - exp316_typewell_group_candidate_family_error_prior
+    - exp256_segment_local_corridor_near_bucket_signal_attribution_readout
+  diff_summary: >-
+    Removes dependencies on exp311, exp312, exp313, and exp315. Stage 0 uses
+    only the frozen exp293 deployable12 candidate/family manifest, outer-train
+    truth, and Type Well content to test a soft family prior before selector fit.
+
+implementation:
+  enabled: true
+  scope: stage_0_compact_selfcontained_canonical
+  train_notebook_state: compact_selfcontained_canonical_adopted
+  canonical_notebook_adopted: true
+  stage_1_implemented: false
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: exp293_outer5_typewell_group_candidate_family_prior_readout
+  metric: heldout_family_rank_spearman_then_nested_selector_rmse
+  seed: 42
+  outer_folds: 5
+  inner_folds_if_stage_1: 4
+  group_column: well_id
+  fit_scope: outer_train_wells_only
+  family_error_unit: equal_candidate_within_family_then_equal_well
+  rank_score: shrunk_family_rmse_ascending
+  rank_aggregation: mean_within_well_spearman_then_equal_well
+  truth_attachment: after_prior_and_fallback_content_sha_freeze
+  leakage_policy:
+    - Candidate family statistics use outer-train well truth only.
+    - Outer-valid error is joined after the prior, fallback, and shuffle manifests are frozen.
+    - Well-id priors, hard family routing, oracle rank, and candidate-value changes are forbidden.
+
+data:
+  exp293:
+    expected_kernel_id: kentookumura/exp293-physics-bank-headroom-audit-train
+    expected_kernel_version: 2
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_candidate_count: 12
+    expected_bank_manifest_raw_sha256: 646a394fed300469bd3e880290457b43df23cda5ce152c1ee43014f3a8278cdf
+    expected_candidate_bank_raw_sha256: 1281c1ec501c21bdee9d918d805eb320b3e0e82715d993c2cfd0f9dda18909bc
+    expected_candidate_bank_content_sha256: 29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474
+    expected_key_content_sha256: 42ede2f53e28dc2ccb28f847e0bc23680d1121bb29e980016dee989dbdddfef7
+    expected_block_assignment_raw_sha256: 49571a6e674f9cec2729e47ccf7c7740417c2f560eeb7b5d5dcf47ab3475667c
+    expected_block_assignment_decompressed_sha256: b0755c22aa8d791012d3f605e2f1b66063ce9bb6ba46ddd4b48dca77cce032d7
+    root_candidates:
+      - experiments/exp293_physics_only_candidate_bank_headroom_contract/kaggle/output/train_v2
+      - /kaggle/input/notebooks/kentookumura/exp293-physics-bank-headroom-audit-train
+      - /kaggle/input/exp293-physics-bank-headroom-audit-train
+    filenames:
+      bank_manifest: artifacts/exp293_physics_only_candidate_bank_headroom_contract_bank_manifest.json
+      block_assignment: artifacts/exp293_physics_only_candidate_bank_headroom_contract_block_assignment.csv.gz
+      candidate_bank: .exp293_work/exp293_physics_only_candidate_bank_headroom_contract_candidate_bank.f32
+  typewell_group_assignments:
+    filename: common_typewell_cluster_assignments.csv
+    expected_raw_sha256: dcda8588cc1dd9261bafae7de00c890393e38b8a0ca0eb86fbba18a2cffc4a50
+    method: native_overlap
+    threshold: "1"
+    candidates:
+      - experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/common_typewell_cluster_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp065-typewell-supertype-cluster-cv-audit-train/artifacts/common_typewell_cluster_assignments.csv
+      - /kaggle/input/exp065-typewell-supertype-cluster-cv-audit-train/artifacts/common_typewell_cluster_assignments.csv
+  hidden_like_assignments:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_raw_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    spatial_role_column: verification_like_spatial_role
+    typewell_purged_role_column: verification_like_typewell_purged_role
+    selected_role: valid
+  raw_train_dir_candidates:
+    - data/raw/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+  raw_horizontal_glob: "*__horizontal_well.csv"
+  raw_columns:
+    truth: TVT
+    visible_input: TVT_input
+
+model:
+  name: typewell_group_candidate_family_prior_readout
+  candidate_bank:
+    source: exp293_deployable12
+    manifest_and_order: frozen
+    regenerate_candidates: false
+    order:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_k16__selfgr_hmm_a070
+      - exp226_k16__exact_hmm
+      - exp226_k16__likpf_mean
+      - selfgr_hmm_a070__likpf_mean
+      - likpf_mean__exact_hmm
+      - exp226_w500_50_50
+    family_order: [geometry, hmm_selfgr, pf, hmm, beam, virtual_combination]
+    family_by_candidate:
+      exp226_k16: geometry
+      selfgr_hmm_a070: hmm_selfgr
+      likpf_mean: pf
+      exact_hmm: hmm
+      pf_ancc: pf
+      beam_mean: beam
+      exp226_k16__selfgr_hmm_a070: virtual_combination
+      exp226_k16__exact_hmm: virtual_combination
+      exp226_k16__likpf_mean: virtual_combination
+      selfgr_hmm_a070__likpf_mean: virtual_combination
+      likpf_mean__exact_hmm: virtual_combination
+      exp226_w500_50_50: virtual_combination
+  prior:
+    group: native_overlap_1
+    unit: well_equal_weighted_candidate_family
+    statistics: [mae, rmse, best_family_rate]
+    shrinkage_support_k_wells: 10
+    shrinkage_formula: alpha_equals_source_wells_over_source_wells_plus_k
+    ranking_statistic: rmse
+    family_candidate_reducer: equal_candidate
+    well_reducer: equal_well
+    best_family_tie_policy: fixed_family_order
+    fallback_order: [group_family, global_family, neutral]
+    families: fixed_from_exp293_manifest
+  stage_0:
+    controls: [real_native_group, stable_group_label_shuffle_within_fold]
+    pass_requires_all:
+      candidate_family_fold_identity_parity: true
+      require_all_prior_values_finite: true
+      minimum_heldout_group_coverage: 0.90
+      minimum_family_rank_spearman: 0.15
+      minimum_positive_folds: 4
+      minimum_real_minus_shuffle_spearman: 0.05
+      require_hidden_like_spatial_spearman_nonnegative: true
+      require_hidden_like_typewell_purged_spearman_nonnegative: true
+  stage_1:
+    enabled_condition: stage_0_all_gates_pass_and_separate_user_approval
+    downstream_model: corrected_exp264_dual_selector
+    objectives: [expected_error, within10]
+    outer_folds: 5
+    inner_folds: 4
+    selector_models: 40
+    control_retrain: false
+    pass_requires_all:
+      minimum_rmse_gain_vs_saved_corrected_exp264_ft: 0.03
+      minimum_improved_folds: 4
+      require_hidden_like_non_regression: true
+      maximum_worst_well_regression_ft: 0.25
+  forbidden:
+    - exp311_or_exp312_group_statistics
+    - exp313_guard_output
+    - exp315_rank_features
+    - family_or_support_grid
+    - hard_family_router
+    - candidate_value_change
+
+artifacts:
+  output_prefix: exp354_typewell_group_candidate_family_prior_readout
+  expected_stage_0_artifacts:
+    - exp354_typewell_group_candidate_family_prior_readout_candidate_family_manifest.csv
+    - exp354_typewell_group_candidate_family_prior_readout_group_membership.csv
+    - exp354_typewell_group_candidate_family_prior_readout_well_family_error.csv.gz
+    - exp354_typewell_group_candidate_family_prior_readout_prior_schedule.csv.gz
+    - exp354_typewell_group_candidate_family_prior_readout_readout.csv.gz
+    - exp354_typewell_group_candidate_family_prior_readout_fold_metrics.csv
+    - exp354_typewell_group_candidate_family_prior_readout_surface_metrics.csv
+    - exp354_typewell_group_candidate_family_prior_readout_gate.json
+    - exp354_typewell_group_candidate_family_prior_readout_input_manifest.json
+    - exp354_typewell_group_candidate_family_prior_readout_scientific_contract.json
+    - exp354_typewell_group_candidate_family_prior_readout_summary.json
+    - exp354_typewell_group_candidate_family_prior_readout_sha_manifest.csv
+
+execution_contract:
+  stage_0: {prior_variants: 1, negative_controls: 1, outer_folds: 5, model_configs: 0, trained_folds: 0, boosters: 0}
+  stage_1_if_pass: {scientific_variants: 1, objectives: 2, outer_folds: 5, inner_folds: 4, selector_models: 40, control_models: 0}
+  parent_control_retraining: false
+
+execution:
+  implementation_approved: true
+  implementation_approved_at: "2026-07-23"
+  implementation_authorization_source: user_message_implement_exp354
+  kaggle_push_approved: false
+  kaggle_push_approved_at: "2026-07-23"
+  kaggle_push_authorization_source: user_message_execute_exp354
+  completed_at: "2026-07-23"
+  active_stage: stage_0_completed_failed_close
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 1800
+    train_run_on_push: false
+    train_kernel_id: kentookumura/exp354-typewell-family-prior-readout-train
+    train_title: exp354 typewell family prior readout train
+    train_kernel_version: 1
+    train_kernel_id_no: 128363177
+    train_url: https://www.kaggle.com/code/kentookumura/exp354-typewell-family-prior-readout-train
+    stage_0_runtime_seconds: 63.67233964900004
+    train_kernel_sources:
+      - kentookumura/exp293-physics-bank-headroom-audit-train
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_fold_and_group_content_permutation
+  stochastic_components:
+    - deterministic_group_label_shuffle_negative_control
+  parallel_rng_policy: materialize_stable_permutation_before_fixed_order_reduction
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Stage 0 records candidate/family/fold/prior/fallback/readout content SHAs.
+    - Stage 1 would record 40 selector model and OOF SHAs only after separate approval.
+
+inference: {enabled: false, create_submission: false}
+
+notes:
+  - Stage 0 implementation was approved on 2026-07-23; canonical notebook adoption and Kaggle execution are not approved.
+  - Candidate families inherit exp263 source families for the six exp293 primitives and the exp263 virtual_combination family for the six fixed formulas.
+  - The primary held-out family rank uses shrunk family RMSE; MAE and best-family rate remain fixed auxiliary prior statistics.
+  - A Stage 0 PASS does not itself approve 40 selector models, inference, or submission.

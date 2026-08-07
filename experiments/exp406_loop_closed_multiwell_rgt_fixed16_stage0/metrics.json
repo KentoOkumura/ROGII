@@ -1,0 +1,131 @@
+{
+  "experiment": "exp406_loop_closed_multiwell_rgt_fixed16_stage0",
+  "status": "fixed16_stage0_v1_technical_fail_closed",
+  "route": "pf_beam",
+  "parent": "exp405_geometry_reinjected_interval_semimarkov_fusion",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "target_free_graph_and_prefix_rolling_origin_gates",
+  "dependency": {
+    "experiment": "exp405_geometry_reinjected_interval_semimarkov_fusion",
+    "required_decision": "technically_valid_scientific_fail",
+    "satisfied": true,
+    "source_decision": "scientific_fail_close_exp405_unlock_exp406_stage0",
+    "decision_sha256": "e159cfb712a6ed81e78f4524febbf0d995375124a473a5056aad3c1347b648f0"
+  },
+  "planned_execution": {
+    "implemented": true,
+    "kaggle_run": true,
+    "kernel_ref": "kentookumura/exp406-loopclosed-multiwell-rgt-f16-stage0-train",
+    "kernel_version": 1,
+    "kernel_id_no": 128637170,
+    "fixed16_target_wells": 16,
+    "reporting_folds": 5,
+    "full_oof": false,
+    "current_test": false,
+    "inference": false,
+    "submission": false,
+    "models": 0,
+    "boosters": 0,
+    "pf_runs": 0,
+    "hmm_runs": 0,
+    "beam_runs": 0,
+    "exp226_fixed16_prefix_geometry_fold_replays_max": 5,
+    "exp226_official_oof_regenerated": false
+  },
+  "implementation_validation": {
+    "compact_selfcontained_train_candidate": true,
+    "compact_selfcontained_fail_closed_inference_candidate": true,
+    "canonical_notebook_adopted": true,
+    "dedicated_tests": 13,
+    "dedicated_tests_passed": true,
+    "py_compile_passed": true,
+    "ruff_f821_f811_passed": true,
+    "jupytext_roundtrip_passed": true,
+    "strict_experiment_validation_passed": true,
+    "template_validation_passed": true,
+    "full_suite": {
+      "passed": 1178,
+      "skipped": 7,
+      "failed": 5,
+      "exp406_failures": 0,
+      "unrelated_existing_failures": [
+        "exp293: 2",
+        "exp296: 2",
+        "exp407: 1"
+      ]
+    }
+  },
+  "stage0_v1": {
+    "kernel_ref": "kentookumura/exp406-loopclosed-multiwell-rgt-f16-stage0-train",
+    "kernel_version": 1,
+    "kernel_id_no": 128637170,
+    "kernel_status": "KernelWorkerStatus.COMPLETE",
+    "decision": "close_exp406_without_parameter_rescue",
+    "passed": false,
+    "technical_pass": false,
+    "technical_checks_passed": 12,
+    "technical_checks_total": 15,
+    "failed_technical_checks": [
+      "graph_query_coverage",
+      "finite_loop_closed_rgt_coverage",
+      "projected_full_runtime"
+    ],
+    "target_free_observed": {
+      "graph_query_coverage": 0.45115681233933164,
+      "graph_query_coverage_min": 0.9,
+      "connected_target_coverage": 1.0,
+      "finite_loop_closed_rgt_coverage": 0.7550262606606368,
+      "finite_loop_closed_rgt_coverage_min": 0.95,
+      "fundamental_cycles": 9272,
+      "raw_cycle_residual_p95_ft": 70.0,
+      "solved_cycle_residual_p95_ft": 7.105427357601002e-15,
+      "cycle_residual_p95_reduction_fraction": 1.0
+    },
+    "negative_control": {
+      "passed": true,
+      "pooled_real_minus_circular_ncc": 0.8741479371901661,
+      "better_fold_count": 5
+    },
+    "prefix": {
+      "executed": false,
+      "reason": "target_free_technical_gate_failed",
+      "exp226_fixed16_prefix_geometry_replays": 0
+    },
+    "resources": {
+      "fixed16_target_free_elapsed_seconds": 1356.649085214,
+      "fixed16_total_diagnostic_elapsed_seconds": 1356.6660202130001,
+      "projected_full_runtime_seconds": 65543.10892940138,
+      "projected_full_runtime_seconds_max": 30600,
+      "peak_rss_gb": 0.5449943542480469,
+      "projected_peak_rss_gb_max": 25,
+      "runtime_pass": false,
+      "rss_pass": true
+    },
+    "safety": {
+      "source_target_overlap": 0,
+      "suffix_truth_reads_before_freeze": 0,
+      "target_formation_reads_before_freeze": 0,
+      "hidden_role_reads_before_freeze": 0,
+      "unknown_suffix_prediction_persisted": false,
+      "forbidden_gauge_columns_present": false
+    },
+    "artifacts": {
+      "summary_sha256": "e9332c3166c875ee663c41d3f7bec0d17c68f3902aa9eb372996d77920575413",
+      "gate_sha256": "677613e1d8d856a93e2a5d1fd65840cfd8dc80064facd503713454a042f0afb8",
+      "sha_manifest_sha256": "92f53159a550dfba0a37c4a657e7cb98660357d9279e56783062201ae2315321",
+      "manifest_file_sha_checks_passed": 8,
+      "manifest_file_sha_checks_total": 8,
+      "pairwise_edges_rows": 14066,
+      "cycle_basis_rows": 9272,
+      "loop_closed_gauge_rows": 4811,
+      "role_read_ledger_rows": 191
+    }
+  },
+  "decision_contract": {
+    "pass": "full_oof_stage1_design_eligible_pending_explicit_approval",
+    "fail": "close_exp406_without_parameter_rescue"
+  },
+  "notes": "Kaggle CPU version 1 completed and failed the frozen graph-query coverage, finite row coverage, and projected runtime gates. Prefix replay did not run, no unknown-suffix prediction was persisted, and the branch is closed without parameter rescue."
+}

@@ -1,0 +1,90 @@
+{
+  "experiment": "exp002_drift_minimal",
+  "status": "completed",
+  "created_at": "2026-05-31",
+  "updated_at": "2026-05-31T08:54:53.560864+00:00",
+  "debug": false,
+  "cv": 14.124569,
+  "cv_mean_fold_rmse": 14.101909,
+  "public_lb": 12.533,
+  "private_lb": null,
+  "metric": "rmse",
+  "seed": 42,
+  "primary_strategy": "drift_hgb",
+  "n_folds": 5,
+  "n_wells": 773,
+  "strategies": {
+    "last_anchor": {
+      "oof_rmse": 15.909853,
+      "mean_fold_rmse": 15.894391,
+      "fold_rmse": [
+        15.077329,
+        15.175248,
+        15.574938,
+        16.120531,
+        17.523911
+      ],
+      "rows": 3783989,
+      "per_well_rmse_mean": 12.812466,
+      "per_well_rmse_median": 10.665141
+    },
+    "drift_hgb": {
+      "oof_rmse": 14.124569,
+      "mean_fold_rmse": 14.101909,
+      "fold_rmse": [
+        13.431936,
+        13.573716,
+        13.51014,
+        14.060831,
+        15.932922
+      ],
+      "rows": 3783989,
+      "per_well_rmse_mean": 11.288493,
+      "per_well_rmse_median": 9.191009
+    }
+  },
+  "model_training": [
+    {
+      "fold": 0,
+      "n_train_wells": 618,
+      "n_valid_wells": 155,
+      "n_train_rows": 300000,
+      "max_rows_per_fold": 300000,
+      "max_rows_per_well": 800
+    },
+    {
+      "fold": 1,
+      "n_train_wells": 618,
+      "n_valid_wells": 155,
+      "n_train_rows": 300000,
+      "max_rows_per_fold": 300000,
+      "max_rows_per_well": 800
+    },
+    {
+      "fold": 2,
+      "n_train_wells": 618,
+      "n_valid_wells": 155,
+      "n_train_rows": 300000,
+      "max_rows_per_fold": 300000,
+      "max_rows_per_well": 800
+    },
+    {
+      "fold": 3,
+      "n_train_wells": 619,
+      "n_valid_wells": 154,
+      "n_train_rows": 300000,
+      "max_rows_per_fold": 300000,
+      "max_rows_per_well": 800
+    },
+    {
+      "fold": 4,
+      "n_train_wells": 619,
+      "n_valid_wells": 154,
+      "n_train_rows": 300000,
+      "max_rows_per_fold": 300000,
+      "max_rows_per_well": 800
+    }
+  ],
+  "key_idea": "Minimal residual model on top of last-known TVT anchor",
+  "notes": "Kaggle inference submitted; ref=53211155; kernel=kentookumura/exp002-drift-minimal-inference v1; public LB 12.533"
+}

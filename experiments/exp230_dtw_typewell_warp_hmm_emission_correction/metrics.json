@@ -1,0 +1,76 @@
+{
+  "experiment": "exp230_dtw_typewell_warp_hmm_emission_correction",
+  "status": "completed_train_side_rejected_no_inference_no_submit",
+  "metric": "train_side_rmse",
+  "cv": 13.611292322617885,
+  "public_lb": null,
+  "private_lb": null,
+  "route": "pf_beam",
+  "parent": "exp209_exp072_exp205_joint_exact_parity_fast_cache_generation",
+  "kaggle_kernel": "kentookumura/exp230-dtw-hmm-emission-train",
+  "kaggle_version": 2,
+  "updated_at": "2026-07-11",
+  "rows": 3783989,
+  "wells": 773,
+  "elapsed_seconds": 36768.8,
+  "lightgbm_config_count": 0,
+  "fold_count": 0,
+  "total_boosters": 0,
+  "dtw_hmm_variant_count": 2,
+  "best_hmm_candidate": {
+    "candidate": "hmm_dtw_a005_s1200",
+    "rmse": 13.611292322617885,
+    "mae": 7.696311593657245,
+    "bias": 2.3927183142834565,
+    "within10": 0.753860278135058,
+    "delta_rmse_vs_exp072_likpf_mean": 2.016394654176894,
+    "delta_mae_vs_exp072_likpf_mean": 0.6286790105490478,
+    "delta_within10_vs_exp072_likpf_mean": -0.018941915528824294
+  },
+  "other_hmm_candidate": {
+    "candidate": "hmm_dtw_a010_s1200",
+    "rmse": 16.435494713341324,
+    "mae": 9.661305209697447,
+    "bias": 4.185281291342853,
+    "within10": 0.6896576602099002,
+    "delta_rmse_vs_exp072_likpf_mean": 4.840597044900333
+  },
+  "comparison_best_candidate": {
+    "candidate": "exp072_likpf_mean",
+    "rmse": 11.594897668440991,
+    "mae": 7.067632583108197,
+    "bias": -1.0994231116902413,
+    "within10": 0.7728021936638823
+  },
+  "hidden_like": {
+    "hmm_dtw_a005_s1200_verification_like_spatial_delta_rmse": 1.645723,
+    "hmm_dtw_a005_s1200_verification_like_typewell_purged_delta_rmse": 1.740356,
+    "hmm_dtw_a010_s1200_verification_like_spatial_delta_rmse": 4.014746,
+    "hmm_dtw_a010_s1200_verification_like_typewell_purged_delta_rmse": 4.134836
+  },
+  "distance_bucket_best_hmm_delta_rmse": {
+    "000_050": -0.279896,
+    "050_100": -0.424749,
+    "100_250": -0.224815,
+    "250_500": -0.082857,
+    "500_1000": 0.128648,
+    "1000_plus": 2.300709
+  },
+  "by_well_best_hmm_delta_summary": {
+    "improved_wells": 409,
+    "worsened_wells": 364,
+    "max_regression_well": "b19b0395",
+    "max_regression_rmse": 47.80329266241037
+  },
+  "step_delta_best_hmm": {
+    "abs_step_delta_mean": 0.01024,
+    "abs_step_delta_p95": 0.036,
+    "abs_step_delta_p99": 0.062,
+    "rate_abs_step_delta_gt_5p0": 0.0,
+    "rate_abs_step_delta_gt_10p0": 0.0,
+    "rate_abs_step_delta_gt_25p0": 0.0
+  },
+  "hmm_feature_content_sha256": "a939913c786cf07e21feff01eadaf4258eb772384f82e9682921a57abd2893e4",
+  "artifacts_checked_from": "/tmp/exp230_output_metrics",
+  "decision": "reject_no_raw_test_regeneration_no_inference_no_submit"
+}

@@ -1,0 +1,402 @@
+experiment:
+  name: exp403_exp333_exp355_tail_constrained_physics_shrink
+  description: >-
+    Design-frozen saved-OOF experiment that replaces the exp263 K16 and
+    exact-HMM components with the saved exp333 segment-corrected K16 path and
+    exp355 K16-rate-prior HMM, then cross-fits one fold-level scalar shrink
+    back to exp263 under strict well-tail constraints.
+  hypothesis: >-
+    The complementary mean gain from the two fixed component upgrades can
+    survive held-out folds when a shrink coefficient is selected using only
+    outer-train wells and fails closed to the saved exp263 prediction whenever
+    no positive coefficient satisfies the fixed tail constraints.
+  route: ensemble
+  status: kaggle_train_completed_fail_closed
+  created_at: "2026-07-26"
+  updated_at: "2026-07-26"
+
+lineage:
+  parent: exp263_last_anchor_better_candidate_confidence_pair_cache
+  k16_upgrade: exp333_exp226_k16_segment_residual_offset_target
+  hmm_upgrade: exp355_exp226_dip_rate_prior_on_exp209
+  reporting_fold_source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  hidden_like_source: exp115_hidden_like_spatial_holdout_from_ppt
+  steering: ../../.steering/20260726-exp403-exp333-exp355-tail-constrained-physics-shrink
+  references:
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp399_soft_sticky_fused_exact_runtime_audit
+    - exp370_triggered_reset_rejuvenation_pf
+    - docs/06_reproducibility.md
+  diff_summary: >-
+    Keep the exp263 fixed weights 0.50/0.25/0.25 and replace only its exp226
+    K16 component with the saved exp333 Stage-1 path and its exp209 exact-HMM
+    component with the saved exp355 Stage-1 path. Apply one reporting-fold
+    scalar shrink toward the unchanged exp263 prediction, selected from a
+    fixed nine-value set using only the other four reporting folds. No
+    component is regenerated, no hard router is trained, and the exp263
+    generation fold remains separate provenance from the exp226 reporting
+    fold. Because the exp333 ML correction and PF/HMM components all
+    materially generate the prediction, the route is ensemble.
+
+implementation:
+  enabled: true
+  scope: saved_oof_crossfit_kaggle_train_completed_fail_closed
+  design_approval_received: true
+  design_approval_source: user_message_create_backlog_experiment_steering_and_freeze_design_2026_07_26
+  implementation_approval_received: true
+  implementation_approval_source: user_message_implement_exp403_2026_07_26
+  scaffold_created: true
+  notebook_placeholders_only: false
+  canonical_notebook_adopted: true
+  compact_selfcontained_train_candidate_created: true
+  compact_selfcontained_inference_candidate_created: true
+  train_readout_implemented: true
+  inference_fail_closed_implemented: true
+  jupytext_source_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  training_enabled: false
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: exp226_reporting_outer5_crossfit_tail_constrained_scalar_shrink
+  metric: rmse
+  metric_weighting: unweighted_suffix_rows
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  id_columns: [well_id, row_idx]
+  reporting_fold_column: exp226_outer_fold
+  generation_fold_column: exp263_generation_fold
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  expected_independent_fold_label_mismatch_wells: 631
+  primary_control:
+    experiment: exp263_last_anchor_better_candidate_confidence_pair_cache
+    candidate: exp226_w500_50_50
+    formula: 0.50*exp226_k16 + 0.25*likpf_mean + 0.25*exp209_exact_hmm
+    rmse_ft: 8.238331546
+    public_lb: 7.800
+  full_replacement_reference:
+    formula: 0.50*exp333_stage1 + 0.25*likpf_mean + 0.25*exp355_stage1
+    exploratory_rebuilt_control_rmse_ft: 8.2383317454837
+    exploratory_rmse_ft: 8.159425494114096
+    exploratory_gain_ft: 0.07890625136960416
+    exploratory_fold_gain_ft:
+      0: 0.2890096169813843
+      1: 0.1212063740369107
+      2: 0.1709873958402195
+      3: -0.06022310327992031
+      4: -0.08270308454439146
+    exploratory_by_well_delta_p95_ft: 1.983209252754805
+    exploratory_worst_well: 86454a6f
+    exploratory_worst_well_delta_ft: 13.412006861804933
+    evidence_classification: read_only_design_evidence_not_promotion_result
+  scopes:
+    - near_0_250
+    - mid_250_1000
+    - 1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  truth_attachment: after_source_predictions_formulas_and_content_sha_freeze
+  leakage_policy:
+    - Load exp333 prediction columns without tvt_true before freeze.
+    - Read suffix TVT from raw train only after every source prediction, formula, identity, and content SHA is frozen.
+    - Select lambda for reporting fold f using only wells whose exp226 reporting fold is not f.
+    - Never use outer-valid RMSE, error, hidden-like role, persistent episode, or Public LB to select lambda.
+    - Preserve exp263 generation fold only as independent provenance and never require it to equal exp226 reporting fold.
+    - Saved parent and branch predictions are load-only and are never regenerated during the train-side readout.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  exp263_cache:
+    source: exp263_last_anchor_better_candidate_confidence_pair_cache
+    kernel_source: kentookumura/exp263-last-anchor-pair-cache-train
+    cache_manifest_filename: cache_manifest.json
+    expected_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+    candidate_partitions:
+      exp226_k16: candidate_values/exp226_k16/fold=*/part-000.parquet
+      likpf_mean: candidate_values/likpf_mean/fold=*/part-000.parquet
+      exact_hmm: candidate_values/exact_hmm/fold=*/part-000.parquet
+    required_columns: [id, well, well_row_idx, outer_fold, candidate_tvt]
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts
+      - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts
+      - /tmp/exp263-fold-audit/artifacts
+    rerun: false
+  exp333_oof:
+    source: exp333_exp226_k16_segment_residual_offset_target
+    kernel_source: kentookumura/exp333-k16-segment-residual-stage1-train
+    filename: exp333_exp226_k16_segment_residual_offset_target_stage1_oof_predictions.csv.gz
+    prediction_column: tvt_pred_stage1
+    exp226_parity_column: tvt_pred
+    reporting_fold_column: outer_fold
+    allowed_pre_freeze_columns:
+      [well_id, row_idx, suffix_offset, outer_fold, md_since, tvt_pred, tvt_pred_stage1]
+    forbidden_pre_freeze_columns: [tvt_true]
+    expected_raw_sha256: 70b623d4c839c4f7eb11fb2134aa214ca8f0ce8d6ebe65e723d2fffa95dcc2dc
+    expected_decompressed_sha256: f2ebc6f6ea243b45fdb785342b8815b3b04947f96d787d3017e5e2be7ff92e5a
+    expected_prediction_content_sha256: dbb3f41642a2d6a9da704d276ed6398b706059078bcfcaca95e17e5c7af00784
+    expected_prediction_content_sha_role: upstream_producer_provenance_only_pandas_hash_nonportable
+    expected_rmse_ft: 9.076676660936831
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp333-k16-segment-residual-stage1-train/artifacts
+      - /kaggle/input/exp333-k16-segment-residual-stage1-train/artifacts
+      - /tmp/exp333-fold-audit.qfzohf/artifacts
+    rerun: false
+  exp355_oof:
+    source: exp355_exp226_dip_rate_prior_on_exp209
+    kernel_source: kentookumura/exp355-exp226-dip-rate-prior-on-exp209-train
+    kernel_version: 2
+    filename: exp355_exp226_dip_rate_prior_on_exp209_stage1_oof_predictions.csv.gz
+    prediction_column: candidate_tvt
+    reporting_fold_column: fold
+    allowed_pre_freeze_columns:
+      [id, well_id, row_idx, suffix_offset, fold, segment_id, md_since, candidate_tvt]
+    forbidden_pre_freeze_columns:
+      [tvt_true, true_tvt, target, error, abs_error, oracle_label]
+    expected_raw_sha256: 28da6ffb17300f7757d51496f2dc56402d477fc5a79e24dec7514e855c960a41
+    expected_decompressed_sha256: 3c49f25e138f94c9e09fb551f199fa4f92b0d776899485e67e61e2fcdb83ede3
+    expected_prediction_logical_sha256: 634303f022bced6685367094304da6182fee42815302344469b5919a36cd5e21
+    expected_prediction_logical_sha_role: upstream_producer_provenance_only_dtype_dependent_array_hash
+    expected_rmse_ft: 11.291976615843922
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp355-exp226-dip-rate-prior-on-exp209-train/artifacts
+      - /kaggle/input/exp355-exp226-dip-rate-prior-on-exp209-train/artifacts
+      - /tmp/exp355_quantization_audit/artifacts
+    rerun: false
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /tmp/exp275-output-v2/inputs
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+
+candidate:
+  name: exp333_exp355_tail_constrained_physics_shrink
+  control_formula: 0.50*exp226_k16 + 0.25*likpf_mean + 0.25*exp209_exact_hmm
+  full_replacement_formula: 0.50*exp333_stage1 + 0.25*likpf_mean + 0.25*exp355_stage1
+  correction_formula: full_replacement - exp263_control
+  output_formula: exp263_control + lambda_fold * correction
+  lambda:
+    candidates: [0.0, 0.015625, 0.03125, 0.0625, 0.125, 0.25, 0.5, 0.75, 1.0]
+    positive_eligibility_outer_train:
+      minimum_pooled_rmse_gain_ft: 0.01
+      maximum_near_0_250_delta_rmse_ft: 0.02
+      maximum_mid_250_1000_delta_rmse_ft: 0.02
+      maximum_1000_plus_delta_rmse_ft: 0.02
+      maximum_by_well_delta_p95_ft: 0.0
+      maximum_worst_well_delta_rmse_ft: 0.25
+    selection: largest_positive_eligible_lambda
+    tie_break: not_applicable_largest_numeric_value_is_unique
+    no_positive_fallback: 0.0
+    current_test_lambda: median_of_five_crossfit_lambda_values
+    outer_valid_reselection_allowed: false
+    full_train_refit_allowed: false
+  execution_count:
+    scientific_policies: 1
+    calibration_lambda_values: 9
+    reporting_folds: 5
+    model_configs: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    pf_well_runs: 0
+    hmm_well_runs: 0
+    beam_well_runs: 0
+    parent_control_reruns: 0
+
+model:
+  name: deterministic_crossfit_tail_constrained_scalar_shrink_policy
+  estimator: no_fitted_model
+  enabled: false
+  fitted_model_count: 0
+  params: {}
+
+guards:
+  technical:
+    require_all_input_sha_matches: true
+    require_expected_rows: 3783989
+    require_expected_wells: 773
+    require_expected_folds: [0, 1, 2, 3, 4]
+    require_unique_global_key: true
+    require_exp263_formula_parity_atol_ft: 0.00001
+    require_exp263_formula_parity_max_float32_ulps: 1.0
+    require_exp226_parity_atol_ft: 0.001
+    require_design_reference_metric_atol_ft: 0.000001
+    require_source_prediction_finite_coverage: 1.0
+    require_reporting_and_generation_fold_well_constant: true
+    require_reporting_and_generation_fold_support: [0, 1, 2, 3, 4]
+    require_fold_cross_tab_saved: true
+    maximum_truth_error_hidden_reads_before_freeze: 0
+    maximum_runtime_seconds: 3600
+    maximum_peak_rss_gb: 4.0
+    require_execution_count_match: true
+  promotion:
+    all_required: true
+    minimum_positive_lambda_folds: 4
+    minimum_current_test_lambda: 0.015625
+    minimum_pooled_rmse_gain_vs_exp263_ft: 0.03
+    minimum_improved_folds: 4
+    maximum_scope_delta_rmse_vs_exp263_ft: 0.02
+    maximum_by_well_delta_p95_ft: 0.0
+    maximum_worst_well_delta_rmse_ft: 0.25
+    maximum_persistent_offset_episode_count_delta: 0
+    minimum_recovery_within_512_rate_delta: 0.0
+  decision:
+    pass_action: eligible_for_separate_current_test_inference_implementation_and_run_approval
+    fail_action: close_without_lambda_component_weight_gate_or_router_rescue
+  forbidden:
+    - outer_valid_or_public_lb_lambda_selection
+    - continuous_lambda_optimization
+    - alternative_lambda_grid_after_result
+    - component_weight_fit_or_grid
+    - per_well_or_per_row_router
+    - candidate_subset_or_additional_component
+    - exp333_exp355_or_parent_regeneration
+    - exp263_and_exp226_fold_identity_assertion
+    - same_oof_rescue_or_gate_relaxation
+    - inference_or_submission_before_promotion
+
+audit:
+  output_prefix: exp403_exp333_exp355_tail_constrained_physics_shrink
+  persistent_offset:
+    error_threshold_ft: 10.0
+    minimum_consecutive_rows: 128
+    return_threshold_ft: 5.0
+    recovery_horizons_rows: [512]
+  expected_artifacts:
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_scientific_contract.json
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_input_manifest.csv
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_frozen_source_partition_manifest.csv
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_freeze_manifest.json
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_fold_ledger.csv
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_fold_cross_tab.csv
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_outer_train_lambda_metrics.csv
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_lambda_selection.csv
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_crossfit_oof_predictions.csv.gz
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_scope_metrics.csv
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_fold_metrics.csv
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_by_well_metrics.csv
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_persistent_offset_episodes.csv
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_persistent_offset_recovery.csv
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_promotion_gate.json
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_summary.json
+    - exp403_exp333_exp355_tail_constrained_physics_shrink_sha_manifest.csv
+
+execution:
+  implementation_approved: true
+  implementation_approval_scope: user_message_implement_exp403_2026_07_26
+  kaggle_package_approved: false
+  kaggle_train_run_approved: false
+  canonical_notebook_adoption_approved: true
+  canonical_notebook_adoption_approval_scope: user_message_execute_exp403_2026_07_26
+  run_train: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  accelerator: cpu
+  internet: false
+  streaming_partition_key: exp263_generation_fold
+  materialize_full_wide_candidate_table: false
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 3600
+    train_run_on_push: false
+    train_kernel_id: kentookumura/exp403-exp333-355-tail-physics-shrink-train
+    train_title: exp403 exp333 355 tail physics shrink train
+    train_kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp333-k16-segment-residual-stage1-train
+      - kentookumura/exp355-exp226-dip-rate-prior-on-exp209-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng
+  stochastic_components: []
+  parallel_rng_policy: single_process_streaming_no_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip_and_manifest_logical_sha_for_parquet
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - The implementation-only candidate is not a deterministic anchor.
+    - Freeze source predictions and formulas before loading suffix truth or hidden-like roles.
+    - Record exp263 parity, full replacement, correction, lambda ledger, cross-fit prediction, and gate content SHA.
+    - Verify loose config and Kaggle bootstrap config byte equality before any future push.
+
+results:
+  kaggle_run: true
+  technical_gate_passed: true
+  promotion_gate_passed: false
+  decision: close_without_lambda_component_weight_gate_or_router_rescue
+  cv: 8.23833166670289
+  control_cv: 8.23833166670289
+  full_replacement_reference_cv: 8.159425494114096
+  pooled_gain_ft: 0.0
+  positive_lambda_folds: 0
+  improved_folds: 0
+  lambda_fold: [0.0, 0.0, 0.0, 0.0, 0.0]
+  lambda_test: 0.0
+  runtime_seconds: 172.41754841099998
+  peak_rss_gb: 1.9209976196289062
+  kernel_id: kentookumura/exp403-exp333-355-tail-physics-shrink-train
+  kernel_version: 4
+  kernel_id_no: 128628482
+  prediction_raw_sha256: dfbf21ceba7aab7713b835257045666651db467bf29d38055b709944a3aad350
+  prediction_decompressed_sha256: 7b49a8c2ff392ffbea03ad20ee35d5e277ca77b5cdcd190d1adc16021da27b35
+  prediction_content_sha256: 17a7bae695c56500e55d1b724b7ca29908d70b4a2cb39e03d618016f02d1618a
+  promotion_gate_sha256: 094c59ee5f6dbd1335332c950c00cab68bf84449f67403693ec9848c2d838592
+  summary_sha256: d8a79932fbfe2fe18471e805a36d1f1da963bd8a3069532a464f5e96b59f372b
+  runs:
+    - kernel_version: 1
+      kernel_id_no: 128628482
+      status: ERROR
+      runtime_seconds: 32.222
+      scientific_stage_reached: false
+      error: exp333_upstream_prediction_content_sha_pandas_portability_mismatch
+    - kernel_version: 2
+      kernel_id_no: 128628482
+      status: ERROR
+      runtime_seconds: 58.078
+      scientific_stage_reached: false
+      error: exp263_float64_float32_formula_parity_one_ulp
+    - kernel_version: 3
+      kernel_id_no: 128628482
+      status: ERROR
+      runtime_seconds: 116.819
+      scientific_stage_reached: false
+      source_freeze_completed: true
+      truth_rows_attached: 0
+      error: raw_truth_resolver_selected_schema_incomplete_duplicate
+    - kernel_version: 4
+      kernel_id_no: 128628482
+      status: COMPLETE
+      runtime_seconds: 172.41754841099998
+      final_log_seconds: 327.001166041
+      scientific_stage_reached: true
+      technical_gate_passed: true
+      promotion_gate_passed: false

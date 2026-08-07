@@ -1,0 +1,431 @@
+experiment:
+  name: exp295_prefix_anchored_wholewell_gr_alignment_ssm
+  description: >-
+    Learn a prefix-conditioned complete-well GR-to-Type-Well unary and decode
+    the continuous TVT alignment with the fixed exp209 exact state-space
+    grammar, without neighbor-well data or a candidate bank.
+  route: ensemble
+  status: stage_a_failed_runtime_timeout_branch_closed
+  created_at: "2026-07-19"
+
+lineage:
+  parent: exp202_heatmap_mdn_candidate_generator_probe
+  references:
+    - exp178_supervised_gr_window_matcher_from_known_tvt_prefix
+    - exp197_cnn_pf_likelihood_probe
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+    - exp244_bidirectional_prediction_start_pseudotail_augmentation
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam
+    - exp292_typewell_gr_warp_rate_identifiability_audit
+    - exp293_physics_only_candidate_bank_headroom_contract
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md
+  design_source: .steering/20260719-exp295-prefix-anchored-wholewell-gr-alignment-ssm
+  architecture_contract: architecture_contract.md
+  diff_summary: >-
+    Replaces local-window argmax, hand-crafted GR candidate scores, and
+    candidate selection with one fold-safe neural emission architecture whose
+    sample is a complete well. A visible-prefix context conditions horizontal
+    and Type Well GR encoders; their row-by-TVT unary is decoded by the fixed
+    exp209 state grid and transition grammar. The experiment uses no
+    neighbor-well inference data, candidate bank, hard top1, or downstream
+    blend. Pseudo-cuts are outer-train augmentation only, not a risk gate.
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: complete_well_groupkfold_official_prefix_hidden_suffix
+  metric: pooled_oof_rmse_tvt_posterior_mean
+  seed: 42
+  n_folds: 5
+  group_column: well
+  sample_unit: complete_well
+  score_rows: official_tvt_input_hidden_suffix_rows
+  reuse_fold_map_from: exp202_heatmap_mdn_candidate_generator_probe
+  valid_mask_policy: organizer_equivalent_official_tvt_input_mask
+  outer_train_pseudo_cut_offsets_rows: [0, 256, 512]
+  baselines:
+    primary_decoder_baseline:
+      experiment: exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+      pooled_oof_rmse: 8.327736951
+    raw_exact_hmm:
+      experiment: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+      pooled_oof_rmse: 11.938287417
+    current_ml_same_fold_reference:
+      experiment: exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218
+      pooled_oof_rmse: 7.936690031
+      use_for_primary_gate: false
+  diagnostics:
+    - fold_rmse
+    - distance_bucket_rmse
+    - distance_1000_plus_rmse
+    - hidden_like_spatial_rmse
+    - hidden_like_typewell_purged_rmse
+    - by_well_rmse_p95_and_worst
+    - true_state_nll
+    - posterior_mass_within10_and_20
+    - posterior_entropy_and_grid_edge_mass
+    - target_in_grid_rate
+    - step_and_transition_continuity
+    - runtime_and_peak_memory
+  leakage_policy:
+    - Outer-valid wells are completely absent from model fitting, normalization fitting, early stopping, and temperature fitting.
+    - Outer-valid suffix TVT is loaded only after model, unary, posterior, row identity, and control manifests are content-frozen.
+    - The model input allowlist is target-well MD, X, Y, Z, GR, TVT_input and the target well's provided Type Well TVT/GR curve.
+    - Inference-side horizontal source count must equal one; same-typewell or spatially neighboring horizontal wells are forbidden.
+    - Pseudo-cuts are generated only from outer-train wells and never serve as an outer-valid risk or correction gate.
+    - Candidate, error, oracle, true-error rank, formation, and neighbor-path columns are rejected before model execution.
+    - Valid truth may report target-in-grid coverage but may not expand the band or change any setting in exp295.
+  stage_a_pass:
+    minimum_target_in_grid_rate: 0.995
+    maximum_prefix_clamp_abs_error_ft: 0.000001
+    minimum_real_nll_gain_vs_circular_shuffle_nats_per_token: 0.05
+    minimum_real_within10_mass_gain_vs_circular_shuffle: 0.03
+    minimum_real_rmse_gain_vs_geometry_only_ft: 0.25
+    minimum_real_rmse_gain_vs_exp209_ft: 0.25
+    require_well_rmse_p95_non_regression_vs_exp209: true
+    maximum_worst_well_regression_vs_exp209_ft: 10.0
+    maximum_peak_gpu_memory_gb: 14.0
+    maximum_fold_runtime_hours: 8.5
+  stage_b_gr_attribution_pass:
+    minimum_pooled_rmse_gain_vs_each_control_ft: 0.50
+    require_real_better_than_each_control_all_folds: true
+    require_real_nll_better_than_circular_shuffle_all_folds: true
+  stage_b_lb5x_promotion_pass:
+    maximum_pooled_oof_rmse_ft: 6.0
+    stretch_pooled_oof_rmse_ft: 5.0
+    require_improvement_vs_exp221_all_folds: true
+    require_improvement_vs_exp221_distance_1000_plus: true
+    require_improvement_vs_exp221_hidden_like_spatial: true
+    require_improvement_vs_exp221_hidden_like_typewell_purged: true
+    require_well_rmse_p95_non_regression_vs_exp221: true
+    maximum_worst_well_regression_vs_exp221_ft: 5.0
+    require_gr_attribution_pass: true
+    require_finite_coverage: 1.0
+  architecture_signal_only_upper_rmse_ft: 6.75
+  failure_policy:
+    - Stage A failure closes Stage B without an in-experiment architecture, loss, band, or temperature rescue grid.
+    - OOF above 6.75 ft or failed GR attribution closes the branch.
+    - OOF in (6.0, 6.75] ft with full GR attribution supports only a separately designed architecture-iteration experiment, not exp295 inference.
+    - Only the full LB5x promotion gate permits a separately approved Stage C in this same experiment.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  horizontal_glob: "*__horizontal_well.csv"
+  typewell_glob: "*__typewell.csv"
+  id_column: id
+  target_column: TVT
+  visible_target_column: TVT_input
+  horizontal_file_input_columns: [MD, X, Y, Z, GR, TVT_input]
+  horizontal_derived_metadata:
+    well_id: horizontal_filename_stem_before_double_underscore
+    row_index: stable_file_row_order
+    id: sample_submission_or_canonical_row_identity_join
+  typewell_input_columns: [TVT, GR]
+  forbidden_horizontal_input_columns:
+    - TVT
+    - formation
+    - target
+    - error
+    - abs_error
+    - oracle
+    - candidate
+  hidden_like_assignment_reference: exp115_hidden_like_spatial_holdout_from_ppt
+  exp209_baseline_cache:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    prediction_column: hmm_mean_tvt
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5_small/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+
+model:
+  name: prefix_conditioned_wholewell_gr_emission_exact_ssm
+  estimator: pytorch_structured_neural_emission_plus_exact_forward_backward
+  target: typewell_tvt_state_of_true_horizontal_tvt
+  sample_unit: complete_well
+  output: tvt_posterior_mean
+  inference_neighbor_well_data: false
+  candidate_bank: none
+  test_time_gradient_updates: false
+  preprocessing:
+    robust_center: finite_median
+    robust_scale: 1p4826_mad_with_floor_1
+    missing_fill_value_after_normalization: 0.0
+    include_missing_mask: true
+    typewell_extrapolation: false
+    prefix_huber_summary:
+      minimum_pairs: 32
+      fallback: neutral_context
+  inputs:
+    horizontal_emission_channels: [gr_robust_z, gr_missing_mask, dgr_dmd]
+    typewell_emission_channels: [gr_robust_z, gr_missing_mask, dgr_dtvt]
+    transition_only_channels: [MD, X, Y, Z, TVT_input]
+    prefix_context_sources: [horizontal_gr, typewell_gr_at_visible_tvt_input, visible_tvt_input_mask]
+  architecture:
+    horizontal_encoder: multiscale_1d_residual
+    typewell_encoder: multiscale_1d_residual
+    embedding_dim: 64
+    dilations: [1, 2, 4, 8, 16]
+    normalization: group_norm
+    dropout: 0.10
+    prefix_context_aggregator: masked_attention_pool
+    prefix_context_dim: 32
+    conditioning: film_scale_and_bias_per_encoder_block
+    similarity: normalized_bilinear_cosine
+    temperature: positive_prefix_conditioned_clamped
+    temperature_min: 0.05
+    temperature_max: 2.0
+    temperature_initial: 0.25
+    convolution_kernel_size: 3
+    group_norm_groups: 8
+    prefix_pair_embedding_dim: 64
+    prefix_pair_channels: [horizontal_gr, matched_typewell_gr, gr_difference, pair_finite_mask]
+    prefix_huber_summary_channels: [slope, intercept_scaled, residual_scale_scaled, pair_fraction, valid_fit]
+    derivative_clip_abs: 8.0
+    unary_row_chunk_size: 256
+    streamed_row_tvt_unary: true
+  state_space:
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    state: tvt_grid_and_rate
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    emission_distribution: learned_log_unary
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+    known_prefix_policy: hard_clamp_finite_tvt_input
+    solver: exact_log_space_forward_backward
+    primary_readout: posterior_mean_tvt
+    diagnostic_readouts: [marginal_map, global_viterbi, posterior_std, entropy, grid_edge_mass]
+    learn_transition: false
+  training:
+    objective:
+      structured_label_nll_weight: 1.0
+      label_observation_distribution: gaussian
+      label_observation_sigma_ft: 0.35
+      local_true_state_ce_weight: 0.25
+    optimizer: adamw
+    learning_rate: 0.0003
+    weight_decay: 0.0001
+    max_epochs: 8
+    early_stopping_holdout_fraction: 0.10
+    early_stopping_minimum_wells: 16
+    early_stopping_patience_epochs: 2
+    early_stopping_min_delta_nll_per_token: 0.001
+    early_stopping_views: [official]
+    gradient_clip_norm: 1.0
+    batch_size_wells: 1
+    gradient_accumulation_wells: 4
+    amp: true
+    early_stopping_source: stable_outer_train_well_holdout_only
+    dataloader_shuffle: true
+    dataloader_workers: 0
+    pseudo_cut_views_per_well_maximum: 3
+    full_suffix_no_tail_truncation: true
+    require_cuda: true
+    minimum_cuda_capability_major: 7
+  controls:
+    - real_gr
+    - stable_within_well_circular_shuffled_typewell_gr_same_trained_model
+    - zero_gr_unary_geometry_only_same_trained_model
+  forbidden_actions:
+    - neighbor_well_path_or_tvt_input
+    - same_typewell_horizontal_donor
+    - spatial_neighbor_feature_or_prior
+    - candidate_bank_or_selector
+    - hard_top1_or_row_switch
+    - candidate_softmax_average
+    - learned_transition
+    - outer_valid_temperature_or_early_stopping
+    - test_time_backpropagation
+    - pseudo_start_risk_gate_or_direct_correction
+    - posthoc_loss_band_temperature_or_architecture_grid
+    - blend_with_existing_ml_pf_or_beam
+
+execution:
+  implementation: true
+  implementation_approved: true
+  implementation_approved_at: "2026-07-19"
+  implementation_approval_scope: user_message_implement_exp295_stage_a_only
+  kaggle_push_approved: true
+  kaggle_push_approved_at: "2026-07-19"
+  kaggle_push_approval_scope: user_message_execute_exp295_stage_a_fold0_only
+  kaggle_push_resumed_at: "2026-07-20"
+  kaggle_push_resume_scope: user_message_execute_after_gpu_slot_available
+  runtime_contract_repair_approved: true
+  runtime_contract_repair_approved_at: "2026-07-20"
+  runtime_contract_repair_approval_scope: >-
+    user_message_execute_after_exp295_v2_hard_truth_path_failure_diagnosis
+  runtime_contract_repair: >-
+    Keep the fixed exp209 decoder grammar and replace infeasible hard-path CRF
+    likelihood with exact Gaussian soft-label structured likelihood at sigma
+    0.35 ft; keep local true-state CE weight 0.25.
+  inference_approved: false
+  submission_approved: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  canonical_train_kernel_id: kentookumura/exp295-prefix-gr-ssm-fold0-train
+  canonical_train_title: exp295 prefix gr ssm fold0 train
+  canonical_train_kernel_version: 3
+  canonical_train_run_url: https://www.kaggle.com/code/kentookumura/exp295-prefix-gr-ssm-fold0-train
+  canonical_train_run_started_at_utc: "2026-07-20T01:35:47.267Z"
+  current_active_architectures: 1
+  current_neural_model_count: 0
+  current_running_neural_model_count: 0
+  current_kaggle_run:
+    kernel_version: 3
+    worker_status: CANCEL_ACKNOWLEDGED
+    started_at_utc: "2026-07-20T01:35:47.267Z"
+    objective: gaussian_soft_label_structured_nll_sigma_0p35_ft
+    trained_model_count: 0
+    completed_epoch_count: 0
+    timed_out: true
+  previous_kaggle_failure:
+    kernel_version: 2
+    worker_status: ERROR
+    classification: training_objective_data_contract
+    message: "1478: true quantized path is infeasible under fixed exp209 grammar"
+    failed_before_completed_epoch: true
+    trained_model_count: 0
+  last_kaggle_failure:
+    kernel_version: 3
+    worker_status: CANCEL_ACKNOWLEDGED
+    classification: kaggle_runtime_timeout_compute_infeasible
+    message: >-
+      No epoch summary was emitted before the Kaggle timeout; the final normal
+      log entry was the Stage A contract preview at 18.455680111 seconds.
+    failed_before_completed_epoch: true
+    trained_model_count: 0
+    output_file_count: 0
+  runtime_shape_audit:
+    fit_wells: 556
+    fit_views: 1668
+    fit_hidden_rows_total: 8571405
+    mean_hidden_rows_per_view: 5138.732014388489
+    mean_grid_states: 571.697242206235
+    rate_states: 41
+    soft_label_dp_sweeps_per_view: 4
+    position_rate_cells_per_epoch: 803449626924
+    position_rate_cells_for_max_8_epochs: 6427597015392
+    early_stop_official_views_per_epoch: 62
+  current_lightgbm_config_count: 0
+  current_trained_fold_count: 0
+  current_total_boosters: 0
+  current_pf_beam_well_runs: 0
+  control_or_parent_retraining: false
+  stage_a_plan:
+    fold_indices: [0]
+    active_architectures: 1
+    seeds: [42]
+    neural_model_count: 1
+    lightgbm_config_count: 0
+    total_boosters: 0
+    control_model_training: 0
+    requires_separate_implementation_approval: true
+    requires_separate_gpu_push_approval: true
+  stage_b_plan:
+    prerequisite: stage_a_all_pass
+    reuse_stage_a_fold0_model: true
+    additional_fold_indices: [1, 2, 3, 4]
+    additional_neural_model_count: 4
+    total_five_fold_neural_model_count: 5
+    lightgbm_config_count: 0
+    total_boosters: 0
+    control_model_training: 0
+    requires_separate_gpu_push_approval: true
+  stage_c_plan:
+    prerequisite: stage_b_lb5x_promotion_pass
+    same_experiment_inference: true
+    candidate_or_existing_model_blend: false
+    requires_separate_inference_approval: true
+    requires_separate_submission_approval: true
+
+runtime:
+  use_amp: true
+  num_workers: 0
+  batch_size: 1
+  kaggle:
+    enable_gpu: true
+    machine_shape: NvidiaTeslaT4
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+    inference_kernel_sources: []
+
+inference:
+  enabled: false
+  create_submission: false
+  prerequisite: stage_b_lb5x_promotion_pass_and_separate_user_approval
+  reason: Stage A implementation only; Stage B, Stage C, and submission are not authorized.
+
+artifacts:
+  output_prefix: exp295_prefix_anchored_wholewell_gr_alignment_ssm
+  expected_stage_a_outputs:
+    - exp295_prefix_anchored_wholewell_gr_alignment_ssm_fold_map.csv
+    - exp295_prefix_anchored_wholewell_gr_alignment_ssm_pseudo_cut_manifest.csv
+    - exp295_prefix_anchored_wholewell_gr_alignment_ssm_input_manifest.csv
+    - exp295_prefix_anchored_wholewell_gr_alignment_ssm_training_history.csv
+    - exp295_prefix_anchored_wholewell_gr_alignment_ssm_fold0_model.pt
+    - exp295_prefix_anchored_wholewell_gr_alignment_ssm_model_manifest.json
+    - exp295_prefix_anchored_wholewell_gr_alignment_ssm_frozen_predictions.csv.gz
+    - exp295_prefix_anchored_wholewell_gr_alignment_ssm_freeze_manifest.json
+    - exp295_prefix_anchored_wholewell_gr_alignment_ssm_emission_posterior_manifest.csv
+    - exp295_prefix_anchored_wholewell_gr_alignment_ssm_validation_readout.csv.gz
+    - exp295_prefix_anchored_wholewell_gr_alignment_ssm_by_well_metrics.csv
+    - exp295_prefix_anchored_wholewell_gr_alignment_ssm_stage_a_metrics.json
+    - exp295_prefix_anchored_wholewell_gr_alignment_ssm_summary.json
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_global_seed_plus_stable_sha256_per_well_fold_pseudocut_and_control
+  stochastic_components:
+    - pytorch_cuda_convolution_training
+    - adamw_optimizer
+    - dropout
+    - seeded_dataloader_order
+  parallel_rng_policy: dataloader_workers_zero_batch_one_well_stable_gradient_accumulation_order
+  deterministic_flags:
+    cudnn_benchmark: false
+    torch_deterministic_algorithms: warn_only
+    amp: true
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    fold_map_sha: true
+    pseudo_cut_manifest_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    model_sha: true
+    emission_sha: true
+    posterior_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - GPU and AMP may not be byte deterministic; this experiment is never a deterministic anchor without an explicit rerun audit.
+    - Outer-valid truth is loaded only after model, unary, posterior, control, and row-identity manifests are frozen.
+    - Gzip raw SHA is supplemental; decompressed logical content SHA is the primary comparison evidence.
+
+notes:
+  - Stage A fold 0 canonical train notebook adoption and one-model Kaggle T4 push were authorized on 2026-07-19.
+  - The canonical inference notebook remains an untouched template; Stage B, inference, and submission remain unauthorized.
+  - The old heatmap_unary_exact_hmm_redecode_probe backlog is subsumed as evidence and decoder lineage, not implemented as a separate exp.
+  - Any redesign after a failed fixed gate requires a new steering decision and normally a new experiment number.

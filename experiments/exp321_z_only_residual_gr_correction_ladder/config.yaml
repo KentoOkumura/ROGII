@@ -1,0 +1,330 @@
+experiment:
+  name: exp321_z_only_residual_gr_correction_ladder
+  description: 最後の既知TVTから固定-ΔZで作るZ-only経路を、残差構造、GR shift識別力、exp226 window GR補正の3段階gateで監査する
+  route: pf_beam
+  status: stage_ab_completed_gate_failed_stage_c_closed
+  created_at: "2026-07-21"
+  updated_at: "2026-07-21"
+
+lineage:
+  parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  references:
+    - exp206_discussion711308_dz_dtvt_bpeak_cluster_baseline
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp213_prefix_structural_prior_pfbeam
+    - exp263_last_anchor_better_candidate_confidence_pair_cache
+    - exp264_exp263_candidate_confidence_dual_selector
+    - exp280_exp226_shift_likelihood_separability_readout
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe
+    - exp293_physics_only_candidate_bank_headroom_contract
+    - exp298_exp226_blockwise_offset_slope_quotient_local_shape_audit
+  design_source: .steering/20260721-exp321-z-only-residual-gr-correction-ladder
+  followup_contract: reserved_followups.md
+  diff_summary: >-
+    exp226/exp280のgeometry baseを、最後の既知TVT_inputとZだけから
+    tvt_z=anchor_tvt-(Z-anchor_z)で作る固定係数-1経路へ置換する。
+    Stage A residual structure、Stage B exp280-parity GR shift separability、
+    Stage C exp226-parity window GR correctionを順序付きgateで評価し、
+    donor/XY/ANCC/kappa/U projection/exact HMM/MLは使わない。
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+implementation:
+  enabled: true
+  scope: stage_ab_only
+  train_notebook_state: compact_selfcontained_stage_ab_implemented
+  canonical_train_notebook_adopted: true
+  stage_c_implemented: false
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: fixed_exp226_fold_three_stage_z_only_gr_correction_ladder
+  metric: rmse_tvt_with_stage_specific_diagnostics
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  fold_policy: reuse_exp226_saved_oof_fold_identity_without_refit
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  distance_buckets_ft: [50, 100, 250, 500, 1000]
+  scopes:
+    near:
+      minimum_md_since_ft: 0.0
+      maximum_md_since_ft: 250.0
+    long_tail:
+      minimum_md_since_ft: 1000.0
+      maximum_md_since_ft: null
+    hidden_like:
+      - verification_like_spatial
+      - verification_like_typewell_purged
+  leakage_policy:
+    - Raw row order, anchor, suffix identity, tvt_z, relpath_z, block assignment, shift scores, and all candidate values are generated without suffix TVT truth.
+    - Stage A/B target-free tables are schema/content-hashed before true TVT is loaded through a separate late-readout path.
+    - Stage C is a separate run and hashes tvt_z_gr before loading suffix truth or saved score controls.
+    - Oracle block offset, affine slope, truth-nearest shift, errors, and guard labels are diagnostic-only post-freeze values and cannot become prediction inputs.
+    - Stage A/B/C settings and thresholds are fixed before execution and cannot be rescued on the same truth.
+  technical_guards:
+    required_row_identity_coverage: 1.0
+    required_well_identity_coverage: 1.0
+    required_finite_prediction_coverage: 1.0
+    required_fold_set: [0, 1, 2, 3, 4]
+    require_contiguous_known_prefix: true
+    require_last_known_anchor_z_finite: true
+    require_suffix_z_finite: true
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  input_target_column: TVT_input
+  z_column: Z
+  gr_column: GR
+  id_column: id
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    pre_freeze_safe_columns: [well_id, fold, row_idx, suffix_offset, tvt_geop]
+    post_freeze_reference_columns: [tvt_true, tvt_pred]
+    forbidden_pre_freeze_columns: [tvt_true, error, abs_error, gr_delta]
+  hidden_like:
+    enabled: true
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+z_only:
+  anchor_policy: last_row_with_finite_tvt_input_in_raw_order
+  formula: anchor_tvt_minus_z_minus_anchor_z
+  delta_z_coefficient: -1.0
+  fit_slope: false
+  fit_intercept: false
+  fit_rate: false
+  use_xy: false
+  use_donor_field: false
+  use_ancc: false
+  use_formation: false
+  use_u_projection: false
+  missing_z_policy: technical_fail_no_interpolation
+
+stage_a_residual_structure:
+  enabled_after_implementation: true
+  block_horizons_rows: [128, 256, 512]
+  block_policy: non_overlapping_from_suffix_start_keep_short_tail
+  singleton_policy: exclude_from_affine_metric_identically
+  quotient_metrics:
+    direct: residual
+    offset_only: residual_minus_block_mean_residual
+    affine: residual_minus_ols_intercept_and_linear_row_slope
+  diagnostic_cap4_oracle:
+    offset_source: block_mean_residual
+    clip_ft: [-4.0, 4.0]
+    persist_prediction: false
+  pass_requires_all:
+    maximum_affine_quotient_rmse_ratio_vs_exp226_tvt_geop_h256: 1.25
+    maximum_affine_quotient_rmse_ratio_vs_exp226_tvt_geop_h512: 1.25
+    minimum_folds_meeting_relative_shape_each_primary_horizon: 4
+    minimum_h512_affine_sse_explained_fraction: 0.80
+    minimum_h512_cap4_oracle_rmse_gain_ft: 0.05
+    required_technical_coverage: 1.0
+  fail_action: stop_before_stage_c_no_rescue_grid
+
+stage_b_shift_separability:
+  enabled_after_implementation: true
+  parity_parent: exp280_exp226_shift_likelihood_separability_readout
+  base_path: tvt_z
+  shift_bank_ft: [-80.0, -40.0, -20.0, -10.0, -5.0, -2.0, 0.0, 2.0, 5.0, 10.0, 20.0, 40.0, 80.0]
+  block_rows: 512
+  block_policy: non_overlapping_from_suffix_start_keep_short_tail
+  score_aggregation: mean_row_log_likelihood
+  tie_policy: config_shift_bank_order
+  typewell_extension_ft: 40.0
+  emission:
+    kind: exp209_gaussian_raw_gr
+    sigma_mode: known_prefix_residual_std
+    sigma_clip: [10.0, 60.0]
+    log_likelihood_clip: 600.0
+    missing_gr_policy: interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+  shuffled_control:
+    enabled: true
+    seed: 42
+    policy: stable_sha256_per_well_block_permutation_of_candidate_scores
+  exp280_pooled_reference:
+    top1: 0.189547
+    top3: 0.452421
+    mrr: 0.389626
+    sign: 0.498523
+  pass_requires_all:
+    minimum_folds_real_above_shuffled_each_metric: 5
+    required_pooled_metrics_strictly_above_exp280: [top1, top3, mrr, sign]
+    required_positive_real_minus_shuffled_scopes:
+      - long_tail_1000_plus
+      - hidden_like_spatial
+      - hidden_like_typewell_purged
+    minimum_bank_range_coverage: 0.95
+    maximum_quantization_error_ft: 20.0
+    required_finite_score_coverage: 1.0
+  fail_action: stop_before_stage_c_no_shift_or_likelihood_rescue
+
+stage_c_window_gr_correction:
+  enabled: false
+  enable_condition: stage_a_pass_and_stage_b_pass_and_separate_user_approval
+  run_policy: separate_kaggle_cpu_train_run_after_stage_ab_decision_manifest
+  base_path: tvt_z
+  relative_path: relpath_z
+  output_path: tvt_z_gr
+  algorithm_parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  params:
+    gr_grid_step: 0.5
+    gr_window: 500
+    gr_stride: 125
+    gr_tau: 2.0
+    gr_w_mse: 0.5
+    gr_w_lvl: 0.1
+    gr_sh_a: 1.1
+    gr_sh_b: 0.12
+    gr_sh_lo: 0.3
+    gr_cap_ft: 4.0
+    gr_s0: 0.10
+    gr_extent_ft: 30.0
+    known_prefix_affine: exp226_two_pass_sigma_clip_affine
+    known_prefix_sigma_mode: std
+    known_prefix_sigma_clip: [5.0, 60.0]
+    known_prefix_sigma_fallback_pairs_le: 30
+    known_prefix_sigma_fallback: 30.0
+    lateral_gr_interpolation_limit_rows: 10
+    enable_u_projection: false
+  fallback_policy:
+    explicit_ineligible: zero_correction_with_reason_manifest
+    unexpected_exception: technical_fail_no_silent_zero
+  scientific_pass_requires_all:
+    minimum_rmse_gain_vs_z_only_ft: 0.05
+    minimum_improved_folds: 4
+    maximum_scope_rmse_regression_ft: 0.0
+    maximum_by_well_p95_rmse_regression_ft: 0.25
+    maximum_worst_well_rmse_regression_ft: 0.25
+    required_finite_identity_cap_coverage: 1.0
+  route_candidate_additional_gate:
+    maximum_rmse_ft: 9.427110
+    reference: saved_exp226_final_oof
+  report_only_reference:
+    exp263_fixed_rmse: 8.238332
+  fail_action: close_direct_z_gr_branch_no_parameter_rescue
+
+reserved_followups:
+  exact_hmm:
+    name: z_only_residual_offset_exact_hmm_probe
+    experiment_id: unassigned
+    status: closed_exp321_stage_b_failed
+    trigger: stage_b_pass_and_stage_c_scientific_pass
+    fixed_reference: reserved_followups.md
+  sparse_candidate:
+    name: z_only_gr_sparse_candidate_addonly
+    experiment_id: unassigned
+    status: closed_exp321_stage_c_not_reached
+    trigger: stage_c_scientific_pass_and_rmse_not_worse_than_exp226
+    fixed_reference: reserved_followups.md
+
+model:
+  name: none_deterministic_physical_readout_and_window_decoder
+  params: {}
+
+execution_contract:
+  stage_ab:
+    implemented: true
+    active_variants: 1
+    diagnostic_contracts: 1
+    fold_strata: 5
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+    hmm_well_runs: 0
+    window_decoder_well_runs: 0
+    expected_artifacts:
+      - exp321_z_only_target_free_paths.csv.gz
+      - exp321_z_only_target_free_shift_scores.csv.gz
+      - exp321_z_only_target_free_contract.json
+      - exp321_z_only_stage_a_block_metrics.csv.gz
+      - exp321_z_only_stage_a_metrics.csv
+      - exp321_z_only_stage_b_block_readout.csv.gz
+      - exp321_z_only_stage_b_scope_metrics.csv
+      - exp321_z_only_stage_b_fold_metrics.csv
+      - exp321_z_only_stage_b_shift_metrics.csv
+      - exp321_z_only_well_manifest.csv
+      - exp321_z_only_input_manifest.csv
+      - exp321_z_only_decision_manifest.json
+      - exp321_z_only_summary.json
+  stage_c_maximum:
+    candidate_variants: 1
+    folds: 5
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+    hmm_well_runs: 0
+    window_decoder_well_runs: 773
+  parent_control_retraining: false
+  gpu: false
+  inference: false
+  submission: false
+  kaggle_push_approved: true
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    canonical_train_kernel_id: kentookumura/exp321-z-only-residual-gr-ladder-train
+    canonical_train_title: exp321 z only residual gr ladder train
+    run_after_kernel: kentookumura/exp305-tempered-raw-swt-exact-hmm-emission-train
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_real_paths_stable_sha256_local_rng_for_shuffle_only
+  stochastic_components:
+    - stable_shuffled_score_negative_control_only
+  parallel_rng_policy: fixed_well_row_block_shift_window_order_no_global_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Run AB records target-free path/block/score content SHA before truth join.
+    - Run C records correction/prediction raw, decompressed, and logical content SHA before truth join.
+    - This is not a deterministic submission anchor because inference and submission are disabled.
+
+inference:
+  enabled: false
+  mode: disabled_design_only_train_side_ladder
+  create_submission: false
+
+notes:
+  - exp305完了後にKaggle CPU Run AB version 1を実行し、Stage A PASS / Stage B FAILで完了した。
+  - Stage A/B/Cを同じexpに保持し、PASS後のinference portだけを理由に新expを作らない。
+  - Stage Bのbank range/quantization gate FAILによりStage Cと案4/5を救済なしで閉じた。

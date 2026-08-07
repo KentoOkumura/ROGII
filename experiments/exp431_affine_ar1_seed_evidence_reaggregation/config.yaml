@@ -1,0 +1,187 @@
+experiment:
+  name: "exp431_affine_ar1_seed_evidence_reaggregation"
+  description: "Conditionally reaggregate one fixed exp404-compatible 128-seed PF trajectory bank with the exp427 affine-by-AR1 block likelihood factorial."
+  route: pf_beam
+  status: closed_prerequisite_failed
+  created_at: "2026-07-28"
+
+lineage:
+  parent: exp404_scale5_sigma_gr_likelihood_pf_ablation
+  prerequisite: exp427_affine_ar1_whitened_gr_likelihood_readout
+  comparison:
+    - exp417_scale5_seed_aggregation_promotion_audit
+  diff_summary: "PF generation is unchanged; seed evidence becomes the sum of exp427 block posterior-predictive log densities, with affine_ar1 as the sole primary."
+
+prerequisite_gate:
+  required_status: complete_pass
+  require_exp427_technical_and_gate: true
+  require_exp427_scientific_and_gate: true
+  require_expected_artifact_content_shas: true
+  on_failure: closed_prerequisite_failed_no_same_oof_rescue
+  implementation_requires_separate_user_approval_after_pass: true
+  observed:
+    status: stage_0_completed_gate_failed_closed
+    decision: stage_0_failed_close_without_rescue
+    technical_passed: false
+    scientific_passed: false
+    eligible_block_fraction: 0.7210735841787594
+    eligible_block_fraction_required: 0.75
+    primary_mrr: 0.38609004481221754
+    matched_mrr: 0.38800261972123057
+    saved_exp280_mrr: 0.3881463777144988
+    scientific_contract_sha256: 75241052d0bdeba3dcbad6548167bb1193f4375b1035e8de625591d4fdb24773
+    target_free_bundle_sha256: 3cae530e8c2629eea16468383ae06edc3e971d1ed77fb3a4d8d71d4043ba8a4d
+
+validation:
+  source: exp226_oof_fold_assignment
+  wells: 773
+  reporting_folds: 5
+  truth_late: true
+  primary_metric: rmse
+  paired_tail_unit: well
+
+pf:
+  parent_compatibility: exp404_x1p0
+  trajectory_variants: 1
+  particles: 500
+  seeds: 128
+  scale: 1.0
+  filtering_particle_likelihood: parent_gaussian_unchanged
+  resampling: parent_unchanged
+  transition: parent_unchanged
+  save_per_seed_trajectories: true
+
+likelihood:
+  prerequisite_contract: exp427_frozen_pass_artifacts
+  block_rows: 512
+  block_policy: non_overlapping_from_suffix_start
+  minimum_finite_gr_rows: 128
+  minimum_finite_gr_fraction: 0.50
+  missing_policy: raw_finite_only_break_runs_at_original_missing_rows
+  typewell_policy: exp427_endpoint_hold
+  affine:
+    observation: horizontal_gr_equals_intercept_plus_slope_times_typewell_gr
+    prior_mean: [0.0, 1.0]
+    prior_std: [20.0, 0.25]
+    posterior: analytic_fixed_sigma_bayesian_linear_regression
+    source: current_well_known_prefix_finite_pairs_only
+    minimum_prefix_pairs: 64
+    minimum_typewell_gr_std: 5.0
+    require_positive_posterior_mean_slope: true
+    ineligible_policy: no_candidate_no_identity_fallback
+  sigma:
+    source: current_well_known_prefix_identity_residual_population_std
+    clip: [10.0, 60.0]
+  ar1:
+    source: frozen_exp427_outer_train_fold_prior
+    rho_clip: [-0.8, 0.8]
+    application: stationary_whitening_within_contiguous_finite_runs
+    outer_valid_source_forbidden: true
+  predictive_density:
+    family: gaussian
+    numerical_method: rank2_woodbury
+    dense_reference: tests_only
+    maximum_dense_woodbury_abs_error: 1.0e-8
+  factorial:
+    variants:
+      identity_iid_matched:
+        role: factorial_control
+      affine_iid:
+        role: diagnostic
+      identity_ar1:
+        role: diagnostic
+      affine_ar1:
+        role: scientific_candidate
+
+evidence:
+  aggregation_score: sum_proper_log_predictive_density_across_eligible_runs_and_blocks
+  audit_score: mean_log_predictive_density_per_finite_observation
+  temperature: 5.0
+  aggregation: centered_softmax_weighted_seed_mean
+  require_shared_trajectory_sha: true
+  score_centering: independently_within_each_readout_and_well
+  weight_clip: null
+  top_k: null
+  ess_rescue: null
+
+model:
+  name: none_fixed_pf_affine_ar1_evidence_readout
+  estimator: none_physical_pf_only
+
+run_contract:
+  technical_preflight:
+    fixed_eligible_wells: 4
+    pf_well_runs: 4
+    seed_well_trajectories: 512
+    particle_starts: 256000
+    likelihood_readouts: 4
+  full:
+    wells: 773
+    pf_well_runs: 773
+    seed_well_trajectories: 98944
+    particle_starts: 49472000
+    cpu_shards: 4
+    lightgbm_configs: 0
+    folds_trained: 0
+    boosters: 0
+    parent_independent_full_reruns: 0
+
+promotion_gate:
+  overall_rmse_gain_vs_identity_iid_min: 0.10
+  overall_rmse_gain_vs_saved_exp404_t5_min: 0.10
+  overall_rmse_gain_vs_affine_iid_min: 0.05
+  overall_rmse_gain_vs_identity_ar1_min: 0.05
+  nonworse_reporting_folds_min: 4
+  require_all_scopes_nonworse: true
+  paired_well_squared_error_delta_p95_max: 0.0
+  worst_paired_well_rmse_delta_max: 0.25
+  minimum_eligible_well_fraction: 0.90
+
+runtime:
+  accelerator: cpu
+  numba: true
+  cpu_shards: 4
+  use_amp: false
+
+reproducibility:
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_immutable_well_and_seed_index
+  seed_indices: "0..127"
+  stochastic_components:
+    - particle_transition
+    - resampling
+  parallel_rng_policy: local_rng_per_well_seed_fixed_reduction_order
+  trajectory_freeze_before_readout: true
+  prerequisite_artifact_sha_required: true
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    package_versions: true
+    input_sha: true
+    prerequisite_artifact_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    trajectory_sha: true
+    evidence_sha: true
+    prediction_sha: true
+
+implementation:
+  allowed_now: false
+  notebooks: markdown_only_terminal_closed_placeholders
+  kaggle_push_allowed: false
+  closed_without_implementation: true
+  closure_reason: exp427_technical_and_scientific_gates_failed
+
+forbidden:
+  - implement_before_exp427_complete_pass
+  - same_oof_rescue_after_exp427_failure
+  - candidate_specific_pf_replay
+  - huber_or_student_t
+  - self_gr
+  - datum_reinjection
+  - affine_prior_rho_block_temperature_grid
+
+notes:
+  - "exp427 version 2 completed with both technical and scientific gates failed."
+  - "The preregistered no-rescue branch is terminally closed; no exp431 code, PF replay, prediction, inference, or submission is permitted."
+  - "identity_iid is the matched control inside the exp427 factorial; saved exp404 T=5 remains a separate strong reference."

@@ -1,0 +1,109 @@
+{
+  "experiment": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector",
+  "status": "completed_train_side_supported_for_review",
+  "route": "pf_beam",
+  "parent": "exp158_segment_continuity_selector_on_exp157",
+  "kernel": {
+    "id": "kentookumura/exp183-copcf-train",
+    "url": "https://www.kaggle.com/code/kentookumura/exp183-copcf-train",
+    "version": 2,
+    "status": "COMPLETE"
+  },
+  "key_idea": "Add exp181 cluster-outlier typewell/spatial prior signal as selector confidence features on top of exp157/158, without direct prediction correction.",
+  "cv": {
+    "metric": "rmse",
+    "rows": 3783989,
+    "wells": 773,
+    "runtime_seconds": 28882.350387096405,
+    "best_viterbi": {
+      "variant": "viterbi_sw200_bias000_jw100_jf025_d0075_std999999_md0000_seg001",
+      "rmse_tvt": 10.60148177371247,
+      "mae_tvt": 6.386571251212593,
+      "within_10ft": 0.7924187940292639,
+      "oracle_label_accuracy": 0.26653671561941644,
+      "path_switch_count": 5650,
+      "path_switch_per_1000_rows": 1.4931333045629889,
+      "default_candidate_rate": 0.45931634579276,
+      "switch_penalty": 20.0,
+      "jump_penalty_weight": 1.0,
+      "jump_free_ft": 25.0,
+      "max_abs_delta_vs_default": 75.0,
+      "max_pf_ancc_std": 999999.0,
+      "min_md_since": 0.0,
+      "min_segment_len": 1
+    },
+    "oracle": {
+      "rmse_tvt": 4.564605114796885,
+      "mae_tvt": 2.3171664126922344,
+      "within_10ft": 0.960053530811004,
+      "oracle_label_accuracy": 1.0
+    }
+  },
+  "metrics": {
+    "historical_baselines": {
+      "likpf_mean_rmse": 11.594897672217703,
+      "multiobs_score_top1_rmse": 11.594897672217703,
+      "exp157_rowwise_rmse": 10.79579983712686,
+      "exp158_continuity_rmse": 10.789163253
+    },
+    "delta_rmse_vs_likpf_mean": -0.9934158985052335,
+    "delta_rmse_vs_multiobs_score_top1": -0.9934158985052335,
+    "delta_rmse_vs_exp157_rowwise": -0.19431806341439106,
+    "delta_rmse_vs_exp158_continuity": -0.1876814792875301,
+    "best_pf_ancc_selection_rate": 0.36098334323910564,
+    "best_max_path_switch_per_1000_rows": 5.519779208831647,
+    "planned_lightgbm_configs": 3,
+    "planned_folds": 5,
+    "planned_boosters": 15,
+    "planned_viterbi_variants": 180,
+    "actual_lightgbm_configs": 3,
+    "actual_folds": 5,
+    "actual_boosters": 15,
+    "actual_viterbi_variants": 180,
+    "control_retraining": false,
+    "recommendation": "cluster_outlier_prior_addonly_selector_supported_for_review"
+  },
+  "runtime": {
+    "enable_gpu": false,
+    "new_boosters": 15,
+    "viterbi_variants": 180,
+    "control_retraining": false,
+    "long_model_max_train_rows_per_fold": 120000,
+    "long_model_max_valid_rows_per_fold": 120000,
+    "long_model_predict_chunk_rows": 50000,
+    "v1_failure": "DeadKernelError during candidate-long feature generation, likely OOM",
+    "v2_oom_guard": "candidate-long bulk construction plus sampled eval and chunked full-valid prediction"
+  },
+  "sha256": {
+    "metrics": "c5fc041bcfa55b52580712d25762efdfd2439d7655eaffa46763923102456341",
+    "predictions": "d2a98e8212ff9fc06f46c5505f3dc870310453af989150921bc54ef42cedbf5d",
+    "predictions_decompressed": "beddc97c04cdbddcd5d5756e90b66ff51dfc525c998f668a147bac540d0180a0",
+    "feature_schema": "3b4c44e750e640066298542b70946b9a2d3733c71ba24ecc0a46d0e0f5b03ec4",
+    "score_summary": "669b6fbb066d541442cbf91006bfd3fb578a0d6057defbee8376b087480ae515",
+    "subgroup_metrics": "42aecfb0506e74c9b0a1376b74c02cf1635c928ffb21dc2da8abc53b11db587e",
+    "viterbi_params": "002f5d2bf4be169842ec1e911ec545223b4d87a1ff4a586a388c18ffd801112b",
+    "prediction_by_variant": {
+      "lgb_candidate_binary": "9a93954fcce65598e661a40b40684a512967f316e4b0b451e71f650c816c3a64",
+      "lgb_candidate_error_ranker": "3abe803a37c765f1b3c9e8c3a4daefc273b0b86fe0e80bd4e2969526d7f6b6e4",
+      "lgb_multiclass": "2142530833dd4e9c36b3944012525fa62fed2309bcd8bfb0520d9cf2fa25696b",
+      "likpf_mean_single": "5d156eec5471cb86d5a47063f723f813988403b614b126d6206a1fe76345411f",
+      "multiobs_score_top1": "5d156eec5471cb86d5a47063f723f813988403b614b126d6206a1fe76345411f",
+      "oracle": "e09e2d084a74a359fa7f8667c127ec23d99f1cfcfd726302c809bb8bc43433f7",
+      "viterbi_sw200_bias000_jw100_jf025_d0075_std999999_md0000_seg001": "4468cda64f2c63d2cd865826da2ecd63da34097b0ecbe741831c888756ed2392"
+    }
+  },
+  "artifacts": {
+    "metrics": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector_metrics.csv",
+    "oof_predictions": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector_oof_predictions.csv.gz",
+    "selection_distribution": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector_selection_distribution.csv",
+    "by_well": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector_by_well.csv",
+    "bucket_metrics": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector_bucket_metrics.csv",
+    "subgroup_metrics": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector_subgroup_metrics.csv",
+    "viterbi_params": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector_viterbi_params.csv",
+    "score_summary": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector_score_summary.csv",
+    "feature_importance": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector_feature_importance.csv",
+    "feature_importance_mean": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector_feature_importance_mean.csv",
+    "feature_schema": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector_feature_schema.csv",
+    "model_manifest": "exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector_model_manifest.json"
+  }
+}

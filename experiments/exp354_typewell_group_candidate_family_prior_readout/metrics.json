@@ -1,0 +1,104 @@
+{
+  "experiment": "exp354_typewell_group_candidate_family_prior_readout",
+  "status": "completed_stage_0_failed_close_without_rescue",
+  "route": "ml_model",
+  "stage": "stage_0_zero_model_family_prior_readout",
+  "cv": {
+    "passed": false,
+    "decision": "stage_0_failed_close_without_rescue",
+    "checks": {
+      "all_prior_values_finite": true,
+      "candidate_family_fold_identity_parity": true,
+      "fit_valid_well_overlap_zero": true,
+      "hidden_like_spatial_spearman_nonnegative": true,
+      "hidden_like_typewell_purged_spearman_nonnegative": true,
+      "minimum_family_rank_spearman": true,
+      "minimum_heldout_group_coverage": true,
+      "minimum_positive_folds": true,
+      "minimum_real_minus_shuffle_spearman": false,
+      "outer_valid_truth_before_prior_freeze_zero": true
+    },
+    "family_rank_spearman": 0.325788918916327,
+    "shuffle_family_rank_spearman": 0.32707907442799916,
+    "real_minus_shuffle_spearman": -0.0012901555116721641,
+    "positive_folds": 5,
+    "reporting_folds": 5,
+    "heldout_group_coverage": 0.9805950840879689,
+    "hidden_like_spatial_family_rank_spearman": 0.3817361922398502,
+    "hidden_like_typewell_purged_family_rank_spearman": 0.3765703933203774,
+    "stage_1_eligible": false
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "heldout_family_rank_spearman_then_nested_selector_rmse",
+  "artifacts_generated": true,
+  "artifact_directory": "kaggle/output/train_v1/artifacts",
+  "runtime_seconds": 63.67233964900004,
+  "kaggle": {
+    "kernel_id": "kentookumura/exp354-typewell-family-prior-readout-train",
+    "kernel_version": 1,
+    "id_no": 128363177,
+    "url": "https://www.kaggle.com/code/kentookumura/exp354-typewell-family-prior-readout-train",
+    "cpu_only": true,
+    "internet_enabled": false
+  },
+  "execution_contract": {
+    "prior_variants": 1,
+    "negative_controls": 1,
+    "reporting_folds": 5,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "candidate_regeneration": false,
+    "parent_control_retraining": false,
+    "stage_1_models": 0
+  },
+  "input_sha256": {
+    "exp293_bank_manifest_raw": "646a394fed300469bd3e880290457b43df23cda5ce152c1ee43014f3a8278cdf",
+    "exp293_block_assignment_raw": "49571a6e674f9cec2729e47ccf7c7740417c2f560eeb7b5d5dcf47ab3475667c",
+    "exp293_block_assignment_content": "b0755c22aa8d791012d3f605e2f1b66063ce9bb6ba46ddd4b48dca77cce032d7",
+    "exp293_candidate_bank_raw": "1281c1ec501c21bdee9d918d805eb320b3e0e82715d993c2cfd0f9dda18909bc",
+    "exp293_candidate_bank_content": "29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474",
+    "exp065_group_membership_raw": "dcda8588cc1dd9261bafae7de00c890393e38b8a0ca0eb86fbba18a2cffc4a50",
+    "exp115_hidden_like_assignments_raw": "5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597"
+  },
+  "freeze_sha256": {
+    "target_free_input": "b1920c1eb6a855201a91ede193eabdf0fdeead959afb560a455a65c27bb527cd",
+    "prior_schedule": "f64975ec2335b8eb5f1bf3e03d8e8a4d3314a9b878219941ded66be583b173f2"
+  },
+  "output_sha256": {
+    "candidate_family_manifest_raw": "80e6c3d127e86e1f82133137e1d8fb6728e7e3217f757157cd897d930475d9b2",
+    "group_membership_raw": "e3b650efd074acbe425f9583d7cfff01bb81bafaef26ad29d926ad8a5d754cdd",
+    "well_family_error_raw": "46688d9f48dac9ed7f43744b2bafc8e7cd5307c3632da380b0f8830e2465228f",
+    "well_family_error_content": "9afa8a83520ef511c3fc721bc2441f8511516433ff675fc2112b03d105d3f8a1",
+    "prior_schedule_raw": "d334e1d44639835af9fc77d5ba038bc1e10bee2bb09a0cc25b84dace408aedb7",
+    "prior_schedule_content": "1d0f0073ab5a1f997bde06e1fa7366088d56a21fa507083ac8f39db8590d2585",
+    "readout_raw": "124cad884d560d5b60bec1e96b27089dc922b1d5cda8c735411b9fd9c81ab185",
+    "readout_content": "4c384076578107fbff22268222dba4559c09227cd6e8d6f2b7ad6c9f8157b7a8",
+    "fold_metrics_raw": "eee7eff297d224dc8a9869b89bb2f1ef8f32df6d2bbc7f76535ae2d362f6bb77",
+    "surface_metrics_raw": "7770cf90d6924fae6609ac5ad5b9ff0a8fa8a7cf5dff973fe2cc354d3718b7a6",
+    "gate_raw": "0ad39168b7542c4404e5a9284529e08cb770ed6af80f175f98921e8c1cdf89c7",
+    "input_manifest_raw": "deef61aa5dce41dbf1cb451bc6b1602f0e52c5342076c482168d28168dd564c0",
+    "scientific_contract_raw": "d37ea2762c661148f3afb6ce62467cfde63bc4a2e46c9ccacbd8a5561301247e",
+    "summary_raw": "c3f3a9b7b3affd8157051520b790f7ab3a83d9436f17ee7c463ea7fdd4de2e99"
+  },
+  "canonical_notebook_adopted": true,
+  "stage_1_implemented": false,
+  "inference_enabled": false,
+  "submission_enabled": false,
+  "implementation_sha256": {
+    "config": "7a2618b94a8ec43ad49d9e8f4af95f354fbd3bca2605fe6945f7aa663ec4e6f4",
+    "train_source": "f9ebe460200cac04b5372a836d27f23ed547178ca4bfca35137a1dc16372bde3",
+    "inference_source": "1808552656afa2900797ac639fb40bf3a3f72419865b7dc2de9c7c624759b872",
+    "contract_test": "23b0e5dfe7137c9a2ce2f76bd108919172246636ab81384019896ba95d0f9fe8",
+    "canonical_train_notebook": "af361dcdcd00d8a7033bb8f5c4b3e3052685a5a0321b4fed051a68586ffe5a88",
+    "compact_train_notebook": "80f99a2c68cc1ba050c23105dc5855b435aa0a61cbe9ea89c0f53e31c4618ef4",
+    "compact_inference_notebook": "cae928c95f8f821da6b1813f4705e2aeba229bf7dd949e739c6078078100c984"
+  },
+  "execution_package_sha256": {
+    "config": "a9495a73e25d2fb654d7723fb5bfba5cc69cb4f08c5acd6142b9921f602afeb9",
+    "kernel_metadata": "96cd2dd887f6a6e74aca194cdd0643af3f429dc84fc49f936ed26ab2b640d7ca",
+    "notebook": "75325eb6a919065dc4b84d11d72f0e022e717e5133bb6d99c8f3ca838e4558e6"
+  },
+  "notes": "Kaggle CPU version 1 completed. Nine of ten fixed checks passed, but the real-minus-shuffle Spearman was -0.001290 against the >=0.05 gate. Stage 1 is ineligible and the branch is closed without rescue, inference, or submission."
+}

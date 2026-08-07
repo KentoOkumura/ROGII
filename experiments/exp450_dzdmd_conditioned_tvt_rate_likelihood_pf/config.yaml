@@ -1,0 +1,403 @@
+experiment:
+  name: exp450_dzdmd_conditioned_tvt_rate_likelihood_pf
+  description: >-
+    Design-frozen one-factor likelihood-PF ablation that expresses the
+    particles as TVT and TVT-rate, fits a well-local affine TVT-rate mean from
+    visible-prefix dZ/dMD, and applies persistence only to the residual rate.
+  hypothesis: >-
+    Restoring known-Z forcing through a visible-prefix affine transition
+    center can avoid exp446's under-response failure while retaining an
+    interpretable TVT-rate state.
+  route: pf_beam
+  status: stage0b_mechanism_failed_closed
+  created_at: "2026-07-30"
+  updated_at: "2026-07-30"
+
+lineage:
+  parent: exp417_scale5_seed_aggregation_promotion_audit
+  exact_pf_implementation_reference: exp404_scale5_sigma_gr_likelihood_pf_ablation
+  prefix_affine_reference: exp072_exp063_full_replay_feature_cache
+  negative_mechanism_reference: exp446_persistent_tvt_rate_exact_hmm
+  exact_coordinate_reference: exp445_tvt_to_u_coordinate_parity_exact_hmm
+  mechanism_manifest_reference: exp411_predictive_filtered_rate_innovation_destick
+  steering: ../../.steering/20260730-exp450-dzdmd-conditioned-tvt-rate-likelihood-pf
+  diff_summary: >-
+    Re-express exp404's U/r_U particles as TVT/q particles and replace only
+    the exact transformed q transition center with a well-local visible-prefix
+    OLS mean mu_t=beta*dZ/dMD_t+intercept. Persist q_t-mu_t with the original
+    0.998 momentum. Keep initialization in exact parent coordinates and keep
+    every PF, emission, resampling, roughening, seed, and temperature-5
+    aggregation setting fixed. Do not add PF_Z's rate likelihood.
+
+implementation:
+  enabled: true
+  design_approval_received: true
+  design_approval_source: user_message_2026_07_30_choose_learned_dzdmd_conditioning_option_1
+  implementation_approval_received: true
+  implementation_approval_source: user_message_2026_07_30_implement_exp450
+  scaffold_created: true
+  canonical_notebooks_are_markdown_placeholders: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  compact_train_candidate: exp450_dzdmd_conditioned_tvt_rate_likelihood_pf_compact_selfcontained_train.py
+  compact_train_notebook_candidate: exp450_dzdmd_conditioned_tvt_rate_likelihood_pf_compact_selfcontained_train.ipynb
+  compact_inference_guard_candidate: exp450_dzdmd_conditioned_tvt_rate_likelihood_pf_compact_selfcontained_inference.py
+  compact_inference_guard_notebook_candidate: exp450_dzdmd_conditioned_tvt_rate_likelihood_pf_compact_selfcontained_inference.ipynb
+  dedicated_test: ../../tests/test_exp450_dzdmd_conditioned_tvt_rate_likelihood_pf.py
+  jupytext_source_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  train_execution_enabled: false
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: sentinel12_exact_coordinate_parity_then_fixed32_mechanism_then_full_773
+  metric: rmse
+  metric_weighting: unweighted_suffix_rows
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: tvt_input_missing_evaluation_suffix
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  primary_control: exp404_exp417_likpf_scale5_x1p0
+  primary_control_rmse_ft: 10.914522073
+  fixed_hmm_pf_50_50_control_rmse_ft: 10.084909679560383
+  primary_candidate: likpf_scale5_dzdmd_conditioned_tvt_rate
+  gain_definition: primary_control_rmse_minus_candidate_rmse
+  truth_attachment: after_prefix_fit_ledger_all_candidate_predictions_diagnostics_schema_and_logical_content_sha_are_frozen
+  leakage_policy:
+    - Prefix OLS reads only finite visible-prefix TVT_input, MD, and Z steps from the same well.
+    - Prefix coefficients and diagnostics are frozen before unknown-suffix truth, error, role, episode, or fold score is read.
+    - Candidate PF generation reads suffix MD, Z, and GR but not suffix TVT.
+    - Type Well TVT is an allowed reference-curve coordinate, as in exp404.
+    - Fixed32 membership and episode definitions are immutable saved manifests and cannot select a successful coefficient or well after prediction.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  observed_log_column: GR
+  id_column: id
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  saved_control:
+    source: exp404_scale5_sigma_gr_likelihood_pf_ablation
+    kernel_source: kentookumura/exp404-scale5-sigma-gr-likpf-ablation-train
+    source_kernel_version: 1
+    dataset_source: kentookumura/exp404-v1-frozen-predictions
+    filename: exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin
+    candidates:
+      - /kaggle/input/exp404-v1-frozen-predictions
+      - /tmp/exp404-failed-v1-output/artifacts
+    prediction_column: likpf_scale_5_x1p0
+    expected_rmse_ft: 10.914522073
+    expected_raw_sha256: b3699432a691229da5a6562ce74e0b84f1bee3021bd80d650526906f5aa390f8
+    expected_decompressed_sha256: 00fe1b90fce84bd601b4b91442d9fc698200aafadd48658f7d8c26ec1fbe0d00
+    expected_source_logical_sha256: 5f4b6e715081b598b0a34607ad0c81339d0ecd5882ea3a45dd79f33123959a00
+    expected_logical_sha256: null
+    rerun: false
+  stage_0a_sentinel12:
+    source: exp410_likpf_particle_resampling_basin_audit
+    filename: pf_counterfactual_sentinel_wells.csv
+    local: experiments/exp410_likpf_particle_resampling_basin_audit/assets/pf_counterfactual_sentinel_wells.csv
+    expected_sha256: 7e8491d4e1cde59caaed12c638451615b8f113c42811dd7f70f356afe0cf9a04
+    expected_wells: 12
+    use: technical_exact_coordinate_parity_only
+  stage_0b_fixed32:
+    source: exp411_predictive_filtered_rate_innovation_destick
+    filename: stage0_fixed32_manifest.csv
+    local: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+    expected_sha256: fbbc62b7cb79e16a7fb436f3a9d11f8975e935ad2475a17e2dec4fd7b142e4d6
+    expected_wells: 32
+    expected_roles:
+      persistent: 16
+      control: 16
+    expected_fold_counts:
+      "0": 8
+      "1": 6
+      "2": 6
+      "3": 6
+      "4": 6
+  persistent_episodes:
+    source: exp408_hmm_message_rate_basin_audit
+    filename: persistent_offset_episodes.csv
+    local: experiments/exp408_hmm_message_rate_basin_audit/assets/persistent_offset_episodes.csv
+    expected_sha256: 031067fa77c195b77920a0997401310fbdd16532a2d0e99a9c3b5044de28913c
+  exp408_episode_causes:
+    source: exp408_hmm_message_rate_basin_audit
+    filename: exp408_hmm_message_rate_basin_audit_episode_summary.csv
+    local: experiments/exp408_hmm_message_rate_basin_audit/artifacts/kaggle_v3/exp408_hmm_message_rate_basin_audit_episode_summary.csv
+    expected_sha256: b230ffc759e6ee4891f22809b3f3c8a8796681fb461ec0b7215b94a352bf0ab0
+    forward_cause: forward_transition_prior_hysteresis
+
+model:
+  name: visible_prefix_affine_dzdmd_conditioned_tvt_rate_likelihood_pf
+  estimator: stochastic_likelihood_weighted_particle_filter
+  active_scientific_variants: [learned_prefix_affine_residual_ar]
+  particle_state:
+    position: tvt
+    rate: q_equals_d_tvt_d_md
+    weight: normalized_gr_likelihood_weight
+  prefix_affine_fit:
+    scope: same_well_visible_prefix_only
+    response: delta_tvt_input_divided_by_delta_md
+    covariate: delta_z_divided_by_delta_md
+    valid_step: delta_md_positive_and_all_terms_finite
+    estimator: unweighted_ordinary_least_squares_with_intercept
+    implementation_reference: numpy_linalg_lstsq
+    minimum_valid_steps: 10
+    fallback_beta: -1.0
+    fallback_intercept: 0.0
+    fallback_on_nonfinite_coefficients: true
+    coefficient_clip: null
+    coefficient_shrinkage: null
+    regularization: null
+  transition:
+    g_t: delta_z_divided_by_parent_compatible_delta_md
+    mu_t: beta_times_g_t_plus_intercept
+    formula: q_t_equals_mu_t_plus_momentum_times_q_previous_minus_mu_previous_plus_rate_noise
+    position_formula: tvt_t_equals_tvt_previous_plus_q_t_times_delta_md_plus_position_noise
+    previous_mu_initialization: fitted_mu_at_last_finite_visible_prefix_g
+    previous_g_fallback: 0.0
+    first_suffix_previous_z: last_visible_prefix_z
+    delta_md_policy: max_raw_delta_md_and_1p0_as_in_parent
+    exact_parent_coordinate_sentinel:
+      beta: -1.0
+      intercept: 0.0
+      scientific_candidate: false
+      formula: q_t_equals_momentum_times_q_previous_plus_g_previous_minus_g_t_plus_noise
+  initialization:
+    position_center: last_visible_tvt_input
+    position_spread_ft: 4.5
+    parent_initial_u_rate: tail30_median_delta_tvt_input_plus_delta_z_divided_by_delta_md
+    parent_initial_u_rate_minimum_valid_steps: 3
+    parent_initial_u_rate_fallback: 0.0
+    q_center: parent_initial_u_rate_minus_last_finite_prefix_g
+    q_spread: 0.01
+  fixed_from_exp404:
+    particles: 500
+    seeds: 128
+    primary_seed_weighting_temperature: 5.0
+    gr_emission: capped_gaussian
+    gr_emission_clip_z2: 600.0
+    gr_scale_multiplier: 1.0
+    base_scale_clip: [10.0, 60.0]
+    momentum: 0.998
+    rate_noise: 0.002
+    position_noise: 0.005
+    rough_position: 0.1
+    rough_rate: 0.001
+    resample_threshold_fraction: 0.5
+    typewell_grid_step_ft: 0.2
+    typewell_tvt_pad_ft: 100.0
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    output_dtype: float32
+  explicitly_not_imported_from_pf_z:
+    - rate_likelihood
+    - residual_zsig_noise_or_weight
+    - smoothed_gr_mixture
+    - pf_z_initial_position_or_rate_spread
+
+mechanism_readout:
+  prefix_fit_ledger:
+    - valid_step_count
+    - fallback_used
+    - beta
+    - intercept
+    - g_summary
+    - q_summary
+    - fitted_residual_sse
+  prefix_tail_backtest:
+    holdout_valid_steps: 20
+    minimum_fit_valid_steps: 10
+    candidate: learned_affine_mu
+    control: exact_coordinate_mu_equals_negative_g
+    target_free: true
+    selector_use: forbidden
+  suffix_after_freeze:
+    rate_readout: finite_difference_of_prediction_including_last_visible_tvt
+    compare_to: saved_exp404_prediction
+    scopes:
+      - zero_directed_under_response
+      - forward_cause_episodes
+      - persistent_episodes
+      - matched_control_wells
+
+stages:
+  stage_0a:
+    purpose: technical_exact_coordinate_parity_without_truth
+    well_set: exp410_sentinel12
+    scientific_variants: 0
+    technical_variants: 1
+    parent_pf_well_runs: 12
+    exact_transform_pf_well_runs: 12
+    total_pf_well_runs: 24
+    seed_well_trajectories: 3072
+    particle_starts: 1536000
+  stage_0b:
+    enabled_only_after_stage_0a_pass: true
+    purpose: fixed32_target_free_and_mechanism_preflight_not_cv
+    well_set: exp411_exp446_fixed32
+    scientific_variants: 1
+    candidate_pf_well_runs: 32
+    seed_well_trajectories: 4096
+    particle_starts: 2048000
+    control_pf_well_runs: 0
+  stage_1:
+    enabled_only_after_stage_0a_and_stage_0b_pass_and_separate_user_approval: true
+    scientific_variants: 1
+    candidate_pf_well_runs: 773
+    seed_well_trajectories: 98944
+    particle_starts: 49472000
+    control_pf_well_runs: 0
+    planned_cpu_shards: 4
+
+guards:
+  technical_stage_0a:
+    parity_primary: temperature5_aggregate_output
+    maximum_paired_seed_prediction_abs_diff: 1.0e-10
+    maximum_paired_particle_weight_abs_diff: 1.0e-10
+    maximum_paired_log_likelihood_abs_diff: 1.0e-10
+    maximum_temperature5_prediction_abs_diff: 1.0e-6
+    internal_seed_weight_log_state_resampling_checks_are_diagnostic_only: true
+    require_rate_position_clip_resampling_roughening_parity: false
+    require_finite_prediction_coverage: 1.0
+    require_execution_count_match: true
+    require_stable_seed_identity: true
+    maximum_truth_error_fold_role_episode_reads_before_freeze: 0
+  mechanism_stage_0b:
+    require_prefix_ols_and_fallback_contract: true
+    require_all_coefficients_and_predictions_finite: true
+    require_fixed32_roles_and_fold_counts: true
+    require_prefix_fit_and_prediction_content_sha: true
+    maximum_prefix_backtest_pooled_sse_ratio_vs_exact: 1.0
+    minimum_prefix_backtest_nonworse_folds: 4
+    minimum_zero_directed_under_response_sse_share_reduction_absolute: 0.05
+    minimum_forward_cause_episode_sse_reduction_fraction: 0.10
+    minimum_persistent_episode_sse_reduction_fraction: 0.05
+    minimum_persistent_improved_wells: 10
+    minimum_persistent_improving_folds: 4
+    maximum_matched_control_pooled_rmse_regression_ft: 0.02
+    maximum_matched_control_by_well_delta_p95_ft: 0.25
+    maximum_seconds_full_projection: 30600
+    maximum_peak_rss_gb: 25
+  scientific_stage_1:
+    minimum_pooled_rmse_gain_vs_control_ft: 0.05
+    minimum_improved_folds: 4
+    minimum_raw_gr_observed_gain_ft: 0.05
+    maximum_raw_gr_missing_regression_ft: 0.0
+    maximum_high_missing_well_regression_ft: 0.0
+    maximum_long_tail_1000_plus_regression_ft: 0.0
+    maximum_hidden_like_spatial_regression_ft: 0.0
+    maximum_hidden_like_typewell_purged_regression_ft: 0.0
+    maximum_by_well_delta_p95_ft: 0.0
+    maximum_worst_well_regression_ft: 0.25
+    maximum_fixed_hmm_pf_50_50_regression_ft: 0.0
+    require_all_checks: true
+  forbidden:
+    - beta_or_intercept_clip_shrink_regularization_or_grid
+    - prefix_window_minimum_support_or_holdout_search
+    - pf_z_rate_likelihood_or_smoothed_gr_mixture
+    - exact_beta_minus_one_as_scientific_candidate
+    - momentum_noise_roughening_particle_seed_temperature_or_gr_scale_change
+    - well_or_row_gate
+    - blend_or_selector_rescue
+    - same_fixed32_or_same_oof_rescue
+
+runtime:
+  device: cpu
+  use_gpu: false
+  num_workers: 8
+  planned_full_cpu_shards: 4
+  maximum_seconds: 30600
+  maximum_peak_rss_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    copy_repository_src: false
+    planned_train_kernel_id: kentookumura/exp450-dzdmd-tvt-rate-likpf-train
+    planned_train_title: exp450 dzdmd tvt rate likpf train
+    kernel_slug_shortening_reason: >-
+      The full semantic experiment name exceeds Kaggle's 50-character slug
+      limit, so likelihood-pf is shortened to likpf while retaining exp450,
+      dzdmd, tvt-rate, and train.
+    train_dataset_sources:
+      - kentookumura/exp404-v1-frozen-predictions
+    bootstrap_dependency_files:
+      - source: experiments/exp410_likpf_particle_resampling_basin_audit/assets/pf_counterfactual_sentinel_wells.csv
+        destination: assets/pf_counterfactual_sentinel_wells.csv
+      - source: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+        destination: assets/stage0_fixed32_manifest.csv
+      - source: experiments/exp408_hmm_message_rate_basin_audit/assets/persistent_offset_episodes.csv
+        destination: assets/persistent_offset_episodes.csv
+      - source: experiments/exp408_hmm_message_rate_basin_audit/artifacts/kaggle_v3/exp408_hmm_message_rate_basin_audit_episode_summary.csv
+        destination: assets/exp408_hmm_message_rate_basin_audit_episode_summary.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: >-
+    seed_base=sha256_first16("likpf::train::<well_id>")
+    modulo_2147483647_plus_1; seed=seed_base+seed_index_0_to_127.
+  stochastic_components:
+    - particle_position_and_rate_initialization
+    - rate_and_position_process_noise
+    - systematic_resampling
+    - post_resampling_roughening
+  parallel_rng_policy: explicit_per_well_seed_stream_independent_of_thread_schedule
+  paired_parity_rng_policy: identical_draw_order_for_parent_and_exact_transform_paths
+  stable_order: well_id_then_original_row_then_seed_index_then_particle_index
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  train_test_generation_policy: separate_raw_generation_with_identical_prefix_fit_contract
+  first_successful_run_is_anchor: false
+  independent_rerun_required_for_anchor: true
+  record:
+    kernel_version: true
+    input_sha: true
+    scientific_config_sha: true
+    prefix_fit_ledger_sha: true
+    prediction_schema_sha: true
+    prediction_content_sha: true
+    diagnostic_content_sha: true
+    truth_late_ledger_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+
+execution:
+  implementation_approved: true
+  selected_stage: null
+  kaggle_package_approved: false
+  kaggle_push_approved: false
+  train_run_approved: false
+  stage1_approved: false
+  run_stage_0a: false
+  run_stage_0b: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+  current_pf_well_runs: 56
+  current_seed_well_trajectories: 7168
+  current_particle_starts: 3584000
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  fitted_models: 0
+  hmm_well_runs: 0
+  beam_well_runs: 0
+  gpu_runs: 0
+
+notes:
+  - Implemented on 2026-07-30 as a compact self-contained Stage 0A/0B train candidate plus dedicated tests.
+  - User authorized execution on 2026-07-30; canonical train adoption and Kaggle CPU Stage 0A/0B package/push/run were enabled for version 1.
+  - The self-contained train imports no repository src modules, so the Kaggle bootstrap excludes src to keep the API payload compact.
+  - Kaggle version 1 completed but Stage 0A exact-coordinate parity failed closed; Stage 0B did not start.
+  - User authorized temperature-5 output roundoff tolerance 1e-6 ft and Stage 0A/0B version 2 execution on 2026-07-30.
+  - Version 2 passed revised Stage 0A and generated 32 Stage 0B candidates, then stopped because exp404 typed source SHA was checked with a CSV-text SHA.
+  - Version 3 keeps the expected exp404 SHA unchanged and uses the exact parent typed logical-SHA contract.
+  - Version 3 completed; revised Stage 0A passed and Stage 0B mechanism/safety gate failed closed.
+  - Further train runs, Stage 1, raw-test inference, and submission are disabled.

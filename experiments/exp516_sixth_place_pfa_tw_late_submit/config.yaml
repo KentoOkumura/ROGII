@@ -1,0 +1,237 @@
+experiment:
+  name: exp516_sixth_place_pfa_tw_late_submit
+  description: >-
+    Faithful component replay of the 6th-place public submission source's
+    single pfA x typewell-GR particle filter: GR-free physical anchor, learned
+    emission, 600 particles, 32 seeds, and whole-interval ancestral smoothing.
+    The fixed output is submitted once as an explicit post-competition LATE SUBMIT.
+  hypothesis: >-
+    The published pfA x twGR component can be regenerated from current runtime
+    inputs without visible-test prediction reuse and should produce a valid
+    late-submission score in the neighborhood of the author's reported
+    standalone component, subject to runtime and GPU reproducibility differences.
+  route: pf_beam
+  status: running_kaggle_inference_v2_after_config_text_sha_fix
+  created_at: "2026-08-07"
+  updated_at: "2026-08-07"
+  train_enabled: false
+  inference_enabled: true
+
+lineage:
+  parent: kaggle_discussion_733226_and_public_kernel_126919690
+  steering: ../../.steering/20260807-exp516-sixth-place-pfa-tw-late-submit
+  public_kernel: k256net/public20th-private6th-pf-pf-pf-pf-and-bagging
+  public_kernel_id_no: 126919690
+  public_notebook_sha256: b44f7889d6abdf9b027d33cb6c6b45f23902d609fae8d06f332914017784c924
+  public_v96_config_sha256: 80e973d5f5e0e39be758a03f399cdd3d81d9e79320da8db6fbddbc25c2a202f3
+  references:
+    - ../../docs/discussions/rogii-wellbore-geology-prediction-733226.md
+    - ../../docs/notebooks/rogii-wellbore-geology-prediction/solution_6th/k256net__public20th-private6th-pf-pf-pf-pf-and-bagging/kernel-metadata.json
+    - ../../docs/06_reproducibility.md
+  diff_summary: >-
+    Extract only the v96 pfA x twGR component from the published final
+    submission notebook. Preserve its GR-free anchor generation, learned
+    emission, exact pfA parameters, 600x32 PF, full smoother, and seed
+    likelihood decode. Exclude the other PF banks/representations, candidate
+    curve NN, TCN, GBM, global de-shrink, and Submission A/B fusion because the
+    user selected the standalone PF component.
+
+model:
+  name: public_pfa_twgr_particle_filter
+  family: sequential_monte_carlo
+  learned_components:
+    - gr_free_anchor_gru
+    - frozen_stageA_enccapaug_emission
+
+authorization:
+  design_approved: true
+  design_source: user_request_2026_08_07_pf_standalone_reproduction
+  implementation_approved: true
+  implementation_source: user_confirmation_2026_08_07_pf_standalone
+  kaggle_package_approved: true
+  kaggle_run_approved: true
+  competition_late_submission_approved: true
+  late_submission_scope: one_fixed_post_competition_submission
+  second_submission_approved: false
+
+method_contract:
+  fidelity: faithful
+  component: pfa_twgr_standalone
+  input:
+    horizontal_columns: [MD, X, Y, Z, GR, TVT_input]
+    typewell_columns: [TVT, GR]
+    anchor_source: fold_safe_gr_free_field_and_gru
+    emission_source: public_five_fold_stageA_enccapaug_checkpoints
+  target_objective: posterior_inference_of_position_tvt_plus_z_and_rate
+  output: whole_interval_smoothed_tvt_mean_std_and_loglik
+  loss:
+    particle_filter: none
+    anchor_gru: masked_huber_delta_8ft
+    observation: power_gr_likelihood_times_anchor_and_learned_emission
+  decode: final_weight_ancestral_smoother_then_seed_loglik_soft_average
+  context_unit: whole_well_hidden_suffix_plus_fold_safe_train_field
+  excluded_final_system_components:
+    - other_pf_banks
+    - self_neighbor_gr5_self_graft_representations
+    - dec10_and_tw_affine
+    - candidate_curve_ensembler
+    - tcn
+    - gbm
+    - global_deshrink
+
+validation:
+  official_metric: rmse
+  primary: late_submission_public_score_component_audit
+  author_reported_component:
+    label: twGR-prior_PF_alone
+    cv: 7.8
+    public: 7.88
+    private: 7.78
+    evidence: discussion_733226
+    external_reference_only: true
+  no_lb_retuning: true
+
+pf:
+  active_banks: [pfA]
+  active_representations: [tw]
+  config_file: pf_banks_config_v96_public.json
+  config_sha256: 80e973d5f5e0e39be758a03f399cdd3d81d9e79320da8db6fbddbc25c2a202f3
+  generation_seed: 4423098
+  n_particles: 600
+  n_seeds: 32
+  smooth_mode: full
+  smooth_lag_config: 192
+  well_chunk: 40
+  full_vram_gb_per_device: 8.0
+  grid_step: 0.2
+  anchor_mult: 20.0
+  learned_emission_weight: 0.01
+  physics_bank: true
+  state: [position_tvt_plus_z, formation_rate]
+  direct_submission_column: mean
+
+anchor:
+  source: public_gen_grfree_anchor_v2
+  folds: 5
+  seeds_per_fold: 3
+  trained_models: 15
+  hidden_size: 96
+  epochs: 10
+  output_sigma_ft: 9.0
+  gr_used: false
+  reuse_visible_test_anchor: false
+
+emission:
+  architecture: public_stageA_enccapaug_Enc1D
+  checkpoint_count: 5
+  checkpoint_glob: "**/stageA_enccapaug_f*.pt"
+  kernel_source: k256net/public20th-private6th-pf-pf-pf-pf-and-bagging
+  fail_if_missing: true
+  band_step_ft: 0.5
+  band_half_width_ft: 45.0
+  checkpoint_sha256:
+    stageA_enccapaug_f0.pt: 9ce3763b14a68ae5f05e78467ae4faa5b696ab714c270fd129a6e7d468cdd007
+    stageA_enccapaug_f1.pt: d6b1dc0956e47b778bb2089c644d71c9006fdf8948a9cc962c6a40d27dccdfec
+    stageA_enccapaug_f2.pt: 2f312ce8de05feab9d8480a7971d91eb4e8289cce7e654f895f1b63d95cf5208
+    stageA_enccapaug_f3.pt: 8bf70f128c12a86e6f65177912d7ee90b5d24a7a67caf91f40df992bdd2c599f
+    stageA_enccapaug_f4.pt: b438d113b8fc07d8e9842cb66d01cfff2971ef4a5d213841574ec2680b2ab170
+
+execution_contract:
+  scientific_variants: 1
+  pf_banks: 1
+  representations: 1
+  particle_trajectories_per_well: 19200
+  anchor_gru_models: 15
+  public_encoder_models: 5
+  lightgbm_configs: 0
+  trained_lightgbm_folds: 0
+  boosters: 0
+  parent_control_reruns: 0
+  late_submission_attempts: 1
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  enable_gpu: true
+  accelerator: NvidiaTeslaT4
+  machine_shape: NvidiaTeslaT4
+  gpu_count_expected: 2
+  enable_tpu: false
+  enable_internet: false
+  kaggle:
+    enable_gpu: true
+    enable_tpu: false
+    enable_internet: false
+    machine_shape: NvidiaTeslaT4
+    kernel_sources:
+      - k256net/public20th-private6th-pf-pf-pf-pf-and-bagging
+    inference_kernel_sources:
+      - k256net/public20th-private6th-pf-pf-pf-pf-and-bagging
+
+late_submission:
+  enabled: true
+  phase: post_competition_late_submission
+  purpose: faithful_component_reproduction_audit_not_competition_selection
+  one_shot_fixed_version: true
+  allow_lb_retuning: false
+  message: "LATE SUBMIT | exp516 | 6th-place pfA x twGR standalone faithful replay | fixed v1"
+  kernel_inference_slug: exp516-sixth-pfa-late-submit-inference
+  kernel_inference_title: "exp516 sixth pfa late submit inference"
+
+guards:
+  technical:
+    require_bank: pfA
+    require_representation: tw
+    require_particles: 600
+    require_seeds: 32
+    require_smooth_mode: full
+    require_public_encoder_checkpoints: 5
+    require_all_predictions_finite: true
+    require_no_duplicate_ids: true
+    require_sample_id_exact_match: true
+    require_no_extra_ids: true
+    require_no_missing_ids: true
+  scientific:
+    no_same_run_rescue: true
+    external_reported_scores_are_not_exp516_results: true
+  forbidden:
+    - public_lb_parameter_selection
+    - second_pf_bank
+    - non_tw_representation
+    - fewer_particles_or_seeds_in_official_run
+    - fixedlag_in_official_run
+    - learned_emission_fallback_off
+    - visible_test_prediction_or_anchor_reuse
+    - current_test_id_or_row_count_branch
+    - second_late_submission_without_new_user_approval
+
+reproducibility:
+  seed: 4423098
+  deterministic_anchor: false
+  seed_policy: public_fixed_seed_fixed_sorted_wells_fixed_two_t4_chunk_policy
+  stochastic_components:
+    - anchor_gru_training
+    - particle_transition
+    - particle_jump
+    - systematic_resampling
+  parallel_rng_policy: >-
+    Preserve the public chunk-local torch.Generator policy and record device,
+    chunk, sorted well order, and all source/config/checkpoint SHAs.
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - GPU replay is not called deterministic until a fixed-environment rerun matches.
+    - Public encoder checkpoints remain a read-only kernel source and are not committed.
+
+notes:
+  - This is explicitly a LATE SUBMIT / post-competition reproduction audit.
+  - The author's final 6th-place score belongs to the excluded 91-candidate fused system.
+  - The author's standalone pfA-related component scores are external references only.

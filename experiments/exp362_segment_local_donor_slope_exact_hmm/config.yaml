@@ -1,0 +1,332 @@
+experiment:
+  name: "exp362_segment_local_donor_slope_exact_hmm"
+  description: >-
+    Direct exact-HMM experiment that transfers only the exp226 idea of K16
+    path segmentation and spatial interpolation of nearby donor slopes into
+    the transition-rate mean, without reading any exp226 prediction artifact.
+  route: pf_beam
+  status: completed_postrun_support_audit_failed_closed
+  created_at: "2026-07-23"
+  updated_at: "2026-07-24"
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260723-exp362-segment-local-donor-slope-exact-hmm
+  conceptual_reference: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  superseded_interpretation: exp355_exp226_dip_rate_prior_on_exp209
+  references:
+    - exp302_exp226_multiscale_k_segment_candidate_audit
+    - docs/06_reproducibility.md
+  diff_summary: >-
+    Keeps the trusted exp209 exact-HMM emission, grid, diffusion, momentum,
+    initialization, and posterior output fixed. Replaces only its constant
+    transition-rate mean with a fold-safe K16 schedule derived directly from
+    raw outer-train donor truth and raw target geometry. Exp226 OOF, tvt_geop,
+    tvt_pred, GR correction, kappa, near-strike ANCC, and U projection are
+    forbidden inputs. There is no Stage 0; the first future run is the HMM.
+
+implementation:
+  enabled: true
+  scope: train_side_single_candidate_exact_hmm_only
+  train_notebook_state: canonical_compact_selfcontained_adopted
+  compact_train_candidate_state: adopted_as_canonical
+  inference_notebook_state: placeholder_not_for_execution
+  compact_inference_candidate_state: disabled_fail_closed
+  compact_selfcontained_source_created: true
+  canonical_notebook_adopted: true
+  postrun_support_audit_state: all_target_segments_degenerated_to_prefix_rate
+  saved_fallback_flag_state: invalid_overwritten_by_prefix_rate_fallback_field
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.score_rows
+
+validation:
+  strategy: direct_group_safe_k16_segment_local_gradient_exact_hmm
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  fold_assignment: sha256_seed42_well_id_order_round_robin
+  expected_wells: 773
+  expected_rows: 3783989
+  expected_folds: [0, 1, 2, 3, 4]
+  score_rows: unknown_suffix_truth_only_after_schedule_and_prediction_freeze
+  truth_attachment: after_fold_donor_ledger_schedule_and_prediction_content_sha_freeze
+  report_scopes:
+    - pooled
+    - fold
+    - distance_bucket
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+    - by_well_p50_p95_worst
+    - donor_support_and_fallback
+  leakage_policy:
+    - All wells assigned to the target outer-valid fold are excluded from donor construction.
+    - Donor segments use raw outer-train TVT truth; targets use only raw X, Y, Z, MD, GR, typewell, and visible TVT_input prefix.
+    - Donor ledger, rowwise prior schedule, and candidate prediction are frozen before suffix truth is attached.
+    - Unknown-suffix TVT, errors, oracle choices, formation columns, and well-id-specific rules are forbidden from schedule construction.
+    - No exp226 artifact or prediction column may be resolved or read.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  id_column: id
+  submission_target_column: tvt
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  forbidden_inputs:
+    - exp226_oof
+    - tvt_geop
+    - tvt_pred
+    - gr_delta
+    - adaptive_kappa
+    - near_strike_ancc
+    - exp226_u_projection
+  exp209_control:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    expected_hmm_cache_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    direct_rmse_ft: 11.938287417
+    usage: prediction_and_metric_baseline_only_no_control_rerun
+    prediction_column: hmm_mean_tvt
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v3/artifacts
+  hidden_like:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+    valid_role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+model:
+  name: k16_segment_local_gradient_residual_exact_hmm
+  estimator: none_exact_hmm
+  state_definition:
+    u: tvt_plus_z
+    absolute_rate: delta_u_div_delta_md
+    residual_rate: absolute_rate_minus_rowwise_prior_mean
+  prefix_rate:
+    formula: median_finite_delta_tvt_input_plus_delta_z_div_delta_md
+    tail_steps: 30
+    fallback: 0.0
+  donor_segments:
+    source: raw_outer_train_truth_only
+    k_segments: 16
+    partition: equal_measured_depth_span_over_full_horizontal_well
+    minimum_finite_rows: 2
+    minimum_positive_md_span: 0.0
+    fit: intercept_ordinary_least_squares_against_md
+    quantities:
+      center_xy: fitted_xy_at_segment_md_midpoint
+      u_rate: fitted_tvt_plus_z_slope
+      heading_xy: fitted_x_and_y_slopes
+    stable_order: outer_fold_well_id_segment_id_row_id
+  target_segments:
+    k_segments: 16
+    partition: equal_measured_depth_span_over_unknown_suffix
+    geometry_inputs: [MD, X, Y, Z]
+    target_heading_fit: intercept_ordinary_least_squares_against_md
+  local_gradient:
+    donor_candidate_policy: nearest_segment_per_donor_well_then_nearest_50_wells
+    n_neighbors: 50
+    bandwidth_ft: 500.0
+    weight: exp_minus_half_squared_distance_over_bandwidth
+    regression: no_intercept_weighted_ridge_of_u_rate_on_heading_xy
+    ridge_relative_trace: 0.001
+    ridge_formula: 0.001_times_max_trace_htwh_div_2_or_1e_minus_12
+    minimum_valid_donor_wells: 10
+    minimum_effective_donors: 10.0
+    maximum_nearest_distance_ft: 1500.0
+    minimum_directional_information: 0.30
+    minimum_target_horizontal_speed_norm: 0.30
+    maximum_abs_delta_from_prefix_rate: 0.10
+    invalid_policy: target_known_prefix_rate
+  prior_schedule:
+    segment_mean: dot_target_heading_and_local_gradient
+    row_interpolation: linear_between_segment_md_midpoints
+    outside_midpoints: hold_nearest_endpoint
+    failed_segment_value: target_known_prefix_rate
+  hmm:
+    transition: residual_rate_ar1_around_rowwise_prior_mean
+    residual_rate_formula: q_t_equals_0p998_q_prev_plus_epsilon
+    u_formula: u_t_equals_u_prev_plus_mu_t_plus_q_t_times_delta_md_plus_eta
+    initial_residual_rate: prefix_rate_minus_first_row_prior_mean
+    step: 0.35
+    n_rates: 41
+    residual_rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    emission: gauss
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    momentum: 0.998
+    output: posterior_mean
+  active_variants:
+    - k16_segment_local_gradient_residual_hmm
+  forbidden:
+    - stage_0_or_preflight
+    - exp226_prediction_or_feature_artifact
+    - absolute_tvt_unary
+    - gr_correction_or_u_projection
+    - transition_variance_change
+    - parameter_grid
+    - prediction_blend
+    - ml_selector
+
+success_criteria:
+  technical_all_required:
+    expected_rows: 3783989
+    expected_wells: 773
+    finite_prediction_coverage: 1.0
+    duplicate_rows: 0
+    truth_access_before_freeze: 0
+    exp226_artifacts_resolved: 0
+    require_fold_donor_exclusion: true
+    require_stable_content_sha: true
+    require_parent_control_sha_match: true
+  scientific_all_required:
+    minimum_direct_rmse_gain_vs_exp209_ft: 0.05
+    minimum_improved_folds: 4
+    maximum_1000_plus_regression_ft: 0.02
+    maximum_hidden_like_spatial_regression_ft: 0.02
+    maximum_hidden_like_typewell_purged_regression_ft: 0.02
+    maximum_by_well_p95_regression_ft: 0.02
+    maximum_worst_well_regression_ft: 0.25
+  fail_policy: close_without_same_oof_parameter_or_blend_rescue
+
+execution_contract:
+  scientific_variants: 1
+  reporting_folds: 5
+  hmm_well_runs: 773
+  model_configs: 0
+  trained_folds: 0
+  boosters: 0
+  gpu: false
+  parent_control_retraining: false
+
+execution:
+  implementation_approved: true
+  implementation_approval_scope: user_message_implement_exp362
+  kaggle_push_approved: true
+  kaggle_push_approved_at: "2026-07-23"
+  kaggle_push_authorization_source: user_message_execute_exp362
+  completed_at: "2026-07-24"
+  active_stage: completed_postrun_support_audit_failed_closed
+  run_hmm: false
+  run_inference: false
+  create_submission: false
+
+audit:
+  output_prefix: exp362_segment_local_donor_slope_exact_hmm
+  expected_future_artifacts:
+    - exp362_segment_local_donor_slope_exact_hmm_scientific_contract.json
+    - exp362_segment_local_donor_slope_exact_hmm_raw_input_manifest.json
+    - exp362_segment_local_donor_slope_exact_hmm_fold_assignment.csv
+    - exp362_segment_local_donor_slope_exact_hmm_donor_segment_ledger.csv.gz
+    - exp362_segment_local_donor_slope_exact_hmm_target_segment_prior.csv.gz
+    - exp362_segment_local_donor_slope_exact_hmm_rowwise_prior_schedule.csv.gz
+    - exp362_segment_local_donor_slope_exact_hmm_freeze_manifest.json
+    - exp362_segment_local_donor_slope_exact_hmm_oof_predictions.csv.gz
+    - exp362_segment_local_donor_slope_exact_hmm_fold_metrics.csv
+    - exp362_segment_local_donor_slope_exact_hmm_distance_bucket_metrics.csv
+    - exp362_segment_local_donor_slope_exact_hmm_hidden_like_metrics.csv
+    - exp362_segment_local_donor_slope_exact_hmm_by_well_metrics.csv
+    - exp362_segment_local_donor_slope_exact_hmm_support_fallback_metrics.csv
+    - exp362_segment_local_donor_slope_exact_hmm_sha_manifest.csv
+    - exp362_segment_local_donor_slope_exact_hmm_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    train_run_on_push: true
+    train_kernel_id: kentookumura/exp362-segment-local-donor-slope-exact-hmm-train
+    train_title: exp362 segment local donor slope exact hmm train
+    train_kernel_version: 1
+    train_kernel_id_no: 128368310
+    train_url: https://www.kaggle.com/code/kentookumura/exp362-segment-local-donor-slope-exact-hmm-train
+    train_kernel_status: COMPLETE
+    train_runtime_seconds: 19777.653140535
+    train_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_sha256_seed42_well_fold_and_stable_segment_donor_row_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads_stable_tie_break_and_reduction_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Design follows docs/06_reproducibility.md.
+    - No RNG, PF, Beam, likelihood-PF, seed bagging, GPU, trained model, or submission is in scope.
+    - Kaggle version 1 recorded input, schedule, prediction, and kernel identities.
+    - No rerun parity or raw-test inference exists, and the intended donor slope schedule degenerated completely, so this is not a deterministic anchor.
+
+results:
+  decision: close_without_parameter_fallback_hmm_blend_selector_inference_or_submission_rescue
+  notebook_technical_gate_passed: true
+  notebook_scientific_gate_passed: false
+  postrun_support_audit_passed: false
+  valid_as_intended_local_donor_slope_test: false
+  observed_variant: prefix_rate_only_residual_exact_hmm_due_to_complete_local_gradient_fallback
+  rows: 3783989
+  wells: 773
+  target_segments: 12368
+  accepted_local_gradient_segments: 0
+  prefix_rate_segments: 12368
+  fallback_reasons:
+    effective_donors: 11596
+    nearest_distance: 772
+  saved_fallback_flag_bug: estimate_fallback_overwritten_by_prefix_rate_fallback_during_dict_merge
+  candidate_rmse: 11.161677222752134
+  parent_rmse: 11.938287234887435
+  improvement_ft: 0.7766100121353006
+  improved_folds: 3
+  worst_well_id: 86454a6f
+  worst_well_delta: 52.74142579338134
+  runtime_seconds: 19777.653140535
+  schedule_logical_sha256: d6cbf1a717cd461418939689921888009857d7c0202467d620982f69900a3cb7
+  prediction_logical_sha256: bdf616e00bdebb496093d3d05526aebce01381281c4b1c46f7b77e72e57415cb
+
+inference:
+  enabled: false
+  create_submission: false
+  future_contract: full_train_raw_truth_donors_and_raw_test_geometry_no_exp226_artifact
+
+notes:
+  - Design frozen on 2026-07-23; compact self-contained implementation was added after the user implementation request.
+  - Kaggle CPU version 1 completed on 2026-07-24; inference and submission were not run.
+  - The frozen direct HMM run had no Stage 0.
+  - K16, k=50, bandwidth 500 ft, ridge, support gates, fallback, and HMM parameters are frozen before implementation.
+  - All target segments fell back to the prefix rate, so the intended local donor slope intervention was not activated.
+  - The notebook fallback count was invalid because the prefix-rate fallback field overwrote the local-gradient fallback field.
+  - The branch is closed without changing support thresholds or rerunning the same OOF.

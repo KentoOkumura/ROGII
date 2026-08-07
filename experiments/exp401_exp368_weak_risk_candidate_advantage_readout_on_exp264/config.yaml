@@ -1,0 +1,480 @@
+experiment:
+  name: exp401_exp368_weak_risk_candidate_advantage_readout_on_exp264
+  description: >-
+    Design-frozen zero-booster readout that tests whether the saved target-free
+    exp368 weak-GR posterior identifies likpf_mean bad10 rows where the
+    exp264 strict-nested selector scores already nominate a recoverable
+    alternative. A single continuous risk feature may proceed to an add-only
+    exp264 Stage C selector audit only after every Stage 0 gate passes.
+  hypothesis: >-
+    The continuous exp368 weak risk contains candidate-advantage information
+    beyond the existing exp264 predicted-error margin, even though it was not
+    strong or frequent enough to promote exp368's marginalized PF.
+  route: ml_model
+  status: stage_0_failed_closed
+  created_at: "2026-07-26"
+  updated_at: "2026-07-26"
+
+lineage:
+  parent: exp264_exp263_candidate_confidence_dual_selector
+  auxiliary_source: exp368_marginalized_reliability_pf
+  steering: ../../.steering/20260726-exp401-exp368-weak-risk-candidate-advantage-readout-on-exp264
+  references:
+    - exp263_last_anchor_better_candidate_confidence_pair_cache
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - docs/06_reproducibility.md
+  diff_summary: >-
+    Do not weaken GR likelihood, rerun PF, or lower a weak-state threshold.
+    Freeze one continuous row-level context feature by averaging the saved
+    exp368 weak_posterior_mean of every overlapping block covering the row.
+    Stage 0 only asks whether that feature predicts actionable recovery inside
+    each existing exp264 legal selector domain after the feature SHA is frozen.
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+implementation:
+  enabled: true
+  scope: stage_0_implementation_only
+  design_approval_received: true
+  design_approval_source: user_message_create_backlog_experiment_and_steering_2026_07_26
+  implementation_approval_received: true
+  implementation_approval_source: user_message_implement_exp401_2026_07_26
+  scaffold_created: true
+  notebook_placeholders_only: false
+  canonical_notebook_adopted: true
+  compact_selfcontained_candidate_created: true
+  jupytext_source_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  stage_0_implemented: true
+  stage_1_implemented: false
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: >-
+    zero_booster_outer5_actionable_candidate_advantage_readout_then_conditional
+    _strict_nested_selector_addonly
+  metric: nominated_recovery10_auc
+  seed: 42
+  n_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  group_column: well_id
+  score_rows: TVT_input_isna
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_blocks: 15174
+  expected_candidate_long_rows: 45407868
+  truth_attachment: after_risk_domain_fold_schema_and_content_sha_freeze
+  leakage_policy:
+    - Read no suffix TVT, error, bad10, oracle, or hidden-like result before risk freeze.
+    - Use exp264 strict-nested outer-valid scores; never use same-fold selector fits.
+    - Keep primitive_pair_bank and primitive_fixed_bank as separate legal domains.
+    - Use oracle_recoverable10 only as a non-gating headroom diagnostic.
+    - Do not return labels, errors, quartiles, thresholds, or gate outcomes to features.
+    - Derive valid-fold margin deciles and weak-risk quartiles from the other four folds.
+    - Do not use public LB for feature, threshold, domain, or gate selection.
+
+data:
+  exp368_target_free:
+    source: exp368_marginalized_reliability_pf
+    kernel_source: kentookumura/exp368-marginalized-reliability-pf-train
+    kernel_version: 1
+    artifact_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp368-marginalized-reliability-pf-train/artifacts
+      - experiments/exp368_marginalized_reliability_pf/kaggle/output/train_v1/artifacts
+    block_ledger:
+      filename: exp368_marginalized_reliability_pf_target_free_block_ledger.csv.gz
+      expected_decompressed_content_sha256: 7327ce8e6383d76f99c51cec6982c1db181e6f05257df28e7268d7a0549ba30a
+      expected_blocks: 15174
+      safe_columns:
+        - well_id
+        - block_id
+        - start_suffix_offset
+        - stop_suffix_offset_exclusive
+        - start_row_idx
+        - end_row_idx
+        - block_row_count
+    weak_posterior:
+      filename: exp368_marginalized_reliability_pf_target_free_weak_posterior_blocks.csv.gz
+      expected_decompressed_content_sha256: 4ffa4fc761fc4db6b1c7de42c132b8102e33f9910bf5dc56752b20e95c2520ae
+      expected_blocks: 15174
+      safe_columns:
+        - well_id
+        - block_id
+        - weak_posterior_mean
+        - circular_weak_score
+        - circular_offset_blocks
+      forbidden_columns: [target, TVT, tvt_true, error, abs_error, bad10]
+  exp264_nested_score:
+    source: exp264_exp263_candidate_confidence_dual_selector
+    kernel_source: kentookumura/exp264-exp263-confidence-dual-selector-train
+    corrected_stage_c_kernel_version: 6
+    filename: nested_outer_valid_candidate_score.parquet
+    artifact_patterns:
+      - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-train/artifacts
+      - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_c_v6/artifacts
+    expected_logical_content_sha256: a10b7848127f01bef522f4b17dfd1640c9784956892dc24fc1159e3869500abc
+    expected_rows: 45407868
+    expected_base_rows: 3783989
+    expected_candidates_per_row: 12
+    safe_columns:
+      - id
+      - well
+      - outer_fold
+      - candidate_id
+      - candidate_tvt
+      - pred_abs_error
+      - p_within10
+      - downstream_outer_fold
+      - nested_model_count
+    expected_nested_model_count: 4
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    truth_columns: [well_id, row_idx, tvt_true]
+    expected_decompressed_content_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  future_raw_test_source:
+    source: exp263_last_anchor_better_candidate_confidence_pair_cache
+    kernel_source: kentookumura/exp263-last-anchor-pair-cache-inference
+    filename: current_test_formula_parity.parquet
+    expected_public_current_test_rows: 14151
+    expected_public_current_test_wells: 3
+    static_submission_as_input: false
+
+candidate_contract:
+  source: experiments/exp264_exp263_candidate_confidence_dual_selector/candidate_contract.yaml
+  anchor: likpf_mean
+  candidate_order:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__exact_hmm
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+    - likpf_mean__exact_hmm
+    - exp226_w500_50_50
+  primary_domain:
+    name: primitive_pair_bank
+    candidate_count: 11
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_k16__selfgr_hmm_a070
+      - exp226_k16__exact_hmm
+      - exp226_k16__likpf_mean
+      - selfgr_hmm_a070__likpf_mean
+      - likpf_mean__exact_hmm
+  secondary_domain:
+    name: primitive_fixed_bank
+    candidate_count: 7
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_w500_50_50
+  tie_break: declared_candidate_order
+  twelve_candidate_single_hard_domain_enabled: false
+
+features:
+  active_feature_count: 1
+  active:
+    - name: ctx__exp368_weak_risk
+      source_column: weak_posterior_mean
+      join_keys: [well_id, block_id]
+      row_aggregation: arithmetic_mean_over_all_covering_blocks
+      block_rows: 512
+      stride_rows: 256
+      tail_policy: keep_short_tail_from_stride_starts
+      overlap_weighting: equal_per_covering_block
+      dtype: float32
+      expected_range: [0.0, 1.0]
+      transforms: []
+      thresholds: []
+  negative_control:
+    name: ctx__exp368_circular_weak_risk
+    source_column: circular_weak_score
+    row_aggregation: same_as_active_feature
+    use_as_model_feature: false
+  freeze_before_truth:
+    - row_identity
+    - active_feature
+    - circular_feature
+    - fold
+    - legal_domains
+    - feature_schema_sha256
+    - feature_content_sha256
+    - scientific_contract_sha256
+
+stage_0:
+  enabled: true
+  implementation_approval_required: true
+  run_approval_required: true
+  name: zero_booster_actionable_candidate_advantage_readout
+  cohort:
+    definition: likpf_actual_abs_error_greater_than_or_equal_10ft
+    anchor_bad10_threshold_ft: 10.0
+  nominated_other:
+    selection_score: minimum_pred_abs_error
+    exclude_anchor: true
+    tie_break: declared_candidate_order
+  labels_after_freeze:
+    nominated_recovery10: nominated_other_actual_abs_error_strictly_less_than_10ft
+    oracle_recoverable10: any_non_anchor_in_same_legal_domain_actual_abs_error_strictly_less_than_10ft
+    realized_advantage_ft: likpf_actual_abs_error_minus_nominated_other_actual_abs_error
+    selector_margin: likpf_pred_abs_error_minus_nominated_other_pred_abs_error
+  conditional_readout:
+    selector_margin_bins: 10
+    boundary_source: other_four_outer_folds_target_free_margin
+    metric: pooled_within_bin_pairwise_auc
+  quartile_readout:
+    edges: [0.25, 0.75]
+    boundary_source: other_four_outer_folds_target_free_weak_risk
+    metric: q4_minus_q1_mean_realized_advantage_ft
+  technical_gate_all_required:
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_blocks: 15174
+    expected_folds: 5
+    expected_candidate_long_rows: 45407868
+    expected_candidates_per_row: 12
+    primary_domain_candidates: 11
+    secondary_domain_candidates: 7
+    row_coverage_fraction: 1.0
+    feature_finite_fraction: 1.0
+    feature_range: [0.0, 1.0]
+    truth_columns_read_before_freeze: 0
+    minimum_positive_rows_per_required_scope: 1000
+    minimum_negative_rows_per_required_scope: 1000
+    model_configs: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    pf_runs: 0
+    prediction_rows: 0
+    require_input_schema_feature_and_readout_sha: true
+  scientific_gate_all_required:
+    primary_domain:
+      minimum_pooled_nominated_recovery10_auc: 0.60
+      minimum_auc_gain_over_circular: 0.02
+      minimum_folds_with_real_auc_strictly_above_0p50: 4
+      minimum_hidden_like_spatial_auc: 0.55
+      minimum_hidden_like_typewell_purged_auc: 0.55
+      minimum_pooled_margin_conditional_auc: 0.55
+      minimum_folds_with_margin_conditional_auc_strictly_above_0p50: 4
+      minimum_q4_minus_q1_mean_realized_advantage_ft: 0.50
+      minimum_folds_with_positive_q4_minus_q1_advantage: 4
+    secondary_domain:
+      minimum_pooled_nominated_recovery10_auc: 0.52
+      minimum_auc_gain_over_circular: 0.00
+      minimum_q4_minus_q1_mean_realized_advantage_ft: 0.00
+  non_gating_diagnostics:
+    - oracle_recoverable10_auc
+    - oracle_recoverable10_prevalence
+    - nominated_recovery10_prevalence
+    - candidate_nomination_distribution
+    - p_within10_margin_readout
+  fail_policy: close_without_inversion_threshold_block_domain_subset_metric_or_gate_rescue
+
+stage_1_if_stage_0_passes_and_separately_approved:
+  enabled: false
+  scope: exp264_corrected_stage_c_selector_one_feature_addonly
+  treatment_feature_count: 1
+  parent_feature_count: 88
+  treatment_feature_count_total: 89
+  variants: 1
+  objectives: [pred_abs_error, p_within10]
+  lightgbm_config_count: 1
+  outer_folds: 5
+  inner_folds: 4
+  planned_cpu_selector_boosters: 40
+  planned_compact_partitions: 25
+  parent_control_retraining: false
+  pf_hmm_beam_replays: 0
+  gpu_boosters: 0
+  downstream_tvt_boosters: 0
+  raw_test_parity_all_required:
+    raw_train_replay_logical_content_sha_matches_saved_feature: true
+    public_current_test_rows: 14151
+    public_current_test_wells: 3
+    finite_fraction: 1.0
+    coverage_fraction: 1.0
+  promotion_gate_all_required:
+    selector_score_metrics:
+      metrics: [expected_error_mae, within10_logloss, within10_brier]
+      pooled_improvement_required: true
+      minimum_improved_folds_each_metric: 4
+    minimum_primary_hard_domain_rmse_gain_ft: 0.05
+    minimum_primary_hard_domain_improved_folds: 4
+    maximum_1000_plus_rmse_regression_ft: 0.02
+    maximum_hidden_like_spatial_rmse_regression_ft: 0.02
+    maximum_hidden_like_typewell_purged_rmse_regression_ft: 0.02
+    maximum_by_well_p95_regression_ft: 0.02
+    maximum_worst_well_regression_ft: 0.25
+    leakage_audit_passed: true
+    raw_test_parity_passed: true
+    expected_model_count: 40
+    expected_compact_partitions: 25
+    model_and_partition_sha_required: true
+  after_pass: request_separate_approval_for_any_downstream_tvt_stage
+
+model:
+  name: none_stage0_then_exp264_selector_addonly_if_promoted
+  stage_0_estimator: none
+  stage_1_estimator: exp264_strict_nested_dual_objective_lightgbm
+  stage_1_parent_config: standard_lightgbm_exp251_v4
+  stage_1_fixed_params:
+    learning_rate: 0.035
+    num_leaves: 63
+    min_child_samples: 80
+    subsample: 0.85
+    subsample_freq: 1
+    colsample_bytree: 0.85
+    reg_alpha: 0.1
+    reg_lambda: 1.0
+    n_jobs: 8
+    deterministic: true
+    force_col_wise: true
+
+runtime:
+  device: cpu
+  use_gpu: false
+  use_amp: false
+  num_workers: 1
+  stage_0_chunked_candidate_long_scan: true
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_run_on_push: false
+    train_kernel_id: kentookumura/exp401-weak-risk-readout-on-exp264-train
+    train_title: exp401 weak risk readout on exp264 train
+    train_url: https://www.kaggle.com/code/kentookumura/exp401-weak-risk-readout-on-exp264-train
+    train_kernel_version: 4
+    train_kernel_id_no: 128626512
+    kernel_sources:
+      - kentookumura/exp368-marginalized-reliability-pf-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stage0_then_inherit_exp264_fixed_seed_42
+  stochastic_components: []
+  parallel_rng_policy: stage0_single_worker_no_rng_stage1_exp264_deterministic_threads
+  feature_sha_policy: decompressed_logical_content_sha_for_gzip_and_logical_content_sha_for_parquet
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    readout_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  stage_1_record_if_separately_approved:
+    model_manifest_sha: true
+    candidate_score_sha: true
+    compact_partition_manifest_sha: true
+    tvt_prediction_sha: false
+    submission_sha: false
+  notes:
+    - Stage 0 is a deterministic diagnostic, not a submission anchor.
+    - Preserve exp368 and exp264 source artifact SHA without rewriting them.
+    - Record decompressed logical content for gzip because gzip metadata may vary.
+    - Stage 1 must prove raw-train replay and raw-current-test feature parity before fitting.
+
+execution_contract:
+  completed_stage_0:
+    scientific_variants: 0
+    diagnostic_variants_implemented: 1
+    diagnostic_variants_run: 1
+    model_configs: 0
+    lightgbm_configs: 0
+    reporting_folds_run: 5
+    trained_folds: 0
+    boosters: 0
+    pf_runs: 0
+    parent_control_retraining: 0
+    prediction_rows: 0
+    submission_rows: 0
+  future_stage_0_if_implemented_and_approved:
+    diagnostic_variants: 1
+    reporting_folds: 5
+    model_configs: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    pf_runs: 0
+    parent_control_retraining: 0
+    prediction_rows: 0
+  future_stage_1_if_all_gates_pass_and_separately_approved:
+    scientific_variants: 1
+    lightgbm_configs: 1
+    objectives: 2
+    outer_folds: 5
+    inner_folds: 4
+    cpu_selector_boosters: 40
+    parent_control_retraining: 0
+    pf_hmm_beam_replays: 0
+    downstream_tvt_boosters: 0
+    gpu_boosters: 0
+
+execution:
+  implementation_approved: true
+  stage_0_run_approved: true
+  stage_0_run_approval_source: user_message_execute_exp401_2026_07_26
+  stage_1_implementation_approved: false
+  stage_1_run_approved: false
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+
+forbidden:
+  - lower_or_tune_weak_state_threshold
+  - weak_risk_threshold_or_hard_router
+  - risk_transform_smoothing_clip_or_grid
+  - transition_initial_probability_sigma_or_block_tuning
+  - invert_auc_after_reading_results
+  - candidate_subset_or_legal_domain_tuning
+  - merge_all_12_candidates_into_one_hard_select_domain
+  - use_oracle_recoverable10_for_feature_or_selection
+  - read_truth_or_error_before_feature_freeze
+  - exp368_stage1_pf_revival
+  - parent_selector_control_retraining_without_approval
+  - downstream_tvt_stage_without_separate_approval
+  - inference_or_submission
+
+notes:
+  - Design frozen on 2026-07-26.
+  - Stage 0 compact self-contained train and fail-closed inference candidates were implemented on 2026-07-26.
+  - The user approved canonical train notebook adoption and the Kaggle private CPU Stage 0 run on 2026-07-26.
+  - The exp368 Stage 0 failure remains terminal for the marginalized-PF branch.
+  - The canonical train notebook is adopted from the compact self-contained candidate; inference and settings.py remain untouched scaffold placeholders.
+  - Kaggle private CPU version 4 completed Stage 0 with every technical check PASS but the scientific all-AND gate FAIL.
+  - Decision is stage_0_failed_close_without_rescue; Stage 1, inference, and submission remain disabled and unrun.

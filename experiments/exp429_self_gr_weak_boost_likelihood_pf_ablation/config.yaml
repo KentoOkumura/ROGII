@@ -1,0 +1,438 @@
+experiment:
+  name: "exp429_self_gr_weak_boost_likelihood_pf_ablation"
+  description: >-
+    Design-frozen one-factor likelihood-PF ablation that inserts the fixed
+    exp223 self-GR boost-only surface directly into each particle observation
+    log-likelihood while preserving the exp072 PF dynamics and x1.0 GR scale.
+  hypothesis: >-
+    The exp223 self-GR weak boost can improve the fixed temperature-5
+    likelihood-PF prediction by changing particle weights, ESS, resampling, and
+    trajectories inside the filter, even though separate self-GR candidates and
+    post-hoc PF switches were negative.
+  route: pf_beam
+  status: completed_train_side_gate_failed_terminal_close
+  created_at: "2026-07-28"
+
+lineage:
+  parent: exp417_scale5_seed_aggregation_promotion_audit
+  kernel_control: exp072_exp063_full_replay_feature_cache
+  self_gr_formula_parent: exp223_joint_typewell_self_gr_hmm_likelihood_probe
+  exact_pf_implementation_reference: exp400_all_well_1p3_sigma_gr_likelihood_pf
+  scale5_artifact_parent: exp404_scale5_sigma_gr_likelihood_pf_ablation
+  diagnostic_references:
+    - exp091_self_gr_likelihood_pf_beam_probe
+    - exp128_trajectory_local_typewell_self_gr_switch_audit
+    - exp410_likpf_particle_resampling_basin_audit
+  steering: ../../.steering/20260728-exp429-self-gr-weak-boost-likelihood-pf-ablation
+  diff_summary: >-
+    Keep the exp072 x1.0 Type Well GR emission, transition, 500 particles,
+    128 stable seeds, clamp, ESS resampling, roughening, and score rows fixed.
+    Add only the exp223 boost-only alpha-0.07 clip-1.0 same-well visible-prefix
+    self-GR surface to each particle observation log-likelihood. Use fixed
+    temperature-5 seed aggregation as the sole primary and arithmetic mean as
+    a preregistered secondary. This is not a self-GR candidate, post-hoc switch,
+    blend, proposal, or transition change.
+
+implementation:
+  enabled: true
+  design_approval_received: true
+  design_approval_source: user_message_2026_07_28_create_backlog_experiment_steering_freeze_design
+  implementation_approval_received: true
+  implementation_approval_source: user_message_2026_07_28_implement_exp429
+  scaffold_created: true
+  canonical_train_notebook_is_placeholder: false
+  canonical_inference_notebook_is_placeholder: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_fail_closed: true
+  jupytext_source_created: true
+  compact_train_notebook_created: true
+  compact_inference_notebook_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  train_execution_enabled: true
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: all_well_exact_likelihood_pf_direct_self_gr_emission_ablation
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  group_column: well_id
+  score_rows: tvt_input_missing_evaluation_suffix
+  expected_rows: 3783989
+  expected_wells: 773
+  primary_control: exp404_exp417_likpf_scale_5_x1p0
+  primary_control_rmse_ft: 10.914522073
+  primary_candidate: likpf_scale5_selfgr_boost_only_a070_c100
+  secondary_control: exp072_arithmetic_seed_mean
+  secondary_control_rmse_ft: 11.594897884
+  fixed_hmm_likpf_blend_control_rmse_ft: 10.084909679560383
+  primary_seed_aggregation_temperature: 5.0
+  leakage_policy:
+    - Self-GR anchor descriptors and anchor TVT use finite TVT_input prefix rows from the same horizontal well only.
+    - Evaluation suffix GR is observable input; unknown-suffix true TVT is not an input.
+    - Candidate prediction, surface schema, logical content SHA, and manifest are frozen before truth, error, fold, or hidden-like role attachment.
+    - exp091 candidate ranking and exp128 post-hoc switching are diagnostic references, not direct-PF scientific controls.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  exp072_control:
+    source: exp072_exp063_full_replay_feature_cache
+    kernel_source: kentookumura/exp072-exp063-full-replay-feature-cache-train
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    expected_raw_gzip_sha256: 14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18
+    expected_decompressed_sha256: 99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350
+    expected_arithmetic_rmse_ft: 11.594897884
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts
+      - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts
+      - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v2_stream/artifacts
+    full_rerun: false
+  exp404_scale5_control:
+    source: exp404_scale5_sigma_gr_likelihood_pf_ablation
+    kernel_source: kentookumura/exp404-scale5-sigma-gr-likpf-ablation-train
+    filename: exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin
+    prediction_column: likpf_scale_5_x1p0
+    arithmetic_prediction_column: likpf_mean_x1p0
+    arithmetic_prediction_dtype: float32
+    expected_raw_sha256: b3699432a691229da5a6562ce74e0b84f1bee3021bd80d650526906f5aa390f8
+    expected_decompressed_sha256: 00fe1b90fce84bd601b4b91442d9fc698200aafadd48658f7d8c26ec1fbe0d00
+    expected_logical_sha256: 5f4b6e715081b598b0a34607ad0c81339d0ecd5882ea3a45dd79f33123959a00
+    expected_schema_sha256: 2372de95ab154ddd2b1bfe545923233bc41f96104e66c32ab93e6f0fa99bee88
+    expected_scale5_x1p0_rmse_ft: 10.914522073
+    candidates:
+      - /kaggle/input/exp404-v1-frozen-predictions
+      - /tmp/exp404-failed-v1-output/artifacts
+    full_rerun: false
+  exp209_hmm_control:
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    prediction_column: hmm_mean_tvt
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+    rerun: false
+  exp226_reporting:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    forbidden_decoder_columns: [tvt_geop, tvt_pred, gr_delta, tvt_true, error, abs_error]
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+  exp115_hidden_like:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_role_counts:
+      hidden_like_spatial:
+        train: 573
+        valid: 200
+      hidden_like_typewell_purged:
+        train: 557
+        valid: 200
+        purged_train_excluded: 16
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    postfreeze_only: true
+  preflight_wells:
+    filename: exp429_self_gr_weak_boost_likelihood_pf_ablation_preflight_wells.csv
+    candidates:
+      - assets
+      - experiments/exp429_self_gr_weak_boost_likelihood_pf_ablation/assets
+    expected_sha256: 24358da10d2d853b25b4eeb68446c005e34364c78d7f0185af4ceb601effd876
+  preflight_v2_failed_result:
+    filename: exp429_self_gr_weak_boost_likelihood_pf_ablation_preflight_summary.json
+    candidates:
+      - experiments/exp429_self_gr_weak_boost_likelihood_pf_ablation/artifacts/kaggle_v2
+      - /kaggle/input/notebooks/kentookumura/exp429-self-gr-weak-boost-likpf-ablation-train/artifacts
+      - /kaggle/input/exp429-self-gr-weak-boost-likpf-ablation-train/artifacts
+      - /tmp/kaggle-output/exp429_self_gr_weak_boost_likelihood_pf_ablation/preflight_v2/artifacts
+    expected_sha256: 715ce13b5f918184017678e1087b0ebf5c3607b262ed2f73caa8d1408adf0dd0
+    technical_gate_passed: false
+    kernel_version: 2
+    failure_reason: alpha0_saved_exp072_absolute_reconstruction_row_max_parity_exceeded
+  preflight_v3_failed_result:
+    filename: exp429_self_gr_weak_boost_likelihood_pf_ablation_preflight_summary.json
+    candidates:
+      - experiments/exp429_self_gr_weak_boost_likelihood_pf_ablation/artifacts/kaggle_v3
+      - /tmp/kaggle-output/exp429_self_gr_weak_boost_likelihood_pf_ablation/preflight_v3/artifacts
+    expected_sha256: b28a08566d4a4abc3c635aec5d1014f6c4a7ecfe9384cf83492b5244bc1eec87
+    technical_gate_passed: false
+    kernel_version: 3
+    failure_reason: saved_float32_csv_parsed_as_float64_comparator_representation_mismatch
+  preflight_result:
+    filename: exp429_self_gr_weak_boost_likelihood_pf_ablation_preflight_summary.json
+    candidates:
+      - experiments/exp429_self_gr_weak_boost_likelihood_pf_ablation/artifacts/kaggle_v4
+      - /kaggle/input/notebooks/kentookumura/exp429-self-gr-weak-boost-likpf-ablation-train/artifacts
+      - /kaggle/input/exp429-self-gr-weak-boost-likpf-ablation-train/artifacts
+      - /tmp/kaggle-output/exp429_self_gr_weak_boost_likelihood_pf_ablation/preflight_v4/artifacts
+    expected_sha256: 2e9f066fd80813862d1e232ad66fd965020e63a3bddd976ef68303e79fe0d190
+    technical_gate_passed: true
+    kernel_version: 4
+    comparator: saved_exp404_likpf_mean_x1p0_bit_exact
+    comparator_dtype: float32
+  full_result:
+    artifact_dir: experiments/exp429_self_gr_weak_boost_likelihood_pf_ablation/artifacts/kaggle_merge_v2
+    kernel_id: kentookumura/exp429-self-gr-weak-boost-likpf-merge
+    kernel_version: 2
+    status: completed_train_side_gate_failed_terminal_close
+    technical_gate_passed: true
+    scientific_gate_passed: false
+    primary_candidate_rmse_ft: 11.127406420665118
+    primary_control_rmse_ft: 10.914522073423171
+    primary_improvement_ft: -0.21288434724194616
+    improved_folds: 1
+    arithmetic_delta_rmse_candidate_minus_control_ft: -0.02341682789859334
+    by_well_delta_p95_ft: 0.7706270493738033
+    worst_well_regression_ft: 34.862601957412124
+    fixed_hmm_likpf_blend_regression_ft: 0.07031920915451195
+    prediction_logical_sha256: d7677deb40526274853178290d316efcc0b1bafe629d13c669f50ac062689ff0
+    surface_logical_sha256: 2bfc1a996c4f7ad01a48ef34ba333f56907e5f732c3f599d77cc4f27c58a2ba7
+    artifact_manifest_sha256: 3620944f8ab0c6cf0b85c9fd7c11a9ed07897965324c774e43aa528dedbf694e
+    decision: terminal_close_without_self_gr_or_pf_rescue_grid
+
+model:
+  name: deterministic_exp072_likelihood_pf_direct_self_gr_weak_boost
+  estimator: none_particle_filter
+  fitted_model: false
+  active_scientific_variants:
+    - likpf_scale5_selfgr_boost_only_a070_c100
+  typewell_gr_emission:
+    family: exp072_capped_gaussian
+    gr_sigma_policy: known_prefix_residual_std_clip_10_60
+    multiplier: 1.0
+    post_multiplier_clip: null
+    z2_clip: 600.0
+  self_gr_surface:
+    source_contract: exp223_exact
+    mode: boost_only
+    alpha: 0.07
+    clip: 1.0
+    window_radius_rows: 12
+    descriptor_offsets: [-12, -8, -4, 0, 4, 8, 12]
+    top_k: 5
+    prefix_anchor_stride: 3
+    max_prefix_anchors: 128
+    keep_last_prefix_anchors: 32
+    min_prefix_anchors: 12
+    max_window_missing_rate: 0.35
+    gaussian_sigma_tvt_ft: 12.0
+    descriptor_distance_temperature: 1.5
+    typewell_agreement_sigma_tvt_ft: 18.0
+    surface_quadratic_clip: 60.0
+    surface_chunk_size: 256
+    grid_step_ft: 0.2
+    grid_pad_ft: 100.0
+    invalid_row_quality: 0.0
+    particle_interpolation: linear_on_preclipped_boost_grid
+    formula: combined_loglik_equals_exp072_typewell_loglik_plus_0p07_times_quality_times_clip_centered_self_loglik_0_1
+  pf:
+    particles: 500
+    seeds: 128
+    seed_indices: [0, 127]
+    stable_seed_namespace: [likpf, train, well_id]
+    primary_seed_weighting_temperature: 5.0
+    secondary_seed_aggregation: arithmetic_mean
+    other_seed_weighting_scales_enabled: false
+    typewell_grid_step_ft: 0.2
+    typewell_tvt_pad_ft: 100.0
+    initial_position_spread_ft: 4.5
+    initial_rate_spread: 0.01
+    momentum: 0.998
+    rate_noise: 0.002
+    position_noise: 0.005
+    rough_position: 0.1
+    rough_rate: 0.001
+    resample_threshold_fraction: 0.5
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    output_dtype: float32
+  execution_count:
+    technical_preflight_variants: 2
+    technical_preflight_wells: 4
+    technical_preflight_pf_well_runs: 8
+    technical_preflight_seed_well_trajectories: 1024
+    technical_preflight_particle_starts: 512000
+    scientific_variants: 1
+    full_candidate_pf_well_runs: 773
+    full_seed_well_trajectories: 98944
+    full_particle_starts: 49472000
+    full_shards: 4
+    merge_pf_well_runs: 0
+    parent_full_control_reruns: 0
+    reporting_folds: 5
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    models: 0
+    hmm_well_runs: 0
+    beam_well_runs: 0
+    gpu_runs: 0
+
+guards:
+  technical:
+    require_all_input_sha_matches: true
+    require_expected_rows: 3783989
+    require_expected_wells: 773
+    require_expected_folds: [0, 1, 2, 3, 4]
+    require_preflight_alpha0_arithmetic_max_abs_parity_ft: 0.00001
+    require_preflight_alpha0_comparator: saved_exp404_likpf_mean_x1p0_bit_exact
+    require_preflight_alpha0_bit_exact: true
+    require_mode: boost_only
+    require_alpha: 0.07
+    require_clip: 1.0
+    require_finite_candidate_coverage: 1.0
+    require_fallback_wells: 0
+    require_positive_self_gr_valid_rows: true
+    require_positive_self_gr_boost_applications: true
+    maximum_truth_error_fold_hidden_reads_before_candidate_freeze: 0
+    require_execution_count_match: true
+    require_prediction_surface_schema_manifest_sha: true
+    require_saved_control_rmse_parity_atol_ft: 0.00001
+  scientific:
+    minimum_primary_scale5_rmse_gain_ft: 0.05
+    minimum_primary_improved_folds: 4
+    maximum_arithmetic_mean_regression_ft: 0.0
+    maximum_raw_gr_observed_regression_ft: 0.0
+    maximum_raw_gr_missing_regression_ft: 0.0
+    maximum_high_missing_well_regression_ft: 0.0
+    maximum_long_tail_1000_plus_regression_ft: 0.0
+    maximum_hidden_like_spatial_regression_ft: 0.0
+    maximum_hidden_like_typewell_purged_regression_ft: 0.0
+    maximum_by_well_delta_p95_ft: 0.0
+    maximum_worst_well_regression_ft: 0.25
+    maximum_fixed_hmm_likpf_blend_regression_ft: 0.0
+    pass_action: eligible_for_separate_raw_test_regeneration_design_in_same_experiment
+    fail_action: terminal_close_without_self_gr_or_pf_rescue_grid
+
+execution:
+  stage: completed_train_side_gate_failed_terminal_close
+  implementation_approved: true
+  kaggle_package_approved: true
+  preflight_run_approved: true
+  full_run_approved: true
+  inference_approved: false
+  submission_approved: false
+  approval_source: user_message_2026_07_28_execute_after_exp429_implementation
+  version3_preflight_approval_source: user_message_2026_07_28_execute_version3
+  version4_preflight_debug_retry_source: version3_float32_artifact_comparator_fix
+  full_run_approval_source: user_message_2026_07_29_execute_full
+  run_preflight: false
+  run_full: false
+  run_merge: false
+  selected_shard_index: null
+  merge_shard_dirs:
+    - /kaggle/input/notebooks/kentookumura/exp429-self-gr-weak-boost-likpf-shard0
+    - /kaggle/input/notebooks/kentookumura/exp429-self-gr-weak-boost-likpf-shard1
+    - /kaggle/input/notebooks/kentookumura/exp429-self-gr-weak-boost-likpf-shard2
+    - /kaggle/input/notebooks/kentookumura/exp429-self-gr-weak-boost-likpf-shard3
+  run_inference: false
+  create_submission: false
+  forbidden_same_experiment_rescues:
+    - alpha_or_clip_grid
+    - symmetric_or_negative_self_gr_mode
+    - window_topk_anchor_or_quality_grid
+    - seed_temperature_or_aggregation_grid
+    - gr_sigma_particle_seed_transition_resampling_or_roughening_change
+    - self_gr_proposal_initialization_or_posthoc_switch
+    - hmm_beam_ml_blend_or_selector
+    - truth_error_oracle_gate
+    - inference_or_submission_without_separate_approval
+
+runtime:
+  device: cpu
+  use_amp: false
+  num_workers: 2
+  numba_num_threads: 1
+  batch_size: 1
+  full_shard_count: 4
+  shard_policy: deterministic_lpt_by_eval_rows
+  maximum_seconds_per_shard: 30600
+  maximum_peak_rss_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp429-self-gr-weak-boost-likpf-ablation-train
+    train_title: exp429 self gr weak boost likpf ablation train
+    train_kernel_id_no: 128934717
+    train_kernel_version: 4
+    run_on_push: false
+    full_shard_kernels:
+      - kentookumura/exp429-self-gr-weak-boost-likpf-shard0
+      - kentookumura/exp429-self-gr-weak-boost-likpf-shard1
+      - kentookumura/exp429-self-gr-weak-boost-likpf-shard2
+      - kentookumura/exp429-self-gr-weak-boost-likpf-shard3
+    merge_kernel: kentookumura/exp429-self-gr-weak-boost-likpf-merge
+    merge_kernel_version: 2
+    merge_last_run_time_utc: "2026-07-29T10:13:51.243000"
+    kernel_slug_shortening_reason: >-
+      The full canonical slug is 54 characters, so likelihood-pf is abbreviated
+      to likpf to keep the id/title-derived slug within Kaggle's 50-character
+      limit while preserving the experiment meaning.
+    bootstrap_files:
+      - assets/exp429_self_gr_weak_boost_likelihood_pf_ablation_preflight_wells.csv
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp429-self-gr-weak-boost-likpf-ablation-train
+    dataset_sources:
+      - kentookumura/exp404-v1-frozen-predictions
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: exp072_stable_sha256_likpf_train_well_plus_seed_index
+  stochastic_components:
+    - likelihood_pf_particle_initialization
+    - likelihood_pf_particle_propagation
+    - likelihood_pf_conditional_systematic_resampling
+    - likelihood_pf_resampling_roughening
+  parallel_rng_policy: per_well_stable_seed_no_shared_global_rng_across_workers
+  shard_policy: deterministic_lpt_by_eval_rows_each_well_exactly_one_shard
+  feature_sha_policy: raw_and_decompressed_logical_content_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    self_gr_surface_sha: true
+    pf_contract_sha: true
+    shard_inventory_sha: true
+    merge_manifest_sha: true
+    prediction_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - The first full run is a deterministic candidate attempt, not a deterministic anchor.
+    - Independent logical prediction SHA agreement and raw-test regeneration audit are required before deterministic-anchor classification.
+    - Gzip decompressed content SHA is the primary evidence.
+
+inference:
+  enabled: false
+  mode: not_implemented_fail_closed
+  submission: false
+
+notes:
+  - exp091 and exp128 did not modify particle weights or resampling and are not direct-PF results.
+  - The alpha 0.07, clip 1.0, and boost-only mode are imported from exp223 before PF OOF is opened.
+  - Temperature 5 is fixed before this experiment and cannot be changed after the run.

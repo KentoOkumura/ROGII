@@ -1,0 +1,244 @@
+experiment:
+  name: "exp225_state_known_tvt_self_gr_hmm_emission"
+  description: Add a weak self-GR emission boost only when an HMM candidate TVT state lies inside the known-prefix TVT_input range.
+  route: ensemble
+  status: completed_train_side_rejected_no_inference_no_submit
+  created_at: "2026-07-09"
+  updated_at: "2026-07-10"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.strategy
+    - validation.score_rows
+
+lineage:
+  parent: state_known_tvt_self_gr_hmm_emission backlog
+  references:
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp223_joint_typewell_self_gr_hmm_likelihood_probe
+    - exp091_self_gr_likelihood_pf_beam_probe
+    - exp128_trajectory_local_typewell_self_gr_switch_audit
+    - exp131_gr_shape_descriptor_matching_ablation
+    - exp134_self_gr_multiscale_longtail_gate
+    - exp178_supervised_gr_window_matcher_from_known_tvt_prefix
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - KAGGLE_DIRECTION.md state_known_tvt_self_gr_hmm_emission
+  implementation_source: joint_cache_generation.py
+  diff_summary: >
+    Reuses the exp209 exact HMM grid, transition, and typewell GR emission, but
+    replaces exp223 descriptor motif self-GR with a state-known TVT_input -> GR
+    curve. The additional self-GR term is evaluated for each HMM candidate
+    state and is neutral outside the known-prefix TVT_input range. This is not
+    a self-GR candidate, hard switch, direct replacement, row-wise gate, or
+    softmax average. It is a train-side no-training emission readout over all
+    train wells.
+
+validation:
+  strategy: train_side_no_training_hmm_self_gr_emission_readout
+  metric: rmse
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  success_criteria:
+    - The state-known self-GR HMM variant improves or at least does not materially regress versus exp072 likPF overall.
+    - The gap to exp209 HMM/likPF blend is smaller than exp223 or the worst-well regression is materially reduced.
+    - Worst-well regression versus exp072_likpf_mean is materially lower than exp223's +46.954683 RMSE.
+    - Near rows 000_050 / 050_100 and longtail 1000_plus do not show pathological regression.
+    - exp115 hidden-like spatial and typewell-purged valid subgroups do not regress materially.
+    - State-valid rate, HMM std, posterior smoothness, and self-GR quality/agreement buckets do not show overconfident wrong-depth attraction.
+  leakage_policy:
+    - HMM generation uses raw train horizontal/typewell files, observed TVT_input prefix, GR, MD, Z, and typewell GR/TVT.
+    - Self-GR curve uses only finite TVT_input and GR prefix rows from the same horizontal well.
+    - Self-GR emission is neutral for candidate TVT states outside the known-prefix TVT_input range; no extrapolated self-GR curve is used.
+    - Unknown-suffix train TVT is used only for metrics and summaries.
+    - True TVT, absolute OOF error, oracle best, and true-error rank are never used to tune self-GR surface, quality, alpha, clip, or mode.
+    - No raw test files, inference, submission, or model training are performed in the initial train-side audit.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: state_known_tvt_self_gr_hmm_emission
+  estimator: none
+  target: target
+  base_prediction: last_known_tvt
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+  notes:
+    - HMM grid, transition, GR emission, and band settings match exp209/exp205.
+    - Only the additional self-GR clipped likelihood term changes the posterior.
+
+self_gr_emission:
+  enabled: true
+  method: state_known_tvt_curve
+  alpha_grid:
+    - 0.07
+  clip_grid:
+    - 1.0
+  modes:
+    - boost_only
+  max_variants: 1
+  min_curve_points: 12
+  min_tvt_span: 20.0
+  min_state_count: 5
+  min_state_valid_rate: 0.02
+  curve_smooth_window: 9
+  gr_sigma_default: 25.0
+  gr_sigma_floor: 10.0
+  gr_sigma_cap: 60.0
+  typewell_agreement_sigma_tvt: 18.0
+  surface_quadratic_clip: 60.0
+  peak_gap_temperature: 0.25
+  deferred_grid:
+    alpha_grid:
+      - 0.03
+      - 0.10
+    gr_sigma_default:
+      - 20.0
+      - 30.0
+    clip_grid:
+      - 1.0
+    modes:
+      - boost_only
+    note: Use only if the initial 1-variant state-known run is stable enough to justify additional CPU time.
+
+feature_cache:
+  exp072:
+    variant: pixiux_likpf_public_replay
+    deterministic_pf: true
+    seed_policy: stable_sha256_per_well
+    output_prefix: exp063_full_replay_feature_cache
+    n_jobs: 8
+    pf_seeds: 128
+    pf_particles: 500
+    fast: false
+    max_wells: null
+    keep_frame_for_comparison: false
+  hmm:
+    variant: state_known_tvt_self_gr_hmm_emission
+    output_prefix: exp225_state_known_tvt_self_gr_hmm_emission
+    expected_feature_count: 13
+    fast: false
+    max_wells: null
+    outer_workers: 2
+    expected_artifacts:
+      - exp225_state_known_tvt_self_gr_hmm_emission_state_known_tvt_self_gr_hmm_emission_train_features.csv.gz
+      - exp225_state_known_tvt_self_gr_hmm_emission_feature_schema.csv
+      - exp225_state_known_tvt_self_gr_hmm_emission_by_well_generation_summary.csv
+      - exp225_state_known_tvt_self_gr_hmm_emission_summary.json
+
+execution:
+  run_exp072_full_cache: false
+  run_hmm_cache: true
+  run_direct_comparison: true
+  direct_comparison_use_in_memory_exp072: false
+  run_reference_parity_checks: false
+  write_joint_summary: true
+  notes:
+    - Uses saved exp072 likPF cache as comparison baseline; does not regenerate exp072.
+    - Uses exp209 v5 runtime setting outer_workers=2 / numba_num_threads=2.
+    - Initial runtime-limited run uses 1 state-known boost_only variant with alpha 0.07.
+    - No GPU model training, no LightGBM boosters, no control retraining, no submission.
+
+comparison:
+  baseline_experiment: exp072_exp063_full_replay_feature_cache
+  output_prefix: exp225_state_known_tvt_self_gr_hmm_emission
+  baseline_feature_cache:
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  hmm_feature_cache:
+    - /kaggle/working/artifacts/exp225_state_known_tvt_self_gr_hmm_emission_state_known_tvt_self_gr_hmm_emission_train_features.csv.gz
+    - experiments/exp225_state_known_tvt_self_gr_hmm_emission/artifacts/exp225_state_known_tvt_self_gr_hmm_emission_state_known_tvt_self_gr_hmm_emission_train_features.csv.gz
+  baseline_candidate_columns:
+    - likpf_mean
+    - pf_ancc
+    - pf_z
+    - beam_mean
+  primary_baselines:
+    - exp072_likpf_mean
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+  uncertainty_bins: 10
+  self_gr_signal_bins: 5
+  write_enriched_cache: false
+  step_delta_thresholds:
+    - 5.0
+    - 10.0
+    - 25.0
+  result_artifacts:
+    - exp225_state_known_tvt_self_gr_hmm_emission_overall_metrics.csv
+    - exp225_state_known_tvt_self_gr_hmm_emission_distance_bucket_metrics.csv
+    - exp225_state_known_tvt_self_gr_hmm_emission_hidden_like_metrics.csv
+    - exp225_state_known_tvt_self_gr_hmm_emission_by_well_delta.csv
+    - exp225_state_known_tvt_self_gr_hmm_emission_hmm_std_calibration.csv
+    - exp225_state_known_tvt_self_gr_hmm_emission_step_delta_rates.csv
+    - exp225_state_known_tvt_self_gr_hmm_emission_self_gr_signal_bucket_metrics.csv
+    - exp225_state_known_tvt_self_gr_hmm_emission_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: hmm_no_rng_self_gr_deterministic_state_known_tvt_curve
+  stochastic_components: []
+  parallel_rng_policy: HMM and state-known self-GR curve evaluation consume no RNG; outer job scheduling can change tiny floating point ordering, so compare RMSE and feature content hashes with documented tolerances.
+  feature_sha_policy: decompressed_content_sha_for_gzip plus raw gzip SHA recorded separately
+  record:
+    kernel_version: true
+    input_sha: false
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This experiment is a train-side no-training ensemble audit, not a deterministic submission anchor.
+    - Self-GR alpha/clip/mode are global fixed values, not row-wise error-calibrated parameters.
+    - Self-GR likelihood is neutral outside the known-prefix TVT_input range and does not use suffix true TVT.
+
+inference:
+  mode: not_applicable_train_side_readout_only
+  selected_candidate: null
+  notes:
+    - No raw-test features, predictions, or submission.csv are generated until train-side gates pass.
+    - If a candidate passes, raw-test-safe self-GR/HMM regeneration must be implemented in this same experiment.

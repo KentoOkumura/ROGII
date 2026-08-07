@@ -1,0 +1,344 @@
+experiment:
+  name: exp377_formation_relative_k16_slope_identifiability_readout
+  description: >-
+    Decompose exp226-style K16 structural-position slopes relative to six
+    train-only formation surfaces and audit whether the reconstructed slopes
+    transfer to outer-valid wells before any HMM, PF, or fitted model is used.
+  route: pf_beam
+  status: kaggle_cpu_v2_completed_stage1_scientific_fail_closed
+  created_at: "2026-07-24"
+  updated_at: "2026-07-24"
+
+lineage:
+  parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  formation_reference_parent: exp287_fold_safe_formation_74_addonly_on_exp264
+  negative_reference: exp376_exp226_formation_conditioned_k16_donor_kernel
+  downstream_if_pass:
+    - exp378_formation_relative_exp226_multisurface_candidate_audit
+    - exp379_formation_transition_mixture_exact_hmm
+    - exp380_formation_stratified_multimode_pf
+  diff_summary: >-
+    Keep exp226's outer five-fold split, K16 row boundaries, directional
+    projection, XY-nearest-50 local-linear kernel, 500 ft bandwidth, and ridge
+    fixed. Replace the interpolated quantity dS/dMD, S=TVT+Z, with six
+    d(S-F_f)/dMD fields and add back dF_f/dMD from an outer-train-only
+    FormationPlaneKNN(k=10). The primary is the pre-registered median of all six
+    reconstructed rates. This experiment creates diagnostic rates and paths
+    only; it does not create an inference candidate or submission.
+
+validation:
+  strategy: exp226_outer5_groupfold_role_safe_formation_readout
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_segments: 12368
+  expected_folds: [0, 1, 2, 3, 4]
+  primary: robust_median_across_6_formations
+  scopes:
+    h512:
+      kind: suffix_offset_less_than
+      value: 512
+      notes: unknown suffix first 512 rows
+    long401:
+      kind: well_suffix_rows_at_least
+      value: 401
+      notes: all rows from wells whose unknown suffix has at least 401 rows
+    clean273:
+      kind: pooled_contract_alias
+      notes: >-
+        clean273 is a feature allowlist, not a target-derived row subset. The
+        diagnostic uses no ML feature surface, so this guard is an explicit
+        pooled alias rather than an invented well subset.
+  leakage_policy:
+    - Outer-valid objects are loaded from X/Y/Z/MD/TVT_input only before freeze.
+    - Outer-valid TVT and all six raw formation columns have zero pre-freeze reads.
+    - Outer-train donor TVT and formation columns are opened only inside that fold.
+    - Fold assignment and row identity come from the saved exp226 OOF allowlist.
+    - Truth is joined only after the complete Stage 0 bundle and logical SHA freeze.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  raw_train_dir_patterns:
+    - data/raw/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+  raw_horizontal_glob: "*__horizontal_well.csv"
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  coordinate_columns: [X, Y, Z, MD]
+  formation_columns: [ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+  structural_position_formula: S=TVT+Z
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    patterns:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    pre_freeze_columns: [well_id, row_idx, suffix_offset, fold]
+    forbidden_pre_freeze_columns: [tvt_true, TVT, error, abs_error, oracle_rank]
+
+method:
+  segment_count: 16
+  segment_boundary: exp226_numpy_linspace_searchsorted_left
+  segment_rate_estimator: median_of_finite_positive_md_step_rates
+  directional_projection:
+    theta0_deg: 118.4
+    minimum_abs_projection: 0.3
+  donor_kernel:
+    family: exp226_xy_local_linear
+    nearest_segments: 50
+    bandwidth_ft: 500.0
+    ridge: 1.0
+    stable_tie_order: [distance, donor_well_id, donor_segment_id]
+  formation_surface:
+    family: FormationPlaneKNN
+    reference_statistic: well_median
+    nearest_wells: 10
+    reference_scope: outer_train_only
+    query_scope: outer_valid_segment_endpoints
+    fallback: inverse_distance_weighted_k10
+    self_exclusion: true
+  candidate_order:
+    - frk16_ANCC
+    - frk16_ASTNU
+    - frk16_ASTNL
+    - frk16_EGFDU
+    - frk16_EGFDL
+    - frk16_BUDA
+    - frk16_robust_median6
+  primary_aggregation:
+    family: median
+    minimum_finite_formations: 6
+    posthoc_surface_selection: forbidden
+  formula: >-
+    reconstructed dS/dMD =
+    XYKernel[d(S-F_f)/dMD divided by directional projection]
+    times target directional projection + FormationPlaneKNN dF_f/dMD
+  output_type: diagnostic_readout_only
+
+model:
+  name: diagnostic_only_no_fitted_model
+  estimator: deterministic_geometry_readout
+  trained_models: 0
+
+gates:
+  stage0_integrity:
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_segments: 12368
+    expected_outer_fold_runs: 5
+    validation_truth_reads: 0
+    validation_formation_reads: 0
+    source_valid_overlap: 0
+    target_surface_fallback_fraction_max: 0.05
+    primary_coverage_min: 0.98
+    effective_donors_p05_min: 10.0
+    report_only_checks:
+      - effective_donors_p05
+  stage1_identifiability:
+    donor_rate_rmse_relative_gain_min: 0.05
+    cumulative_path_rmse_gain_ft_min: 0.50
+    positive_rate_fold_count_min: 4
+    positive_path_fold_count_min: 4
+    scope_regression_tolerance_ft: 0.02
+    p95_well_regression_max_ft: 0.0
+    worst_well_regression_max_ft: 0.25
+
+runtime:
+  use_amp: false
+  accelerator: cpu
+  num_workers: 1
+  scientific_variants: 1
+  reporting_surfaces: 6
+  reporting_folds: 5
+  model_configs: 0
+  trained_folds: 0
+  lightgbm_boosters: 0
+  hmm_runs: 0
+  pf_runs: 0
+  parent_control_regeneration: false
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_run_on_push: false
+    inference_run_on_push: false
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+    inference_kernel_sources: []
+
+execution:
+  stage: kaggle_cpu_v2_completed
+  implementation: true
+  implementation_authorized: true
+  implementation_authorized_at: "2026-07-24"
+  implementation_authorization_source: user_message_implement_exp377
+  compact_selfcontained_candidate_implemented: true
+  canonical_train_notebook_adopted: true
+  canonical_train_notebook_adopted_at: "2026-07-24T08:17:53Z"
+  kaggle_execution_authorized: true
+  kaggle_execution_authorized_at: "2026-07-24"
+  kaggle_execution_authorization_source: user_message_execute_exp377
+  one_run_authorization_consumed: true
+  kaggle_execution_started: true
+  kaggle_execution_started_at: "2026-07-24T09:14:22Z"
+  kaggle_execution_completed: true
+  kaggle_execution_completed_at: "2026-07-24T09:24:09.503834+00:00"
+  kaggle_execution_success: true
+  kaggle_execution_outcome: technical_pass_stage0_pass_stage1_scientific_fail
+  kaggle_target_version: 2
+  kaggle_kernel_id: kentookumura/exp377-formation-relative-k16-slope-readout-train
+  kaggle_kernel_id_no: 128452991
+  kaggle_kernel_version: 2
+  kaggle_kernel_url: https://www.kaggle.com/code/kentookumura/exp377-formation-relative-k16-slope-readout-train
+  kaggle_slug_abbreviated_for_50_character_limit: true
+  kaggle_slug_length: 49
+  notebook_scaffold_is_executable_implementation: true
+  kaggle_package_preflight_passed: true
+  kaggle_v2_package_preflight_passed: true
+  kaggle_package_enabled: false
+  kaggle_push_enabled: false
+  kaggle_run_enabled: false
+  inference_enabled: false
+  submission_enabled: false
+  truth_loaded: true
+  stage0_evaluated: true
+  stage0_passed: true
+  stage0_effective_donors_p05: 2.59469484575288
+  stage0_primary_coverage: 1.0
+  stage0_surface_fallback_fraction: 0.0
+  stage0_bundle_logical_sha256: 944af71f245e5e4615953c7d69fbbb3f22e48757cf63d8474e16d0398a683e5a
+  stage1_evaluated: true
+  stage1_passed: false
+  scientific_support: false
+  downstream_exp378_exp379_exp380_blocked: true
+  downstream_status_pending_v2: false
+  decision: close_and_block_exp378_exp379_exp380_without_surface_kernel_or_scope_rescue
+  stage0_effective_donors_gate_mode: report_only_shared_exp226_kernel_limitation
+  stage0_correction_rationale: >-
+    The exp226-style direct control and all six formation-relative fields share
+    the same eligible donor XY inventory and distance weights. Effective donor
+    concentration therefore does not distinguish treatment from control and is
+    retained as a warning rather than a truth-join blocker.
+  kaggle_v1_execution_completed: true
+  kaggle_v1_execution_started_at: "2026-07-24T08:19:57Z"
+  kaggle_v1_execution_completed_at: "2026-07-24T08:28:14.452812+00:00"
+  kaggle_v1_execution_success: true
+  kaggle_v1_execution_outcome: technical_pass_stage0_effective_donor_support_fail
+  kaggle_v1_audit_completed_at_seconds: 436.170447442
+  kaggle_v1_log_last_timestamp_seconds: 446.345942703
+  kaggle_v1_stage0_passed: false
+  kaggle_v1_stage0_effective_donors_p05: 2.59469484575288
+  kaggle_v1_stage0_bundle_logical_sha256: 944af71f245e5e4615953c7d69fbbb3f22e48757cf63d8474e16d0398a683e5a
+  kaggle_v2_execution_authorized: true
+  kaggle_v2_execution_authorized_at: "2026-07-24"
+  kaggle_v2_execution_authorization_source: user_message_execute_option1_shared_kernel_stage1
+  kaggle_v2_run_authorization_consumed: true
+  kaggle_v2_execution_started: true
+  kaggle_v2_execution_started_at: "2026-07-24T09:14:22Z"
+  kaggle_v2_execution_completed: true
+  kaggle_v2_execution_completed_at: "2026-07-24T09:24:09.503834+00:00"
+  kaggle_v2_execution_success: true
+  kaggle_v2_execution_outcome: technical_pass_stage0_pass_stage1_scientific_fail
+  kaggle_v2_log_last_timestamp_seconds: 489.190654601
+  kaggle_v2_stage0_passed: true
+  kaggle_v2_stage1_passed: false
+  kaggle_v2_rate_baseline_rmse: 0.012300807400595496
+  kaggle_v2_rate_candidate_rmse: 0.03845360562025232
+  kaggle_v2_rate_relative_gain: -2.1261041952734527
+  kaggle_v2_rate_positive_folds: 0
+  kaggle_v2_path_baseline_rmse_ft: 16.100131165038366
+  kaggle_v2_path_candidate_rmse_ft: 38.776238158630434
+  kaggle_v2_path_gain_ft: -22.676106993592068
+  kaggle_v2_path_positive_folds: 0
+  kaggle_v2_by_well_improved: 164
+  kaggle_v2_by_well_worsened: 609
+  kaggle_v2_by_well_p95_delta_ft: 49.43456225293919
+  kaggle_v2_worst_well_id: a247e7cf
+  kaggle_v2_worst_well_delta_ft: 408.0446864027287
+  kaggle_v2_truth_manifest_logical_sha256: 6cf3ad2ad64f075189e9f162258f9bd727a80be197df51addca8a5a66760c19e
+  kaggle_v2_segment_actual_logical_sha256: ef644b7c9e404c2925950c727ca7e8d4f1721361c475344a8c4ab25b7c00012c
+  active_scientific_variants: 1
+  reporting_surfaces: 6
+  outer_evaluation_folds: 5
+  model_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  hmm_runs: 0
+  pf_runs: 0
+  parent_or_control_regeneration: false
+  gpu: false
+  inference: false
+  submission: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_outer_fold_well_segment_and_row_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_single_worker_stable_reduction_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - >-
+      Record the exp226 fold/row manifest, raw input manifest, formation
+      reference ledger, donor d(S-F)/dMD fields, target formation surfaces, six
+      reconstructed rate series, primary median series, and truth-late-join
+      manifest.
+    - >-
+      A single successful Kaggle run is not promoted to deterministic anchor
+      until the logical content SHA agrees across successful reruns.
+
+artifacts:
+  expected:
+    - exp377_formation_relative_k16_slope_identifiability_readout_input_manifest.csv
+    - exp377_formation_relative_k16_slope_identifiability_readout_fold_manifest.csv
+    - exp377_formation_relative_k16_slope_identifiability_readout_role_read_ledger.csv
+    - exp377_formation_relative_k16_slope_identifiability_readout_donor_relative_rate_fields.csv.gz
+    - exp377_formation_relative_k16_slope_identifiability_readout_segment_rate_schedule.csv.gz
+    - exp377_formation_relative_k16_slope_identifiability_readout_primary_path_schedule.csv.gz
+    - exp377_formation_relative_k16_slope_identifiability_readout_freeze_manifest.json
+    - exp377_formation_relative_k16_slope_identifiability_readout_stage0_integrity_guard.json
+    - exp377_formation_relative_k16_slope_identifiability_readout_truth_late_join_manifest.csv
+    - exp377_formation_relative_k16_slope_identifiability_readout_segment_actual_rate_readout.csv.gz
+    - exp377_formation_relative_k16_slope_identifiability_readout_segment_rate_metrics.csv
+    - exp377_formation_relative_k16_slope_identifiability_readout_path_metrics.csv
+    - exp377_formation_relative_k16_slope_identifiability_readout_by_well_metrics.csv
+    - exp377_formation_relative_k16_slope_identifiability_readout_stage1_identifiability_guard.json
+    - exp377_formation_relative_k16_slope_identifiability_readout_summary.json
+    - exp377_formation_relative_k16_slope_identifiability_readout_sha_manifest.csv
+
+forbidden_actions:
+  - outer_valid_or_test_raw_formation_read_before_or_during_generation
+  - outer_valid_truth_read_before_freeze
+  - posthoc_best_formation_selection
+  - formation_or_kernel_hyperparameter_grid
+  - parent_control_regeneration
+  - hmm_pf_beam_or_model_training
+  - current_test_generation
+  - inference_or_submission
+
+inference:
+  enabled: false
+  create_submission: false
+
+notes:
+  - >-
+    The user explicitly authorized canonical train notebook adoption and one
+    Kaggle CPU execution on 2026-07-24. Inference and submission remain disabled.
+  - >-
+    The user explicitly authorized one corrected v2 run on 2026-07-24: keep the
+    shared exp226 kernel unchanged, treat low effective-donor support as
+    report-only, and execute the truth-late Stage 1 comparison once.

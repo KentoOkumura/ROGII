@@ -1,0 +1,379 @@
+experiment:
+  name: exp355_exp226_dip_rate_prior_on_exp209
+  description: >-
+    Independent two-stage audit of a fold-safe exp226 K16 geometry rate-change
+    schedule as the only time-varying rate-prior mean change on trusted exp209.
+  route: pf_beam
+  status: stage1_completed_scientific_gate_failed_closed
+  created_at: "2026-07-23"
+  updated_at: "2026-07-23"
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260723-exp355-exp226-dip-rate-prior-on-exp209
+  history: exp323_time_varying_exp226_dip_rate_prior
+  references:
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe
+    - exp338_exp209_well_adaptive_transition_noise
+  diff_summary: >-
+    Removes the failed exp307--309/338 chain. It keeps every exp209 observation,
+    diffusion, grid, momentum, prior, and output setting fixed and changes only
+    the constant rate-prior mean to a target-anchored exp226 geometry rate-change schedule.
+
+implementation:
+  enabled: true
+  scope: stage_0_completed_stage_1_exact_hmm
+  train_notebook_state: canonical_stage1_compact_selfcontained_adopted
+  inference_notebook_state: compact_selfcontained_fail_closed_candidate_created
+  compact_selfcontained_source_created: true
+  stage_0_implemented: true
+  stage_1_implemented: true
+  canonical_notebook_adopted: true
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: exp209_grouped_two_stage_exp226_geometry_rate_prior_audit
+  metric: rate_schedule_identifiability_then_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  expected_folds: [0, 1, 2, 3, 4]
+  score_rows: unknown_suffix_truth_only_after_rate_schedule_and_prediction_freeze
+  truth_attachment: after_geometry_ledger_schedule_prediction_and_content_sha_freeze
+  leakage_policy:
+    - Exp226 donor fields must preserve the saved group-safe outer-fold contract.
+    - Validation wells and same-fold validation wells are forbidden from donor generation.
+    - Unknown-suffix TVT, error, abs_error, oracle choice, exp226 tvt_pred, and GR correction are forbidden before schedule freeze.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    allowed_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    forbidden_columns: [tvt_pred, gr_delta, tvt_true, error, abs_error]
+  exp209_control:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    expected_hmm_cache_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v3/artifacts
+      - /tmp/kaggle-output/exp205_exact_hmm_smoother_exp072_compatible_cache_audit/train_v2_small/artifacts/exp205_exact_hmm_smoother_exp072_compatible_cache_audit_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    prediction_column: hmm_mean_tvt
+    direct_rmse_ft: 11.938287417
+    fixed_likpf_50_50_rmse: 10.269699957242537
+    usage: late_prediction_and_metric_baseline_only_no_control_rerun
+  exp209_enriched_control:
+    filename: exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    expected_decompressed_sha256: ee3b548b0d38f78966742542e86fa31b7e64698d4762b924c924a5895d2ee3f4
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/exp209_blend_audit/artifacts
+    hmm_prediction_column: hmm_mean_tvt
+    hmm_minus_likpf_column: hmm_minus_likpf_mean
+    usage: late_fixed_likpf_50_50_diagnostic_only
+  hidden_like:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /tmp/exp275-output-v2/inputs
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+
+model:
+  name: exp226_geometry_rate_prior_on_exp209
+  estimator: none
+  stage_0:
+    exp226_component: geometry_only_pre_gr_pre_u_projection
+    k_segments: 16
+    geometry_rate: delta_tvt_geop_plus_delta_z_div_delta_md
+    target_anchor_rate: exp209_known_prefix_initial_rate
+    formula: parent_initial_rate_plus_geometry_rate_minus_first_segment_geometry_rate
+    fallback: constant_parent_initial_rate_when_geometry_invalid
+    segment_assignment: exp226_row_position_linspace_k16
+    segment_reducer: median_finite_positive_delta_md_steps
+    first_segment_policy: full_well_constant_parent_fallback_when_invalid
+    invalid_later_segment_policy: constant_parent_rate_for_that_segment
+    rate_readout_weighting: equal_valid_well_segment
+    cumulative_path_anchor: last_known_prefix_u
+    fold_gate_scope: segment_and_cumulative_path_both
+    compare_against: exp209_constant_rate_prior
+    pass_requires_all:
+      minimum_segment_rate_change_rmse_gain_fraction: 0.05
+      minimum_cumulative_path_rmse_gain_ft: 0.05
+      minimum_improved_folds: 4
+      require_1000_plus_non_regression: true
+      require_hidden_like_spatial_non_regression: true
+      require_hidden_like_typewell_purged_non_regression: true
+      maximum_worst_well_regression_ft: 0.25
+  stage_1:
+    enabled_condition: explicit_user_override_after_stage0_average_improvement
+    user_override:
+      approved: true
+      approved_at: "2026-07-23"
+      authorization_source: user_message_average_improves_proceed
+      rationale: pooled_and_fold_average_improvement_is_sufficient_to_run_stage1
+      overridden_failed_gate: stage0_worst_well_regression_guard
+      does_not_approve: [parameter_rescue, inference, submission]
+    state_coordinate: residual_rate_about_time_varying_mu
+    residual_initial_mean: 0.0
+    prior_mean_schedule: stage0_frozen_mu_rate_t
+    expected_stage0_schedule_logical_sha256: 53f9d42bcca0f5596568971b5da6c440114922d0a25b5622592e1b7b50774c85
+    expected_stage0_geometry_ledger_logical_sha256: b527d3401e2d730ec883681051c476c929a428e7fc28ed88fff3091045915a39
+    active_variants: [exp226_geometry_rate_prior_mean_residual_hmm]
+    hmm_well_runs: 773
+    baseline_metric_absolute_tolerance: 1.0e-5
+    hmm:
+      step: 0.35
+      n_rates: 41
+      residual_rate_span: 0.10
+      sig_r: 0.002
+      sig_p: 0.02
+      emission: gauss
+      sigma_mode: std
+      start_sig: 0.75
+      r0_sig: 0.01
+      band_pad: 100.0
+      momentum: 0.998
+      output: posterior_mean
+    pass_requires_all:
+      minimum_rmse_gain_vs_exp209_ft: 0.05
+      minimum_improved_folds: 4
+      require_1000_plus_non_regression: true
+      require_hidden_like_spatial_non_regression: true
+      require_hidden_like_typewell_purged_non_regression: true
+      require_by_well_p95_non_regression: true
+      maximum_worst_well_regression_ft: 0.25
+      require_fixed_likpf_blend_non_regression: true
+  fixed_parent:
+    observation_model: exact_exp209
+    sigma_gr: exact_exp209
+    sig_r: 0.002
+    sig_p: 0.02
+    effective_position_sigma_floor: 0.1225
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    momentum: 0.998
+    prior: exact_exp209
+    output: posterior_mean
+  forbidden:
+    - exp307_or_exp308_or_exp309_or_exp338_inputs
+    - exp226_final_tvt_prediction
+    - exp226_gr_correction
+    - exp226_u_projection
+    - absolute_tvt_unary
+    - fixed_exp226_path_shape
+    - prediction_blend
+    - parameter_grid
+
+execution_contract:
+  stage_0: {diagnostic_variants: 1, reporting_folds: 5, hmm_well_runs: 0, model_configs: 0, trained_folds: 0, boosters: 0}
+  stage_1_if_pass: {scientific_variants: 1, hmm_well_runs: 773, model_configs: 0, trained_folds: 0, boosters: 0}
+  parent_control_retraining: false
+
+execution:
+  implementation_approved: true
+  implementation_approval_scope: user_message_implement_exp355
+  kaggle_push_approved: true
+  kaggle_push_approved_at: "2026-07-23"
+  kaggle_push_authorization_source: user_message_average_improves_proceed
+  stage_0_completed_at: "2026-07-23"
+  stage_1_override_approved_at: "2026-07-23"
+  stage_1_completed_at: "2026-07-24"
+  stage_1_override_scope: one_variant_773_hmm_cpu_no_control_rerun
+  active_stage: stage1_completed_scientific_gate_failed_closed
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+
+audit:
+  output_prefix: exp355_exp226_dip_rate_prior_on_exp209
+  expected_artifacts:
+    - exp355_exp226_dip_rate_prior_on_exp209_scientific_contract.json
+    - exp355_exp226_dip_rate_prior_on_exp209_input_manifest.json
+    - exp355_exp226_dip_rate_prior_on_exp209_raw_well_identity.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_rate_prior_schedule.csv.gz
+    - exp355_exp226_dip_rate_prior_on_exp209_geometry_segment_ledger.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_fallback_summary.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_freeze_manifest.json
+    - exp355_exp226_dip_rate_prior_on_exp209_segment_rate_readout.csv.gz
+    - exp355_exp226_dip_rate_prior_on_exp209_path_readout.csv.gz
+    - exp355_exp226_dip_rate_prior_on_exp209_segment_rate_metrics.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_path_metrics.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_by_well_metrics.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_stage0_gate.json
+    - exp355_exp226_dip_rate_prior_on_exp209_summary.json
+  expected_stage_1_artifacts:
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_scientific_contract.json
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_input_manifest.json
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_raw_well_identity.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_rate_prior_schedule.csv.gz
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_geometry_segment_ledger.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_fallback_summary.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_schedule_freeze_manifest.json
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_oof_predictions.csv.gz
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_by_well_runtime.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_fold_metrics.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_distance_bucket_metrics.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_hidden_like_metrics.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_by_well_metrics.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_geometry_fallback_metrics.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_promotion_gate.json
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_sha_manifest.csv
+    - exp355_exp226_dip_rate_prior_on_exp209_stage1_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    train_run_on_push: true
+    train_kernel_id: kentookumura/exp355-exp226-dip-rate-prior-on-exp209-train
+    train_title: exp355 exp226 dip rate prior on exp209 train
+    train_kernel_version: 2
+    approved_train_kernel_version_target: 2
+    train_kernel_id_no: 128366148
+    train_url: https://www.kaggle.com/code/kentookumura/exp355-exp226-dip-rate-prior-on-exp209-train
+    stage_0_runtime_seconds: 460.87276452300006
+    stage_1_runtime_seconds: 18161.789478106
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_outer_fold_well_segment_and_row_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads_and_stable_reduction_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: true, submission_sha: false}
+
+inference: {enabled: false, create_submission: false}
+
+results:
+  generated_at_utc: "2026-07-23T20:06:16.755807+00:00"
+  rows: 3783989
+  wells: 773
+  stage_0_gate_passed: false
+  stage_1_gate_passed: false
+  decision: stage_1_exact_hmm_failed_no_automatic_inference
+  checks_passed: 5
+  checks_total: 8
+  stage_0:
+    decision: stage_0_failed_close_without_parameter_rescue
+    checks_passed: 7
+    checks_total: 8
+  segment_rate_change:
+    baseline_rmse: 0.01823798168220974
+    candidate_rmse: 0.01671059736624418
+    gain_fraction: 0.08374744215558938
+    improved_folds: 4
+  cumulative_path:
+    baseline_rmse: 49.493155005049516
+    candidate_rmse: 46.97732532516993
+    gain_ft: 2.5158296798795874
+    improved_folds: 5
+    distance_1000_plus_delta: -2.8282142144233973
+    hidden_like_spatial_delta: -1.8305740205207002
+    hidden_like_typewell_purged_delta: -2.056030635324994
+    worst_well_id: 071d7b45
+    worst_well_delta: 69.01766866149215
+  by_well:
+    improved: 439
+    worsened: 334
+    median_delta: -1.9419047756742565
+    mean_delta: -2.442514690691406
+    p95_delta: 20.58546314915919
+  technical:
+    fallback_wells: 0
+    fallback_segments: 0
+    truth_attached_after_freeze: true
+    artifact_raw_sha_reports_checked: 13
+    artifact_raw_sha_mismatches: 0
+    gzip_decompressed_sha_reports_checked: 3
+    gzip_decompressed_sha_mismatches: 0
+  sha256:
+    scientific_contract: 8972158b5f0e248df0a67241dbb5af5a5cb0ee4d733ad95682590cfe21149e60
+    input_manifest: 00d351b23a49b843ea0737ba41b0cd523908dc3af4a786080403f12a9a40c1c3
+    frozen_schedule: 53f9d42bcca0f5596568971b5da6c440114922d0a25b5622592e1b7b50774c85
+    geometry_segment_ledger: b527d3401e2d730ec883681051c476c929a428e7fc28ed88fff3091045915a39
+    segment_rate_readout: 4d28d0088268bad8818d042abf92a60db6884418ca2c1a2d22b339a68b77d9af
+    path_readout: a09c77ae6ed060a63eebdaaafd23649fe46f4062093bbe49ff0781e9eb548107
+  stage_1:
+    technical_gate_passed: true
+    scientific_gate_passed: false
+    direct:
+      parent_rmse: 11.938287234887435
+      candidate_rmse: 11.291976615843922
+      improvement_ft: 0.6463106190435131
+      relative_gain_fraction: 0.05413763350866529
+      improved_folds: 5
+    fixed_likpf_50_50:
+      parent_rmse: 10.269696317096978
+      candidate_rmse: 10.053143746365542
+      improvement_ft: 0.21655257073143552
+      improved_folds: 4
+    distance_1000_plus_delta: -0.7301600804148158
+    hidden_like_spatial_delta: 0.4149434587834069
+    hidden_like_typewell_purged_delta: 0.3717199526722741
+    by_well_p95_delta: -2.5413736342213937
+    paired_by_well_delta_mean: -0.4887460980559339
+    paired_by_well_delta_median: 0.0128728237814748
+    paired_by_well_delta_p95: 5.663042619930491
+    improved_wells: 360
+    worsened_wells: 413
+    worst_well_id: 86454a6f
+    worst_well_delta: 52.7437544619024
+    checks:
+      minimum_direct_rmse_gain: true
+      minimum_improved_folds: true
+      distance_1000_plus_non_regression: true
+      hidden_like_spatial_non_regression: false
+      hidden_like_typewell_purged_non_regression: false
+      by_well_p95_non_regression: true
+      worst_well_regression_guard: false
+      fixed_likpf_50_50_non_regression: true
+    prediction_logical_sha256: 634303f022bced6685367094304da6182fee42815302344469b5919a36cd5e21
+    scientific_contract_sha256: 08f5d08576d2bc9ffeca80e6c7c9a8cf752751ba62ed5fd27c49736b6f7ac1ef
+    input_manifest_sha256: 458871d2a1cb80fdd9d4acbefaf35661ae16487b2cf83baafd0a07017c9b3349
+    sha_manifest_content_sha256: d721f74334ab82f0fd4d95faca6c83002fe5520bf4928b96ab4059091f09371f
+    truth_access_before_prediction_freeze: 0
+    posterior_normalization_max_abs_error: 3.9968028886505635e-15
+
+notes:
+  - Kaggle CPU Stage 0 version 1 completed and failed only the preregistered worst-well guard.
+  - The user explicitly overrode the failed worst-well gate because average Stage 0 metrics improved.
+  - Kaggle CPU Stage 1 version 2 completed one candidate over 773 wells; parent/control reruns were zero.
+  - Stage 1 improved pooled and all-fold direct RMSE but failed hidden-like spatial/typewell-purged and worst-well guards.
+  - Parameter rescue, inference, and submission remain outside this approval.
+  - Exp281 and exp338 are negative references, not dependencies.

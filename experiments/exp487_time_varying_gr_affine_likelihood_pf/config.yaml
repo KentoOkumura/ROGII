@@ -1,0 +1,416 @@
+experiment:
+  name: exp487_time_varying_gr_affine_likelihood_pf
+  description: >-
+    Design-frozen two-variant PF audit that applies the exp345 causal and
+    exp350 bidirectional time-varying GR affine schedules to particle emission
+    centers.
+  hypothesis: >-
+    Dynamic current-well affine calibration can correct local GR distribution
+    drift inside PF filtering more safely than the failed exp211 static affine
+    transform.
+  route: pf_beam
+  status: stage0_completed_all_pass_pending_stage1_approval
+  created_at: "2026-07-30"
+  updated_at: "2026-07-30"
+
+lineage:
+  parent: exp417_scale5_seed_aggregation_promotion_audit
+  exact_pf_implementation_reference: exp404_scale5_sigma_gr_likelihood_pf_ablation
+  causal_schedule_source: exp345_exp209_time_varying_gr_affine_calibration_hmm
+  bidirectional_schedule_source: exp350_exp345_bidirectional_gr_affine_smoother
+  static_pf_negative_reference: exp211_affine_calibrated_gr_observation_pfbeam
+  steering: ../../.steering/20260730-exp487-time-varying-gr-affine-likelihood-pf
+  diff_summary: >-
+    Generate the fixed exp345 causal EKF and exp350 extended-RTS affine
+    schedules from the frozen exp209 base path, then apply each schedule to the
+    exp404 per-particle Type Well GR emission center. Keep PF sigma, dynamics,
+    500 particles, 128 stable seeds, and temperature-5 aggregation fixed.
+    Report both variants independently without same-OOF winner selection.
+
+implementation:
+  enabled: true
+  design_approval_received: true
+  design_approval_source: user_message_2026_07_30_freeze_pf_transfer_designs
+  implementation_approval_received: true
+  implementation_approval_source: user_message_2026_07_30_implement_exp487
+  scaffold_created: true
+  canonical_notebooks_are_markdown_placeholders: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  compact_train_candidate: exp487_time_varying_gr_affine_likelihood_pf_compact_selfcontained_train.py
+  compact_train_notebook_candidate: exp487_time_varying_gr_affine_likelihood_pf_compact_selfcontained_train.ipynb
+  compact_inference_guard_candidate: exp487_time_varying_gr_affine_likelihood_pf_compact_selfcontained_inference.py
+  compact_inference_guard_notebook_candidate: exp487_time_varying_gr_affine_likelihood_pf_compact_selfcontained_inference.ipynb
+  dedicated_test: ../../tests/test_exp487_time_varying_gr_affine_likelihood_pf.py
+  jupytext_source_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  train_execution_enabled: true
+  stage_0_implemented: true
+  stage_1_implemented: true
+  inference_enabled: false
+  test_deployment_process_noise_implemented: false
+  test_exp209_path_regeneration_implemented: false
+  submission_enabled: false
+
+validation:
+  strategy: fixed32_technical_then_all_well_two_independent_dynamic_affine_pf_variants
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: tvt_input_missing_evaluation_suffix
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  primary_control: exp404_exp417_likpf_scale5_x1p0
+  primary_control_rmse_ft: 10.914522073
+  fixed_hmm_pf_50_50_control_rmse_ft: 10.084909679560383
+  fixed32_is_cv: false
+  active_variants:
+    - causal_ekf_affine_emission
+    - bidirectional_rts_affine_emission
+  selection_policy: independent_report_only_no_same_oof_winner
+  truth_attachment: after_both_schedules_predictions_and_all_content_sha_freeze
+  leakage_policy:
+    - Affine initialization uses current-well visible TVT_input prefix pairs only.
+    - Process noise uses outer-train visible-prefix information only.
+    - Full suffix raw GR is observable and may be used by RTS; suffix true TVT is never a schedule input.
+    - Truth, error, fold-valid outcomes, and hidden-like roles attach after both predictions freeze.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  target_column: TVT
+  visible_prefix_column: TVT_input
+  observed_log_column: GR
+  id_column: id
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  saved_exp209_base_path:
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    mean_column: hmm_mean_tvt
+    std_column: hmm_std
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v3/artifacts
+    patterns:
+      - "**/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz"
+    train_policy: reuse_saved_no_hmm_rerun
+    test_policy: regenerate_exp209_path_only_after_separate_inference_approval
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    process_noise_usecols: [well_id, fold]
+    report_only_after_freeze_columns: [row_idx, suffix_offset]
+    usage: outer_train_process_noise_selection_and_late_scoring_strata
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    patterns:
+      - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+  fixed32_manifest:
+    source: exp411_predictive_filtered_rate_innovation_destick
+    filename: stage0_fixed32_manifest.csv
+    local: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+    expected_sha256: fbbc62b7cb79e16a7fb436f3a9d11f8975e935ad2475a17e2dec4fd7b142e4d6
+    expected_suffix_rows: 156088
+    prefreeze_columns: [well]
+    postfreeze_columns: [well, role, fold]
+  saved_control:
+    source: exp404_scale5_sigma_gr_likelihood_pf_ablation
+    filename: exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin
+    prediction_column: likpf_scale_5_x1p0
+    logical_columns:
+      - id
+      - well_id
+      - row_idx
+      - likpf_scale_5_x1p0
+      - likpf_scale_5_x1p3
+      - likpf_mean_x1p0
+      - likpf_mean_x1p3
+    expected_rmse_ft: 10.914522073
+    expected_logical_sha256: 5f4b6e715081b598b0a34607ad0c81339d0ecd5882ea3a45dd79f33123959a00
+    expected_raw_sha256: b3699432a691229da5a6562ce74e0b84f1bee3021bd80d650526906f5aa390f8
+    expected_decompressed_sha256: 00fe1b90fce84bd601b4b91442d9fc698200aafadd48658f7d8c26ec1fbe0d00
+    candidates:
+      - /kaggle/input/exp404-v1-frozen-predictions
+      - /kaggle/input/datasets/kentookumura/exp404-v1-frozen-predictions
+      - /tmp/exp404-v1-frozen-predictions-dataset
+      - /tmp/exp404-reference
+    patterns:
+      - "**/exp404_scale5_sigma_gr_likelihood_pf_ablation_paired_predictions.csv.gz.bin"
+    rerun: false
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    kernel_source: kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_role_counts:
+      hidden_like_spatial:
+        train: 573
+        valid: 200
+      hidden_like_typewell_purged:
+        train: 557
+        valid: 200
+        purged_train_excluded: 16
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    patterns:
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+
+model:
+  name: time_varying_affine_gr_emission_likelihood_pf_audit
+  estimator: deterministic_affine_schedule_plus_stochastic_likelihood_pf
+  active_variants:
+    - causal_ekf_affine_emission
+    - bidirectional_rts_affine_emission
+  base_path:
+    source: saved_exp209_posterior_mean_and_std
+    freeze_before_schedule: true
+    calibration_iterations: 1
+  affine_state_common:
+    state: [intercept_b, log_scale_a]
+    transition: local_level_random_walk
+    initial_fit: robust_current_well_visible_prefix_affine
+    minimum_prefix_pairs: 40
+    minimum_typewell_gr_std: 5.0
+    slope_bounds: [0.25, 4.0]
+    maximum_prefix_rmse: 60.0
+    trim_quantile: 0.90
+    robust_iterations: 2
+    process_noise_estimator: median_squared_adjacent_robust_prefix_state_increment
+    process_noise_state_sequence: cumulative_robust_fit_every_40_finite_pairs_plus_final
+    process_noise_increment_normalization: squared_state_increment_per_source_row
+    process_noise_shrinkage: n_div_n_plus_100_toward_global_outer_train_median
+    process_noise_shrinkage_space: linear_variance
+    process_noise_numerical_floor: 1.0e-12
+    initial_covariance: trimmed_ols_covariance_transformed_to_intercept_and_log_scale
+    covariance_update: joseph_form
+    missing_raw_gr_update_policy: skip_update_propagate_state
+    fallback: identity_a1_b0
+    train_process_noise_policy: once_per_outer_fold_from_visible_prefix_only
+    test_process_noise_policy: once_from_all_train_visible_prefix_only
+  causal_ekf:
+    schedule_state_timing: current_row_posterior_after_one_finite_raw_gr_update
+    gr_nll_timing: one_step_predictive_before_current_row_update
+    freeze_before_pf: true
+  bidirectional_rts:
+    forward_records: exact_causal_ekf_records
+    algorithm: deterministic_fixed_interval_extended_rts
+    transition_matrix: identity_2x2
+    interval: entire_score_suffix
+    observation_source: full_observable_raw_gr
+    smoothing_gain: filtered_covariance_times_pinv_next_predicted_covariance
+    pseudoinverse_rcond: 1.0e-12
+    terminal_policy: smoothed_terminal_equals_filtered_terminal
+    covariance_symmetrization: half_matrix_plus_transpose
+    covariance_negative_eigen_tolerance: 1.0e-8
+    covariance_numerical_floor: 1.0e-12
+    output_scale_policy: clip_to_common_slope_bounds
+    maximum_output_scale_clip_fraction: 0.01
+    freeze_before_pf: true
+  pf_emission:
+    mean: exp_log_scale_a_t_times_typewell_gr_at_particle_tvt_plus_intercept_b_t
+    sigma_policy: unchanged_exp404_x1p0_no_a_rescaling
+    log_likelihood: capped_gaussian_z2_600
+    emission_clip_z2: 600.0
+    raw_gr_double_use_risk: schedule_update_and_particle_likelihood
+  fixed_from_exp404:
+    particles: 500
+    seeds: 128
+    primary_seed_weighting_temperature: 5.0
+    base_scale_clip: [10.0, 60.0]
+    initial_position_spread_ft: 4.5
+    initial_rate_spread: 0.01
+    momentum: 0.998
+    rate_noise: 0.002
+    position_noise: 0.005
+    rough_position: 0.1
+    rough_rate: 0.001
+    resample_threshold_fraction: 0.5
+    typewell_grid_step_ft: 0.2
+    typewell_tvt_pad_ft: 100.0
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    output_dtype: float32
+
+stages:
+  stage_0:
+    purpose: technical_and_schedule_preflight_not_cv
+    well_set: stable_sha256_fixed32
+    scientific_variants: 2
+    candidate_pf_well_runs: 64
+    seed_well_trajectories: 8192
+    particle_starts: 4096000
+    control_pf_well_runs: 0
+    base_hmm_well_runs: 0
+  stage_1:
+    enabled_only_after_stage_0_pass_and_separate_user_approval: true
+    scientific_variants: 2
+    candidate_pf_well_runs: 1546
+    seed_well_trajectories: 197888
+    particle_starts: 98944000
+    control_pf_well_runs: 0
+    base_hmm_well_runs: 0
+
+guards:
+  technical:
+    require_exp209_base_path_sha_match: true
+    require_causal_schedule_contract: true
+    require_rts_terminal_and_forward_parity_contract: true
+    require_covariance_finite_and_psd_with_tolerance: true
+    maximum_output_scale_clip_fraction: 0.01
+    require_finite_prediction_coverage_each_variant: 1.0
+    require_stable_seed_identity: true
+    require_execution_count_match: true
+    maximum_truth_error_fold_hidden_reads_before_both_freeze: 0
+    maximum_seconds_full_projection: 30600
+    maximum_peak_rss_gb: 25
+  scientific_each_variant:
+    minimum_pooled_rmse_gain_vs_control_ft: 0.05
+    minimum_improved_folds: 4
+    minimum_raw_gr_observed_gain_ft: 0.05
+    maximum_raw_gr_missing_regression_ft: 0.0
+    maximum_high_missing_well_regression_ft: 0.0
+    maximum_long_tail_1000_plus_regression_ft: 0.0
+    maximum_hidden_like_spatial_regression_ft: 0.0
+    maximum_hidden_like_typewell_purged_regression_ft: 0.0
+    maximum_by_well_delta_p95_ft: 0.0
+    maximum_worst_well_regression_ft: 0.25
+    maximum_fixed_hmm_pf_50_50_regression_ft: 0.0
+    require_all_checks: true
+  decision:
+    selection_within_exp487: forbidden
+    downstream_if_any_variant_passes: new_steering_and_separate_user_approval
+  forbidden:
+    - affine_parameter_process_noise_or_slope_bound_search
+    - causal_rts_schedule_blend
+    - static_dynamic_schedule_selection
+    - sigma_temperature_particle_or_seed_change
+    - well_or_row_affine_gate
+    - same_oof_variant_winner_selection
+    - blend_or_selector_rescue
+    - same_oof_rescue
+
+runtime:
+  device: cpu
+  use_gpu: false
+  num_workers: 8
+  maximum_seconds: 30600
+  maximum_peak_rss_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    planned_train_kernel_id: kentookumura/exp487-time-varying-gr-affine-likelihood-pf-train
+    planned_train_title: exp487 time varying gr affine likelihood pf train
+    actual_train_kernel_id: kentookumura/exp487-time-varying-gr-affine-likelihood-pf-train
+    actual_train_kernel_version: 5
+    actual_train_kernel_id_no: 129180524
+    actual_train_kernel_url: https://www.kaggle.com/code/kentookumura/exp487-time-varying-gr-affine-likelihood-pf-train
+    actual_train_package_notebook_sha256: 74541686560d47f8003e41e134d94c9f8b600d72bd19807b6d07966775a2d4e8
+    actual_train_remote_pull_notebook_sha256: 9af3080cd261ee664d91619b5c7b4abf9927d5e8f4c072cb662a0be3e70b76c7
+    dataset_sources:
+      - kentookumura/exp404-v1-frozen-predictions
+    kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    bootstrap_dependency_files:
+      - source: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+        destination: assets/stage0_fixed32_manifest.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: >-
+    affine schedule is deterministic; PF seed_base is
+    sha256_first16("likpf::train::<well_id>") modulo_2147483647_plus_1,
+    seed=seed_base+seed_index_0_to_127, with variant excluded.
+  stochastic_components:
+    - particle_initialization
+    - rate_and_position_process_noise
+    - systematic_resampling
+    - post_resampling_roughening
+  parallel_rng_policy: explicit_per_well_seed_stream_independent_of_thread_schedule
+  stable_order: well_id_then_variant_declared_order_then_row_then_seed_then_particle
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    base_path_sha: true
+    process_noise_sha: true
+    forward_schedule_and_covariance_sha: true
+    smoothed_schedule_and_covariance_sha: true
+    scientific_contract_sha: true
+    prediction_schema_sha: true
+    prediction_content_sha: true
+    submission_sha: false
+
+execution:
+  implementation_approved: true
+  implementation_approval_source: user_message_2026_07_30_implement_exp487
+  kaggle_push_approved: false
+  kaggle_push_approval_source: user_message_2026_07_30_execute_exp487
+  stage_0_execution_approved: false
+  stage_0_execution_approval_source: user_message_2026_07_30_execute_exp487
+  stage_1_execution_approved: false
+  selected_stage: null
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+  submit_to_kaggle: false
+  scientific_variants: 2
+  stage_0_candidate_pf_well_runs: 64
+  stage_0_seed_well_trajectories: 8192
+  stage_0_particle_starts: 4096000
+  stage_1_candidate_pf_well_runs: 1546
+  stage_1_seed_well_trajectories: 197888
+  stage_1_particle_starts: 98944000
+  control_pf_well_runs: 0
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  hmm_well_runs: 0
+  beam_well_runs: 0
+  gpu_runs: 0
+  stage_0_completed: true
+  stage_0_all_gates_pass: true
+  stage_1_eligible_pending_separate_user_approval: true
+  stage_0_kernel_version: 5
+  stage_0_kernel_id_no: 129180524
+  stage_0_kernel_status: COMPLETE
+  stage_0_started_at_utc: "2026-07-30T23:01:40Z"
+  stage_0_completed_at_utc: "2026-07-30T23:22:53Z"
+  stage_0_elapsed_seconds: 1191.0875504016876
+  stage_0_peak_rss_gb: 1.8486404418945312
+  stage_0_projected_full_seconds: 28772.208639390767
+  stage_0_causal_fixed32_rmse: 12.634359565368019
+  stage_0_rts_fixed32_rmse: 13.391424323137391
+  stage_0_saved_control_fixed32_rmse: 9.616740808061033
+  stage_0_scientific_contract_sha256: 18743aff469f4ca1a410fdc3dda62261faccdbda020410185f43f062f83a79e3
+  stage_0_input_manifest_sha256: 82a39670ba6c69d944f6f4832499b211bacda2f6f14ccfca014816b709cff743
+  stage_0_freeze_manifest_sha256: 1366aca8282bd003e56df255e96e3c87a499fab57838643581e7744051597aa2
+  stage_0_process_noise_logical_sha256: aae37e5eecfc220d6c345b96000ddba395bc7eb2ecd2a8b1011f8fae1e16bca8
+  stage_0_version_1_error: raw_identity_used_csv_text_sha_instead_of_frozen_typed_content_sha
+  stage_0_version_2_error: pf_numba_kernel_called_python_interp_helper
+  stage_0_version_3_error: decorated_schedule_column_order_not_reindexed_to_frozen_schema
+  stage_0_version_4_error: compared_pre_serialization_control_logical_sha_to_csv_readback
+
+notes:
+  - Design frozen on 2026-07-30; implementation was separately approved by the user.
+  - Compact self-contained train and fail-closed inference candidates plus dedicated tests are implemented.
+  - The user approved canonical train adoption, Kaggle push, and Stage 0 execution on 2026-07-30.
+  - Stage 1, inference, and submission remain unapproved and disabled.

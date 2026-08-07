@@ -1,0 +1,339 @@
+{
+  "experiment": "exp396_fold_safe_exp111_score_27_addonly_on_exp287",
+  "status": "stage_b_complete_promotion_gate_failed_closed",
+  "route": "ml_model",
+  "created_at": "2026-07-25",
+  "parent": "exp287_fold_safe_formation_74_addonly_on_exp264",
+  "clean_tail_control": "exp264_exp263_candidate_confidence_dual_selector",
+  "cv": 8.134294734835043,
+  "public_lb": null,
+  "private_lb": null,
+  "implementation": true,
+  "kaggle_runs": [
+    {
+      "stage": "stage_a_zero_booster_preflight",
+      "kernel_id": "kentookumura/exp396-foldsafe-exp111-score27-exp287-train",
+      "kernel_title": "exp396 foldsafe exp111 score27 exp287 train",
+      "kernel_version": 1,
+      "kernel_id_no": 128540844,
+      "status": "KernelWorkerStatus.COMPLETE",
+      "status_checked_at_utc": "2026-07-25 03:50:58 UTC",
+      "enable_gpu": false,
+      "enable_internet": false,
+      "is_private": true,
+      "runtime_seconds": 277.13375637900003,
+      "peak_rss_gb": 5.168308258056641,
+      "boosters_trained": 0,
+      "predictions_generated": false,
+      "submission_generated": false
+    },
+    {
+      "stage": "stage_a_strict_nested_scorer_train",
+      "kernel_id": "kentookumura/exp396-foldsafe-exp111-score27-exp287-train",
+      "kernel_title": "exp396 foldsafe exp111 score27 exp287 train",
+      "kernel_version": 2,
+      "kernel_id_no": 128540844,
+      "status": "KernelWorkerStatus.COMPLETE",
+      "status_checked_at_utc": "2026-07-25 05:12:40 UTC",
+      "enable_gpu": false,
+      "enable_internet": false,
+      "is_private": true,
+      "runtime_seconds": 3662.974058053,
+      "peak_rss_gb": 8.762432098388672,
+      "boosters_trained": 40,
+      "predictions_generated": false,
+      "submission_generated": false
+    },
+    {
+      "stage": "stage_b_gpu_tvt_train",
+      "kernel_id": "kentookumura/exp396-score27-exp287-stageb-train",
+      "kernel_title": "exp396 score27 exp287 stageb train",
+      "kernel_version": 1,
+      "kernel_id_no": 128570498,
+      "status": "KernelWorkerStatus.COMPLETE",
+      "status_checked_at_utc": "2026-07-25 15:31:14 UTC",
+      "enable_gpu": true,
+      "machine_shape": "NvidiaTeslaT4",
+      "enable_internet": false,
+      "is_private": true,
+      "preflight_runtime_seconds": 570.220847435,
+      "runtime_seconds": 16830.25523505,
+      "kaggle_log_last_timestamp_seconds": 17430.630990448,
+      "peak_rss_gb": 25.557098388671875,
+      "boosters_trained": 15,
+      "predictions_generated": true,
+      "inference_generated": false,
+      "submission_generated": false
+    }
+  ],
+  "local_validation": {
+    "dedicated_tests_passed": 11,
+    "py_compile": "passed",
+    "ruff_f821_f401_e9": "passed",
+    "jupytext_roundtrip": "passed",
+    "strict_experiment_validation": "passed"
+  },
+  "stage_a": {
+    "status": "complete_all_gates_passed",
+    "outer_folds": 5,
+    "inner_folds_per_outer": 4,
+    "objectives": 2,
+    "planned_cpu_boosters": 40,
+    "completed_cpu_boosters": 40,
+    "expected_models": 40,
+    "expected_imputation_vectors": 40,
+    "input_feature_count_per_model": 48,
+    "score_core_count": 10,
+    "derived_feature_count": 27,
+    "preflight": {
+      "passed": true,
+      "checks_passed": 16,
+      "checks_total": 16,
+      "rows": 3783989,
+      "wells": 773,
+      "duplicate_ids": 0,
+      "row_coverage": 1.0,
+      "well_coverage": 1.0,
+      "full_coverage": 1.0,
+      "nested_manifest_rows": 20,
+      "outer_inner_well_overlap_sum": 0,
+      "runtime_seconds": 277.13375637900003,
+      "peak_rss_gb": 5.168308258056641,
+      "resource_gate": "pending_full_stage_a_run",
+      "scientific_gate_evaluated": false,
+      "fold_assignment_sha256": "e8c3dd328af6e5b295940467679fb36b07614f6d6f0b1120f1bc373bec85f92f",
+      "nested_manifest_logical_sha256": "f8104336a64369cccdeddebdfb1c29c349872f6c91529677391cdb9946892035",
+      "synthetic_derivation_logical_sha256": "2c5e71073a8f70825b95e1f825789a00d79fff275b27b90271bffe589df8a61c",
+      "artifact_sha256": {
+        "preflight_manifest": "5ee569555de45417deac61368b73dde94232bc8377439ac4c873d97861f4f13c",
+        "nested_fold_manifest": "3d42173760625993e51a76d91eb2b7d7dc9e9fbe1a16dbba71c2382c749d41c0",
+        "logs": "2c8d681dea7e8b32456eb061cf28ca3c5ddb72bc8637368809719cb4a5f2086f"
+      }
+    },
+    "gate": {
+      "passed": true,
+      "technical_passed": true,
+      "technical_checks_passed": 22,
+      "technical_checks_total": 22,
+      "score_quality_passed": true,
+      "runtime_seconds": 3662.974058053,
+      "maximum_runtime_seconds": 30600,
+      "peak_rss_gb": 8.762432098388672,
+      "maximum_peak_rss_gb": 25,
+      "model_count": 40,
+      "median_vector_count": 40,
+      "schema_record_count": 40,
+      "score_partition_count": 10,
+      "outer_inner_well_overlap_sum": 0,
+      "duplicate_ids_sum": 0,
+      "saved_exp111_model_reuse_count": 0,
+      "control_retraining_boosters": 0
+    },
+    "scorer_quality": {
+      "candidate_rows": 18919945,
+      "learned_expected_error_mae": 5.908305461058927,
+      "prior_expected_error_mae": 39.05507516312361,
+      "expected_error_mae_delta": -33.14676970206468,
+      "expected_error_mae_improved_folds": 5,
+      "learned_within10_logloss": 0.34512524723695354,
+      "prior_within10_logloss": 0.535689166777512,
+      "within10_logloss_delta": -0.19056391954055846,
+      "within10_logloss_improved_folds": 5,
+      "learned_within10_brier": 0.11213481757995002,
+      "prior_within10_brier": 0.17740592942088648,
+      "within10_brier_delta": -0.06527111184093647,
+      "within10_brier_improved_folds": 5
+    },
+    "artifact_sha256": {
+      "preflight_manifest": "2661b808dedc5e463d3813af501e6e61f397cac36f044e9cf709b8d6ccb02749",
+      "nested_fold_manifest": "3d42173760625993e51a76d91eb2b7d7dc9e9fbe1a16dbba71c2382c749d41c0",
+      "summary": "e5fa67ed62266a8cfed03121463692d1abec1e1e85616e3af0611912cf1a383e",
+      "gate": "35314fb017234cd0ed3fe8a2eb7f998e7ceee9b837a20c4c207d54718391ff49",
+      "model_manifest": "b42757edd5dbb061ccc2903595e7c1676a8e21bfcc87837202a3f9387f4bd028",
+      "fold_manifest": "ad8279628a64f8afb812ef6c7ae4ade1307aeff24dd6b5f0ce0d57b232354e4b",
+      "score_partition_manifest": "055d2c1f5583b6b44b0ea3413bfd66592b485adb764cec69522e7b33d571aba5",
+      "score_quality": "40abadfb5e9e385a9b15fbc53ae4d829cde948badbd0e2be66b64ea7f213b679",
+      "feature_importance": "9abf67ae6f3f73da18408cfb59eb397e8c85ffd502e7533c01e01a2a849eea91",
+      "reproducibility_manifest": "84cc8703868eea2ebddbbfb176e861505e1f3b6281c725b02e772a31518338f0",
+      "logs": "a8e96ce402e6e44972121ea79034431225bb6345b7de64b4088cb14bded1353b"
+    }
+  },
+  "stage_b": {
+    "status": "complete_promotion_gate_failed_closed",
+    "active_variants": 1,
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "planned_gpu_boosters": 15,
+    "completed_gpu_boosters": 15,
+    "control_retraining_boosters": 0,
+    "feature_counts": {
+      "clean_base": 273,
+      "nested_compact": 74,
+      "fold_safe_formation": 74,
+      "fold_safe_exp111_score": 27,
+      "final": 448
+    },
+    "feature_schema_sha256": "07f6c2b51d166f210bae18720c32fae638aead255b24adda4ac598eaac517630",
+    "preflight": {
+      "passed": true,
+      "checks_passed": 14,
+      "checks_total": 14,
+      "runtime_seconds": 570.220847435,
+      "peak_rss_gb": 23.867610931396484
+    },
+    "gate": {
+      "passed": false,
+      "checks": {
+        "pooled_delta_rmse_vs_exp287": false,
+        "minimum_nonworse_folds_vs_exp287": false,
+        "all_scope_non_regression_vs_exp287": false,
+        "by_well_delta_p95_vs_exp287": false,
+        "worst_well_delta_rmse_vs_exp264": false,
+        "worsened_well_counts_vs_exp264": true
+      },
+      "exp396_rmse": 8.134294734835043,
+      "exp287_rmse": 8.136708220359452,
+      "delta_rmse_exp396_minus_exp287": -0.002413485524408898,
+      "maximum_allowed_pooled_delta_rmse_vs_exp287": -0.02,
+      "nonworse_folds_vs_exp287": 2,
+      "minimum_required_nonworse_folds_vs_exp287": 4,
+      "maximum_scope_delta_rmse_vs_exp287": 0.026155870703092887,
+      "maximum_allowed_scope_delta_rmse_vs_exp287": 0.02,
+      "by_well_delta_p95_vs_exp287": 0.34292654498632785,
+      "maximum_allowed_by_well_delta_p95_vs_exp287": 0.0,
+      "worst_well_delta_rmse_vs_exp264": 7.802733094923152,
+      "maximum_allowed_worst_well_delta_rmse_vs_exp264": 0.25,
+      "worsened_well_counts_vs_exp264": {
+        "plus_1ft": {
+          "count": 68,
+          "maximum": 135,
+          "passed": true
+        },
+        "plus_3ft": {
+          "count": 16,
+          "maximum": 39,
+          "passed": true
+        },
+        "plus_5ft": {
+          "count": 5,
+          "maximum": 14,
+          "passed": true
+        }
+      }
+    },
+    "fold_metrics": [
+      {
+        "outer_fold": 0,
+        "exp287_rmse": 8.0703683475,
+        "exp396_rmse": 8.0860816302,
+        "delta_rmse_exp396_minus_exp287": 0.0157132828,
+        "nonworse_vs_exp287": false
+      },
+      {
+        "outer_fold": 1,
+        "exp287_rmse": 8.2558384316,
+        "exp396_rmse": 8.2221557901,
+        "delta_rmse_exp396_minus_exp287": -0.0336826415,
+        "nonworse_vs_exp287": true
+      },
+      {
+        "outer_fold": 2,
+        "exp287_rmse": 7.8936300106,
+        "exp396_rmse": 7.8819382068,
+        "delta_rmse_exp396_minus_exp287": -0.0116918037,
+        "nonworse_vs_exp287": true
+      },
+      {
+        "outer_fold": 3,
+        "exp287_rmse": 8.1065667306,
+        "exp396_rmse": 8.1072929478,
+        "delta_rmse_exp396_minus_exp287": 0.0007262172,
+        "nonworse_vs_exp287": false
+      },
+      {
+        "outer_fold": 4,
+        "exp287_rmse": 8.3496259473,
+        "exp396_rmse": 8.3662038882,
+        "delta_rmse_exp396_minus_exp287": 0.0165779409,
+        "nonworse_vs_exp287": false
+      }
+    ],
+    "scope_metrics": {
+      "near_0_250": {
+        "exp287_rmse": 1.5476499497,
+        "exp396_rmse": 1.5514161014,
+        "delta": 0.0037661517
+      },
+      "mid_250_1000": {
+        "exp287_rmse": 4.047816403,
+        "exp396_rmse": 4.0738160854,
+        "delta": 0.0259996825
+      },
+      "1000_plus": {
+        "exp287_rmse": 8.9366478217,
+        "exp396_rmse": 8.9315766623,
+        "delta": -0.0050711595
+      },
+      "hidden_like_spatial": {
+        "exp287_rmse": 8.7997677309,
+        "exp396_rmse": 8.8208691122,
+        "delta": 0.0211013813
+      },
+      "hidden_like_typewell_purged": {
+        "exp287_rmse": 8.7354037578,
+        "exp396_rmse": 8.7615596285,
+        "delta": 0.0261558707
+      }
+    },
+    "feature_importance": {
+      "strict_nested_score_27_gain_fraction": 0.011025,
+      "strict_nested_score_27_split_fraction": 0.024936
+    },
+    "runtime_seconds": 16830.25523505,
+    "peak_rss_gb": 25.557098388671875,
+    "model_count": 15,
+    "prediction_generated": true,
+    "inference_generated": false,
+    "submission_generated": false,
+    "artifact_sha256": {
+      "canonical_notebook": "0a19d05759febf720bb2a60c38b9885b2cc8841295c00c6024a7a1944fa44cf2",
+      "packaged_notebook": "b80878667f6f47b742143557e65858dcf30e69c89c1c04fb43d462d7b6e13e13",
+      "packaged_metadata": "59c887f9532ca3a4820eec1bf663f51cf4ede0478732dc94fe3d0828ffefc012",
+      "packaged_config": "d741e1aa6d1a2c30ab5153d83c200c873a1548b34d9703083e27de990967c8d5",
+      "preflight_manifest": "0cd823b4e3058b547e3aa411de158a7c66c9a29b0f58cf66f9a1950d6be5052e",
+      "component_manifest": "1a228ffe8679a2087ff9f11dd17db69917bed104927407199047077800449af1",
+      "fold_metrics": "3c3c16271da83518a7fd1ccaabec6119da3ee86b92f315ab2d46af7d706376a4",
+      "scope_metrics": "67244fb51a7ebb385cbc241146df4540959155d22d89eeca41d3ee1667d0211d",
+      "by_well_metrics": "6cb967c0ea2b30b74c3ddc9827a256e048ba9497c43f57530a18511e1cb86e96",
+      "feature_importance": "6c9d7b9ffa8bf1838f3693a5f09cfefadeaa6610da2bec2a2be56c079f89f6b3",
+      "metrics": "d80395f71279e7a8c1597f91902303c471ecfaf22e13fddca61193f7fcdc5146",
+      "model_manifest": "85059c057895365c53158e75a5f18246414d591123c5b52a1627501af63d75c1",
+      "reproducibility_manifest": "fd7434ce4dd39be3996d1a10c403d1ed00d4d2a4ce67d34c266b265e1031c8a9",
+      "oof_prediction": "ebf4a12896c80435ab12f16e8bcb3297874edef81b7630f42dea7c53713a81c3",
+      "logs": "0a28d6b1a83453e27f3ceeb4b5121fc0ae6cbca30564077974377de593989b46"
+    }
+  },
+  "reference": {
+    "exp287_cv": 8.136708220359452,
+    "exp264_cv": 8.460811237612477,
+    "exp287_public_lb": 7.53,
+    "exp287_oof_sha256": "8f026c5c5f6508fb142981832994c6ba9cded4940168c648a9df9f3e698c3913",
+    "exp287_model_manifest_sha256": "419dbdf83dd6bc343f0265aca56dd690ba1f231ee419e7cf0ff456ffdb797590",
+    "exp264_oof_sha256": "b11c5005ca566f76588f4e1735386c15b8f016b874701a82e1c0741c8b839ae2",
+    "exp111_source_sha256": "0f9ec70f8080bf98566dee2122a36066ba161db0a7a3de4be203757d86ebec48",
+    "exp111_config_sha256": "ca8b27de391e306ea6f3e7fbfa9510af63aacfeacd42ea99dbaa0a05b21d851f",
+    "exp111_row_feature_schema_sha256": "d5adf0f71d1ca44b1ddd7b0577b3637e3ea5e9affd9cb317f931bb3485537f8d",
+    "exp111_model_manifest_sha256": "178e8b3124b817a2b230080fc041aaaee1b06941e5a4223a68cc31bf26e68010"
+  },
+  "execution_approval": {
+    "stage_a_implementation": true,
+    "stage_a_preflight": true,
+    "stage_a_cpu_run": true,
+    "stage_b_implementation": true,
+    "stage_b_gpu_run": true,
+    "inference": false,
+    "submission": false
+  },
+  "notes": "Stage B private T4 version 1 completed 15/15 boosters with zero control retraining. OOF RMSE improved only 0.002413 ft versus exp287 and failed five of six fixed promotion checks: only 2/5 folds were nonworse, maximum scope regression was 0.026156 ft, by-well delta p95 was 0.342927 ft, and worst-well delta versus corrected exp264 was 7.802733 ft. The branch is closed without inference or submission.",
+  "next_action": "Keep exp287 as the train-side parent anchor. Do not implement exp396 inference, submission, same-OOF rescue, or gate relaxation. The only retained follow-up is a low-P4 zero-booster transfer-failure attribution readout, requiring a new explicit need and approval."
+}

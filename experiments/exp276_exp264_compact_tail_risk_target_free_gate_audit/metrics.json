@@ -1,0 +1,147 @@
+{
+  "experiment": "exp276_exp264_compact_tail_risk_target_free_gate_audit",
+  "status": "completed_corrected_parent_revalidation_guard_failed_no_inference",
+  "result_valid": true,
+  "route": "ml_model",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "bad_well_rate_lift_recall_and_gated_rmse",
+  "kernel": {
+    "id": "kentookumura/exp276-target-free-tail-risk-gate-audit-train",
+    "id_no": 127735777,
+    "version": 3,
+    "runtime_seconds": 104.01691794395447,
+    "enable_gpu": false,
+    "enable_internet": false,
+    "remote_notebook_sha256": "66b84813850c32e96bc88c89bbe43b0347df0844975a96d1b5e9f4f588dfd801"
+  },
+  "compute_contract": {
+    "active_audit_variants": 1,
+    "evaluation_folds": 5,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "total_boosters": 0,
+    "parent_control_retraining": false,
+    "gpu": false,
+    "inference": false,
+    "submission": false
+  },
+  "inputs": {
+    "stage_c_kernel_version": 6,
+    "stage_c_manifest_sha256": "f4855726de446b8308a8acf80d6ff6cd6a789f18ef90e165b98fa05d12aecf1c",
+    "stage_c_partition_manifest_sha256": "17930b7b50da7c783bffb8db8e34a0f69e5e583e028bde5b356d50a63bfacf66",
+    "stage_c_partitions": 25,
+    "stage_c_rows": 18919945,
+    "raw_horizontal_files": 773,
+    "stage_d_kernel_version": 3,
+    "stage_d_oof_sha256": "b11c5005ca566f76588f4e1735386c15b8f016b874701a82e1c0741c8b839ae2",
+    "stage_d_oof_rows": 3783989,
+    "stage_d_wells": 773
+  },
+  "stage_d_anchor": {
+    "matched_control_rmse": 10.476169179272501,
+    "selector_compact_addonly_rmse": 8.460811237612477,
+    "worsened_wells": 255,
+    "over_0p25_wells": 220
+  },
+  "pooled_quantile_readout": [
+    {
+      "quantile_label": "q70",
+      "risk_wells": 223,
+      "gated_rmse": 9.770623226679339,
+      "improvement_retention_fraction": 0.35008468620319294,
+      "worst_well_delta_rmse_gated_minus_control": 7.98901577655546,
+      "gt0_risk_bad_rate_lift_vs_safe": 0.9149428612758571,
+      "gt0p25_risk_bad_rate_lift_vs_safe": 0.9462165439828526,
+      "gt0_bad_well_recall": 0.27058823529411763,
+      "gt0p25_bad_well_recall": 0.2772727272727273
+    },
+    {
+      "quantile_label": "q80",
+      "risk_wells": 148,
+      "gated_rmse": 9.651451534808661,
+      "improvement_retention_fraction": 0.40921646096500897,
+      "worst_well_delta_rmse_gated_minus_control": 13.441267814330768,
+      "gt0_risk_bad_rate_lift_vs_safe": 0.9792401096748924,
+      "gt0p25_risk_bad_rate_lift_vs_safe": 1.0557432432432432,
+      "gt0_bad_well_recall": 0.18823529411764706,
+      "gt0p25_bad_well_recall": 0.2
+    },
+    {
+      "quantile_label": "q90",
+      "risk_wells": 74,
+      "gated_rmse": 9.271525194083166,
+      "improvement_retention_fraction": 0.5977320258043519,
+      "worst_well_delta_rmse_gated_minus_control": 13.441267814330768,
+      "gt0_risk_bad_rate_lift_vs_safe": 1.1651387069889274,
+      "gt0p25_risk_bad_rate_lift_vs_safe": 1.2110187110187112,
+      "gt0_bad_well_recall": 0.10980392156862745,
+      "gt0p25_bad_well_recall": 0.11363636363636363
+    }
+  ],
+  "guard": {
+    "all_quantiles_must_pass": true,
+    "target_free_tail_risk_guard_pass": false,
+    "guard_by_quantile": {
+      "q70": {
+        "gt0_positive_lift_folds": 1,
+        "gt0p25_positive_lift_folds": 1,
+        "gated_control_improvement_folds": 5,
+        "pooled_improvement_retention_pass": false,
+        "pooled_worst_well_pass": false,
+        "quantile_guard_pass": false
+      },
+      "q80": {
+        "gt0_positive_lift_folds": 2,
+        "gt0p25_positive_lift_folds": 2,
+        "gated_control_improvement_folds": 5,
+        "pooled_improvement_retention_pass": false,
+        "pooled_worst_well_pass": false,
+        "quantile_guard_pass": false
+      },
+      "q90": {
+        "gt0_positive_lift_folds": 2,
+        "gt0p25_positive_lift_folds": 4,
+        "gated_control_improvement_folds": 5,
+        "pooled_improvement_retention_pass": true,
+        "pooled_worst_well_pass": false,
+        "quantile_guard_pass": false
+      }
+    }
+  },
+  "implementation_validation": {
+    "targeted_tests": 9,
+    "targeted_tests_passed": true,
+    "repository_tests": 389,
+    "repository_tests_passed": false,
+    "repository_tests_result": "386 passed, 1 skipped, 2 unrelated exp296 failures",
+    "py_compile_passed": true,
+    "ruff_f821_e9_passed": true,
+    "jupytext_roundtrip_passed": true,
+    "strict_experiment_validation_passed": true,
+    "template_validation_passed": true,
+    "bootstrap_sha_matches_source": true
+  },
+  "reproducibility": {
+    "deterministic_anchor": false,
+    "rerun_result": null,
+    "input_manifest_sha256": "b6db86362e1d5f6c7a4fa19d66b27760a47d53d142f5903f5d0c2fc17f49a255",
+    "risk_feature_schema_sha256": "3e178e78e05620f610ea4fc99e8ca3ca205f6fece8013f040bc4b9a94ddb772d",
+    "risk_feature_content_sha256": "7e8c3ccac6a1573651e24bd43baab756d0adde7b433e7f87b4ff4f681a54199d",
+    "risk_score_content_sha256": "c09b74fd939545fa9a28d1e71982995be04af3a5588e2609c80b4f08a7a5f470",
+    "gated_oof_prediction_content_sha256": "ee370eb443d2d65a80b9aabcfc28e65f72dc208c7d7b69d273c8b09735eb8843"
+  },
+  "decision": {
+    "branch_closed": true,
+    "rescue_grid_allowed": false,
+    "current_test_port": false,
+    "submission": false,
+    "reason": "Corrected-parent fixed q70/q80/q90 guard failed; proceed to the preregistered exp303 dependency branch."
+  },
+  "historical_invalid_run": {
+    "kernel_version": 2,
+    "result_valid": false,
+    "reason": "Parent exp264 Stage C/D OOF feature availability leakage"
+  }
+}

@@ -1,0 +1,291 @@
+{
+  "experiment": "exp486_exp226_geometry_residual_likelihood_pf",
+  "status": "stage1_all_variants_gate_failed_terminal_close",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "saved_control_rmse": 10.914522073423171,
+  "variant_cv": {
+    "absolute_geometry_unary_sigma20_lambda050": 9.7269380294375,
+    "slow_residual_offset_state": 11.139812021086678
+  },
+  "variant_improvement_ft": {
+    "absolute_geometry_unary_sigma20_lambda050": 1.1875840439856713,
+    "slow_residual_offset_state": -0.22528994766350685
+  },
+  "eligible_variants": [],
+  "prediction_sha256": "70a5ac662c9c58fe54d050f1350ed08e912ecb4edc6362e98e3c3663cd704ea8",
+  "validation": {
+    "stage": "stage1_all_well_train_side_cv",
+    "fixed32_is_cv": false,
+    "wells": 773,
+    "rows": 3783989,
+    "variants_are_independent": true,
+    "same_oof_winner_selection": false
+  },
+  "execution_contract": {
+    "scientific_variants": 2,
+    "particles": 500,
+    "seeds": 128,
+    "candidate_pf_well_runs": 1546,
+    "seed_well_trajectories": 197888,
+    "particle_starts": 98944000,
+    "saved_control_pf_well_runs": 0,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "hmm_well_runs": 0,
+    "beam_well_runs": 0,
+    "gpu_runs": 0
+  },
+  "stage1_authorization": {
+    "approved": true,
+    "source": "user_message_2026_07_30_runtime_accepted_proceed_stage1",
+    "runtime_exception_approved": true,
+    "support_numerical_tolerance": 1e-12,
+    "original_stage0_failures_preserved": true,
+    "kernel_id": "kentookumura/exp486-exp226-geometry-residual-likpf-train",
+    "completed_kernel_version": 4,
+    "inference_approved": false,
+    "submission_approved": false
+  },
+  "stage1_version2_failure_and_resume": {
+    "kernel_version": 2,
+    "status": "ERROR",
+    "failed_at_utc": "2026-07-30T17:10:58Z",
+    "runtime_seconds_to_error": 13311.053095581,
+    "failure": "saved_exp209_hmm_expected_sha_manifest_typo_62_characters",
+    "failed_after_target_free_freeze": true,
+    "target_free_rows": 3783989,
+    "target_free_wells": 773,
+    "prediction_logical_sha256": "70a5ac662c9c58fe54d050f1350ed08e912ecb4edc6362e98e3c3663cd704ea8",
+    "resume_dataset": "kentookumura/exp486-v2-stage1-frozen-targetfree",
+    "resume_dataset_id": 11428952,
+    "planned_kernel_version": 3,
+    "planned_current_kernel_pf_well_runs": 0
+  },
+  "stage1_version3_resume_failure": {
+    "kernel_version": 3,
+    "status": "ERROR",
+    "failed_at_utc": "2026-07-30T23:03:18Z",
+    "current_kernel_pf_well_runs": 0,
+    "failure": "unpacked_full_ledger_float_reserialization_logical_sha_mismatch",
+    "raw_and_decompressed_sha_passed": true,
+    "prediction_subset_logical_sha_passed": true,
+    "planned_kernel_version": 4
+  },
+  "stage1_result": {
+    "kernel_version": 4,
+    "status": "stage1_all_variants_gate_failed_terminal_close",
+    "generated_at_utc": "2026-07-30T23:17:29.082818+00:00",
+    "rows": 3783989,
+    "wells": 773,
+    "saved_control_rmse": 10.914522073423171,
+    "technical_gate_passed": true,
+    "scientific_gate_passed": false,
+    "eligible_variants": [],
+    "selection_policy": "independent_report_only_no_same_oof_winner",
+    "variants": {
+      "absolute_geometry_unary_sigma20_lambda050": {
+        "rmse": 9.7269380294375,
+        "improvement_ft": 1.1875840439856713,
+        "improved_folds": 4,
+        "fixed_hmm_pf_50_50_rmse": 8.871021641765827,
+        "fixed_hmm_pf_50_50_improvement_ft": 1.213888206994186,
+        "by_well_delta_p95_ft": 10.069321492226827,
+        "worst_well_id": "389ae58f",
+        "worst_well_regression_ft": 44.02197705356748,
+        "gate_passed": false
+      },
+      "slow_residual_offset_state": {
+        "rmse": 11.139812021086678,
+        "improvement_ft": -0.22528994766350685,
+        "improved_folds": 2,
+        "fixed_hmm_pf_50_50_rmse": 9.832639500252796,
+        "fixed_hmm_pf_50_50_improvement_ft": 0.2522703485072171,
+        "by_well_delta_p95_ft": 4.795182565348637,
+        "worst_well_id": "70e1788b",
+        "worst_well_regression_ft": 32.921501346637896,
+        "gate_passed": false
+      }
+    },
+    "runtime": {
+      "combined_stage1_elapsed_seconds": 13769.492126705116,
+      "current_version_seconds_through_large_artifacts": 458.439031124115,
+      "peak_rss_gb": 4.5059661865234375
+    },
+    "technical_readback": {
+      "support_minimum": 0.1653684743404633,
+      "support_maximum": 1.000000000000003,
+      "support_numerical_tolerance": 1e-12,
+      "saved_control_rmse_absolute_difference_max": 4.2317083170928527e-10,
+      "truth_control_role_fold_reads_before_freeze_zero": true
+    },
+    "artifact_sha256": {
+      "primary_metrics": "326aa169d85e003d7e81e494381ba943c0442e8c5c015886e55ebf7c4020988c",
+      "by_well_metrics": "63aa32898dd34a725fe68c16f4569a21060967444c4389c3ed4f833d1e022a72",
+      "blend_metrics": "ce4541211b6a422e5f5c1ce52bcc9833bb69f9401e0c26c28004edd23f39490b",
+      "promotion_gate": "ec5e450ae953267fdbfc37170df5899b629e01d5f0c087d9bb027f6592dabb46",
+      "runtime_ledger": "d11ef8af62b67ca7f140df15ca9eab48c49f27854dcfb25ad4d54e421dfb0e99",
+      "summary": "b637038f913411714c672914cfa9532190d97df92a9f0f77cd83c283b4e20f29"
+    },
+    "decision": "terminal_close_without_geometry_pf_rescue"
+  },
+  "kaggle_run": {
+    "kernel_id": "kentookumura/exp486-exp226-geometry-residual-likpf-train",
+    "kernel_version": 4,
+    "kernel_id_no": 129170320,
+    "url": "https://www.kaggle.com/code/kentookumura/exp486-exp226-geometry-residual-likpf-train",
+    "status": "COMPLETE",
+    "runtime": "private_cpu",
+    "gpu": false,
+    "internet": false,
+    "completed_at_utc": "2026-07-30T23:17:29.082818+00:00",
+    "package_config_sha256": "1b1cf538681b0127449db590bb282c530708ef1ad7b9bb56396d42ab4cceedfe",
+    "package_notebook_sha256": "2d54ea06d516d7ab7db15a0e42a27358a361337197c02e21226425bb2b9efddd",
+    "package_metadata_sha256": "b95668245d8432bf0acf31b2fe0e076f42b25fbe179bffc5c2558a70f3a5012b",
+    "terminal_log_sha256": "6bc378e5aaa39dad1e1a6a66bb8fd8b1123300e6a60e20b7a1bdc7d931faa452"
+  },
+  "runtime": {
+    "prefreeze_wall_seconds": 1029.9962048530579,
+    "summed_variant_well_seconds": 7487.545464754105,
+    "preregistered_projected_full_seconds": 180871.02013296634,
+    "projected_full_limit_seconds": 30600.0,
+    "projected_full_excess_seconds": 150271.02013296634,
+    "projected_full_excess_fraction": 4.910817651404129,
+    "diagnostic_wall_scaled_full_seconds_not_a_gate": 24880.84582348168,
+    "peak_rss_gb_gate_measurement": 1.2391624450683594,
+    "runtime_ledger_peak_rss_gb": 0.9443702697753906
+  },
+  "stage0_gates": {
+    "all_pass": false,
+    "technical_all_pass": false,
+    "mechanism_all_pass": false,
+    "failed_checks": [
+      "runtime_projection",
+      "residual_support_fraction_bounded"
+    ],
+    "technical_checks": {
+      "common_stable_seed_identity": true,
+      "execution_count_match": true,
+      "finite_mechanism_ledgers": true,
+      "finite_prediction_coverage": true,
+      "forbidden_geometry_reads_zero": true,
+      "geometry_allowlist_exact": true,
+      "geometry_row_coverage": true,
+      "peak_rss": true,
+      "runtime_projection": false,
+      "truth_control_role_fold_reads_before_freeze_zero": true,
+      "variant_formula_and_state_contracts": true
+    },
+    "mechanism_checks": {
+      "absolute_geometry_factor_active": true,
+      "absolute_geometry_residual_nonnegative_std": true,
+      "ess_positive_both_variants": true,
+      "residual_offset_state_non_degenerate": true,
+      "residual_support_fraction_bounded": false
+    },
+    "measurements": {
+      "mean_absolute_geometry_log_factor": -0.009604882988508487,
+      "mean_residual_offset_std": 3.9771524394354416,
+      "minimum_residual_support_fraction": 0.9999999999999988,
+      "maximum_residual_support_fraction": 1.000000000000001,
+      "residual_support_rows_above_one": 54924,
+      "residual_support_rows_below_zero": 0,
+      "residual_support_failure_is_floating_point_overshoot": true
+    }
+  },
+  "fixed32_descriptive_metrics_not_cv": [
+    {
+      "variant": "absolute_geometry_unary_sigma20_lambda050",
+      "rows": 156088,
+      "rmse": 9.183489453268399,
+      "gain_vs_saved_exp404_control_ft": 0.433251354792634,
+      "gain_vs_exp226_tvt_geop_reference_ft": 0.083715324924901
+    },
+    {
+      "variant": "slow_residual_offset_state",
+      "rows": 156088,
+      "rmse": 10.399506240490478,
+      "gain_vs_saved_exp404_control_ft": -0.782765432429445,
+      "gain_vs_exp226_tvt_geop_reference_ft": -1.132301462297178
+    },
+    {
+      "variant": "saved_exp404_control",
+      "rows": 156088,
+      "rmse": 9.616740808061033
+    },
+    {
+      "variant": "exp226_tvt_geop_reference",
+      "rows": 156088,
+      "rmse": 9.2672047781933
+    }
+  ],
+  "truth_access_ledger": {
+    "before_freeze": {
+      "truth_rows": 0,
+      "control_rows": 0,
+      "role_fold_rows": 0,
+      "forbidden_geometry_columns": 0,
+      "geometry_safe_rows": 156088
+    },
+    "after_freeze": {
+      "truth_rows": 156088,
+      "control_rows": 156088,
+      "role_fold_rows": 32
+    },
+    "expected_variant_wells": 64,
+    "frozen_variant_wells": 64,
+    "all_frozen": true
+  },
+  "reproducibility": {
+    "deterministic_anchor": false,
+    "scientific_contract_sha256": "62dcb499c0c9c9320091fa28663771493847dd6f46f03737015d1373dddc5f8e",
+    "scientific_contract_file_sha256": "a516871a5a805a988b421d3b90ca60ace0d98f0ee8a2040fd56362642c7abbff",
+    "input_manifest_sha256": "4adc16fbdff5a5c77ff9e60790d3c42296b56a6c3096d2d54fe49a7e57e0b059",
+    "prediction_logical_sha256": "10451d62e5921fd5624d93b5c0025ac2e575fdbc7e42c8d9bd24b7ba6f736821",
+    "prediction_raw_sha256": "4a572b8f4cbc4a9a0c2f3bdbc955136fc14aef0005c47a4a20b1dd8ca04293ab",
+    "prediction_decompressed_sha256": "1bf351e9e57e08e84b4d1a9d719d2f1dfbef2a99d7e95b585b8c97039804a058",
+    "absolute_ledger_raw_sha256": "f8b55b83c39abec09764b4aca5dd1e81fb47b938803d5c5c130ab8421c84e20b",
+    "absolute_ledger_decompressed_sha256": "7bf5d5a11db73045a3967ddf27b2d983afa904242355dae59d98b2a1f8c62310",
+    "residual_ledger_raw_sha256": "8f914049cd61344e082c1546de724da4cdff1644153805565bdb467ebb69d2cf",
+    "residual_ledger_decompressed_sha256": "177cf13a28633f5b6ca0672f5e8759c571edb7e7499d5adb692289b05e05e38d",
+    "truth_late_rows_raw_sha256": "b2f8e3dff5b8d6425055f81eb4473b3aa7dce33b96875554d58146bd5f02c7e1",
+    "truth_late_rows_decompressed_sha256": "bff7d196454e8466eb87225d710c6f2c7c1286c100f652fdb948bbfcb2890a60",
+    "runtime_ledger_sha256": "d3e9aafc700cbc20f55a063ea1968c2735eab33bc3ab05ef42309a0dd4712a7a",
+    "gate_report_sha256": "5908d54aa2d60ef06d8688a014ba3cbca4e896198b5718a6bcc05316f2137e2e",
+    "summary_sha256": "fe706d83875fba69eca545a1af9b441fe038989c60e3eb7bb9a2cc6104695878"
+  },
+  "contract_tests": {
+    "passed_before_run": 17,
+    "failed_before_run": 0,
+    "passed_after_result_recording": 18,
+    "failed_after_result_recording": 0,
+    "jupytext_roundtrip": true,
+    "py_compile": true,
+    "ruff": true,
+    "strict_experiment_validation": true,
+    "repository_test_nodeids_before_run": 1983,
+    "repository_test_after_result_recording": {
+      "status": "collection_error_unrelated_to_exp486",
+      "collected_before_error": 1675,
+      "collection_errors": 5,
+      "affected_experiments": [
+        "exp297",
+        "exp301",
+        "exp333",
+        "exp336",
+        "exp349"
+      ],
+      "cause": "Existing repository-root exp410 config.yaml is resolved by older experiment loaders."
+    }
+  },
+  "stage0_all_gates_pass": false,
+  "stage1_eligible_for_separate_approval": false,
+  "decision": "terminal_close_without_geometry_pf_rescue",
+  "output_archive_downloaded_to_temporary_directory": true,
+  "next_action": "Close exp486 without geometry-PF rescue, inference, or submission.",
+  "notes": "Kaggle CPU version 4 completed all-well Stage 1. The technical gate passed, but neither independently evaluated variant passed the scientific gate. The original Stage 0 failures remain unchanged."
+}

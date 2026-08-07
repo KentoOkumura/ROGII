@@ -1,0 +1,122 @@
+experiment:
+  name: "exp039_ravaghi_single_lgbm_inference_submit"
+  description: Port exp038 selected single-LGBM PF feature candidate into the public sel15 inference flow and prepare a code submission.
+  route: ml_model
+  status: completed
+  created_at: "2026-06-08"
+  updated_at: "2026-06-08"
+
+lineage:
+  parent: exp038_ravaghi_public_sel15_features_single_lgbm
+  inference_parent: exp035_public_sel15_pf_meta_inference_port
+  public_anchor: exp027_public_replay_needless090_sel15_spread3
+  diff_summary: Replace exp035 Ridge meta 見えない test well 用 residual 処理 with exp038 selected base_plus_pf_prediction_bucket_shrink single LightGBM. Keep the public visible physical branch unchanged.
+
+validation:
+  leakage_policy:
+    - The single-LGBM model trains only on exp029 train well の途中以降を隠した疑似 test 生成物 rows.
+    - target_tvt is used only as the training label for train well の途中以降を隠した疑似 test train rows.
+    - Test hidden features use MD, X, Y, Z, GR, public sel15 PF predictions, selector diagnostics, and known TVT_input prefix only.
+    - Hidden/test evaluation-zone TVT is never read.
+    - Visible public sample wells keep the original physical-model branch unchanged.
+
+data:
+  feature_path: experiments/exp029_public_sel15_pf_oof_feature_generation/features/public_sel15_pf_oof_features.csv.gz
+
+model:
+  name: ravaghi_single_lgbm_inference_submit
+  selected_candidate: base_plus_pf_prediction_bucket_shrink
+  target: target_tvt_minus_last_anchor_tvt
+  base_prediction: last_anchor_tvt
+  estimator: LGBMRegressor
+  params:
+    n_estimators: 800
+    learning_rate: 0.03
+    num_leaves: 31
+    min_child_samples: 80
+    subsample: 0.9
+    colsample_bytree: 0.9
+    reg_lambda: 0.1
+    n_jobs: 2
+  prediction:
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  training:
+    max_train_rows: 300000
+    max_train_rows_per_bucket: 60000
+    random_seed: 42
+  features:
+    - pseudo_cutoff_fraction
+    - cutoff_row
+    - row_idx
+    - prefix_length
+    - eval_step
+    - eval_fraction
+    - MD
+    - X
+    - Y
+    - Z
+    - gr_isna
+    - gr_prefix_availability
+    - gr_eval_availability
+    - last_anchor_tvt
+    - pf_pred
+    - pf_selected_scale_pred
+    - pf_scale_3
+    - pf_scale_5
+    - pf_scale_8
+    - pf_scale_12
+    - pf_seed_mean
+    - pf_seed_std
+    - pf_pred_minus_last_anchor
+  params_public_sel15:
+    n_particles: 500
+    n_seeds: 128
+    selector_scales: [3.0, 5.0, 8.0, 12.0]
+    beam_configs: 14
+
+postprocess:
+  selected_method: distance_bucket_shrink
+  output_file: submission.csv
+  submit_check_required: true
+  audit_files:
+    - public_sel15_original_selector_submission.csv
+    - ravaghi_single_lgbm_corrected_diff.csv
+    - ravaghi_single_lgbm_corrected_summary.json
+  methods:
+    distance_bucket_shrink:
+      name: exp014_bucket_shrink_params
+      buckets:
+        - {name: rows_0_49, max_step: 49, alpha: 0.20}
+        - {name: rows_50_249, max_step: 249, alpha: 0.5917180252647632}
+        - {name: rows_250_999, max_step: 999, alpha: 1.15}
+        - {name: rows_1000_2499, max_step: 2499, alpha: 1.15}
+        - {name: rows_2500_plus, max_step: 1000000000, alpha: 1.0490770312511664}
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  chunk_rows: 500000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp029-sel15-pf-oof-train
+    expected_sources:
+      dataset_sources: []
+      kernel_sources:
+        - kentookumura/exp029-sel15-pf-oof-train
+      model_sources: []
+
+audit:
+  parent_exp038_original_fold_cv: 15.850147
+  parent_exp038_well_hash_cv: 15.820850
+  exp038_best_control: pf090_hold010
+  exp038_best_control_cv: 15.089532
+  parent_public_lb_anchor: 8.781
+  selected_candidate_note: Selected single-LGBM feature candidate improves base_geometry but does not beat public PF controls.
+
+notes:
+  - This is a requested inference/submit port despite exp038 being weaker than public PF controls on the train-side audit.
+  - Public visible sample wells should remain unchanged versus exp027 because the physical branch is preserved.

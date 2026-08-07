@@ -1,0 +1,242 @@
+experiment:
+  name: "exp175_cluster_outlier_typewell_prior_gate"
+  description: Train-side posthoc audit for weakly applying exp109/114 typewell and spatial neighbor priors only on native typewell cluster outlier wells.
+  route: ml_model
+  status: implemented_pending_kaggle_train
+  created_at: "2026-07-03"
+  updated_at: "2026-07-03"
+
+lineage:
+  parent: exp148_learned_likelihood_fulltrain_addonly_on_exp092
+  fallback_parent: exp092_u_projection_correction_disagreement_fullrun
+  prior_parents:
+    - exp109_typewell_neighbor_prior_features
+    - exp114_spatial_neighbor_prior_signal_audit
+  cluster_parent: exp065_typewell_supertype_cluster_cv_audit
+  diagnostic_parents:
+    - exp110_typewell_neighbor_prior_rawtest_parity_gate
+    - exp118_spatial_neighbor_prior_confidence_gate_on_exp092
+    - exp115_hidden_like_spatial_holdout_from_ppt
+  implementation_source: cluster_outlier_typewell_prior_gate.py
+  diff_summary: Uses fixed OOF predictions and fixed fold-safe typewell/spatial priors, then audits small clipped posthoc corrections only for wells that are spatial outliers within their native typewell cluster. It does not train a model, regenerate PF/Beam, create an inference port, or submit.
+
+validation:
+  strategy: fixed_oof_posthoc_cluster_outlier_prior_gate
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - gate_rate
+    - gated_wells
+    - cluster_outlier_subset_rmse
+    - distance_bucket_rmse
+    - exp115_hidden_like_stress_rmse
+    - worst_well_rmse_delta
+    - path_continuity
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: fixed_oof_rows
+  leakage_policy:
+    - Base OOF predictions are fixed upstream GroupKFold-by-well outputs.
+    - exp109 typewell neighbor prior and exp114 spatial neighbor prior are fixed upstream fold-safe outputs.
+    - exp065 native typewell cluster assignment and raw trajectory geometry are target-free gate features.
+    - True TVT is used only to score posthoc policies and is not used in cluster features, neighbor priors, or gate construction.
+    - A positive OOF policy is diagnostic only until raw-test/full-train parity and hidden-like stress pass.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp065_cluster_assignments_local: experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts/common_typewell_cluster_assignments.csv
+  exp109_oof_predictions_local: experiments/exp109_typewell_neighbor_prior_features/kaggle/output/train_v2/artifacts/exp109_typewell_neighbor_prior_features_oof_predictions.csv.gz
+  exp109_summary_local: experiments/exp109_typewell_neighbor_prior_features/kaggle/output/train_v2/artifacts/exp109_typewell_neighbor_prior_features_summary.json
+  exp114_oof_predictions_local: experiments/exp114_spatial_neighbor_prior_signal_audit/kaggle/output/train_v1/artifacts/exp114_spatial_neighbor_prior_signal_audit_oof_predictions.csv.gz
+  exp114_well_geometry_local: experiments/exp114_spatial_neighbor_prior_signal_audit/kaggle/output/train_v1/artifacts/exp114_spatial_neighbor_prior_signal_audit_well_geometry_summary.csv
+  exp114_summary_local: experiments/exp114_spatial_neighbor_prior_signal_audit/kaggle/output/train_v1/artifacts/exp114_spatial_neighbor_prior_signal_audit_summary.json
+  exp115_fold_assignments_local: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+model:
+  name: cluster_outlier_typewell_prior_gate
+  estimator: none
+  target: true_tvt_for_scoring_only
+  base_prediction: fixed_oof_pred_tvt
+  correction_family: clipped_prior_delta_to_fixed_oof_prediction
+
+prediction_sources:
+  - name: exp148_lgb_mean
+    display_name: exp148 learned likelihood add-only lgb_mean
+    required: false
+    path_candidates:
+      - experiments/exp148_learned_likelihood_fulltrain_addonly_on_exp092/kaggle/output/train_v1/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+      - /kaggle/input/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+      - /kaggle/input/exp148-learned-likelihood-fulltrain-addonly-on-exp092-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+    variant: learned_likelihood_confidence_addonly
+    mode: gpu_repro_guard_dp_threads8
+    models:
+      - lgb_mean
+  - name: exp092_lgb1
+    display_name: exp092 U-projection correction/disagreement lgb1
+    required: false
+    path_candidates:
+      - experiments/exp092_u_projection_correction_disagreement_fullrun/kaggle/output/train/artifacts/exp092_u_projection_correction_disagreement_fullrun_predictions.csv.gz
+      - /kaggle/input/exp092-uproj-corr-disagree-train/artifacts/exp092_u_projection_correction_disagreement_fullrun_predictions.csv.gz
+      - /kaggle/input/exp092-u-projection-correction-disagreement-fullrun-train/artifacts/exp092_u_projection_correction_disagreement_fullrun_predictions.csv.gz
+    variant: u_projection_correction_plus_disagreement
+    mode: gpu_repro_guard_dp_threads8
+    models:
+      - lgb1
+
+cluster:
+  assignment_method: native_overlap
+  assignment_threshold: "1"
+  min_cluster_size: 2
+  robust_scale_floor_ft: 250.0
+  outlier_z_thresholds: [1.5, 2.0]
+  nearby_k_values: [5, 8, 12]
+  nearby_majority_min_share: 0.5
+  gates:
+    - name: own_z_gt1p5
+      own_cluster_dist_z_gt: 1.5
+    - name: own_z_gt2p0
+      own_cluster_dist_z_gt: 2.0
+    - name: nearest_other_closer
+      nearest_other_closer: true
+    - name: nearby_majority_diff_k8
+      nearby_majority_diff: true
+      nearby_k: 8
+    - name: own_z_gt1p5_nearest_other
+      own_cluster_dist_z_gt: 1.5
+      nearest_other_closer: true
+    - name: own_z_gt1p5_nearby_diff_k8
+      own_cluster_dist_z_gt: 1.5
+      nearby_majority_diff: true
+      nearby_k: 8
+    - name: all_outlier_signals_k8
+      own_cluster_dist_z_gt: 1.5
+      nearest_other_closer: true
+      nearby_majority_diff: true
+      nearby_k: 8
+    - name: any_outlier_signal_k8
+      any_of:
+        - own_cluster_dist_z_gt: 1.5
+        - nearest_other_closer: true
+        - nearby_majority_diff: true
+          nearby_k: 8
+
+gate:
+  prior_variants:
+    - name: typewell_native_overlap_1
+      family: typewell
+      prior_tvt: native_overlap_1_prior_tvt
+      prior_std: native_overlap_1_prior_std
+      prior_count: native_overlap_1_prior_count
+      neighbor_wells: native_overlap_1_neighbor_wells
+    - name: typewell_native_overlap_0p999
+      family: typewell
+      prior_tvt: native_overlap_0p999_prior_tvt
+      prior_std: native_overlap_0p999_prior_std
+      prior_count: native_overlap_0p999_prior_count
+      neighbor_wells: native_overlap_0p999_neighbor_wells
+    - name: spatial_xy_plus_trajectory_shape_k8
+      family: spatial
+      prior_tvt: xy_plus_trajectory_shape_k8_prior_tvt
+      prior_std: xy_plus_trajectory_shape_k8_prior_std
+      prior_count: xy_plus_trajectory_shape_k8_prior_count
+      neighbor_wells: xy_plus_trajectory_shape_k8_neighbor_wells
+      distance_mean: xy_plus_trajectory_shape_k8_distance_mean
+      azimuth_mismatch: xy_plus_trajectory_shape_k8_azimuth_mismatch
+    - name: spatial_xy_only_k8
+      family: spatial
+      prior_tvt: xy_only_k8_prior_tvt
+      prior_std: xy_only_k8_prior_std
+      prior_count: xy_only_k8_prior_count
+      neighbor_wells: xy_only_k8_neighbor_wells
+      distance_mean: xy_only_k8_distance_mean
+      azimuth_mismatch: xy_only_k8_azimuth_mismatch
+  correction_alphas: [0.05, 0.10, 0.20]
+  correction_clip_ft: [5.0, 10.0, 20.0, 40.0]
+  prior_quality:
+    - name: valid_prior
+    - name: std_le20
+      max_prior_std: 20.0
+    - name: std_le40
+      max_prior_std: 40.0
+    - name: neighbor_wells_ge3
+      min_neighbor_wells: 3
+    - name: std_le40_neighbor_wells_ge3
+      max_prior_std: 40.0
+      min_neighbor_wells: 3
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 32
+  read_chunksize: 1000000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp109-typewell-neighbor-prior-train
+      - kentookumura/exp114-spatial-neighbor-prior-signal-audit-train
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+      - kentookumura/exp148-train
+      - kentookumura/exp092-uproj-corr-disagree-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: deterministic_posthoc_grid_no_model_rng
+  stochastic_components:
+    - upstream_exp092_lightgbm_training
+    - upstream_exp148_lightgbm_training
+    - upstream_exp109_typewell_neighbor_prior_oof
+    - upstream_exp114_spatial_neighbor_prior_oof
+  parallel_rng_policy: no_rng_in_exp175
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a deterministic posthoc grid over fixed upstream Kaggle outputs.
+    - It is not a deterministic submission anchor and does not create submission.csv.
+
+audit:
+  mode: cluster_outlier_typewell_prior_gate
+  output_prefix: exp175_cluster_outlier_typewell_prior_gate
+  max_rows: null
+  top_n_detailed_policies: 16
+  top_n_prediction_policies: 8
+  max_regression_warn_rmse: 0.25
+  expected_train_artifacts:
+    - exp175_cluster_outlier_typewell_prior_gate_gate_metrics.csv
+    - exp175_cluster_outlier_typewell_prior_gate_by_well.csv
+    - exp175_cluster_outlier_typewell_prior_gate_by_well_delta.csv
+    - exp175_cluster_outlier_typewell_prior_gate_bucket_metrics.csv
+    - exp175_cluster_outlier_typewell_prior_gate_subgroup_metrics.csv
+    - exp175_cluster_outlier_typewell_prior_gate_path_continuity.csv
+    - exp175_cluster_outlier_typewell_prior_gate_cluster_outlier_well_features.csv
+    - exp175_cluster_outlier_typewell_prior_gate_top_gated_predictions.csv.gz
+    - exp175_cluster_outlier_typewell_prior_gate_feature_schema.csv
+    - exp175_cluster_outlier_typewell_prior_gate_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - This experiment is a posthoc gate audit only.
+    - Any positive OOF policy requires raw-test/full-train parity and hidden-like stress review before inference work.
+
+notes:
+  - Implements the `cluster_outlier_typewell_prior_gate` backlog item.
+  - The prior correction is intentionally weak and cluster-outlier gated; exp109/114 direct corrections are not ported.

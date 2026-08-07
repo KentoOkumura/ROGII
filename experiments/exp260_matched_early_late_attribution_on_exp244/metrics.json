@@ -1,0 +1,133 @@
+{
+  "experiment": "exp260_matched_early_late_attribution_on_exp244",
+  "status": "completed_train_side_attribution_rejected_no_inference_no_submit",
+  "route": "ml_model",
+  "parent": "exp244_bidirectional_prediction_start_pseudotail_augmentation",
+  "cv": 8.489116155426453,
+  "selected_diagnostic_variant": "late_only",
+  "adopted_variant": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "references": {
+    "raw_exp218_oof_rmse": 8.475793751656624,
+    "mixed_exp244_oof_rmse": 8.472379730655001,
+    "mixed_exp244_delta_vs_raw": -0.0034140210016229133,
+    "mixed_exp244_adoption_supported": false
+  },
+  "execution": {
+    "stage": "kaggle_gpu_train_v1_complete",
+    "kernel_id": "kentookumura/exp260-matched-early-late-exp244-train",
+    "kernel_version": 1,
+    "kernel_id_no": 127431158,
+    "runtime": "gpu",
+    "internet": false,
+    "run_approved": true,
+    "user_approved_at": "2026-07-16",
+    "active_variants": 2,
+    "lightgbm_configs_per_variant": 3,
+    "folds": 5,
+    "boosters_per_variant": 15,
+    "total_boosters": 30,
+    "parent_control_retrained": false,
+    "gpu_training_complete": true,
+    "elapsed_seconds": 26501.51939892769,
+    "peak_rss_mb": 20371.73046875,
+    "inference_prediction_performed": false,
+    "submission_created": false
+  },
+  "variants": {
+    "early_only": {
+      "offsets_rows": [-1000, -250],
+      "pseudo_views": 1537,
+      "pseudo_rows": 384250,
+      "pseudo_weight": 0.5,
+      "cv": 8.513933814242783,
+      "delta_vs_raw": 0.03814006258615876,
+      "delta_vs_mixed": 0.041554083587781676,
+      "guards": {
+        "overall_improved": false,
+        "1000_plus_non_worse": false,
+        "hidden_like_spatial_non_worse": true,
+        "hidden_like_typewell_purged_non_worse": true,
+        "improved_folds": 2,
+        "minimum_improved_folds": 3,
+        "worst_well_regression_within_limit": false,
+        "adoption_supported": false
+      },
+      "by_well": {
+        "improved_wells": 394,
+        "worsened_wells": 379,
+        "wells_over_2ft_regression": 17,
+        "worst_well": "059c8f24",
+        "worst_raw_rmse": 7.6555524500038015,
+        "worst_variant_rmse": 26.27871052987013,
+        "worst_well_regression": 18.62315807986633
+      }
+    },
+    "late_only": {
+      "offsets_rows": [250, 1000],
+      "pseudo_views": 1544,
+      "pseudo_rows": 385907,
+      "pseudo_weight": 0.5,
+      "cv": 8.489116155426453,
+      "delta_vs_raw": 0.013322403769828739,
+      "delta_vs_mixed": 0.016736424771451652,
+      "guards": {
+        "overall_improved": false,
+        "1000_plus_non_worse": false,
+        "hidden_like_spatial_non_worse": false,
+        "hidden_like_typewell_purged_non_worse": false,
+        "improved_folds": 2,
+        "minimum_improved_folds": 3,
+        "worst_well_regression_within_limit": false,
+        "adoption_supported": false
+      },
+      "by_well": {
+        "improved_wells": 388,
+        "worsened_wells": 385,
+        "wells_over_2ft_regression": 2,
+        "worst_well": "7850c72e",
+        "worst_raw_rmse": 18.002609792797376,
+        "worst_variant_rmse": 21.411061240602745,
+        "worst_well_regression": 3.408451447805369
+      }
+    }
+  },
+  "stress_surfaces": {
+    "columns": ["surface", "rows", "raw_exp218_rmse", "mixed_exp244_rmse", "early_only_rmse", "late_only_rmse"],
+    "rows": [
+      ["overall", 3783989, 8.475793751656624, 8.472379730655001, 8.513933814242783, 8.489116155426453],
+      ["000_050", 38650, 0.9576384556448945, 0.9527445429492148, 0.9757845105696401, 0.9571135753161399],
+      ["050_100", 38650, 1.3101772526948643, 1.3044183100037916, 1.324606265188331, 1.299091262983475],
+      ["100_250", 115950, 2.094428644331708, 2.101476204766698, 2.114391452008026, 2.084651570608278],
+      ["250_500", 193157, 3.315458965628703, 3.3584677718602456, 3.389731932156166, 3.3448112074448253],
+      ["500_1000", 385911, 4.800746651163531, 4.8635747241091565, 4.880184906775982, 4.8152433031074935],
+      ["1000_plus", 3011671, 9.295197605986544, 9.286062662633958, 9.331677365801921, 9.308932682517618],
+      ["hidden_like_spatial", 972463, 9.661607079430295, 9.245770750852131, 9.328626023548683, 9.7143906154796],
+      ["hidden_like_typewell_purged", 976449, 9.636009778533612, 9.230899642826884, 9.310898893184303, 9.694470404943328],
+      ["fold_0", 757738, 8.716010305612084, 8.245738794366254, 8.32843938728377, 8.548386433983165],
+      ["fold_1", 756650, 8.578534204039373, 9.488172125544137, 9.456993204009313, 8.801912114514398],
+      ["fold_2", 756255, 7.6722514682940055, 7.6392402626618, 7.690065110225459, 7.6427497021008435],
+      ["fold_3", 757101, 8.351300668304864, 8.48399940287828, 8.567360487891298, 8.362214708919064],
+      ["fold_4", 756245, 9.001172131932568, 8.399398766415098, 8.431914964104086, 9.024209168880933]
+    ]
+  },
+  "attribution": {
+    "late_minus_early_overall": -0.024817658816330024,
+    "late_independent_compensation_supported": false,
+    "interpretation": "Late-only is safer and better than early-only overall, but neither direction improves raw exp218. Mixed exp244 gains are not reproduced by either direction alone and therefore indicate a non-additive training interaction, not independent late compensation."
+  },
+  "artifacts": {
+    "training_metrics_sha256": "62c8031481fa1e7a2eb383fb6c5e952e6f8cc895358df0b4d71f7f783e4eba3e",
+    "metrics_sha256": "104c021e8a26fe6808c5d2d8a261a6109f3766ad48f98e7fe3100991bb3efaa3",
+    "by_well_sha256": "1ee0ef90e6f5d44faff93cd10adf7ec2c9e40d47f118a0b523d883994316e989",
+    "feature_importance_sha256": "936182183560474100bda553fd129f700f0e5f6a0e31552df7e3698ebbbe391e",
+    "feature_schema_sha256": "197c7ee8c296b9ef151931ce9127b0abe2856a6d5961f27ec24be29b7a9209b5",
+    "model_manifest_sha256": "cdfbda0d35f9140f82c0c65374697e4d416c511d7729b715ae2779df84fce00b",
+    "prediction_decompressed_sha256": "3e55541d02f4221fc0ea8b48af86f2c36b7368d2f20bb5c39cb489387eaee28a",
+    "summary_sha256": "a8d7761627121da3b628fe438fbc9a0f8b76742f7ea98587cb3b7f8f79b580e7"
+  },
+  "decision": "Reject both direction-only variants, do not infer or submit, and close the prediction-start augmentation branch without weight or offset rescue grids.",
+  "next_action": "None for this branch."
+}

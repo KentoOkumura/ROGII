@@ -1,0 +1,153 @@
+experiment:
+  name: "exp097_modelpkg_tiny_gate_on_exp073"
+  description: "Agreement-gated tiny model-package correction on the deterministic exp073 inference anchor."
+  route: ml_model
+  status: submitted_complete_public_lb_8_766
+  created_at: "2026-06-21"
+  updated_at: "2026-06-21"
+
+lineage:
+  parent: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  public_reference: pilkwang/rogii-target-free-tvt-geosteering
+  implementation_source: modelpkg_tiny_gate_on_exp073.py
+  diff_summary: Keeps exp073 GPU lgb_mean inference prediction as the base and applies only a tiny agreement-gated correction toward the model-package-only prediction. No LightGBM retraining, PF/Beam regeneration, feature addition, projection, public final blend, or direct model-package replacement is introduced.
+
+validation:
+  strategy: inference_prediction_diff_guard_no_oof
+  metric: rmse
+  secondary_metrics:
+    - raw_modelpkg_diff_abs_p95
+    - correction_abs_p95
+    - correction_abs_max
+    - prediction_range
+    - submission_sha256
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: hidden_test_submission_rows
+  leakage_policy:
+    - exp073 base prediction is a saved deterministic inference artifact.
+    - model-package input is treated as an external branch prediction and aligned only by sample_submission id.
+    - No true TVT labels are used in this experiment.
+    - Because no OOF model-package surrogate is available yet, this experiment must not be interpreted as CV evidence.
+    - A selected candidate writes submission.csv only when raw diff and correction magnitude guards pass.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp073_inference_predictions:
+    - /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/inference_v2/artifacts/exp063_full_replay_repro_guard_inference_test_predictions.csv.gz
+    - /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/inference_v1/artifacts/exp063_full_replay_repro_guard_inference_test_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp073-full-replay-repro-guard-infer/artifacts/exp063_full_replay_repro_guard_inference_test_predictions.csv.gz
+  model_package_predictions:
+    - /tmp/kaggle-output/source-check/pilkwang-rogii-target-free-tvt-geosteering/submission_model_package_only.csv
+    - /kaggle/input/notebooks/pilkwang/rogii-target-free-tvt-geosteering/submission_model_package_only.csv
+    - /kaggle/input/rogii-target-free-tvt-geosteering/submission_model_package_only.csv
+    - /kaggle/input/pilkwang-rogii-target-free-tvt-geosteering/submission_model_package_only.csv
+
+model:
+  name: modelpkg_tiny_gate_postprocess
+  source_experiment: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  base_prediction: exp073_gpu_lgb_mean_inference_pred_tvt
+  correction_source: pilkwang_model_package_only_submission
+  estimator: none
+  formula: final = base + gmax / (1 + (abs(modelpkg-base) / scale)^2) * (modelpkg-base)
+
+model_package:
+  prediction_mode: precomputed_submission
+  dataset_slug: pilkwang/rogii-model-package
+  reference_notebook: pilkwang/rogii-target-free-tvt-geosteering
+  notes:
+    - This implementation consumes the model-package-only prediction CSV produced by the reference notebook or a compatible rerun.
+    - It does not yet regenerate package features/models directly from pilkwang/rogii-model-package.
+    - If direct package regeneration is added later, keep the same id/tvt contract and rerun this gate audit.
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp073-full-replay-repro-guard-train
+      - pilkwang/rogii-target-free-tvt-geosteering
+    inference_kernel_sources:
+      - kentookumura/exp073-full-replay-repro-guard-train
+      - pilkwang/rogii-target-free-tvt-geosteering
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_submission_diff_postprocess
+  stochastic_components:
+    - upstream_exp073_gpu_lightgbm_inference_prediction
+    - upstream_pilkwang_model_package_prediction
+  parallel_rng_policy: no_parallel_rng_in_exp097
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - This audit itself has no RNG and performs no training.
+    - Source gzip prediction content SHA is recorded using decompressed CSV bytes.
+    - Do not treat this as a deterministic submission anchor unless the upstream source predictions are regenerated and rerun-stable.
+
+audit:
+  mode: modelpkg_tiny_gate_submission_diff_on_exp073
+  output_prefix: exp097_modelpkg_tiny_gate_on_exp073
+  selected_mode: gpu_repro_guard_dp_threads8
+  selected_model: lgb_mean
+  prediction_read_chunksize: 500000
+  grid:
+    gmax: [0.003, 0.005, 0.010]
+    scale: [4.0, 5.0, 8.0]
+  selection_guard:
+    max_raw_modelpkg_diff_p95: 35.0
+    max_correction_abs_p95: 0.10
+    max_correction_abs_max: 1.0
+  expected_artifacts:
+    - exp097_modelpkg_tiny_gate_on_exp073_aligned_base_modelpkg.csv.gz
+    - exp097_modelpkg_tiny_gate_on_exp073_variant_metrics.csv
+    - exp097_modelpkg_tiny_gate_on_exp073_modelpkg_gate_g005_s4p0_predictions.csv.gz
+    - exp097_modelpkg_tiny_gate_on_exp073_modelpkg_gate_g005_s4p0_submission.csv
+    - exp097_modelpkg_tiny_gate_on_exp073_summary.json
+
+inference:
+  mode: write_submission_only_after_diff_guards
+  generate_exp073_base_on_current_test: true
+  disable_modelpkg_on_row_mismatch: true
+  exp073_base_generation:
+    selected_mode: gpu_repro_guard_dp_threads8
+    selected_model: lgb_mean
+    model_manifest_path: null
+    tracker_test_path: null
+    regenerate_test_features: true
+    feature_generation:
+      n_jobs: 8
+      pf_seeds: 128
+      pf_particles: 500
+      fast: false
+      use_gpu: auto
+  selected_variant:
+    gmax: 0.005
+    scale: 4.0
+  notes:
+    - gmax 0.005 and scale 4.0 match the conservative Pilkwang tiny-gate setting.
+    - Kaggle code-submission reruns regenerate the exp073 base prediction on the current test rows.
+    - If the precomputed model-package CSV does not match current sample_submission rows, inference writes exp073 base-only instead of throwing a row-alignment exception.
+    - Submit only after submit-check and manual review because there is no OOF surrogate yet.
+
+notes:
+  - Implements backlog item modelpkg_tiny_gate_on_exp073.
+  - This is a submission-diff audit, not a CV-improving experiment.
+  - Direct model-package-only replacement remains rejected by exp081 branch decomposition.

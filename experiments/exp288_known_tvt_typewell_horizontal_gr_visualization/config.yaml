@@ -1,0 +1,101 @@
+experiment:
+  name: "exp288_known_tvt_typewell_horizontal_gr_visualization"
+  description: "Plot Type Well reference GR above observed horizontal GR over known and prediction-target intervals for every train well."
+  route: pf_beam
+  status: kaggle_train_v1_complete_diagnostic_only
+  created_at: "2026-07-19"
+  updated_at: "2026-07-19"
+
+lineage:
+  parent: exp168_gr_matching_pair_visualization
+  references:
+    - exp170_heel_calibrated_shift_scan_pfbeam_audit
+    - exp211_affine_calibrated_gr_observation_pfbeam
+    - docs/04_data.md
+  diff_summary: >
+    Replaces the sampled hidden-tail shift-scan visualization surface with a
+    deterministic all-train-well EDA comparison. It uses TVT_input on known rows
+    and train-only true TVT on prediction-target rows to linearly interpolate raw
+    Type Well GR, then saves a two-panel full-well PNG above raw horizontal GR.
+    Prediction-target rows are shaded and true-TVT usage is explicitly labeled.
+    It does not estimate GR quality metrics, smooth or calibrate either curve,
+    search offsets, train a model, generate PF/Beam paths, or submit.
+
+# Defaults come from project.yml. Add keys here only when this experiment intentionally differs.
+validation: {}
+
+# Common paths and submission columns come from project.yml.
+data: {}
+
+model:
+  name: none_known_tvt_typewell_horizontal_gr_visualization
+  trains_model: false
+  params: {}
+
+audit:
+  mode: known_tvt_typewell_horizontal_gr_visualization
+  output_prefix: exp288_known_tvt_typewell_horizontal_gr_visualization
+  data_split: train
+  max_wells: null
+  well_include: []
+  horizontal_columns: [MD, GR, TVT_input, TVT]
+  typewell_columns: [TVT, GR]
+  interpolation: linear_inside_typewell_range_no_extrapolation_using_tvt_input_known_and_true_tvt_target
+  use_true_tvt_for_prediction_target_eda: true
+  prediction_target_mask: TVT_input_isna
+  duplicate_typewell_tvt: median_gr
+  x_axis: MD
+  plot:
+    figsize: [14.0, 7.0]
+    dpi: 120
+    reference_color: "#d62728"
+    horizontal_color: "#1f77b4"
+    prediction_target_color: "#ffbf00"
+    prediction_target_alpha: 0.12
+    line_width: 0.9
+    gr_padding_fraction: 0.05
+    grid_alpha: 0.25
+  outputs:
+    figure_subdir: reference_vs_horizontal_gr
+    manifest_csv: exp288_known_tvt_typewell_horizontal_gr_visualization_manifest.csv
+    index_html: exp288_known_tvt_typewell_horizontal_gr_visualization_index.html
+    summary_json: exp288_known_tvt_typewell_horizontal_gr_visualization_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources: []
+    train_kernel_id: kentookumura/exp288-known-tvt-typewell-horizontal-gr-viz-train
+    train_kernel_version: 1
+    train_kernel_status: complete
+    train_runtime_seconds: 388.99937748908997
+    output_dir: experiments/exp288_known_tvt_typewell_horizontal_gr_visualization/kaggle/output/train_v1
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_sorted_well_iteration
+  stochastic_components: []
+  parallel_rng_policy: single_process_no_rng
+  feature_sha_policy: manifest_and_summary_file_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - No random sampling, stochastic generation, model training, prediction, or submission is used.
+    - PNG bytes may vary across Matplotlib/Pillow versions, so this visualization is not a deterministic anchor.
+    - Scientific content is fixed by the interpolation contract and manifest row counts.
+    - True TVT on prediction-target train rows is used only for EDA figure construction and must never feed prediction features, model fitting, inference, or submission.
+
+notes:
+  - Initial scope is visualization only; robust scale, NCC, affine fit, autocorrelation, and mode entropy are intentionally excluded.
+  - This is train-only EDA and is intentionally not raw-test reproducible because prediction-target reference GR uses train true TVT.
+  - The train notebook is the only execution entry. Inference is intentionally disabled.

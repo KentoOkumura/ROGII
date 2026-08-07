@@ -1,0 +1,332 @@
+experiment:
+  name: exp425_symmetric_datum_reanchor_exact_hmm
+  description: >-
+    Completed fail-closed exact-HMM mechanism experiment that froze the first
+    exp412 persistent beta-filter rate-disagreement event, created negative,
+    parent, and positive absolute-datum branches once, and used exact
+    full-sequence evidence to soft-marginalize them without changing the
+    exp209 rate process.
+  route: pf_beam
+  status: stage0_fail_closed
+  created_at: "2026-07-28"
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  evidence_parents:
+    - exp408_hmm_message_rate_basin_audit
+    - exp412_beta_filter_rate_disagreement_two_pass_reset
+  comparison_references:
+    - exp290_piecewise_datum_physical_smoother
+    - exp424_exp209_momentum1_exact_hmm_ablation
+  diff_summary: >-
+    Keep the exp209 rate grid, rate transition, position noise, GR emission,
+    priors, support, and posterior-mean readout fixed. After an unchanged
+    first pass, freeze the first persistent exp412 beta-filter rate-gap event.
+    At that single event, add explicit negative and positive datum-reanchor
+    states beside the parent datum state; do not use the rate-gap sign to
+    choose the datum direction.
+
+steering:
+  path: ../../.steering/20260728-exp425-symmetric-datum-reanchor-exact-hmm
+
+design:
+  phase: late
+  priority: P3
+  risk: high
+  implementation_authorized: true
+  implementation_approval_source: user_message_implement_exp425_symmetric_datum_reanchor_exact_hmm_2026_07_28
+  canonical_notebook_adoption_authorized: true
+  canonical_notebook_adoption_approval_source: user_message_implement_exp425_symmetric_datum_reanchor_exact_hmm_2026_07_28
+  kaggle_stage_0_authorized: true
+  kaggle_stage_0_approval_source: user_message_execute_exp425_2026_07_28
+  kaggle_stage_0_completed: true
+  kaggle_stage_0_kernel_version: 1
+  kaggle_stage_0_kernel_id_no: 128930925
+  kaggle_stage_0_result: stage0_fail_closed
+  stage_1_eligible: false
+  kaggle_stage_1_authorized: false
+  inference_authorized: false
+  submission_authorized: false
+  stage_0_role: mechanism_preflight_only_not_cv_or_promotion
+  single_factor_change: explicit_symmetric_absolute_datum_branch
+  rescue_grid_allowed: false
+  assumption: >-
+    Persistent beta-filter rate disagreement is useful as a target-free
+    indicator that the parent path may be translation-locked, but its rate
+    correction sign is not a reliable absolute-datum correction sign.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  parent_hmm_cache_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+  stage_0_manifest:
+    filename: stage0_fixed32_manifest.csv
+    local: experiments/exp412_beta_filter_rate_disagreement_two_pass_reset/assets/stage0_fixed32_manifest.csv
+    expected_sha256: 1edb1e1481af84af4e8178fb6e0743fa40315eab0b7441eeff9232b571f93c30
+    backward_cause_wells: 8
+    forward_cause_wells: 8
+    matched_control_wells: 16
+    total_wells: 32
+    use: mechanism_diagnostic_only
+  stage_0_manifest_metadata:
+    filename: stage0_fixed32_manifest_metadata.json
+    local: experiments/exp412_beta_filter_rate_disagreement_two_pass_reset/assets/stage0_fixed32_manifest_metadata.json
+    expected_sha256: 3c696de9afa5b8782d614664bc65d909a80a086e6a67f54c0be9e732518838ba
+  exp408_episode_summary:
+    filename: exp408_hmm_message_rate_basin_audit_episode_summary.csv
+    local: experiments/exp408_hmm_message_rate_basin_audit/artifacts/kaggle_v3/exp408_hmm_message_rate_basin_audit_episode_summary.csv
+    expected_sha256: b230ffc759e6ee4891f22809b3f3c8a8796681fb461ec0b7215b94a352bf0ab0
+    join_policy: after_first_pass_event_and_treatment_prediction_freeze_only
+  exp209_saved_control:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    prediction_column: hmm_mean_tvt
+    row_index_source: parsed_from_id_suffix_after_exact_well_prefix
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts
+    patterns:
+      - "**/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz"
+
+model:
+  name: symmetric_datum_reanchor_exact_hmm
+  parent_hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    rate_step: 0.005
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    emission: gauss
+    rate_center: zero
+  first_pass:
+    treatment: none
+    require_saved_exp209_prediction_parity_ft: 1.0e-5
+    persist_filtered_position_std: true
+    persist_filtered_rate_mean: true
+    persist_filtered_rate_std: true
+    persist_smoothed_rate_mean: true
+  trigger:
+    statistic: standardized_smoothed_minus_filtered_rate
+    denominator_floor: 0.005
+    absolute_z_threshold: 2.0
+    rolling_window_rows: 16
+    qualifying_rows_min: 8
+    same_sign_fraction_min: 0.75
+    event_definition: first_false_to_true_persistent_activation
+    maximum_events_per_well: 1
+    rate_sign_selects_datum_direction: false
+    tie_policy: inactive
+    freeze_before_truth: true
+    recompute_from_treatment: false
+  datum_branch:
+    explicit_state_values:
+      - negative
+      - parent
+      - positive
+    branch_count: 3
+    prior_mass:
+      negative: 0.10
+      parent: 0.80
+      positive: 0.10
+    shift_source: first_pass_filtered_position_std_at_event
+    shift_scale: 1.0
+    shift_floor_ft: 0.35
+    shift_formula: max(filtered_position_std_ft, 0.35)
+    negative_shift_sign: -1
+    positive_shift_sign: 1
+    event_transition_only: true
+    persist_branch_identity_after_event: true
+    allow_branch_switch_after_event: false
+    allow_additional_events: false
+    selection: exact_sum_product_soft_marginalization
+    hard_map_or_viterbi_selection: false
+  treatment_fixed_parent_components:
+    rate_grid: true
+    rate_transition: true
+    momentum: true
+    sig_r: true
+    position_noise: true
+    gr_emission: true
+    initial_prior: true
+    state_support: true
+    posterior_mean_readout: true
+
+validation:
+  strategy: stage_0_fixed32_two_pass_then_stage_1_full_773_two_pass
+  reporting_folds: 5
+  metric: rmse
+  group_column: well_id
+  truth_join: after_first_pass_event_and_treatment_prediction_freeze
+  stage_0:
+    role: mechanism_preflight_only
+    baseline_variants: 1
+    baseline_hmm_well_runs: 32
+    treatment_variants: 1
+    treatment_hmm_logical_well_runs: 32
+    treatment_branch_states: 3
+    total_logical_hmm_well_runs: 64
+    technical:
+      expected_wells: 32
+      expected_backward_cause_wells: 8
+      expected_forward_cause_wells: 8
+      expected_control_wells: 16
+      finite_coverage: 1.0
+      normalization_max_abs_error: 1.0e-5
+      untreated_parent_parity_max_abs_ft: 1.0e-5
+      event_wells_min: 8
+      require_event_well_all_folds: true
+      full_runtime_projection_max_seconds: 30600
+      peak_rss_max_gb: 25
+      truth_reads_before_freeze: 0
+      episode_reads_before_freeze: 0
+    mechanism:
+      soft_datum_direction_agreement_min: 0.60
+      per_fold_direction_agreement_strictly_above: 0.50
+      passing_folds_min: 4
+      backward_cause_sse_reduction_min: 0.10
+      forward_cause_sse_regression_max: 0.02
+      control_rmse_delta_max_ft: 0.02
+      control_reanchor_posterior_mass_mean_max: 0.10
+      active_reanchor_posterior_mass_mean_min: 0.05
+    fail_policy: close_without_trigger_shift_prior_gate_or_readout_rescue
+  stage_1:
+    prerequisite: all_stage_0_gates_pass_and_separate_user_approval
+    first_pass_hmm_well_runs: 773
+    treatment_hmm_logical_well_runs: 773
+    treatment_branch_states: 3
+    promotion:
+      direct_rmse_gain_min_ft: 0.05
+      improving_folds_min: 4
+      backward_cause_sse_reduction_min: 0.10
+      required_nonworse_scopes:
+        - md_1000_plus
+        - hidden_like_spatial
+        - hidden_like_typewell_purged
+        - raw_gr_observed
+        - raw_gr_missing
+        - fixed_likpf_hmm_50_50
+      by_well_delta_p95_max_ft: 0.25
+      worst_well_delta_max_ft: 5.0
+
+execution:
+  selected_stage: stage_0_fixed32
+  run_hmm: false
+  create_prediction: false
+  create_submission: false
+  kaggle_execution_approval_source: user_message_execute_exp425_2026_07_28
+  completed_kernel_id: kentookumura/exp425-symmetric-datum-reanchor-exact-hmm-train
+  completed_kernel_version: 1
+  completed_kernel_id_no: 128930925
+  active_scientific_variants: 1
+  planned_stage_0_baseline_hmm_well_runs: 32
+  planned_stage_0_treatment_hmm_logical_well_runs: 32
+  planned_stage_0_total_logical_hmm_well_runs: 64
+  planned_stage_0_treatment_branch_states: 3
+  parent_control_hmm_reruns_stage_0: 32
+  planned_stage_1_first_pass_hmm_well_runs: 773
+  planned_stage_1_treatment_hmm_logical_well_runs: 773
+  planned_stage_1_total_logical_hmm_well_runs: 1546
+  planned_stage_1_treatment_branch_states: 3
+  parent_control_hmm_reruns_stage_1: 773
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  models: 0
+  pf_runs: 0
+  beam_runs: 0
+  gpu_runs: 0
+  notebook_status: kaggle_train_v1_complete_stage0_fail_closed
+
+runtime:
+  target: kaggle_private_cpu
+  enable_gpu: false
+  enable_internet: false
+  use_amp: false
+  num_workers: 1
+  numba_threads_per_worker: 4
+  hard_runtime_limit_seconds: 32400
+  full_projection_gate_seconds: 30600
+  peak_rss_limit_gb: 25
+  known_reference:
+    exp412_two_pass_full_projection_seconds: 51753.199176
+    interpretation: exact_exp425_is_expected_to_be_slower_and_is_mechanism_first
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp425-symmetric-datum-reanchor-exact-hmm-train
+    train_title: exp425 symmetric datum reanchor exact hmm train
+    bootstrap_dependency_files:
+      - source: experiments/exp412_beta_filter_rate_disagreement_two_pass_reset/assets/stage0_fixed32_manifest.csv
+        destination: assets/stage0_fixed32_manifest.csv
+      - source: experiments/exp412_beta_filter_rate_disagreement_two_pass_reset/assets/stage0_fixed32_manifest_metadata.json
+        destination: assets/stage0_fixed32_manifest_metadata.json
+      - source: experiments/exp408_hmm_message_rate_basin_audit/artifacts/kaggle_v3/exp408_hmm_message_rate_basin_audit_episode_summary.csv
+        destination: assets/exp408_hmm_message_rate_basin_audit_episode_summary.csv
+    train_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: null
+  deterministic_anchor: false
+  seed_policy: no_rng_sorted_well_row_position_rate_branch_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_outer_well_and_branch_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    sample_manifest_sha: true
+    first_pass_message_sha: true
+    activation_event_sha: true
+    datum_shift_sha: true
+    baseline_prediction_sha: true
+    treatment_prediction_sha: true
+    branch_posterior_sha: true
+    metrics_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - No model or submission is produced, so this is not a deterministic submission anchor.
+    - Truth and episode ledgers must remain unread until events, shifts, branch posteriors, and predictions are frozen.
+    - Loose config, embedded bootstrap config, notebook body, and dependency files must match before any push.
+
+inference:
+  enabled: false
+  create_submission: false
+  unlock_condition: stage_1_promotion_pass_and_separate_user_approval
+
+forbidden_changes:
+  - one_sided_datum_branch
+  - use_rate_gap_sign_as_datum_shift_sign
+  - trigger_threshold_window_or_persistence_grid
+  - branch_prior_grid
+  - shift_scale_or_floor_grid
+  - multiple_reanchor_events_per_well
+  - truth_error_cause_or_well_id_branch_selection
+  - hard_map_or_viterbi_branch_selection
+  - rate_grid_or_transition_change
+  - momentum_or_sig_r_change
+  - gr_emission_or_support_change
+  - posterior_readout_change
+  - posthoc_branch_clip_shrink_or_blend
+  - same_oof_rescue
+  - implementation_without_separate_user_approval
+  - kaggle_run_without_separate_user_approval
+  - inference
+  - submission

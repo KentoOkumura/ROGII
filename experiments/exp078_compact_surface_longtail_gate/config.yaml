@@ -1,0 +1,104 @@
+experiment:
+  name: "exp078_compact_surface_longtail_gate"
+  description: Metric-aware long-tail gate that adds the exp075 compact surface prediction lightly on top of the exp073 deterministic full replay ML anchor.
+  route: ml_model
+  status: local_oof_completed_no_submit_candidate
+  created_at: "2026-06-18"
+  updated_at: "2026-06-18"
+
+lineage:
+  parent: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  compact_parent: exp075_compact_tracker_pfbeam_feature_repro_guard
+  metric_context:
+    - docs/discussions/rogii-wellbore-geology-prediction-698860-rmse-vs-ssr-error.md
+    - docs/discussions/rogii-wellbore-geology-prediction-700340-oof-vs-lb-should-we-track-worst-well-improvements-instead-of-only-global-rmse.md
+    - artifacts/metric_weighted_tail_error_map_anchor_exp073/README.md
+  implementation_source: exp063_full_replay_reproducibility_guard.py
+  public_replay_source: public_notebook_replay_audit.py
+  diff_summary: Reuses exp073 deterministic full replay predictions as the base and exp075 compact PF/Beam surface predictions as an optional branch. The audit never globally replaces the base; it evaluates small conditional weights on long-tail rows and records RMSE, SSE/SSR deltas, tail-bucket deltas, and worst-well regressions.
+
+validation:
+  strategy: exp073_vs_exp075_oof_compact_surface_gate
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: exp073_oof_rows
+  leakage_policy:
+    - Main audit reads saved exp073 and exp075 OOF predictions only; it does not fit a new supervised model.
+    - Gate candidates use id-derived tail rank/evaluation length and prediction disagreement, plus optional target-free geometry columns if a valid feature cache is available.
+    - Same-OOF policy ranking is diagnostic until a fixed policy is ported to inference and checked against LB.
+    - A policy must improve or preserve overall RMSE/SSE, improve long-tail SSE, and avoid large well-level regressions before it is a submit candidate.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp073_oof_predictions_local: /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/train_v2/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+  exp075_oof_predictions_local: /tmp/kaggle-output/exp075_compact_tracker_pfbeam_feature_repro_guard/train_v2/artifacts/compact_tracker_pfbeam_repro_guard_predictions.csv.gz
+  exp073_inference_predictions_local: /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/inference_v2/artifacts/exp063_full_replay_repro_guard_inference_test_predictions.csv.gz
+  exp075_inference_predictions_local: /tmp/kaggle-output/exp075_compact_tracker_pfbeam_feature_repro_guard/inference_v3_gpu/artifacts/compact_tracker_pfbeam_repro_guard_inference_test_predictions.csv.gz
+
+model:
+  name: exp078_compact_surface_longtail_gate
+  source_experiment: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  compact_experiment: exp075_compact_tracker_pfbeam_feature_repro_guard
+  base_prediction: exp073_lgb_mean
+  branch_prediction: exp075_lgb_mean
+  estimator: fixed_gate_blend
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp073-full-replay-repro-guard-train
+      - kentookumura/exp075-compact-pfbeam-lgbm-train
+    inference_kernel_sources:
+      - kentookumura/exp073-full-replay-repro-guard-train
+      - kentookumura/exp075-compact-pfbeam-lgbm-infer
+
+audit:
+  mode: compact_surface_longtail_gate_oof_audit
+  output_prefix: exp078_compact_surface_longtail_gate
+  fast: false
+  selected_mode: gpu_repro_guard_dp_threads8
+  selected_model: lgb_mean
+  weights:
+    - 0.05
+    - 0.10
+    - 0.20
+  discussion_metric_guard:
+    rmse_is_sqrt_mean_sse: true
+    track_sse_delta: true
+    track_worst_well_regression: true
+    long_tail_bucket: "1000_plus"
+    max_allowed_well_rmse_regression: 0.25
+  expected_train_artifacts:
+    - exp078_compact_surface_longtail_gate_metrics.csv
+    - exp078_compact_surface_longtail_gate_bucket_metrics.csv
+    - exp078_compact_surface_longtail_gate_well_metrics.csv
+    - exp078_compact_surface_longtail_gate_best_predictions.csv.gz
+    - exp078_compact_surface_longtail_gate_summary.json
+
+inference:
+  mode: saved_prediction_compact_surface_longtail_gate
+  deterministic_pf: true
+  seed_policy: stable_sha256_per_well
+  selected_mode: gpu_repro_guard_dp_threads8
+  selected_model: lgb_mean
+  selected_policy: tail_rank_ge1000_diff_p50_w005
+  notes:
+    - Inference reads exp073 and exp075 saved test predictions from Kaggle kernel sources and applies the fixed selected policy.
+    - Local OOF audit selected baseline_exp073 because every compact branch candidate with lower global RMSE violated the well-level regression guard.
+
+notes:
+  - The backlog label referenced exp073, but the actual experiment id is correctly incremented to exp078.
+  - Discussion #698860 frames RMSE as a scale transform of SSR/SSE, so this audit records delta SSE and tail SSE share.
+  - Discussion #700340 warns that global OOF RMSE can miss hardest-well regressions, so the guard records worst-well RMSE regression and improved/worsened well counts.

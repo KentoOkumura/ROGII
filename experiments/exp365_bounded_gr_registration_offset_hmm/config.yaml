@@ -1,0 +1,298 @@
+experiment:
+  name: "exp365_bounded_gr_registration_offset_hmm"
+  description: >-
+    Separate physical TVT position from a bounded sticky GR registration offset
+    in exp209, after a known-prefix rolling-origin emission preflight.
+  route: pf_beam
+  status: completed_stage0_gate_failed_closed
+  created_at: "2026-07-23"
+  updated_at: "2026-07-25"
+
+implementation:
+  enabled: true
+  scope: stage0_known_prefix_registration_preflight
+  stage_0_implemented: true
+  stage_1_implemented: false
+  compact_selfcontained_source_created: true
+  canonical_notebook_adopted: true
+  canonical_notebook_replacement_authorized_by_request: true
+  inference_enabled: false
+  submission_enabled: false
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260723-exp365-bounded-gr-registration-offset-hmm
+  references:
+    - exp230_dtw_warp_hmm
+    - exp297_latent_registration
+    - exp345_time_varying_gr_affine
+  diff_summary: >-
+    Add delta in {-6,-3,0,3,6} ft. The physical output remains p while the
+    typewell GR emission is evaluated at p+delta. Only delta has a new sticky
+    transition; exp209 position/rate dynamics and emission sigma stay fixed.
+
+validation:
+  strategy: known_prefix_rolling_origin_registration_preflight_then_exact_hmm
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  expected_wells: 773
+  group_column: well_id
+  score_rows: unknown_suffix_only
+  stage_0:
+    name: known_prefix_heldout_gr_registration_readout
+    hmm_well_runs: 0
+    history_rows: 128
+    heldout_rows: 64
+    stride_rows: 64
+    minimum_known_prefix_rows: 256
+    baseline: delta_zero
+    posterior_snapshot: end_of_history_before_heldout
+    predictive_policy: sequential_one_step_ahead_update_on_observed_gr_only
+    sigma_policy: exp209_std_on_history_only_interpolated_gr_clip_10_60
+    minimum_history_observed_gr_rows: 1
+    minimum_heldout_observed_gr_rows: 1
+    nll: normalized_gaussian_with_squared_z_clip_600
+    fold_assignment: sklearn_group_kfold_on_stable_well_order
+    fold_pass_definition: >-
+      real_nll_gain_at_least_1pct_and_real_minus_circular_gain_at_least_0p5pct
+    adjacent_window_sign: sign_of_history_posterior_mean_delta
+    negative_control:
+      kind: within_well_circular_shift_of_observed_known_prefix_gr
+      shift_observed_values: 64
+      preserve_missing_mask: true
+      preserve_observed_value_multiset: true
+      minimum_shifted_values: 2
+    resource_projection_wells: 16
+    resource_projection:
+      selection: stable_parent_state_cell_quantiles_including_min_and_max
+      method: exp209_selected_wall_time_scaled_by_exact_offset_state_count
+      parent_reference_hmm_runtime_seconds: 11285.868
+      parent_reference_wells: 773
+      parent_reference_outer_workers: 2
+      parent_reference_numba_threads_per_worker: 2
+      offset_state_count: 5
+      runtime_state_count_multiplier: 5.0
+      alpha_dtype_bytes: 4
+      posterior_dtype_bytes: 8
+      emission_dtype_bytes: 4
+      workspace_state_planes: 5
+      fixed_process_overhead_gb: 1.0
+      peak_rss_safety_factor: 1.25
+    all_required:
+      minimum_predictive_gr_nll_gain_fraction: 0.01
+      minimum_passing_folds: 4
+      minimum_real_minus_circular_nll_gain_fraction: 0.005
+      nonzero_posterior_mean_range: [0.05, 0.50]
+      maximum_boundary_posterior_mass: 0.25
+      minimum_adjacent_window_sign_agreement: 0.60
+      maximum_projected_runtime_seconds: 30600
+      maximum_projected_peak_rss_gb: 25
+  stage_1:
+    enabled_only_after_stage_0_pass_and_separate_user_approval: true
+    exact_hmm_well_runs: 773
+    all_required:
+      minimum_rmse_gain_vs_exp209_ft: 0.05
+      minimum_improved_folds: 4
+      maximum_1000_plus_regression_ft: 0.02
+      maximum_hidden_like_spatial_regression_ft: 0.02
+      maximum_hidden_like_typewell_purged_regression_ft: 0.02
+      maximum_by_well_p95_regression_ft: 0.02
+      maximum_worst_well_regression_ft: 0.25
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  horizontal_required_columns: [MD, Z, GR, TVT_input]
+  horizontal_forbidden_columns: [TVT, target, true_tvt, error, abs_error]
+  typewell_required_columns: [TVT, GR]
+  parent_control:
+    candidate: hmm_mean_tvt
+    direct_rmse_ft: 11.938287417
+    usage: saved_prediction_only_no_control_rerun
+
+model:
+  name: bounded_gr_registration_offset_hmm
+  estimator: deterministic_exact_hmm
+  state: [physical_position, rate, gr_registration_offset]
+  gr_registration_offset:
+    values_ft: [-6.0, -3.0, 0.0, 3.0, 6.0]
+    initial_probability: [0.05, 0.15, 0.60, 0.15, 0.05]
+    adjacent_move_probability_per_direction: 0.001953125
+    boundary_policy: invalid_move_mass_added_to_stay
+    direct_multi_cell_jump_probability: 0.0
+    transition_matrix:
+      - [0.998046875, 0.001953125, 0.0, 0.0, 0.0]
+      - [0.001953125, 0.99609375, 0.001953125, 0.0, 0.0]
+      - [0.0, 0.001953125, 0.99609375, 0.001953125, 0.0]
+      - [0.0, 0.0, 0.001953125, 0.99609375, 0.001953125]
+      - [0.0, 0.0, 0.0, 0.001953125, 0.998046875]
+    physical_output: physical_position
+    emission_lookup_position: physical_position_plus_gr_registration_offset
+  fixed_from_exp209:
+    position_grid_step_ft: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    emission: gauss
+    emission_squared_z_clip: 600.0
+    sigma_mode: std
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+    start_sigma_ft: 0.75
+    initial_rate_sigma: 0.01
+    band_pad_ft: 100.0
+    typewell_outer_pad_ft: 40.0
+    momentum: 0.998
+    rate_center: zero
+    output: posterior_mean_physical_position
+  forbidden:
+    - output_position_plus_offset
+    - offset_or_transition_grid
+    - dtw_or_affine_gr_transform
+    - rate_prediction_from_prefix_or_geometry
+    - emission_sigma_or_dynamics_change
+    - blend_or_selector
+    - parent_control_rerun
+
+audit:
+  output_prefix: exp365_bounded_gr_registration_offset_hmm_stage0
+  expected_artifacts:
+    - exp365_bounded_gr_registration_offset_hmm_stage0_scientific_contract.json
+    - exp365_bounded_gr_registration_offset_hmm_stage0_input_manifest.csv
+    - exp365_bounded_gr_registration_offset_hmm_stage0_rolling_window_ledger.csv.gz
+    - exp365_bounded_gr_registration_offset_hmm_stage0_delta_posterior.csv.gz
+    - exp365_bounded_gr_registration_offset_hmm_stage0_resource_projection.csv
+    - exp365_bounded_gr_registration_offset_hmm_stage0_freeze_manifest.json
+    - exp365_bounded_gr_registration_offset_hmm_stage0_fold_metrics.csv
+    - exp365_bounded_gr_registration_offset_hmm_stage0_gate_report.json
+    - exp365_bounded_gr_registration_offset_hmm_stage0_summary.json
+
+runtime:
+  device: cpu
+  use_gpu: false
+  use_amp: false
+  num_workers: 1
+  maximum_seconds: 30600
+  maximum_peak_rss_gb: 25
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_run_on_push: true
+    train_kernel_id: kentookumura/exp365-bounded-gr-registration-offset-hmm-train
+    train_title: exp365 bounded gr registration offset hmm train
+    train_kernel_version: 2
+    train_kernel_id_no: 128537562
+    train_kernel_url: https://www.kaggle.com/code/kentookumura/exp365-bounded-gr-registration-offset-hmm-train
+    stage_0_v1_runtime_seconds: 352.18196725845337
+    stage_0_v2_runtime_seconds: 408.72006940841675
+    kernel_sources: []
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: true
+  seed_policy: no_rng_stable_well_row_delta_order
+  stochastic_components: []
+  parallel_rng_policy: single_worker_no_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - Stage 0 uses only visible TVT_input and GR; suffix truth is not read.
+    - Stage 1 prediction is frozen before suffix truth and control are joined.
+
+execution:
+  implementation_approved: true
+  implementation_approval_source: user_message_implement_exp365
+  implementation_approved_at: "2026-07-25"
+  implementation_scope: stage0_only
+  kaggle_push_approved: true
+  kaggle_execution_approved: true
+  kaggle_execution_approved_at: "2026-07-25 11:49:15 JST"
+  kaggle_execution_approval_source: user_message_execute_exp365
+  active_stage: completed_stage0_gate_failed_closed
+  kaggle_kernel_status: COMPLETE
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+  stage_0_counts:
+    diagnostic_variants: 1
+    offset_states: 5
+    reporting_folds: 5
+    resource_projection_wells: 16
+    exact_hmm_well_runs: 0
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    parent_control_reruns: 0
+  stage_1_counts:
+    scientific_variants: 1
+    reporting_folds: 5
+    exact_hmm_well_runs: 773
+    lightgbm_configs: 0
+    trained_folds: 0
+    boosters: 0
+    parent_control_reruns: 0
+
+results:
+  version_1:
+    status: stage0_failed_close_without_rescue
+    technical_pass: false
+    technical_issue: strict_machine_epsilon_probability_interval_check
+    scientific_pass: false
+    stage0_pass: false
+    stage1_eligible: false
+    runtime_seconds: 352.18196725845337
+    wells: 773
+    windows: 18465
+    observed_heldout_rows: 915301
+    real_predictive_nll_gain_fraction: 0.05430399407814468
+    circular_predictive_nll_gain_fraction: 0.15311424747703123
+    real_minus_circular_nll_gain_fraction: -0.09881025339888655
+    passing_folds: 0
+    nonzero_posterior_mean: 0.4894351409925479
+    boundary_posterior_mean: 0.18267050497516882
+    adjacent_window_sign_agreement: 0.5807709699299118
+    projected_runtime_seconds: 56429.340000000004
+    projected_peak_rss_gb: 7.358320385
+    decision: STAGE0_FAIL_CLOSE_WITHOUT_RESCUE
+  version_2:
+    status: stage0_failed_close_without_rescue
+    technical_pass: true
+    scientific_pass: false
+    stage0_pass: false
+    stage1_eligible: false
+    runtime_seconds: 408.72006940841675
+    wells: 773
+    windows: 18465
+    observed_heldout_rows: 915301
+    real_predictive_nll_gain_fraction: 0.05430399407814468
+    circular_predictive_nll_gain_fraction: 0.15311424747703123
+    real_minus_circular_nll_gain_fraction: -0.09881025339888655
+    passing_folds: 0
+    nonzero_posterior_mean: 0.4894351409925479
+    boundary_posterior_mean: 0.18267050497516882
+    adjacent_window_sign_agreement: 0.5807709699299118
+    projected_runtime_seconds: 56429.340000000004
+    projected_peak_rss_gb: 7.358320385
+    contract_sha256: 83a15a82a966a44837be5f7c22dece5160c2324e112949bab66895f39b7225d9
+    scientific_outputs_match_version_1: true
+    decision: STAGE0_FAIL_CLOSE_WITHOUT_RESCUE
+
+notes:
+  - Design frozen on 2026-07-23.
+  - Stage 0 version 1 completed on Kaggle CPU on 2026-07-25 and failed the frozen scientific gates.
+  - Version 2 changes only the technical probability-interval check to tolerate 1e-12 floating-point roundoff.
+  - Version 2 restored technical pass while all scientific outputs remained byte-identical to version 1.
+  - Stage 1 exact HMM remains unimplemented and ineligible because Stage 0 failed the frozen scientific gates.

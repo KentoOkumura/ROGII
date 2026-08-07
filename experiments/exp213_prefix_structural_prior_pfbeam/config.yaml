@@ -1,0 +1,229 @@
+experiment:
+  name: "exp213_prefix_structural_prior_pfbeam"
+  description: Train-side audit for using TVT_input plus Z prefix structural surface as PF/Beam initial-state and transition prior.
+  route: pf_beam
+  status: completed_train_side_diagnostic_no_submit
+  created_at: "2026-07-07"
+  updated_at: "2026-07-07"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+
+lineage:
+  parent: prefix_structural_prior_pfbeam backlog
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - exp211_affine_calibrated_gr_observation_pfbeam
+    - exp146_tvt_plus_z_beam_smoothness_penalty
+    - exp200_pf_step_delta_soft_prior_full_replay_replacement
+    - exp142_trajectory_aware_pf_transition_prior
+    - pilkwang/working-note-target-free-tvt-geosteering
+  implementation_source: prefix_structural_prior_pfbeam.py
+  diff_summary: >
+    Reuses the exp211 train-side PF/Beam audit surface, but removes affine GR
+    observation variants and focuses on raw GR plus prefix structural transition
+    priors. The structural prior fits TVT_input + Z against MD on known prefix
+    rows only, uses the fit to initialize PF velocity, softly pull PF velocity,
+    add a position prior, and add Beam absolute-position and step-delta costs.
+    Raw GR observation, target wells, PF seeds, particles, Beam width, and
+    exp072 reference candidates are held fixed.
+
+validation:
+  strategy: train_well_pseudotail_prefix_structural_prior_pfbeam_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within10
+    - raw_vs_structural_delta_rmse
+    - pf_effective_sample_size
+    - pf_resampling_rate
+    - beam_cost_gap
+    - beam_path_spread
+    - path_jump_rate
+    - oracle_topk_coverage
+    - selector_headroom
+    - worst_well_regression_vs_raw
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Target wells are selected by target-free availability, eval row count, and md_since coverage, not by true error.
+    - Evaluation-zone true TVT is materialized as last_known_tvt + target from the exp072 cache only for scoring.
+    - Prefix structural prior uses known prefix TVT_input, MD, and Z only, plus evaluation-row MD/Z that are available in raw test.
+    - Raw and structural variants share the same PF seed schedule, particles, transition noise, beam width, and target wells.
+    - Structural prior is soft: no hard window, no candidate invalidation, and no true-error tuned strength.
+    - Positive train-side results are diagnostic only and must pass a separate raw-test regeneration guard before any inference port.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_reference_candidates:
+    - pf_ancc
+    - beam_mean
+    - likpf_mean
+    - pf_z
+
+model:
+  name: prefix_structural_prior_pfbeam
+  estimator: none_pfbeam_generation_audit
+  target: exp072_target_for_scoring_only
+  observation_variants:
+    - name: raw
+      kind: raw
+      transition: classic
+    - name: structural_slope_only
+      kind: raw
+      transition: prefix_structural
+      transition_params:
+        weight: 0.00
+        transition_delta_weight: 0.25
+        transition_delta_sigma: 20.0
+        velocity_blend: 0.60
+        velocity_pull: 0.08
+        initial_position_blend: 0.00
+        init_spread_scale: 0.85
+        init_spread_min: 2.5
+        min_prefix_points: 80
+        tail_points: 256
+        sigma_min: 40.0
+        sigma_max: 180.0
+        sigma_default: 90.0
+        trim_quantile: 0.90
+        robust_iterations: 2
+    - name: structural_weak
+      kind: raw
+      transition: prefix_structural
+      transition_params:
+        weight: 0.12
+        transition_delta_weight: 0.10
+        transition_delta_sigma: 24.0
+        velocity_blend: 0.35
+        velocity_pull: 0.04
+        initial_position_blend: 0.00
+        init_spread_scale: 0.90
+        init_spread_min: 3.0
+        min_prefix_points: 80
+        tail_points: 256
+        sigma_min: 40.0
+        sigma_max: 180.0
+        sigma_default: 90.0
+        trim_quantile: 0.90
+        robust_iterations: 2
+    - name: structural_base
+      kind: raw
+      transition: prefix_structural
+      transition_params:
+        weight: 0.25
+        transition_delta_weight: 0.20
+        transition_delta_sigma: 24.0
+        velocity_blend: 0.50
+        velocity_pull: 0.06
+        initial_position_blend: 0.00
+        init_spread_scale: 0.80
+        init_spread_min: 2.5
+        min_prefix_points: 80
+        tail_points: 256
+        sigma_min: 40.0
+        sigma_max: 180.0
+        sigma_default: 90.0
+        trim_quantile: 0.90
+        robust_iterations: 2
+  validation_surface:
+    selection_mode: long_md_since
+    max_target_wells: 64
+    well_include: []
+    min_known_prefix_rows: 160
+    min_eval_rows: 64
+  runtime:
+    particles: 240
+    seed_count: 8
+    likelihood_temperature: 6.0
+    topk_oracle: 3
+    resample_threshold: 0.5
+    init_spread: 4.5
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_pos_noise: 0.10
+    resample_velocity_noise: 0.001
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+  beam:
+    beam_size: 14
+    topk_keep: 3
+    move_radius: 2
+    move_cost: 16.0
+    error_scale: 120.0
+    post_smooth_window: 1
+
+audit:
+  mode: prefix_structural_prior_pfbeam
+  output_prefix: exp213_prefix_structural_prior_pfbeam
+  primary_baseline: pf_raw_lik_mean
+  path_jump_threshold_ft: 8.0
+  expected_train_artifacts:
+    - exp213_prefix_structural_prior_pfbeam_candidate_metrics.csv
+    - exp213_prefix_structural_prior_pfbeam_filter_delta_metrics.csv
+    - exp213_prefix_structural_prior_pfbeam_bucket_metrics.csv
+    - exp213_prefix_structural_prior_pfbeam_by_well.csv
+    - exp213_prefix_structural_prior_pfbeam_group_metrics.csv
+    - exp213_prefix_structural_prior_pfbeam_pf_diagnostics.csv
+    - exp213_prefix_structural_prior_pfbeam_target_wells.csv
+    - exp213_prefix_structural_prior_pfbeam_well_status.csv
+    - exp213_prefix_structural_prior_pfbeam_row_candidates.csv.gz
+    - exp213_prefix_structural_prior_pfbeam_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_query_well_seed_index_shared_across_structural_variants
+  stochastic_components:
+    - exp072_eval_zone_pf_particle_propagation
+    - exp072_eval_zone_pf_resampling
+  parallel_rng_policy: sequential_initial_audit_with_per_well_stable_seeds_no_global_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it is train-side diagnostic only.
+    - PF seeds are shared across raw and structural variants for the same query well and seed index.
+    - Beam variants are deterministic for fixed raw GR observation and transition config.
+    - Structural prior diagnostics include fit activity, residual sigma, expected delta, velocity blend, Beam cost gap, and path spread.
+    - No inference or submission output is generated by this experiment.
+
+inference:
+  mode: not_applicable_train_side_audit_only
+  selected_candidate: null
+  notes:
+    - Direct inference and submit are out of scope for exp213.
+    - A positive train-side result must first pass raw-test-safe regeneration, runtime, worst-well, and hidden-like stress checks.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog prefix_structural_prior_pfbeam as a train-side no-model audit.
+  - Compares raw GR classic transition against raw GR plus soft prefix structural prior variants.
+  - Public notebook lineage is treated as target-free geosteering context, not as evidence that this exact prior is submission-ready.
+  - Direct PF/Beam candidate replacement, LightGBM training, inference port, and submit are explicitly out of scope.

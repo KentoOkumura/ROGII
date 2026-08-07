@@ -1,0 +1,378 @@
+experiment:
+  name: exp239_distribution_matched_multicut_pseudotail
+  description: Build deterministic distribution-matched early-start pseudo-tail cutoffs and a fold-safe prefix replay manifest for the exp218 ML route.
+  route: ml_model
+  status: submission_complete_public_lb_7p944_not_adopted
+  created_at: '2026-07-12'
+  updated_at: '2026-07-15'
+
+lineage:
+  parent: exp218_gr_wavelet_rotation_confidence_features_on_exp148
+  augmentation_parent: exp023_pseudo_tail_distance_augmentation
+  hidden_like_parent: exp115_hidden_like_spatial_holdout_from_ppt
+  comparison_parents:
+    - exp218_gr_wavelet_rotation_confidence_features_on_exp148
+    - exp023_pseudo_tail_distance_augmentation
+  implementation_source: exp239_distribution_matched_multicut_pseudotail_train.py
+  diff_summary: >
+    Replaces exp023 fixed q45/q65/q82 early-start cutoffs with deterministic
+    candidate generation from prefix/evaluation quantiles, fixed pseudo-holdout
+    lengths, GR change points, GR missing-block boundaries, and trajectory
+    curvature changes. A marginal-distribution quota selector matches official
+    start metadata while capping per-well, per-source, total-cutoff, and estimated
+    row amplification. It emits a fold-safe prefix replay request for later
+    exp218 feature regeneration; it does not reuse full-prefix features, train a
+    model, run inference, blend predictions, or submit.
+
+validation:
+  strategy: groupkfold_by_source_well_official_start_primary_hidden_like_stress
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: source_well
+  primary_score_surface: official_start_oof
+  stress_surfaces:
+    - exp115_verification_like_spatial
+    - exp115_verification_like_typewell_purged
+    - rows_000_050
+    - rows_1000_plus
+    - worst_well
+  leakage_policy:
+    - Cutoff candidates and derived samples inherit exactly one fold from source well.
+    - Outer-valid wells are never used as augmentation rows for the corresponding outer fold.
+    - TVT after a synthetic cutoff is target-only and forbidden from feature generation.
+    - Current-test wells and Public LB are not used to fit cutoff weights or caps.
+    - Official-start OOF remains the primary adoption metric.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  horizontal_glob: '*__horizontal_well.csv'
+  hidden_like_fold_assignments_local: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  target_column: TVT
+  input_target_column: TVT_input
+  md_column: MD
+  gr_column: GR
+  coordinate_columns: [X, Y, Z]
+  exp111_artifact_dir_local: ''
+  exp111_feature_schema: exp111_learned_pf_observation_likelihood_probe_feature_schema.csv
+  exp111_model_manifest: exp111_learned_pf_observation_likelihood_probe_model_manifest.json
+  exp112_artifact_dir_local: ''
+  exp112_feature_schema: exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+
+model:
+  name: distribution_matched_multicut_manifest_audit
+  estimator: none
+  parent_model_family: exp218_lgb0_lgb1_lgb2
+  parent_cv_rmse: 8.475793752
+  parent_public_lb: 7.843
+  historical_exp023:
+    control_cv_rmse: 13.494554
+    best_variant: pseudo_tail_3_cutoffs_distance_balanced
+    best_cv_rmse: 12.942938
+    fixed_quantiles: [0.45, 0.65, 0.82]
+  cutoff_generation:
+    min_prefix_rows: 200
+    min_newly_hidden_rows: 50
+    prefix_eval_quantiles: [0.10, 0.25, 0.45, 0.65, 0.82, 0.90]
+    fixed_hidden_rows: [50, 100, 250, 500, 1000, 2500]
+    gr_change:
+      enabled: true
+      min_finite_pair_fraction: 0.25
+      robust_z_threshold: 4.0
+      max_candidates_per_well: 4
+      min_separation_rows: 32
+    gr_missing_blocks:
+      enabled: true
+      max_candidates_per_well: 4
+      min_block_rows: 8
+      min_separation_rows: 16
+    trajectory_curvature:
+      enabled: true
+      robust_z_threshold: 4.0
+      max_candidates_per_well: 4
+      min_separation_rows: 32
+  distribution_matching:
+    strategy: global_marginal_deficit_quota
+    features:
+      prefix_fraction: [0.10, 0.25, 0.50, 0.75, 0.90]
+      prefix_rows: [0.10, 0.25, 0.50, 0.75, 0.90]
+      eval_rows: [0.10, 0.25, 0.50, 0.75, 0.90]
+      gr_missing_rate_prefix: [0.10, 0.25, 0.50, 0.75, 0.90]
+      trajectory_phase: [0.10, 0.25, 0.50, 0.75, 0.90]
+    max_cutoffs_per_well: 3
+    max_cutoffs_per_source_per_well: 1
+    target_total_cutoffs: 800
+    max_total_cutoffs: 800
+    max_estimated_rows_per_cutoff: 1000
+    max_estimated_augmentation_ratio: 0.45
+    source_target_share:
+      prefix_eval_quantile: 0.30
+      fixed_hidden_rows: 0.30
+      gr_change_point: 0.15
+      gr_missing_boundary: 0.10
+      trajectory_curvature: 0.15
+    score_weights:
+      marginal_deficit: 1.0
+      source_deficit: 0.03
+      hidden_like_bonus: 0.02
+      new_well_coverage_bonus: 0.03
+    guard:
+      max_abs_marginal_share_delta: 0.05
+      min_selected_well_fraction: 0.65
+      min_hidden_like_selected_well_fraction: 0.90
+      max_estimated_augmentation_ratio: 0.45
+      require_all_leakage_checks: true
+  replay_contract:
+    mask_columns_after_cutoff: [TVT_input]
+    target_only_columns_after_cutoff: [TVT]
+    regenerate_feature_groups:
+      - anchor_and_prefix_statistics
+      - projection_correction
+      - pf_beam_likelihood_candidates
+      - learned_likelihood_confidence
+      - gr_wavelet_rotation_confidence
+      - pf_hmm_initial_state_and_confidence
+    forbid_full_prefix_cache_slice: true
+    inference_generation_enabled: true
+  materialization:
+    enabled: true
+    feature_group: anchor_and_prefix_statistics
+    max_rows_per_request: 1000
+    recent_windows: [32, 128]
+    distance_buckets:
+      - {name: rows_000_049, min_step: 0, max_step: 49, quota: 200}
+      - {name: rows_050_249, min_step: 50, max_step: 249, quota: 200}
+      - {name: rows_250_999, min_step: 250, max_step: 999, quota: 200}
+      - {name: rows_1000_2499, min_step: 1000, max_step: 2499, quota: 200}
+      - {name: rows_2500_plus, min_step: 2500, max_step: null, quota: 200}
+    fill_remaining: true
+    target_column: target_tvt
+    forbidden_feature_columns: [TVT, target_tvt]
+  residual_probe:
+    enabled: false
+    target_column: target_tvt
+    anchor_column: anchor_tvt_input
+    group_column: source_well
+    n_folds: 5
+    baseline_predictions:
+      - anchor_hold
+      - anchor_plus_delta_z
+    exclude_columns:
+      - request_id
+      - source_well
+      - fold
+      - cutoff_source
+      - distance_bucket
+      - target_tvt
+    lightgbm:
+      objective: regression
+      metric: rmse
+      learning_rate: 0.05
+      num_leaves: 31
+      min_data_in_leaf: 200
+      feature_fraction: 0.85
+      bagging_fraction: 0.85
+      bagging_freq: 1
+      lambda_l2: 1.0
+      num_threads: 4
+      verbosity: -1
+      deterministic: true
+      force_col_wise: true
+      seed: 42
+      feature_fraction_seed: 42
+      bagging_seed: 42
+      data_random_seed: 42
+    num_boost_round: 500
+    early_stopping_rounds: 50
+    guard:
+      require_overall_improvement_vs_best_baseline: true
+      max_well_rmse_regression: 20.0
+  exp218_augmentation:
+    enabled: true
+    execution_stage: gpu_dual_cache_streaming_training
+    preflight:
+      enabled: false
+      request_count: 2
+    variant: distribution_matched_multicut_weight050
+    official_row_weight: 1.0
+    pseudo_row_weight: 0.5
+    expected_official_rows: 3783989
+    expected_pseudo_rows: 799961
+    expected_feature_count: 380
+    pseudo_request_count: 800
+    validation_rows: official_start_only
+    exclude_outer_valid_source_well_pseudo_rows: true
+    parent_control_retrained: false
+    reference_exp218_lgb_mean_rmse: 8.475793751656624
+    final_official_oof_rmse: 8.697380065917969
+    active_variants: 1
+    lightgbm_configs: 3
+    folds: 5
+    boosters: 15
+    feature_cache:
+      batch_request_count: 25
+      expected_shards: 32
+      format: parquet
+      compression: zstd
+      training_kernel_source: kentookumura/exp239-pseudotail-feature-cache
+      preflight:
+        enabled: false
+        request_count: 25
+    official_feature_cache:
+      row_batch_count: 250000
+      expected_shards: 16
+      format: parquet
+      compression: zstd
+      training_kernel_source: kentookumura/exp239-official-exp218-feature-cache-v1
+    feature_generation:
+      n_jobs: 4
+      pf_seeds: 128
+      pf_particles: 500
+      use_full_prefix_cache_slice: false
+      regenerate_exp072_base: true
+      regenerate_learned_likelihood: true
+      regenerate_grwr: true
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  allow_local: false
+  kaggle:
+    enabled: true
+    enable_gpu: true
+    enable_internet: false
+    push_requires_user_approval: true
+    bootstrap_dependency_files:
+      - source: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - source: experiments/exp072_exp063_full_replay_feature_cache/public_notebook_replay_audit.py
+        destination: public_notebook_replay_audit.py
+      - source: experiments/exp099_pf_multi_observation_likelihood_probe/pf_multi_observation_likelihood_probe.py
+        destination: pf_multi_observation_likelihood_probe.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/learned_likelihood_rawtest_feature_generator_parity.py
+        destination: learned_likelihood_rawtest_feature_generator_parity.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: inputs/exp218_config.yaml
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp145-train
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp112-learned-pf-likelihood-followup-train
+    inference_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp218-gr-wavelet-rotation-exp148-train
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp112-learned-pf-likelihood-followup-train
+      - kentookumura/exp239-pseudotail-dual-cache-streaming-train
+    prefix_crop_features:
+      enable_gpu: false
+    train_aggregate:
+      enable_gpu: true
+    dual_cache_streaming_train:
+      enable_gpu: true
+    gr_matcher_features:
+      enable_gpu: false
+    gr_matcher_features_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp145-train
+    train_aggregate_kernel_sources:
+      - kentookumura/exp239-pseudotail-feature-cache
+      - kentookumura/exp239-official-exp218-feature-cache-v1
+    dual_cache_streaming_train_kernel_sources:
+      - kentookumura/exp239-pseudotail-feature-cache
+      - kentookumura/exp239-official-exp218-feature-cache-v1
+
+generator:
+  chunksize: 200000
+  include_candidate_values: false
+  default_candidate: likpf_mean
+  candidates:
+    - {name: pf_ancc, column: pf_ancc}
+    - {name: beam_mean, column: beam_mean}
+    - {name: likpf_mean, column: likpf_mean}
+    - {name: sc_ens, column: sc_ens}
+    - {name: hyb, column: hyb}
+  row_context_columns: [last_known_tvt, pf_ancc_std, beam_mean_d, sc_ens_d, hyb_d, eval_len, md_since, likpf_mean_d]
+  multiobs_global_columns: [multiobs_score_max, multiobs_score_mean, multiobs_score_gap, multiobs_top1_source_id, multiobs_top1_mae, multiobs_top1_ncc]
+  feature_cache:
+    include_candidate_tvt: true
+    include_multiobs_scores: true
+    include_probability_features: true
+    include_expected_error_features: true
+  multi_observation_likelihood:
+    observation_offsets: [-24, -12, 0, 12, 24]
+    gr_rolling_window: 5
+    gr_scale: 18.0
+    out_of_range_scale: 80.0
+    softmax_temperatures: [0.15, 0.30]
+    likpf_blend_weights: [0.25, 0.50]
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: sha256_stable_key_for_well_source_cutoff_ties
+  stochastic_components: []
+  parallel_rng_policy: no_global_rng_sorted_well_processing
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This stage emits deterministic manifests but is not a prediction anchor.
+    - Model, prediction, and submission SHA become mandatory only after approved exp218-family training.
+
+audit:
+  output_prefix: exp239_distribution_matched_multicut_pseudotail
+  expected_artifacts:
+    - exp239_distribution_matched_multicut_pseudotail_well_metadata.csv
+    - exp239_distribution_matched_multicut_pseudotail_fold_manifest.csv
+    - exp239_distribution_matched_multicut_pseudotail_cutoff_candidates.csv.gz
+    - exp239_distribution_matched_multicut_pseudotail_selected_cutoffs.csv
+    - exp239_distribution_matched_multicut_pseudotail_distribution_report.csv
+    - exp239_distribution_matched_multicut_pseudotail_source_summary.csv
+    - exp239_distribution_matched_multicut_pseudotail_prefix_replay_requests.csv
+    - exp239_distribution_matched_multicut_pseudotail_prefix_materialized_features.csv.gz
+    - exp239_distribution_matched_multicut_pseudotail_prefix_materialization_request_summary.csv
+    - exp239_distribution_matched_multicut_pseudotail_prefix_materialization_schema.csv
+    - exp239_distribution_matched_multicut_pseudotail_residual_probe_oof.csv.gz
+    - exp239_distribution_matched_multicut_pseudotail_residual_probe_metrics.csv
+    - exp239_distribution_matched_multicut_pseudotail_residual_probe_by_well.csv
+    - exp239_distribution_matched_multicut_pseudotail_residual_probe_feature_importance.csv
+    - exp239_distribution_matched_multicut_pseudotail_exp218_feature_cache_manifest.csv
+    - exp239_distribution_matched_multicut_pseudotail_exp218_feature_cache_schema.csv
+    - exp239_distribution_matched_multicut_pseudotail_exp218_feature_cache_requests.csv
+    - exp239_distribution_matched_multicut_pseudotail_exp218_feature_cache_summary.json
+    - exp239_distribution_matched_multicut_pseudotail_official_exp218_feature_cache_manifest.csv
+    - exp239_distribution_matched_multicut_pseudotail_official_exp218_feature_cache_schema.csv
+    - exp239_distribution_matched_multicut_pseudotail_official_exp218_feature_cache_summary.json
+    - exp239_distribution_matched_multicut_pseudotail_augmentation_predictions.csv.gz
+    - exp239_distribution_matched_multicut_pseudotail_augmentation_metrics.csv
+    - exp239_distribution_matched_multicut_pseudotail_augmentation_feature_importance.csv
+    - exp239_distribution_matched_multicut_pseudotail_augmentation_feature_schema.csv
+    - exp239_distribution_matched_multicut_pseudotail_augmentation_summary.json
+    - exp239_distribution_matched_multicut_pseudotail_summary.json
+
+notes:
+  - Kaggle CPU audit must run before any GPU training decision.
+  - v11 was rejected by official-start OOF, but the user explicitly requested one trial submission.
+  - The adjacent late-start idea remains a separate backlog item.
+
+inference:
+  selected_variant: distribution_matched_multicut_weight050
+  selected_model: lgb_mean
+  source_train_kernel: kentookumura/exp239-pseudotail-dual-cache-streaming-train
+  kernel_id: kentookumura/exp239-distribution-matched-multicut-inference
+  expected_models: 15
+  expected_features: 380

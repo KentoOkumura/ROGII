@@ -1,0 +1,124 @@
+{
+  "experiment": "exp487_time_varying_gr_affine_likelihood_pf",
+  "route": "pf_beam",
+  "status": "stage0_completed_all_pass_pending_stage1_approval",
+  "created_at": "2026-07-30",
+  "updated_at": "2026-07-30",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "key_idea": "exp345 causal / exp350 RTS affine scheduleをPF particle emissionへ適用",
+  "kernel": {
+    "id": "kentookumura/exp487-time-varying-gr-affine-likelihood-pf-train",
+    "id_no": 129180524,
+    "version": 5,
+    "status": "COMPLETE",
+    "url": "https://www.kaggle.com/code/kentookumura/exp487-time-varying-gr-affine-likelihood-pf-train",
+    "private": true,
+    "device": "cpu",
+    "internet": false
+  },
+  "execution": {
+    "stage": "stage0",
+    "scientific_variants": 2,
+    "candidate_pf_well_runs": 64,
+    "seed_well_trajectories": 8192,
+    "particle_starts": 4096000,
+    "control_pf_well_runs": 0,
+    "hmm_well_runs": 0,
+    "beam_well_runs": 0,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "gpu_runs": 0,
+    "elapsed_seconds": 1191.0875504016876,
+    "peak_rss_gb": 1.8486404418945312,
+    "projected_full_seconds": 28772.208639390767
+  },
+  "fixed32_descriptive": [
+    {
+      "variant": "causal_ekf_affine_emission",
+      "rmse": 12.634359565368019,
+      "rows": 156088,
+      "wells": 32,
+      "descriptive_fixed32_not_cv": true
+    },
+    {
+      "variant": "bidirectional_rts_affine_emission",
+      "rmse": 13.391424323137391,
+      "rows": 156088,
+      "wells": 32,
+      "descriptive_fixed32_not_cv": true
+    },
+    {
+      "variant": "saved_exp404_control",
+      "rmse": 9.616740808061033,
+      "rows": 156088,
+      "wells": 32,
+      "descriptive_fixed32_not_cv": true
+    }
+  ],
+  "stage0_gate": {
+    "all_pass": true,
+    "stage1_eligible_pending_separate_user_approval": true,
+    "checks": {
+      "boundary_jump_reported": true,
+      "causal_schedule_contract": true,
+      "covariance_finite_and_psd": true,
+      "execution_count_match": true,
+      "exp209_base_path_sha_match": true,
+      "finite_pf_ledgers": true,
+      "finite_prediction_coverage": true,
+      "freeze_sha_contract": true,
+      "output_scale_clip_fraction": true,
+      "peak_rss": true,
+      "rts_forward_parity": true,
+      "rts_terminal_contract": true,
+      "runtime_projection": true,
+      "stable_seed_identity": true,
+      "truth_error_outcome_fold_hidden_reads_before_freeze_zero": true
+    },
+    "measurements": {
+      "causal_boundary_jump_sigma_p95": 0.0049737333782097735,
+      "causal_scale_clip_fraction_maximum": 0.0,
+      "rts_scale_clip_fraction_maximum": 0.0,
+      "fallback_wells": 0
+    },
+    "truth_access_ledger": {
+      "expected_variant_wells": 64,
+      "frozen_variant_wells": 64,
+      "all_frozen": true,
+      "allowed_before_freeze": {
+        "base_rows": 3783989,
+        "process_fold_rows": 773
+      },
+      "forbidden_before_freeze": {
+        "truth_rows": 0,
+        "error_rows": 0,
+        "outcome_fold_rows": 0,
+        "hidden_role_rows": 0
+      },
+      "after_freeze": {
+        "truth_rows": 156088,
+        "control_rows": 156088,
+        "outcome_fold_rows": 32,
+        "hidden_role_rows": 0
+      }
+    }
+  },
+  "sha256": {
+    "scientific_contract": "18743aff469f4ca1a410fdc3dda62261faccdbda020410185f43f062f83a79e3",
+    "input_manifest": "82a39670ba6c69d944f6f4832499b211bacda2f6f14ccfca014816b709cff743",
+    "freeze_manifest": "1366aca8282bd003e56df255e96e3c87a499fab57838643581e7744051597aa2",
+    "process_noise_logical": "aae37e5eecfc220d6c345b96000ddba395bc7eb2ecd2a8b1011f8fae1e16bca8"
+  },
+  "implementation": {
+    "canonical_train_notebook_adopted": true,
+    "stage_0_implemented": true,
+    "stage_1_implemented": true,
+    "inference_enabled": false,
+    "tests_passed": 29
+  },
+  "notes": "Stage 0 technical preflight completed with all gates passing. Fixed32 scores are descriptive and are not CV. Stage 1, inference, and submission remain disabled pending separate user approval."
+}

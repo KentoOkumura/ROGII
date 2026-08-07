@@ -1,0 +1,151 @@
+{
+  "experiment": "exp186_typewell_late_range_pfbeam_generation_soft_prior",
+  "route": "pf_beam",
+  "status": "completed_train_feature_cache_direct_pfbeam_rejected_no_submit",
+  "decision": "full_replay_train_cache_generated_direct_pfbeam_rejected_no_inference_no_submit",
+  "mode": "typewell_late_soft_prior_full_public_replay_train_feature_cache",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "kernel": {
+    "id": "kentookumura/exp186-typewell-late-soft-pfbeam-train",
+    "version": 3,
+    "url": "https://www.kaggle.com/code/kentookumura/exp186-typewell-late-soft-pfbeam-train",
+    "status": "KernelWorkerStatus.COMPLETE",
+    "enable_gpu": false,
+    "enable_internet": false,
+    "elapsed_seconds_summary": 15783.764,
+    "elapsed_feature_seconds": 14053.477,
+    "log_last_timestamp_seconds": 15839.914160345
+  },
+  "feature_cache": {
+    "variant": "pixiux_likpf_late_soft_prior_public_replay",
+    "rows": 3783989,
+    "wells": 773,
+    "columns": 199,
+    "meta_columns": 3,
+    "feature_count": 196,
+    "expected_feature_count": 196,
+    "train_wells": 773,
+    "ravaghi_rows": 3783989,
+    "pixiux_rows": 3783989,
+    "likpf_rows": 3783989,
+    "soft_prior": {
+      "name": "pct50_strong2_pct70_weak0p5",
+      "weak_pct": 0.7,
+      "strong_pct": 0.5,
+      "weak_penalty": 0.5,
+      "strong_penalty": 2.0,
+      "known_last_pct_threshold": 0.75,
+      "known_last_multiplier": 1.0
+    }
+  },
+  "artifacts": {
+    "train_features": "experiments/exp186_typewell_late_range_pfbeam_generation_soft_prior/artifacts/exp186_typewell_late_range_pfbeam_generation_soft_prior_full_replay_cache_pixiux_likpf_late_soft_prior_public_replay_train_features.csv.gz",
+    "feature_schema": "experiments/exp186_typewell_late_range_pfbeam_generation_soft_prior/artifacts/exp186_typewell_late_range_pfbeam_generation_soft_prior_full_replay_cache_feature_schema.csv",
+    "summary": "experiments/exp186_typewell_late_range_pfbeam_generation_soft_prior/artifacts/exp186_typewell_late_range_pfbeam_generation_soft_prior_full_replay_cache_summary.json"
+  },
+  "sha256": {
+    "train_features_raw_gzip": "4bb7a43278ec65143d61c3451353735093995d5258aad665b901237a6a469185",
+    "train_features_decompressed": "b4dd75312d91b21f55b8d1ad09a8590c6bb75857ddfbbbc84d7db175dbb75d15",
+    "feature_schema": "8c875703e3c009c74cc28430c4a8451f239f11fd4dcd3e6e55c705a5adfb7830",
+    "summary": "8e85db2e6d48b93b2a436b160a6041e478426e8bf7ef62406b6be6e31f215c5f"
+  },
+  "validation": {
+    "gzip_integrity": true,
+    "schema_lines": 197,
+    "header_columns": 199,
+    "first_row_columns": 199,
+    "decompressed_lines": 3783990,
+    "data_rows": 3783989,
+    "decompressed_bytes": 7430756999
+  },
+  "pfbeam_rmse_tvt_comparison_vs_exp072": {
+    "status": "completed_direct_comparison",
+    "baseline_experiment": "exp072_exp063_full_replay_feature_cache",
+    "candidate_experiment": "exp186_typewell_late_range_pfbeam_generation_soft_prior",
+    "comparison_basis": "full train replay cache rows; true_tvt = last_known_tvt + target; *_d candidate features converted to absolute TVT by adding last_known_tvt",
+    "rows": 3783989,
+    "ids": {
+      "first_id": "000d7d20_1442",
+      "last_id": "ffefef30_6420",
+      "aligned": true
+    },
+    "candidate_metrics": {
+      "pf_ancc": {
+        "exp072_rmse": 14.493061258821,
+        "exp186_rmse": 14.220030311507,
+        "delta_rmse": -0.273030947313,
+        "exp072_mae": 8.921569265057,
+        "exp186_mae": 8.851546806144,
+        "delta_mae": -0.070022458913
+      },
+      "pf_z": {
+        "exp072_rmse": 17.788174255088,
+        "exp186_rmse": 17.679589223613,
+        "delta_rmse": -0.108585031475,
+        "exp072_mae": 10.677493258427,
+        "exp186_mae": 10.697447227026,
+        "delta_mae": 0.019953968599
+      },
+      "beam_mean": {
+        "exp072_rmse": 15.774327571684,
+        "exp186_rmse": 15.753703223151,
+        "delta_rmse": -0.020624348533,
+        "exp072_mae": 10.898586179988,
+        "exp186_mae": 10.888194081307,
+        "delta_mae": -0.010392098681
+      },
+      "beam_cons": {
+        "exp072_rmse": 16.023008178376,
+        "exp186_rmse": 16.025382560706,
+        "delta_rmse": 0.00237438233,
+        "exp072_mae": 11.10671347193,
+        "exp186_mae": 11.112428685348,
+        "delta_mae": 0.005715213418
+      },
+      "beam_sm5": {
+        "exp072_rmse": 16.313542241595,
+        "exp186_rmse": 16.309361211107,
+        "delta_rmse": -0.004181030488,
+        "exp072_mae": 11.300927741036,
+        "exp186_mae": 11.300965235812,
+        "delta_mae": 0.000037494776
+      },
+      "beam_med": {
+        "exp072_rmse": 15.987519266204,
+        "exp186_rmse": 15.988469486333,
+        "delta_rmse": 0.000950220128,
+        "exp072_mae": 11.06027716931,
+        "exp186_mae": 11.067241207208,
+        "delta_mae": 0.006964037898
+      },
+      "likpf_mean": {
+        "exp072_rmse": 11.594897668441,
+        "exp186_rmse": 12.942278350429,
+        "delta_rmse": 1.347380681988,
+        "exp072_mae": 7.067632583108,
+        "exp186_mae": 7.805224778085,
+        "delta_mae": 0.737592194977
+      }
+    },
+    "decision": "rejected_as_direct_exp072_replacement",
+    "reason": "The strongest exp072 PF/Beam candidate, likpf_mean, worsened by +1.347380681988 RMSE and +0.737592194977 MAE. Small pf_ancc, pf_z, and beam_mean RMSE gains are not enough to support replacing the exp072 generation cache."
+  },
+  "superseded": {
+    "v1_v2_prefix_holdout_audit": {
+      "reason": "192-row prefix-holdout audit was not the intended full replay cache rebuild output.",
+      "v2_rows": 148416,
+      "v2_wells": 773,
+      "v2_best_non_oracle": "pf_no_prior_lik_mean",
+      "v2_best_non_oracle_rmse": 3.563341581844542,
+      "v2_best_soft_prior_rmse": 3.726103563390809
+    }
+  },
+  "notes": [
+    "Existing exp072 full replay cache was not used as generation input.",
+    "Raw competition train horizontal/typewell files were used to rebuild a full replay train feature cache.",
+    "The selected soft prior was applied inside PF_ANCC, PF_Z, Beam, and likelihood-PF generation.",
+    "No LightGBM, inference, submission, or Public LB was produced in this experiment."
+  ]
+}

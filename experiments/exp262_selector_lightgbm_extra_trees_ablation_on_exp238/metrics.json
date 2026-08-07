@@ -1,0 +1,175 @@
+{
+  "experiment": "exp262_selector_lightgbm_extra_trees_ablation_on_exp238",
+  "status": "completed_train_selector_guard_failed_rejected_no_downstream_no_inference_no_submit",
+  "route": "ml_model",
+  "cv": 8.826521285969703,
+  "cv_reference": 8.492559123515461,
+  "cv_delta": 0.3339621624542417,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "parent": "exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218",
+  "implementation": {
+    "changed_parameter": {"extra_trees": true},
+    "active_variants": 1,
+    "selector_configs": 1,
+    "outer_folds": 5,
+    "inner_folds": 4,
+    "selector_boosters": 20,
+    "historical_control_retraining": false,
+    "downstream_retraining": false,
+    "inference_enabled": false,
+    "submission_enabled": false,
+    "run_approved": true,
+    "approved_scope": "extra_trees_true_1_variant_1_selector_config_outer5_inner4_20_cpu_boosters_no_control_or_downstream_retraining",
+    "required_approval_scope": "extra_trees_true_1_variant_1_selector_config_outer5_inner4_20_cpu_boosters_no_control_or_downstream_retraining"
+  },
+  "kaggle_train_v1": {
+    "status": "COMPLETE",
+    "result_status": "selector_guard_failed_no_downstream_no_inference_no_submit",
+    "kernel_id": "kentookumura/exp262-sel-extra-trees-exp238-train",
+    "kernel_version": 1,
+    "kernel_id_no": 127468598,
+    "runtime": "cpu",
+    "runtime_seconds_from_log_max": 18760.043478588,
+    "enable_internet": false,
+    "rows": 3783989,
+    "wells": 773,
+    "candidate_count": 11,
+    "context_feature_count": 184,
+    "selector_feature_count": 187,
+    "selector_model_count": 20,
+    "model_best_iteration": {
+      "mean": 1172.4,
+      "median": 1199.0,
+      "min": 914,
+      "max": 1200
+    },
+    "traceback_or_runtime_error": false
+  },
+  "candidate_metrics": {
+    "historical_exp238": {
+      "candidate_error_mae": 4.532912355694154,
+      "oracle_candidate_logloss": 2.9574098673353646,
+      "pairwise_rank_accuracy": 0.7927618759587799,
+      "oracle_top1_accuracy": 0.19732298376131643
+    },
+    "extra_trees_true": {
+      "candidate_error_mae": 4.748342340880328,
+      "oracle_candidate_logloss": 3.0256681846081137,
+      "pairwise_rank_accuracy": 0.7830406668622337,
+      "oracle_top1_accuracy": 0.17578116638288324
+    },
+    "delta": {
+      "candidate_error_mae": 0.21542998518617384,
+      "oracle_candidate_logloss": 0.06825831727274911,
+      "pairwise_rank_accuracy": -0.009721209096546168,
+      "oracle_top1_accuracy": -0.02154181737843319
+    }
+  },
+  "score_comparison": {
+    "flat_pearson": 0.9984839082486932,
+    "mean_rowwise_spearman": 0.897034243252533,
+    "top1_agreement": 0.4299391462290192,
+    "mean_abs_score_difference": 1.4936983829580945,
+    "max_abs_score_difference": 129.71600341796875
+  },
+  "selection_metrics": {
+    "fixed_top1_global": {
+      "historical_rmse": 8.512261790700284,
+      "current_rmse": 8.84033242175047,
+      "delta_rmse": 0.32807063105018486
+    },
+    "fixed_viterbi_global": {
+      "historical_rmse": 8.492559123515461,
+      "current_rmse": 8.826521285969703,
+      "delta_rmse": 0.3339621624542417
+    },
+    "fixed_viterbi_000_050": {
+      "historical_rmse": 0.6676162904423665,
+      "current_rmse": 0.6271418645913516,
+      "delta_rmse": -0.040474425851014906
+    },
+    "fixed_viterbi_1000_plus": {
+      "historical_rmse": 9.31488657906078,
+      "current_rmse": 9.69463496962996,
+      "delta_rmse": 0.37974839056917986
+    },
+    "fixed_viterbi_exp115_spatial_valid": {
+      "historical_rmse": 8.821804703494545,
+      "current_rmse": 9.620148991898448,
+      "delta_rmse": 0.7983442884039036
+    },
+    "fixed_viterbi_exp115_typewell_purged_valid": {
+      "historical_rmse": 8.778809433914894,
+      "current_rmse": 9.556357942382222,
+      "delta_rmse": 0.7775485084673281
+    }
+  },
+  "selector_guard": {
+    "guard_pass": false,
+    "nonworse_outer_folds": 1,
+    "fold_delta_rmse": {
+      "0": 0.6771869766183451,
+      "1": 0.2585894642586535,
+      "2": -0.09208068247673751,
+      "3": 0.21902842160433877,
+      "4": 0.6156517304474711
+    },
+    "current_worst_well_regression_vs_historical": 12.835996550412434,
+    "current_worst_well": "a959858c",
+    "historical_top1_worst_well_delta_vs_likpf": 37.68089916209287,
+    "current_top1_worst_well_delta_vs_likpf": 37.37415487302425,
+    "downstream_retraining_allowed": false,
+    "rawtest_inference_allowed": false,
+    "submission_allowed": false,
+    "next_step": "close_extra_trees_selector_branch_no_downstream_retraining"
+  },
+  "reproducibility": {
+    "deterministic_anchor": false,
+    "rerun_sha_match_checked": false,
+    "output_downloaded_for_file_audit": true,
+    "all_primary_file_sha_match": true,
+    "all_nested_score_raw_and_decompressed_sha_match": true,
+    "all_model_sha_match": true,
+    "selector_feature_content_sha256": "096b6788fd915b98de4d4a3035f274415ddc8661f6d0021f8714902bfff6299d",
+    "selector_model_manifest_sha256": "5e0dbc5f3f1e6b76b214e24a3e523f1aaff03019f82b8fd20e2c7c51ec851807",
+    "fixed_selection_predictions_decompressed_sha256": "ac3cc0bfa8d132641453f7f404f829ef3d9e2abc63e7151270b8a89c2363f41a",
+    "nested_score_decompressed_sha256": {
+      "0": "595d8c77d4aaa20e285e051c5076eb8dcb77b5009410e9ca6a02eab17cd084e4",
+      "1": "69ca54bb20a532e0038237230b69a32e885426d995e4eb58f913a89ee2a273c0",
+      "2": "e1bf5594d5fc2a06537e267aa28310709f6d7a3264ddf09c50f8259786342b91",
+      "3": "53dad048ec86bd644dd9409865f7b5b5c484b556c18a27f1bce8784eac9a6d3e",
+      "4": "54e60e04bb6350bbf6d29764224cb800c329a44d49d885c19de64e76de644031"
+    }
+  },
+  "static_validation": {
+    "jupytext_test": "pass",
+    "py_compile": "pass",
+    "ruff_f821": "pass",
+    "strict_experiment_validation": "pass",
+    "template_validation": "pass",
+    "full_ruff_check": "pass",
+    "repository_tests": "50_passed",
+    "local_notebook_execution": false
+  },
+  "kaggle_package": {
+    "kernel_id": "kentookumura/exp262-sel-extra-trees-exp238-train",
+    "code_file": "exp262_selector_lightgbm_extra_trees_ablation_on_exp238_train.ipynb",
+    "prepared": true,
+    "strict": true,
+    "run_on_push": true,
+    "is_private": true,
+    "enable_gpu": false,
+    "enable_internet": false,
+    "kernel_sources": 9,
+    "bootstrap_support_files": 10,
+    "bootstrap_dependency_files": 5,
+    "src_included": false,
+    "pushed": true,
+    "kernel_version": 1,
+    "kernel_id_no": 127468598,
+    "remote_metadata_verified": true
+  },
+  "notes": "Technical execution and SHA contracts passed, but the selector guard failed. The extra-trees branch is rejected and closed; no downstream retraining, raw-test inference, or submission was run."
+}

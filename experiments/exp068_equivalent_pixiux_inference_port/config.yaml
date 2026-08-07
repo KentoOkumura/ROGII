@@ -1,0 +1,109 @@
+experiment:
+  name: "exp068_equivalent_pixiux_inference_port"
+  description: Re-evaluate the exp039-style branch value by training the exp063 Pixiux LightGBM model family on exp063 tracker/PF/Beam output features under the exp039 CV surface.
+  route: ml_model
+  status: discarded
+  created_at: "2026-06-13"
+  updated_at: "2026-06-16"
+
+lineage:
+  parent: exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit
+  reference_branch: exp039_ravaghi_single_lgbm_inference_submit
+  overlap_probe: exp064_train_test_well_id_assert_probe
+  implementation_source: exp063_branch_audit.py
+  diff_summary: Joins exp039/exp038 CV rows from exp029 public_sel15 PF OOF features with exp063 tracker/PF/Beam train features by id, then retrains the exp063 LightGBM config family under exp039 leave-one-original-fold and well-hash audits. It uses exp063 output features, does not regenerate PF/Beam features, and does not modify exp063.
+
+validation:
+  strategy: exp063_model_on_exp039_cv
+  metric: rmse
+  audits:
+    - leave_one_original_fold_out
+    - well_hash_holdout
+  well_hash_folds: 5
+  leakage_policy:
+    - "The CV surface is the exp039/exp038-style audit surface from exp029 public_sel15_pf_oof_features.csv.gz."
+    - "fold from exp039 is used for leave-one-original-fold evaluation; well-hash holdout is also reproduced."
+    - The model family is the exp063 public Pixiux LightGBM config set.
+    - "PF/Beam/tracker features are read from exp063 output artifact ravaghi_vs_pixiux_public_replay_tracker_features_train.csv.gz."
+    - Train PF/Beam features are not regenerated in exp068; train features use the exp063 output artifact.
+    - Inference generates hidden-test exp063 replay features at runtime to avoid static public prediction artifacts.
+    - Existing exp063 implementation files are not modified.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  exp039_cv_feature_path: experiments/exp029_public_sel15_pf_oof_feature_generation/features/public_sel15_pf_oof_features.csv.gz
+  exp063_tracker_features_train_local: experiments/exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit/artifacts/ravaghi_vs_pixiux_public_replay_tracker_features_train.csv.gz
+  exp063_tracker_features_test_local: experiments/exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit/artifacts/ravaghi_vs_pixiux_public_replay_tracker_features_test.csv.gz
+  exp063_oof_predictions_local: experiments/exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit/artifacts/ravaghi_vs_pixiux_public_replay_oof_predictions.csv.gz
+  exp063_inference_predictions_local: experiments/exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit/artifacts/ravaghi_vs_pixiux_public_replay_inference_test_predictions.csv.gz
+
+model:
+  name: exp063_pixiux_lgbm_configs_on_exp039_cv
+  source_experiment: exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit
+  variant: pixiux_likpf_public_replay
+  model: exp063_public_lightgbm_configs
+  feature_source: exp063_tracker_features_train
+  target: target_tvt_minus_last_known_tvt
+  base_prediction: last_known_tvt
+  training:
+    use_gpu: true
+    fast: false
+    early_stopping_rounds: 250
+    max_train_rows: null
+    deterministic: true
+    force_col_wise: true
+    save_full_models: true
+    primary_audit_for_full_model: leave_one_original_fold_out
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp029-sel15-pf-oof-train
+      - kentookumura/exp063-ravaghi-pixiux-strict-replay-train
+    inference_kernel_sources:
+      - kentookumura/exp068-equivalent-pixiux-train
+      - kentookumura/exp063-ravaghi-pixiux-strict-replay-infer
+
+audit:
+  mode: exp063_model_retrained_on_exp039_cv
+  output_prefix: exp063_model_exp039_cv
+  expected_train_artifacts:
+    - exp063_model_exp039_cv_metrics.csv
+    - exp063_model_exp039_cv_by_well.csv
+    - exp063_model_exp039_cv_predictions.csv.gz
+    - exp063_model_exp039_cv_summary.json
+    - exp068_exp039_cv_full_lgb_models/manifest.json
+    - exp068_exp039_cv_full_model_feature_schema.csv
+    - exp068_exp039_cv_full_model_feature_importance.csv
+  expected_inference_artifacts:
+    - exp068_exp039_cv_full_model_inference_predictions.csv.gz
+    - exp068_exp039_cv_full_model_inference_metrics.csv
+    - exp068_exp039_cv_full_model_inference_summary.json
+    - exp063_branch_submission_diff.csv
+
+inference:
+  mode: exp068_full_model_from_exp039_cv_retrain
+  model: lgb_mean
+  feature_mode: generate_exp063_replay
+  model_artifact_dir: experiments/exp068_equivalent_pixiux_inference_port/artifacts/exp068_exp039_cv_full_lgb_models
+  reference_submission_path: /kaggle/input/notebooks/kentookumura/exp063-ravaghi-pixiux-strict-replay-infer/submission.csv
+  use_gpu: auto
+  max_wells: null
+  notes:
+    - Uses exp068 full LightGBM boosters saved by the train notebook.
+    - Generates hidden-test exp063 replay features at inference time with exp063 code.
+    - Does not use static exp063 inference prediction artifact.
+    - Does not use static visible override.
+    - Does not regenerate train PF/Beam features; train features are the exp063 output artifact.
+
+notes:
+  - This implementation is intentionally named exp068_equivalent_pixiux_inference_port.
+  - Existing historical exp039 experiments are left untouched; no new exp039 experiment directory or notebook is created.
+  - Discarded by user request on 2026-06-16. The replacement backlog is exp073_exp039_cv_reassessment, which evaluates exp073 under the exp039 CV surface instead of exp063.

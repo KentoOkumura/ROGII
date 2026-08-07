@@ -1,0 +1,106 @@
+{
+  "artifact_rows": {
+    "prefix_calibration_bucket_summary": 35,
+    "prefix_calibration_candidate_metrics": 9,
+    "prefix_calibration_cutoff_summary": 2319,
+    "prefix_calibration_fold_metrics": 35,
+    "prefix_calibration_selection": 10,
+    "prefix_calibration_well_holdout_metrics": 35,
+    "pseudo_tail_feature_importance": 125,
+    "pseudo_tail_source_summary": 3615
+  },
+  "best_same_oof_candidate": "exp026_bucket_shrink_control",
+  "best_same_oof_cv": 12.87078,
+  "best_same_oof_delta_vs_control": 0.0,
+  "clean_prefix_calibration_supported": false,
+  "control_candidate": "exp026_bucket_shrink_control",
+  "control_cv": 12.87078,
+  "cv": 12.87078,
+  "experiment": "exp036_test_time_prefix_calibration_audit",
+  "leave_one_original_fold_out_selection_cv": 12.87078,
+  "metric": "rmse",
+  "metrics": [
+    {
+      "candidate": "exp026_bucket_shrink_control",
+      "control_rmse": 12.87078,
+      "delta_vs_control": 0.0,
+      "method": "fixed_exp014_bucket_shrink",
+      "rmse": 12.87078,
+      "rows": 3783989
+    },
+    {
+      "candidate": "prefix_near_continuity_decay",
+      "control_rmse": 12.87078,
+      "delta_vs_control": 0.045236,
+      "method": "test_time_near_continuity",
+      "rmse": 12.916015,
+      "rows": 3783989
+    },
+    {
+      "candidate": "raw_pseudo_tail",
+      "control_rmse": 12.87078,
+      "delta_vs_control": 0.072158,
+      "method": "raw",
+      "rmse": 12.942938,
+      "rows": 3783989
+    },
+    {
+      "candidate": "prefix_distance_bucket_shrink",
+      "control_rmse": 12.87078,
+      "delta_vs_control": 0.248373,
+      "method": "test_time_prefix_bucket_alpha",
+      "rmse": 13.119153,
+      "rows": 3783989
+    },
+    {
+      "candidate": "prefix_global_residual_shrink",
+      "control_rmse": 12.87078,
+      "delta_vs_control": 0.248902,
+      "method": "test_time_prefix_global_alpha",
+      "rmse": 13.119682,
+      "rows": 3783989
+    },
+    {
+      "candidate": "prefix_bias_add",
+      "control_rmse": 12.87078,
+      "delta_vs_control": 2.680505,
+      "method": "test_time_prefix_bias",
+      "rmse": 15.551284,
+      "rows": 3783989
+    },
+    {
+      "candidate": "prefix_error_slope",
+      "control_rmse": 12.87078,
+      "delta_vs_control": 6.670123,
+      "method": "test_time_prefix_error_slope",
+      "rmse": 19.540902,
+      "rows": 3783989
+    },
+    {
+      "candidate": "leave_one_original_fold_out_prefix_candidate_selection",
+      "control_rmse": 12.87078,
+      "delta_vs_control": 0.0,
+      "method": "heldout_candidate_selection",
+      "rmse": 12.87078,
+      "rows": 3783989
+    },
+    {
+      "candidate": "well_hash_holdout_prefix_candidate_selection",
+      "control_rmse": 12.87078,
+      "delta_vs_control": 0.0,
+      "method": "heldout_candidate_selection",
+      "rmse": 12.87078,
+      "rows": 3783989
+    }
+  ],
+  "public_lb": null,
+  "raw_pseudo_tail_cv": 12.942938,
+  "selected_method": "exp026_bucket_shrink_control",
+  "source_experiment": "exp026_pseudo_tail_bucket_shrink_inference_submit",
+  "source_variant": "pseudo_tail_3_cutoffs_distance_balanced",
+  "status": "completed",
+  "updated_at": "2026-06-08T00:13:12.798590+00:00",
+  "well_hash_holdout_selection_cv": 12.87078,
+  "key_idea": "Audit visible-prefix per-well calibration on exp026 fixed bucket-shrink control",
+  "notes": "Kaggle train v1 completed. Control remains best: prefix calibration not supported; selected_method=exp026_bucket_shrink_control; best prefix candidate near_continuity is +0.045236 worse."
+}

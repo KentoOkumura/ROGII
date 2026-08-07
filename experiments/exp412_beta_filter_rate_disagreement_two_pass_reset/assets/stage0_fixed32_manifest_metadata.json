@@ -1,0 +1,66 @@
+{
+  "experiment": "exp412_beta_filter_rate_disagreement_two_pass_reset",
+  "inputs": {
+    "episode_summary_path": "experiments/exp408_hmm_message_rate_basin_audit/artifacts/kaggle_v3/exp408_hmm_message_rate_basin_audit_episode_summary.csv",
+    "episode_summary_sha256": "b230ffc759e6ee4891f22809b3f3c8a8796681fb461ec0b7215b94a352bf0ab0",
+    "fold_source_decompressed_sha256": "709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609",
+    "fold_source_path": "/tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz",
+    "fold_source_raw_sha256": "4151b8fecd0caf1cdb58ef00c565162dff89a5868b4735639d51baa83cebd134",
+    "persistent_scope_path": "experiments/exp408_hmm_message_rate_basin_audit/assets/target_wells.csv",
+    "persistent_scope_sha256": "ce245abce24dae98d37b6e0a2adf73fa57a29e0e53864bee983aa916238ea51e",
+    "persistent_scope_wells": 450,
+    "raw_train_dir": "data/raw/train",
+    "raw_wells": 773
+  },
+  "leakage_contract": {
+    "cause_membership_passed_to_hmm": false,
+    "cause_membership_used_for_sample_selection_only": true,
+    "control_matching_columns": [
+      "fold",
+      "suffix_row_count_quartile",
+      "raw_gr_missing_quartile",
+      "prefix_row_count_quartile"
+    ],
+    "error_columns_read_for_matching": [],
+    "truth_columns_read_for_matching": []
+  },
+  "manifest": {
+    "file_sha256": "1edb1e1481af84af4e8178fb6e0743fa40315eab0b7441eeff9232b571f93c30",
+    "logical_sha256": "1edb1e1481af84af4e8178fb6e0743fa40315eab0b7441eeff9232b571f93c30",
+    "path": "experiments/exp412_beta_filter_rate_disagreement_two_pass_reset/assets/stage0_fixed32_manifest.csv",
+    "rows": 32
+  },
+  "selection": {
+    "cause_fold_counts": {
+      "backward_cause": {
+        "0": 1,
+        "1": 2,
+        "2": 1,
+        "3": 1,
+        "4": 3
+      },
+      "forward_cause": {
+        "0": 3,
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 2
+      }
+    },
+    "control_pool_wells": 323,
+    "exact_control_quartile_matches": 5,
+    "fold_counts": {
+      "0": 8,
+      "1": 6,
+      "2": 4,
+      "3": 4,
+      "4": 10
+    },
+    "maximum_control_quartile_distance": 1,
+    "roles": {
+      "backward_cause": 8,
+      "control": 16,
+      "forward_cause": 8
+    }
+  }
+}

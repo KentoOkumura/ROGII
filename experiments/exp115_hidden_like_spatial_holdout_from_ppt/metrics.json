@@ -1,0 +1,66 @@
+{
+  "cv": null,
+  "experiment": "exp115_hidden_like_spatial_holdout_from_ppt",
+  "key_idea": "Build a fixed hidden-like spatial holdout from official PPT verification map distribution.",
+  "metric": "rmse",
+  "private_lb": null,
+  "public_lb": null,
+  "status": "kaggle_train_v1_verified",
+  "kaggle": {
+    "kernel": "kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train",
+    "version": 1,
+    "status": "COMPLETE",
+    "output_path": "experiments/exp115_hidden_like_spatial_holdout_from_ppt/kaggle/output/train_v1",
+    "verified_against_local_smoke": true
+  },
+  "summary": {
+    "artifacts": {
+      "distribution_report": "/home/kento/work/kaggle/ROGII/experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_distribution_report.csv",
+      "fold_assignments": "/home/kento/work/kaggle/ROGII/experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv",
+      "holdout_wells": "/home/kento/work/kaggle/ROGII/experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_holdout_wells.csv",
+      "ppt_red_points": "/home/kento/work/kaggle/ROGII/experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_ppt_red_points.csv",
+      "summary": "/home/kento/work/kaggle/ROGII/experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_summary.json",
+      "well_metadata": "/home/kento/work/kaggle/ROGII/experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_well_metadata.csv"
+    },
+    "created_at": "2026-06-23T13:45:30.545499+00:00",
+    "experiment": "exp115_hidden_like_spatial_holdout_from_ppt",
+    "ppt_extraction": {
+      "colored_pixel_count": 149588,
+      "image_height": 1481,
+      "image_width": 2028,
+      "plot_bbox_pixel": {
+        "max_col": 1930,
+        "max_row": 1342,
+        "min_col": 246,
+        "min_row": 71
+      },
+      "pptx_path": "/home/kento/work/kaggle/ROGII/data/raw/AI_wellbore_geology_prediction_task_en.pptx",
+      "pptx_sha256": "c083c59df01f0fdf1fea860bc977fcdcf278eb12a33282a0200044c8abf950fc",
+      "red_component_count": 45,
+      "red_pixel_count": 6217,
+      "slide_image_path": "ppt/media/image10.png",
+      "slide_image_sha256": "e8ed99d562ae0a630a1780ac4bdb73cf2c5fd3f40d733723ddaece80f5e17901",
+      "slide_number": 10,
+      "status": "ok"
+    },
+    "route": "ml_model",
+    "spatial_holdout": {
+      "distinct_typewell_groups": 196,
+      "max_ppt_red_distance": 0.0806685421851775,
+      "median_ppt_red_distance": 0.01860991034622501,
+      "valid_wells": 200
+    },
+    "status": "kaggle_train_v1_verified",
+    "target_holdout_wells": 200,
+    "target_points": 45,
+    "train_wells": 773,
+    "typewell_purged_holdout": {
+      "distinct_typewell_groups": 200,
+      "max_ppt_red_distance": 0.0806685421851775,
+      "median_ppt_red_distance": 0.01860991034622501,
+      "purged_train_excluded_wells": 16,
+      "valid_wells": 200
+    },
+    "validation_strategy": "hidden_like_spatial_holdout_from_official_ppt_slide10"
+  }
+}

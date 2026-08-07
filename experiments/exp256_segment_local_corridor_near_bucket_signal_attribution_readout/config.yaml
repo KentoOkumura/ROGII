@@ -1,0 +1,157 @@
+experiment:
+  name: exp256_segment_local_corridor_near_bucket_signal_attribution_readout
+  description: >-
+    Attribute the exp250 near-bucket pooled AUC to distance-conditioned base
+    error, candidate-family and well strata, and risk=1 saturation using only
+    fixed Stage 1 diagnostic artifacts.
+  route: pf_beam
+  status: completed_near_pooled_base_rate_attributed_weak_residual_signal_only
+  created_at: '2026-07-15'
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.metric
+
+lineage:
+  parent: exp250_segment_local_negative_space_gr_corridor_audit
+  references:
+    - KAGGLE_DIRECTION.md segment_local_corridor_near_bucket_signal_attribution_readout
+    - docs/06_reproducibility.md
+  diff_summary: >-
+    Reads the fixed exp250 Stage 1 candidate-segment, distance-group, by-well,
+    and summary artifacts. It adds paired conditional AUC, family-by-well
+    contribution, near evaluation-weight, and risk=1 saturation readouts. It
+    does not recompute a corridor or change any exp250 candidate or decision.
+
+validation:
+  strategy: exp250_saved_stage1_paired_signal_attribution_readout
+  metric: diagnostic_paired_auc_attribution
+  n_folds: 0
+  group_column: well
+  score_rows: exp250_saved_candidate_segment_contributions
+  leakage_policy:
+    - The exp250 real and shuffled risk values and bad/good weights are immutable inputs.
+    - Every paired comparison requires identical well, segment, candidate, and bad/good weights.
+    - Target-derived bad/good weights are used only for retrospective attribution and never create a prediction, selector, gate, or feature.
+    - No parameter, threshold, segment, corridor, candidate, model, or control is fitted or regenerated.
+
+data:
+  parent_kernel: kentookumura/exp250-seglocal-negspace-gr-corridor-audit-train
+  expected_candidate_segment_rows: 291710
+  expected_candidate_pairs: 145855
+  expected_wells: 773
+  candidates: [beam_mean, hyb, likpf_mean, pf_ancc, sc_ens]
+  variants: [real_gr, shuffled_typewell_gr]
+  inputs:
+    candidate_segment:
+      filename: exp250_segment_local_negative_space_gr_corridor_audit_candidate_segment_metrics.csv.gz
+      paths:
+        - experiments/exp250_segment_local_negative_space_gr_corridor_audit/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_candidate_segment_metrics.csv.gz
+        - /tmp/kaggle-output/exp250-stage1-v2-full/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_candidate_segment_metrics.csv.gz
+        - /kaggle/input/notebooks/kentookumura/exp250-seglocal-negspace-gr-corridor-audit-train/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_candidate_segment_metrics.csv.gz
+        - /kaggle/input/exp250-seglocal-negspace-gr-corridor-audit-train/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_candidate_segment_metrics.csv.gz
+      sha_kind: decompressed
+      expected_sha256: 0fd6241b27fdd778e202d9f81df859fdad1dd228eeea872630261c5a30a48a9a
+    group_metrics:
+      filename: exp250_segment_local_negative_space_gr_corridor_audit_group_metrics.csv
+      paths:
+        - experiments/exp250_segment_local_negative_space_gr_corridor_audit/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_group_metrics.csv
+        - /tmp/kaggle-output/exp250-stage1-v2-full/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_group_metrics.csv
+        - /kaggle/input/notebooks/kentookumura/exp250-seglocal-negspace-gr-corridor-audit-train/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_group_metrics.csv
+        - /kaggle/input/exp250-seglocal-negspace-gr-corridor-audit-train/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_group_metrics.csv
+      sha_kind: raw
+      expected_sha256: 333c3c2a869db976ca0fc42741897bb50cdad42a91fd682e40c1996626fe8d96
+    by_well:
+      filename: exp250_segment_local_negative_space_gr_corridor_audit_by_well.csv
+      paths:
+        - experiments/exp250_segment_local_negative_space_gr_corridor_audit/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_by_well.csv
+        - /tmp/kaggle-output/exp250-stage1-v2-full/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_by_well.csv
+        - /kaggle/input/notebooks/kentookumura/exp250-seglocal-negspace-gr-corridor-audit-train/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_by_well.csv
+        - /kaggle/input/exp250-seglocal-negspace-gr-corridor-audit-train/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_by_well.csv
+      sha_kind: raw
+      expected_sha256: 14e226cb05072b3195306b92b7587efbe6300fe6cb1da8e7b5db3aff1a4973b8
+    parent_summary:
+      filename: exp250_segment_local_negative_space_gr_corridor_audit_summary.json
+      paths:
+        - experiments/exp250_segment_local_negative_space_gr_corridor_audit/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_summary.json
+        - /tmp/kaggle-output/exp250-stage1-v2-full/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_summary.json
+        - /kaggle/input/notebooks/kentookumura/exp250-seglocal-negspace-gr-corridor-audit-train/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_summary.json
+        - /kaggle/input/exp250-seglocal-negspace-gr-corridor-audit-train/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_summary.json
+      sha_kind: raw
+      expected_sha256: 79448ad77882e3ecf6fd95e0044b59965ffe8cc7fa00603459be3e786824a396
+
+model:
+  name: none_saved_corridor_attribution_readout
+  estimator: none
+  active_variant_count: 2
+  model_config_count: 0
+  fold_count: 0
+  booster_count: 0
+  pf_beam_regeneration_count: 0
+  corridor_regeneration_count: 0
+  parent_control_retraining: false
+
+audit:
+  mode: fixed_saved_artifact_attribution_only
+  distance_labels: ['000_050', '050_100', '100_250', '250_500', '500_1000', '1000_plus']
+  near_labels: ['000_050', '050_100']
+  risk_saturation_value: 1.0
+  equality_tolerance: 1.0e-12
+  outputs:
+    distance_paired_auc_filename: exp256_segment_local_corridor_near_bucket_signal_attribution_readout_distance_paired_auc.csv
+    distance_conditional_summary_filename: exp256_segment_local_corridor_near_bucket_signal_attribution_readout_distance_conditional_summary.csv
+    scope_summary_filename: exp256_segment_local_corridor_near_bucket_signal_attribution_readout_scope_summary.csv
+    family_well_attribution_filename: exp256_segment_local_corridor_near_bucket_signal_attribution_readout_family_well_attribution.csv.gz
+    family_summary_filename: exp256_segment_local_corridor_near_bucket_signal_attribution_readout_family_summary.csv
+    well_summary_filename: exp256_segment_local_corridor_near_bucket_signal_attribution_readout_well_summary.csv
+    risk_saturation_filename: exp256_segment_local_corridor_near_bucket_signal_attribution_readout_risk_one_saturation.csv
+    input_manifest_filename: exp256_segment_local_corridor_near_bucket_signal_attribution_readout_input_manifest.json
+    summary_filename: exp256_segment_local_corridor_near_bucket_signal_attribution_readout_summary.json
+  forbidden:
+    - exp250_stage1_replay
+    - new_corridor_or_candidate_generation
+    - threshold_slack_or_segment_grid
+    - near_specific_rule
+    - candidate_prune_replacement_or_blend
+    - ml_feature_generation
+    - raw_test_inference
+    - submission
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp250-seglocal-negspace-gr-corridor-audit-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_fixed_exp250_artifacts
+  stochastic_components: []
+  parallel_rng_policy: sorted_single_process_no_global_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Determinism is claimed only for this diagnostic with fixed exp250 inputs.
+    - The upstream exp250 candidate artifacts inherit exp072 PF/Beam stochastic provenance.
+    - This experiment is not a prediction or submission anchor.
+
+inference:
+  enabled: false
+  mode: disabled_saved_train_side_attribution_only
+  selected_candidate: null
+  create_submission: false
+  notes:
+    - The readout cannot reopen exp250 hard use or feature use.
+    - No raw-test path or submission is produced.

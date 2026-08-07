@@ -1,0 +1,184 @@
+{
+  "causal_conclusion": [
+    "The exact boundary TVT anchor is not globally shifted; error is small near the boundary and grows with suffix distance.",
+    "Small local increment/rate errors from spatially transferred K16 geometry are cumulatively integrated without a new absolute TVT anchor.",
+    "The accumulated error is then inherited as a nearly constant offset by later K16 segments; segment-mean removal explains most squared error.",
+    "Sparse capped GR correction and robust U projection modify the error but are not the primary source when geometry already crossed the persistent-offset threshold.",
+    "Large donor distance and geometry extrapolation are risk amplifiers; global bias, fold identity, file ordering, and a simple source-port constant mismatch are not sufficient explanations."
+  ],
+  "component_effects": [
+    {
+      "adjustment_abs_mean": 2.1277780643339277,
+      "adjustment_abs_p95": 4.0,
+      "adjustment_cap_3p99_fraction": 0.24259531409842894,
+      "adjustment_mean": 0.18770294110806493,
+      "adjustment_vs_needed_correction_pearson": 0.3436383852954019,
+      "component": "gr_delta",
+      "row_abs_error_improvement_fraction": 0.6163646353094578,
+      "row_abs_error_worsening_fraction": 0.38337479310854233,
+      "sse_after": 341563705.82485366,
+      "sse_before": 384321153.31246066,
+      "sse_change_after_minus_before": -42757447.487607
+    },
+    {
+      "adjustment_abs_mean": 0.934081460614244,
+      "adjustment_abs_p95": 2.907332181930542,
+      "adjustment_cap_3p99_fraction": 0.020639066339780587,
+      "adjustment_mean": -0.006289528241668945,
+      "adjustment_vs_needed_correction_pearson": 0.1263166822319574,
+      "component": "u_projection",
+      "row_abs_error_improvement_fraction": 0.5036365063429096,
+      "row_abs_error_worsening_fraction": 0.4963634936570904,
+      "sse_after": 336284598.414811,
+      "sse_before": 341563705.82485366,
+      "sse_change_after_minus_before": -5279107.410042644
+    }
+  ],
+  "definitions": {
+    "error_sign": "prediction_minus_true",
+    "k_segments": 16,
+    "persistent_min_rows": 128,
+    "persistent_threshold_ft": 10.0
+  },
+  "input_manifest": {
+    "by_well_path": "/tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_by_well_metrics.csv",
+    "by_well_sha256": "838fb587debf2ce80beccd7ad121160fff2a31aae442724770319db00c4877a3",
+    "folds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "kappa_path": "/tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv",
+    "kappa_sha256": "6cbded4c6ea157d141c4272a2e29c498515e3eaa6eff3ec4517078ae1d1aeff0",
+    "oof_decompressed_sha256": "709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609",
+    "oof_file_sha256": "4151b8fecd0caf1cdb58ef00c565162dff89a5868b4735639d51baa83cebd134",
+    "oof_path": "/tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz",
+    "read_mode": "chunked_well_contiguous_stream",
+    "rows": 3783989,
+    "source_port_numeric_parity": {
+      "all_pass": true,
+      "port_source_path": "/home/kento/work/kaggle/ROGII/experiments/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/connortynan_k16_reproduction.py",
+      "port_source_sha256": "8293e915672d34b67e10b7951b22dfee50c7551c4ed6d98ac988b4ef9d4db4b8",
+      "public_source_path": "/tmp/kaggle-notebooks/connortynan-k16-versioned/rogii-k16-spline-kernel-knn-adaptive-kappa.py",
+      "public_source_sha256": "fbaa63c1d38295c4fddf80e8ee8d25865005e5cd0ecc6641cc36ad4bad3c000e",
+      "selected_functions": [
+        "affine_cal",
+        "build_columns",
+        "decode",
+        "emissions",
+        "fit_coeffs",
+        "gr_correction",
+        "kernel_mean",
+        "local_linear",
+        "project_u",
+        "segment_geometry"
+      ],
+      "synthetic_seed": 20260727
+    },
+    "wells": 773
+  },
+  "kappa_max_fold_range": 0.7553150443846967,
+  "non_causal_or_not_supported": [
+    "single global calibration bias",
+    "wrong last-known-row anchor",
+    "submission row ordering",
+    "one bad CV fold",
+    "K=16 alone",
+    "always-on prefix offset predictability",
+    "GR correction as the sole origin",
+    "U projection as the sole origin"
+  ],
+  "offset_structure": {
+    "global_bias_ft": -0.2996190050669165,
+    "global_bias_mse_fraction_explained": 0.0010101400792447146,
+    "k16_affine_oracle_rmse": 0.4036541348823016,
+    "k16_mean_mse_fraction_explained": 0.9856165591751936,
+    "k16_mean_oracle_rmse": 1.1306025263265347,
+    "segment_mean_vs_previous_end_error_pearson": 0.9829506143175872,
+    "segment_mean_vs_start_error_pearson": 0.9817104832847573,
+    "well_mean_mse_fraction_explained": 0.6243905974201365,
+    "well_mean_oracle_rmse": 5.777590856311739
+  },
+  "output_sha256": {
+    "component_effects.csv": "c2bd0c6452c7bd1716bfa73b165b18998520f506599cd8debca60d7e125b99ba",
+    "driver_quantile_contrasts.csv": "306fd441d6efac013e73bd87badc30bef51e9f4d12dcc1a26228615d2878e4f8",
+    "k16_segment_statistics.csv": "1d61c4026f7c493fef278e301a1e51f24ed3ec959b05bba2645b7672fe1ce582",
+    "kappa_fold_stability.csv": "bf952eb909f540603ef1f89e139dd55b5e05be1cfdcccc76ad48d35f8158b1ca",
+    "oracle_quotient_metrics.csv": "75cbae0907a103b18eb07328a25ac412b0dccb1e32e76e48364ccfa3c019c77f",
+    "persistent_offset_episodes.csv": "bf287bf42021eecce5984c815e67e74a7ee37e0f91736dadd2670149cf11b080",
+    "persistent_offset_summary.csv": "e8194cc58be5a49decde1a68f3962ff2d5a7c22b23108d2087b595936dde85c5",
+    "segment_persistence_metrics.csv": "58eef265f69f21809682c1ec252c8e5a8ca8ed9dd4d68ec4511e498b4c80b32c",
+    "source_port_contract.csv": "f86bdcdae2375d99363c7c8fc99f7303673118c472f20afdb8172efed8737814",
+    "source_port_numeric_parity.csv": "c004d0e6201811da1b87cbc7e2f7455cd7ad7cac28348406ca2c7e85935ac9e0",
+    "stage_metrics.csv": "2f7b852a920404e25e96c909e22bf3c5bd1ca916a0823cf6da9d13f6622c7123",
+    "suffix_bucket_metrics.csv": "1dcbf900ea4ff2c7a89018fdaab005316be1163403154fdf7957f62bdc13dcfa",
+    "well_component_effects.csv": "d78a877980c02dbfbb5ac3d1c7d8cbb777fe50f2cda54f3eb79dbcc7c8ae8b3e",
+    "well_driver_correlations.csv": "aa434d544df9f35fbbc7747e359a68813060b72a565aad9c30a19edd7c426608",
+    "well_root_cause_readout.csv": "60e93f6432223644a8e415eb90f7238e8b1d17a505dd0a6e651bfedaba1dd0c0",
+    "well_stage_metrics.csv": "4f7d268ba62802816511fbe7277aa1d01f37b2d95d2db8016a648c157b99eb0c"
+  },
+  "persistent_offsets": {
+    "episode_rows": 718744.0,
+    "episode_rows_fraction_of_total": 0.18994346970881787,
+    "episode_sse_fraction_of_total": 0.8200729735991091,
+    "episodes": 645.0,
+    "geometry_already_over_threshold_fraction": 0.5457364341085271,
+    "gr_crossed_threshold_fraction": 0.23565891472868217,
+    "gr_worsens_episode_sse_fraction": 0.4573643410852713,
+    "onset_distance_to_k16_boundary_median": 81.0,
+    "onset_distance_to_k16_boundary_p90": 162.0,
+    "onset_one_row_change_abs_median": 0.021148228259336932,
+    "pre_onset_64row_rate_abs_median": 0.01794419810130421,
+    "u_projection_crossed_threshold_fraction": 0.2186046511627907,
+    "u_worsens_episode_sse_fraction": 0.4666666666666667,
+    "wells_with_episode": 449.0
+  },
+  "stage_increment_rmse": {
+    "final_post_u": 0.03568667781285847,
+    "geometry_plus_gr_pre_u": 0.036431793585304996,
+    "geometry_tvt_geop": 0.03601693441433214
+  },
+  "stage_rmse": {
+    "final_post_u": 9.427109596582214,
+    "geometry_plus_gr_pre_u": 9.500816404575934,
+    "geometry_tvt_geop": 10.077950290784381
+  },
+  "status": "read_only_oof_audit_complete",
+  "study": "exp226_offset_root_cause_audit_20260727",
+  "top_well_level_rmse_drivers": [
+    {
+      "driver": "suffix_tvt_range",
+      "spearman": 0.387341903483832
+    },
+    {
+      "driver": "donor_dist_max",
+      "spearman": 0.3371176873182933
+    },
+    {
+      "driver": "donor_dist_min",
+      "spearman": 0.31728295722509775
+    },
+    {
+      "driver": "u_adjust_abs_mean",
+      "spearman": 0.23467859638632252
+    },
+    {
+      "driver": "gr_cap_fraction_rows",
+      "spearman": 0.18758453211382747
+    },
+    {
+      "driver": "delta_abs_median",
+      "spearman": 0.17752456216205775
+    },
+    {
+      "driver": "suffix_z_range",
+      "spearman": 0.17393064284643897
+    },
+    {
+      "driver": "suffix_u_true_range",
+      "spearman": 0.16869122505835688
+    }
+  ]
+}

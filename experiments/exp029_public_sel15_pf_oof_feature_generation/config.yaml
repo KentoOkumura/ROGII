@@ -1,0 +1,76 @@
+experiment:
+  name: "exp029_public_sel15_pf_oof_feature_generation"
+  description: Generate fold-safe OOF-like train features from the public sel15 PF/Beam replay route for later selector and meta-stack experiments.
+  route: pf_beam
+  status: implemented
+  created_at: "2026-06-07"
+  updated_at: "2026-06-07"
+
+lineage:
+  parent: exp027_public_replay_needless090_sel15_spread3
+  diff_summary: Convert the replayed public sel15 PF/Beam logic into train-side train well の途中以降を隠した疑似 test feature generation instead of producing a submission.
+
+validation:
+  leakage_policy:
+    - Train wells are never split across train/valid folds for downstream use; this experiment only generates candidate features.
+    - Each train well is converted to a train well の途中以降を隠した疑似 test test well by setting TVT_input to NaN after the cutoff row before PF/Beam runs.
+    - PF/Beam feature generation uses MD, X, Y, Z, GR, typewell TVT/GR, and the known TVT_input prefix only.
+    - True TVT after the cutoff is saved only as target_tvt and error diagnostics; it is never passed into PF/Beam.
+    - Train-only formation/geology columns from the horizontal well are not used.
+
+data:
+  reference_oof_path: null
+
+model:
+  name: public_sel15_pf_oof_feature_generator
+  cutoff_fractions: [0.65]
+  min_known_rows: 500
+  min_eval_rows: 200
+  public_sel15_pf:
+    n_particles: 250
+    n_seeds: 16
+    selector_scales: [3.0, 5.0, 8.0, 12.0]
+    selector_n_eval_threshold: 4840.0
+    selector_z_span_thresholds: [136.73000000000016, 185.5133333333342]
+    beam_configs: 14
+  output_schema:
+    id_columns: [id, well_id, fold, pseudo_cutoff_fraction, cutoff_row, row_idx]
+    prediction_columns:
+      - pf_pred
+      - pf_scale_3
+      - pf_scale_5
+      - pf_scale_8
+      - pf_scale_12
+      - beam_pred
+      - last_anchor_tvt
+    confidence_columns:
+      - pf_seed_std
+      - pf_lik_best
+      - pf_lik_gap_best_second
+      - pf_weight_entropy
+      - pf_effective_seeds
+      - beam_spread
+      - beam_final_cost_min
+    bridge_columns:
+      - pf_pred_minus_last_anchor
+      - pf_pred_minus_exp026_oof
+      - abs_pf_pred_minus_exp026_oof
+      - abs_pf_beam_diff
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: null
+  output_compression: gzip
+  run_label: all_wells_cutoff065_seed16_particles250
+  full_run_overrides:
+    debug_n_wells: null
+    model.cutoff_fractions: [0.45, 0.65, 0.82]
+    model.public_sel15_pf.n_particles: 500
+    model.public_sel15_pf.n_seeds: 128
+
+notes:
+  - Default run is a smoke feature-generation pass to check leakage and runtime.
+  - Full artifact generation should be launched only after smoke runtime is recorded.
+  - This experiment intentionally does not fit a selector or meta model.

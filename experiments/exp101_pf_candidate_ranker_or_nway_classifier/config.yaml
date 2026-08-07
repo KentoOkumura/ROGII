@@ -1,0 +1,214 @@
+experiment:
+  name: "exp101_pf_candidate_ranker_or_nway_classifier"
+  description: Train supervised ranker / N-way classifier selectors over fixed PF/Beam/likelihood-PF candidates using exp099 multi-observation likelihood features.
+  route: pf_beam
+  status: completed_train_side_rejected
+  created_at: "2026-06-21"
+  updated_at: "2026-06-21"
+
+lineage:
+  parent: exp099_pf_multi_observation_likelihood_probe
+  cache_parent: exp099_pf_multi_observation_likelihood_probe
+  diagnostic_parents:
+    - exp093_pf_candidate_coverage_then_ranker_audit
+    - exp099_pf_multi_observation_likelihood_probe
+  implementation_source: pf_candidate_ranker_or_nway_classifier.py
+  diff_summary: Uses the exp099 v2 wide multi-observation likelihood cache as a fixed input, labels each row by oracle-best candidate among five PF/Beam candidates, and compares LightGBM multiclass, candidate-long binary scorer, and candidate-long predicted-error ranker against likPF, target-free multiobs score top1, and oracle controls.
+
+validation:
+  strategy: train_well_pseudotail_candidate_selector_oof
+  metric: rmse
+  secondary_metrics:
+    - oracle_label_accuracy
+    - within_1ft
+    - within_2ft
+    - within_5ft
+    - within_10ft
+    - selection_distribution
+    - path_switch_count
+    - bucket_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Candidate values and target-free likelihood features are read from exp099 v2 train-side pseudo-tail cache.
+    - The label is oracle-best candidate index from train pseudo-tail true TVT; it is used only for supervised train-side OOF evaluation.
+    - Feature columns exclude target, true_tvt, oracle label, and oracle candidate. Direct generated exp099 diagnostic candidates are not used as direct predictions.
+    - GroupKFold is grouped by well, so a well never appears in train and validation in the same fold.
+    - This experiment does not create a submission candidate; positive results require continuity and raw-test parity follow-up.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+
+model:
+  name: lightgbm_candidate_ranker_or_nway_classifier
+  target: oracle_best_candidate_index
+  base_prediction: candidate_selected_tvt
+  estimator:
+    - lightgbm_multiclass
+    - lightgbm_candidate_binary
+    - lightgbm_candidate_error_ranker
+
+ranker:
+  mode: supervised_candidate_selector
+  max_rows: null
+  include_candidate_values: false
+  log_period: 100
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+    - name: beam_mean
+      column: beam_mean
+    - name: likpf_mean
+      column: likpf_mean
+    - name: sc_ens
+      column: sc_ens
+    - name: hyb
+      column: hyb
+  context_columns:
+    - last_known_tvt
+    - pf_ancc_std
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+    - eval_len
+    - md_since
+    - likpf_mean_d
+  multiobs_feature_columns:
+    - multiobs_score_max
+    - multiobs_score_mean
+    - multiobs_score_gap
+    - multiobs_top1_source_id
+    - multiobs_top1_mae
+    - multiobs_top1_ncc
+    - multiobs_score_pf_ancc
+    - multiobs_mae_pf_ancc
+    - multiobs_ncc_pf_ancc
+    - multiobs_score_beam_mean
+    - multiobs_mae_beam_mean
+    - multiobs_ncc_beam_mean
+    - multiobs_score_likpf_mean
+    - multiobs_mae_likpf_mean
+    - multiobs_ncc_likpf_mean
+    - multiobs_score_sc_ens
+    - multiobs_mae_sc_ens
+    - multiobs_ncc_sc_ens
+    - multiobs_score_hyb
+    - multiobs_mae_hyb
+    - multiobs_ncc_hyb
+  optional_columns:
+    - multiobs_top1
+    - multiobs_softmax_t0p15
+    - multiobs_softmax_t0p3
+    - likpf_multiobs_blend_w0p25
+    - likpf_multiobs_blend_w0p5
+  multiclass_lgbm:
+    params:
+      n_estimators: 600
+      learning_rate: 0.045
+      num_leaves: 63
+      min_child_samples: 120
+      subsample: 0.85
+      subsample_freq: 1
+      colsample_bytree: 0.85
+      reg_alpha: 0.1
+      reg_lambda: 1.0
+      n_jobs: -1
+      verbose: -1
+  long_models:
+    max_train_rows_per_fold: 650000
+    binary_lgbm:
+      params:
+        n_estimators: 550
+        learning_rate: 0.045
+        num_leaves: 63
+        min_child_samples: 160
+        subsample: 0.85
+        subsample_freq: 1
+        colsample_bytree: 0.85
+        reg_alpha: 0.1
+        reg_lambda: 1.0
+        n_jobs: -1
+        verbose: -1
+    error_lgbm:
+      params:
+        n_estimators: 550
+        learning_rate: 0.04
+        num_leaves: 63
+        min_child_samples: 160
+        subsample: 0.85
+        subsample_freq: 1
+        colsample_bytree: 0.85
+        reg_alpha: 0.1
+        reg_lambda: 1.0
+        n_jobs: -1
+        verbose: -1
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_groupkfold_and_lightgbm_seed
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - lightgbm_histogram_training
+    - candidate_long_training_row_subsample
+  parallel_rng_policy: no_parallel_rng_in_feature_generation
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a train-side selector audit, not a deterministic submission anchor.
+    - Candidate-long model training samples row indices with a fixed local RNG seed per fold to cap memory.
+
+audit:
+  mode: pf_candidate_ranker_or_nway_classifier
+  output_prefix: exp101_pf_candidate_ranker_or_nway_classifier
+  baselines:
+    - likpf_mean_single
+    - multiobs_score_top1
+    - oracle
+  expected_train_artifacts:
+    - exp101_pf_candidate_ranker_or_nway_classifier_metrics.csv
+    - exp101_pf_candidate_ranker_or_nway_classifier_oof_selected_predictions.csv.gz
+    - exp101_pf_candidate_ranker_or_nway_classifier_selection_distribution.csv
+    - exp101_pf_candidate_ranker_or_nway_classifier_by_well.csv
+    - exp101_pf_candidate_ranker_or_nway_classifier_bucket_metrics.csv
+    - exp101_pf_candidate_ranker_or_nway_classifier_feature_importance.csv
+    - exp101_pf_candidate_ranker_or_nway_classifier_feature_importance_mean.csv
+    - exp101_pf_candidate_ranker_or_nway_classifier_feature_schema.csv
+    - exp101_pf_candidate_ranker_or_nway_classifier_model_manifest.json
+    - exp101_pf_candidate_ranker_or_nway_classifier_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - No inference notebook candidate is selected by this implementation.
+    - If OOF beats likpf_mean and multiobs_score_top1 while selecting pf_ancc at non-trivial rate, create a follow-up continuity/raw-test parity audit before any submission work.
+
+notes:
+  - Implements the backlog item pf_candidate_ranker_or_nway_classifier.
+  - Does not train direct TVT regression, use soft-average candidate blending, replace hidden branch output, or submit.

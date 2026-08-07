@@ -1,0 +1,232 @@
+experiment:
+  name: exp267_well_segment_candidate_divergence_signature_cluster_on_exp265
+  description: >-
+    exp263の6 primitive candidateがwell内の序盤・中盤・終盤でどの程度広がるかを、
+    6指標×3区間のtarget-free 18次元well署名へ固定する。outer-trainだけでK=3をfitし、
+    保存済みexp264 Stage B scoreはassignment確定後のadd-only前提監査にだけ使う。
+  route: ensemble
+  status: structure_negative_retained_exp264_score_readout_invalidated
+  created_at: "2026-07-17"
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+lineage:
+  parent: exp265_target_free_pairwise_candidate_divergence_soft_experts_on_exp264
+  candidate_source: exp263_last_anchor_better_candidate_confidence_pair_cache
+  post_assignment_score_source: exp264_stage_b_v2_private_immutable_dataset
+  diff_summary: >-
+    exp265の512-row block、raw MD span、block row count、295特徴を廃止し、evaluation progressの
+    fixed thirdsへrow-weighted集約した18 divergence特徴だけを使う。K=3 semantic well clusterと
+    soft membershipをOOF生成し、既存exp264 dual selectorへ21特徴をadd-onlyする前提を0 boosterで
+    監査する。hard routingやcluster別expertは作らない。
+
+validation:
+  strategy: outer5_target_free_well_segment_signature_cluster_audit
+  metric: structure_stability_and_post_assignment_candidate_score_separation
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_isna
+  leakage_policy:
+    - cluster fitにはcandidate absolute TVT、true TVT、TVT_input、target、error、oracleを使わない。
+    - 6 primitiveのcandidate間rangeと15 pair absolute gapだけを使い、common TVT translationを除去する。
+    - outer-valid wellはmedian、RobustScaler、clip、KMeans、temperatureのfitへ使わない。
+    - exp264 Stage B candidate scoreはOOF well assignmentとstructure guardを固定した後にだけ開く。
+    - candidate winner、calibration bias、worst-well結果をsignatureやcluster fitへ戻さない。
+
+data:
+  exp263_experiment: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache
+  exp263_stage0_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts
+    - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1/artifacts
+    - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1_sample_partitions/artifacts
+  exp263_stage0_manifest_patterns:
+    - "**/cache_manifest.json"
+  exp263_expected_stage0_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+  exp263_expected_catalog_sha256: 7cd748661b719bfcfb1ed21b9fe314366b1c089cc0dd224a9e4cbd4ba7e9e6e0
+  exp264_stage_b_dataset: kentookumura/exp264-stage-b-selector-oof-v2
+  exp264_stage_b_source_kernel: kentookumura/exp264-exp263-confidence-dual-selector-train
+  exp264_stage_b_source_kernel_version: 2
+  exp264_candidate_score_patterns:
+    - /kaggle/input/exp264-stage-b-selector-oof-v2/candidate_score_oof.parquet
+    - /tmp/kaggle-output/exp264_exp263_candidate_confidence_dual_selector/train_v2/artifacts/candidate_score_oof.parquet
+    - "**/candidate_score_oof.parquet"
+  exp264_expected_candidate_score_sha256: e51bb6747c71ed38a550b72a119558241220bdddab3fa9bdc2a21e0587445a5a
+  exp264_selector_manifest_patterns:
+    - /kaggle/input/exp264-stage-b-selector-oof-v2/selector_model_manifest.json
+    - /tmp/kaggle-output/exp264_exp263_candidate_confidence_dual_selector/train_v2/artifacts/selector_model_manifest.json
+    - "**/selector_model_manifest.json"
+  exp264_expected_selector_manifest_sha256: 123750384c24f1a51b5a0108fc17483df35c575ba5a7a852b461bd04ca3f4c9a
+  exp264_selector_metrics_patterns:
+    - /kaggle/input/exp264-stage-b-selector-oof-v2/selector_metrics.json
+    - /tmp/kaggle-output/exp264_exp263_candidate_confidence_dual_selector/train_v2/artifacts/selector_metrics.json
+    - "**/selector_metrics.json"
+  exp264_expected_selector_metrics_sha256: 568140aafb5d1a3d9191ea6888212a97dd990e2166fb511834510f19e5513c16
+  candidate_contract: candidate_contract.yaml
+
+candidate_bank:
+  source_of_truth: exp263_stage0_primitive_surfaces
+  primitive_count: 6
+  pair_count: 15
+  formula_candidates_used: 0
+  candidate_absolute_value_used: false
+
+features:
+  evaluation_progress_formula: eval_position_divided_by_eval_len
+  segment_boundaries: [0.0, 0.3333333333333333, 0.6666666666666666, 1.0]
+  segment_names: [early, middle, late]
+  aggregation_weight: raw_evaluation_row
+  metrics_per_segment:
+    - bank_range_mean
+    - bank_range_p90
+    - effective_rank
+    - rank_switch_rate
+    - pair_abs_gap_mean
+    - pair_abs_gap_p90
+  expected_feature_count: 18
+  missing_segment_policy: keep_nan_record_coverage_then_outer_train_median_for_cluster_only
+  forbidden_feature_tokens:
+    - tvt
+    - tvt_input
+    - true_tvt
+    - candidate_tvt
+    - last_known_tvt
+    - target
+    - truth
+    - error
+    - actual_abs_error
+    - pred_abs_error
+    - oracle
+    - label
+    - last_known
+    - md
+    - block
+
+cluster:
+  n_clusters: 3
+  semantic_labels: [low, middle, high]
+  semantic_order_score: mean_of_18_clipped_robust_scaled_centroid_features
+  imputation: outer_train_median
+  scaler: robust
+  quantile_range: [25.0, 75.0]
+  scaled_clip: [-10.0, 10.0]
+  kmeans_n_init: 20
+  soft_membership: softmax_negative_centroid_distance
+  soft_temperature: median_positive_outer_train_nearest_centroid_distance
+  assignment_audit: second_seed_hungarian_centroid_matched
+
+model:
+  name: target_free_well_signature_cluster_audit_then_conditional_exp264_selector_addonly
+  trains_new_boosters: false
+  stage_a:
+    variants: 0
+    lightgbm_configs: 0
+    folds_trained: 0
+    planned_boosters: 0
+    parent_control_retraining: false
+  conditional_stage_b:
+    enabled: false
+    approval_required: true
+    variants: 1
+    objectives: [pred_abs_error, p_within10]
+    folds: 5
+    planned_cpu_boosters: 10
+    added_signature_features: 18
+    added_soft_memberships: 3
+    saved_exp264_stage_b_control_retraining: false
+
+execution:
+  stage: well_segment_signature_cluster_audit
+  run_approved: false
+  allowed_stages:
+    - well_segment_signature_cluster_audit
+  kaggle_push_requires_user_approval: true
+  inference_enabled: false
+  stage_a_variants: 0
+  stage_a_lightgbm_configs: 0
+  stage_a_folds: 0
+  stage_a_total_boosters: 0
+  conditional_stage_b_total_boosters: 10
+
+guards:
+  technical:
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_folds: 5
+    expected_primitives: 6
+    expected_pairs: 15
+    expected_features: 18
+    forbidden_feature_hits: 0
+  occupancy:
+    min_wells_per_cluster_outer_valid: 10
+    min_wells_per_cluster_pooled: 75
+  stability:
+    min_centroid_matched_assignment_agreement_each_fold: 0.95
+  profile:
+    require_bank_range_low_middle_high_each_segment: true
+    require_all_folds: 5
+    require_nonoverlapping_centroid_semantics_across_folds: true
+  score:
+    min_consistent_folds: 4
+    min_distinct_candidates_in_modal_winner_pattern: 2
+    calibration_epsilon: 1.0e-9
+    worst_cluster_leave_one_well_out_must_remain_worst: true
+  stage_b_requires_all_stage_a_guards: true
+
+artifacts:
+  required:
+    - well_segment_signatures.parquet
+    - well_segment_coverage.csv
+    - well_cluster_assignments.parquet
+    - well_cluster_centroids.csv
+    - well_cluster_preprocessors.json
+    - well_cluster_assignment_stability.csv
+    - well_cluster_occupancy.csv
+    - well_cluster_divergence_profiles.csv
+    - well_cluster_candidate_metrics.csv
+    - well_cluster_candidate_calibration.csv
+    - well_cluster_score_by_well.csv
+    - well_signature_feature_schema.json
+    - stage_a_summary.json
+    - reproducibility_manifest.json
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  batch_size: 500000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    dataset_sources:
+      - kentookumura/exp264-stage-b-selector-oof-v2
+    kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_explicit_seed_plus_outer_fold_offset
+  stochastic_components:
+    - kmeans_initialization
+  parallel_rng_policy: sklearn_random_state_is_explicit_no_global_rng
+  feature_sha_policy: logical_content_sha_for_parquet_and_sha256_for_contracts
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    preprocessor_sha: true
+    assignment_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - 主seed42+foldと監査seed10042+foldを同じouter-trainへfitし、Hungarian matching後のOOF一致率を保存する。
+    - Stage A rerun前はdeterministic anchorと呼ばない。
+    - Stage Aではmodel、prediction、submissionを生成しない。
+
+notes:
+  - exp265のblock-level expert branchはoccupancy guard FAILで閉じており、本実験はwell-level 0-booster監査である。
+  - hard cluster routing、cluster別expert、segment/K/clip/feature grid、inference、submissionはscope外。

@@ -1,0 +1,36 @@
+contract_version: 1
+candidate_id: exp513_hjyact_v2_final_standalone
+route: ensemble
+parent: exp512_hjyact_v2_final_10pct_hedge_on_exp413
+component:
+  name: hjyact_v2_final
+  boundary: after_complete_hjyact_v2_final_stack_and_pf_seed_branch_hedge
+  source_kernel: hjyact/ultimate-pf-config-strategy-a-reproducible-score
+  source_version: 2
+  source_run_id: 337064157
+  profile: vp_balanced_modelpkg_005
+  static_prediction_sidecar_allowed: false
+  expected_visible_submission_sha256: b192d3f348ae00680dc4df942b95cef5fd708c636a741f77dfb6b6e89b9ded4a
+final_output:
+  operation: identity
+  dtype: source_csv_float64_readback
+  downstream_blend: false
+  postprocess_after_source_final: none
+excluded_paths:
+  exp413_runtime: true
+  cross_consumer_candidate_reuse: true
+  static_visible_prediction: true
+  inference_time_model_training_fallback: true
+mount_resolution:
+  competition_root:
+    policy: unique_root_with_train_test_and_sample_submission
+    candidates:
+      - /kaggle/input/competitions/rogii-wellbore-geology-prediction
+      - /kaggle/input/rogii-wellbore-geology-prediction
+  ridge_root:
+    policy: unique_root_with_required_files_and_exact_sha_then_explicit_cfg_assignment
+    candidates:
+      - /kaggle/input/datasets/ravaghi/wellbore-geology-prediction-artifacts
+      - /kaggle/input/wellbore-geology-prediction-artifacts
+technical_fail_policy: fail_closed
+external_submission_authorized: false

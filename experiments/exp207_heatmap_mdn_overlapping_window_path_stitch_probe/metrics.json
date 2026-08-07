@@ -1,0 +1,104 @@
+{
+  "experiment": "exp207_heatmap_mdn_overlapping_window_path_stitch_probe",
+  "status": "kaggle_train_v2_complete_diagnostic_only",
+  "route": "pf_beam",
+  "parent": "exp202_heatmap_mdn_candidate_generator_probe",
+  "comparison_parent": "exp099_pf_multi_observation_likelihood_probe",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "cached_path_stitch_oracle_rmse_on_covered_rows",
+  "key_idea": "Stitch exp202 heatmap MDN local topK window paths into train-side full-well candidate paths, then audit coverage, physicality, and oracle headroom against the exp099 PF/Beam candidate union.",
+  "kernel": {
+    "id": "kentookumura/exp207-hmdn-path-stitch-train",
+    "version": 2,
+    "url": "https://www.kaggle.com/code/kentookumura/exp207-hmdn-path-stitch-train",
+    "id_no": 126149730,
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "v1_failure": {
+    "status": "error",
+    "reason": "No kernel name found in notebook and no override provided.",
+    "fix": "Added Python 3 kernelspec metadata to Jupytext percent sources and reran as version 2."
+  },
+  "primary_readout": {
+    "rows": 1333241,
+    "row_coverage_rate_vs_cache": 0.35233744072723255,
+    "existing_union_oracle_rmse": 5.1543536597226325,
+    "existing_union_within10": 0.9471610909055452,
+    "existing_plus_stitched_top1_oracle_rmse": 4.4729980305488235,
+    "existing_plus_stitched_top1_rmse_delta": -0.681355629173809,
+    "existing_plus_stitched_top1_within10": 0.9584418720996429,
+    "existing_plus_stitched_top1_new_best_candidate_rate": 0.0609724723437098,
+    "existing_plus_stitched_top3_oracle_rmse": 4.418699605056702,
+    "existing_plus_stitched_top3_rmse_delta": -0.7356540546659307,
+    "existing_plus_stitched_top3_within10": 0.959487444505532,
+    "existing_plus_stitched_top3_new_best_candidate_rate": 0.06915703912495941,
+    "stitched_only_top3_oracle_rmse": 50.79837704217831,
+    "stitched_only_top3_within10": 0.2759463592853805
+  },
+  "coverage": {
+    "cache_rows": 3783989,
+    "stitched_rows": 4148139,
+    "stitched_wide_rows": 1382713,
+    "merged_rows": 1333241,
+    "source_wells": 773,
+    "source_windows_per_well_mean": 14.0,
+    "source_overlap_wells": 3,
+    "source_overlap_pair_count": 39,
+    "source_gap_pair_count": 10010,
+    "source_row_coverage_count_mean": 1788.7619663648125
+  },
+  "physicality": {
+    "assignment_overlap_abs_mean_ft": 4.555301323915139,
+    "assignment_overlap_rows_total": 6087,
+    "assignment_gap_boundary_abs_mean_ft": 9.725981375395438,
+    "assignment_gap_boundary_abs_p95_ft": 31.206542968749993,
+    "stitched_path_step_abs_mean_ft": 0.19756878350442497,
+    "stitched_curvature_abs_mean_ft": 0.387193141717973,
+    "stitched_overlap_row_rate_mean": 0.002252561790345973,
+    "stitched_row_gap_count_total": 30030
+  },
+  "by_well": {
+    "wells": 773,
+    "improved": 461,
+    "same": 312,
+    "worse": 0,
+    "mean_rmse_delta": -0.3385240687663225,
+    "median_rmse_delta": -0.0039185425385497,
+    "max_regression": 0.0,
+    "best_improvement_well": "1b1eba53",
+    "best_improvement_existing_rmse": 37.761571,
+    "best_improvement_union_rmse": 17.418515,
+    "best_improvement_delta": -20.343056
+  },
+  "distance_bucket": {
+    "1000_plus_existing_oracle_rmse": 6.376418,
+    "1000_plus_union_oracle_rmse": 5.414525,
+    "1000_plus_new_best_candidate_rate": 0.091269,
+    "0_50_existing_oracle_rmse": 0.313605,
+    "0_50_union_oracle_rmse": 0.310983
+  },
+  "decision": "completed_train_side_diagnostic_no_inference_no_submit",
+  "next_candidate": "heatmap_mdn_dense_stride_window_path_regeneration_probe",
+  "input_sha256": {
+    "exp202_path_npz": "e615f0d01a08fd37685fd1ac46335b99306f0bb0c9c43d37c1e1f620040839a3",
+    "exp202_path_samples_decompressed": "cea6a29c716a1c5dedda1efec64a1b1f2371d1eadfd298084576f06170d0a7de",
+    "exp099_candidate_cache_decompressed": "1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a"
+  },
+  "output_sha256": {
+    "stitched_path_rows_csv_decompressed_sha256": "5177a3e11a06675b0b591d53d9c0ac3c0da29f5ee9b08daf686273ddadb1945b",
+    "stitched_window_assignments_csv_decompressed_sha256": "ce9b637961ca9f549d42ae6d613c8741da901b13803f5d408d11586ff5abc1be",
+    "candidate_union_metrics_csv_sha256": "3e029251de93b86c576bd9319cf39accab9d545080f574e831c5abda711d33bd",
+    "candidate_union_distance_bucket_metrics_csv_sha256": "6c9976dd554f8c758cff13b5a3a149643a492e50f86b4a80f0a9747f581bd77c",
+    "candidate_union_by_well_csv_sha256": "86bdb37d835f40118f80eb518529995d6cf4dedc657422d3eb6193de6a8c1783",
+    "source_window_coverage_csv_sha256": "9cf2eb9f55107aaa39d0c1a243272e449fd7430f3d04438eb3db87f0d8d316a1"
+  },
+  "notes": [
+    "Kaggle train v2 completed on CPU. Inference and submission were not run.",
+    "Covered-row oracle headroom is positive, but stitched-only candidates are weak.",
+    "The current exp202 v2 artifact is sparse: overlap exists for only 3 wells / 39 center pairs.",
+    "No direct TVT replacement, softmax average, PF weight replacement, inference, or submission is performed."
+  ]
+}

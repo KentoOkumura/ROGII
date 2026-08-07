@@ -1,0 +1,196 @@
+experiment:
+  name: exp007_hard_well_router
+  description: Route all-GR, no-GR, and guarded residual predictions with inference-safe hard-well rules
+  route: ml_model
+  status: completed
+  created_at: "2026-06-01"
+  updated_at: "2026-06-01"
+
+lineage:
+  parent: exp006_hard_well_router_diagnostic
+  diff_summary: Implement the exp006 router diagnostic as a fold-safe hard router over exp002 all-GR, exp003 no-GR, and exp005 guarded predictions
+
+validation:
+  # Shared metric, fold count, seed, group, and score-row defaults come from project.yml.
+  leakage_policy:
+    - Same well is never split across train and validation folds.
+    - Target-derived features use only the known TVT_input prefix.
+    - Evaluation-zone TVT is used only as the residual target during training/CV.
+    - Router route decisions use only inference-safe well summaries, not OOF labels or per-well RMSE.
+    - Train-only formation columns are not used.
+
+data: {}
+
+model:
+  name: hgb_last_anchor_residual_hard_router
+  primary_strategy: drift_hgb
+  drift_strategy: drift_hgb
+  feature_set: all
+  strategies:
+    - last_anchor
+    - drift_hgb
+  params:
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+    gr_slope_window: 200
+    max_abs_gr_slope: 2.0
+    gr_roll_short: 25
+    gr_roll_long: 100
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  drift_model:
+    estimator: HistGradientBoostingRegressor
+    params:
+      max_iter: 180
+      learning_rate: 0.05
+      max_leaf_nodes: 31
+      min_samples_leaf: 80
+      l2_regularization: 0.05
+      max_bins: 255
+  training:
+    max_train_rows_per_fold: 300000
+    max_train_rows_final: 450000
+    max_train_rows_per_well: 800
+  hard_router:
+    enabled: false
+    all_gr_feature_set: all
+    no_gr_feature_set: no_gr_signal
+    default_route: all_gr
+    thresholds:
+      prefix_gr_missing_rate: 0.35
+      eval_gr_missing_rate: 0.40
+      prefix_fraction_short: 0.23
+      eval_row_count_long: 5700
+      trajectory_abs_dz_dmd_high: 0.04
+      gr_delta_abs_mean_high: 15.0
+    guarded_gr_gating:
+      enabled: true
+      base_feature_set: all
+      alternate_feature_set: no_gr_signal
+      combine: all
+      default_weight: 0.0
+      alternate_weight: 1.0
+      rules:
+        - feature: prefix_gr_missing_rate
+          op: ">="
+          value: 0.35
+        - feature: eval_gr_missing_rate
+          op: ">="
+          value: 0.40
+    routes: []
+  rationale:
+    - exp002 all-GR residual learning remains the Public LB anchor with CV 14.124569 and Public LB 12.533.
+    - exp003 no-GR has stronger CV at 13.882944 but weaker Public LB at 12.852.
+    - exp005 guarded strict gate improved Public LB versus exp004 but still trailed exp002.
+    - exp006 showed low-GR routing has useful headroom but high hurt rate, so this router keeps strong-GR wells on all-GR and routes only inference-safe hard-well conditions.
+
+ablation:
+  baseline_experiment: exp002_drift_minimal
+  baseline_cv: 14.124569
+  baseline_public_lb: 12.533
+  alternate_experiment: exp003_residual_ablation
+  alternate_cv: 13.882944
+  alternate_public_lb: 12.852
+  comparison_experiment: exp005_gr_gate_recalibration
+  comparison_cv: 13.936732
+  comparison_public_lb: 12.579
+  parent_experiment: exp006_hard_well_router_diagnostic
+  parent_cv: 13.936732
+  selected_variant: hard_router_low_gr_guarded
+  variants:
+    - name: control_exp002_all
+      variable: control
+      description: Re-run exp002 all-GR settings as the main control row.
+      overrides: {}
+    - name: control_exp003_no_gr
+      variable: feature_set
+      description: Re-run exp003 selected no-GR feature set as the alternate control row.
+      overrides:
+        model:
+          feature_set: no_gr_signal
+    - name: control_exp005_guarded
+      variable: gr_gating
+      description: Re-run exp005 selected strict guarded prediction.
+      overrides:
+        model:
+          gr_gating:
+            enabled: true
+            base_feature_set: all
+            alternate_feature_set: no_gr_signal
+            combine: all
+            default_weight: 0.0
+            alternate_weight: 1.0
+            rules:
+              - feature: prefix_gr_missing_rate
+                op: ">="
+                value: 0.35
+              - feature: eval_gr_missing_rate
+                op: ">="
+                value: 0.40
+    - name: hard_router_low_gr_any
+      variable: hard_router
+      description: Route any low-GR well directly to no-GR; this reproduces the exp004 diagnostic rule through the new router implementation.
+      overrides:
+        model:
+          hard_router:
+            enabled: true
+            routes:
+              - name: low_gr_any_to_no_gr
+                route: no_gr
+                when: gr_weak_any
+    - name: hard_router_low_gr_guarded
+      variable: hard_router
+      description: Route both-low-GR, short-prefix-low-GR, or large-GR-shift-low-GR wells to no-GR; keep remaining weak-GR wells on the guarded prediction and default to all-GR.
+      overrides:
+        model:
+          hard_router:
+            enabled: true
+            routes:
+              - name: low_gr_all_to_no_gr
+                route: no_gr
+                when: gr_weak_all
+              - name: short_prefix_low_gr_to_no_gr
+                route: no_gr
+                when: short_prefix_low_gr
+              - name: large_gr_shift_low_gr_to_no_gr
+                route: no_gr
+                when: large_gr_shift_low_gr
+              - name: remaining_low_gr_to_guarded
+                route: guarded
+                when: gr_weak_any
+
+diagnostic:
+  control_variant: control_exp002_all
+  no_gr_variant: control_exp003_no_gr
+  comparison_variant: hard_router_low_gr_any
+  guarded_variant: control_exp005_guarded
+  meaningful_rmse_delta: 0.25
+  thresholds:
+    prefix_gr_missing_rate: 0.35
+    eval_gr_missing_rate: 0.40
+    prefix_fraction_short: 0.23
+    eval_row_count_long: 5700
+    trajectory_abs_dz_dmd_high: 0.04
+    gr_delta_abs_mean_high: 15.0
+  outputs:
+    well_tags: router_diagnostic_well_tags.csv
+    condition_summary: router_condition_summary.csv
+    candidate_rules: router_candidate_rules.csv
+    metrics: router_diagnostic_metrics.json
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: 30
+  save_well_metrics: true
+  save_oof_predictions: false
+
+notes:
+  - Submission target column is lowercase tvt, while train target is uppercase TVT.
+  - Do not use train-only formation columns directly at inference.
+  - Train notebook writes ablation_metrics.csv, well_metrics.csv, fold_metrics.csv, fold_model_training.csv, and router diagnostic artifacts.
+  - Inference applies ablation.selected_variant.
+  - The selected router is rule-based, not a classifier, to avoid training route decisions on target-derived OOF labels.

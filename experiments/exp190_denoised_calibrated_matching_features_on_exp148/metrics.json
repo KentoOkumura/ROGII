@@ -1,0 +1,126 @@
+{
+  "experiment": "exp190_denoised_calibrated_matching_features_on_exp148",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "matching_audit_parents": [
+    "exp167_fft_denoised_gr_matching_audit",
+    "exp170_heel_calibrated_shift_scan_pfbeam_audit",
+    "exp171_bimodal_posterior_pfbeam_candidate_audit"
+  ],
+  "kaggle": {
+    "train_kernel": "kentookumura/exp190-denoised-calibrated-matching-exp148-train",
+    "train_kernel_version": 1,
+    "train_status": "KernelWorkerStatus.COMPLETE",
+    "train_url": "https://www.kaggle.com/code/kentookumura/exp190-denoised-calibrated-matching-exp148-train"
+  },
+  "cv": {
+    "status": "train_completed",
+    "source": "kaggle_train_v1_logs",
+    "variant": "denoised_calibrated_matching_addonly",
+    "mode": "gpu_repro_guard_dp_threads8",
+    "rows": 3783989,
+    "wells": 773,
+    "features": 431,
+    "feature_groups": "projection_correction,u_disagreement,learned_likelihood_confidence,denoised_calibrated_matching",
+    "best_model": "lgb_mean",
+    "best_pooled_rmse_tvt": 8.503596159484825,
+    "best_pooled_rmse_target": 8.50359625222738,
+    "prediction_sha256": "3f2a1afc37f09bb63f1abed9ab1cb0c2782b06092aea579c76b8fd5c66736cbf",
+    "pooled_metrics": {
+      "lgb0": {
+        "rmse_tvt": 8.601678275458363,
+        "rmse_target": 8.601678160524132,
+        "prediction_sha256": "beb6ccbf52c46766258c15414866c6bc029f05ec9516c10de48ad4629839771c"
+      },
+      "lgb1": {
+        "rmse_tvt": 8.539624480134293,
+        "rmse_target": 8.539624596538978,
+        "prediction_sha256": "0876a8a16fb5650d6e6f825caaccc8c2496bccd2ec7ea101921d63af47167122"
+      },
+      "lgb2": {
+        "rmse_tvt": 8.540073561506953,
+        "rmse_target": 8.54007358743121,
+        "prediction_sha256": "c14a0c5d0204d6f96ce68af747139867cbe06153405b94b5956b61a5e584c48c"
+      },
+      "lgb_mean": {
+        "rmse_tvt": 8.503596159484825,
+        "rmse_target": 8.50359625222738,
+        "prediction_sha256": "3f2a1afc37f09bb63f1abed9ab1cb0c2782b06092aea579c76b8fd5c66736cbf"
+      }
+    },
+    "delta_vs_exp148_lgb_mean": 0.002314977589005,
+    "delta_lgb0_vs_exp148_lgb0": 0.001892416079473,
+    "delta_lgb1_vs_exp148_lgb1": -0.024346641095376,
+    "delta_lgb2_vs_exp148_lgb2": 0.030253842712878,
+    "delta_vs_exp160_lgb_mean": 0.039877385701817,
+    "feature_join_coverage": {
+      "base_rows_before_feature_join": 3783989,
+      "base_wells_before_feature_join": 773,
+      "learned_feature_rows": 3783989,
+      "learned_feature_wells": 773,
+      "joined_rows": 3783989,
+      "joined_wells": 773,
+      "dropped_base_rows": 0,
+      "dropped_base_wells": 0,
+      "full_train_coverage_pass": true
+    },
+    "elapsed_seconds": 15570.458
+  },
+  "inference": {
+    "status": "not_selected_train_side_negative",
+    "selected_variant": null,
+    "selected_model": null
+  },
+  "submitted": false,
+  "planned_train": {
+    "active_variants": [
+      "denoised_calibrated_matching_addonly"
+    ],
+    "disabled_variants": [
+      "exp148_fulltrain_control"
+    ],
+    "lightgbm_configs": 3,
+    "folds": 5,
+    "active_modes": [
+      "gpu_repro_guard_dp_threads8"
+    ],
+    "total_boosters": 15,
+    "control_retraining": false,
+    "train_notebook_split_by_lgb_config": false,
+    "gpu": true
+  },
+  "reference_metrics": {
+    "exp148_lgb_mean_pooled_rmse": 8.50128118189582,
+    "exp148_public_lb": 7.96,
+    "exp160_lgb_mean_pooled_rmse": 8.463718773783008,
+    "exp160_public_lb": 8.061,
+    "exp167_rolling_hidden_tail_gap_gain_vs_raw": 0.133844,
+    "exp171_posterior_direct_candidate": "rejected"
+  },
+  "artifacts": {
+    "metrics": "exp190_denoised_calibrated_matching_features_on_exp148_metrics.csv",
+    "by_well": "exp190_denoised_calibrated_matching_features_on_exp148_by_well.csv",
+    "bucket_metrics": "exp190_denoised_calibrated_matching_features_on_exp148_bucket_metrics.csv",
+    "projection_feature_summary": "exp190_denoised_calibrated_matching_features_on_exp148_projection_feature_summary.csv",
+    "learned_feature_summary": "exp190_denoised_calibrated_matching_features_on_exp148_learned_feature_summary.csv",
+    "dcm_feature_summary": "exp190_denoised_calibrated_matching_features_on_exp148_dcm_feature_summary.csv",
+    "feature_importance": "exp190_denoised_calibrated_matching_features_on_exp148_feature_importance.csv",
+    "feature_importance_mean": "exp190_denoised_calibrated_matching_features_on_exp148_feature_importance_mean.csv",
+    "feature_importance_plot": "exp190_denoised_calibrated_matching_features_on_exp148_feature_importance_mean_top.png",
+    "predictions": "exp190_denoised_calibrated_matching_features_on_exp148_predictions.csv.gz",
+    "feature_schema": "exp190_denoised_calibrated_matching_features_on_exp148_feature_schema.csv",
+    "model_manifest": "exp190_denoised_calibrated_matching_features_on_exp148_lgb_models/manifest.json"
+  },
+  "warnings": [
+    "DCM feature generation emitted many pandas DataFrame fragmentation PerformanceWarnings but completed successfully."
+  ],
+  "decision": {
+    "submit_candidate": false,
+    "inference_candidate": false,
+    "reason": "lgb_mean CV worsened versus exp148 lgb_mean by +0.002314977589005; exp190 also trails exp160 train-side positive reference by +0.039877385701817.",
+    "recommendation": "rejected_keep_exp148_anchor"
+  },
+  "key_idea": "Add denoised calibrated GR matching confidence features on top of exp148; train-side rejected because lgb_mean OOF worsened versus exp148.",
+  "updated_at": "2026-07-04"
+}

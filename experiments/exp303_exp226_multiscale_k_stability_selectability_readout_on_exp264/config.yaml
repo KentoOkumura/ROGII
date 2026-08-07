@@ -1,0 +1,357 @@
+experiment:
+  name: exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264
+  description: >-
+    Tests whether a preregistered target-free instability score derived from
+    K=12/K=16/K=24 exp226 predictions identifies H512 blocks where the saved
+    exp226 K=16 candidate materially beats corrected exp264 Stage C v6 hard selection.
+  route: ml_model
+  status: kaggle_cpu_v1_completed_technical_pass_scientific_fail_branch_closed
+  created_at: "2026-07-20"
+  inference_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.score_rows
+
+lineage:
+  parent: exp264_exp263_candidate_confidence_dual_selector
+  candidate_source: exp302_exp226_multiscale_k_segment_candidate_audit
+  evidence_source: exp300_exp264_vs_exp274_well_selector_readout
+  required_prior_audit: exp276_corrected_exp264_parent_revalidation
+  design_source: .steering/20260720-exp303-exp226-multiscale-k-stability-selectability-readout-on-exp264
+  diff_summary: >-
+    Fit no model and change no prediction. Freeze K=12/K=16/K=24
+    prediction-only stability features, compute one fixed outer-train empirical
+    rank score, then join truth only to measure whether it separates blocks
+    where exp264 misranks K=16. This is a selector-feature feasibility readout,
+    not a gate, correction, or selector retrain.
+
+dependencies:
+  all_required:
+    - exp302_technical_pass
+    - exp302_candidate_novelty_pass
+    - exp276_completed
+    - exp276_promotion_guard_fail
+  status:
+    exp302_technical_pass: true
+    exp302_candidate_novelty_pass: true
+    exp276_completed: true
+    exp276_promotion_guard_fail: true
+  exp302_evidence:
+    kernel_id: kentookumura/exp302-ksegment-candidate-audit-train
+    kernel_version: 2
+    completed_at: "2026-07-20T14:19:59.617307+00:00"
+    technical_passed: true
+    candidate_novelty_passed: true
+  exp276_evidence:
+    kernel_id: kentookumura/exp276-target-free-tail-risk-gate-audit-train
+    kernel_version: 3
+    completed_at: "2026-07-21 12:38 JST"
+    promotion_guard_passed: false
+    branch_closed: true
+  cancellation_rules:
+    - If exp302 candidate novelty fails, close exp303 without implementation.
+    - If exp276 passes its promotion guard, keep exp303 blocked unless the user explicitly reauthorizes it.
+
+validation:
+  strategy: fixed_target_free_multiscale_k_instability_h512_selectability_readout
+  metric: roc_auc
+  seed: 42
+  n_folds: 5
+  trained_folds: 0
+  group_column: well_id
+  fold_source: corrected_exp264_stage_c_v6_outer_fold_identity
+  score_rows: train_unknown_suffix_rows
+  primary_unit: non_overlapping_h512_block
+  block_origin: first_prediction_suffix_row_per_well
+  include_final_short_block: true
+  primary_label: k16_block_rmse_at_least_0p25_ft_better_than_exp264_stage_c_selected_hard
+  label_positive_equation: rmse_k16_plus_0p25_le_rmse_exp264_selected_hard
+  truth_join_policy: after_feature_schema_feature_values_score_and_block_manifest_sha_freeze
+  report_scopes:
+    - pooled_h512_blocks
+    - fold
+    - distance_1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+    - by_well
+
+data:
+  exp302_predictions:
+    required_candidates: [exp226_k12, exp226_k16, exp226_k24]
+    source_status: must_be_sha_frozen_output_from_exp302
+    source_kernel: kentookumura/exp302-ksegment-candidate-audit-train
+    source_kernel_version: 2
+    expected:
+      exp226_k12:
+        filename: exp302_exp226_multiscale_k_segment_candidate_audit_exp226_k12_oof_predictions.csv.gz
+        patterns:
+          - /kaggle/input/notebooks/kentookumura/exp302-ksegment-candidate-audit-train/artifacts/exp302_exp226_multiscale_k_segment_candidate_audit_exp226_k12_oof_predictions.csv.gz
+          - /tmp/kaggle-output/exp302_exp226_multiscale_k_segment_candidate_audit/train_v2/artifacts/exp302_exp226_multiscale_k_segment_candidate_audit_exp226_k12_oof_predictions.csv.gz
+          - "**/exp302_exp226_multiscale_k_segment_candidate_audit_exp226_k12_oof_predictions.csv.gz"
+        prediction_content_sha256: c3d7dfe20ad3b8c7d6d5220023bbb4526fb90d10cc73f01e612db847af70da63
+        decompressed_sha256: 63b381299ee46fa172680af57959d675c68b6b24af05664c8689dd291961f22d
+      exp226_k16:
+        filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+        patterns:
+          - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+          - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+          - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+        decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+      exp226_k24:
+        filename: exp302_exp226_multiscale_k_segment_candidate_audit_exp226_k24_oof_predictions.csv.gz
+        patterns:
+          - /kaggle/input/notebooks/kentookumura/exp302-ksegment-candidate-audit-train/artifacts/exp302_exp226_multiscale_k_segment_candidate_audit_exp226_k24_oof_predictions.csv.gz
+          - /tmp/kaggle-output/exp302_exp226_multiscale_k_segment_candidate_audit/train_v2_k24_retry/artifacts/exp302_exp226_multiscale_k_segment_candidate_audit_exp226_k24_oof_predictions.csv.gz
+          - "**/exp302_exp226_multiscale_k_segment_candidate_audit_exp226_k24_oof_predictions.csv.gz"
+        prediction_content_sha256: dca92e8f21d3b8b33d1543fe3df0bf586be3a2604b76ee1bf19fa84a327f06ef
+        decompressed_sha256: ca36d168b45acb15cc814ac3c1c3437894cd1050f6c51ba03f5b302efd0a31aa
+    freeze_manifest:
+      patterns:
+        - /kaggle/input/notebooks/kentookumura/exp302-ksegment-candidate-audit-train/artifacts/exp302_exp226_multiscale_k_segment_candidate_audit_freeze_manifest.json
+        - /tmp/kaggle-output/exp302_exp226_multiscale_k_segment_candidate_audit/train_v2/artifacts/exp302_exp226_multiscale_k_segment_candidate_audit_freeze_manifest.json
+        - "**/exp302_exp226_multiscale_k_segment_candidate_audit_freeze_manifest.json"
+      expected_file_sha256: bd80a4e02ddda8222821f4186adfa264ce1382504168be47ed51e2e5c04b6919
+      policy: >-
+        Verify the pre-serialization prediction_content_sha256 declaration in this
+        frozen manifest and independently verify each persisted gzip by decompressed SHA.
+  exp264_stage_c_candidate_score:
+    source_experiment: exp264_exp263_candidate_confidence_dual_selector
+    surface: corrected_stage_c_v6_strict_nested_outer_valid
+    filename: nested_outer_valid_candidate_score.parquet
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-train/artifacts/nested_outer_valid_candidate_score.parquet
+      - experiments/exp300_exp264_vs_exp274_well_selector_readout/artifacts/source_inputs/exp264_stage_c_v6/artifacts/nested_outer_valid_candidate_score.parquet
+      - "**/nested_outer_valid_candidate_score.parquet"
+    expected_sha256: a10b7848127f01bef522f4b17dfd1640c9784956892dc24fc1159e3869500abc
+  exp300_evidence:
+    selection_regret_k16_misranking_sse_fraction_gt3_wells: 0.523
+    use_as_design_evidence_only: true
+  hidden_like_assignment:
+    source_experiment: exp115_hidden_like_spatial_holdout_from_ppt
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+    expected_file_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    well_column: well_id
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+  raw_train_dir_patterns:
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - data/raw/train
+
+feature_contract:
+  allowed_pre_freeze_columns:
+    - well_id
+    - fold
+    - row_idx
+    - suffix_offset
+    - MD
+    - exp226_k12_prediction
+    - exp226_k16_prediction
+    - exp226_k24_prediction
+    - exp264_stage_c_selected_candidate_id
+    - exp264_stage_c_selected_hard_prediction
+  forbidden_pre_freeze_columns:
+    - TVT
+    - tvt_true
+    - error
+    - abs_error
+    - oracle_candidate
+    - oracle_rank
+    - bad_well_label
+  fixed_row_features:
+    level_spread_ft: max_k_prediction_minus_min_k_prediction
+    level_std_ft: population_std_of_three_k_predictions
+    k16_midpoint_deviation_ft: abs_k16_minus_mean_k12_k24
+    outer_asymmetry_ft: abs_k12_minus_k16_minus_abs_k24_minus_k16
+    direction_agreement: sign_k12_minus_k16_equals_sign_k24_minus_k16
+    k_order_monotone: k12_k16_k24_monotone_increasing_or_decreasing
+  fixed_h128_block_features:
+    slope_spread_ft: max_minus_min_ols_slope_vs_normalized_block_position
+    slope_std_ft: population_std_of_three_ols_slopes
+    k16_slope_midpoint_deviation_ft: abs_k16_slope_minus_mean_k12_k24_slopes
+  fixed_boundary_feature:
+    name: boundary_weighted_jump_spread_ft
+    definition: >-
+      At rows within plus-or-minus 8 rows of any equal-row segment boundary
+      implied by K=12, K=16, or K=24, take the maximum pairwise absolute
+      difference among the three first differences; use zero off boundary.
+    boundary_position_rule: continuous_np_linspace_edges_on_zero_based_suffix_position
+    boundary_radius_rows: 8
+  primary_score:
+    name: multiscale_k_instability_score
+    components:
+      - level_spread_ft
+      - slope_spread_ft
+      - boundary_weighted_jump_spread_ft
+    normalization: outer_train_empirical_percentile_with_average_ties
+    formula: arithmetic_mean_of_three_component_percentiles
+    h512_aggregation: p90_of_row_score
+    direction: higher_means_more_unstable_and_more_likely_k16_is_underselected
+    tuning: none
+  secondary_features_are_diagnostic_only: true
+
+model:
+  name: no_new_model_target_free_selectability_readout
+  estimator: none
+  trains_model: false
+  params: {}
+
+success_criteria:
+  technical_all_required:
+    expected_feature_coverage: 1.0
+    duplicate_blocks: 0
+    required_truth_access_before_freeze: 0
+    required_exp302_prediction_sha_match: true
+    required_exp264_candidate_score_sha_match: true
+    required_score_recompute_max_abs: 0.000000000001
+  scientific_all_required:
+    minimum_pooled_h512_auc: 0.65
+    minimum_folds_with_auc_above_0p5: 4
+    minimum_top_vs_bottom_quintile_positive_rate_lift: 1.5
+    minimum_top_vs_bottom_quintile_mean_k16_benefit_delta_ft: 0.25
+    subgroup_direction_rule: >-
+      For distance_1000_plus and both hidden-like scopes, require AUC above
+      0.5 when both label classes exist; otherwise require top-quintile mean
+      K16 benefit greater than bottom-quintile mean benefit.
+  subgroup_block_membership:
+    distance_1000_plus: full_h512_block_min_md_since_at_least_1000
+    hidden_like: well_is_valid_in_corresponding_exp115_assignment
+  pass_action: >-
+    Record support for a separate future add-only selector-feature experiment;
+    do not modify exp264 or generate predictions in exp303.
+  fail_action: close_branch_without_feature_score_threshold_or_horizon_rescue
+
+execution:
+  implementation: true
+  implementation_authorized: true
+  implementation_authorized_at: "2026-07-21"
+  kaggle_execution_authorized: false
+  kaggle_execution_authorized_at: "2026-07-21 13:37:37 JST"
+  kaggle_execution_approval_scope: one_private_cpu_readout_no_inference_no_submission
+  kaggle_execution_authorization_consumed_at: "2026-07-21 13:42:32 JST"
+  fixed_readout_variants_if_implemented: 1
+  outer_evaluation_folds_if_implemented: 5
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  parent_or_control_retraining: false
+  candidate_regeneration: false
+  gpu: false
+  inference: false
+  submission: false
+  implementation_source: exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264_compact_selfcontained_train.py
+  canonical_notebook_replacement_authorized: true
+  canonical_notebook_replacement_authorized_at: "2026-07-21 13:37:37 JST"
+  kaggle_push_requires_separate_user_approval: true
+
+result:
+  kernel_id: kentookumura/exp303-k-stability-readout-train
+  kernel_version: 1
+  kernel_id_no: 128080983
+  runtime_seconds_from_log: 142.124839
+  status: technical_pass_scientific_fail
+  technical_passed: true
+  scientific_passed: false
+  action: close_without_rescue_grid
+  pooled:
+    blocks: 7787
+    wells: 773
+    positive_blocks: 2596
+    auc: 0.4888054440555673
+    positive_rate_lift: 0.9161904761904762
+    mean_k16_benefit_delta_ft: -1.2055317981477287
+  folds_with_auc_above_0p5: 1
+  subgroup_direction_pass_count: 0
+  subgroup_direction_total: 3
+  reproducibility:
+    input_manifest_sha256: 9089d8ded32a7c30ae1504a345993d654a8630ce600ba335a17b1cee99c840ba
+    feature_schema_sha256: ca56361d0aef8a8ffe127418ceadd1cf666dcdeaafd13246a7be19ddfe0e69a7
+    feature_content_sha256: 964da0fa966cf24f1f2d3755cf365767f19c37a62c7fab46be819528196a38ea
+    h512_block_content_sha256: 55fd6db94a7b4120cde515238e743a273c047aef26f772b32972a4e4cf851267
+    truth_content_sha256: c3db553e89c7495cbcc01d99a38ab2b301bacf3e6fc8fa4dffe930eb93b35982
+    summary_json_sha256: e7b76c68191273d2798968d5b87e6f1a6ef4cca1401b981e4c74143f1399649e
+    score_recompute_max_abs: 0.0
+
+artifacts:
+  output_prefix: exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264
+  expected_train:
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264_contract.json
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264_input_manifest.json
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264_feature_schema.json
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264_target_free_row_features.parquet
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264_target_free_h512_blocks.parquet
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264_empirical_preprocessor_manifest.json
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264_freeze_manifest.json
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264_post_freeze_truth_manifest.csv
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264_block_readout.csv
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264_scope_readout.csv
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264_fold_readout.csv
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264_by_well.csv
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264_summary.json
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264_sha_manifest.csv
+  expected_inference: []
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_run_on_push: false
+    train_kernel_id: kentookumura/exp303-k-stability-readout-train
+    train_kernel_title: exp303 k stability readout train
+    train_kernel_version: 1
+    train_kernel_id_no: 128080983
+    inference_run_on_push: false
+    train_kernel_sources:
+      - kentookumura/exp302-ksegment-candidate-audit-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_fixed_outer_train_empirical_percentile
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  stable_order_keys: [fold, well_id, row_idx, suffix_offset]
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Freeze candidate predictions, row/block identities, feature table, outer-train empirical maps, and the primary score before truth join.
+    - The readout is diagnostic and cannot become a deterministic prediction or submission anchor.
+
+forbidden_actions:
+  - implement_or_run_before_all_dependency_gates_pass
+  - use_truth_error_oracle_candidate_or_well_id_as_feature
+  - select_feature_family_weight_horizon_threshold_or_direction_on_outer_valid_truth
+  - change_k_values_beyond_12_16_24
+  - regenerate_candidate_bank
+  - train_selector_or_stage_d_model
+  - hard_replace_or_fallback_to_k16
+  - blend_or_correct_prediction
+  - raw_test_inference
+  - submission
+
+notes:
+  - All four dependencies are satisfied; the user authorized implementation on 2026-07-21.
+  - A separate compact self-contained Jupytext source is implemented without overwriting the existing canonical placeholder Notebook.
+  - Kaggle package/push/run remains unauthorized and run-on-push stays false.
+  - Route is ml_model because the only possible downstream use is a selector feature; exp303 itself trains no model.

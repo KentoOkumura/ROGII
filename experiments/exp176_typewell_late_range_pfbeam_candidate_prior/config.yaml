@@ -1,0 +1,281 @@
+experiment:
+  name: "exp176_typewell_late_range_pfbeam_candidate_prior"
+  description: Add typewell late-range candidate_pct prior features to the exp157 supervised PF/Beam candidate ranker without hard invalidation or PF/Beam regeneration.
+  route: ensemble
+  status: completed_train_side_supported_no_submit
+  created_at: "2026-07-03"
+  updated_at: "2026-07-04"
+
+lineage:
+  parent: exp157_candidate_ranker_feature_enrichment
+  cache_parent: exp099_pf_multi_observation_likelihood_probe
+  feature_cache_parent: exp072_exp063_full_replay_feature_cache
+  diagnostic_parents:
+    - exp093_pf_candidate_coverage_then_ranker_audit
+    - exp099_pf_multi_observation_likelihood_probe
+    - exp101_pf_candidate_ranker_or_nway_classifier
+    - exp151_tvt_dense_addonly_confidence_features_on_exp092
+    - exp157_candidate_ranker_feature_enrichment
+    - exp158_segment_continuity_selector_on_exp157
+    - exp174_typewell_late_range_ml_posthoc_clip_audit
+  implementation_source: typewell_late_range_pfbeam_candidate_prior.py
+  diff_summary: Keeps exp157 GroupKFold supervised ranker/classifier training and the same eight candidate set, then adds target-free typewell late-range prior features based on candidate_pct and known_last_pct. It does not hard-drop candidates, clip candidate paths, regenerate PF/Beam trajectories, train a direct TVT regressor, or create a submission candidate.
+
+validation:
+  strategy: train_well_pseudotail_candidate_selector_oof
+  metric: rmse
+  secondary_metrics:
+    - oracle_label_accuracy
+    - within_1ft
+    - within_2ft
+    - within_5ft
+    - within_10ft
+    - selection_distribution
+    - path_switch_count
+    - bucket_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Candidate values and target-free likelihood features are read from exp099 v2 and exp072 train-side pseudo-tail caches.
+    - Dense candidates are reconstructed as last_known_tvt plus tvt_dense*_d columns; no validation true TVT is used to create features.
+    - Typewell late-range features use raw train typewell TVT min/max and visible prefix last TVT only.
+    - candidate_pct thresholds are configured before training and are not selected from validation true TVT or oracle error rank.
+    - The label is oracle-best candidate index from train pseudo-tail true TVT; it is used only for supervised train-side OOF evaluation.
+    - Feature columns exclude target, true_tvt, oracle label, oracle candidate, absolute error, and fold label.
+    - GroupKFold is grouped by well, so a well never appears in train and validation in the same fold.
+    - This experiment does not create a submission candidate; positive results require segment/continuity and raw-test parity follow-up.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+model:
+  name: lightgbm_typewell_late_range_candidate_prior
+  target: oracle_best_candidate_index
+  base_prediction: candidate_selected_tvt
+  estimator:
+    - lightgbm_multiclass
+    - lightgbm_candidate_binary
+    - lightgbm_candidate_error_ranker
+
+ranker:
+  mode: supervised_candidate_selector
+  max_rows: null
+  include_candidate_values: false
+  log_period: 100
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+    - name: beam_mean
+      column: beam_mean
+    - name: likpf_mean
+      column: likpf_mean
+    - name: sc_ens
+      column: sc_ens
+    - name: hyb
+      column: hyb
+    - name: tvt_dense
+      column: tvt_dense
+    - name: tvt_densew
+      column: tvt_densew
+    - name: tvt_dense50
+      column: tvt_dense50
+  context_columns:
+    - last_known_tvt
+    - pf_ancc_std
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+    - eval_len
+    - md_since
+    - likpf_mean_d
+  multiobs_feature_columns:
+    - multiobs_score_max
+    - multiobs_score_mean
+    - multiobs_score_gap
+    - multiobs_top1_source_id
+    - multiobs_top1_mae
+    - multiobs_top1_ncc
+    - multiobs_score_pf_ancc
+    - multiobs_mae_pf_ancc
+    - multiobs_ncc_pf_ancc
+    - multiobs_score_beam_mean
+    - multiobs_mae_beam_mean
+    - multiobs_ncc_beam_mean
+    - multiobs_score_likpf_mean
+    - multiobs_mae_likpf_mean
+    - multiobs_ncc_likpf_mean
+    - multiobs_score_sc_ens
+    - multiobs_mae_sc_ens
+    - multiobs_ncc_sc_ens
+    - multiobs_score_hyb
+    - multiobs_mae_hyb
+    - multiobs_ncc_hyb
+  optional_columns:
+    - multiobs_top1
+    - multiobs_softmax_t0p15
+    - multiobs_softmax_t0p3
+    - likpf_multiobs_blend_w0p25
+    - likpf_multiobs_blend_w0p5
+  feature_enrichment:
+    enabled: true
+    prefix: crfe_
+    max_missing_rate: 0.0
+    min_md_scale: 25.0
+    min_dense_scale: 10.0
+    near_md_threshold: 50.0
+    primary_dense_candidate: tvt_densew
+    auxiliary_candidate_columns:
+      - tvt_dense
+      - tvt_densew
+      - tvt_dense50
+    auxiliary_columns:
+      - tvt_dense_d
+      - tvt_densew_d
+      - tvt_dense50_d
+      - dense_std
+      - dense_dist
+      - pf_vs_dense
+    dense_delta_columns:
+      tvt_dense: tvt_dense_d
+      tvt_densew: tvt_densew_d
+      tvt_dense50: tvt_dense50_d
+    reference_candidates:
+      - likpf_mean
+      - beam_mean
+      - pf_ancc
+    base_feature_columns:
+      - tvt_dense_d
+      - tvt_densew_d
+      - tvt_dense50_d
+      - dense_std
+      - dense_dist
+      - pf_vs_dense
+  typewell_late_range_prior:
+    enabled: true
+    row_feature_prefix: tlp_
+    candidate_feature_prefix: candidate_tlp_
+    min_typewell_span: 1.0
+    max_context_missing_rate: 0.0
+    known_last_pct_min: [0.75, 0.80]
+    candidate_pct_lower_bounds: [0.50, 0.60, 0.70]
+    known_last_margins: [0.05, 0.10]
+  multiclass_lgbm:
+    params:
+      n_estimators: 600
+      learning_rate: 0.045
+      num_leaves: 63
+      min_child_samples: 120
+      subsample: 0.85
+      subsample_freq: 1
+      colsample_bytree: 0.85
+      reg_alpha: 0.1
+      reg_lambda: 1.0
+      n_jobs: -1
+      verbose: -1
+  long_models:
+    max_train_rows_per_fold: 300000
+    row_feature_exclude_prefixes:
+      - tlp_
+    binary_lgbm:
+      params:
+        n_estimators: 550
+        learning_rate: 0.045
+        num_leaves: 63
+        min_child_samples: 160
+        subsample: 0.85
+        subsample_freq: 1
+        colsample_bytree: 0.85
+        reg_alpha: 0.1
+        reg_lambda: 1.0
+        n_jobs: -1
+        verbose: -1
+    error_lgbm:
+      params:
+        n_estimators: 550
+        learning_rate: 0.04
+        num_leaves: 63
+        min_child_samples: 160
+        subsample: 0.85
+        subsample_freq: 1
+        colsample_bytree: 0.85
+        reg_alpha: 0.1
+        reg_lambda: 1.0
+        n_jobs: -1
+        verbose: -1
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_groupkfold_and_lightgbm_seed
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - lightgbm_histogram_training
+    - candidate_long_training_row_subsample
+    - upstream_exp157_candidate_selector_design
+  parallel_rng_policy: no_parallel_rng_in_feature_generation
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a train-side selector audit, not a deterministic submission anchor.
+    - Candidate-long model training samples row indices with a fixed local RNG seed per fold to cap memory.
+    - Typewell late-range prior feature generation itself is deterministic and target-free.
+    - Kaggle train is CPU runtime; GPU is disabled.
+
+audit:
+  mode: typewell_late_range_pfbeam_candidate_prior
+  output_prefix: exp176_typewell_late_range_pfbeam_candidate_prior
+  baselines:
+    - likpf_mean_single
+    - multiobs_score_top1
+    - oracle
+  expected_train_artifacts:
+    - exp176_typewell_late_range_pfbeam_candidate_prior_metrics.csv
+    - exp176_typewell_late_range_pfbeam_candidate_prior_oof_selected_predictions.csv.gz
+    - exp176_typewell_late_range_pfbeam_candidate_prior_selection_distribution.csv
+    - exp176_typewell_late_range_pfbeam_candidate_prior_by_well.csv
+    - exp176_typewell_late_range_pfbeam_candidate_prior_bucket_metrics.csv
+    - exp176_typewell_late_range_pfbeam_candidate_prior_feature_importance.csv
+    - exp176_typewell_late_range_pfbeam_candidate_prior_feature_importance_mean.csv
+    - exp176_typewell_late_range_pfbeam_candidate_prior_feature_schema.csv
+    - exp176_typewell_late_range_pfbeam_candidate_prior_model_manifest.json
+    - exp176_typewell_late_range_pfbeam_candidate_prior_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - No inference notebook candidate is selected by this implementation.
+    - If OOF beats exp157 and likpf_mean while controlling path switches, evaluate the same score surface with exp158-style continuity/raw-test parity before submission work.
+
+notes:
+  - Implements the KAGGLE_DIRECTION backlog item `typewell_late_range_pfbeam_candidate_prior`.
+  - Planned Kaggle train cost before push is 1 active selector experiment x 3 LightGBM model families x 5 folds = 15 boosters; exp157 control is not retrained separately.
+  - Does not train direct TVT regression, hard-invalid candidates, clip candidate paths, regenerate PF/Beam, use soft-average candidate blending, replace hidden branch output, or submit.

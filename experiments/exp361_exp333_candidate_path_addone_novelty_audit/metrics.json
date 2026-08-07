@@ -1,0 +1,74 @@
+{
+  "experiment": "exp361_exp333_candidate_path_addone_novelty_audit",
+  "status": "kaggle_cpu_v2_completed_technical_pass_candidate_novelty_pass",
+  "route": "ensemble",
+  "cv": 9.076676660936831,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "technical_passed": true,
+  "direct_gate_enabled": false,
+  "direct_context_parity_passed": true,
+  "candidate_novelty_passed": true,
+  "decision": "exp333_candidate_path_novelty_supported",
+  "kernel": {
+    "id": "kentookumura/exp361-exp333-candidate-novelty-train",
+    "version": 2,
+    "completed_at": "2026-07-23T14:15:32.285446+00:00",
+    "audit_completed_at_seconds": 234.279773032,
+    "log_last_timestamp_seconds": 242.406767304,
+    "config_sha256": "a9a09223e8996e2bc45ce72482fc99907a3e707b4c00c5721f74d15f2a3f0fd1"
+  },
+  "execution": {
+    "scientific_candidates": 1,
+    "reporting_folds": 5,
+    "candidate_fold_readouts": 5,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "parent_control_regeneration": 0,
+    "gpu": false,
+    "inference": false,
+    "submission": false
+  },
+  "direct_context": {
+    "exp226_rmse": 9.427109596582216,
+    "exp333_rmse": 9.076676660936831,
+    "exp333_minus_exp226_ft": -0.3504329356453848,
+    "improved_folds": 5,
+    "exp228_reference_rmse": 8.944085500827,
+    "exp263_reference_rmse": 8.238331715
+  },
+  "candidate_novelty": {
+    "h512_base_oracle_rmse": 3.683762664246268,
+    "h512_add_one_oracle_rmse": 3.5506587880396805,
+    "h512_oracle_improvement_ft": 0.13310387620658748,
+    "whole_well_oracle_improvement_ft": 0.10213233914534925,
+    "h512_strict_unique_best_fraction": 0.11506356748426866,
+    "h512_fold_improvements_ft": [
+      0.2471545099766872,
+      0.18667144778279265,
+      0.08127917941117158,
+      0.07275246291624038,
+      0.09329543328749645
+    ],
+    "improved_folds": 5,
+    "passed": true
+  },
+  "reproducibility": {
+    "rows": 3783989,
+    "wells": 773,
+    "evaluation_truth_access_before_freeze": 0,
+    "exp333_source_file_sha256": "70b623d4c839c4f7eb11fb2134aa214ca8f0ce8d6ebe65e723d2fffa95dcc2dc",
+    "exp333_source_decompressed_sha256": "f2ebc6f6ea243b45fdb785342b8815b3b04947f96d787d3017e5e2be7ff92e5a",
+    "prediction_content_sha256": "e9bb5e9f0689facf7d7aa468dda89ca776c11bbec1c97cc02f74ab992a016450",
+    "prediction_decompressed_sha256": "ed7b7a7f281b5d8d0b43b7007a5f640408312f4ed08abd1e417a3372bccd6bff",
+    "candidate_bank_content_sha256": "29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474",
+    "block_assignment_decompressed_sha256": "b0755c22aa8d791012d3f605e2f1b66063ce9bb6ba46ddd4b48dca77cce032d7",
+    "truth_content_sha256": "e9067327058431278a0fd994e8e6005b76ab99acbd3942118974599afb69a8d0",
+    "sha_manifest_file_sha256": "4dadbd76efbdf6c2af86fe9e9fb13b8b132c211afd7c5c03b900dca222ae0bef",
+    "downloaded_manifest_entries_checked": 10,
+    "downloaded_manifest_entries_passed": 10
+  },
+  "notes": "exp333 passed the preregistered fixed12 add-one novelty gate. Inference and submission remain unexecuted and require separate approval."
+}

@@ -1,0 +1,168 @@
+schema_version: 1.0.0
+source_of_truth: exp263_last_anchor_better_candidate_confidence_pair_cache
+expected_rows: 3783989
+expected_wells: 773
+inventory_counts:
+  exp263_stage0_and_virtual_surface_inventory: 23
+  current_stage1_score_candidates: 12
+  not_in_current_stage1_surfaces: 11
+
+score_candidates:
+  - id: exp226_k16
+    kind: primitive
+    family: geometry
+  - id: selfgr_hmm_a070
+    kind: primitive
+    family: self_gr_hmm
+  - id: likpf_mean
+    kind: primitive
+    family: likelihood_pf
+  - id: exact_hmm
+    kind: primitive
+    family: exact_hmm
+  - id: pf_ancc
+    kind: primitive
+    family: particle_filter
+  - id: beam_mean
+    kind: primitive
+    family: beam
+  - id: exp226_k16__selfgr_hmm_a070
+    kind: pair_mean_50
+    family: geometry_self_gr_hmm_pair
+    parents: [exp226_k16, selfgr_hmm_a070]
+    weights: [0.5, 0.5]
+  - id: exp226_k16__exact_hmm
+    kind: pair_mean_50
+    family: geometry_exact_hmm_pair
+    parents: [exp226_k16, exact_hmm]
+    weights: [0.5, 0.5]
+  - id: exp226_k16__likpf_mean
+    kind: pair_mean_50
+    family: geometry_likelihood_pf_pair
+    parents: [exp226_k16, likpf_mean]
+    weights: [0.5, 0.5]
+  - id: selfgr_hmm_a070__likpf_mean
+    kind: pair_mean_50
+    family: self_gr_hmm_likelihood_pf_pair
+    parents: [selfgr_hmm_a070, likpf_mean]
+    weights: [0.5, 0.5]
+  - id: likpf_mean__exact_hmm
+    kind: pair_mean_50
+    family: likelihood_pf_exact_hmm_pair
+    parents: [likpf_mean, exact_hmm]
+    weights: [0.5, 0.5]
+    aliases_not_registered_as_candidates: [blend_likpf_hmm_w500]
+  - id: exp226_w500_50_50
+    kind: named_fixed
+    family: geometry_likelihood_pf_exact_hmm_fixed
+    parents: [exp226_k16, likpf_mean, exact_hmm]
+    weights: [0.5, 0.25, 0.25]
+
+legal_domains:
+  primitive_pair_bank:
+    role: primary_meta_domain
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_k16__selfgr_hmm_a070
+      - exp226_k16__exact_hmm
+      - exp226_k16__likpf_mean
+      - selfgr_hmm_a070__likpf_mean
+      - likpf_mean__exact_hmm
+  primitive_fixed_bank:
+    role: fixed_fallback_comparison_domain
+    candidates:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - likpf_mean
+      - exact_hmm
+      - pf_ancc
+      - beam_mean
+      - exp226_w500_50_50
+
+candidate_id_model_encoding:
+  type: one_hot
+  order_source: score_candidates_declared_order
+  width: 12
+  keep_string_id_in_artifacts: true
+  ordinal_index_as_model_feature: false
+
+confidence_contract:
+  native_confidence_required_for_every_candidate: false
+  universal_proxy_required_for_every_candidate: true
+  universal_proxy_groups:
+    - candidate_availability_and_coverage
+    - candidate_anchor_distance
+    - candidate_local_shape
+    - candidate_bank_disagreement
+    - formula_parent_disagreement_and_validity
+  formula_confidence:
+    - keep_parent_confidence_namespaced
+    - add_parent_valid_count
+    - add_component_range_and_std
+    - do_not_average_cross_family_sigma
+  common_learned_scale:
+    - pred_abs_error
+    - p_within10
+  current_test_native_encoding: confidence__<candidate_id>__<field>
+  current_test_required_fields_by_primitive:
+    exp226_k16: [confidence_valid, geometry_gr_delta]
+    selfgr_hmm_a070:
+      - confidence_valid
+      - sigma_tvt
+      - source_loglik
+      - loglik_per_row
+      - candidate_finite_source
+      - selfgr_quality
+      - selfgr_peak_tvt
+      - score_margin
+      - selfgr_typewell_agreement
+      - selfgr_valid
+    likpf_mean: [confidence_valid]
+    exact_hmm: [confidence_valid, sigma_tvt, source_loglik, loglik_per_row]
+    pf_ancc: [confidence_valid, sigma_tvt]
+    beam_mean: [confidence_valid, beam_family_std]
+  current_test_policy: >-
+    採用feature schemaがsource-native confidenceを含む場合はexp263 Stage 1 parityを必須とし、
+    未出力列を暗黙の0または全NaNへ置換して推論しない。universal proxyだけのschemaは全候補で生成する。
+
+not_in_current_exp264_score_bank:
+  stage0_oof_only_not_in_current_stage1_primitives:
+    - selfgr_hmm_a150
+    - hmm_peer_atlas
+    - exp192_likpf
+    - pf_medoid_k8_m0
+    - exp103_xy_likpf_scale_12
+    - hmm_state_selfgr
+  stage0_oof_only_not_in_current_stage1_pairs:
+    - exp226_k16__hmm_peer_atlas
+    - exp226_k16__exp192_likpf
+    - exp226_k16__pf_medoid_k8_m0
+  outer_fold_fitted_formulas_not_in_current_stage1:
+    - exp226_selfgr_a070_likpf_outer_convex
+    - exp226_exp192_likpf_exact_hmm_outer_convex
+
+not_registered_as_exp264_candidates:
+  - sc_ens
+  - hyb
+  - tvt_dense
+  - tvt_densew
+  - tvt_dense50
+  - blend_likpf_hmm_w500
+  - hmm_lgb_exp148
+  - hmm_exp218_residual_scale
+  - hmm_exp218_shrink_a050
+
+forbidden_behaviors:
+  - treat_all_12_as_one_hard_selectable_domain
+  - use_catalog_rmse_as_row_feature
+  - use_pair_readout_as_row_feature
+  - use_outer_fold_eligibility_as_row_feature
+  - use_true_error_or_oracle_as_feature
+  - softmax_average_candidate_tvt
+  - viterbi_in_exp264
+  - hmm_lgb_feedback

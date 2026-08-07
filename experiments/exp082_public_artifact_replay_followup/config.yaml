@@ -1,0 +1,193 @@
+experiment:
+  name: "exp082_public_artifact_replay_followup"
+  description: Follow-up integrity audit for SP45, fle3n, Koolbox, and SP45/Fleongg public replay candidates after exp079.
+  route: ensemble
+  status: submitted_jaemin_final_source_port_public_lb_7_602_not_adopted
+  created_at: "2026-06-19"
+  updated_at: "2026-06-21"
+
+lineage:
+  parent: exp079_public_artifact_replay_integrity_audit
+  deterministic_anchor: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  pf_route_anchor: exp027_public_replay_needless090_sel15_spread3
+  diff_summary: Fixes exact source slugs for the SP45/fle3n/Koolbox family left as placeholder in exp079, then reruns the same integrity audit and source-ports fle3n and jaemin SP45/Fleongg final blends for hidden-compatible notebook submission. This is an ensemble public-notebook route candidate, not an ML-route anchor.
+
+validation:
+  strategy: target_free_public_artifact_integrity_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: TVT_input_isna
+  leakage_policy:
+    - No supervised training is performed in this experiment.
+    - Public notebook outputs are not submitted until inputs, branch CSVs, hashes, and sample compatibility are recorded.
+    - Static visible-test CSV and public-sample branches are treated as blocking risks until explained.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: public_artifact_replay_followup_audit
+  estimator: none
+  params: {}
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - lightningv08/lb-7-776-rogii-ridge-sp
+      - fleongg/fle3n-rogii-v4
+      - jaemin3404/rogii-sp45-fleongg-blend-v2
+      - debatreyabiswas/wellboregeology-prediction-with-koolbox-best-8-188
+      - packagemanager/pm-121774751-at-06-05-2026-09-29-28
+    dataset_sources:
+      - phongnguyn23021656/koolbox-offline
+      - fleongg/rogii-claude-models-pub
+      - ravaghi/wellbore-geology-prediction-artifacts
+    inference_kernel_sources: []
+    inference_dataset_sources:
+      - phongnguyn23021656/koolbox-offline
+      - fleongg/rogii-claude-models-pub
+      - ravaghi/wellbore-geology-prediction-artifacts
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_used
+  stochastic_components: []
+  parallel_rng_policy: no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: false
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - This is an audit notebook, not a deterministic prediction anchor.
+    - External input files and submission-like CSVs are hashed; gzip files also record decompressed content SHA.
+
+audit:
+  mode: public_artifact_replay_integrity_audit
+  output_prefix: exp082_public_artifact_replay_followup
+  max_inventory_files: 5000
+  max_source_files: 200
+  source_specs:
+    - name: ridge_sp_lb_7776
+      kernel: lightningv08/lb-7-776-rogii-ridge-sp
+      kernel_output_slugs:
+        - lb-7-776-rogii-ridge-sp
+      required_input_slugs:
+        - lb-7-776-rogii-ridge-sp
+      branch_files:
+        - submission.csv
+      expected_checks:
+        - dataset_kernel_model_sources
+        - static_visible_csv_writer
+        - code_competition_rerun_compatibility
+    - name: fle3n_rogii_v4
+      kernel: fleongg/fle3n-rogii-v4
+      kernel_output_slugs:
+        - fle3n-rogii-v4
+      external_input_slugs:
+        - koolbox-offline
+        - rogii-claude-models-pub
+        - wellbore-geology-prediction-artifacts
+      required_input_slugs:
+        - fle3n-rogii-v4
+        - koolbox-offline
+        - rogii-claude-models-pub
+        - wellbore-geology-prediction-artifacts
+      notebook_paths:
+        - docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_20260611/fleongg__fle3n-rogii-v4/fle3n-rogii-v4.ipynb
+      branch_files:
+        - submission.csv
+        - fleongg_pretrained_submission.csv
+      expected_checks:
+        - exact_source_slug_fixed
+        - external_dataset_sources_fixed
+        - static_visible_csv_writer
+        - code_competition_rerun_compatibility
+    - name: sp45_fleongg_blend_v2
+      kernel: jaemin3404/rogii-sp45-fleongg-blend-v2
+      kernel_output_slugs:
+        - rogii-sp45-fleongg-blend-v2
+      external_input_slugs:
+        - koolbox-offline
+        - rogii-claude-models-pub
+        - wellbore-geology-prediction-artifacts
+      required_input_slugs:
+        - rogii-sp45-fleongg-blend-v2
+        - koolbox-offline
+        - rogii-claude-models-pub
+        - wellbore-geology-prediction-artifacts
+      branch_files:
+        - submission.csv
+        - sp45_projection_submission.csv
+        - fleongg_pretrained_submission.csv
+        - submission_sp45_fleongg_w0.50.csv
+        - submission_sp45_fleongg_w0.52.csv
+        - submission_sp45_fleongg_w0.55.csv
+        - submission_sp45_fleongg_w0.58.csv
+        - submission_sp45_fleongg_w0.60.csv
+        - sp45_fleongg_blend_report.csv
+      notebook_paths:
+        - docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_20260611/jaemin3404__rogii-sp45-fleongg-blend-v2/rogii-sp45-fleongg-blend-v2.py
+      expected_checks:
+        - exact_source_slug_fixed
+        - external_dataset_sources_fixed
+        - branch_blend_outputs_saved
+        - static_visible_csv_writer
+        - code_competition_rerun_compatibility
+    - name: koolbox_best_8188
+      kernel: debatreyabiswas/wellboregeology-prediction-with-koolbox-best-8-188
+      kernel_output_slugs:
+        - wellboregeology-prediction-with-koolbox-best-8-188
+      external_input_slugs:
+        - wellbore-geology-prediction-artifacts
+        - pm-121774751-at-06-05-2026-09-29-28
+      required_input_slugs:
+        - wellboregeology-prediction-with-koolbox-best-8-188
+        - wellbore-geology-prediction-artifacts
+        - pm-121774751-at-06-05-2026-09-29-28
+      notebook_paths:
+        - docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_latest/debatreyabiswas__wellboregeology-prediction-with-koolbox-best-8-188/wellboregeology-prediction-with-koolbox-best-8-188.ipynb
+      branch_files:
+        - submission.csv
+      expected_checks:
+        - exact_source_slug_fixed
+        - package_manager_source_fixed
+        - static_visible_csv_writer
+        - code_competition_rerun_compatibility
+  anchor_submission_paths:
+    - name: exp027_public_replay_anchor
+      path: /tmp/kaggle-output/exp027_public_replay_needless090_sel15_spread3/inference/submission.csv
+    - name: exp073_deterministic_ml_anchor
+      path: /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/inference_v2/submission.csv
+    - name: exp063_old_ml_public_anchor
+      path: /tmp/kaggle-output/exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit/inference_v2/submission.csv
+
+notes:
+  - This experiment implements the public_artifact_replay_followup backlog item from KAGGLE_DIRECTION.md.
+  - Direct CSV submit is rejected by the competition API because the competition only accepts submissions from notebooks.
+  - Source slugs are fixed from saved public notebook metadata under docs/notebooks/rogii-wellbore-geology-prediction.
+  - rauffauzanrambe/rogii-sp45-wellbore-for-blend-prediction exists and its output can be downloaded directly, but a single-source addability probe confirmed it does not mount under /kaggle/input. It is therefore tracked as a direct-output reference, not as a required Kaggle input source.
+  - rauff direct output reference SHA values: submission.csv=2b86386f19279e79e7184096f353ccf2b97785de67b268caa56aa5f85405a815, sp45_projection_submission.csv=4e2bfc43b4b2202a5a9fc8808f3a42d408d86cee9c401f1eae4a1fcaa2c5edb9, submission_sp45_fleongg_w0.60.csv=fa95d6906d5aa2aa29bc99843dded981f6f366d9ea8a463a87fe8a6597250c42.
+  - Submitted fle3n SP45 projection copy wrapper ref=53853237, status=SubmissionStatus.COMPLETE, but raw API errorDescription says the notebook hit an unhandled error during hidden rerun. publicScore is null. The copy-from-public-output submit wrapper is not hidden-rerun compatible.
+  - Submitted hidden-compatible fle3n SP45 source-port notebook ref=53854058 from kentookumura/exp082-fle3n-sp45-source-infer v1. Public LB is 7.857, raw API errorDescription is null, and output submission SHA is 9fb152e8ecc045b602597d8bdf87578d1f3ec4aa34eff0e857aceccfb2e75eb1.
+  - sp45_fleongg_source_port_next_candidates guard completed. fle3n final blend and jaemin SP45/Fleongg final have archived source and no blocking public-output-copy source risk; Pilkwang raw projection and w0.60 blend are blocked until exact archived source is available. Recommended next action is one fle3n final blend source-port run before any additional submit.
+  - fle3n final blend source-port run completed as kentookumura/exp082-fle3n-final-source-infer v1. Output submission SHA is 40ffcd3daf554fc6b79f472bc5da8d0e4f7d0cb88f8a464a87bbb826c5a15ceb and submit-check passed.
+  - Submitted fle3n final blend source-port v1 as ref=53885305. Public LB is 7.601, improving the previous exp082 SP45 source-port ref=53854058 / Public LB 7.857. This is the current ensemble route anchor.
+  - jaemin final source-port run completed as kentookumura/exp082-jaemin-final-source-infer v1. Output submission SHA is f789960d9a2e9f8bdaa107dd56f723d35035f1b0fe82673d148cc77f5071c5b9 and submit-check / validate_submission passed. Notebook submission ref=53896556 completed with Public LB 7.602; ref=53896658 completed with no public score. The fle3n final ref=53885305 / Public LB 7.601 remains the current scored ensemble route anchor.

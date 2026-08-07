@@ -1,0 +1,89 @@
+{
+  "exact_prune_17": {
+    "features": [
+      "sc_trust",
+      "ll_candidate_tvt_likpf_mean_minus_likpf_mean_tvt",
+      "ll_candidate_tvt_beam_mean_minus_last_known_tvt",
+      "ll_candidate_tvt_beam_mean_minus_likpf_mean_tvt",
+      "ll_candidate_tvt_hyb_minus_last_known_tvt",
+      "ll_candidate_tvt_likpf_mean_minus_last_known_tvt",
+      "ll_candidate_tvt_pf_ancc_minus_last_known_tvt",
+      "ll_candidate_tvt_pf_ancc_minus_likpf_mean_tvt",
+      "ll_candidate_tvt_sc_ens_minus_last_known_tvt",
+      "tda0",
+      "dense_bias",
+      "uproj_beam_mean_resid",
+      "uproj_beam_med_resid",
+      "uproj_diff_pf_ancc_minus_pf_z",
+      "uproj_likpf_mean_resid",
+      "uproj_pf_ancc_resid",
+      "uproj_pf_z_resid"
+    ],
+    "recommended_actions": [
+      "drop_in_exact_prune"
+    ],
+    "evidence_levels": [
+      "high"
+    ]
+  },
+  "formation_last50_followup_12": {
+    "features": [
+      "bw50_ANCC",
+      "bw50_ASTNU",
+      "bw50_ASTNL",
+      "bw50_EGFDU",
+      "bw50_EGFDL",
+      "bw50_BUDA",
+      "tvtF50_ANCC",
+      "tvtF50_ASTNU",
+      "tvtF50_ASTNL",
+      "tvtF50_EGFDU",
+      "tvtF50_EGFDL",
+      "tvtF50_BUDA"
+    ],
+    "recommended_actions": [
+      "defer_to_separate_ablation"
+    ],
+    "evidence_levels": [
+      "medium"
+    ]
+  },
+  "learned_likelihood_slim_review": {
+    "features": [
+      "ll_candidate_tvt_sc_ens_minus_likpf_mean_tvt",
+      "ll_candidate_tvt_hyb_minus_likpf_mean_tvt",
+      "ll_candidate_tvt_std",
+      "ll_candidate_tvt_range"
+    ],
+    "recommended_actions": [
+      "review_only_do_not_include_in_exact_prune"
+    ],
+    "evidence_levels": [
+      "medium"
+    ]
+  },
+  "u_projection_slim_review": {
+    "features": [
+      "uproj_pf_ancc_abs_resid",
+      "uproj_pf_ancc_resid_mad",
+      "uproj_pf_z_abs_resid",
+      "uproj_pf_z_resid_mad",
+      "uproj_beam_mean_abs_resid",
+      "uproj_beam_mean_resid_mad",
+      "uproj_beam_med_abs_resid",
+      "uproj_beam_med_resid_mad",
+      "uproj_likpf_mean_abs_resid",
+      "uproj_likpf_mean_resid_mad",
+      "uproj_source_u_std",
+      "uproj_source_u_range",
+      "uproj_corr_std",
+      "uproj_corr_range"
+    ],
+    "recommended_actions": [
+      "review_only_do_not_include_in_exact_prune"
+    ],
+    "evidence_levels": [
+      "medium"
+    ]
+  }
+}

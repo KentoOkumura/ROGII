@@ -1,0 +1,24 @@
+# exp221 lgb_oof_gaussian_emission_hmm_on_exp148 tasklist
+
+- [x] Create steering docs.
+- [x] Scaffold exp221 from exp209.
+- [x] Set route to `ensemble` and record no-training cost guard.
+- [x] Add LGB OOF Gaussian emission support to exact HMM.
+- [x] Add dynamic wide HMM candidate cache output.
+- [x] Add exp072 / exp148 / exp193 comparison readout.
+- [x] Add exp115 hidden-like subgroup readout.
+- [x] Create exp221 train / inference notebook sources.
+- [x] Generate `.ipynb` files from Jupytext sources.
+- [x] Run py_compile / ruff F821.
+- [x] Run validate-exp.
+- [x] Prepare Kaggle train notebook.
+- [x] Push Kaggle train only after confirming 3 active variants, 0 boosters, no control retraining.
+- [x] Diagnose Kaggle train v2 timeout from logs.
+- [x] Push Kaggle train v3 with single sigma=20 variant.
+- [x] Record Kaggle train result and update result / metrics / summaries.
+- [x] Implement current-test exp148 saved-booster prediction inside exp221 inference.
+- [x] Add exp221 test-row LGB-emission HMM inference and strict sample id coverage.
+- [x] Generate inference notebook and prepare Kaggle inference package.
+- [x] Push Kaggle inference v1.
+- [x] Validate Kaggle inference output submission.csv.
+- [x] Record submission v1 Public LB 7.953 and adoption decision.

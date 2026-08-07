@@ -1,0 +1,285 @@
+experiment:
+  name: exp334_equal_well_loss_weighting_on_exp287
+  description: >-
+    Keep the exp287 421-feature, five-fold, three-LightGBM-config surface fixed
+    and change only the outer-train sample weights so every well contributes the
+    same total training loss. Validation, early stopping, OOF, scope, and by-well
+    metrics remain unweighted. The implementation, including the zero-booster
+    preflight path, is complete. The compact train notebook, zero-booster
+    preflight, and one 15-booster Kaggle train completed. Pooled/global guards
+    passed, but the fixed well-tail AND gate failed; the experiment is closed
+    without inference or submission.
+  route: ml_model
+  status: train_complete_guard_failed_closed_no_inference
+  created_at: "2026-07-21"
+  updated_at: "2026-07-22"
+
+lineage:
+  parent: exp287_fold_safe_formation_74_addonly_on_exp264
+  clean_tail_control: exp264_exp263_candidate_confidence_dual_selector
+  diff_summary: >-
+    Reuse the saved exp287 control and keep its clean-273 plus nested-compact-74
+    plus fold-safe-formation-74 feature surface, folds, target, selectors, seeds,
+    and three LightGBM configs fixed. The only scientific change is a deterministic
+    outer-train row weight N_train/(N_train_wells*n_rows_for_well), normalized to
+    mean one and equal total weight per well. No validation weight is supplied.
+
+validation:
+  strategy: exp287_outer5_groupfold_with_saved_exp287_and_exp264_controls
+  metric: rmse
+  metric_weighting: unweighted_rows
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_isna
+  expected_rows: 3783989
+  expected_wells: 773
+  early_stopping_metric_weighting: unweighted_rows
+  primary_control:
+    experiment: exp287_fold_safe_formation_74_addonly_on_exp264
+    rmse: 8.136708220359452
+    public_lb: 7.530
+  clean_tail_control:
+    experiment: exp264_exp263_candidate_confidence_dual_selector
+    rmse: 8.460811237612477
+  scopes:
+    - near_0_250
+    - mid_250_1000
+    - 1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+  leakage_policy:
+    - Build weights independently inside each outer fold from outer-train score-row identity and well only.
+    - Never use target, prediction, error, formation value, or outer-valid rows to define weights.
+    - Do not attach sample weights to the validation Dataset.
+    - Compare against SHA-pinned saved exp287 and corrected exp264 OOF artifacts without retraining either control.
+
+data:
+  stage_c_artifact_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-train/artifacts
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_c_v6/artifacts
+  stage_c_expected_nested_selector_metrics_sha256: 421376abe55378ac3e0d9c37d2a882a97d6fd4ebf866ec4395e7346c1d4f478b
+  stage_c_expected_nested_selector_model_manifest_sha256: 3f28b04a017f0edadb815be44bf6f6f039dbd115bb72b3401e2681d3002422d2
+  stage_c_expected_nested_compact_manifest_sha256: f4855726de446b8308a8acf80d6ff6cd6a789f18ef90e165b98fa05d12aecf1c
+  stage_c_expected_compact_meta_schema_file_sha256: e3a677610899cb33bf58262f4cf02f650300c8c2207c46b53588d3418162ea74
+  stage_c_expected_compact_meta_schema_logical_sha256: 23614916c99edbbd513bcefee958d26cdfae5b83fb05c232c19736f2708dd725
+  exp218_source_patterns:
+    - inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+    - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+  exp218_config_patterns:
+    - inputs/exp218_source/config.yaml
+    - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+  clean_273_allowlist_patterns:
+    - inputs/exp218_clean_273_allowlist.csv
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+  clean_273_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
+  hidden_like_assignment_patterns:
+    - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  hidden_like_assignment_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  saved_exp287_artifact_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp287-foldsafe-form74-addonly-exp264-train/artifacts
+    - experiments/exp287_fold_safe_formation_74_addonly_on_exp264/kaggle/output/train_v5/artifacts
+  expected_exp287_oof_sha256: 8f026c5c5f6508fb142981832994c6ba9cded4940168c648a9df9f3e698c3913
+  expected_exp287_model_manifest_sha256: 419dbdf83dd6bc343f0265aca56dd690ba1f231ee419e7cf0ff456ffdb797590
+  expected_exp287_metrics_sha256: 435434342494aaa62cee6e627809363ac34f16174973f4b81301d2923f780862
+  expected_exp287_fold_metrics_sha256: 864eca0452eea578c96baa653d25c4f2ae241c84b8e5d659b277407b5e427141
+  expected_exp287_by_well_sha256: 3562cec13abe3c3df496e57d71b46aeb592ea2022c7bf0b9b5df1e062c21024d
+  expected_exp287_formation_fold_manifest_sha256: 25611e281299991d626f1caca48673aee6225a890ad47ecdcd28a117ae827772
+  expected_exp287_feature_schema_sha256: c1327324d6e0719eab45b9f8841033dd6cf09dd09228b044e6e8cc85f0fa8413
+  expected_exp287_raw_schema_audit_sha256: 45d0bf77b1893adfce74921f4427c4ca5ba6d95c69326cbbd35abb766e502a41
+  saved_exp264_oof_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-tvt-train/artifacts/stage_d_oof_predictions.parquet
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_d_v3_corrected/artifacts/stage_d_oof_predictions.parquet
+  expected_exp264_oof_sha256: b11c5005ca566f76588f4e1735386c15b8f016b874701a82e1c0741c8b839ae2
+
+model:
+  name: exp287_421_equal_well_total_train_weight_lightgbm
+  downstream_tvt_stage:
+    expected_source_base_feature_count: 380
+    expected_base_feature_count: 273
+    base_feature_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
+  source_surface:
+    clean_base_feature_count: 273
+    nested_compact_feature_count: 74
+    fold_safe_formation_feature_count: 74
+    final_feature_count: 421
+    target: target_residual_from_last_known_tvt
+    model_family: exp218_exp063_public_pixiux_lgb0_lgb1_lgb2
+    lightgbm_config_indices: [0, 1, 2]
+    folds: 5
+    early_stopping_rounds: 250
+    log_evaluation_period: 100
+    matrix_copy_chunk_columns: 32
+    mode: gpu_repro_guard_dp_threads8
+  train_weight:
+    variant: equal_well_total_train_weight
+    scope: outer_train_score_rows_only
+    formula: N_train_rows/(N_train_wells*n_train_rows_for_well)
+    normalization: mean_one_within_outer_train
+    expected_total_weight_per_well: N_train_rows/N_train_wells
+    validation_weight: null
+    inputs: [outer_fold, score_row_identity, well]
+    forbidden_inputs: [target, prediction, error, formation_value, outer_valid_rows]
+    invariant_tolerance: 1.0e-10
+  execution_count:
+    active_variants: 1
+    lightgbm_configs: 3
+    folds: 5
+    planned_gpu_boosters: 15
+    control_retraining_boosters: 0
+
+guards:
+  promotion:
+    maximum_pooled_delta_rmse_vs_exp287: 0.02
+    minimum_nonworse_folds_vs_exp287: 4
+    maximum_scope_delta_rmse_vs_exp287: 0.02
+    maximum_by_well_delta_p95_vs_exp287: 0.0
+    maximum_worst_well_delta_rmse_vs_exp264: 0.25
+    worsened_well_thresholds_ft: [1.0, 3.0, 5.0]
+    maximum_worsened_well_counts_vs_exp264:
+      plus_1ft: 135
+      plus_3ft: 39
+      plus_5ft: 14
+    require_all_checks: true
+  reference_exp287_failure:
+    worst_well_delta_rmse_vs_exp264: 8.228409822385604
+    worsened_well_counts_vs_exp264:
+      plus_1ft: 140
+      plus_3ft: 40
+      plus_5ft: 19
+  forbidden:
+    - target_or_error_derived_weight
+    - inner_oof_hard_well_weight
+    - weight_formula_grid
+    - weight_clipping_or_power_search
+    - validation_sample_weight
+    - feature_surface_change
+    - lightgbm_config_change
+    - fold_seed_or_target_change
+    - control_retraining
+    - guard_relaxation
+    - inference_or_submit_before_all_guards_pass_and_separate_approval
+
+execution:
+  stage: equal_well_weight_train
+  allowed_stages: [preflight_only, equal_well_weight_train]
+  implementation_approved: true
+  implementation_approved_at: "2026-07-21"
+  canonical_train_notebook_adoption_approved: true
+  zero_booster_preflight_approved: true
+  fifteen_booster_train_approved: true
+  execution_approved_at: "2026-07-21 19:42:57 JST"
+  execution_approval_scope: >-
+    Adopt the compact self-contained train candidate as the canonical train
+    notebook, run one zero-booster Kaggle preflight, and only after it passes
+    run one variant times three LightGBM configs times five folds, for 15 GPU
+    boosters total and zero control-retraining boosters.
+  preflight_completed: true
+  preflight_completed_at: "2026-07-21 20:36:02 JST"
+  preflight_kernel_version: 1
+  preflight_kernel_id_no: 128110184
+  preflight_manifest_sha256: 132169c0315febbd8fda69e164bc40e3c55eeb0cf12dd80524b495912c65bacb
+  train_kernel_version: 2
+  train_kernel_id_no: 128110184
+  train_started_at: "2026-07-21 20:41:27 JST"
+  train_completed: true
+  train_completion_confirmed_at: "2026-07-22 06:34:49 JST"
+  train_runtime_seconds: 21882.805369142
+  promotion_guard_passed: false
+  kaggle_push_approved: false
+  run_train: false
+  run_inference: false
+  create_submission: false
+  submit_to_kaggle: false
+  kaggle_push_requires_user_approval: true
+  inference_requires_separate_user_approval: true
+  submission_requires_separate_user_approval: true
+  control_retraining: false
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  batch_size: 50000
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    machine_shape: NvidiaTeslaT4
+    bootstrap_dependency_files:
+      - source: experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/kaggle/output/train_v4_selected/artifacts/exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv
+        destination: inputs/exp251_v4_selected_feature_schema.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_a_v4/artifacts/feature_catalog.csv
+        destination: inputs/exp264_stage_a_feature_catalog.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_a_v4/artifacts/feature_schema.json
+        destination: inputs/exp264_stage_a_feature_schema.json
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+        destination: inputs/exp218_clean_273_allowlist.csv
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: inputs/exp218_source/config.yaml
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/settings.py
+        destination: inputs/exp218_source/settings.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/learned_likelihood_rawtest_feature_generator_parity.py
+        destination: inputs/exp145_source/learned_likelihood_rawtest_feature_generator_parity.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/pf_multi_observation_likelihood_probe.py
+        destination: inputs/exp145_source/pf_multi_observation_likelihood_probe.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/settings.py
+        destination: inputs/exp145_source/settings.py
+      - source: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/config.yaml
+        destination: inputs/exp145_source/config.yaml
+      - source: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+        destination: exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_builder.py
+        destination: inputs/exp263_source/candidate_cache_builder.py
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_contract.py
+        destination: inputs/exp263_source/candidate_cache_contract.py
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/candidate_cache_loader.py
+        destination: inputs/exp263_source/candidate_cache_loader.py
+      - source: experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/config.yaml
+        destination: inputs/exp263_source/config.yaml
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/config.yaml
+        destination: inputs/exp264_parent_config.yaml
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/candidate_contract.yaml
+        destination: candidate_contract.yaml
+    train_kernel_sources:
+      - kentookumura/exp264-exp263-confidence-dual-selector-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-tvt-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp145-train
+      - kentookumura/exp287-foldsafe-form74-addonly-exp264-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_global_seed_42_inherited_from_exp287
+  stochastic_components:
+    - lightgbm_gpu_training
+  parallel_rng_policy: preserve_exp287_threads8_and_do_not_add_global_rng_dependent_work
+  gpu_policy:
+    gpu_use_dp: true
+    deterministic: true
+    force_col_wise: true
+    num_threads: 8
+    bitwise_rerun_claimed: false
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    fold_assignment_sha: true
+    train_weight_summary_and_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - GPU LightGBM is not a deterministic anchor until an independently approved rerun confirms parity.
+    - Inference and submission artifacts are outside the current implementation scope.
+
+notes:
+  - Assumption: row-count-proportional loss contribution is one cause of exp287 well-level tail regressions.
+  - A target/error-derived hard-well variant is a separate future hypothesis and is not part of exp334.
+  - Implementation is complete; Kaggle push/training, inference, and submission are not approved.

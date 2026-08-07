@@ -1,0 +1,36 @@
+{
+  "experiment": "exp387_prefix_gr_rgt_scenario_posterior",
+  "status": "design_closed_by_exp386_stage0_fail",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse_ft",
+  "implementation": false,
+  "parent": {
+    "experiment": "exp386_cycle_consistent_rgt_scenario_bank",
+    "kaggle_train_kernel_version": 1,
+    "kaggle_train_kernel_id_no": 128478384,
+    "stage0_passed": false,
+    "all_gates_passed": false,
+    "scenario_bank_well_coverage": 0.0,
+    "cycle_residual_p95": 2.363303287461948,
+    "manifest_logical_sha256": null
+  },
+  "runtime_counts": {
+    "scientific_variants": 1,
+    "stage0_likelihood_audits_completed": 0,
+    "stage1_decoder_well_runs_completed": 0,
+    "lightgbm_boosters": 0,
+    "hmm_runs": 0,
+    "pf_runs": 0,
+    "beam_runs": 0
+  },
+  "gates": {
+    "stage0_target_free_prefix": "not_run_parent_stage0_failed",
+    "stage1_truth_late_scientific": "not_run_parent_stage0_failed",
+    "stage2_promotion_safety": "not_run_parent_stage0_failed"
+  },
+  "decision": "close_without_implementation",
+  "notes": "The required exp386 bank was empty and exp386 failed its fixed cycle residual gate. No implementation, Kaggle run, inference, or submission was performed."
+}

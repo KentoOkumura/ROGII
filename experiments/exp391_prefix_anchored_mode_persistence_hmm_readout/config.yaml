@@ -1,0 +1,389 @@
+experiment:
+  name: exp391_prefix_anchored_mode_persistence_hmm_readout
+  description: >-
+    Completed fail-closed train-side readout that first separates
+    exp209 posterior averaging and transition effects from exp226 K16 projection
+    and exp263 fixed-blend effects, then conditionally tests a prefix-anchored
+    no-mode-switch HMM decoder.
+  route: pf_beam
+  status: completed_stage_a1_fail_closed
+  created_at: "2026-07-25"
+  updated_at: "2026-07-25"
+  inference_enabled: false
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260725-exp391-prefix-anchored-mode-persistence-hmm-readout
+  references:
+    - exp236_exact_hmm_posterior_bimodality_audit
+    - exp270_exact_hmm_posterior_mode_candidate_audit
+    - exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    - exp263_last_anchor_better_candidate_confidence_pair_cache
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md
+  diff_summary: >-
+    Keep the exp209 absolute-TVT exact-HMM model unchanged. Add a train-side
+    posterior-shape and downstream-path readout, stable transition-overlap mode
+    identities, a cross-mode edge ledger, and one prefix-anchor no-switch
+    conditional-mean candidate. Never use top1/top2 mass rank as a mode identity.
+
+implementation:
+  enabled: true
+  scope: compact_selfcontained_train_and_fail_closed_inference_candidates
+  train_notebook_state: canonical_compact_selfcontained_adopted
+  inference_notebook_state: compact_selfcontained_fail_closed_candidate_not_adopted
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+
+validation:
+  strategy: saved_artifact_cause_census_then_same_posterior_mode_persistence_readout
+  metric: rmse
+  seed: 42
+  reporting_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  truth_attachment: after_event_mode_ledger_and_candidate_logical_sha_freeze
+  leakage_policy:
+    - Event extraction and 16-well selection may use only saved predictions, identity, fold, and suffix distance.
+    - Peak extraction, basin matching, mode tracking, and candidate generation happen before suffix truth, errors, or hidden-like roles are read.
+    - exp236 values are not joined as exp209 posterior values; only its preregistered peak thresholds are reused.
+    - Truth and hidden-like roles are late-joined only for frozen-candidate reporting.
+    - Public LB is never used for threshold, event, mode, fallback, or rescue selection.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  exp209_control:
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    prediction_column: hmm_mean_tvt
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    parity_atol_ft: 0.00001
+    candidates:
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5_small/artifacts
+    patterns:
+      - "**/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz"
+  exp270_mode_bank:
+    source: exp270_exact_hmm_posterior_mode_candidate_audit
+    aggregate_filename: exp270_exact_hmm_posterior_mode_candidate_audit_candidates.csv.gz
+    local_aggregate_candidate: experiments/exp270_exact_hmm_posterior_mode_candidate_audit/kaggle/output/aggregate_v4/artifacts/exp270_exact_hmm_posterior_mode_candidate_audit_candidates.csv.gz
+    aggregate_candidates:
+      - experiments/exp270_exact_hmm_posterior_mode_candidate_audit/kaggle/output/aggregate_v4/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp270-exact-hmm-posterior-mode-audit-train/artifacts
+      - /kaggle/input/exp270-exact-hmm-posterior-mode-audit-train/artifacts
+    aggregate_patterns:
+      - "**/exp270_exact_hmm_posterior_mode_candidate_audit_candidates.csv.gz"
+    expected_aggregate_decompressed_sha256: 986276e2495b23d5de2425542efd0433c59f1a398c073b3053218ba9007a5ecf
+    fixed_columns:
+      - posterior_mean
+      - marginal_map
+      - topk_path_1
+    global_viterbi_alias: topk_path_1
+    shards:
+      - index: 0
+        filename: exp270_exact_hmm_posterior_mode_candidate_audit_shard0_candidates.csv.gz
+        expected_rows: 1792363
+        expected_wells: 363
+        expected_decompressed_sha256: 93e0aeac70b1e84d139aab05f9a1d6abd577d2a07388367cf2dac362e8f68b6d
+      - index: 1
+        filename: exp270_exact_hmm_posterior_mode_candidate_audit_shard1_candidates.csv.gz
+        expected_rows: 1991626
+        expected_wells: 410
+        expected_decompressed_sha256: 831cbfb5adfe09f98059f4e2a192d7913331f6c57c437fadc989f01e3c91aee5
+  exp226_k16:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    kernel_source: kentookumura/exp226-k16-kappa-repro-train
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    identity_columns: [well_id, row_idx, suffix_offset, fold]
+    preprojection_formula: tvt_geop_plus_gr_delta
+    preprojection_columns: [tvt_geop, gr_delta]
+    postprojection_column: tvt_pred
+    truth_columns: [tvt_true, error, abs_error]
+    truth_columns_forbidden_before_freeze: true
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    candidates:
+      - experiments/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    patterns:
+      - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+  exp263_fixed_physical_candidate:
+    source: exp263_last_anchor_better_candidate_confidence_pair_cache
+    kernel_source: kentookumura/exp263-last-anchor-pair-cache-train
+    candidate: exp226_w500_50_50
+    formula: exp226_0p50_plus_likpf_0p25_plus_exact_hmm_0p25
+    saved_oof_rmse: 8.238331
+    expected_stage0_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+    regenerate: false
+    cache_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts
+      - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts
+      - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1_small/artifacts
+  hidden_like:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    late_join_only: true
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    role_columns:
+      - verification_like_spatial_role
+      - verification_like_typewell_purged_role
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    patterns:
+      - "**/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+
+model:
+  name: exp209_prefix_anchor_no_switch_mode_readout
+  estimator: deterministic_exact_hmm_train_side_diagnostic
+  fitted_model: false
+  fixed_hmm:
+    coordinate: absolute_tvt
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    emission: gaussian
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    momentum: 0.998
+    rate_center: zero
+    output_control: posterior_mean
+  posterior_modes:
+    min_peak_height: 0.02
+    min_top2_mass: 0.10
+    min_top2_to_top1_mass_ratio: 0.25
+    min_peak_separation_ft: 6.0
+    min_valley_depth: 0.30
+    mean_valley_density_ratio_max: 1.20
+    mode_track_allowance_ft: 6.0
+    peak_order: ascending_tvt_then_grid_index
+    basin_boundary: minimum_posterior_between_adjacent_peaks
+    display_rank_is_identity: false
+  mode_identity:
+    anchor: joint_start_prior_lineage
+    matching: maximum_transition_transport_overlap
+    tie_break: previous_mode_id_then_current_basin_center_tvt
+    fields:
+      - anchor_mode_id
+      - current_mode_id
+      - cross_mode_edge
+      - mode_switch_count
+      - lineage_status
+    cross_mode_definition: source_mode_id_differs_from_destination_mode_id
+    gradual_cross_mode_moves_count_as_switch: true
+    rank_swap_counts_as_switch: false
+    unresolved_policy: whole_well_fallback_to_saved_exp209_posterior_mean
+  candidate:
+    active_variants:
+      - prefix_anchor_no_switch_conditional_mean
+    final_condition: current_mode_id_equals_anchor_mode_id_and_mode_switch_count_zero
+    output: conditional_posterior_mean
+    alternative_mode_lanes: diagnostic_only
+    soft_average_across_modes: false
+    row_oracle_fallback: false
+
+stage_a0:
+  name: saved_artifact_target_free_cause_census
+  hmm_well_runs: 0
+  decoder_separation_event:
+    minimum_abs_decoder_gap_ft: 6.0
+    minimum_consecutive_rows: 32
+    merge_event_gap_rows: 32
+  preflight_selection:
+    total_wells: 16
+    per_fold_top_severity_wells: 3
+    add_global_median_severity_wells: 1
+    deduplicate_then_fill_by_well_id: true
+    target_or_error_allowed: false
+  technical_gates:
+    require_rows: 3783989
+    require_wells: 773
+    require_folds: [0, 1, 2, 3, 4]
+    require_duplicate_keys: 0
+    require_missing_joins: 0
+    require_fold_mismatches: 0
+    require_id_mismatches: 0
+    require_md_since_mismatches: 0
+    require_exp263_cache_partition_folds: [0, 1, 2, 3, 4]
+    require_finite_path_coverage: 1.0
+    require_exp270_exp209_mean_parity_atol_ft: 0.00001
+    maximum_truth_error_role_reads_before_freeze: 0
+
+stage_a1:
+  name: fixed_16_well_same_exp209_posterior_preflight
+  hmm_well_runs: 16
+  cause_flags:
+    - posterior_averaging_supported
+    - transition_kernel_supported
+    - k16_projection_supported
+    - fixed_blend_supported
+    - unresolved
+  technical_gates:
+    require_same_pass_saved_decoder_parity_atol_ft: 0.00001
+    maximum_posterior_normalization_error: 0.00000001
+    maximum_mode_ledger_key_duplicates: 0
+    maximum_mode_identity_collisions: 0
+    minimum_decoder_separation_events: 10
+    maximum_projected_full_runtime_seconds: 30600
+    maximum_projected_peak_rss_gb: 25
+  mechanism_gates:
+    hmm_supported_flags:
+      - posterior_averaging_supported
+      - transition_kernel_supported
+    minimum_hmm_supported_event_fraction: 0.60
+    minimum_reporting_folds_with_hmm_supported_event: 4
+  fail_action: close_as_k16_projection_blend_or_unresolved_without_mode_decoder
+
+stage_b:
+  name: full_prefix_anchor_no_switch_readout
+  enabled: false
+  enable_after: stage_a1_all_gates_pass_and_separate_user_approval
+  active_hmm_variants: 1
+  total_hmm_well_runs: 773
+  parent_control_variant_reruns: 0
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  pf_runs: 0
+  beam_runs: 0
+  scientific_gates:
+    minimum_rmse_gain_vs_exp209_ft: 0.25
+    minimum_positive_folds: 4
+    minimum_hmm_supported_event_gain_ft: 0.50
+    maximum_1000_plus_regression_ft: 0.0
+    maximum_hidden_like_spatial_regression_ft: 0.0
+    maximum_hidden_like_typewell_purged_regression_ft: 0.0
+    maximum_by_well_delta_p95_ft: 0.0
+    maximum_worst_well_regression_ft: 0.25
+    maximum_fail_closed_well_fraction: 0.10
+    require_report_only_exp263_fixed_formula_non_regression: true
+    require_all_checks: true
+  fail_action: close_without_threshold_matching_fallback_or_blend_rescue
+  pass_action: eligible_for_separate_model_specific_port_design_only
+
+execution_contract:
+  stage_a0_hmm_well_runs: 0
+  stage_a1_hmm_well_runs: 16
+  stage_b_hmm_well_runs: 773
+  full_scientific_variants: 1
+  model_configs: 0
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  pf_well_runs: 0
+  beam_well_runs: 0
+  gpu_runs: 0
+  parent_control_retraining: false
+  parent_control_separate_regeneration: false
+
+execution:
+  stage: completed_stage_a1_fail_closed
+  run_stage: none
+  implementation_approved: true
+  implementation_approval_source: user_message_implement_exp391_2026_07_25
+  kaggle_execution_approval_source: user_message_execute_exp391_2026_07_25
+  stage_a1_execution_approval_source: user_message_advance_to_stage_a1_2026_07_25
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  kaggle_package_approved: true
+  kaggle_push_approved: true
+  stage_a0_run_approved: true
+  stage_a1_run_approved: true
+  stage_b_run_approved: false
+  inference_approved: false
+  submission_approved: false
+  run_hmm: false
+  run_inference: false
+  create_submission: false
+  submit_to_kaggle: false
+  completed_kernel_version: 3
+  completed_kernel_numeric_id: 128527913
+  stage_a0_status: pass
+  stage_a1_status: fail_closed
+  stage_a1_blocked_pending_user_approval: false
+  stage_b_blocked_pending_user_approval: false
+  stage_b_blocked_by_stage_a1_gate_failure: true
+  stage_a1_kernel_runtime_seconds: 18105.382207183
+  stage_a1_hmm_runtime_seconds: 18008.710256264003
+  stage_a1_peak_rss_gb: 4.132144927978516
+  stage_a1_all_gates_pass: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  numba_num_threads: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    peak_rss_limit_gb: 25
+    train_kernel_id: kentookumura/exp391-prefix-anchored-mode-persistence-hmm-train
+    train_title: exp391 prefix anchored mode persistence hmm train
+    kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp270-exact-hmm-posterior-mode-audit-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_sorted_well_row_state_peak_basin_mode_event_keys
+  stochastic_components: []
+  parallel_rng_policy: no_rng_outer_workers_one_stable_reduction_and_output_order
+  feature_sha_policy: decompressed_and_logical_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  required_output_sha:
+    - event_manifest_logical_sha
+    - preflight_well_manifest_logical_sha
+    - posterior_row_summary_logical_sha
+    - mode_ledger_logical_sha
+    - decoder_contract_manifest_sha
+    - candidate_prediction_logical_sha
+  notes:
+    - No random numbers, fitted model, GPU, PF, or Beam are used.
+    - The decoder contract manifest is the model-manifest equivalent.
+    - Full posterior arrays remain process-local and are not persisted.
+    - A successful first run is not a deterministic anchor until a rerun reproduces logical SHAs.
+
+guards:
+  forbidden:
+    - implementation_without_separate_user_approval
+    - exp236_row_values_joined_as_exp209_posterior
+    - top1_or_top2_mass_rank_used_as_stable_mode_identity
+    - truth_error_or_oracle_event_well_mode_selection
+    - jump_penalty_mode_count_peak_threshold_matching_allowance_grid
+    - marginal_map_viterbi_or_alternate_mode_direct_final_candidate
+    - row_oracle_fallback_or_soft_average_across_modes
+    - pf_beam_k16_or_exp263_generator_modification
+    - current_test_inference_or_submission

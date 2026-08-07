@@ -1,0 +1,242 @@
+experiment:
+  name: "exp127_learned_likelihood_features_on_exp092"
+  description: Add exp112 target-free learned likelihood confidence features to the exp092 U-projection LightGBM surface on shared rows.
+  route: ml_model
+  status: implemented_not_run
+  created_at: "2026-06-25"
+  updated_at: "2026-06-25"
+
+lineage:
+  parent: exp092_u_projection_correction_disagreement_fullrun
+  learned_likelihood_parent: exp112_learned_pf_likelihood_weight_or_feature_followup
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  comparison_parents:
+    - exp092_u_projection_correction_disagreement_fullrun
+    - exp112_learned_pf_likelihood_weight_or_feature_followup
+    - exp125_confidence_gate_continuity_rawtest_parity
+  implementation_source: learned_likelihood_features_on_exp092.py
+  diff_summary: Keeps the exp092 U-projection correction plus disagreement feature surface and original residual target, restricts training to rows where exp112 target-free learned likelihood features exist, and compares a shared-row exp092 control against add-only learned likelihood confidence features.
+
+validation:
+  strategy: groupkfold_by_well_exp092_surface_shared_exp112_rows
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: shared_rows_between_exp072_exp092_surface_and_exp112_ml_feature_cache
+  leakage_policy:
+    - Exp072 full replay features are raw-train-only deterministic cache columns.
+    - Exp092 U-projection features use target-free PF/Beam/likelihood-PF candidate paths, row Z, MD distance, and known-prefix anchors.
+    - Exp112 learned likelihood features are target-free OOF confidence/cache columns saved by exp112; true TVT is not read from exp112 features.
+    - The exp112 fold column is used only for inventory and is not a model feature.
+    - The exp112 feature cache covers a 155-well subset, so the primary comparison is shared-row control versus shared-row add-only variant, not direct full exp092 CV.
+    - GroupKFold is grouped by well; a well never appears in train and validation in the same fold.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_summary_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_summary.json
+  exp112_ml_features_local: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_ml_features.csv.gz
+  exp112_feature_schema_local: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+  exp112_summary_local: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_summary.json
+
+model:
+  name: exp127_learned_likelihood_features_on_exp092_lgbm
+  source_experiment: exp092_u_projection_correction_disagreement_fullrun
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  learned_likelihood_feature_experiment: exp112_learned_pf_likelihood_weight_or_feature_followup
+  feature_source: exp072_exp063_full_replay_train_feature_cache_plus_exp112_ml_features
+  expected_base_feature_count: 196
+  target: target
+  base_prediction: last_known_tvt
+  estimator: lightgbm
+  lgb_config_family: exp063_public_pixiux_lgb0_lgb1_lgb2
+  u_projection:
+    anchor_definition: local_prefix_u0_equals_T0_plus_Z0
+    degree: 3
+    robust_iters: 3
+    clip_sigma: 4.0
+    include_lgb_oof_features: false
+    sources:
+      pf_ancc:
+        value_column: pf_ancc
+        enabled: true
+      pf_z:
+        value_column: pf_z
+        enabled: true
+      beam_mean:
+        delta_column: beam_mean_d
+        enabled: true
+      beam_med:
+        delta_column: beam_med_d
+        enabled: true
+      likpf_mean:
+        delta_column: likpf_mean_d
+        enabled: true
+  learned_likelihood_features:
+    prefix: ll_
+    direct_columns:
+      - learned_prob_top1_index
+      - learned_error_top1_index
+      - learned_prob_top1_value
+      - learned_prob_top2_value
+      - learned_prob_margin_top1_top2
+      - learned_prob_entropy
+      - learned_error_top1_value
+      - learned_error_top2_value
+      - learned_error_margin_top2_top1
+      - learned_prob_likpf_rank
+      - learned_error_likpf_rank
+      - learned_prob_top3_contains_likpf
+      - learned_error_top3_contains_likpf
+      - candidate_tvt_std
+      - candidate_tvt_range
+      - learned_prob_pf_ancc
+      - learned_pred_abs_error_pf_ancc
+      - multiobs_score_pf_ancc
+      - multiobs_mae_pf_ancc
+      - multiobs_ncc_pf_ancc
+      - learned_prob_beam_mean
+      - learned_pred_abs_error_beam_mean
+      - multiobs_score_beam_mean
+      - multiobs_mae_beam_mean
+      - multiobs_ncc_beam_mean
+      - learned_prob_likpf_mean
+      - learned_pred_abs_error_likpf_mean
+      - multiobs_score_likpf_mean
+      - multiobs_mae_likpf_mean
+      - multiobs_ncc_likpf_mean
+      - learned_prob_sc_ens
+      - learned_pred_abs_error_sc_ens
+      - multiobs_score_sc_ens
+      - multiobs_mae_sc_ens
+      - multiobs_ncc_sc_ens
+      - learned_prob_hyb
+      - learned_pred_abs_error_hyb
+      - multiobs_score_hyb
+      - multiobs_mae_hyb
+      - multiobs_ncc_hyb
+    candidate_tvt_columns:
+      - candidate_tvt_pf_ancc
+      - candidate_tvt_beam_mean
+      - candidate_tvt_likpf_mean
+      - candidate_tvt_sc_ens
+      - candidate_tvt_hyb
+    weighted_tvt_columns:
+      - learned_prob_weighted_tvt
+      - learned_error_weighted_tvt
+  feature_ablation:
+    selected_variant: learned_likelihood_confidence_addonly
+    active_variants:
+      - name: exp092_shared_row_control
+        description: Exp092 U-projection correction plus disagreement feature surface retrained only on rows shared with exp112 ML feature cache.
+        feature_groups:
+          - projection_correction
+          - u_disagreement
+        enabled: true
+      - name: learned_likelihood_confidence_addonly
+        description: Adds exp112 target-free learned likelihood probability, predicted-error, margin, entropy, candidate disagreement, multi-observation score, and weighted TVT proxy features.
+        feature_groups:
+          - projection_correction
+          - u_disagreement
+          - learned_likelihood_confidence
+        enabled: true
+  training:
+    early_stopping_rounds: 250
+    max_train_rows: null
+    max_rows: null
+    save_models: true
+    save_predictions: true
+    top_n_importance: 60
+    active_modes:
+      - gpu_repro_guard_dp_threads8
+    modes:
+      gpu_repro_guard_dp_threads8:
+        description: GPU double precision plus fixed thread count and deterministic flags.
+        use_gpu: true
+        common_overrides:
+          gpu_use_dp: true
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+      cpu_deterministic_threads8:
+        description: CPU deterministic LightGBM control with fixed thread count.
+        use_gpu: false
+        common_overrides:
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp112-learned-pf-likelihood-followup-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_groupkfold_seed_no_new_pf_rng
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - upstream_exp112_learned_likelihood_feature_cache
+    - gpu_lightgbm_training
+  parallel_rng_policy: LightGBM deterministic flags plus fixed n_jobs and num_threads; feature merge itself has no RNG.
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a train-side add-only feature audit, not a deterministic submission anchor.
+    - Inference and submission are disabled until shared-row OOF, worst-well, hidden-like stress, and raw-test feature parity are reviewed.
+
+audit:
+  mode: learned_likelihood_features_on_exp092_shared_rows
+  output_prefix: exp127_learned_likelihood_features_on_exp092
+  fast: false
+  reference_metrics:
+    exp092_full_lgb1_pooled_rmse: 9.322479895503927
+    exp092_full_public_lb: 8.350
+    exp112_gate_expected_error_delta_rmse_vs_likpf: -0.031143761763194888
+  expected_train_artifacts:
+    - exp127_learned_likelihood_features_on_exp092_metrics.csv
+    - exp127_learned_likelihood_features_on_exp092_by_well.csv
+    - exp127_learned_likelihood_features_on_exp092_bucket_metrics.csv
+    - exp127_learned_likelihood_features_on_exp092_projection_feature_summary.csv
+    - exp127_learned_likelihood_features_on_exp092_learned_feature_summary.csv
+    - exp127_learned_likelihood_features_on_exp092_feature_importance.csv
+    - exp127_learned_likelihood_features_on_exp092_feature_importance_mean.csv
+    - exp127_learned_likelihood_features_on_exp092_feature_importance_mean_top.png
+    - exp127_learned_likelihood_features_on_exp092_predictions.csv.gz
+    - exp127_learned_likelihood_features_on_exp092_feature_schema.csv
+    - exp127_learned_likelihood_features_on_exp092_lgb_models/manifest.json
+    - exp127_learned_likelihood_features_on_exp092_summary.json
+
+inference:
+  mode: disabled_train_side_feature_audit_only
+  selected_variant: null
+  notes:
+    - This experiment does not generate submission.csv.
+    - Exp112 raw-test feature regeneration/parity must be designed before any inference port.
+
+notes:
+  - Implements the remaining branch of `learned_likelihood_gate_rawtest_parity_or_ml_feature` after the raw-test gate diagnostics were moved into exp125.
+  - Primary decision is whether exp112 learned likelihood confidence signals help exp092 as add-only ML features on a fair shared-row control.

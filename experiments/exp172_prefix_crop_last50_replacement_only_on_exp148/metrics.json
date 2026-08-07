@@ -1,0 +1,99 @@
+{
+  "experiment": "exp172_prefix_crop_last50_replacement_only_on_exp148",
+  "status": "completed_train_side_rejected_no_submit",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "baseline": {
+    "exp148_lgb_mean_pooled_rmse": 8.50128118189582,
+    "exp148_public_lb": 7.96,
+    "control_retrain": false
+  },
+  "run": {
+    "runtime": "cpu_deterministic_threads8",
+    "feature_cache_kernel": "kentookumura/exp172-prefix-crop-last50-exp148-features",
+    "feature_cache_kernel_version": 1,
+    "train_kernels": {
+      "lgb0": "kentookumura/exp172-prefix-crop-last50-exp148-train-lgb0",
+      "lgb1": "kentookumura/exp172-prefix-crop-last50-exp148-train-lgb1",
+      "lgb2": "kentookumura/exp172-prefix-crop-last50-exp148-train-lgb2"
+    },
+    "train_kernel_version": 1,
+    "active_variant": "prefix_crop_last50_multiobs_replacement",
+    "folds": 5,
+    "feature_count": 309,
+    "prefix_crop_loaded_feature_count": 30,
+    "total_boosters": 15,
+    "feature_join_coverage_pass": true,
+    "dropped_base_rows": 0,
+    "dropped_base_wells": 0
+  },
+  "feature_cache": {
+    "rows": 3783989,
+    "wells": 773,
+    "feature_count": 48,
+    "elapsed_seconds": 6536.996,
+    "feature_sha256": "02890a23a49012c8ab74f50c1eec0bb64292997ee9f5be60341e79b82ac01901",
+    "feature_decompressed_sha256": "2061855a1d4d352c35ab6e4e9847d34bc68758526e8fce7a6c4ef3499ccb6a1e",
+    "schema_sha256": "b13bc3849170858bd6758b121b3be6c47eee5eb957b4f70567a15b2a49ee89a1",
+    "summary_sha256": "2a714f5d1a9f49c1c3bc2b1720443519d379f78dfff42f5e566de2df48e307f5"
+  },
+  "results": {
+    "conclusion": "last50 multiobs replacement-only worsened versus exp148 and is not a submit candidate.",
+    "best_single": {
+      "model": "lgb1",
+      "rmse_tvt": 8.57512684958155,
+      "delta_vs_exp148_lgb_mean": 0.07384566768572931,
+      "delta_vs_exp161_last50_addonly_best_single": 0.010401853668408734,
+      "delta_vs_exp166_tail500_replacement_best_single": 0.008699879240753106,
+      "prediction_sha256": "806345f927418011c54d5524653dfa183bd2cdf3a7b4aecee57034eb1e827fa9"
+    },
+    "pooled_metrics": {
+      "lgb0": {
+        "rmse_tvt": 8.583559279034894,
+        "delta_vs_exp148_lgb_mean": 0.08227809713907419,
+        "prediction_sha256": "b0afa9077ced3bf94e44e19cfab113232476fbac93dd9d1302296adecad15998",
+        "elapsed_seconds": 13004.467
+      },
+      "lgb1": {
+        "rmse_tvt": 8.57512684958155,
+        "delta_vs_exp148_lgb_mean": 0.07384566768572931,
+        "prediction_sha256": "806345f927418011c54d5524653dfa183bd2cdf3a7b4aecee57034eb1e827fa9",
+        "elapsed_seconds": 11873.848
+      },
+      "lgb2": {
+        "rmse_tvt": 8.586986606095419,
+        "delta_vs_exp148_lgb_mean": 0.08570542419959892,
+        "prediction_sha256": "d06b2fa8bb5be99da9891d63563bf95e815ecc389b7411a9bbe5c2b796668cb8",
+        "elapsed_seconds": 13428.471
+      },
+      "lgb_mean": null
+    },
+    "fold_metrics": {
+      "lgb0": [
+        {"fold": 0, "rmse_tvt": 9.15364628714625, "best_iteration": 4995},
+        {"fold": 1, "rmse_tvt": 8.846784980464367, "best_iteration": 442},
+        {"fold": 2, "rmse_tvt": 7.495548128348365, "best_iteration": 529},
+        {"fold": 3, "rmse_tvt": 8.294540149602469, "best_iteration": 210},
+        {"fold": 4, "rmse_tvt": 9.018497628083116, "best_iteration": 232}
+      ],
+      "lgb1": [
+        {"fold": 0, "rmse_tvt": 9.004387354580777, "best_iteration": 10000},
+        {"fold": 1, "rmse_tvt": 8.72133953368981, "best_iteration": 5036},
+        {"fold": 2, "rmse_tvt": 7.496022159494569, "best_iteration": 2504},
+        {"fold": 3, "rmse_tvt": 8.492739779960425, "best_iteration": 655},
+        {"fold": 4, "rmse_tvt": 9.065971490668701, "best_iteration": 1444}
+      ],
+      "lgb2": [
+        {"fold": 0, "rmse_tvt": 8.987777695775797, "best_iteration": 9987},
+        {"fold": 1, "rmse_tvt": 8.755704891633018, "best_iteration": 5708},
+        {"fold": 2, "rmse_tvt": 7.453486397159167, "best_iteration": 1756},
+        {"fold": 3, "rmse_tvt": 8.597611169799173, "best_iteration": 1004},
+        {"fold": 4, "rmse_tvt": 9.041590688427187, "best_iteration": 1302}
+      ]
+    },
+    "notes": [
+      "Cross-kernel lgb_mean was not computed locally because output archives were not downloaded; all single configs are clearly worse than exp148, so inference port and submit are skipped.",
+      "Train-side evidence is from Kaggle logs / notebook output, not local output archive download."
+    ]
+  }
+}

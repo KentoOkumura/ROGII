@@ -1,0 +1,179 @@
+{
+  "artifact_manifest_sha256": "fa7a2be4d494edf9813c56647fc52f8fba02f7697bcf3e2c14d1967bac66ce0b",
+  "cv": 10.680074152793843,
+  "experiment": "exp419_exp226_guided_defensive_mixture_pf",
+  "gate": {
+    "decision": "proposal_rejected_close_without_same_oof_rescue",
+    "deterministic_anchor_blocker": "scientific_or_technical_gate_failed",
+    "deterministic_anchor_eligible": false,
+    "experiment": "exp419_exp226_guided_defensive_mixture_pf",
+    "failure_action": "close_without_mixture_weight_width_importance_clip_gr_sigma_process_noise_roughening_seed_particle_well_row_gate_or_same_oof_rescue",
+    "mechanism_gate": {
+      "by_well_rmse_delta_p95": 5.766212571731278,
+      "candidate_majority_seed_predictive_support_outside_rate": 0.9749733915302067,
+      "candidate_rmse": 10.680074152793843,
+      "control_rmse": 10.914522073423171,
+      "exp410_baseline_majority_seed_predictive_support_outside_rate": 0.6420611555399323,
+      "improved_folds": 4,
+      "improvement_ft": 0.23444792062932862,
+      "maximum_by_well_rmse_delta_p95": 0.25,
+      "maximum_worst_well_rmse_regression": 2.0,
+      "minimum_improved_folds": 4,
+      "minimum_improvement_ft": 0.1,
+      "minimum_persistent_episode_sse_reduction_fraction": 0.1,
+      "minimum_raw_gr_observed_improvement_ft": 0.1,
+      "minimum_support_outside_rate_reduction_percentage_points": 5.0,
+      "non_regression_scopes": {
+        "hidden_like_spatial": false,
+        "hidden_like_typewell_purged": true,
+        "md_since_1000_plus": true,
+        "missing_fraction_high": true,
+        "raw_gr_missing": true
+      },
+      "passed": false,
+      "persistent_episode_candidate_sse": 319758224.8563375,
+      "persistent_episode_control_sse": 375396955.3499454,
+      "persistent_episode_count": 839,
+      "persistent_episode_rows": 819288,
+      "persistent_episode_sse_reduction_fraction": 0.1482130574067695,
+      "raw_gr_observed_improvement_ft": 0.16554386971295187,
+      "support_outside_rate_reduction_percentage_points": -33.29122359902744,
+      "worst_well_rmse_regression": 20.570237512061006
+    },
+    "mechanism_positive": false,
+    "passed": false,
+    "standalone_adoption_gate": {
+      "candidate_rmse": 10.680074152793843,
+      "exp226_final_rmse": 9.427109596582222,
+      "improved_folds_vs_exp226": 1,
+      "improvement_vs_exp226_ft": -1.2529645562116212,
+      "mechanism_gate_required": true,
+      "minimum_improved_folds_vs_exp226": 3,
+      "minimum_improvement_vs_exp226_ft": 0.03,
+      "passed": false
+    },
+    "technical_gate": {
+      "all_wells_completed_without_fallback": true,
+      "audit_wells": 773,
+      "execution_count_match": true,
+      "execution_counts": {
+        "beam_well_runs": 0,
+        "boosters": 0,
+        "candidate_pf_well_runs": 773,
+        "exp226_reruns": 0,
+        "gpu_runs": 0,
+        "hmm_well_runs": 0,
+        "lightgbm_configs": 0,
+        "parent_pf_control_reruns": 0,
+        "particle_starts": 49472000,
+        "reporting_folds": 5,
+        "scientific_variants": 1,
+        "seed_well_trajectories": 98944,
+        "trained_folds": 0
+      },
+      "finite_candidate_coverage": 1.0,
+      "forbidden_exp226_columns_parsed": 0,
+      "geometry_weight_zero_parity_max_abs_ft": 0.0,
+      "importance_ratio_maximum": 1.999999999999981,
+      "importance_ratio_minimum": 0.0,
+      "passed": true,
+      "prediction_logical_content_sha256": "2465d2aae907af57ad16daa0588d3210b8d201bad5f622f4408f5f4d3b701740",
+      "prediction_rows": 3783989,
+      "prediction_wells": 773,
+      "probe_rerun_available": true,
+      "probe_rerun_byte_identical_float32": true,
+      "proposal_allowlists": [
+        [
+          "well_id",
+          "row_idx",
+          "suffix_offset",
+          "tvt_geop"
+        ]
+      ],
+      "proposal_contract": {
+        "family": "importance_corrected_defensive_gaussian_mixture",
+        "geometry_input_columns": [
+          "well_id",
+          "row_idx",
+          "suffix_offset",
+          "tvt_geop"
+        ],
+        "geometry_sigma_multipliers": [
+          1.0,
+          4.0,
+          16.0
+        ],
+        "geometry_surface": "tvt_geop_plus_z",
+        "geometry_weights": [
+          0.16666666666666666,
+          0.16666666666666666,
+          0.16666666666666666
+        ],
+        "importance_clipping": false,
+        "importance_ratio": "target_rate_density_divided_by_mixture_rate_density",
+        "maximum_importance_ratio_by_construction": 2.0,
+        "proposal_contract_sha256": "53e02565925eb7b97d148c18769a70ede3b2ba54ca92d3ee5830271e2bd50579",
+        "target_posterior_changed": false,
+        "target_sigma_multiplier": 1.0,
+        "target_weight": 0.5,
+        "weight_sum": 1.0
+      },
+      "reporting_folds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "runtime_limit_seconds_per_shard": 32400.0,
+      "saved_control_rmse_parity_absolute_difference_ft": 0.0,
+      "saved_exp226_final_rmse_parity_absolute_difference_ft": 8.881784197001252e-15,
+      "scientific_contract_sha256": "a25d809a7af142b74f3d7e5a8eec7f54247aa1bbf659b2a646493277fc50f013",
+      "shard_count": 4,
+      "shard_runtime_seconds": [
+        23141.648674726486,
+        22783.224147081375,
+        19409.214508771896,
+        21005.406434059143
+      ],
+      "truth_or_reporting_values_parsed_before_freeze": {
+        "control_prediction_rows": 0,
+        "exp226_final_rows": 0,
+        "exp410_scope_rows": 0,
+        "fold_rows": 0,
+        "hidden_like_role_rows": 0,
+        "unknown_suffix_tvt_rows": 0
+      }
+    }
+  },
+  "metric": "rmse",
+  "model_sha256": null,
+  "notes": "Train-side candidate only. No saved exp404 control PF rerun, exp226 rerun, model, raw-test prediction, inference, or submission is produced.",
+  "overall": {
+    "candidate": "exp226_guided_defensive_mixture_scale5",
+    "candidate_bias": -0.9287510447598879,
+    "candidate_mae": 6.3702209494976785,
+    "candidate_rmse": 10.680074152793843,
+    "candidate_within_10ft": 0.8013487882760758,
+    "control": "likpf_scale_5_x1p0",
+    "control_bias": -0.6507927726535542,
+    "control_mae": 6.429207269894288,
+    "control_rmse": 10.914522073423171,
+    "control_within_10ft": 0.8010940306644655,
+    "delta_rmse_candidate_minus_control": -0.23444792062932862,
+    "delta_rmse_candidate_minus_exp226": 1.2529645562116212,
+    "exp226_final_rmse": 9.427109596582222,
+    "improvement_ft": 0.23444792062932862,
+    "improvement_vs_exp226_ft": -1.2529645562116212,
+    "rows": 3783989,
+    "scope": "overall",
+    "standalone_reference": "exp226_final_oof",
+    "wells": 773
+  },
+  "prediction_sha256": "2465d2aae907af57ad16daa0588d3210b8d201bad5f622f4408f5f4d3b701740",
+  "private_lb": null,
+  "public_lb": null,
+  "route": "pf_beam",
+  "status": "train_side_guided_defensive_mixture_gate_failed_closed",
+  "submission_sha256": null
+}

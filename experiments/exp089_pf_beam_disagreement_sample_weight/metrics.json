@@ -1,0 +1,88 @@
+{
+  "experiment": "exp089_pf_beam_disagreement_sample_weight",
+  "status": "completed",
+  "route": "ml_model",
+  "parent": "exp073_gpu_reproducibility_guard_for_exp063_full_replay",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "cv": 9.5212120473311,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "key_idea": "PF/Beam disagreement sample-weight only slightly improves exp073 control, but confidence features worsen and well/bucket guards are weak.",
+  "best_variant": "sample_weight_unstable_downweight",
+  "best_model": "lgb_mean",
+  "control_cv": 9.52637457314413,
+  "delta_vs_control": -0.0051625258130293,
+  "variants": [
+    {
+      "variant": "sample_weight_unstable_downweight",
+      "model": "lgb_mean",
+      "rmse_tvt": 9.5212120473311,
+      "features": 196,
+      "sample_weight_policy": "confidence_downweight_unstable",
+      "prediction_sha256": "7a25cbba2810a3f8e650d0274619d2ee5a86038750025dc55f80f8b9fc2944c1"
+    },
+    {
+      "variant": "control_exp073_base196",
+      "model": "lgb_mean",
+      "rmse_tvt": 9.52637457314413,
+      "features": 196,
+      "sample_weight_policy": null,
+      "prediction_sha256": "10131aa514107ed8ee00ddafb5eb4c7b5e44758a65b3b039528e6e5c26da53e1"
+    },
+    {
+      "variant": "confidence_features_plus_weight",
+      "model": "lgb_mean",
+      "rmse_tvt": 9.562018858093628,
+      "features": 199,
+      "sample_weight_policy": "confidence_downweight_unstable",
+      "prediction_sha256": "abc7db2f64ff77ac71484106e728b5d000a078b8714c1a8a26eb82ee36e437c8"
+    },
+    {
+      "variant": "confidence_features_core",
+      "model": "lgb_mean",
+      "rmse_tvt": 9.564240269703115,
+      "features": 199,
+      "sample_weight_policy": null,
+      "prediction_sha256": "222eaa332183c1bcd85b3b525a56dbdd01985a56e21c7fb51f4ab878320f0272"
+    }
+  ],
+  "well_guard": {
+    "best_variant": "sample_weight_unstable_downweight",
+    "improved_wells": 374,
+    "worsened_wells": 399,
+    "mean_delta": 0.010116487471591605,
+    "median_delta": 0.010214805603028232,
+    "max_worsen": 1.096752166748045,
+    "max_improve": -1.0683822631835973
+  },
+  "sample_weight_summary": {
+    "policy": "confidence_downweight_unstable",
+    "mean": 1.0,
+    "std": 0.085432,
+    "min": 0.769068,
+    "p05": 0.860132,
+    "p50": 0.999054,
+    "p95": 1.14496,
+    "max": 1.249405
+  },
+  "reproducibility": {
+    "kaggle_kernel": "kentookumura/exp089-pf-beam-disagreement-sample-weight-train",
+    "kaggle_version": 1,
+    "source_cache_sha256": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18",
+    "oof_predictions_decompressed_sha256": "d6a94e064a24e594b822a4adeed9d5a5f3c631caff4f680385a2d7eec0d805b1",
+    "model_count": 60
+  },
+  "artifacts": [
+    "artifacts/exp089_pf_beam_disagreement_sample_weight_metrics.csv",
+    "artifacts/exp089_pf_beam_disagreement_sample_weight_bucket_metrics.csv",
+    "artifacts/exp089_pf_beam_disagreement_sample_weight_by_well.csv",
+    "artifacts/exp089_pf_beam_disagreement_sample_weight_confidence_feature_summary.csv",
+    "artifacts/exp089_pf_beam_disagreement_sample_weight_sample_weight_summary.csv",
+    "artifacts/exp089_pf_beam_disagreement_sample_weight_feature_importance_mean.csv",
+    "artifacts/exp089_pf_beam_disagreement_sample_weight_summary.json",
+    "artifacts/exp089-pf-beam-disagreement-sample-weight-train.log"
+  ],
+  "notes": "Best sample_weight_unstable_downweight lgb_mean 9.521212047 vs control 9.526374573; no submit candidate.",
+  "updated_at": "2026-06-20T12:36:28.415734+00:00"
+}

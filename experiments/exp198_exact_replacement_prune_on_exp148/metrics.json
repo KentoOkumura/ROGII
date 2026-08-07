@@ -1,0 +1,234 @@
+{
+  "experiment": "exp198_exact_replacement_prune_on_exp148",
+  "status": "submitted_public_lb_7_930_not_adopted",
+  "route": "ml_model",
+  "parent": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+  "public_lb": 7.93,
+  "private_lb": null,
+  "cv": {
+    "status": "train_completed",
+    "kernel": "kentookumura/exp198-exact-replacement-prune-exp148-train",
+    "kernel_version": 1,
+    "variant": "drop_exact_replacements_17",
+    "mode": "gpu_repro_guard_dp_threads8",
+    "rows": 3783989,
+    "wells": 773,
+    "features": 277,
+    "parent_exp148_features": 294,
+    "drop_columns": 17,
+    "feature_join_coverage_pass": true,
+    "dropped_base_rows": 0,
+    "dropped_base_wells": 0,
+    "models": {
+      "lgb0": {
+        "pooled_rmse_tvt": 8.525098952459498,
+        "delta_vs_exp148_same_model": -0.07468690691939273,
+        "prediction_sha256": "463a3f0a2f855d850268737c316630825dd2b861f10f7d9e28d47f9e58188270"
+      },
+      "lgb1": {
+        "pooled_rmse_tvt": 8.531602620643975,
+        "delta_vs_exp148_same_model": -0.03236850058569374,
+        "prediction_sha256": "a4e2f36a27f03b3de6e92d90a4642ac258a56e5ce853a69c662ca01a4c84d29b"
+      },
+      "lgb2": {
+        "pooled_rmse_tvt": 8.476691203242892,
+        "delta_vs_exp148_same_model": -0.03312851555118357,
+        "prediction_sha256": "1f9b08e5fc8a8301f4b972b618fa6af248133edc73546dc757182ab2da79cb1e"
+      },
+      "lgb_mean": {
+        "pooled_rmse_tvt": 8.457923652800986,
+        "delta_vs_exp148_lgb_mean": -0.043357529094834035,
+        "prediction_sha256": "fdfcd2f441cdcdeda9e958de497b96d55a28cc151679cffd170b17afcb034e88"
+      }
+    },
+    "best_model": "lgb_mean",
+    "best_pooled_rmse_tvt": 8.457923652800986
+  },
+  "guards": {
+    "drop_columns_remaining_in_feature_schema": [],
+    "distance_bucket_lgb_mean": {
+      "000_050": {
+        "rows": 38650,
+        "rmse_tvt": 0.9590858221054076,
+        "delta_vs_exp148": -0.01964271068572998
+      },
+      "050_100": {
+        "rows": 38650,
+        "rmse_tvt": 1.2994906902313232,
+        "delta_vs_exp148": -0.01749575138092041
+      },
+      "100_250": {
+        "rows": 115950,
+        "rmse_tvt": 2.0872390270233154,
+        "delta_vs_exp148": 0.002599954605102539
+      },
+      "250_500": {
+        "rows": 193157,
+        "rmse_tvt": 3.31475043296814,
+        "delta_vs_exp148": 0.016456604003906694
+      },
+      "500_1000": {
+        "rows": 385911,
+        "rmse_tvt": 4.802190780639648,
+        "delta_vs_exp148": 0.010155677795410156
+      },
+      "1000_plus": {
+        "rows": 3011671,
+        "rmse_tvt": 9.274723052978516,
+        "delta_vs_exp148": -0.05068206787109375
+      }
+    },
+    "by_well_delta_vs_exp148_lgb_mean": {
+      "wells": 773,
+      "improved_wells": 423,
+      "worsened_wells": 350,
+      "mean_delta_rmse_tvt": -0.02588461349112256,
+      "median_delta_rmse_tvt": -0.017895936965942827,
+      "max_regression_rmse_tvt": 1.0221490859985352,
+      "max_regression_well": "b37fd114",
+      "max_improvement_rmse_tvt": -1.4258575439453125,
+      "max_improvement_well": "86454a6f"
+    },
+    "worst_absolute_wells_lgb_mean": [
+      {
+        "well": "1b1eba53",
+        "rows": 4655,
+        "rmse_tvt": 47.337063,
+        "delta_vs_exp148": -0.1157
+      },
+      {
+        "well": "86454a6f",
+        "rows": 7964,
+        "rmse_tvt": 47.211758,
+        "delta_vs_exp148": -1.425858
+      },
+      {
+        "well": "fb03ae90",
+        "rows": 6431,
+        "rmse_tvt": 43.946739,
+        "delta_vs_exp148": -0.285023
+      }
+    ]
+  },
+  "inference": {
+    "status": "inference_completed",
+    "kernel": "kentookumura/exp198-exact-replacement-prune-exp148-inference",
+    "kernel_version": 4,
+    "url": "https://www.kaggle.com/code/kentookumura/exp198-exact-replacement-prune-exp148-inference",
+    "output_dir": "/tmp/kaggle-output/exp198_exact_replacement_prune_on_exp148/inference_v4",
+    "variant": "drop_exact_replacements_17",
+    "mode": "gpu_repro_guard_dp_threads8",
+    "model": "lgb_mean",
+    "model_count": 15,
+    "feature_count": 277,
+    "test_rows": 14151,
+    "submission_rows": 14151,
+    "predicted_rows": 14151,
+    "fallback_rows": 0,
+    "feature_replay_elapsed_seconds": 101.484,
+    "elapsed_seconds": 155.668,
+    "rawtest_learned_likelihood_features": {
+      "source_kind": "target_free_current_test_generated_learned_likelihood_ml_features",
+      "rows": 14151,
+      "wells": 3,
+      "columns": 51,
+      "source_sha256": "f04d543baf36441d7441dde7c51c07b486865a423e4d744226099fe9ea9260b2",
+      "source_decompressed_sha256": "27efc7c7ef776fc21a9792c8e1a587d4f9fc99a0b2e7945cd8d47d165c658fbb",
+      "long_likelihood_rows": 70755,
+      "long_likelihood_decompressed_sha256": "39a0d80b2e01352cfd6350dbe3105a1f41b16dd064af7c62a4952f05fb63ebbd"
+    },
+    "predictions": {
+      "prediction_min": 11590.4658203125,
+      "prediction_max": 12240.234375,
+      "prediction_mean": 11905.457642403806,
+      "prediction_std": 278.82843661424334,
+      "prediction_sha256": "e23bd8f8e59b56fe188833849075e1ce146ced28c2810ab0bd1ea0b42948944c",
+      "submission_sha256": "e5b71f6f576a62567adfe189c2def12a7720375e264ce8c66b31456db7848c36"
+    },
+    "submit_check": {
+      "status": "pass",
+      "fail": 0,
+      "warn": 0,
+      "sample_submission": "data/raw/sample_submission.csv",
+      "submission": "/tmp/kaggle-output/exp198_exact_replacement_prune_on_exp148/inference_v4/submission.csv",
+      "rows_match_sample": true,
+      "header_matches_sample": true,
+      "id_order_matches_sample": true,
+      "duplicate_ids": 0,
+      "missing_nan_inf_like_values": 0
+    },
+    "runtime_metadata": {
+      "enable_gpu": false,
+      "enable_internet": false
+    }
+  },
+  "submission": {
+    "submitted": true,
+    "ref": "54354847",
+    "submitted_at": "2026-07-05 07:51:41.043000",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_lb": 7.93,
+    "private_lb": null,
+    "file": "/tmp/kaggle-output/exp198_exact_replacement_prune_on_exp148/inference_v4/submission.csv",
+    "submission_sha256": "e5b71f6f576a62567adfe189c2def12a7720375e264ce8c66b31456db7848c36",
+    "kernel": "kentookumura/exp198-exact-replacement-prune-exp148-inference",
+    "kernel_version": 4,
+    "attribution": "Latest completed scoring after exp198 inference v4 and submit-check; Kaggle submission description is blank.",
+    "delta_vs_exp148_gpu_public_lb": -0.03,
+    "delta_vs_exp193_public_lb": -0.016,
+    "delta_vs_exp148_cpu_runtime_public_lb": 0.009,
+    "adopted_as_ml_anchor": false,
+    "reason_not_adopted": "Public LB 7.930 improves exp148 GPU inference v7 7.960 and exp193 7.946, but is worse than the current exp148 CPU runtime ML route anchor 7.921."
+  },
+  "artifacts": {
+    "output_dir": "/tmp/kaggle-output/exp198_exact_replacement_prune_on_exp148/train_v1",
+    "feature_schema_sha256": "c9827f1a2fbec34e039035cab121b56077e56be8e1c3a74a7624ba205566c833",
+    "model_manifest_sha256": "f286ae46c6e47a66793ea2e4668e8569ef79fa6f896c19610c311ed1ff1c54d8",
+    "predictions_gzip_sha256": "60e0756f6c137de676afac20686c5fa326214898cb4599f66d0d2f6690dc238e",
+    "predictions_decompressed_sha256": "816dc0883b4920d7ece1ed63cc719dc11ae88dcb72d80a51ee2644076b41d381",
+    "model_count": 15,
+    "elapsed_seconds": 12264.703
+  },
+  "kaggle_package": {
+    "train_prepared": true,
+    "train_pushed": true,
+    "kernel_id": "kentookumura/exp198-exact-replacement-prune-exp148-train",
+    "kernel_version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp198-exact-replacement-prune-exp148-train",
+    "title": "exp198 exact replacement prune exp148 train",
+    "run_on_push": true,
+    "enable_gpu": true,
+    "enable_internet": false,
+    "pushed_config_sha256": "3f2972a11b64971923186aa301e011904d17a260e08550f8296008fadb457e5f"
+  },
+  "inference_package": {
+    "inference_prepared": true,
+    "inference_pushed": true,
+    "kernel_id": "kentookumura/exp198-exact-replacement-prune-exp148-inference",
+    "kernel_version": 4,
+    "url": "https://www.kaggle.com/code/kentookumura/exp198-exact-replacement-prune-exp148-inference",
+    "title": "exp198 exact replacement prune exp148 inference",
+    "run_on_push": true,
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "reference_metrics": {
+    "exp148_lgb_mean_pooled_rmse": 8.50128118189582,
+    "exp148_public_lb": 7.96,
+    "exp148_cpu_runtime_public_lb": 7.921,
+    "exp193_public_lb": 7.946,
+    "exp148_feature_count": 294,
+    "exp092_full_lgb1_pooled_rmse": 9.322479895503927,
+    "exp092_full_public_lb": 8.35
+  },
+  "decision": {
+    "train_side_supported": true,
+    "inference_port_candidate": true,
+    "inference_completed": true,
+    "submit_check_pass": true,
+    "submitted": true,
+    "public_lb": 7.93,
+    "adopted_as_ml_anchor": false,
+    "reason": "Drop-only exact replacement prune improves lgb_mean OOF by 0.043357529 vs exp148 and Public LB 7.930 improves exp148 GPU inference v7 7.960 by 0.030, but it is worse than the current exp148 CPU runtime ML route anchor 7.921 by 0.009."
+  }
+}

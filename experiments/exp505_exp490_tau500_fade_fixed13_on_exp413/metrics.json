@@ -1,0 +1,76 @@
+{
+  "experiment": "exp505_exp490_tau500_fade_fixed13_on_exp413",
+  "status": "completed_train_side_rejected_no_stage_d_no_submit",
+  "route": "ensemble",
+  "cv": {
+    "metric": "rmse_tvt_ft",
+    "hard_primary_oof_rmse": 8.243315437237596,
+    "raw_exp501_hard_oof_rmse": 8.264890208588357,
+    "gain_vs_raw_exp501_ft": 0.021574771350760358,
+    "fixed12_hard_oof_rmse": 8.652531955610227,
+    "fixed_fallback_oof_rmse": 8.238331546485645,
+    "nonworse_folds_vs_raw_exp501": 4,
+    "folds": [
+      {"fold": 0, "exp505_rmse": 8.416177538733027, "raw_exp501_rmse": 8.466895073168018, "delta_ft": -0.05071753443499105},
+      {"fold": 1, "exp505_rmse": 8.295453153203185, "raw_exp501_rmse": 8.278298759790575, "delta_ft": 0.017154393412610602},
+      {"fold": 2, "exp505_rmse": 8.030499522222497, "raw_exp501_rmse": 8.044158353217016, "delta_ft": -0.013658830994518922},
+      {"fold": 3, "exp505_rmse": 8.23293839520431, "raw_exp501_rmse": 8.243424839183701, "delta_ft": -0.010486443979392135},
+      {"fold": 4, "exp505_rmse": 8.236416367086928, "raw_exp501_rmse": 8.285808879310979, "delta_ft": -0.04939251222405083}
+    ]
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "seed": 42,
+  "stage_c": {
+    "status": "completed_scientific_gate_failed",
+    "variants": 1,
+    "objectives": 2,
+    "outer_folds": 5,
+    "inner_folds": 4,
+    "completed_cpu_selector_boosters": 40,
+    "control_retraining_boosters": 0,
+    "model_count": 40,
+    "compact_feature_count": 77,
+    "technical_checks_all_passed": true,
+    "fixed_scopes_nonworse_vs_raw_exp501": 7,
+    "fade_usage_pooled": 0.5524138680107157,
+    "positive_fade_usage_folds": 5,
+    "by_well_p95_reduction_ft": 0.00003653592260333127,
+    "required_by_well_p95_reduction_ft": 0.1,
+    "worst_well_reduction_ft": 0.17316807875078766,
+    "required_worst_well_reduction_ft": 1.0,
+    "scientific_gate_passed": false,
+    "decision": "FAIL_CLOSE_WITHOUT_STAGE_D_OR_SAME_OOF_RESCUE"
+  },
+  "stage_d": {
+    "status": "not_permitted_after_stage_c_fail",
+    "implemented": false,
+    "gpu_boosters": 0,
+    "control_exp413_rmse": 7.884802794404715
+  },
+  "kaggle": {
+    "kernel_id": "kentookumura/exp505-exp490-tau500-fade-fixed13-on-exp413-train",
+    "kernel_version": 1,
+    "kernel_id_no": 129519165,
+    "status": "COMPLETE",
+    "elapsed_seconds": 7312.583036358,
+    "pushed_at": "2026-08-02 23:21:39 UTC"
+  },
+  "sha256": {
+    "feature_schema": "f3811d0da796b1634c6ec28ef50d8d22aa4bbe443c4692b725f498b3c9dcf79b",
+    "model_manifest": "e0523757dfb79c2082ba78aa582a5f5c8cce55fe247969e89e8d29979905362b",
+    "compact_manifest": "49812f4c31d925b5630c41d5446173bf60ef21d962acfe9c3ea52a60ea5f9eb8",
+    "outer_valid_candidate_score": "c319fff5b8d675c170cf6d75260f05add64524eb2d8377b6edcc1963b26403ab",
+    "scientific_gate": "edb3c7c933f8db2e102bdf35a90ca36634ccd280e4137b09f039a3e984d10f07",
+    "kaggle_log": "e46310da31ff6dad4419406780c55ecb5e01def67964cdd58e67246880eff91d"
+  },
+  "implementation": true,
+  "kaggle_run": true,
+  "inference": false,
+  "submission": false,
+  "created_at": "2026-08-02",
+  "updated_at": "2026-08-03",
+  "key_idea": "Replace raw exp490 in the fixed13 selector with a frozen tau-500 fade. Stage C improved pooled OOF and all fixed scopes, but the material by-well tail reductions were nearly absent, so the branch is closed without Stage D, inference, or submission.",
+  "notes": "Tau 500 was selected exploratorily on the same full OOF in exp503; exp505 is not a clean independent validation. Stage C failed both preregistered tail guards, and same-OOF rescue is forbidden."
+}

@@ -1,0 +1,115 @@
+{
+  "experiment": "exp248_candidate_perturbation_augmentation_for_likelihood_ranker",
+  "status": "completed_train_side_guard_failed",
+  "decision": "reject_candidate_perturbation_augmentation_keep_original_only_as_train_side_lead",
+  "route": "ensemble",
+  "key_idea": "Target-independent candidate-set perturbation augmentation for the exp237 dual-objective likelihood/error ranker; augmentation failed all clean-validation guards.",
+  "cv": 8.728086070914728,
+  "control_cv": 8.421415096736327,
+  "public_lb": null,
+  "private_lb": null,
+  "kaggle": {
+    "kernel": "kentookumura/exp248-candidate-perturbation-ranker-train",
+    "version": 1,
+    "id_no": 127067118,
+    "url": "https://www.kaggle.com/code/kentookumura/exp248-candidate-perturbation-ranker-train",
+    "status": "COMPLETE"
+  },
+  "runtime": {
+    "seconds": 9687.118455648422,
+    "rows": 3783989,
+    "wells": 773,
+    "candidate_count": 11,
+    "base_feature_count": 148,
+    "long_feature_count": 297,
+    "active_variants": 2,
+    "lightgbm_objectives_per_variant": 2,
+    "folds": 5,
+    "model_count": 20,
+    "gpu": false,
+    "internet": false,
+    "parent_retraining": false,
+    "same_fold_control_retraining": true
+  },
+  "fixed_viterbi": {
+    "original_only": {
+      "rmse": 8.421415096736327,
+      "mae": 4.945848271772113,
+      "within10": 0.8524641588545844,
+      "path_switch_count": 7147
+    },
+    "perturbation_augmented": {
+      "rmse": 8.728086070914728,
+      "mae": 5.093334003553773,
+      "within10": 0.8483000346988324,
+      "path_switch_count": 7685
+    },
+    "delta_augmented_minus_control_rmse": 0.3066709741784006
+  },
+  "fold_rmse_fixed_viterbi": {
+    "derivation": "Exact sklearn GroupKFold allocation reconstructed from by-well row counts; fold RMSE is row-weighted from the saved by-well metrics.",
+    "original_only": [7.960474, 9.304039, 7.882326, 8.691422, 8.185133],
+    "perturbation_augmented": [8.261688, 9.640797, 8.175388, 9.174111, 8.288151],
+    "delta_augmented_minus_control": [0.301214, 0.336758, 0.293061, 0.482689, 0.103018],
+    "improved_folds": 0,
+    "worsened_folds": 5
+  },
+  "candidate_metrics": {
+    "original_only": {
+      "auc": 0.9250067828429464,
+      "logloss": 0.3267439850468316,
+      "brier": 0.1032196685837124,
+      "expected_error_mae": 4.537501009423963
+    },
+    "perturbation_augmented": {
+      "auc": 0.923061812084068,
+      "logloss": 0.3312554096388794,
+      "brier": 0.1049123984165294,
+      "expected_error_mae": 4.61053811766446
+    }
+  },
+  "guards": {
+    "adoption_supported": false,
+    "selected_rmse_nonworse": false,
+    "candidate_logloss_nonworse": false,
+    "1000_plus_nonworse": false,
+    "hidden_like_nonworse": false,
+    "worst_well_regression_bounded": false,
+    "delta_1000_plus_rmse": 0.35222231516133995,
+    "hidden_like_delta_rmse": {
+      "exp115_spatial_valid": 0.32886707147426364,
+      "exp115_typewell_purged_valid": 0.3026091207677286
+    },
+    "worst_well": "389ae58f",
+    "worst_well_regression": 15.575245723279082,
+    "wells_improved": 360,
+    "wells_worsened": 413
+  },
+  "anchors": {
+    "exp237_fixed_viterbi_rmse": 8.545093285823208,
+    "original_only_delta_vs_exp237": -0.12367818908688122,
+    "augmented_delta_vs_exp237": 0.1829927850915194,
+    "exp218_lgb_mean_rmse": 8.475793751656624,
+    "original_only_delta_vs_exp218": -0.054378654920297365,
+    "augmented_delta_vs_exp218": 0.25229231925810325
+  },
+  "reproducibility": {
+    "augmentation_inventory_rows": 300000,
+    "augmentation_inventory_decompressed_sha256": "80a0e6c7e394f24f2c0a21e6a1447c3bc071b89e3a9852473c620273c208799a",
+    "oof_predictions_decompressed_sha256": "aecbecbec5199e6d6559c5cb7c5797b07afedff0c4709ff50e193299e25a82dc",
+    "feature_schema_sha256": "46819aaebc98e61a172567b20a1c93bb7816cc6343d8989a429e6dbd69a507ba",
+    "model_manifest_sha256": "28e0dbfa9b52f5cad8b0d35f73b7aed97514b61350fdbc93c65093336dccc3ca",
+    "model_sha_count": 20,
+    "unique_model_sha_count": 20,
+    "metrics_sha256": "a279a1dcc571b0e68c86c2397fa39f1cc53f50ac26c8129dd7dfdb92c74de64d",
+    "by_well_sha256": "6ee1149067704a7c3b3ff209d1dd139ce380d0e087358545167eab818a86258b",
+    "summary_download_sha256": "c82f4db1e6250781f8c8ccef4af45588fd735e6d5ec4d06cb455f415d956ed59",
+    "kernel_log_sha256": "1b781cf6328f0ab5cb83133923d6764a24341318a5bd3fcfe3d48591b96956e4"
+  },
+  "notes": [
+    "Outer-valid candidates were always clean originals; augmented candidates were training-only teacher rows.",
+    "All five adoption guards failed and all five fold RMSE values worsened.",
+    "No inference or competition submission was run."
+  ],
+  "updated_at": "2026-07-15"
+}

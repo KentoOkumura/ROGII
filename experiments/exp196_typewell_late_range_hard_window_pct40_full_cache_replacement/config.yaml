@@ -1,0 +1,135 @@
+experiment:
+  name: "exp196_typewell_late_range_hard_window_pct40_full_cache_replacement"
+  description: CPU-only exp072-style full replay train feature cache rebuilt from raw files after cutting typewell rows to typewell_pct >= 0.40 before PF/Beam generation.
+  route: pf_beam
+  status: completed_supported_for_downstream_replacement_test_no_submit
+  created_at: "2026-07-04"
+  updated_at: "2026-07-05"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.metric
+
+lineage:
+  parent: exp192_typewell_late_range_hard_window_pct50_full_cache_replacement
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - exp192_typewell_late_range_hard_window_pct50_full_cache_replacement
+    - exp186_typewell_late_range_pfbeam_generation_soft_prior
+    - exp176_typewell_late_range_pfbeam_candidate_prior
+    - exp174_typewell_late_range_ml_posthoc_clip_audit
+  implementation_source: feature_cache.py
+  public_replay_source: hard_window_public_replay.py
+  diff_summary: >
+    Rebuilds the exp072-style full Pixiux public replay train feature cache from raw
+    competition files, without using an existing full replay cache as input. Before
+    PF_ANCC, PF_Z, Beam, and likelihood-PF generation, each raw typewell is filtered
+    to the late 60 percent of its original TVT range (`typewell_pct >= 0.40`). This
+    runs a single hard-window pct40 replacement cache as a sensitivity check against
+    exp192 pct50, with no 0.30/0.60/0.70 grid, no soft prior, no LightGBM training,
+    no inference port, and no submission candidate.
+
+validation:
+  strategy: full_replay_train_feature_cache_generation
+  metric: generated_feature_contract
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  leakage_policy:
+    - Uses raw competition train horizontal/typewell files as generation input.
+    - Computes typewell_pct from each raw typewell's original finite TVT min/max before filtering.
+    - Does not read the existing exp072 full replay cache while generating features.
+    - The train TVT label is written only as the target column for downstream CV and is not used by PF/Beam generation.
+    - Does not read raw test files, train models, infer, submit, or use labels outside the generated train target column.
+    - Downstream inference notebooks must regenerate current raw test features directly with the same hard-window generation code.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: no_model_train_feature_cache
+  estimator: none
+  target: target
+  base_prediction: last_known_tvt
+  hard_window:
+    name: pct40
+    enabled: true
+    min_typewell_pct: 0.40
+    max_typewell_pct: 1.00
+    min_rows_after_filter: 3
+    grid_run: false
+    notes:
+      - Only pct40 is enabled. pct30/pct60/pct70 are intentionally not run in this experiment.
+      - The pct is computed from each raw typewell's original finite TVT min/max before filtering.
+
+feature_cache:
+  variant: pixiux_likpf_hard_window_pct40_public_replay
+  hard_window_name: pct40
+  deterministic_pf: true
+  seed_policy: stable_sha256_per_well
+  expected_feature_count: 196
+  output_prefix: exp196_typewell_late_range_hard_window_pct40_full_cache_replacement_full_replay_cache
+  n_jobs: 8
+  pf_seeds: 128
+  pf_particles: 500
+  fast: false
+  max_wells: null
+  expected_artifacts:
+    - exp196_typewell_late_range_hard_window_pct40_full_cache_replacement_full_replay_cache_pixiux_likpf_hard_window_pct40_public_replay_train_features.csv.gz
+    - exp196_typewell_late_range_hard_window_pct40_full_cache_replacement_full_replay_cache_feature_schema.csv
+    - exp196_typewell_late_range_hard_window_pct40_full_cache_replacement_full_replay_cache_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources: []
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_well
+  stochastic_components:
+    - full_replay_pf_particle_propagation
+    - full_replay_pf_resampling
+    - full_replay_likelihood_pf_seed_ensemble
+  parallel_rng_policy: joblib_threads_with_per_well_stable_sha256_seeds
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it generates a train feature cache only.
+    - PF seeds are stable per well and split; the hard window changes the typewell support before generation but not seed derivation.
+    - Beam variants are deterministic for fixed input and config.
+    - No inference or submission output is generated by this experiment.
+
+inference:
+  mode: not_applicable_train_feature_cache_only
+  selected_candidate: null
+  notes:
+    - Test PF/Beam/likelihood-PF features are intentionally not cached here.
+    - Each downstream inference notebook should regenerate current raw test features directly with the same hard-window generation code.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog typewell_late_range_hard_window_pct40_full_cache_replacement as an exp072-style full replay train cache rebuild.
+  - Existing full replay cache is not a generation input; it is only a comparison target for downstream review.
+  - The only hard-window threshold is typewell_pct >= 0.40; pct30/pct60/pct70 grid variants are explicitly out of scope.
+  - Direct PF/Beam comparison vs exp072 and exp192 pct50 completed on 2026-07-05.
+  - pct40 is supported as a sensitivity/downstream replacement-test candidate only; direct inference and submit are not recommended.

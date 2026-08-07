@@ -1,0 +1,360 @@
+experiment:
+  name: "exp154_segment_level_dense_candidate_verifier_on_exp148"
+  description: "Train-side posthoc audit for low-frequency segment-level tvt_dense verification on the exp148 ML route submitted anchor."
+  route: ml_model
+  status: submitted_public_lb_8p078_not_adopted
+  created_at: "2026-06-28"
+  updated_at: "2026-06-28"
+
+lineage:
+  parent: exp148_learned_likelihood_fulltrain_addonly_on_exp092
+  secondary_parents:
+    - exp072_exp063_full_replay_feature_cache
+    - exp073_gpu_reproducibility_guard_for_exp063_full_replay
+    - exp092_u_projection_correction_disagreement_fullrun
+    - exp126_exp073_exp092_pf_beam_pseudotail_failure_map
+    - exp135_tvt_dense_high_drift_confidence_gate_on_exp092
+    - exp151_tvt_dense_addonly_confidence_features_on_exp092
+  implementation_source: segment_level_dense_candidate_verifier_on_exp148.py
+  diff_summary: >
+    Updates the segment_level_dense_candidate_verifier backlog from the old exp092
+    baseline to the current ML route submitted anchor exp148. The experiment joins
+    saved exp148 lgb_mean OOF predictions, exp073 reference OOF predictions, and
+    exp072 PF/Beam/dense feature cache, then evaluates target-free low-frequency
+    segment-level dense candidate verification without training any new model.
+
+validation:
+  strategy: exp148_train_pseudotail_posthoc_segment_dense_verifier
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - verifier_rate
+    - verified_wells
+    - max_well_regression_vs_exp148
+    - common_pf_ml_worst26_rmse
+    - pf_likpf_worst50_rmse
+    - exp148_worst50_rmse
+    - distance_bucket_rmse
+    - tail_rank_bucket_rmse
+    - path_step_ge10
+    - path_step_ge25
+  seed: 42
+  group_column: well
+  score_rows: exp072_full_replay_train_pseudotail_rows
+  leakage_policy:
+    - Input predictions are saved train-side OOF predictions from exp148 and exp073.
+    - PF/Beam/dense candidates are read from exp072 train pseudo-tail feature cache.
+    - Verifier masks use only target-free columns available from raw-test-compatible candidate generation.
+    - target_tvt is used only for scoring, oracle coverage diagnostics, and posthoc readouts.
+    - No LightGBM or other model is trained in this experiment.
+    - Any submission candidate requires a later raw-test-compatible inference port in this same experiment.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_feature_cache:
+    - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v1/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema:
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp073_predictions:
+    - /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/train_v2/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp073-full-replay-repro-guard-train/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+  exp148_predictions:
+    - /tmp/kaggle-output/exp148_learned_likelihood_fulltrain_addonly_on_exp092/train_v1/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+  learned_likelihood_rawtest_feature_schema_local: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/kaggle/output/inference_v3/artifacts/exp145_learned_likelihood_rawtest_feature_generator_parity_feature_schema.csv
+  learned_likelihood_rawtest_summary_local: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/kaggle/output/inference_v3/artifacts/exp145_learned_likelihood_rawtest_feature_generator_parity_summary.json
+  exp099_artifact_dir_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp111_artifact_dir_local: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts
+  exp111_feature_schema: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_feature_schema.csv
+  exp111_model_manifest: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_model_manifest.json
+  exp112_artifact_dir_local: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts
+  exp112_feature_schema: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+
+model:
+  name: no_new_model_segment_level_dense_candidate_verifier_on_exp148
+  estimator: none
+  exp073_model: lgb_mean
+  exp148_model: lgb_mean
+  base_prediction: pred_exp148_lgb_mean
+  dense_candidates:
+    - pred_tvt_dense
+    - pred_tvt_densew
+    - pred_tvt_dense50
+    - pred_tvtF_ANCC
+  u_projection:
+    anchor_definition: local_prefix_u0_equals_T0_plus_Z0
+    degree: 3
+    robust_iters: 3
+    clip_sigma: 4.0
+    include_lgb_oof_features: false
+    sources:
+      pf_ancc:
+        value_column: pf_ancc
+        enabled: true
+      pf_z:
+        value_column: pf_z
+        enabled: true
+      beam_mean:
+        delta_column: beam_mean_d
+        enabled: true
+      beam_med:
+        delta_column: beam_med_d
+        enabled: true
+      likpf_mean:
+        delta_column: likpf_mean_d
+        enabled: true
+  learned_likelihood_features:
+    prefix: ll_
+    direct_columns:
+      - learned_prob_top1_index
+      - learned_error_top1_index
+      - learned_prob_top1_value
+      - learned_prob_top2_value
+      - learned_prob_margin_top1_top2
+      - learned_prob_entropy
+      - learned_error_top1_value
+      - learned_error_top2_value
+      - learned_error_margin_top2_top1
+      - learned_prob_likpf_rank
+      - learned_error_likpf_rank
+      - learned_prob_top3_contains_likpf
+      - learned_error_top3_contains_likpf
+      - candidate_tvt_std
+      - candidate_tvt_range
+      - learned_prob_pf_ancc
+      - learned_pred_abs_error_pf_ancc
+      - multiobs_score_pf_ancc
+      - multiobs_mae_pf_ancc
+      - multiobs_ncc_pf_ancc
+      - learned_prob_beam_mean
+      - learned_pred_abs_error_beam_mean
+      - multiobs_score_beam_mean
+      - multiobs_mae_beam_mean
+      - multiobs_ncc_beam_mean
+      - learned_prob_likpf_mean
+      - learned_pred_abs_error_likpf_mean
+      - multiobs_score_likpf_mean
+      - multiobs_mae_likpf_mean
+      - multiobs_ncc_likpf_mean
+      - learned_prob_sc_ens
+      - learned_pred_abs_error_sc_ens
+      - multiobs_score_sc_ens
+      - multiobs_mae_sc_ens
+      - multiobs_ncc_sc_ens
+      - learned_prob_hyb
+      - learned_pred_abs_error_hyb
+      - multiobs_score_hyb
+      - multiobs_mae_hyb
+      - multiobs_ncc_hyb
+    candidate_tvt_columns:
+      - candidate_tvt_pf_ancc
+      - candidate_tvt_beam_mean
+      - candidate_tvt_likpf_mean
+      - candidate_tvt_sc_ens
+      - candidate_tvt_hyb
+    weighted_tvt_columns:
+      - learned_prob_weighted_tvt
+      - learned_error_weighted_tvt
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp073-full-replay-repro-guard-train
+      - kentookumura/exp148-train
+    inference_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp148-train
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp112-learned-pf-likelihood-followup-train
+
+generator:
+  chunksize: 200000
+  include_candidate_values: false
+  default_candidate: likpf_mean
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+    - name: beam_mean
+      column: beam_mean
+    - name: likpf_mean
+      column: likpf_mean
+    - name: sc_ens
+      column: sc_ens
+    - name: hyb
+      column: hyb
+  row_context_columns:
+    - last_known_tvt
+    - pf_ancc_std
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+    - eval_len
+    - md_since
+    - likpf_mean_d
+  multiobs_global_columns:
+    - multiobs_score_max
+    - multiobs_score_mean
+    - multiobs_score_gap
+    - multiobs_top1_source_id
+    - multiobs_top1_mae
+    - multiobs_top1_ncc
+  feature_cache:
+    include_candidate_tvt: true
+    include_multiobs_scores: true
+    include_probability_features: true
+    include_expected_error_features: true
+  rawtest_replay:
+    variant: pixiux_likpf_public_replay
+    n_jobs: 8
+    pf_seeds: 128
+    pf_particles: 500
+    fast: false
+    use_gpu: auto
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_posthoc_saved_oof_audit
+  stochastic_components:
+    - upstream_exp148_lightgbm_oof_predictions
+    - upstream_exp073_lightgbm_oof_predictions
+    - upstream_exp072_pf_beam_dense_feature_cache
+  parallel_rng_policy: no_parallel_rng_in_exp154
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - docs/06_reproducibility.md applies through saved OOF/cache SHA recording and Kaggle bootstrap metadata.
+    - exp154 performs no stochastic computation and no model training.
+    - This experiment is diagnostic only and is not a deterministic submission anchor.
+
+audit:
+  mode: segment_level_dense_candidate_verifier_on_exp148
+  output_prefix: exp154_segment_level_dense_candidate_verifier_on_exp148
+  max_prediction_rows: null
+  max_feature_rows: null
+  prediction_sample_rows: 200000
+  required_rawtest_compatible_columns:
+    - pf_ancc
+    - pf_ancc_std
+    - pf_z
+    - beam_mean_d
+    - beam_std_d
+    - likpf_mean_d
+    - tvt_dense_d
+    - tvt_densew_d
+    - tvt_dense50_d
+    - tvtF_ANCC
+    - dense_std
+    - dense_dist
+    - dense_nb_std
+    - pf_vs_dense
+    - spatial_vs_dense
+  gate_variants:
+    - name: verifier_densew_tail1000_q80_min120_clip15_a035
+      candidate: pred_tvt_densew
+      scope: segment
+      dense_q: 0.80
+      pf_dense_q: 0.80
+      pf_beam_q: 0.75
+      min_tail_rank: 1000
+      min_conditions: 3
+      min_segment_rows: 120
+      max_near_md_since: 100.0
+      max_candidate_step_p95: 8.0
+      max_candidate_step_max: 25.0
+      alpha: 0.35
+      clip_abs: 15.0
+    - name: verifier_dense50_tail1000_q80_min120_clip15_a035
+      candidate: pred_tvt_dense50
+      scope: segment
+      dense_q: 0.80
+      pf_dense_q: 0.80
+      pf_beam_q: 0.75
+      min_tail_rank: 1000
+      min_conditions: 3
+      min_segment_rows: 120
+      max_near_md_since: 100.0
+      max_candidate_step_p95: 8.0
+      max_candidate_step_max: 25.0
+      alpha: 0.35
+      clip_abs: 15.0
+    - name: verifier_densew_tail1500_q90_min80_clip10_a025
+      candidate: pred_tvt_densew
+      scope: segment
+      dense_q: 0.90
+      pf_dense_q: 0.90
+      pf_beam_q: 0.80
+      min_tail_rank: 1500
+      min_conditions: 3
+      min_segment_rows: 80
+      max_near_md_since: 250.0
+      max_candidate_step_p95: 6.0
+      max_candidate_step_max: 20.0
+      alpha: 0.25
+      clip_abs: 10.0
+    - name: verifier_dense50_tail1500_q90_min80_clip10_a025
+      candidate: pred_tvt_dense50
+      scope: segment
+      dense_q: 0.90
+      pf_dense_q: 0.90
+      pf_beam_q: 0.80
+      min_tail_rank: 1500
+      min_conditions: 3
+      min_segment_rows: 80
+      max_near_md_since: 250.0
+      max_candidate_step_p95: 6.0
+      max_candidate_step_max: 20.0
+      alpha: 0.25
+      clip_abs: 10.0
+  expected_train_artifacts:
+    - exp154_segment_level_dense_candidate_verifier_on_exp148_metrics.csv
+    - exp154_segment_level_dense_candidate_verifier_on_exp148_gate_variants.csv
+    - exp154_segment_level_dense_candidate_verifier_on_exp148_by_well.csv
+    - exp154_segment_level_dense_candidate_verifier_on_exp148_bucket_metrics.csv
+    - exp154_segment_level_dense_candidate_verifier_on_exp148_common_worst_metrics.csv
+    - exp154_segment_level_dense_candidate_verifier_on_exp148_rawtest_parity_checklist.csv
+    - exp154_segment_level_dense_candidate_verifier_on_exp148_prediction_sample.csv.gz
+    - exp154_segment_level_dense_candidate_verifier_on_exp148_summary.json
+    - README.md
+
+inference:
+  mode: exp148_saved_booster_plus_segment_dense_verifier_submission
+  selected_variant: verifier_dense50_tail1500_q90_min80_clip10_a025
+  exp148:
+    selected_variant: learned_likelihood_confidence_addonly
+    selected_mode: gpu_repro_guard_dp_threads8
+    selected_model: lgb_mean
+    model_manifest_path: null
+  notes:
+    - User accepted submission risk because daily submission slots are available.
+    - Creates exp148 saved-booster base predictions, applies the selected target-free verifier, and writes submission.csv.
+
+notes:
+  - Implements backlog item segment_level_dense_candidate_verifier with exp148 as the current ML route submitted anchor.
+  - LightGBM training is not performed in exp154; inference reuses exp148 saved boosters.
+  - Direct submit is allowed by user request despite unresolved within10 and worst-well regression risk.
+  - Submission ref 54142393 scored Public LB 8.078, worse than exp148 Public LB 7.960, so exp154 is not adopted.

@@ -1,0 +1,123 @@
+{
+  "active_mode": "stage1_full_audit",
+  "cv": null,
+  "decision": "fail_close_segment_local_hard_use_and_grid_search",
+  "experiment": "exp250_segment_local_negative_space_gr_corridor_audit",
+  "guards": [
+    {
+      "name": "pooled_real_auc",
+      "observed": 0.5301335985765501,
+      "passed": false,
+      "requirement": ">=0.60"
+    },
+    {
+      "name": "pooled_real_minus_shuffled_auc",
+      "observed": 0.03593432883233405,
+      "passed": true,
+      "requirement": ">=0.02"
+    },
+    {
+      "name": "likpf_or_pfancc_q90_lift_and_control_delta",
+      "observed": {
+        "likpf_mean": {
+          "difference": -0.017350537245451103,
+          "real": 0.9971984150661809,
+          "shuffled": 1.014548952311632
+        },
+        "pf_ancc": {
+          "difference": 0.04945415611887638,
+          "real": 1.078168393959199,
+          "shuffled": 1.0287142378403227
+        }
+      },
+      "passed": false,
+      "requirement": "one real lift>=1.50; both real-shuffled>=0.10"
+    },
+    {
+      "name": "q90_good_candidate_false_alert",
+      "observed": {
+        "families": {
+          "beam_mean": 0.25643682147231456,
+          "hyb": 0.10009996509155533,
+          "likpf_mean": 0.2624907362987494,
+          "pf_ancc": 0.2526873508353222,
+          "sc_ens": 0.09587649205879452
+        },
+        "overall": 0.23201982646253433
+      },
+      "passed": false,
+      "requirement": "overall<=0.10; each family<=0.15"
+    },
+    {
+      "name": "overlap_path_and_risk_agreement",
+      "observed": {
+        "path_median_ft": 57.61000000000058,
+        "path_p90_ft": 258.6840000000006,
+        "risk_spearman": 0.44872306591139377
+      },
+      "passed": false,
+      "requirement": "median<=8.0, p90<=24.0, Spearman>=0.70"
+    },
+    {
+      "name": "hidden_like_auc",
+      "observed": {
+        "overall": 0.5301335985765501,
+        "verification_like_spatial": 0.5310441849301013,
+        "verification_like_typewell_purged": 0.5323226730157732
+      },
+      "passed": false,
+      "requirement": "each>=0.57 and overall drop<=0.05"
+    },
+    {
+      "name": "by_well_good_candidate_false_alert",
+      "observed": {
+        "max": 0.9847328244274809,
+        "p95": 0.7573808625323494
+      },
+      "passed": false,
+      "requirement": "p95<=0.25; max<=0.50"
+    },
+    {
+      "name": "truth_corridor_coverage_real_vs_shuffled",
+      "observed": {
+        "distance:1000_plus": 0.06122243093020241,
+        "hidden_like:verification_like_spatial": 0.04740639312036765,
+        "hidden_like:verification_like_typewell_purged": 0.04838435283735071,
+        "overall:overall": 0.059580303916066
+      },
+      "passed": true,
+      "requirement": "overall>=0.05; 1000_plus and both hidden-like groups >=0"
+    }
+  ],
+  "input_sha": {
+    "candidate_cache_decompressed_content_sha256": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350",
+    "candidate_cache_raw_sha256": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18",
+    "config_sha256": "4d1407c66753d2255d34547f0523a97e5a87039640d2b742c8a32a6603b715d5",
+    "hidden_like_assignment_sha256": "5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597",
+    "raw_inventory_sha256": "10309f175ffb08774420bd56d3606f226a758785983ffc7f6b293ebcb3c699d1"
+  },
+  "metric": "segment_local_minimum_bottleneck_corridor_audit",
+  "primary_metrics": {
+    "auc": 0.5301335985765501,
+    "bad_row_weight": 1864264.0,
+    "candidate": "__pooled__",
+    "evaluated_row_weight": 3652581.0,
+    "good_row_weight": 1788317.0,
+    "overall_bad_rate": 0.5103963471309739,
+    "q90_bad_rate": 0.3965631330869702,
+    "q90_bad_rate_lift": 0.7769709468261677,
+    "q90_good_false_alert_rate": 0.23201982646253433,
+    "q90_risk_threshold": 1.0,
+    "real_minus_shuffled_auc": 0.03593432883233405,
+    "real_minus_shuffled_q90_lift": -0.010991692710060508,
+    "sample_segment_count": 145855,
+    "variant": "real_gr"
+  },
+  "private_lb": null,
+  "public_lb": null,
+  "route": "pf_beam",
+  "runtime_seconds": 7633.822783470154,
+  "status": "stage1_complete_guard_failed",
+  "summary_path": "/kaggle/working/artifacts/exp250_segment_local_negative_space_gr_corridor_audit_summary.json",
+  "summary_sha256": "79448ad77882e3ecf6fd95e0044b59965ffe8cc7fa00603459be3e786824a396"
+}

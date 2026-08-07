@@ -1,0 +1,149 @@
+inventory: strict_public_core_stage0_source_inventory_v1
+
+source:
+  slug: raunakdey07/rogii-stacked-ensemble
+  id_no: 128237178
+  pulled_code_file: rogii-stacked-ensemble.ipynb
+  conversion: jupytext_ipynb_to_py_percent
+  converted_source_sha256: 88c7b99e234fdbd5620c0045df294d9167eac84e56f538ceb3f2449a677a5454
+  converted_source_bytes: 300695
+  converted_source_lines: 6209
+
+required_symbols:
+  - name: run_particle_filter
+    kind: function
+    definition_lines: [691]
+  - name: run_pf_lik_ensemble_scales
+    kind: function
+    definition_lines: [786]
+  - name: run_beam_ensemble
+    kind: function
+    definition_lines: [916]
+  - name: selector_well_code
+    kind: function
+    definition_lines: [940]
+  - name: parse_selector_variant
+    kind: function
+    definition_lines: [952]
+  - name: build_well
+    kind: function
+    definition_lines: [2065, 3354]
+  - name: run_pf_ancc
+    kind: function
+    definition_lines: [1887, 3098]
+  - name: run_pf_z
+    kind: function
+    definition_lines: [1901, 3109]
+  - name: multi_scale_ncc
+    kind: function
+    definition_lines: [1959, 3129]
+  - name: FormationPlaneKNN
+    kind: class
+    definition_lines: [1984, 3285]
+  - name: DenseANCCImputer
+    kind: class
+    definition_lines: [2026, 3323]
+  - name: _pf_lik_allseeds
+    kind: function
+    definition_lines: [3155]
+  - name: lik_pf
+    kind: function
+    definition_lines: [3206]
+  - name: train_stack
+    kind: function
+    definition_lines: [3527]
+  - name: warmup
+    kind: function
+    definition_lines: [3576]
+  - name: make_prediction
+    kind: function
+    definition_lines: [3578]
+  - name: _robfit
+    kind: function
+    definition_lines: [2695]
+
+source_spans:
+  selector_physics:
+    first_line: 638
+    last_line: 1382
+  sp45_feature_and_stack:
+    first_line: 1678
+    last_line: 2557
+  robust_u_projection:
+    first_line: 2689
+    last_line: 2744
+  independent_learned_branch:
+    first_line: 2791
+    last_line: 3595
+
+feature_inventory:
+  sp45_residual:
+    base_literal_columns: 76
+    beam_expansion_columns: 7
+    formation_expansion_columns: 48
+    formation_rmse_columns: 6
+    offset_residual_columns: 44
+    rolling_lag_lead_columns: 16
+    excluded_identifier_columns: 2
+    model_feature_columns: 195
+  learned_trajectory:
+    base_feature_columns: 195
+    likelihood_pf_absolute_columns: 5
+    likelihood_pf_delta_columns: 5
+    model_feature_columns: 205
+
+physical_inventory:
+  expected_wells: 773
+  selector_likelihood_pf:
+    seed_banks_per_well: 1
+    seeds_per_bank: 128
+    particles_per_seed: 500
+    output_scales: [3.0, 5.0, 8.0, 12.0]
+  learned_likelihood_pf:
+    seed_banks_per_well: 1
+    seeds_per_bank: 128
+    particles_per_seed: 500
+    output_scales: [3.0, 5.0, 8.0, 12.0]
+  pf_ancc:
+    runs_per_well: 1
+    particles: 600
+  pf_z:
+    runs_per_well: 1
+    particles: 600
+  selector_beam:
+    configs_per_well: 14
+  learned_beam:
+    configs_per_well: 7
+  multi_scale_ncc:
+    windows_per_well: 3
+    half_windows: [8, 15, 25]
+
+reference_exclusion_patterns:
+  fixed_public_well_rule: '(?i)Q0522|_EX_EXPECTED_WELL'
+  a27_overlay: '(?i)A27|_A27_EXPECTED_TARGET'
+  fixed_branch_shift: '(?i)total_shift_vs_6p809_ft|fixed_branch_shift'
+  same_well_contact: '(?i)contact_reconstruction|contact_override|tvt_from_contacts'
+  visible_prefix: '(?i)visible_prefix'
+  public_tuned_bimodal: '(?i)bimodal'
+  model_package_correction: '(?i)model_package'
+  precomputed_submission: '(?i)precomputed.{0,40}submission'
+  public_output_copy: '(?i)/kaggle/input/notebooks|public_output_copy'
+  submission_profile: '(?i)SUBMISSION_PROFILE'
+
+decontaminated_executable_forbidden_patterns:
+  fixed_public_well_rule: '(?i)Q0522|_EX_EXPECTED_WELL'
+  a27_overlay: '(?i)A27|_A27_EXPECTED_TARGET'
+  fixed_branch_shift: '(?i)total_shift_vs_6p809_ft|fixed_branch_shift'
+  same_well_contact: '(?i)contact_reconstruction|contact_override|tvt_from_contacts'
+  visible_prefix: '(?i)visible_prefix'
+  public_tuned_bimodal: '(?i)bimodal'
+  model_package_correction: '(?i)model_package'
+  precomputed_submission: '(?i)precomputed.{0,40}submission'
+  public_output_copy: '(?i)/kaggle/input/notebooks|public_output_copy'
+  public_lb_selection: '(?i)public_lb|leaderboard'
+  submission_profile: '(?i)SUBMISSION_PROFILE'
+
+implementation_boundary:
+  stage0_extracts_executable_route_code: false
+  stage0_freezes_source_symbols_spans_feature_counts_and_run_counts: true
+  stage_p_m1_m2_e_require_separate_approval: true

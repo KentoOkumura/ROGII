@@ -1,0 +1,357 @@
+experiment:
+  name: exp299_base_posterior_self_gr_boundary_handoff
+  description: >-
+    Use a frozen Type-Well-only exact-HMM posterior as a target-free controller,
+    keep self-GR contribution exactly zero for outside candidate states, fade the
+    entire row contribution to zero at the known-TVT boundary, and conditionally
+    normalize inside-support evidence so it does not change inside/outside mass.
+  route: ensemble
+  status: kaggle_cpu_v2_completed_train_side_guard_failed_closed
+  created_at: "2026-07-20"
+  updated_at: "2026-07-21"
+
+lineage:
+  parent: exp223_joint_typewell_self_gr_hmm_likelihood_probe
+  negative_reference: exp296_exp223_self_gr_known_tvt_support_gate
+  base_hmm_parity_reference: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  hidden_like_reference: exp115_hidden_like_spatial_holdout_from_ppt
+  diff_summary: >-
+    Keeps the exp223 raw motif surface and exact Type Well HMM fixed. Adds a
+    frozen base-only posterior pass, an outside-state exact-zero rule, a
+    target-free row-level boundary handoff using the existing 12-ft self-GR
+    sigma, and base-posterior-weighted conditional normalization. This prevents
+    self-GR from changing total inside-versus-outside support odds.
+
+validation:
+  strategy: train_side_no_training_single_base_posterior_handoff_ablation
+  metric: rmse
+  group_column: well
+  n_training_folds: 0
+  reporting_folds: 5
+  reporting_fold_policy: stable_sha256_well_mod_5
+  score_rows: official_train_unknown_suffix_rows
+  truth_join_policy: after_base_posterior_gate_contribution_and_variant_prediction_sha_freeze_only
+  leakage_policy:
+    - Pass A uses only horizontal MD/Z/GR/finite TVT_input and Type Well TVT/GR.
+    - Pass B gate uses only frozen Pass A posterior/mean and visible-prefix known TVT support.
+    - Never use unknown-suffix true TVT, prediction error, exp223/exp296 prediction, or oracle data in the controller, gate, normalizer, self-GR surface, or HMM.
+    - Use unknown-suffix true TVT and saved controls only after all generation artifacts are frozen.
+    - Use exp115 hidden-like assignments only for metric readout.
+  hard_gates:
+    technical:
+      input_wells: 773
+      output_rows: 3783989
+      finite_prediction_coverage_min: 1.0
+      base_hmm_config_parity: true
+      base_prediction_max_abs_delta_vs_exp209_max: 0.00001
+      exp223_raw_surface_and_quality_parity: true
+      outside_candidate_contribution_max_abs: 0.0
+      base_mean_outside_or_boundary_all_state_contribution_max_abs: 0.0
+      row_gate_min: 0.0
+      row_gate_max: 1.0
+      conditional_support_mass_relative_error_max: 0.000001
+      unknown_suffix_truth_access_before_freeze_max: 0
+      saved_control_access_before_freeze_max: 0
+      scientific_variants: 1
+      base_hmm_well_runs: 773
+      variant_hmm_well_runs: 773
+      total_hmm_well_runs: 1546
+      lightgbm_configs_max: 0
+      trained_folds_max: 0
+      boosters_max: 0
+      parent_control_retraining_max: 0
+    performance:
+      pooled_rmse_delta_vs_exp223_max: -0.05
+      improving_reporting_folds_min: 4
+      true_tvt_inside_known_range_rmse_delta_max: 0.02
+      true_tvt_outside_known_range_rmse_delta_max: -0.10
+      upper_boundary_0_12_rmse_delta_max: 0.0
+      distance_1000_plus_rmse_delta_max: 0.02
+      hidden_like_spatial_rmse_delta_max: 0.02
+      hidden_like_typewell_purged_rmse_delta_max: 0.02
+      by_well_rmse_p95_delta_max: 0.0
+      worst_well_rmse_delta_max: 0.25
+      step_delta_p99_nonregression: true
+  fail_action: close_without_handoff_fade_normalizer_alpha_clip_support_or_threshold_rescue
+  pass_action: scientific_support_only_no_automatic_inference
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  known_target_column: TVT_input
+  horizontal_gr_column: GR
+  horizontal_transition_columns: [MD, Z]
+  typewell_columns: [TVT, GR]
+  well_identity_source: filename
+  forbidden_generation_inputs: [TVT, prediction, error, abs_error, oracle, exp223_prediction, exp296_prediction]
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+
+model:
+  name: base_posterior_self_gr_boundary_handoff
+  estimator: deterministic_two_pass_exact_hmm_forward_backward
+  implementation_source: exp299_base_posterior_self_gr_boundary_handoff_compact_selfcontained_train.py
+  planned_scientific_variants: 1
+  active_variants_when_enabled: 1
+  variant: hmm_selfgr_base_posterior_conditional_handoff_a070_c100
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  planned_base_hmm_well_runs: 773
+  planned_variant_hmm_well_runs: 773
+  planned_total_hmm_well_runs: 1546
+  executed_hmm_well_runs: 1546
+  hmm:
+    source: exp223_and_exp209_exact_typewell_hmm
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+  self_gr_emission:
+    source: exp223_hmm_selfgr_boost_only_a070_c100
+    alpha: 0.07
+    clip: 1.0
+    raw_mode: boost_only
+    window_radius_rows: 12
+    descriptor_offsets: [-12, -8, -4, 0, 4, 8, 12]
+    top_k: 5
+    prefix_anchor_stride: 3
+    max_prefix_anchors: 128
+    keep_last_prefix_anchors: 32
+    min_prefix_anchors: 12
+    max_window_missing_rate: 0.35
+    gaussian_sigma_tvt: 12.0
+    descriptor_distance_temperature: 1.5
+    typewell_agreement_sigma_tvt: 18.0
+    surface_quadratic_clip: 60.0
+    surface_chunk_size: 256
+  handoff:
+    controller: frozen_typewell_only_exact_hmm_posterior
+    direction: pass_a_to_pass_b_only
+    support_source: finite_visible_prefix_TVT_input
+    support_boundary: inclusive
+    outside_candidate_contribution: 0.0
+    base_mean_outside_or_boundary_row_action: all_state_self_gr_neutral
+    boundary_fade_width_source: self_gr_emission.gaussian_sigma_tvt
+    boundary_fade_width_multiplier: 1.0
+    row_gate_formula: base_inside_posterior_mass_times_clipped_base_mean_boundary_distance_over_12ft
+    conditional_normalization: base_posterior_weighted_inside_support_likelihood_mass_preserving
+    no_inside_mass_action: all_state_self_gr_neutral
+    final_prediction_clip_to_support: false
+    use_variant_posterior_for_gate: false
+    use_final_prediction_for_gate: false
+    use_true_tvt_for_gate: false
+    forbidden_variants:
+      - handoff_threshold_grid
+      - boundary_fade_width_grid
+      - support_padding_grid
+      - hole_aware_or_soft_state_support
+      - conditional_normalizer_ablation
+      - alpha_or_clip_grid
+      - window_or_topk_grid
+
+comparison:
+  primary_saved_control_experiment: exp223_joint_typewell_self_gr_hmm_likelihood_probe
+  primary_saved_control_candidate: hmm_selfgr_boost_only_a070_c100
+  primary_saved_control_rmse_joined: 11.349942946009358
+  primary_saved_control_decompressed_sha256: 0eb48b5516276b0ab7b2191a52a39ebb89d9997363cc7839ede519c7863baa0c
+  negative_experiment: exp296_exp223_self_gr_known_tvt_support_gate
+  negative_rmse: 12.15974913969598
+  negative_outside_scope_delta_vs_exp223: 2.341424645339133
+  negative_worst_well_delta_vs_exp223: 39.68779120447727
+  base_hmm_reference_experiment: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  base_hmm_reference_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+  base_hmm_reference_prediction_column: hmm_mean_tvt
+  base_hmm_reference_candidates:
+    - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+  saved_control_rows: 3783989
+  saved_control_wells: 773
+  saved_control_feature_filename: exp223_joint_typewell_self_gr_hmm_likelihood_probe_joint_typewell_self_gr_hmm_likelihood_probe_train_features.csv.gz
+  saved_control_candidates:
+    - experiments/exp223_joint_typewell_self_gr_hmm_likelihood_probe/artifacts/exp223_joint_typewell_self_gr_hmm_likelihood_probe_joint_typewell_self_gr_hmm_likelihood_probe_train_features.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp223-selfgr-hmm-train/artifacts/exp223_joint_typewell_self_gr_hmm_likelihood_probe_joint_typewell_self_gr_hmm_likelihood_probe_train_features.csv.gz
+    - /kaggle/input/exp223-selfgr-hmm-train/artifacts/exp223_joint_typewell_self_gr_hmm_likelihood_probe_joint_typewell_self_gr_hmm_likelihood_probe_train_features.csv.gz
+  promotion_reference_rmse: 10.269696146642758
+  candidate_rmse: 11.7895775608145
+  candidate_delta_rmse_vs_exp223: 0.43963461480514177
+  improving_reporting_folds: 0
+  technical_gates_passed: 24
+  technical_gates_total: 25
+  performance_gates_passed: 2
+  performance_gates_total: 11
+
+execution:
+  implementation: true
+  implementation_approved: true
+  canonical_train_notebook_adopted: true
+  canonical_train_notebook_adopted_at: "2026-07-20"
+  run_train: true
+  run_control: false
+  run_variant: true
+  run_inference: false
+  write_submission: false
+  kaggle_cpu_push_approved: false
+  kaggle_execution_authorized: true
+  kaggle_execution_authorized_at: "2026-07-20"
+  kaggle_execution_authorization_source: user_message_execute
+  one_run_authorization_consumed: true
+  kaggle_execution_started: true
+  kaggle_execution_started_at: "2026-07-20T22:22:08+09:00"
+  kaggle_execution_finished: true
+  kaggle_execution_succeeded: true
+  kaggle_execution_finished_at: "2026-07-21T04:36:40+09:00"
+  kaggle_execution_outcome: completed_train_side_guard_failed
+  kaggle_v1_execution_failure_confirmed_at: "2026-07-20T22:12:55+09:00"
+  kaggle_kernel_id: kentookumura/exp299-base-post-self-gr-boundary-handoff-train
+  kaggle_kernel_id_no: 127957958
+  kaggle_kernel_version: 2
+  kaggle_kernel_status: COMPLETE
+  kaggle_kernel_last_checked_at: "2026-07-21T07:34:42+09:00"
+  kaggle_kernel_url: https://www.kaggle.com/code/kentookumura/exp299-base-post-self-gr-boundary-handoff-train
+  kaggle_run_source_sha256: d033f3e4e1aa959f830b6a8bf3f698afdd223ec990a101da3a529fe7ec1df66f
+  kaggle_run_config_sha256: ebaad8ee9f96076938468da6f10a1c6207238e31c800ed69b7dd1de2fadab6c4
+  kaggle_canonical_notebook_sha256: 3133d91c166f3ea326cbe4447001a1cf3524cd9607f1dced5a9e62b8b901b27c
+  kaggle_package_metadata_sha256: 24ba05fa601422fbfa4bfc68b35af39d33b54601c05c688c1696bc666786a1af
+  kaggle_pullback_notebook_sha256: 752822d34ccc2987eddb7cc0aa5153a90985a71bcad7b348b24411e676c7a2d3
+  kaggle_v1_source_sha256: 8cccf41cfa9b95d4fc4c0181a40efef2c4f71f157aae459b97e2b3ea749491f8
+  kaggle_v1_config_sha256: ba57fe479d523ab4d537cdf537971166740e898120b752461c0d9662d047c7f7
+  kaggle_v1_canonical_notebook_sha256: c50a0f689a11243614d430a76db7bb2598dffd39cc132a96293727fdf66abeee
+  kaggle_v1_pullback_notebook_sha256: a3151f04ccf60504aa1d1750aada99cf7cbdfca3cd1cc2a37a61f6a25305caef
+  kaggle_v1_log_last_timestamp_seconds: 40053.639842005
+  kaggle_v1_base_hmm_well_runs: 773
+  kaggle_v1_variant_hmm_well_runs: 773
+  kaggle_v1_total_hmm_well_runs: 1546
+  kaggle_v1_failure_stage: post_generation_exp209_base_parity_before_truth_or_control_readout
+  kaggle_v1_failure_type: csv_float32_roundtrip_comparison_contract_bug
+  kaggle_v1_parity_rows: 3783989
+  kaggle_v1_parity_wells: 773
+  kaggle_v1_parity_row_identity_exact: true
+  kaggle_v1_parity_max_abs_delta_ft: 0.00048437499935971573
+  kaggle_v1_parity_mean_abs_delta_ft: 0.00023841843883720324
+  kaggle_v1_parity_atol_ft: 0.00001
+  kaggle_v1_output_files_available: false
+  parity_fix_source_sha256: d033f3e4e1aa959f830b6a8bf3f698afdd223ec990a101da3a529fe7ec1df66f
+  parity_fix_canonical_notebook_sha256: 3133d91c166f3ea326cbe4447001a1cf3524cd9607f1dced5a9e62b8b901b27c
+  rerun_approved: false
+  rerun_approved_at: "2026-07-20T22:19:22+09:00"
+  rerun_authorization_source: user_message_execute_after_v1_parity_fix
+  rerun_authorization_consumed: true
+  approved_next_kernel_version: 2
+  kaggle_v2_started_at: "2026-07-20T22:22:08+09:00"
+  kaggle_v2_kernel_version: 2
+  kaggle_v2_kernel_id_no: 127957958
+  kaggle_v2_kernel_status: COMPLETE
+  kaggle_v2_kernel_last_checked_at: "2026-07-21T07:34:42+09:00"
+  kaggle_v2_finished_at: "2026-07-21T04:36:40+09:00"
+  kaggle_v2_elapsed_seconds: 22481.454033613205
+  kaggle_v2_train_side_status: completed_train_side_guard_failed
+  kaggle_v2_source_sha256: d033f3e4e1aa959f830b6a8bf3f698afdd223ec990a101da3a529fe7ec1df66f
+  kaggle_v2_config_sha256: ebaad8ee9f96076938468da6f10a1c6207238e31c800ed69b7dd1de2fadab6c4
+  kaggle_v2_canonical_notebook_sha256: 3133d91c166f3ea326cbe4447001a1cf3524cd9607f1dced5a9e62b8b901b27c
+  kaggle_v2_package_metadata_sha256: 24ba05fa601422fbfa4bfc68b35af39d33b54601c05c688c1696bc666786a1af
+  kaggle_v2_pullback_notebook_sha256: 752822d34ccc2987eddb7cc0aa5153a90985a71bcad7b348b24411e676c7a2d3
+  kaggle_v2_executed_hmm_well_runs: 1546
+  kaggle_v2_candidate_rmse: 11.7895775608145
+  kaggle_v2_delta_rmse_vs_exp223: 0.43963461480514177
+  kaggle_v2_base_parity_passed: true
+  kaggle_v2_base_parity_max_abs_delta_ft: 0.0
+  kaggle_v2_technical_passed: false
+  kaggle_v2_performance_passed: false
+  kaggle_v2_row_gate_max: 1.0000000000000029
+  kaggle_v2_row_gate_overshoot: 2.886579864025407e-15
+  failed_push_attempts: 1
+  failed_push_reason: initial_52_character_title_and_slug_rejected_with_http_400_no_kernel_created
+  approval_required_for_implementation: false
+  approval_required_for_canonical_notebook_adoption: false
+  approval_required_for_kaggle_cpu_push: true
+  notes:
+    - The user approved canonical train Notebook adoption and one Kaggle private CPU run on 2026-07-20.
+    - The approved run contains one scientific variant and two deterministic HMM passes per well.
+    - Saved exp209, exp223, and exp296 controls are never regenerated as comparison variants.
+    - Inference and submission remain disabled and unapproved.
+    - The single-run authorization was consumed by Kaggle kernel version 1; any repush requires new user approval.
+    - Version 1 finished all 1,546 HMM well-runs, then failed before truth/control readout because the exp209 CSV reference was not restored to float32 before comparison.
+    - The local parity fix preserves atol=1e-5; version 2 was not approved until the later explicit rerun instruction.
+    - The user approved exactly one version 2 rerun on 2026-07-20 after reviewing the version 1 failure and parity fix.
+    - The version 2 authorization was consumed by the successful push; any version 3 push requires new approval.
+    - Version 2 completed successfully on Kaggle, restored exact exp209 float32 parity, and was closed because the train-side performance guard failed.
+    - The only technical guard failure was a 2.9e-15 floating-point overshoot of row_gate_max above 1.0; the branch also failed 9 of 11 performance gates, so no rescue rerun is justified.
+
+runtime:
+  device: cpu
+  use_amp: false
+  outer_workers: 2
+  numba_num_threads: 2
+  expected_elapsed_hours: 11_to_12_from_version_1_observed_runtime
+  observed_version_2_elapsed_hours: 6.244848342670335
+  gpu_enabled: false
+  internet_enabled: false
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    planned_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp223-selfgr-hmm-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_two_pass_hmm_selfgr_handoff_plus_stable_sha256_reporting_fold
+  stochastic_components: []
+  parallel_rng_policy: No RNG; Pass A and Pass B execute sequentially inside each well worker.
+  feature_sha_policy: decompressed_content_sha_for_gzip_plus_raw_gzip_sha_as_secondary
+  record:
+    kernel_version: true
+    pushed_source_sha: true
+    pushed_config_sha: true
+    input_sha: true
+    saved_control_sha: true
+    base_posterior_sha: true
+    row_gate_sha: true
+    contribution_sha: true
+    prediction_sha: true
+    metrics_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - Train-side no-training diagnostic; not a deterministic submission anchor.
+    - Verify loose, packaged, and bootstrap config/source SHA before any future push.
+
+inference:
+  mode: disabled_until_all_train_gates_pass_and_user_approves
+  selected_candidate: null
+  promotion_requirements:
+    - All preregistered technical and performance gates pass.
+    - Overall RMSE is at or below the exp209 HMM/likPF blend reference 10.269696146642758.
+    - A separate raw-test-safe two-pass inference design and explicit user approval exist.
+
+notes:
+  - The authoritative mathematical contract is handoff_contract.md and the matching steering directory.
+  - This is not an exp296 padding, soft-state-support, alpha, clip, or threshold rescue grid.
+  - Version 2 is a trustworthy negative result for promotion: RMSE worsened by 0.439635 ft versus exp223 with zero improving reporting folds.
+  - Do not run version 3, inference, or submission; the preregistered fail action closes this handoff branch.

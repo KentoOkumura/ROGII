@@ -1,0 +1,110 @@
+experiment:
+  name: exp003_residual_ablation
+  description: One-at-a-time ablation of exp002 residual model sampling, shrink, and feature set
+  route: ml_model
+  status: completed
+  created_at: "2026-05-31"
+  updated_at: "2026-05-31"
+
+lineage:
+  parent: exp002_drift_minimal
+  diff_summary: Compare exp002 residual model sampling caps, residual shrink, and feature set with the same well holdout CV
+
+validation:
+  # Shared metric, fold count, seed, group, and score-row defaults come from project.yml.
+  leakage_policy:
+    - Same well is never split across train and validation folds.
+    - Target-derived features use only the known TVT_input prefix.
+    - Evaluation-zone TVT is used only as the residual target during training/CV.
+    - Train-only formation columns are not used.
+
+data: {}
+
+model:
+  name: hgb_last_anchor_residual
+  primary_strategy: drift_hgb
+  drift_strategy: drift_hgb
+  feature_set: all
+  strategies:
+    - last_anchor
+    - drift_hgb
+  params:
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+    gr_slope_window: 200
+    max_abs_gr_slope: 2.0
+    gr_roll_short: 25
+    gr_roll_long: 100
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  drift_model:
+    estimator: HistGradientBoostingRegressor
+    params:
+      max_iter: 180
+      learning_rate: 0.05
+      max_leaf_nodes: 31
+      min_samples_leaf: 80
+      l2_regularization: 0.05
+      max_bins: 255
+  training:
+    max_train_rows_per_fold: 300000
+    max_train_rows_final: 450000
+    max_train_rows_per_well: 800
+  rationale:
+    - exp002 residual learning improved full CV from 15.909853 to 14.124569.
+    - The next low-risk step is to isolate whether sampling, shrink, or GR feature groups explain the gain.
+    - All ablations keep the exp002 fold split, target, model class, and leak-safe feature construction.
+
+ablation:
+  baseline_experiment: exp002_drift_minimal
+  baseline_cv: 14.124569
+  selected_variant: feature_no_gr_signal
+  variants:
+    - name: control_exp002
+      variable: control
+      description: Re-run exp002 settings as the control row.
+      overrides: {}
+    - name: sample_per_well_400
+      variable: max_train_rows_per_well
+      description: Lower per-well sampled training rows from 800 to 400.
+      overrides:
+        model:
+          training:
+            max_train_rows_per_well: 400
+    - name: sample_total_200k
+      variable: max_train_rows_final
+      description: Lower total sampled rows; CV uses the per-fold analog and inference uses max_train_rows_final.
+      overrides:
+        model:
+          training:
+            max_train_rows_per_fold: 200000
+            max_train_rows_final: 300000
+    - name: shrink_100
+      variable: residual_shrink
+      description: Remove residual shrink by changing 0.85 to 1.00.
+      overrides:
+        model:
+          params:
+            residual_shrink: 1.0
+    - name: feature_no_gr_signal
+      variable: feature_set
+      description: Drop raw and derived GR signal features while keeping trajectory and prefix TVT features.
+      overrides:
+        model:
+          feature_set: no_gr_signal
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  debug_n_wells: 30
+  save_well_metrics: true
+  save_oof_predictions: false
+
+notes:
+  - Submission target column is lowercase tvt, while train target is uppercase TVT.
+  - Do not use train-only formation columns directly at inference.
+  - Train notebook writes ablation_metrics.csv, well_metrics.csv, fold_metrics.csv, and fold_model_training.csv with variant names.
+  - Inference applies ablation.selected_variant; Kaggle full CV selected feature_no_gr_signal.

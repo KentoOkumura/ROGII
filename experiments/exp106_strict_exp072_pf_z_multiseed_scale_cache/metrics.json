@@ -1,0 +1,83 @@
+{
+  "experiment": "exp106_strict_exp072_pf_z_multiseed_scale_cache",
+  "route": "pf_beam",
+  "status": "completed_train_side_audit_rejected",
+  "metric": "train_well_pseudotail_candidate_parity_audit",
+  "key_idea": "Strict exp072 pf_z multi-seed/scale is not a direct replacement for likpf_mean, but pf_z_ms_scale_3 plus quality/delta columns are retained as lower-priority selector candidates and ML add-only feature candidates.",
+  "cv": {
+    "source": "kaggle_train_v3",
+    "rows": 3783989,
+    "wells": 773,
+    "runtime_seconds": 10111.569636821747,
+    "best_candidate": {
+      "candidate": "exp072_likpf_mean",
+      "rmse": 11.594897672217703,
+      "mae": 7.067632584311985,
+      "within_10ft": 0.772807479091509,
+      "bias": -1.0994231121947302
+    },
+    "exp072_pf_z": {
+      "candidate": "exp072_pf_z",
+      "rmse": 17.78817117151714,
+      "mae": 10.677486524833235,
+      "within_10ft": 0.6476681089717755,
+      "bias": -0.9345598923620186
+    },
+    "strict_pf_z_multiseed_best": {
+      "candidate": "pf_z_ms_scale_3",
+      "rmse": 16.145943119315476,
+      "mae": 9.155580185860494,
+      "within_10ft": 0.7088070287730752,
+      "bias": -0.7525068646452692
+    },
+    "delta_strict_ms_best_minus_exp072_likpf_mean_rmse": 4.551045447097772,
+    "delta_strict_ms_best_minus_exp072_pf_z_rmse": -1.6422280522016628,
+    "parity_pass": true,
+    "parity_summary": {
+      "rows": 3783989,
+      "wells": 773,
+      "max_abs_diff": 0.0,
+      "mean_abs_diff": 0.0,
+      "p95_abs_diff": 0.0,
+      "rmse_diff": 0.0
+    }
+  },
+  "updated_at": "2026-06-23",
+  "kernel": {
+    "id": "kentookumura/exp106-strict-exp072-pfz-ms-train",
+    "version": 3,
+    "url": "https://www.kaggle.com/code/kentookumura/exp106-strict-exp072-pfz-ms-train",
+    "status": "KernelWorkerStatus.COMPLETE",
+    "note": "v3 completed with exact exp072 seeded pf_z kernel plus num_workers=8 well-level thread parallelism. v2 failed strict parity: max_abs_diff=69.7236328125, mean_abs_diff=2.501835346221924, p95_abs_diff=15.2958984375, rmse_diff=6.4159561922752415.",
+    "enable_gpu": false,
+    "enable_internet": false,
+    "kernel_sources": [
+      "kentookumura/exp072-exp063-full-replay-feature-cache-train"
+    ]
+  },
+  "artifacts": {
+    "local_output_dir": "experiments/exp106_strict_exp072_pf_z_multiseed_scale_cache/kaggle/output/train_v3",
+    "expected": [
+      "exp106_strict_exp072_pf_z_multiseed_scale_cache_candidate_metrics.csv",
+      "exp106_strict_exp072_pf_z_multiseed_scale_cache_bucket_metrics.csv",
+      "exp106_strict_exp072_pf_z_multiseed_scale_cache_by_well.csv",
+      "exp106_strict_exp072_pf_z_multiseed_scale_cache_strict_pf_z_quality.csv",
+      "exp106_strict_exp072_pf_z_multiseed_scale_cache_parity_diff.csv.gz",
+      "exp106_strict_exp072_pf_z_multiseed_scale_cache_candidate_wide.csv.gz",
+      "exp106_strict_exp072_pf_z_multiseed_scale_cache_summary.json"
+    ],
+    "sha256": {
+      "candidate_metrics": "b730c61713b21f01ead9f7333bdcfa5b5205f777c4dfe3a3a578ba1c0bceb00d",
+      "bucket_metrics": "3a338f402cd94056ac3af419722e14cb18fa59c56622598882706e333b18d71a",
+      "by_well": "88e1c929ba660a4255f3bcb1157010308fc044ee2c2172b26afd0a7ee8ac3acf",
+      "strict_pf_z_quality": "91ebf22a84a0b7cdb98f1536dc869873236fa539275093e659230717161efa76",
+      "candidate_wide_decompressed": "4e362f96eda59584c1f6a25ef244f4ba98224d14f04fa44dbd5f840c6d818069",
+      "parity_diff_decompressed": "8d783fe2a12ac5e8151cb4a13809ec81ce33f3741e2512d7c5b921b142e9cd3e"
+    },
+    "source_cache_decompressed_sha256": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350"
+  },
+  "decision": {
+    "recommendation": "do_not_submit_or_port_directly_keep_as_selector_or_ml_feature_candidate",
+    "reason": "strict exp072 pf_z multiseed improves exp072_pf_z but remains +4.551 RMSE worse than exp072_likpf_mean, so it is not a standalone replacement candidate. Keep pf_z_ms_scale_3 and quality/delta columns as lower-priority selector or ML add-only feature candidates."
+  }
+}

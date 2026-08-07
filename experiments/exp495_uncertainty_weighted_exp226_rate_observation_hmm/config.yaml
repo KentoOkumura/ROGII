@@ -1,0 +1,432 @@
+experiment:
+  name: exp495_uncertainty_weighted_exp226_rate_observation_hmm
+  description: >-
+    Preserve the exp209 joint position-rate exact HMM and add the fold-safe
+    exp226 geometry U-rate as a Gaussian observation on the rate transition.
+    The observation variance is estimated from known-prefix rate residuals so
+    unreliable wells shrink back to the unchanged parent transition.
+  hypothesis: >-
+    exp355 showed that exp226 geometry relative-rate changes reduce the exp209
+    average lag, while its fixed schedule creates severe hidden-like and
+    worst-well regressions. A target-safe prefix-derived uncertainty can retain
+    the average rate-following signal and weaken it on unreliable wells without
+    removing the persistent rate state or hard-replacing the TVT increment.
+  route: pf_beam
+  status: stage_0b_completed_fail_closed
+  created_at: "2026-07-31"
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  rate_schedule_evidence: exp355_exp226_dip_rate_prior_on_exp209
+  mechanism_evidence: exp408_hmm_message_rate_basin_audit
+  negative_references:
+    - exp411_predictive_filtered_rate_innovation_destick
+    - exp491_exp226_final_tvt_rate_direct_hmm
+    - exp285_exp226_prefix_masked_offset_predictability_readout
+  steering: ../../.steering/20260731-exp495-uncertainty-weighted-exp226-rate-observation-hmm
+  diff_summary: >-
+    Keep every exp209 HMM state, kernel, observation, prior, and readout fixed.
+    Reuse the exp355 target-anchored relative exp226 geometry U-rate center, but
+    replace its deterministic time-varying prior mean with one Gaussian rate
+    observation factor whose well-level scale comes only from the last 128
+    known-prefix rate residuals. Do not use exp226 final tvt_pred or its GR/U
+    corrections.
+
+authorization:
+  design_approved: true
+  design_approval_source: user_message_create_backlog_experiment_steering_and_freeze_design_2026_07_31
+  implementation_approved: true
+  implementation_approval_source: user_message_implement_exp495_2026_07_31
+  canonical_notebook_adoption_approved: true
+  canonical_notebook_adoption_approval_source: user_message_execute_exp495_2026_07_31
+  kaggle_package_approved: true
+  kaggle_package_approval_source: user_message_execute_exp495_2026_07_31
+  stage_0a_run_approved: true
+  stage_0a_run_approval_source: user_message_execute_exp495_2026_07_31
+  stage_0b_implementation_approved: true
+  stage_0b_implementation_approval_source: user_message_proceed_stage_0b_2026_07_31
+  stage_0b_run_approved: true
+  stage_0b_run_approval_source: user_message_proceed_stage_0b_2026_07_31
+  stage_0a_fail_closed_override_approved: true
+  stage_0a_fail_closed_override_source: user_message_proceed_stage_0b_2026_07_31
+  stage_1_implementation_approved: false
+  stage_1_run_approved: false
+  inference_approved: false
+  submission_approved: false
+
+implementation:
+  enabled: true
+  scaffold_created: true
+  executable_code_created: true
+  jupytext_source_created: true
+  compact_notebook_candidate_created: true
+  stage_0a_implemented: true
+  stage_0b_implemented: true
+  stage_1_implemented: false
+  tests_created: true
+  canonical_notebooks_placeholder_only: false
+  canonical_train_notebook_adopted: true
+  kaggle_package_created: true
+
+validation:
+  strategy: stage0a_rate_uncertainty_identifiability_then_stage0b_fixed32_then_separately_approved_full_group_safe_oof
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  expected_full_rows: 3783989
+  expected_full_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  truth_attachment: after_rate_schedule_confidence_and_prediction_content_sha_freeze
+  stage_0a:
+    role: uncertainty_transfer_identifiability_only_no_hmm_no_cv_promotion
+    expected_wells: 773
+    expected_suffix_rows: 3783989
+    diagnostic_variants: 1
+    hmm_well_runs: 0
+  stage_0b:
+    role: fixed32_mechanism_only_not_cv_or_promotion
+    expected_wells: 32
+    expected_suffix_rows: 156088
+    persistent_wells: 16
+    matched_control_wells: 16
+    scientific_variants: 1
+    candidate_hmm_well_runs: 32
+    parent_control_hmm_reruns: 0
+  stage_1:
+    role: full_group_safe_rate_lag_mechanism_cv_not_automatic_inference_promotion
+    enabled_only_after_stage_0b_all_pass_and_separate_user_approval: true
+    expected_wells: 773
+    expected_rows: 3783989
+    scientific_variants: 1
+    candidate_hmm_well_runs: 773
+    parent_control_hmm_reruns: 0
+  leakage_policy:
+    - Known-prefix TVT_input and Z may be used to estimate the well-level rate residual scale.
+    - The prefix estimator uses only the last 128 finite positive-delta-MD transitions.
+    - Unknown-suffix TVT, error, abs_error, fold outcomes, persistent roles, and episode labels are forbidden until all schedules, uncertainties, predictions, and content SHAs freeze.
+    - exp226 geometry must be read with a strict allowlist; exp226 final tvt_pred, GR correction, U projection, and truth columns are forbidden.
+    - The target well remains excluded from the outer-fold exp226 donor field.
+    - Public three-well behavior and Public LB cannot choose the prefix window, sigma formula, gate, or rate factor.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  exp226_geometry:
+    source_experiment: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+    expected_oof_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    allowed_geometry_fields: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    forbidden_fields: [tvt_pred, TVT, tvt_true, gr_delta, u_projection, error, abs_error]
+  exp226_kappa_by_fold:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+    expected_sha256: 6cbded4c6ea157d141c4272a2e29c498515e3eaa6eff3ec4517078ae1d1aeff0
+    expected_terms: 12
+  exp209_parent:
+    source_experiment: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v3/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    saved_control_regenerate: false
+    full_oof_rmse_ft: 11.938287234887428
+  exp355_reference:
+    source_experiment: exp355_exp226_dip_rate_prior_on_exp209
+    kernel_source: kentookumura/exp355-exp226-dip-rate-prior-on-exp209-train
+    filename: exp355_exp226_dip_rate_prior_on_exp209_stage1_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp355-exp226-dip-rate-prior-on-exp209-train/artifacts
+      - /kaggle/input/exp355-exp226-dip-rate-prior-on-exp209-train/artifacts
+    metrics_filename: metrics.json
+    metrics_prediction_sha_key: prediction_sha256
+    expected_prediction_logical_sha256: 634303f022bced6685367094304da6182fee42815302344469b5919a36cd5e21
+    prediction_column: candidate_tvt
+    saved_prediction_regenerate: false
+    full_oof_rmse_ft: 11.291976616
+    hidden_like_spatial_delta_vs_exp209_ft: 0.414943459
+    hidden_like_typewell_purged_delta_vs_exp209_ft: 0.371719953
+    worst_well_delta_vs_exp209_ft: 52.743754
+  fixed32_manifest:
+    source_experiment: exp411_predictive_filtered_rate_innovation_destick
+    filename: stage0_fixed32_manifest.csv
+    local: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+    candidates:
+      - /kaggle/working/assets
+      - /kaggle/input/exp495-uncertainty-weighted-rate-obs-hmm-train/assets
+    expected_sha256: fbbc62b7cb79e16a7fb436f3a9d11f8975e935ad2475a17e2dec4fd7b142e4d6
+  persistent_episodes:
+    source_experiment: exp408_hmm_message_rate_basin_audit
+    filename: persistent_offset_episodes.csv
+    local: experiments/exp408_hmm_message_rate_basin_audit/assets/persistent_offset_episodes.csv
+    candidates:
+      - /kaggle/working/assets
+      - /kaggle/input/exp495-uncertainty-weighted-rate-obs-hmm-train/assets
+    expected_sha256: 031067fa77c195b77920a0997401310fbdd16532a2d0e99a9c3b5044de28913c
+  hidden_like_assignment:
+    source_experiment: exp115_hidden_like_spatial_holdout_from_ppt
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+geometry_replay:
+  mode: exp226_geometry_only_fold_safe_saved_kappa_at_prefix_cut
+  source_truth_policy: other_fold_wells_only
+  target_input_columns: [X, Y, Z, MD, TVT_input]
+  target_forbidden_columns: [TVT, GR, ANCC, tvt_true, tvt_pred, gr_delta, error, abs_error]
+  target_truth_policy: never_read_suffix_truth_before_freeze
+  use_exp226_gr_correction: false
+  use_exp226_u_projection: false
+  params:
+    theta0: 118.4
+    k_segments: 16
+    local_linear_k: 50
+    local_linear_bandwidth: 500.0
+    local_linear_ridge: 1.0
+    smooth_rho: 10.0
+    gate: 0.35
+    field_min_proj: 0.3
+    kbins: [0.0, 750.0, 1500.0, 2500.0, 4000.0, 1.0e18]
+    rot_max_deg: 60.0
+    ancc_theta_bandwidth: 1500.0
+
+prefix_uncertainty:
+  transition_selection: last_128_finite_observed_u_rate_positive_delta_md
+  maximum_transitions: 128
+  minimum_valid_transitions: 32
+  replay_cut: row_immediately_before_earliest_selected_transition
+  mask_policy: remove_all_target_tvt_input_after_replay_cut
+  residual: replayed_exp226_geometry_u_rate_minus_observed_prefix_u_rate
+  center_for_scale_only: median
+  mad_multiplier: 1.4826
+  floor: 0.002
+  bias_correction: none
+  fallback_sigma: 0.002
+  fallback_observation_enabled: false
+
+model:
+  name: uncertainty_weighted_exp226_geometry_rate_observation_exact_hmm
+  active_scientific_variants:
+    - prefix_mad_exp226_geometry_rate_observation
+  active_scientific_variant_count: 1
+  fitted_ml_model: false
+  parent_hmm_fixed:
+    position_rate_joint_state: true
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    momentum: 0.998
+    sig_p: 0.02
+    step_ft: 0.35
+    start_sig_ft: 0.75
+    initial_rate_sig: 0.01
+    band_pad_ft: 100.0
+    emission_lambda: 1.0
+    emission: gaussian_typewell_gr
+    prior: exact_exp209
+    forward_backward: true
+    output: posterior_mean
+  geometry_rate_center:
+    source_column: tvt_geop
+    coordinate: u_equals_tvt_plus_z
+    formula: delta_tvt_geop_plus_delta_z_div_delta_md
+    center_formula: exp209_known_prefix_initial_rate_plus_geometry_rate_minus_first_segment_geometry_rate
+    k16_segment_identity: exact_exp226
+    use_exp226_final_prediction: false
+    use_exp226_gr_correction: false
+    use_exp226_u_projection: false
+  uncertainty:
+    scope: one_constant_per_well
+    source: known_prefix_only
+    tail_transitions: 128
+    minimum_valid_transitions: 32
+    residual: exp226_geometry_u_rate_minus_observed_prefix_u_rate
+    center: median
+    scale_formula: max_parent_sig_r_and_1p4826_times_centered_mad
+    floor: 0.002
+    ceiling: null
+    insufficient_prefix_fallback: exact_parent_transition_no_observation
+  rate_observation:
+    likelihood: gaussian
+    log_factor_formula: -0.5_times_squared_rate_state_minus_mu226_div_sigma226
+    application: multiply_each_exp209_rate_transition_destination_then_row_normalize
+    additional_lambda: none
+    temperature: 1.0
+    clipping: none
+    activation_gate: none
+    parent_parity_when_factor_uniform_required: true
+  position_transition:
+    formula: absolute_u_rate_state_times_delta_md_minus_delta_z
+    changed_from_exp209: false
+
+gates:
+  stage_0a_technical:
+    expected_wells: 773
+    expected_suffix_rows: 3783989
+    expected_folds: 5
+    duplicate_rows_max: 0
+    missing_rows_max: 0
+    finite_schedule_uncertainty_coverage_min: 1.0
+    truth_reads_before_freeze_max: 0
+    forbidden_exp226_columns_before_freeze_max: 0
+    formula_parity_max_abs: 1.0e-10
+  stage_0a_mechanism:
+    sigma_vs_suffix_abs_geometry_rate_error_spearman_min: 0.20
+    positive_spearman_folds_min: 4
+    low_sigma_half_rate_rmse_gain_vs_high_sigma_half_min_fraction: 0.10
+    low_sigma_half_exp355_schedule_gain_vs_exp209_constant_min_fraction: 0.05
+    improving_schedule_folds_min: 4
+    prefix_fallback_well_fraction_max: 0.05
+    fail_action: close_before_hmm_implementation_without_window_sigma_scale_or_gate_rescue
+  stage_0b_technical:
+    expected_wells: 32
+    expected_rows: 156088
+    expected_folds: 5
+    parent_uniform_factor_parity_max_abs_ft: 1.0e-10
+    finite_prediction_coverage_min: 1.0
+    transition_row_sum_max_error: 1.0e-6
+    posterior_normalization_max_error: 1.0e-6
+    projected_full_runtime_seconds_max: 30600
+    peak_rss_gb_max: 8
+  stage_0b_mechanism:
+    all32_gain_vs_saved_exp355_min_ft: 0.10
+    persistent_gain_vs_saved_exp355_min_ft: 0.10
+    matched_control_delta_vs_saved_exp209_max_ft: 0.02
+    improving_folds_vs_saved_exp355_min: 4
+    persistent_episode_sse_reduction_vs_exp355_min: 0.10
+    paired_by_well_delta_p95_vs_exp355_max_ft: 0.25
+    worst_well_delta_vs_exp355_max_ft: 2.0
+    fail_action: close_without_sigma_window_scale_temperature_emission_grid_blend_selector_or_pf_rescue
+  stage_1:
+    candidate_rmse_max_ft: 11.241976616
+    gain_vs_saved_exp355_min_ft: 0.05
+    improving_folds_vs_saved_exp355_min: 4
+    md_1000_plus_delta_vs_saved_exp355_max_ft: 0.0
+    hidden_like_spatial_delta_vs_saved_exp355_max_ft: 0.0
+    hidden_like_typewell_purged_delta_vs_saved_exp355_max_ft: 0.0
+    persistent_episode_sse_reduction_vs_saved_exp355_min: 0.10
+    paired_by_well_delta_p95_vs_saved_exp355_max_ft: 0.25
+    worst_well_delta_vs_saved_exp355_max_ft: 2.0
+    fail_action: terminal_close_without_same_oof_rescue_inference_or_submission
+
+execution:
+  selected_stage: stage_0b_completed_fail_closed
+  run_stage_0a: false
+  run_stage_0b: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+  current_diagnostic_variants: 1
+  implemented_diagnostic_variants: 1
+  current_scientific_variants: 1
+  current_hmm_well_runs: 32
+  stage_0a_planned_diagnostic_variants: 1
+  stage_0a_planned_hmm_well_runs: 0
+  stage_0b_planned_scientific_variants: 1
+  stage_0b_planned_candidate_hmm_well_runs: 32
+  stage_1_max_scientific_variants: 1
+  stage_1_max_candidate_hmm_well_runs: 773
+  parent_control_hmm_reruns: 0
+  fitted_ml_models: 0
+  lightgbm_configs: 0
+  trained_ml_folds: 0
+  boosters: 0
+  pf_runs: 0
+  beam_runs: 0
+  gpu_runs: 0
+
+runtime:
+  target: kaggle_private_cpu_completed
+  enable_gpu: false
+  enable_internet: false
+  use_amp: false
+  num_workers: 1
+  numba_threads_per_worker: 4
+  hard_runtime_limit_seconds: 3600
+  peak_rss_limit_gb: 8
+  implementation_approved: true
+  run_approved: true
+  inference_enabled: false
+  submission_enabled: false
+  kaggle:
+    train_kernel_id: kentookumura/exp495-uncertainty-weighted-rate-obs-hmm-train
+    train_title: exp495 uncertainty weighted rate obs hmm train
+    train_status: COMPLETE
+    train_kernel_version: 4
+    train_kernel_id_no: 129285050
+    train_url: https://www.kaggle.com/code/kentookumura/exp495-uncertainty-weighted-rate-obs-hmm-train
+    train_runtime_seconds: 923.702763044
+    executed_config_sha256: e5cc055fbae1e752747cf83aac1c1f7e86359fdf01945601d970eb546d3fdd23
+    executed_canonical_notebook_sha256: a345a7216ac229cfd092942b82f413a717c5e1d0c13b1a5ee817238b09c1958d
+    executed_packaged_notebook_sha256: ebc0defc6fad68342984dbfe2c7e0669b40bb8100c97739e862d379fdb0dc2e4
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp355-exp226-dip-rate-prior-on-exp209-train
+    bootstrap_dependency_files:
+      - source: experiments/exp411_predictive_filtered_rate_innovation_destick/assets/stage0_fixed32_manifest.csv
+        destination: assets/stage0_fixed32_manifest.csv
+      - source: experiments/exp408_hmm_message_rate_basin_audit/assets/persistent_offset_episodes.csv
+        destination: assets/persistent_offset_episodes.csv
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_fixed_fold_well_segment_row_rate_state_and_reduction_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_parent_exp209_reduction_order_and_fixed_well_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    rate_schedule_sha: true
+    uncertainty_sha: true
+    scientific_contract_sha: true
+    prediction_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - No stochastic component is planned.
+    - The first successful run is not a deterministic anchor without an identical rerun.
+    - Verify loose and embedded Kaggle bootstrap config parity before any approved push.
+
+forbidden_changes:
+  - exp226_final_tvt_pred_derivative
+  - tvt_rate_used_as_u_rate_or_double_delta_z_correction
+  - exp226_gr_correction_or_u_projection
+  - persistent_rate_state_removal_or_tvt_only_hard_replacement
+  - prefix_bias_correction
+  - alternate_prefix_window_or_window_grid
+  - sigma_floor_ceiling_scale_temperature_or_clip_grid
+  - row_or_well_activation_gate
+  - exp209_transition_diffusion_momentum_position_kernel_grid_or_emission_change
+  - parent_or_control_hmm_rerun
+  - blend_selector_postprocess_or_pf_rescue
+  - stage_promotion_without_all_gates_and_separate_user_approval
+  - inference_or_submission_without_new_design_and_approval
+
+assumptions:
+  - >-
+    Known-prefix robust geometry-rate residual scale may rank unknown-suffix
+    geometry-rate reliability even though exp285 showed that prefix offset does
+    not predict full-suffix absolute offset. Stage 0A is designed to falsify this
+    assumption before any HMM is implemented.
+
+notes:
+  - Stage 0A compact self-contained candidate and contract tests are implemented and adopted as the canonical train notebook by the user execution instruction.
+  - Stage 0A failed its preregistered mechanism gate; the user explicitly overrode that stop and approved the unchanged preregistered Stage 0B fixed32 implementation and Kaggle CPU run on 2026-07-31.
+  - Stage 1, inference, and submission remain unapproved and disabled regardless of the Stage 0B result.
+  - This is an independent uncertainty-fusion hypothesis, not a same-OOF rescue of exp355 or exp491.

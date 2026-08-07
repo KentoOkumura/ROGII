@@ -1,0 +1,220 @@
+experiment:
+  name: exp308_imputed_gr_confidence_downweight
+  description: >-
+    Implementation-ready exact-HMM audit that keeps promoted exp307 interpolated
+    GR values and finite-MAD sigma fixed while softly downweighting originally
+    missing evaluation rows by distance to the nearest raw finite GR observation.
+  route: pf_beam
+  status: closed_without_run_parent_exp307_gate_failed
+  created_at: "2026-07-21"
+  updated_at: "2026-07-22"
+
+lineage:
+  parent: exp307_finite_only_robust_sigma_gr
+  steering: ../../.steering/20260721-exp308-imputed-gr-confidence-downweight
+  diff_summary: >-
+    Multiplies the parent Gaussian log emission by one fixed missing-distance
+    confidence. Interpolated values, finite-MAD sigma, typewell processing, HMM
+    state grammar, transition, prior, and posterior mean remain parent-identical.
+
+overrides:
+  project_defaults: [validation.strategy, validation.metric, validation.n_folds, validation.score_rows]
+
+validation:
+  strategy: conditional_grouped_train_side_exact_hmm_candidate_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  group_column: well_id
+  score_rows: tvt_input_unknown_suffix_only_after_prediction_freeze
+  expected_wells: 773
+  expected_rows: 3783989
+  truth_attachment: after_weight_audit_and_prediction_content_sha_are_frozen
+  dependency_policy:
+    required_parent: exp307_finite_only_robust_sigma_gr
+    required_parent_promotion_gate_passed: true
+    expected_parent_sha_status: not_frozen_parent_exp307_gate_failed
+    observed_parent_status: train_side_finite_mad_gate_failed_closed
+    observed_parent_promotion_gate_passed: false
+    fail_closed_on_dependency_mismatch: true
+  leakage_policy:
+    - Raw GR missing mask, distance, interpolated GR, and confidence are frozen before unknown-suffix truth is read.
+    - Unknown-suffix TVT, error, abs_error, formation, and oracle labels are forbidden before prediction freeze.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  parent_exp307:
+    kernel_source: kentookumura/exp307-finite-only-robust-sigma-gr-train
+    kernel_version: 2
+    required_status: train_side_finite_mad_gate_passed_no_automatic_downstream
+    required_variant: finite_mad_primary
+    prediction_filename: exp307_finite_only_robust_sigma_gr_predictions.csv.gz
+    scale_audit_filename: exp307_finite_only_robust_sigma_gr_scale_audit.csv.gz
+    summary_filename: exp307_finite_only_robust_sigma_gr_summary.json
+    promotion_gate_filename: exp307_finite_only_robust_sigma_gr_promotion_gate.json
+    scientific_contract_filename: exp307_finite_only_robust_sigma_gr_scientific_contract.json
+    input_control_manifest_filename: exp307_finite_only_robust_sigma_gr_input_control_manifest.json
+    prediction_column: finite_mad_primary_hmm_tvt
+    sigma_column: finite_mad
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp307-finite-only-robust-sigma-gr-train/artifacts
+      - /kaggle/input/exp307-finite-only-robust-sigma-gr-train/artifacts
+      - /tmp/kaggle-output/exp307_finite_only_robust_sigma_gr/train_v2/artifacts
+    expected_scientific_contract_sha256: PENDING_EXP307_PASS
+    expected_input_control_manifest_sha256: PENDING_EXP307_PASS
+    expected_prediction_decompressed_sha256: PENDING_EXP307_PASS
+    expected_scale_audit_decompressed_sha256: PENDING_EXP307_PASS
+    expected_promotion_gate_sha256: PENDING_EXP307_PASS
+  saved_controls:
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    exp072_cache_filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+    likpf_prediction_column: likpf_mean
+    expected_decompressed_sha256: 0503de0512302b06309d26e09fc06ba5095db0ef4d610b1508afe8c8d07ca536
+  fold_assignment:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    safe_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    truth_columns: [well_id, row_idx, tvt_true]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  hidden_like_assignment:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+model:
+  name: imputed_gr_confidence_weighted_exact_hmm
+  estimator: none
+  target: TVT
+  active_variants: [missing_distance_half8_floor025]
+  promotion_candidate: missing_distance_half8_floor025
+  confidence:
+    observed_weight: 1.0
+    raw_finite_rows_exact_one: true
+    distance_unit: within_well_row_distance_to_nearest_raw_finite_gr
+    missing_formula: max_floor_0.25_times_power2_negative_distance_div8
+    half_life_rows: 8.0
+    minimum_weight: 0.25
+    no_finite_gr_fallback: 0.25
+    apply_to: gaussian_log_emission
+    additional_grid: false
+  fixed_parent:
+    sigma: exp307_finite_mad_primary
+    sigma_column: finite_mad
+    prediction_column: finite_mad_primary_hmm_tvt
+    evaluation_gr_values: exact_parent_interpolation_parity
+    typewell_gr: exact_parent_parity
+    hmm_grid_transition_prior_output: exact_parent_parity
+  fixed_hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    lam: 1.0
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    momentum: 0.998
+    emission: gaussian
+    emission_clip_z2: 600.0
+    rate_center: zero
+    evaluation_gr_policy: interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp
+    output: posterior_mean
+  execution_counts:
+    variants: 1
+    hmm_well_runs: 773
+    lightgbm_configs: 0
+    trained_folds: 0
+    pf_well_runs: 0
+    beam_well_runs: 0
+    boosters: 0
+    parent_control_retraining: false
+
+references:
+  parent_exp307_prediction_decompressed_sha256: PENDING_EXP307_PASS
+  parent_exp307_rmse: null
+  likpf_rmse: 11.5948976722
+  parent_exp307_likpf_50_50_rmse: null
+
+gate:
+  min_rmse_improvement_vs_parent: 0.05
+  min_improved_folds: 4
+  require_gap_bucket_readout: true
+  require_1000_plus_non_regression: true
+  require_hidden_like_spatial_non_regression: true
+  require_hidden_like_typewell_purged_non_regression: true
+  require_by_well_p95_delta_max: 0.0
+  maximum_worst_well_regression: 0.25
+  require_fixed_likpf_blend_non_regression: true
+  non_regression_tolerance_ft: 1.0e-6
+  baseline_metric_absolute_tolerance: 1.0e-6
+
+execution:
+  implementation_approved: true
+  parent_dependency_frozen: false
+  kaggle_push_approved: false
+  active_stage: closed_without_run_parent_exp307_gate_failed
+  run_weight_audit: false
+  run_hmm: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    kernel_sources:
+      - kentookumura/exp307-finite-only-robust-sigma-gr-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_deterministic_missing_distance_weight
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+
+inference:
+  enabled: false
+  mode: disabled_train_side_missing_distance_confidence_audit_only
+  create_submission: false
+
+notes:
+  - Implementation was approved and completed while exp307 was running; dependency SHA/metrics were intentionally never frozen because the parent gate failed.
+  - This is not a rescue grid for exp269 blanket neutrality; zero weight and hard masking are forbidden.
+  - No parent control, PF, LikPF, Beam, model, inference, or submission is regenerated.
+  - Exp307 v2 completed with its primary gate failed; this fixed dependency can no longer be satisfied, so exp308 is closed without Kaggle execution.

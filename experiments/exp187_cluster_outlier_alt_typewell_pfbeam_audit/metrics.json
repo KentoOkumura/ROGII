@@ -1,0 +1,131 @@
+{
+  "experiment": "exp187_cluster_outlier_alt_typewell_pfbeam_audit",
+  "status": "completed_train_side_rejected_no_submit",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "kernel": {
+    "id": "kentookumura/exp187-alt-typewell-pfbeam-audit-train",
+    "version": 2,
+    "url": "https://www.kaggle.com/code/kentookumura/exp187-alt-typewell-pfbeam-audit-train",
+    "id_no": 125890196,
+    "runtime_seconds_from_summary": 1049.7537910938263,
+    "last_log_time_seconds": 1081.802962309,
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "validation": {
+    "strategy": "train_well_pseudotail_cluster_outlier_alt_typewell_pfbeam_audit",
+    "score_rows": "TVT_input_missing_equivalent_exp063_rows",
+    "source_cache": "exp072_exp063_full_replay_feature_cache",
+    "source_rows": 3783989,
+    "source_wells": 773,
+    "source_decompressed_sha256": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350"
+  },
+  "rows": 306490,
+  "wells": 64,
+  "target_wells_selected": 64,
+  "strategy_rows": 164,
+  "typewell_cache_entries": 89,
+  "typewell_strategies": {
+    "own_typewell": {
+      "strategy_rows": 64,
+      "source_member_count_mean": 1.0
+    },
+    "nearest_other_cluster_composite": {
+      "strategy_rows": 64,
+      "source_member_count_mean": 19.734375,
+      "source_member_count_min": 2,
+      "source_member_count_max": 53
+    },
+    "nearby_majority_cluster_composite_k8": {
+      "strategy_rows": 36,
+      "source_member_count_mean": 26.055555555555557,
+      "source_member_count_min": 6,
+      "source_member_count_max": 53
+    }
+  },
+  "primary_baseline": {
+    "candidate": "pf_own_typewell_lik_mean",
+    "rows": 306490,
+    "rmse": 17.011318769034336,
+    "mae": 11.50308814132687,
+    "within10": 0.5867009527227642
+  },
+  "best_non_oracle_candidate_by_rmse": {
+    "candidate": "beam_own_typewell_top1",
+    "rows": 306490,
+    "rmse": 16.287399533746807,
+    "mae": 11.798329771923635,
+    "within10": 0.5489967046233156,
+    "delta_rmse_vs_primary_baseline": -0.7239192352875286,
+    "max_well_regression_vs_primary": 17.49385891623641
+  },
+  "best_oracle_diagnostic_by_rmse": {
+    "candidate": "pf_own_typewell_top3_oracle",
+    "rows": 306490,
+    "rmse": 14.292021489803762,
+    "mae": 9.120437328833118,
+    "within10": 0.6797285392671866,
+    "delta_rmse_vs_primary_baseline": -2.719297279230574
+  },
+  "alt_typewell_candidates": {
+    "pf_nearest_other_cluster_composite_lik_mean": {
+      "rows": 306490,
+      "coverage": 1.0,
+      "rmse": 191.62369208758916,
+      "mae": 106.35810381726297,
+      "within10": 0.29542900257757187,
+      "delta_rmse_vs_primary_baseline": 174.61237331855483,
+      "improved_wells_vs_primary": 11,
+      "max_well_regression_vs_primary": 572.5069847165222
+    },
+    "pf_nearby_majority_cluster_composite_k8_lik_mean": {
+      "rows": 183355,
+      "coverage": 0.5982413781852589,
+      "rmse": 189.86408478819453,
+      "mae": 112.12598833825804,
+      "within10": 0.3020591214032887,
+      "delta_rmse_vs_primary_baseline": 172.8527660191602,
+      "improved_wells_vs_primary": 9,
+      "max_well_regression_vs_primary": 615.0419188351939
+    },
+    "beam_nearest_other_cluster_composite_top1": {
+      "rows": 306490,
+      "coverage": 1.0,
+      "rmse": 205.60648668741137,
+      "mae": 115.21613028781065,
+      "within10": 0.27321038157851806,
+      "delta_rmse_vs_primary_baseline": 188.59516791837704,
+      "improved_wells_vs_primary": 11,
+      "max_well_regression_vs_primary": 614.9880992249743
+    },
+    "beam_nearby_majority_cluster_composite_k8_top1": {
+      "rows": 183355,
+      "coverage": 0.5982413781852589,
+      "rmse": 195.10108130257976,
+      "mae": 114.2640888260684,
+      "within10": 0.24946142639143084,
+      "delta_rmse_vs_primary_baseline": 178.08976253354543,
+      "improved_wells_vs_primary": 9,
+      "max_well_regression_vs_primary": 653.8033893611438
+    }
+  },
+  "sha256": {
+    "candidate_metrics": "b44c9cbe010c9dae095de863dcb30e106210f77eddaa6bc690d3a523084f4571",
+    "strategy_delta_metrics": "6a89e97b2399e82753f4a0a2dd2748070732a4b110fc94a5915002f27688746d",
+    "bucket_metrics": "411d0e8f607fabc4f13d9663281669cc9edfa046ec19106b91de405860aed698",
+    "by_well": "bb900850213a3834f137fc60651a3e647ca188a8d470424afd3070296fd10f58",
+    "group_metrics": "0b54ffacc4f3d0d11cff97de6dff3237babc9d024f455135cff6391d793fa3bc",
+    "pf_diagnostics": "58ced07859499c8fd58e7c634e7fc42ae27d41c71fcb09a2422cb1a9836b0d43",
+    "target_well_features": "64d5bb414e521624f78547d9e063a6e5faa50f93a4dd42e10a45cd821bd15be1",
+    "strategy_sources": "f2468b83848664f1413232b6bb38aa530903a53861f7ba36c7518ba4f07012d0",
+    "well_status": "08da85d5c0461921b7620a37456aa0519989c8d5399f45a8019b180a711cbe1d",
+    "row_candidates_raw_gzip": "c5d6fed79f5a9d3bfdac6cdd1cecbd7a227031af090fab0a5b06137c8c666a5b",
+    "row_candidates_decompressed": "7823897d6042d41c67bf1a74e2e3d9e0a1dcfed8304c79ef689c5e1478ec86ea",
+    "summary": "9744b8e72f8f359e8e4e61e4df621095f0bbcd45df94ed917ec80062d51aa01a"
+  },
+  "artifacts_dir": "experiments/exp187_cluster_outlier_alt_typewell_pfbeam_audit/kaggle/output/train_v2/artifacts",
+  "notes": "Kaggle train v2 completed. Validation surface is exp072/099-style TVT_input-missing-equivalent rows. Cluster-composite alternative typewells severely worsen PF/Beam candidates; no inference port or submission."
+}

@@ -1,0 +1,284 @@
+{
+  "experiment": "exp484_student_t_gr_filtering_likelihood_pf",
+  "route": "pf_beam",
+  "status": "stage1_gate_failed_terminal_close",
+  "created_at": "2026-07-30",
+  "updated_at": "2026-07-31",
+  "cv": 10.89709692312777,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "key_idea": "exp374 fixed df=4 Student-t GR scoreを粒子filtering尤度へ移植",
+  "implementation": {
+    "compact_selfcontained_train": true,
+    "canonical_train_adopted": true,
+    "dedicated_tests_passed": 13,
+    "kaggle_package_created": true
+  },
+  "kaggle": {
+    "kernel_id": "kentookumura/exp484-student-t-gr-filtering-likelihood-pf-train",
+    "kernel_version": 3,
+    "kernel_id_no": 129170461,
+    "status": "COMPLETE",
+    "started_at_utc": "2026-07-30 13:22:27 UTC",
+    "completed_at_utc": "2026-07-30 16:25:05 UTC",
+    "stage_0_kernel_version": 2,
+    "stage_0_completed_at_utc": "2026-07-30 12:53:34 UTC",
+    "stage_1_started_at_utc": "2026-07-30 13:22:27 UTC",
+    "stage_1_completed_at_utc": "2026-07-30 16:25:05 UTC",
+    "failed_versions": [
+      {
+        "kernel_version": 1,
+        "status": "ERROR",
+        "reason": "raw identity preflight used a non-parent SHA algorithm; fixed without scientific change"
+      }
+    ]
+  },
+  "stage_0": {
+    "status": "stage0_passed_pending_separate_stage1_approval",
+    "scope": "stable_hash_fixed32_technical_preflight_not_cv",
+    "rows": 165010,
+    "wells": 32,
+    "execution_counts": {
+      "scientific_variants": 1,
+      "candidate_pf_well_runs": 32,
+      "seed_well_trajectories": 4096,
+      "particle_starts": 2048000,
+      "control_pf_well_runs": 0,
+      "hmm_well_runs": 0,
+      "beam_well_runs": 0,
+      "lightgbm_configs": 0,
+      "trained_folds": 0,
+      "boosters": 0,
+      "gpu_runs": 0
+    },
+    "technical_gate": {
+      "all_passed": true,
+      "passed": 16,
+      "total": 16,
+      "finite_prediction_coverage": 1.0,
+      "truth_error_fold_hidden_reads_before_freeze_zero": true,
+      "execution_count_match": true,
+      "runtime_projection_within_limit": true,
+      "peak_rss_within_limit": true
+    },
+    "report_only_not_cv_not_promotion": {
+      "candidate_rmse_ft": 16.536326062515673,
+      "saved_exp404_control_rmse_ft": 17.358983592771203,
+      "control_minus_candidate_gain_ft": 0.8226575302555297,
+      "improved_wells": 18,
+      "total_wells": 32,
+      "by_well_delta_p95_ft": 0.3870566934830214,
+      "worst_well_delta_ft": 0.7826119005022605
+    },
+    "runtime": {
+      "candidate_seconds": 629.2169744968414,
+      "total_seconds": 667.7507383823395,
+      "projected_full_773_seconds": 15199.522540189326,
+      "peak_rss_gb": 0.9093971252441406
+    },
+    "truth_access": {
+      "truth_reads_before_freeze": 0,
+      "control_reads_before_freeze": 0,
+      "fold_reads_before_freeze": 0,
+      "hidden_role_reads_before_freeze": 0
+    },
+    "reproducibility": {
+      "scientific_contract_sha256": "af07896332346cccf722bcedc1cee5c371d93089e9fab2a49e19cada2cb5cc36",
+      "raw_identity_sha256": "bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32",
+      "fixed32_manifest_sha256": "293d3fae9ca12f906113b1a19578b2bcede23e3b47d5e76b885835f6deb71e0e",
+      "prediction_logical_sha256": "9527bdff3feb26c86a4943a6d4f48dc1fb1d4a9fe9f33fdc3f5d3071579cf483",
+      "prediction_raw_gzip_sha256": "6543268e88f3792ba965d053150ae07c67863e690612b44bb28680c23f039781",
+      "prediction_decompressed_sha256": "8b20ad290de96f0e2d972c40025be3fa7f509a8594e5a8714b04c0fafa02edae",
+      "prediction_schema_sha256": "c5ce3792dd158041ccda88aa093e7b56bce3e439323117d5a812757247e6dbfc",
+      "well_audit_sha256": "deefa093b64b7a7a03d6851f840612f85f9e985a33679f9ac1c5958dd33f721e"
+    }
+  },
+  "stage_1": {
+    "status": "stage1_gate_failed_terminal_close",
+    "scope": "stage1_all_well_train_side_cv",
+    "rows": 3783989,
+    "wells": 773,
+    "folds": [0, 1, 2, 3, 4],
+    "primary": {
+      "candidate_rmse_ft": 10.89709692312777,
+      "saved_exp404_control_rmse_ft": 10.914521913422574,
+      "improvement_ft": 0.017424990294804488,
+      "candidate_minus_control_rmse_ft": -0.017424990294804488,
+      "candidate_mae_ft": 6.349282517228769,
+      "control_mae_ft": 6.429207276709601,
+      "minimum_required_improvement_ft": 0.05,
+      "improved_folds": 2,
+      "minimum_required_improved_folds": 4,
+      "folds": {
+        "fold_0": {
+          "candidate_rmse_ft": 9.464670921578652,
+          "control_rmse_ft": 9.360014494400177,
+          "improvement_ft": -0.10465642717847423
+        },
+        "fold_1": {
+          "candidate_rmse_ft": 11.1268368443497,
+          "control_rmse_ft": 10.979418436208054,
+          "improvement_ft": -0.14741840814164675
+        },
+        "fold_2": {
+          "candidate_rmse_ft": 10.771522717278303,
+          "control_rmse_ft": 10.69427711501828,
+          "improvement_ft": -0.07724560226002275
+        },
+        "fold_3": {
+          "candidate_rmse_ft": 10.662625585069874,
+          "control_rmse_ft": 10.74750138232808,
+          "improvement_ft": 0.08487579725820638
+        },
+        "fold_4": {
+          "candidate_rmse_ft": 12.206968745225499,
+          "control_rmse_ft": 12.482448795684073,
+          "improvement_ft": 0.27548005045857415
+        }
+      }
+    },
+    "scopes": {
+      "raw_gr_observed": {
+        "candidate_rmse_ft": 10.981396072880807,
+        "control_rmse_ft": 10.912495716240947,
+        "improvement_ft": -0.06890035663986005,
+        "passed": false
+      },
+      "raw_gr_missing": {
+        "candidate_rmse_ft": 10.713510941153265,
+        "control_rmse_ft": 10.918879245034981,
+        "improvement_ft": 0.20536830388171623,
+        "passed": true
+      },
+      "missing_fraction_high": {
+        "candidate_rmse_ft": 10.161742335390118,
+        "control_rmse_ft": 10.326934377131886,
+        "improvement_ft": 0.1651920417417685,
+        "passed": true
+      },
+      "md_since_1000_plus": {
+        "candidate_rmse_ft": 11.91094768625024,
+        "control_rmse_ft": 11.93947754162198,
+        "improvement_ft": 0.028529855371738577,
+        "passed": true
+      },
+      "hidden_like_spatial": {
+        "candidate_rmse_ft": 12.908386577959229,
+        "control_rmse_ft": 13.038363165014841,
+        "improvement_ft": 0.1299765870556122,
+        "passed": true
+      },
+      "hidden_like_typewell_purged": {
+        "candidate_rmse_ft": 12.90812599782336,
+        "control_rmse_ft": 12.777979741917205,
+        "improvement_ft": -0.1301462559061548,
+        "passed": false
+      }
+    },
+    "by_well": {
+      "improved_wells": 442,
+      "worsened_wells": 331,
+      "total_wells": 773,
+      "delta_rmse_p95_ft": 1.4550666558525527,
+      "maximum_allowed_delta_rmse_p95_ft": 0.0,
+      "worst_well_id": "d924e971",
+      "worst_well_candidate_rmse_ft": 29.46235302488006,
+      "worst_well_control_rmse_ft": 12.797463292174562,
+      "worst_well_regression_ft": 16.664889732705497,
+      "maximum_allowed_worst_well_regression_ft": 0.25
+    },
+    "fixed_exp209_hmm_pf_50_50": {
+      "candidate_rmse_ft": 10.067803689497714,
+      "control_rmse_ft": 10.084909779429955,
+      "candidate_minus_control_rmse_ft": -0.017106089932241275,
+      "passed": true
+    },
+    "technical_gate": {
+      "passed": true,
+      "checks_passed": 18,
+      "checks_total": 18,
+      "all_wells_completed": true,
+      "artifact_sha_readback": true,
+      "ess_ledger_valid": true,
+      "execution_count_match": true,
+      "finite_prediction_coverage": true,
+      "fixed_hmm_pf_50_50_control_parity": true,
+      "formula_unit_contract": true,
+      "peak_rss": true,
+      "prediction_rows": true,
+      "prediction_wells": true,
+      "raw_input_identity": true,
+      "reporting_folds": true,
+      "resampling_ledger_valid": true,
+      "runtime": true,
+      "saved_control_rmse_parity": true,
+      "stable_seed_identity": true,
+      "stage0_all_technical_gates_passed": true,
+      "truth_error_fold_hidden_reads_before_freeze_zero": true
+    },
+    "scientific_gate": {
+      "passed": false,
+      "decision": "terminal_close_without_student_t_or_pf_rescue",
+      "failed_checks": [
+        "pooled_rmse_gain",
+        "minimum_improved_folds",
+        "raw_gr_observed_gain",
+        "hidden_like_typewell_purged_non_regression",
+        "by_well_delta_p95",
+        "worst_well_regression"
+      ]
+    },
+    "execution_counts": {
+      "scientific_variants": 1,
+      "candidate_pf_well_runs": 773,
+      "seed_well_trajectories": 98944,
+      "particle_starts": 49472000,
+      "control_pf_well_runs": 0,
+      "hmm_well_runs": 0,
+      "beam_well_runs": 0,
+      "lightgbm_configs": 0,
+      "trained_folds": 0,
+      "boosters": 0,
+      "gpu_runs": 0
+    },
+    "runtime": {
+      "seconds_to_prediction_freeze": 10871.425777435303,
+      "total_seconds": 10959.720402002335,
+      "peak_rss_gb": 3.30963134765625
+    },
+    "truth_access": {
+      "all_frozen": true,
+      "frozen_wells": 773,
+      "truth_reads_before_freeze": 0,
+      "control_reads_before_freeze": 0,
+      "fold_reads_before_freeze": 0,
+      "hidden_role_reads_before_freeze": 0
+    },
+    "reproducibility": {
+      "deterministic_anchor": false,
+      "scientific_contract_sha256": "af07896332346cccf722bcedc1cee5c371d93089e9fab2a49e19cada2cb5cc36",
+      "prediction_logical_sha256": "4dbe939363b1522dbc521680cd25d3ce7993ff8b94ddbdbf30b95073db2b28f4",
+      "prediction_raw_gzip_sha256": "e1344c2dc63dda8905b997bb82b8c3e25ea9df3cfade2688e2e48dab9f8cc655",
+      "prediction_decompressed_sha256": "1b02c68b0e52cd031b9d06e931f8fa92e2fb841dbc9e4ee6c7778807af5f1962",
+      "prediction_schema_sha256": "c5ce3792dd158041ccda88aa093e7b56bce3e439323117d5a812757247e6dbfc",
+      "primary_metrics_sha256": "d8c818d7bb52ee532119db158095e838d5a2a0f0ad8bf0e8294ebc0a548541c1",
+      "by_well_metrics_sha256": "d82f7a7c6496fa84d80c72d1b35a8b5593fa7cc2f9223cafe7fd2773266c5b0f",
+      "fixed_hmm_pf_50_50_metrics_sha256": "b8c6687d4871796e3a63b2ff38a50a3d4a631ba8441ec3075d9f4db3e164a712",
+      "promotion_gate_sha256": "32a5c8473a4c94eb6ebbad8461332be5ffa40150f1cbeb9af2726b0db56afb50",
+      "runtime_ledger_sha256": "d4043fa1acdaa8a718fed4a0c3ca4b8d5c84e56cc198d980540d4770633a9c67",
+      "summary_sha256": "51d9658ea32fa45b0724b543169661ba36fea5f61b9e331d327dfd6e0db1a380",
+      "well_audit_sha256": "7a3299d4105153f99fb3d0a3553dcffd6d4e490f913e99b3d86e1806728194d2"
+    }
+  },
+  "decision": {
+    "stage_1_run": true,
+    "stage_1_approved": true,
+    "technical_gate_passed": true,
+    "scientific_gate_passed": false,
+    "outcome": "terminal_close_without_student_t_or_pf_rescue",
+    "inference_run": false,
+    "submission_created": false,
+    "notes": "全773 wellsのStage 1は技術契約を満たしたが、pooled改善は0.017424990 ft、改善foldは2/5で、raw observed、typewell-purged、well-tailもFAILした。fixed HMM/PF blendは改善したが、事前登録どおりsame-OOF救済を行わず閉鎖する。"
+  }
+}

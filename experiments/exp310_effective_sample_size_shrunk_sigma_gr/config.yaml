@@ -1,0 +1,138 @@
+experiment:
+  name: exp310_effective_sample_size_shrunk_sigma_gr
+  description: >-
+    Design-frozen conditional exact-HMM audit that shrinks the exp307
+    finite-MAD GR scale toward a leave-one-well-out prior according to an
+    autocorrelation-adjusted effective sample size.
+  route: pf_beam
+  status: closed_without_run_parent_exp307_gate_failed
+  created_at: "2026-07-21"
+  updated_at: "2026-07-22"
+
+lineage:
+  parent: exp307_finite_only_robust_sigma_gr
+  steering: ../../.steering/20260721-exp310-effective-sample-size-shrunk-sigma-gr
+  diff_summary: >-
+    Changes only the uncertainty shrinkage of exp307 well-level sigma_GR.
+    Finite-pair construction, raw MAD scale, fallback, clip, GR interpolation,
+    observation center, HMM state grammar, transitions, and posterior output
+    remain parent-identical.
+
+validation:
+  strategy: conditional_grouped_train_side_exact_hmm_sigma_support_audit
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: tvt_input_unknown_suffix_only_after_prediction_freeze
+  expected_wells: 773
+  expected_rows: 3783989
+  dependency_policy:
+    required_parent_status: all_promotion_gates_passed
+    required_parent_scale_audit_sha_status: freeze_after_parent_pass_before_implementation
+    fail_closed_on_dependency_mismatch: true
+  leakage_policy:
+    - ACF, effective sample size, prior, shrinkage, and trigger use finite known-prefix GR residuals only.
+    - Unknown-suffix TVT, error, abs_error, formation, and oracle labels are forbidden before prediction freeze.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+
+model:
+  name: effective_sample_size_shrunk_sigma_gr_exact_hmm
+  estimator: none
+  active_variants: [effective_sample_size_log_shrinkage_if_triggered]
+  raw_scale:
+    source: exp307_finite_mad_primary
+    minimum_pairs: 20
+    fallback_sigma_gr: 30.0
+    clip: [10.0, 60.0]
+  effective_sample_size:
+    finite_pair_rule: contiguous_raw_row_runs_only
+    maximum_lag: 20
+    minimum_pairs_per_lag: 20
+    insufficient_or_zero_variance_rho: 0.0
+    tau: max_1_plus_2_sum_positive_rho
+    n_eff: n_div_tau_clipped_1_to_n
+  shrinkage:
+    prior: leave_one_well_out_median_of_clipped_raw_scale
+    alpha: n_eff_div_n_eff_plus_50
+    space: log
+    clip: [10.0, 60.0]
+  fixed_parent:
+    gr_interpolation: exp209_identical
+    observation_center: typewell_gr_at_candidate_tvt
+    rate_grid: exp209_identical
+    transition: exp209_identical
+    output: posterior_mean
+  execution_counts:
+    variants_if_triggered: 1
+    variants_if_not_triggered: 0
+    maximum_hmm_well_runs: 773
+    lightgbm_configs: 0
+    trained_folds: 0
+    pf_well_runs: 0
+    beam_well_runs: 0
+    boosters: 0
+    parent_control_retraining: false
+
+trigger:
+  join_truth_before_decision: false
+  median_n_eff_over_n_max: 0.50
+  low_support_n_eff_threshold: 50.0
+  low_support_well_fraction_min: 0.20
+  combination: or
+  fail_action: close_without_hmm
+  lock_parameters_after_decision: true
+
+gate:
+  min_rmse_improvement_vs_parent: 0.03
+  min_improved_folds: 4
+  require_1000_plus_non_regression: true
+  require_hidden_like_spatial_non_regression: true
+  require_hidden_like_typewell_purged_non_regression: true
+  require_by_well_p95_delta_max: 0.0
+  maximum_worst_well_regression: 0.25
+  require_fixed_likpf_blend_non_regression: true
+
+execution:
+  implementation_approved: false
+  kaggle_push_approved: false
+  active_stage: design_only_blocked
+  run_support_audit: false
+  evaluate_target_free_trigger: false
+  run_hmm: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  numba_num_threads: 2
+  kaggle: {enable_gpu: false, enable_internet: false, runtime_limit_seconds: 30600}
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_deterministic_acf_and_log_shrinkage
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+
+inference: {enabled: false, create_submission: false}
+
+notes:
+  - Design frozen on 2026-07-21; blocked until exp307 passes and the target-free trigger is evaluated.
+  - Trigger failure closes this experiment before HMM execution and does not authorize parameter changes.

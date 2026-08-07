@@ -1,0 +1,229 @@
+{
+  "best_candidate_by_rmse": {
+    "abs_error_p50": 3.7490234375,
+    "abs_error_p90": 17.923828125,
+    "abs_error_p95": 24.764257431030273,
+    "bias_tvt": -1.0994231700897217,
+    "candidate": "likpf_mean",
+    "candidate_family": "existing",
+    "mae_tvt": 7.067632675170898,
+    "rank_score_mean": 0.30748724937438965,
+    "rmse_tvt": 11.594897270202637,
+    "rows": 3783989,
+    "within_10ft": 0.772807479091509,
+    "within_1ft": 0.2049339995438676,
+    "within_2ft": 0.33888206334637866,
+    "within_5ft": 0.5832305537886078
+  },
+  "experiment": "exp099_pf_multi_observation_likelihood_probe",
+  "metric": "multi_observation_likelihood_candidate_audit",
+  "multi_observation_likelihood": {
+    "config": {
+      "gr_rolling_window": 5,
+      "gr_scale": 18.0,
+      "likpf_blend_weights": [
+        0.25,
+        0.5
+      ],
+      "observation_offsets": [
+        -24,
+        -12,
+        0,
+        12,
+        24
+      ],
+      "out_of_range_scale": 80.0,
+      "primary_threshold_ft": 10,
+      "score_candidates": [
+        "pf_ancc",
+        "beam_mean",
+        "likpf_mean",
+        "sc_ens",
+        "hyb"
+      ],
+      "softmax_temperatures": [
+        0.15,
+        0.3
+      ]
+    },
+    "generated_candidates": [
+      "multiobs_top1",
+      "multiobs_softmax_t0p15",
+      "multiobs_softmax_t0p3",
+      "likpf_multiobs_blend_w0p25",
+      "likpf_multiobs_blend_w0p5"
+    ],
+    "score_candidates": [
+      "pf_ancc",
+      "beam_mean",
+      "likpf_mean",
+      "sc_ens",
+      "hyb"
+    ],
+    "well_summary_rows": 773
+  },
+  "outputs": {
+    "bucket_metrics": "exp099_pf_multi_observation_likelihood_probe_bucket_metrics.csv",
+    "by_well": "exp099_pf_multi_observation_likelihood_probe_by_well.csv",
+    "candidate_long": "exp099_pf_multi_observation_likelihood_probe_candidate_long.csv.gz",
+    "candidate_metrics": "exp099_pf_multi_observation_likelihood_probe_candidate_metrics.csv",
+    "feature_schema": "exp099_pf_multi_observation_likelihood_probe_feature_schema.csv",
+    "multiobs_well_summary": "exp099_pf_multi_observation_likelihood_probe_multiobs_well_summary.csv",
+    "rank_metrics": "exp099_pf_multi_observation_likelihood_probe_rank_metrics.csv",
+    "row_context": "exp099_pf_multi_observation_likelihood_probe_row_context.csv.gz",
+    "summary": "exp099_pf_multi_observation_likelihood_probe_summary.json",
+    "train_feature_schema": "exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv",
+    "train_features": "exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz"
+  },
+  "probe_decision": {
+    "baseline_plus_multiobs_oracle": {
+      "candidate_count": 10,
+      "candidate_set": "baseline_plus_multiobs",
+      "mae_tvt": 3.2034764289855957,
+      "rank_family": "oracle_best_error",
+      "rmse_tvt": 6.897509574890137,
+      "rows": 3783989,
+      "selected_candidate_top": "likpf_mean",
+      "selected_multiobs_rate": 0.1750834899361494,
+      "topk": 10,
+      "within_10ft": 0.9229405793727201,
+      "within_1ft": 0.4716253139213671,
+      "within_2ft": 0.6356707168017666,
+      "within_5ft": 0.8250425675127491
+    },
+    "baseline_primary_oracle": {
+      "candidate_count": 5,
+      "candidate_set": "baseline_primary",
+      "mae_tvt": 3.745227575302124,
+      "rank_family": "oracle_best_error",
+      "rmse_tvt": 7.434030055999756,
+      "rows": 3783989,
+      "selected_candidate_top": "likpf_mean",
+      "selected_multiobs_rate": 0.0,
+      "topk": 5,
+      "within_10ft": 0.9065253625208741,
+      "within_1ft": 0.40434921983124156,
+      "within_2ft": 0.5655796039576225,
+      "within_5ft": 0.7820831403051118
+    },
+    "candidate_rank_score_top1": {
+      "baseline_plus_multiobs": {
+        "candidate_count": 10,
+        "candidate_set": "baseline_plus_multiobs",
+        "mae_tvt": 38.08673095703125,
+        "rank_family": "candidate_rank_score",
+        "rmse_tvt": 89.99439239501953,
+        "rows": 3783989,
+        "selected_candidate_top": "beam_mean",
+        "selected_multiobs_rate": 0.0,
+        "topk": 1,
+        "within_10ft": 0.523814947665017,
+        "within_1ft": 0.13854295030984498,
+        "within_2ft": 0.21545252906390583,
+        "within_5ft": 0.365132932468884
+      },
+      "baseline_primary": {
+        "candidate_count": 5,
+        "candidate_set": "baseline_primary",
+        "mae_tvt": 38.08673095703125,
+        "rank_family": "candidate_rank_score",
+        "rmse_tvt": 89.99439239501953,
+        "rows": 3783989,
+        "selected_candidate_top": "beam_mean",
+        "selected_multiobs_rate": 0.0,
+        "topk": 1,
+        "within_10ft": 0.523814947665017,
+        "within_1ft": 0.13854295030984498,
+        "within_2ft": 0.21545252906390583,
+        "within_5ft": 0.365132932468884
+      }
+    },
+    "oracle_coverage_gain_from_multiobs": 0.016415216851845993,
+    "oracle_rmse_gain_from_multiobs": 0.5365204811096191,
+    "primary_threshold_ft": 10.0,
+    "recommendation": "multi_observation_likelihood_supported_for_ranker_features"
+  },
+  "route": "pf_beam",
+  "source": {
+    "columns": [
+      "id",
+      "well",
+      "target",
+      "last_known_tvt",
+      "pf_ancc",
+      "pf_ancc_std",
+      "beam_mean_d",
+      "sc_ens_d",
+      "hyb_d",
+      "eval_len",
+      "md_since",
+      "likpf_mean_d"
+    ],
+    "rows": 3783989,
+    "schema": "/kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_feature_schema.csv",
+    "schema_sha256": "700d38149f583c3ab6574ea7b163c3c8709c2514b675bea381d822f82f4809b8",
+    "source": "/kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz",
+    "source_decompressed_sha256": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350",
+    "source_sha256": "14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18",
+    "wells": 773
+  },
+  "status": "completed_train_side_audit",
+  "train_feature_cache": {
+    "feature_columns": [
+      "last_known_tvt",
+      "pf_ancc",
+      "pf_ancc_std",
+      "beam_mean_d",
+      "sc_ens_d",
+      "hyb_d",
+      "eval_len",
+      "md_since",
+      "likpf_mean_d",
+      "last_anchor_tvt",
+      "beam_mean",
+      "likpf_mean",
+      "sc_ens",
+      "hyb",
+      "multiobs_top1",
+      "multiobs_softmax_t0p15",
+      "multiobs_softmax_t0p3",
+      "likpf_multiobs_blend_w0p25",
+      "likpf_multiobs_blend_w0p5",
+      "multiobs_score_max",
+      "multiobs_score_mean",
+      "multiobs_score_gap",
+      "multiobs_top1_source_id",
+      "multiobs_top1_mae",
+      "multiobs_top1_ncc",
+      "multiobs_score_pf_ancc",
+      "multiobs_mae_pf_ancc",
+      "multiobs_ncc_pf_ancc",
+      "multiobs_score_beam_mean",
+      "multiobs_mae_beam_mean",
+      "multiobs_ncc_beam_mean",
+      "multiobs_score_likpf_mean",
+      "multiobs_mae_likpf_mean",
+      "multiobs_ncc_likpf_mean",
+      "multiobs_score_sc_ens",
+      "multiobs_mae_sc_ens",
+      "multiobs_ncc_sc_ens",
+      "multiobs_score_hyb",
+      "multiobs_mae_hyb",
+      "multiobs_ncc_hyb"
+    ],
+    "feature_count": 40,
+    "outputs": {
+      "train_feature_schema": "exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv",
+      "train_features": "exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz"
+    },
+    "rows": 3783989,
+    "sha256": {
+      "train_feature_schema": "203e4f9a280fe901f5f21d39b85c3e0e2a7fe10c466081c15015c7fb014a0413",
+      "train_features": "4bd9df60f5c09f7a3029dac399afef73aa45b0158a7fd06a62a56f85fd0fde38",
+      "train_features_decompressed": "1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a"
+    },
+    "variant": "multiobs_likelihood_probe",
+    "wells": 773
+  },
+  "updated_at": "2026-06-21T10:30:22.873617+00:00"
+}

@@ -1,0 +1,79 @@
+{
+  "experiment": "exp300_exp264_vs_exp274_well_selector_readout",
+  "status": "completed_diagnostic_only",
+  "metric": "rmse",
+  "cv": 8.460811237612477,
+  "public_lb": null,
+  "private_lb": null,
+  "comparison": {
+    "experiment": "exp274_catboost_final_regressor_swap_on_exp238",
+    "rmse": 8.183503546710014,
+    "delta_rmse": 0.2773076909024628
+  },
+  "coverage": {
+    "rows": 3783989,
+    "wells": 773,
+    "fold_matched_wells": 710,
+    "fold_mismatched_wells": 63
+  },
+  "wells": {
+    "worsened": 387,
+    "improved": 386,
+    "worsened_gt_0p25": 330,
+    "worsened_gt_1": 194,
+    "worsened_gt_3": 73,
+    "worsened_gt_5": 40
+  },
+  "selector": {
+    "surface": "corrected_stage_c_v6_strict_nested_outer_valid",
+    "hard_primary_top1_rmse": 8.652531955610227,
+    "hard_primary_is_final_prediction": false,
+    "gt3_margin_median": 0.4804237782955169,
+    "other_margin_median": 0.20010620355606074,
+    "gt3_switches_per_1000_median": 35.846953937592865,
+    "other_switches_per_1000_median": 53.00351021779717,
+    "switch_attribution": {
+      "switch_rows": 205264,
+      "switches_per_1000_rows": 54.24540081908272,
+      "gt3_within5_row_share": 0.1984993481456825,
+      "gt3_within5_positive_sse_share": 0.1426126637284366,
+      "gt3_outside5_positive_sse_share": 0.8573873362715634,
+      "switch_runs": 205264,
+      "harmful_switch_run_rate": 0.4587458102735989,
+      "selected_hard_switch_run_rmse": 8.666261783960762,
+      "previous_candidate_hold_switch_run_rmse": 8.928728698322033,
+      "selected_minus_previous_mse": -4.618102860100699,
+      "gt3_wells_where_switch_runs_hurt_hard_path": 36,
+      "gt3_wells_where_switch_runs_help_hard_path": 37,
+      "conclusion": "candidate_switch_is_not_the_main_stage_d_regression_driver"
+    },
+    "oracle_attribution": {
+      "gt3_exp274_rmse": 10.79640890492341,
+      "gt3_oracle_primary_rmse": 5.262584663439019,
+      "gt3_selected_hard_rmse": 17.16628041169743,
+      "gt3_stage_d_final_rmse": 16.653182441764343,
+      "gt3_selector_tie_aware_correct_rate": 0.07917117416992593,
+      "gt3_oracle_vs_exp274_mse": -88.86764790244594,
+      "gt3_selection_regret_mse": 266.98638583316324,
+      "gt3_stage_d_vs_selected_mse": -17.352697734338612,
+      "gt3_final_vs_exp274_mse": 160.7660401963787,
+      "gt3_selected_hard_worse_than_exp274_wells": 67,
+      "gt3_stage_d_mitigates_selected_hard_wells": 41,
+      "gt3_stage_d_worsens_selected_hard_wells": 32,
+      "gt3_selected_hard_better_but_stage_d_causes_wells": 6,
+      "gt3_selfgr_likpf_selected_oracle_k16_rows": 13331,
+      "gt3_selfgr_likpf_selected_mae": 34.145989244406834,
+      "gt3_selfgr_likpf_selected_rmse": 36.891102863956846,
+      "gt3_same_rows_k16_mae": 6.0816345741364115,
+      "gt3_same_rows_k16_rmse": 9.363012967391608,
+      "gt3_selfgr_likpf_vs_k16_selection_regret_mse": 1273.2874579289055,
+      "gt3_beam_wrong_rows": 18947,
+      "gt3_beam_wrong_row_rate": 0.05255610107902693,
+      "other_beam_wrong_row_rate": 0.025231058814732032,
+      "gt3_vs_other_beam_wrong_rate_lift": 2.0829922939397303,
+      "gt3_beam_wrong_excess_rows_at_other_rate": 9850.950986700955,
+      "conclusion": "selector_candidate_ranking_regret_is_the_dominant_gt3_well_error_term"
+    }
+  },
+  "notes": "Cross-experiment saved-OOF posthoc diagnostic; no model fit, inference, submission, or anchor update."
+}

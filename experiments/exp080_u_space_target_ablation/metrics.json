@@ -1,0 +1,86 @@
+{
+  "experiment": "exp080_u_space_target_ablation",
+  "status": "kaggle_train_v1_timeout_log_metrics_recovered",
+  "route": "ml_model",
+  "parent": "exp073_gpu_reproducibility_guard_for_exp063_full_replay",
+  "cache_parent": "exp072_exp063_full_replay_feature_cache",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "expected_feature_count": 196,
+  "active_mode": "gpu_repro_guard_dp_threads8",
+  "active_targets": [
+    "dTVT",
+    "dTVT_plus_dZ",
+    "TVT_plus_Z_abs",
+    "TVT_plus_Z_minus_T0",
+    "TVT_plus_Z_minus_T0Z0"
+  ],
+  "artifacts": {
+    "metrics": "artifacts/exp080_u_space_target_ablation_metrics.csv",
+    "by_well": "artifacts/exp080_u_space_target_ablation_by_well.csv",
+    "bucket_metrics": "artifacts/exp080_u_space_target_ablation_bucket_metrics.csv",
+    "target_summary": "artifacts/exp080_u_space_target_ablation_target_summary.csv",
+    "predictions": "artifacts/exp080_u_space_target_ablation_predictions.csv.gz",
+    "feature_schema": "artifacts/exp080_u_space_target_ablation_feature_schema.csv",
+    "model_manifest": "artifacts/exp080_u_space_target_ablation_lgb_models/manifest.json",
+    "summary": "artifacts/exp080_u_space_target_ablation_summary.json"
+  },
+  "kaggle_train": {
+    "kernel_id": "kentookumura/exp080-u-space-target-ablation-train",
+    "kernel_version": 1,
+    "enable_gpu": true,
+    "enable_internet": false,
+    "kernel_source": "kentookumura/exp072-exp063-full-replay-feature-cache-train",
+    "status": "timeout_log_metrics_recovered",
+    "url": "https://www.kaggle.com/code/kentookumura/exp080-u-space-target-ablation-train",
+    "pull_check_path": "/tmp/kaggle-pull/exp080-u-space-target-ablation-train-v1",
+    "output_probe_path": "/tmp/kaggle-output/exp080_u_space_target_ablation/train_v1_probe",
+    "output_partial_path": "/tmp/kaggle-output/exp080_u_space_target_ablation/train_v1",
+    "log_path": "/tmp/exp080_train_v1_logs.json",
+    "log_fold_metrics": "artifacts/exp080_train_v1_log_fold_metrics.csv",
+    "log_target_model_summary": "artifacts/exp080_train_v1_log_target_model_summary.csv",
+    "completed_log_rows": 56,
+    "log_summary": {
+      "dTVT": {
+        "lgb0_mean_fold_rmse_tvt": 9.63332941020284,
+        "lgb1_mean_fold_rmse_tvt": 9.534548540558816,
+        "lgb2_mean_fold_rmse_tvt": 9.541831023200428,
+        "completed_models": 3,
+        "completed_folds_per_model": 5
+      },
+      "dTVT_plus_dZ": {
+        "lgb0_mean_fold_rmse_tvt": 12.058332549707462,
+        "lgb1_mean_fold_rmse_tvt": 13.792791710625346,
+        "lgb2_mean_fold_rmse_tvt": 13.433934149637802,
+        "completed_models": 3,
+        "completed_folds_per_model": 5
+      },
+      "TVT_plus_Z_abs": {
+        "lgb0_mean_fold_rmse_tvt": 63.38178230701925,
+        "lgb1_mean_fold_rmse_tvt": 52.90053125797692,
+        "lgb2_mean_fold_rmse_tvt": 53.17107908182552,
+        "completed_models": 3,
+        "completed_folds_per_model": 5
+      },
+      "TVT_plus_Z_minus_T0": {
+        "lgb0_mean_fold_rmse_tvt": 18.89357180230106,
+        "lgb1_mean_fold_rmse_tvt": 27.568902694996204,
+        "lgb2_mean_fold_rmse_tvt": 31.333343036073355,
+        "completed_models": 2,
+        "partial_lgb2_folds": 1
+      },
+      "TVT_plus_Z_minus_T0Z0": {
+        "completed_models": 0,
+        "note": "not reached before Kaggle timeout"
+      }
+    },
+    "interpretation": "Log fold means are not pooled RMSE, but they are sufficient to reject U-space target variants in this run; baseline dTVT is clearly best."
+  },
+  "notes": [
+    "Kaggle train v1 timed out before all targets completed.",
+    "Log-derived fold metrics indicate dTVT is clearly best; U-space variants are worse.",
+    "Inference is intentionally unselected until full CV results are reviewed."
+  ]
+}

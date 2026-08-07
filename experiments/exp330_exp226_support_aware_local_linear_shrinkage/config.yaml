@@ -1,0 +1,241 @@
+experiment:
+  name: exp330_exp226_support_aware_local_linear_shrinkage
+  description: >-
+    Design-frozen exp226 internal correction that uses the exp329 donor-support
+    risk contract to shrink only high-risk K16 local-linear donor drift toward
+    the weighted constant estimate from the exact same donors, while preserving
+    the saved parent kappa and every downstream algorithm.
+  route: pf_beam
+  status: closed_dependency_failed_exp329_stage0
+  created_at: "2026-07-21"
+  updated_at: "2026-07-21"
+
+lineage:
+  parent: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  dependency: exp329_donor_support_risk_bounded_weight_shrink_stage_0
+  steering: ../../.steering/20260721-exp330-exp226-support-aware-local-linear-shrinkage
+  references:
+    - exp263_last_anchor_better_candidate_confidence_pair_cache
+    - exp302_exp226_multiscale_k_segment_candidate_audit
+    - exp303_exp226_multiscale_k_stability_selectability_readout_on_exp264
+    - exp324_exp226_donor_covariance_segment_sig_r
+  diff_summary: >-
+    Changes only the raw and smoothed target-well local-linear donor intercepts
+    in high-risk K16 segments. Each intercept is moved at most halfway toward a
+    weighted constant estimate computed from the exact same k50 donors and
+    kernel weights. Saved fold kappa, donor-distance buckets, ANCC committee,
+    GR correction, U projection, K16 segmentation, and all HMM settings remain
+    fixed. Kappa is not refit.
+
+implementation:
+  enabled: false
+  scope: design_only
+  inference_enabled: false
+  submission_enabled: false
+
+validation:
+  strategy: exp226_saved_kappa_support_aware_local_linear_single_variant_oof
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_rows: 3783989
+  expected_wells: 773
+  fold_policy: exact_saved_exp226_source_fold_and_complete_fold_donor_exclusion
+  score_rows: train_unknown_suffix_truth_only_after_support_and_prediction_freeze
+  dependency_policy:
+    required_experiment: exp329_donor_support_risk_bounded_weight_shrink
+    required_status: stage_0_all_scientific_and_technical_gates_passed
+    required_artifact: frozen_support_risk_contract_sha256
+    exp329_stage_1_required: false
+    fail_closed_on_dependency_mismatch: true
+  leakage_policy:
+    - Validation wells and every well in the same exp226 source fold are excluded from all donor fields.
+    - The six exp329 support primitives and empirical CDF are frozen without validation-well suffix TVT, error, or oracle labels.
+    - Saved parent fold kappa is selected only by the validation well source fold and is never refit with validation truth.
+    - Real/control risk locations, regularized fields, predictions, and their content SHA are frozen before suffix truth is attached.
+    - Neighbor error direction, current validation error, GR likelihood, HMM posterior, and K12/K24 disagreement are forbidden.
+  technical_guards:
+    required_row_identity_coverage: 1.0
+    required_well_identity_coverage: 1.0
+    required_segment_feature_coverage: 1.0
+    required_finite_prediction_coverage: 1.0
+    required_fold_set: [0, 1, 2, 3, 4]
+    maximum_risk_zero_parent_parity_abs_ft: 0.00000001
+    maximum_kappa_file_difference: 0.0
+    maximum_local_linear_shrink_fraction: 0.50
+    minimum_high_risk_segment_fraction: 0.05
+    maximum_high_risk_segment_fraction: 0.30
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  input_target_column: TVT_input
+  id_column: id
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    expected_oof_rmse: 9.427109596582213
+  exp226_kappa_by_fold:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+    expected_file_sha256: 6cbded4c6ea157d141c4272a2e29c498515e3eaa6eff3ec4517078ae1d1aeff0
+    policy: immutable_saved_parent_coefficients
+  exp226_kappa_full_train:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_full_train.csv
+    expected_file_sha256: fe79de099a91e237e0c22f4e34f1744e6560a02656bab18f04de044afd1969a3
+    role: future_inference_only_after_all_cv_gates_and_separate_approval
+  hidden_like:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+model:
+  name: exp226_support_aware_local_linear_intercept_shrinkage
+  estimator: deterministic_geometry_pf_beam_style
+  parent_params:
+    k_segments: 16
+    local_linear_k: 50
+    local_linear_bandwidth: 500.0
+    local_linear_ridge: 1.0
+    donor_distance_neighbors: 15
+    kappa_policy: exact_saved_fold_coefficients_no_refit
+
+support_risk:
+  source_contract: exact_frozen_exp329_stage_0_contract
+  primitive_count: 6
+  final_score: outer_train_empirical_percentile_of_mean_primitive_percentiles
+  range: [0.0, 1.0]
+  activation: clip_risk_minus_0.80_div_0.20_to_zero_one
+  signed_direction_allowed: false
+
+local_linear_shrinkage:
+  applies_to: [raw_field, smoothed_field]
+  donor_set: exact_same_selected_k50_as_parent_local_linear
+  kernel_weights: exact_same_exp226_bandwidth500_weights
+  parent_estimate: ridged_local_linear_intercept
+  fallback_estimate: weighted_constant_sum_w_fd_div_sum_w
+  shrink_fraction: 0.50_times_activation
+  formula: parent_estimate_plus_shrink_fraction_times_fallback_minus_parent_estimate
+  maximum_shrink_fraction: 0.50
+  preserve:
+    - selected_donor_ids_and_order
+    - donor_distance_and_bucket
+    - ndz_and_projection_gate
+    - saved_fold_kappa
+    - near_strike_ancc_committee
+    - gr_correction_algorithm_and_parameters
+    - u_projection_algorithm_and_parameters
+  downstream_policy: >-
+    The regularized raw field is used by the existing relpath and GR correction,
+    and both regularized fields are used by the existing design matrix. These
+    are deterministic consequences of the one field intervention, not separate
+    tunable changes.
+
+stage_0_parity_preflight:
+  enabled_after_dependency_and_implementation_approval: false
+  well_count: 32
+  well_selection: lowest_sha256_well_id_from_each_fold_balanced_then_global_fill
+  checks:
+    - risk_forced_zero_reproduces_saved_parent_prediction_within_1e_minus_8_ft
+    - saved_kappa_file_sha_exact_match
+    - exp329_support_primitive_and_risk_contract_parity
+    - donor_id_weight_distance_and_segment_identity
+    - finite_real_and_control_prediction
+    - projected_runtime_within_30600_seconds
+  fail_action: stop_before_full_oof_no_rescue
+
+stage_1_oof:
+  enabled_after_implementation: false
+  enable_condition: exp329_stage_0_pass_and_stage_0_parity_pass_and_separate_user_approval
+  active_variants: [support_aware_local_linear_shrinkage]
+  negative_control:
+    kind: within_well_nonzero_circular_shift_of_exp329_k16_risk
+    offset: one_plus_sha256_well_prefix_mod_15
+    preserve_segment_count: true
+  parent_control: saved_exp226_oof_no_full_rerun
+
+execution_contract:
+  stage_0:
+    parity_wells: 32
+    scientific_variants: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+  stage_1_if_pass:
+    scientific_variants: 1
+    matched_controls: 1
+    field_pack_builds: 5
+    target_well_prediction_runs: 1546
+    kappa_fits: 0
+    hmm_well_runs: 0
+    pf_well_runs: 0
+    beam_well_runs: 0
+    model_configs: 0
+    trained_folds: 0
+    boosters: 0
+  parent_control_retraining: false
+  parent_full_prediction_regeneration: false
+
+promotion_gates:
+  minimum_rmse_gain_vs_exp226_ft: 0.05
+  minimum_improved_folds: 4
+  minimum_top_risk_decile_rmse_gain_ft: 0.10
+  maximum_near_0_250_rmse_delta_ft: 0.0
+  maximum_1000_plus_rmse_delta_ft: 0.0
+  maximum_hidden_like_spatial_rmse_delta_ft: 0.0
+  maximum_hidden_like_typewell_purged_rmse_delta_ft: 0.0
+  maximum_by_well_delta_p95_ft: 0.0
+  maximum_worst_well_delta_ft: 0.25
+  minimum_real_gain_minus_control_gain_ft: 0.02
+
+forbidden:
+  - kappa_refit_or_regularization_change
+  - changing_k_segments_k_neighbors_bandwidth_ridge_or_distance_buckets
+  - changing_ancc_committee_gr_correction_or_u_projection
+  - zero_drift_or_z_only_fallback
+  - signed_neighbor_error_or_bias_transfer
+  - risk_threshold_or_shrink_fraction_grid
+  - k12_k24_selector_or_hard_route
+  - hmm_sig_r_or_any_hmm_change
+  - parent_control_full_rerun
+  - inference_or_submission_before_all_gates_and_separate_approval
+
+execution:
+  implementation_approved: false
+  kaggle_push_approved: false
+  run_stage_0: false
+  run_stage_1: false
+  run_inference: false
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_real_path_stable_sha256_per_well_control
+  stochastic_components:
+    - deterministic_circular_risk_control_only
+  parallel_rng_policy: no_global_rng_canonical_fold_well_segment_donor_sort
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+
+inference: {enabled: false, create_submission: false}
+
+notes:
+  - Design frozen on 2026-07-21; closed unimplemented because exp329 Stage 0 failed its scientific gates.
+  - This fixes exp226 local donor extrapolation itself; it is not an exp263 blend and does not alter HMM variance like exp324.

@@ -1,0 +1,231 @@
+experiment:
+  name: "exp156_test_batch_covariate_context_audit"
+  description: "Train-side posthoc audit for target-free pseudo test batch covariate context on the exp148 ML route anchor."
+  route: ml_model
+  status: implemented_not_run
+  created_at: "2026-06-28"
+  updated_at: "2026-06-28"
+
+lineage:
+  parent: exp148_learned_likelihood_fulltrain_addonly_on_exp092
+  secondary_parents:
+    - exp072_exp063_full_replay_feature_cache
+    - exp073_gpu_reproducibility_guard_for_exp063_full_replay
+    - exp126_exp073_exp092_pf_beam_pseudotail_failure_map
+    - exp151_tvt_dense_addonly_confidence_features_on_exp092
+    - exp154_segment_level_dense_candidate_verifier_on_exp148
+  implemented_backlog: test_batch_covariate_context_audit
+  implementation_source: test_batch_covariate_context_audit.py
+  diff_summary: >
+    Joins saved exp148 lgb_mean OOF predictions, exp073 reference OOF predictions,
+    exp072 PF/Beam/dense feature cache, and raw train covariates. It builds
+    pseudo test batch context from target-free X/Y/Z/MD/GR, prefix/eval length,
+    GR coverage, candidate disagreement, and tail-drift proxies, then evaluates
+    low-frequency fallback variants without training any new model.
+
+validation:
+  strategy: exp148_train_pseudotail_posthoc_test_batch_covariate_context
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - gate_rate
+    - gate_wells
+    - max_well_regression_vs_exp148
+    - common_pf_ml_worst26_rmse
+    - pf_likpf_worst50_rmse
+    - exp148_worst50_rmse
+    - context_batch_rmse
+    - context_risk_bucket_rmse
+    - near_row_rmse
+  seed: 42
+  group_column: well
+  score_rows: exp072_full_replay_train_pseudotail_rows
+  leakage_policy:
+    - Input predictions are saved train-side OOF predictions from exp148 and exp073.
+    - PF/Beam/dense candidates are read from exp072 train pseudo-tail feature cache.
+    - Raw context uses only X/Y/Z/MD/GR and finite TVT_input prefix statistics that are visible at inference time.
+    - Other wells' TVT_input values are not used as labels, residuals, or correction targets.
+    - target_tvt is used only for scoring, oracle coverage diagnostics, and posthoc readouts.
+    - No LightGBM or other model is trained in this experiment.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_feature_cache:
+    - /tmp/kaggle-output/exp072_exp063_full_replay_feature_cache/train_v1/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema:
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp073_predictions:
+    - /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/train_v2/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp073-full-replay-repro-guard-train/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+  exp148_predictions:
+    - /tmp/kaggle-output/exp148_learned_likelihood_fulltrain_addonly_on_exp092/train_v1/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+    - /kaggle/input/notebooks/kentookumura/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+
+model:
+  name: no_new_model_test_batch_covariate_context_audit
+  estimator: none
+  exp073_model: lgb_mean
+  exp148_model: lgb_mean
+  base_prediction: pred_exp148_lgb_mean
+  fallback_candidates:
+    - pred_exp073_lgb_mean
+    - pred_likpf_mean
+    - pred_tvt_densew
+    - pred_tvt_dense50
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp073-full-replay-repro-guard-train
+      - kentookumura/exp148-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_posthoc_saved_oof_audit
+  stochastic_components:
+    - upstream_exp148_lightgbm_oof_predictions
+    - upstream_exp073_lightgbm_oof_predictions
+    - upstream_exp072_pf_beam_dense_feature_cache
+  parallel_rng_policy: no_parallel_rng_in_exp156
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - exp156 performs no stochastic computation and no model training.
+    - This experiment is diagnostic only and is not a deterministic submission anchor.
+
+audit:
+  mode: test_batch_covariate_context_audit
+  output_prefix: exp156_test_batch_covariate_context_audit
+  max_prediction_rows: null
+  max_feature_rows: null
+  prediction_sample_rows: 200000
+  batch_context:
+    n_xy_bins: 5
+    min_batch_wells: 5
+    z_threshold: 0.75
+    batch_risk_q: 0.70
+  required_rawtest_compatible_columns:
+    - pf_ancc
+    - pf_ancc_std
+    - pf_z
+    - beam_mean_d
+    - beam_std_d
+    - likpf_mean_d
+    - tvt_dense_d
+    - tvt_densew_d
+    - tvt_dense50_d
+    - tvtF_ANCC
+    - dense_std
+    - dense_dist
+    - dense_nb_std
+    - pf_vs_dense
+    - spatial_vs_dense
+  gate_variants:
+    - name: context_exp073_tail500_q70_min3_clip10_a025
+      candidate: pred_exp073_lgb_mean
+      scope: segment
+      context_q: 0.70
+      row_q: 0.70
+      pf_dense_q: 0.70
+      base_dense_q: 0.70
+      min_tail_rank: 500
+      min_conditions: 3
+      min_batch_wells: 5
+      min_segment_rows: 80
+      max_near_md_since: 100.0
+      max_candidate_step_p95: 8.0
+      max_candidate_step_max: 25.0
+      alpha: 0.25
+      clip_abs: 10.0
+    - name: context_exp073_tail1000_q80_min3_clip15_a035
+      candidate: pred_exp073_lgb_mean
+      scope: segment
+      context_q: 0.80
+      row_q: 0.80
+      pf_dense_q: 0.80
+      base_dense_q: 0.80
+      min_tail_rank: 1000
+      min_conditions: 3
+      min_batch_wells: 5
+      min_segment_rows: 80
+      max_near_md_since: 150.0
+      max_candidate_step_p95: 8.0
+      max_candidate_step_max: 25.0
+      alpha: 0.35
+      clip_abs: 15.0
+    - name: context_likpf_tail1000_q80_min3_clip12_a025
+      candidate: pred_likpf_mean
+      scope: segment
+      context_q: 0.80
+      row_q: 0.80
+      pf_dense_q: 0.80
+      base_dense_q: 0.80
+      min_tail_rank: 1000
+      min_conditions: 3
+      min_batch_wells: 5
+      min_segment_rows: 80
+      max_near_md_since: 150.0
+      max_candidate_step_p95: 8.0
+      max_candidate_step_max: 25.0
+      alpha: 0.25
+      clip_abs: 12.0
+    - name: context_densew_tail1500_q85_min4_clip10_a025
+      candidate: pred_tvt_densew
+      scope: segment
+      context_q: 0.85
+      row_q: 0.80
+      pf_dense_q: 0.85
+      base_dense_q: 0.85
+      min_tail_rank: 1500
+      min_conditions: 4
+      min_batch_wells: 5
+      min_segment_rows: 100
+      max_near_md_since: 250.0
+      max_candidate_step_p95: 6.0
+      max_candidate_step_max: 20.0
+      alpha: 0.25
+      clip_abs: 10.0
+  expected_train_artifacts:
+    - exp156_test_batch_covariate_context_audit_metrics.csv
+    - exp156_test_batch_covariate_context_audit_gate_variants.csv
+    - exp156_test_batch_covariate_context_audit_by_well.csv
+    - exp156_test_batch_covariate_context_audit_bucket_metrics.csv
+    - exp156_test_batch_covariate_context_audit_common_worst_metrics.csv
+    - exp156_test_batch_covariate_context_audit_rawtest_parity_checklist.csv
+    - exp156_test_batch_covariate_context_audit_prediction_sample.csv.gz
+    - exp156_test_batch_covariate_context_audit_summary.json
+    - README.md
+
+inference:
+  mode: disabled_diagnostic_only
+  selected_variant: null
+  notes:
+    - No submission.csv is created.
+    - If a context gate passes OOF, common-worst, near-row, continuity, and raw-test parity checks, implement an inference port in this same experiment before submission work.
+
+notes:
+  - Implements backlog item test_batch_covariate_context_audit.
+  - The first pass is LightGBM-free posthoc audit only.
+  - Global OOF improvement alone is not enough for submission candidacy.

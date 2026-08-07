@@ -1,0 +1,77 @@
+{
+  "experiment": "exp118_spatial_neighbor_prior_confidence_gate_on_exp092",
+  "status": "completed",
+  "route": "ml_model",
+  "parent": "exp092_u_projection_correction_disagreement_fullrun",
+  "spatial_prior_parent": "exp114_spatial_neighbor_prior_signal_audit",
+  "cv": 9.321625435798772,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse",
+  "baseline": {
+    "policy": "lgb1__baseline_exp092",
+    "rmse": 9.322479895503927,
+    "mae": 5.980980324939915,
+    "within10": 0.8220470514052762,
+    "prediction_sha256": "ac8c6f4ee941f180f89a684888ed7f46aaf293660fad066257a85ccf9513d7fb"
+  },
+  "best_policy": {
+    "policy": "lgb1__xy_only_k8__std_q50_distance_q50__a0p05__c5",
+    "variant": "xy_only_k8",
+    "gate": "std_q50_distance_q50",
+    "alpha": 0.05,
+    "clip": 5.0,
+    "gate_rate": 0.25738235496984796,
+    "rmse": 9.321625435798772,
+    "mae": 5.979567419420022,
+    "within10": 0.8222008573492153,
+    "delta_rmse_vs_exp092": -0.0008544597051542979,
+    "delta_mae_vs_exp092": -0.0014129055198930374,
+    "delta_within10_vs_exp092": 0.0001538059439391004,
+    "correction_abs_mean": 0.18931208550930023,
+    "correction_abs_p95": 0.25,
+    "correction_abs_max": 0.25,
+    "prediction_sha256": "14568687a3ee37994fc694d0111139ca7c0608b51d4013183d57d2bd08d482ea"
+  },
+  "best_by_well_delta": {
+    "wells": 773,
+    "improved_wells": 192,
+    "worse_wells": 195,
+    "same_wells": 386,
+    "max_regression_rmse": 0.20808462105812886,
+    "max_improvement_rmse": -0.20886839345353359,
+    "mean_delta_rmse": -0.0012593084817774792
+  },
+  "path_continuity": {
+    "baseline_step_abs_ge10_total": 1,
+    "baseline_step_abs_ge25_total": 0,
+    "best_step_abs_ge10_total": 1,
+    "best_step_abs_ge25_total": 0,
+    "best_correction_step_abs_ge5_total": 0,
+    "best_correction_step_abs_max": 0.5
+  },
+  "kaggle": {
+    "kernel": "kentookumura/exp118-spatial-gate-exp092-train",
+    "kernel_version": 1,
+    "status": "COMPLETE",
+    "runtime_seconds": 2536.9519050121307,
+    "local_output_dir": "experiments/exp118_spatial_neighbor_prior_confidence_gate_on_exp092/kaggle/output/train_v1"
+  },
+  "input_sha256": {
+    "exp114_oof_decompressed": "9ffa9f9a026d43d3c0721a549fdff0aaf0acbd73d6c8209218ad9a45a314fe29",
+    "exp092_predictions_decompressed": "6dc3d53d6cb5621b86360929d638f2a5d853c58ea3e7a53d3da86e614e5f2f69"
+  },
+  "artifact_sha256": {
+    "gate_metrics": "93d032ad8cfe98589e9a0c094cafd0040f4a6aa3661d154918b1ba914ae25276",
+    "by_well_delta": "38ef3859aef37e00b3728c1aa28db4e2713f61996c12dc460835152e02b753e5",
+    "bucket_metrics": "9dedc19537d2c0dcc613c7b6798b5b35a9c91da2de710467c0e1e13360da53e4",
+    "path_continuity": "872e1b45ba5f1dbf8ffc3aa14f4463a967bebd3273cf8c090021654605c44fe9",
+    "top_gated_predictions_raw_kaggle": "a90d73d7303b667c508f280bbc08fdf3c09f1ec5ca3c7c75c227bf9f8487ecc5",
+    "top_gated_predictions_decompressed_kaggle": "d3f3a1102d2cf809ef2880acf0298082af80109e4c5b77e1998a6081a6b1b7fe"
+  },
+  "local_output_note": "Kaggle summary records top_gated_predictions SHA, but local output download timed out before the 50MB gzip was fetched; local top_gated_predictions.csv.gz is 0 bytes.",
+  "decision": "confidence_gate_supported_for_review_no_submit",
+  "recommendation": "Do not submit from this result alone. If promoted, first run raw-test/full-train parity and hidden-like stress checks for the best policy.",
+  "key_idea": "Posthoc confidence gate for applying exp114 spatial prior as a tiny clipped correction to exp092 lgb1 OOF predictions.",
+  "notes": "Kaggle train v1 complete. Best OOF improves exp092 by -0.000854 RMSE with max well regression +0.208 under the 0.25 warning threshold, but the gain is tiny and mid-distance buckets slightly regress."
+}

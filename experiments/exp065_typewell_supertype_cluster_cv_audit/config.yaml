@@ -1,0 +1,64 @@
+experiment:
+  name: "exp065_typewell_supertype_cluster_cv_audit"
+  description: Discover common typewell candidate groups from train typewell CSV curves using exact hash, native row-lag overlap, shifted NCC, and constrained DTW
+  route: pf_beam  # ml_model or pf_beam
+  status: implemented
+  created_at: "2026-06-13"
+
+lineage:
+  parent: studies/typewell_group_audit.py
+  diff_summary: >
+    Extend exact typewell hash grouping into common typewell discovery. This experiment
+    does not audit CV or train a model; it outputs candidate shared-typewell groups
+    from native row-lag overlap and typewell GR curve similarity.
+
+validation:
+  strategy: no_cv_common_typewell_discovery
+  leakage_policy:
+    - Uses only train split typewell CSV files.
+    - Does not use horizontal target TVT, OOF predictions, or submission labels.
+    - Resulting groups are diagnostic; any later neighbor feature must be fold-safe.
+
+data: {}
+
+model:
+  name: typewell_supertype_discovery
+  params: {}
+
+discovery:
+  split: train
+  signature:
+    n_points: 160
+    smooth_window: 5
+    min_valid_gr_fraction: 0.50
+  shifted_ncc:
+    max_shift: 32
+    min_overlap_fraction: 0.70
+    top_k_per_well: 20
+    candidate_min_similarity: 0.62
+    cluster_thresholds: [0.95, 0.97, 0.98, 0.99, 0.995]
+  dtw:
+    enabled: true
+    band_fraction: 0.12
+    max_pairs: 20000
+    cluster_similarity_thresholds: [0.92, 0.94, 0.96, 0.98, 0.995]
+  native_overlap:
+    enabled: true
+    kgram_rows: 64
+    max_hash_occurrences: 200
+    min_kgram_hits: 1
+    min_overlap_rows: 200
+    min_overlap_fraction_shorter: 0.80
+    exact_match_rate_thresholds: [1.0, 0.999, 0.995, 0.99]
+  reporting:
+    target_unique_groups: 57
+    max_members_preview: 80
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+
+notes:
+  - The experiment name contains cv_audit for backlog continuity, but the implemented purpose is common typewell discovery.
+  - Cluster counts are not tuned to force 57 groups.

@@ -1,0 +1,212 @@
+experiment:
+  name: "exp211_affine_calibrated_gr_observation_pfbeam"
+  description: Train-side scoped audit for using prefix affine-calibrated GR as the PF/Beam observation likelihood.
+  route: pf_beam
+  status: completed_train_side_diagnostic_no_submit
+  created_at: "2026-07-07"
+  updated_at: "2026-07-07"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+
+lineage:
+  parent: affine_calibrated_gr_observation_pfbeam backlog
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - exp189_denoised_gr_pfbeam_generation_audit
+    - exp170_heel_calibrated_shift_scan_pfbeam_audit
+    - docs/notebooks/rogii-wellbore-geology-prediction/public_discussion_notebook_catchup_2026-07-05.md
+    - hujile/rogii-maybe-you-like
+    - lightningv08/rogii-lb-7-168
+    - yusuketogashi/rogii-lb7156-baseline
+  implementation_source: affine_calibrated_gr_observation_pfbeam.py
+  diff_summary: >
+    Reuses the exp189 scoped PF/Beam train-side audit surface, but replaces the
+    denoising axis with a 2x2 comparison: raw GR versus prefix affine-calibrated
+    GR observation, each with classic transition and a weak prefix structural
+    transition prior. Affine calibration is fit only on known prefix rows using
+    horizontal_GR ~= a * typewell_GR(TVT_input) + b. The evaluation tail target
+    is used only for scoring against exp072-compatible pseudo-tail rows.
+
+validation:
+  strategy: train_well_pseudotail_affine_gr_observation_pfbeam_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within10
+    - raw_vs_affine_delta_rmse
+    - raw_vs_structural_delta_rmse
+    - pf_effective_sample_size
+    - pf_resampling_rate
+    - path_jump_rate
+    - oracle_topk_coverage
+    - selector_headroom
+    - worst_well_regression_vs_raw
+    - affine_fallback_rate
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Target wells are selected by target-free availability, eval row count, and md_since coverage, not by true error.
+    - Evaluation-zone true TVT is materialized as last_known_tvt + target from the exp072 cache only for scoring.
+    - Affine calibration uses known prefix rows only; valid/test true TVT and evaluation-tail target are never used in the fit.
+    - Prefix structural prior uses known prefix TVT_input, MD, and Z only, plus evaluation-row MD/Z that are available in raw test.
+    - Raw and affine variants share the same PF seed schedule, particles, transition noise, beam width, and target wells.
+    - Positive train-side results are diagnostic only and must pass a separate raw-test regeneration guard before any inference port.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_reference_candidates:
+    - pf_ancc
+    - beam_mean
+    - likpf_mean
+    - pf_z
+
+model:
+  name: affine_calibrated_gr_observation_pfbeam
+  estimator: none_pfbeam_generation_audit
+  target: exp072_target_for_scoring_only
+  observation_variants:
+    - name: raw
+      kind: raw
+      transition: classic
+    - name: affine
+      kind: affine_calibrated
+      transition: classic
+      min_prefix_points: 40
+      min_typewell_gr_std: 5.0
+      slope_min: 0.25
+      slope_max: 4.0
+      max_prefix_rmse: 60.0
+      trim_quantile: 0.90
+      robust_iterations: 2
+    - name: raw_structural
+      kind: raw
+      transition: prefix_structural
+      transition_params:
+        weight: 0.20
+        min_prefix_points: 80
+        tail_points: 256
+        sigma_min: 40.0
+        sigma_max: 180.0
+        sigma_default: 90.0
+        trim_quantile: 0.90
+        robust_iterations: 2
+    - name: affine_structural
+      kind: affine_calibrated
+      transition: prefix_structural
+      min_prefix_points: 40
+      min_typewell_gr_std: 5.0
+      slope_min: 0.25
+      slope_max: 4.0
+      max_prefix_rmse: 60.0
+      trim_quantile: 0.90
+      robust_iterations: 2
+      transition_params:
+        weight: 0.20
+        min_prefix_points: 80
+        tail_points: 256
+        sigma_min: 40.0
+        sigma_max: 180.0
+        sigma_default: 90.0
+        trim_quantile: 0.90
+        robust_iterations: 2
+  validation_surface:
+    selection_mode: long_md_since
+    max_target_wells: 64
+    well_include: []
+    min_known_prefix_rows: 160
+    min_eval_rows: 64
+  runtime:
+    particles: 240
+    seed_count: 8
+    likelihood_temperature: 6.0
+    topk_oracle: 3
+    resample_threshold: 0.5
+    init_spread: 4.5
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_pos_noise: 0.10
+    resample_velocity_noise: 0.001
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+  beam:
+    beam_size: 14
+    move_radius: 2
+    move_cost: 16.0
+    error_scale: 120.0
+    post_smooth_window: 1
+
+audit:
+  mode: affine_calibrated_gr_observation_pfbeam
+  output_prefix: exp211_affine_calibrated_gr_observation_pfbeam
+  primary_baseline: pf_raw_lik_mean
+  path_jump_threshold_ft: 8.0
+  expected_train_artifacts:
+    - exp211_affine_calibrated_gr_observation_pfbeam_candidate_metrics.csv
+    - exp211_affine_calibrated_gr_observation_pfbeam_filter_delta_metrics.csv
+    - exp211_affine_calibrated_gr_observation_pfbeam_bucket_metrics.csv
+    - exp211_affine_calibrated_gr_observation_pfbeam_by_well.csv
+    - exp211_affine_calibrated_gr_observation_pfbeam_group_metrics.csv
+    - exp211_affine_calibrated_gr_observation_pfbeam_pf_diagnostics.csv
+    - exp211_affine_calibrated_gr_observation_pfbeam_target_wells.csv
+    - exp211_affine_calibrated_gr_observation_pfbeam_well_status.csv
+    - exp211_affine_calibrated_gr_observation_pfbeam_row_candidates.csv.gz
+    - exp211_affine_calibrated_gr_observation_pfbeam_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: stable_sha256_per_query_well_seed_index_shared_across_observation_variants
+  stochastic_components:
+    - exp072_eval_zone_pf_particle_propagation
+    - exp072_eval_zone_pf_resampling
+  parallel_rng_policy: sequential_initial_audit_with_per_well_stable_seeds_no_global_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: false
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it is train-side diagnostic only.
+    - PF seeds are shared across raw and affine variants for the same query well and seed index.
+    - Beam variants are deterministic for fixed observation and transition config.
+    - Affine fallback rate, slope, intercept, prefix RMSE, and structural prior diagnostics are recorded per well/variant.
+    - No inference or submission output is generated by this experiment.
+
+inference:
+  mode: not_applicable_train_side_audit_only
+  selected_candidate: null
+  notes:
+    - Direct inference and submit are out of scope for exp211.
+    - A positive train-side result must first pass raw-test-safe regeneration, runtime, worst-well, and hidden-like stress checks.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog affine_calibrated_gr_observation_pfbeam as a train-side no-model audit.
+  - Includes the requested raw/affine x classic/prefix-structural 2x2 comparison, but does not tune structural prior strength from labels.
+  - Public notebook lineage is treated as raw GR residual-scale control context, not as evidence that affine observation PF/Beam is already public-reproduced.
+  - Direct PF/Beam candidate replacement, LightGBM training, inference port, and submit are explicitly out of scope.

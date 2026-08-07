@@ -1,0 +1,456 @@
+experiment:
+  name: exp331_prefix_gr_unary_local_ce_exact_ssm
+  description: >-
+    Train the exp295 prefix-conditioned GR unary with row-independent local CE
+    only, then use the fixed exp209 exact SSM exclusively after model freeze for
+    validation and inference.
+  route: ensemble
+  status: stage_a_failed_branch_closed
+  created_at: "2026-07-21"
+  implementation_approved: true
+  kaggle_run_approved: true
+  inference_approved: false
+  submission_approved: false
+
+lineage:
+  parent: exp295_prefix_anchored_wholewell_gr_alignment_ssm
+  references:
+    - exp202_heatmap_mdn_candidate_generator_probe
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md
+  design_source: .steering/20260721-exp331-prefix-gr-unary-local-ce-exact-ssm
+  diff_summary: >-
+    Keeps the exp295 data, fold, encoder, unary, decoder, controls, and
+    promotion contracts, but removes every state-space forward-backward and
+    structured term from training and early stopping. Each suffix row is
+    trained against its nearest Type Well TVT state by hard cross entropy. The
+    fixed exp209 exact SSM is called only after the neural model is frozen.
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: complete_well_groupkfold_official_prefix_hidden_suffix
+  metric: pooled_oof_rmse_tvt_posterior_mean
+  seed: 42
+  n_folds: 5
+  group_column: well
+  sample_unit: complete_well
+  score_rows: official_tvt_input_hidden_suffix_rows
+  reuse_fold_map_from: exp202_heatmap_mdn_candidate_generator_probe
+  valid_mask_policy: organizer_equivalent_official_tvt_input_mask
+  outer_train_pseudo_cut_offsets_rows: [0, 256, 512]
+  baselines:
+    primary_decoder_baseline:
+      experiment: exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+      pooled_oof_rmse: 8.327736951
+    raw_exact_hmm:
+      experiment: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+      pooled_oof_rmse: 11.938287417
+  diagnostics:
+    - local_ce_and_nearest_state_accuracy
+    - fold_and_pooled_rmse
+    - real_vs_circular_shuffle_and_geometry_only
+    - posterior_mass_within10_and_20
+    - distance_1000_plus_rmse
+    - hidden_like_spatial_and_typewell_purged_rmse
+    - by_well_rmse_p95_and_worst
+    - target_in_grid_and_grid_edge_mass
+    - runtime_and_peak_memory
+  stage0_microbenchmark:
+    accelerator: NvidiaTeslaT4
+    fixed_view_count: 16
+    suffix_length_quartiles: 4
+    views_per_quartile: 4
+    conservative_throughput_quantile: 0.10
+    selection: stable_sha256_four_views_per_suffix_length_quartile
+    maximum_projected_fold_runtime_hours: 8.5
+    maximum_peak_gpu_memory_gb: 14.0
+    failure_action: close_without_in_experiment_compute_rescue
+  stage_a:
+    folds: [0]
+    architectures: 1
+    seeds: [42]
+    neural_models: 1
+    lightgbm_configs: 0
+    boosters: 0
+    pf_beam_runs: 0
+    parent_or_control_retraining: 0
+  stage_a_pass:
+    minimum_target_in_grid_rate: 0.995
+    maximum_prefix_clamp_abs_error_ft: 0.000001
+    minimum_real_nll_gain_vs_circular_shuffle_nats_per_token: 0.05
+    minimum_real_within10_mass_gain_vs_circular_shuffle: 0.03
+    minimum_real_rmse_gain_vs_geometry_only_ft: 0.25
+    minimum_real_rmse_gain_vs_exp209_ft: 0.25
+    require_well_rmse_p95_non_regression_vs_exp209: true
+    maximum_worst_well_regression_vs_exp209_ft: 10.0
+    maximum_peak_gpu_memory_gb: 14.0
+    maximum_fold_runtime_hours: 8.5
+  stage_b:
+    requires_stage_a_all_pass_and_separate_approval: true
+    reuse_fold0_model_without_retraining: true
+    additional_folds: [1, 2, 3, 4]
+    additional_neural_models: 4
+  stage_c:
+    requires_stage_b_promotion_and_separate_approval: true
+    per_fold_decode: full_well_exact_ssm_posterior_mean
+    fold_aggregation: rowwise_equal_arithmetic_mean_of_five_posterior_means
+    forbidden_aggregation: [unary_average, learned_fold_weights, existing_candidate_blend]
+  promotion_pass:
+    maximum_pooled_oof_rmse_ft: 6.0
+    architecture_signal_only_upper_rmse_ft: 6.75
+    minimum_pooled_rmse_gain_vs_each_control_ft: 0.50
+    require_real_better_than_each_control_all_folds: true
+    require_improvement_vs_exp221_all_folds: true
+    require_improvement_vs_exp221_distance_1000_plus: true
+    require_improvement_vs_exp221_hidden_like_spatial: true
+    require_improvement_vs_exp221_hidden_like_typewell_purged: true
+    require_well_rmse_p95_non_regression_vs_exp221: true
+    maximum_worst_well_regression_vs_exp221_ft: 5.0
+  failure_policy:
+    - Stage 0 failure closes Stage A without an in-experiment architecture, loss, band, view, epoch, or temperature rescue.
+    - Stage A failure closes Stage B without an in-experiment rescue grid.
+    - Only the full Stage B promotion gate permits separately approved Stage C inference.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  horizontal_glob: "*__horizontal_well.csv"
+  typewell_glob: "*__typewell.csv"
+  id_column: id
+  target_column: TVT
+  visible_target_column: TVT_input
+  horizontal_file_input_columns: [MD, X, Y, Z, GR, TVT_input]
+  typewell_input_columns: [TVT, GR]
+  exp209_baseline_cache:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    prediction_column: hmm_mean_tvt
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5_small/artifacts/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+  hidden_like_assignment:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+  forbidden_horizontal_input_columns:
+    - TVT
+    - formation
+    - target
+    - error
+    - abs_error
+    - oracle
+    - candidate
+
+model:
+  name: prefix_conditioned_gr_unary_local_ce_then_exact_ssm
+  estimator: pytorch_local_ce_neural_unary_plus_frozen_exact_forward_backward
+  target: nearest_typewell_tvt_grid_state
+  sample_unit: complete_well
+  output: tvt_posterior_mean
+  inference_neighbor_well_data: false
+  candidate_bank: none
+  test_time_gradient_updates: false
+  architecture_source: exp295_prefix_anchored_wholewell_gr_alignment_ssm
+  preprocessing:
+    robust_center: finite_median
+    robust_scale: 1p4826_mad_with_floor_1
+    missing_fill_value_after_normalization: 0.0
+    include_missing_mask: true
+    typewell_extrapolation: false
+    prefix_huber_summary:
+      minimum_pairs: 32
+      fallback: neutral_context
+  inputs:
+    horizontal_emission_channels: [gr_robust_z, gr_missing_mask, dgr_dmd]
+    typewell_emission_channels: [gr_robust_z, gr_missing_mask, dgr_dtvt]
+    transition_only_channels: [MD, X, Y, Z, TVT_input]
+    prefix_context_sources: [horizontal_gr, typewell_gr_at_visible_tvt_input, visible_tvt_input_mask]
+  architecture:
+    horizontal_encoder: multiscale_1d_residual
+    typewell_encoder: multiscale_1d_residual
+    embedding_dim: 64
+    dilations: [1, 2, 4, 8, 16]
+    normalization: group_norm
+    dropout: 0.10
+    prefix_context_aggregator: masked_attention_pool
+    prefix_context_dim: 32
+    conditioning: prefix_context_film_scale_and_bias
+    similarity: normalized_bilinear_cosine
+    temperature: positive_prefix_conditioned_clamped
+    temperature_min: 0.05
+    temperature_max: 2.0
+    temperature_initial: 0.25
+    convolution_kernel_size: 3
+    group_norm_groups: 8
+    prefix_pair_embedding_dim: 64
+    derivative_clip_abs: 8.0
+    unary_row_chunk_size: 256
+    streamed_row_tvt_unary: true
+  training:
+    objective:
+      name: hard_nearest_state_local_cross_entropy
+      local_true_state_ce_weight: 1.0
+      structured_label_nll_weight: 0.0
+      state_space_calls_in_optimizer_graph: 0
+      state_space_calls_for_early_stopping: 0
+    full_suffix_no_tail_truncation: true
+    optimizer: adamw
+    learning_rate: 0.0003
+    weight_decay: 0.0001
+    max_epochs: 8
+    early_stopping_source: stable_outer_train_holdout_local_ce_only
+    early_stopping_holdout_fraction: 0.10
+    early_stopping_minimum_wells: 16
+    early_stopping_patience_epochs: 2
+    early_stopping_min_delta_local_ce: 0.001
+    early_stopping_views: [official]
+    gradient_clip_norm: 1.0
+    batch_size_wells: 1
+    gradient_accumulation_wells: 4
+    amp: true
+    dataloader_shuffle: true
+    dataloader_workers: 0
+    pseudo_cut_views_per_well_maximum: 3
+    require_cuda: true
+    minimum_cuda_capability_major: 7
+  state_space:
+    use_phase: frozen_model_evaluation_and_inference_only
+    source: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+    known_prefix_policy: hard_clamp_finite_tvt_input
+    solver: exact_log_space_forward_backward
+    primary_readout: posterior_mean_tvt
+    diagnostic_readouts: [marginal_map, global_viterbi, posterior_std, entropy, grid_edge_mass]
+    learn_transition: false
+  controls:
+    - real_gr
+    - stable_within_well_circular_shuffled_typewell_gr_same_trained_model
+    - zero_gr_unary_geometry_only_same_trained_model
+  forbidden_actions:
+    - structured_loss_or_forward_backward_during_training
+    - exact_ssm_based_early_stopping
+    - fixed_window_structured_training
+    - neighbor_well_or_candidate_bank_input
+    - architecture_loss_band_temperature_view_or_epoch_grid
+    - parent_or_control_retraining
+    - exp295_version4
+    - inference_or_submission_before_promotion_and_approval
+    - fold_unary_average_or_learned_fold_weighting
+    - same_typewell_horizontal_donor
+    - spatial_neighbor_feature_or_prior
+    - candidate_bank_or_selector
+    - test_time_backpropagation
+    - blend_with_existing_ml_pf_or_beam
+
+execution:
+  implementation: true
+  implementation_approved: true
+  implementation_approved_at: "2026-07-21"
+  implementation_approval_scope: user_message_implement_exp331
+  selected_stage: implementation_only
+  kaggle_push_approved: false
+  kaggle_push_approved_at: "2026-07-21"
+  kaggle_push_approval_scope: user_message_start_exp331_stage_a_fold0_only
+  stage0_run_completed: true
+  stage_a_gpu_approved: false
+  stage_a_gpu_approved_at: "2026-07-21"
+  stage_a_gpu_approval_scope: user_message_start_exp331_stage_a_fold0_only
+  inference_approved: false
+  submission_approved: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  current_lightgbm_config_count: 0
+  current_trained_fold_count: 1
+  current_total_boosters: 0
+  current_pf_beam_well_runs: 0
+  control_or_parent_retraining: false
+  stage0_gate:
+    passed: true
+    report_sha256: 401d98f2cdc9ced437d66fc02bbe49b9287d4772e4d9036719c573a90b785c59
+    note: >-
+      Kaggle T4 version 1 passed: conservative fold projection 4.516839 h
+      <= 8.5 h and peak GPU memory 1.924052 GB <= 14 GB. Stage A still
+      requires separate approval.
+  stage0_run:
+    kernel_id: kentookumura/exp331-prefix-gr-unary-local-ce-exact-ssm-stage0
+    kernel_version: 1
+    kernel_status: COMPLETE
+    accelerator: NvidiaTeslaT4
+    generated_at_utc: "2026-07-21T10:44:34.119829+00:00"
+    fixed_view_count: 16
+    measurement_row_count: 80
+    projected_fold_runtime_hours_p50: 3.525366873879352
+    projected_fold_runtime_hours_conservative: 4.516838993243879
+    peak_gpu_memory_gb: 1.9240517616271973
+    outer_valid_truth_access_count: 0
+    trained_stage_a_model_count: 0
+    package_notebook_sha256: 71e37ae8b3defd8d0732913f59237b5d214b1afbccb513471d8c32bdcd667dd9
+    package_metadata_sha256: ae10005dd26d23e9e3225425338690385c02efd06a6efe05cc25316d09dba4af
+    selection_manifest_sha256: 71358ae2725586e78ceb18cd4d19bd0ffb4c7df1fac32a9c86d73cae24d6b937
+    measurement_sha256: c49a001dd2a5316db31df2022a1d0207610866a14d47e062516f80c8444b5fab
+    report_sha256: 401d98f2cdc9ced437d66fc02bbe49b9287d4772e4d9036719c573a90b785c59
+    log_sha256: d0fba4651e41145c89ac8e28ff2c6345815b91cb8794a2880afbaf042bb1f549
+    local_output_dir: kaggle/output/stage0_v1
+  stage_a_plan:
+    fold_indices: [0]
+    active_architectures: 1
+    seeds: [42]
+    neural_model_count: 1
+    lightgbm_config_count: 0
+    total_boosters: 0
+    control_model_training: 0
+    requires_separate_gpu_push_approval: true
+  stage_a_run:
+    kernel_id: kentookumura/exp331-prefix-gr-unary-local-ce-exact-ssm-stage-a
+    kernel_version: 1
+    kernel_id_no: 128114450
+    kernel_status: COMPLETE
+    started_at_utc: "2026-07-21T11:39:54Z"
+    generated_at_utc: "2026-07-21T15:47:59.216758+00:00"
+    status: stage_a_failed_branch_closed
+    accelerator: NvidiaTeslaT4
+    fold_indices: [0]
+    active_architectures: 1
+    seeds: [42]
+    neural_model_count: 1
+    lightgbm_config_count: 0
+    total_boosters: 0
+    pf_beam_well_runs: 0
+    parent_or_control_retraining: 0
+    stage0_report_sha256: 401d98f2cdc9ced437d66fc02bbe49b9287d4772e4d9036719c573a90b785c59
+    package_notebook_sha256: 57079fc8891d2a74d947263175a5b038e968a158790697a25b6298adbf10b0bb
+    package_metadata_sha256: f8cfa6ec2da0e17fb711cb6ad5a345bd45161a435dcc69972354cac7eb5924dc
+    runtime_hours: 4.115497345328331
+    peak_gpu_memory_gb: 1.8898839950561523
+    selected_epoch: 7
+    completed_epochs: 8
+    summary_sha256: 273e51100babeab3554a56d8853e345b1d993ced3c0d23d9568cf60e07dd3356
+    model_sha256: e9cd7404eabf9192a3026184bdffb2de3f585861aa8b0dee2edd777d542fc61b
+    frozen_prediction_gzip_sha256: 120ae26e25d7d598c63b1faa847f869a5441a97853966ce1f8d0ff165e4a82af
+    frozen_prediction_decompressed_sha256: 4fdee845e7c3c2605bc0901db5755de09b599f8f2ff5542b473486a71c86b844
+    log_sha256: c7be39b40493e545a880bcbdded6a345148416b180909a510b9546159f3d45ff
+    local_output_dir: kaggle/output/stage_a_v1
+  stage_a_gate:
+    passed: false
+    failed_checks:
+      - real_rmse_vs_exp209
+      - well_p95_non_regression
+      - worst_well_regression
+    real_rmse: 24.76036012725314
+    exp209_rmse: 12.671086935210896
+    real_well_rmse_p95: 44.56071880265675
+    exp209_well_rmse_p95: 26.301518475831738
+    maximum_well_regression_vs_exp209_ft: 63.10952042409153
+    decision: close_stage_b_without_exp331_rescue_grid
+    stage_b_blocked: true
+  stage_b_plan:
+    prerequisite: stage_a_all_pass
+    reuse_stage_a_fold0_model: true
+    additional_fold_indices: [1, 2, 3, 4]
+    additional_neural_model_count: 4
+    total_five_fold_neural_model_count: 5
+    lightgbm_config_count: 0
+    total_boosters: 0
+    control_model_training: 0
+    requires_separate_gpu_push_approval: true
+  stage_c_plan:
+    prerequisite: stage_b_lb5x_promotion_pass
+    same_experiment_inference: true
+    per_fold_decode: full_well_exact_ssm_posterior_mean
+    fold_aggregation: rowwise_equal_arithmetic_mean_of_five_posterior_means
+    candidate_or_existing_model_blend: false
+    requires_separate_inference_approval: true
+    requires_separate_submission_approval: true
+
+runtime:
+  accelerator: NvidiaTeslaT4
+  use_amp: true
+  num_workers: 0
+  batch_size_wells: 1
+  maximum_fold_runtime_hours: 8.5
+  maximum_peak_gpu_memory_gb: 14.0
+  kaggle:
+    enable_gpu: true
+    machine_shape: NvidiaTeslaT4
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+inference:
+  enabled: false
+  create_submission: false
+  prerequisite: stage_b_lb5x_promotion_pass_and_separate_user_approval
+  reason: Stage A failed its scientific gate, so Stage B and inference are permanently closed for exp331.
+
+artifacts:
+  output_prefix: exp331_prefix_gr_unary_local_ce_exact_ssm
+  expected_stage0_outputs:
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_stage0_fixed16_manifest.csv
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_stage0_measurements.csv
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_stage0_benchmark_report.json
+  expected_stage_a_outputs:
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_fold_map.csv
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_pseudo_cut_manifest.csv
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_input_manifest.csv
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_training_history.csv
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_fold0_model.pt
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_model_manifest.json
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_frozen_predictions.csv.gz
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_freeze_manifest.json
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_emission_posterior_manifest.csv
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_validation_readout.csv.gz
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_by_well_metrics.csv
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_subgroup_metrics.csv
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_stage_a_metrics.json
+    - exp331_prefix_gr_unary_local_ce_exact_ssm_summary.json
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_global_seed_plus_stable_sha256_per_well_fold_view_and_control
+  stochastic_components: [pytorch_cuda_convolution, adamw, dropout, dataloader_order]
+  parallel_rng_policy: worker_zero_no_global_rng_shared_with_threads
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    fold_and_view_manifest_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    unary_and_posterior_sha: true
+    prediction_sha: true
+    submission_sha: true
+  notes:
+    - CUDA and AMP prevent claiming a byte-deterministic anchor without a rerun audit.
+
+notes:
+  - The fixed 16-view Stage 0 Kaggle T4 microbenchmark passed, but Stage A fold 0 failed the exp209, well-p95, and worst-well scientific gates.
+  - Stage B, inference, and submission are closed without an exp331 rescue grid. Any exp332 work requires a separate user decision.

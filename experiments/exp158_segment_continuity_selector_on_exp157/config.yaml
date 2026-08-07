@@ -1,0 +1,244 @@
+experiment:
+  name: "exp158_segment_continuity_selector_on_exp157"
+  description: "Train-side posthoc audit that smooths exp157 PF/Beam/dense predicted-error scores with well-local continuity constraints."
+  route: pf_beam
+  status: completed_train_side_supported_no_submit
+  created_at: "2026-06-29"
+  updated_at: "2026-06-30"
+
+lineage:
+  parent: exp157_candidate_ranker_feature_enrichment
+  cache_parent: exp099_pf_multi_observation_likelihood_probe
+  feature_cache_parent: exp072_exp063_full_replay_feature_cache
+  diagnostic_parents:
+    - exp099_pf_multi_observation_likelihood_probe
+    - exp101_pf_candidate_ranker_or_nway_classifier
+    - exp155_segment_viterbi_candidate_selector_on_exp101
+    - exp157_candidate_ranker_feature_enrichment
+  implementation_source: segment_continuity_selector_on_exp157.py
+  diff_summary: >
+    Reconstructs exp157 OOF per-candidate score surfaces from saved LightGBM boosters
+    and replaces the row-wise argmin selector with deterministic well-local Viterbi
+    selection. The candidate set is exp157's eight PF/Beam/dense candidates. The
+    run trains no new boosters and uses no true TVT, oracle label, or true error
+    inside the continuity selector.
+
+validation:
+  strategy: exp157_oof_posthoc_segment_continuity_selector
+  metric: rmse
+  secondary_metrics:
+    - within_10ft
+    - switch_rate
+    - path_switch_count
+    - selection_distribution
+    - bucket_rmse
+    - worst_well_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Candidate values and target-free likelihood features are read from exp099 v2 and exp072 train-side pseudo-tail caches.
+    - exp157 OOF scores are reconstructed only from fold-held-out boosters and the saved exp157 feature schema.
+    - Dense candidates are reconstructed as last_known_tvt plus tvt_dense*_d columns, matching exp157.
+    - Viterbi local costs use exp157 OOF predicted-error scores. Transition penalties use candidate path geometry and target-free guard features only.
+    - No validation/test true TVT, oracle candidate, or true error is used in Viterbi selection.
+    - This is a train-side posthoc audit; no submission candidate is selected.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp157_artifact_dir_local: experiments/exp157_candidate_ranker_feature_enrichment/kaggle/output/train_v1/artifacts
+  exp157_model_manifest: exp157_candidate_ranker_feature_enrichment_model_manifest.json
+  exp157_feature_schema: exp157_candidate_ranker_feature_enrichment_feature_schema.csv
+
+model:
+  name: segment_continuity_selector_on_exp157
+  target: posthoc_candidate_selection
+  base_prediction: likpf_mean
+  estimator: exp157_saved_lightgbm_booster_inference_only
+  trains_new_boosters: false
+
+selector:
+  mode: segment_continuity_selector_on_exp157
+  default_candidate: likpf_mean
+  ranker_variant: lgb_candidate_error_ranker
+  allowed_switch_candidates:
+    - pf_ancc
+    - beam_mean
+    - sc_ens
+    - hyb
+    - tvt_dense
+    - tvt_densew
+    - tvt_dense50
+  max_rows: null
+  log_period: 10
+  max_train_rows_per_fold: 650000
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+    - name: beam_mean
+      column: beam_mean
+    - name: likpf_mean
+      column: likpf_mean
+    - name: sc_ens
+      column: sc_ens
+    - name: hyb
+      column: hyb
+    - name: tvt_dense
+      column: tvt_dense
+    - name: tvt_densew
+      column: tvt_densew
+    - name: tvt_dense50
+      column: tvt_dense50
+  context_columns:
+    - last_known_tvt
+    - pf_ancc_std
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+    - eval_len
+    - md_since
+    - likpf_mean_d
+  multiobs_feature_columns:
+    - multiobs_score_max
+    - multiobs_score_mean
+    - multiobs_score_gap
+    - multiobs_top1_source_id
+    - multiobs_top1_mae
+    - multiobs_top1_ncc
+    - multiobs_score_pf_ancc
+    - multiobs_mae_pf_ancc
+    - multiobs_ncc_pf_ancc
+    - multiobs_score_beam_mean
+    - multiobs_mae_beam_mean
+    - multiobs_ncc_beam_mean
+    - multiobs_score_likpf_mean
+    - multiobs_mae_likpf_mean
+    - multiobs_ncc_likpf_mean
+    - multiobs_score_sc_ens
+    - multiobs_mae_sc_ens
+    - multiobs_ncc_sc_ens
+    - multiobs_score_hyb
+    - multiobs_mae_hyb
+    - multiobs_ncc_hyb
+  optional_columns:
+    - multiobs_top1
+    - multiobs_softmax_t0p15
+    - multiobs_softmax_t0p3
+    - likpf_multiobs_blend_w0p25
+    - likpf_multiobs_blend_w0p5
+  feature_enrichment:
+    enabled: true
+    prefix: crfe_
+    max_missing_rate: 0.0
+    min_md_scale: 25.0
+    min_dense_scale: 10.0
+    near_md_threshold: 50.0
+    primary_dense_candidate: tvt_densew
+    auxiliary_candidate_columns:
+      - tvt_dense
+      - tvt_densew
+      - tvt_dense50
+    auxiliary_columns:
+      - tvt_dense_d
+      - tvt_densew_d
+      - tvt_dense50_d
+      - dense_std
+      - dense_dist
+      - pf_vs_dense
+    dense_delta_columns:
+      tvt_dense: tvt_dense_d
+      tvt_densew: tvt_densew_d
+      tvt_dense50: tvt_dense50_d
+    reference_candidates:
+      - likpf_mean
+      - beam_mean
+      - pf_ancc
+    base_feature_columns:
+      - tvt_dense_d
+      - tvt_densew_d
+      - tvt_dense50_d
+      - dense_std
+      - dense_dist
+      - pf_vs_dense
+  viterbi_grid:
+    switch_penalty: [0.0, 5.0, 10.0, 20.0, 40.0]
+    nondefault_bias: [0.0]
+    jump_penalty_weight: [0.0, 0.5, 1.0]
+    jump_free_ft: [25.0]
+    jump_scale_ft: 25.0
+    max_abs_delta_vs_default: [75.0, 150.0, 999999.0]
+    max_pf_ancc_std: [999999.0]
+    min_md_since: [0.0]
+    min_segment_len: [1, 12, 36, 96]
+  baselines:
+    - likpf_mean_single
+    - exp157_error_ranker_rowwise
+    - oracle
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp157-cand-ranker-enrich-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_exp157_groupkfold_and_sampled_long_frame_seed_no_new_random_viterbi
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - upstream_exp157_lightgbm_training
+  parallel_rng_policy: no_new_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    exp157_model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - No new model is trained in exp158.
+    - Viterbi selection is deterministic given exp099 cache, exp072 dense cache, exp157 boosters, config, and row order.
+    - This is a train-side audit, not a deterministic submission anchor.
+
+audit:
+  mode: segment_continuity_selector_on_exp157
+  output_prefix: exp158_segment_continuity_selector_on_exp157
+  expected_train_artifacts:
+    - exp158_segment_continuity_selector_on_exp157_metrics.csv
+    - exp158_segment_continuity_selector_on_exp157_oof_predictions.csv.gz
+    - exp158_segment_continuity_selector_on_exp157_selection_distribution.csv
+    - exp158_segment_continuity_selector_on_exp157_by_well.csv
+    - exp158_segment_continuity_selector_on_exp157_bucket_metrics.csv
+    - exp158_segment_continuity_selector_on_exp157_viterbi_params.csv
+    - exp158_segment_continuity_selector_on_exp157_score_summary.csv
+    - exp158_segment_continuity_selector_on_exp157_exp157_model_manifest_resolved.csv
+    - exp158_segment_continuity_selector_on_exp157_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - No inference notebook candidate is selected by this implementation.
+    - A positive OOF result still needs worst-well, near-row, hidden-like, and raw-test parity review before inference work.
+
+notes:
+  - Implements the KAGGLE_DIRECTION backlog item segment_continuity_selector_on_exp157.
+  - Planned Kaggle train cost before push is 1 posthoc audit x 0 newly trained boosters; it reuses 15 saved exp157 boosters for OOF score reconstruction.
+  - This audit does not use soft trajectory averaging, direct residual correction, true-error gates, or submission generation.

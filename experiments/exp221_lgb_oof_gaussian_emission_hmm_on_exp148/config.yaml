@@ -1,0 +1,405 @@
+experiment:
+  name: "exp221_lgb_oof_gaussian_emission_hmm_on_exp148"
+  description: Add exp148/exp193 LightGBM OOF point predictions as fixed Gaussian observation likelihoods inside the exp209 exact HMM smoother.
+  route: ensemble
+  status: submitted_v1_public_lb_7p953_not_adopted
+  created_at: "2026-07-08"
+  updated_at: "2026-07-09"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+    - validation.strategy
+    - validation.score_rows
+
+lineage:
+  parent: lgb_oof_gaussian_emission_hmm_on_exp148 backlog
+  references:
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp148_learned_likelihood_fulltrain_addonly_on_exp092
+    - exp193_typewell_late_interval_context_features_addonly_on_exp148
+    - exp115_hidden_like_spatial_holdout_from_ppt
+    - KAGGLE_DIRECTION.md lgb_oof_gaussian_emission_hmm_on_exp148
+  implementation_source: joint_cache_generation.py
+  diff_summary: >
+    Reuses the exp209 exact HMM generator but injects out-of-fold LightGBM TVT
+    predictions as Gaussian emission terms. The first run does not train any
+    LightGBM models, does not regenerate exp072, and does not create raw-test
+    predictions. It scores train-side OOF rows against exp148/exp193 LGB OOF,
+    exp072 likPF, distance buckets, worst wells, exp115 hidden-like subgroups,
+    HMM uncertainty bins, and step-delta smoothness.
+
+validation:
+  strategy: train_side_oof_no_training_hmm_emission_readout
+  metric: rmse
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  success_criteria:
+    - Best HMM+LGB candidate improves or at least does not materially regress versus exp148_lgb_mean and exp193_lgb_mean overall.
+    - No large worst-well regression versus exp148_lgb_mean.
+    - Near rows 000_050 / 050_100 and mid buckets do not regress materially.
+    - exp115 hidden-like spatial and typewell-purged valid subgroups do not regress materially.
+    - HMM std calibration and step-delta rates do not show pathological overconfidence or step spikes.
+  leakage_policy:
+    - HMM generation uses raw train horizontal/typewell files, observed TVT_input prefix, GR, MD, Z, and typewell GR/TVT.
+    - LGB OOF predictions are fixed out-of-fold point predictions and are used only as Gaussian observation centers.
+    - Unknown-suffix train TVT is used only for metrics and summaries.
+    - True TVT, absolute OOF error, oracle best, and true-error rank are never used to tune row-wise sigma or lambda.
+    - No raw test files, inference, submission, or model training are performed in the initial train-side audit.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  learned_likelihood_rawtest_feature_schema_local: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/kaggle/output/inference_v3/artifacts/exp145_learned_likelihood_rawtest_feature_generator_parity_feature_schema.csv
+  learned_likelihood_rawtest_summary_local: experiments/exp145_learned_likelihood_rawtest_feature_generator_parity/kaggle/output/inference_v3/artifacts/exp145_learned_likelihood_rawtest_feature_generator_parity_summary.json
+  exp099_artifact_dir_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp111_artifact_dir_local: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts
+  exp111_feature_schema: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_feature_schema.csv
+  exp111_model_manifest: experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_model_manifest.json
+  exp112_artifact_dir_local: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts
+  exp112_feature_schema: experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/kaggle/output/train_v1/artifacts/exp112_learned_pf_likelihood_weight_or_feature_followup_feature_schema.csv
+
+model:
+  name: lgb_oof_gaussian_emission_hmm
+  estimator: none
+  target: target
+  base_prediction: last_known_tvt
+  u_projection:
+    anchor_definition: local_prefix_u0_equals_T0_plus_Z0
+    degree: 3
+    robust_iters: 3
+    clip_sigma: 4.0
+    include_lgb_oof_features: false
+    sources:
+      pf_ancc:
+        value_column: pf_ancc
+        enabled: true
+      pf_z:
+        value_column: pf_z
+        enabled: true
+      beam_mean:
+        delta_column: beam_mean_d
+        enabled: true
+      beam_med:
+        delta_column: beam_med_d
+        enabled: true
+      likpf_mean:
+        delta_column: likpf_mean_d
+        enabled: true
+  learned_likelihood_features:
+    prefix: ll_
+    direct_columns:
+      - learned_prob_top1_index
+      - learned_error_top1_index
+      - learned_prob_top1_value
+      - learned_prob_top2_value
+      - learned_prob_margin_top1_top2
+      - learned_prob_entropy
+      - learned_error_top1_value
+      - learned_error_top2_value
+      - learned_error_margin_top2_top1
+      - learned_prob_likpf_rank
+      - learned_error_likpf_rank
+      - learned_prob_top3_contains_likpf
+      - learned_error_top3_contains_likpf
+      - candidate_tvt_std
+      - candidate_tvt_range
+      - learned_prob_pf_ancc
+      - learned_pred_abs_error_pf_ancc
+      - multiobs_score_pf_ancc
+      - multiobs_mae_pf_ancc
+      - multiobs_ncc_pf_ancc
+      - learned_prob_beam_mean
+      - learned_pred_abs_error_beam_mean
+      - multiobs_score_beam_mean
+      - multiobs_mae_beam_mean
+      - multiobs_ncc_beam_mean
+      - learned_prob_likpf_mean
+      - learned_pred_abs_error_likpf_mean
+      - multiobs_score_likpf_mean
+      - multiobs_mae_likpf_mean
+      - multiobs_ncc_likpf_mean
+      - learned_prob_sc_ens
+      - learned_pred_abs_error_sc_ens
+      - multiobs_score_sc_ens
+      - multiobs_mae_sc_ens
+      - multiobs_ncc_sc_ens
+      - learned_prob_hyb
+      - learned_pred_abs_error_hyb
+      - multiobs_score_hyb
+      - multiobs_mae_hyb
+      - multiobs_ncc_hyb
+    candidate_tvt_columns:
+      - candidate_tvt_pf_ancc
+      - candidate_tvt_beam_mean
+      - candidate_tvt_likpf_mean
+      - candidate_tvt_sc_ens
+      - candidate_tvt_hyb
+    weighted_tvt_columns:
+      - learned_prob_weighted_tvt
+      - learned_error_weighted_tvt
+  hmm:
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    sig_r: 0.002
+    sig_p: 0.02
+    df: 4.0
+    emission: gauss
+    lam: 1.0
+    sigma_mode: std
+    start_sig: 0.75
+    r0_sig: 0.01
+    band_pad: 100.0
+    mom: 0.998
+    rate_center: zero
+  notes:
+    - HMM grid, transition, GR emission, and band settings match exp209/exp205.
+    - Only the additional LGB Gaussian emission term changes the posterior.
+
+lgb_emission:
+  enabled: true
+  active_sources:
+    - exp148_lgb_mean
+  sigma_grid:
+    - 20.0
+  lambda_grid:
+    - 0.50
+  sigma_floor: 6.0
+  sigma_cap: 30.0
+  emission_clip: 600.0
+  max_variants: 1
+  timeout_recovery:
+    source_kernel_version: 2
+    reason: v2 ran 3 variants and reached only 576 completed wells plus the 578th start line near the 12h Kaggle limit.
+    selected_variant: hmm_lgb_exp148_lgb_mean_s2000_l0500
+    rationale: v2 partial logs over 576 completed wells had the best mean RMSE for sigma=20 and the largest best-well count.
+  selected_after_v3:
+    kernel_version: 3
+    candidate: hmm_lgb_exp148_lgb_mean_s2000_l0500
+    rmse_tvt: 8.32773695096078
+    delta_rmse_vs_exp148_lgb_mean: -0.17355403333878705
+    delta_rmse_vs_exp193_lgb_mean: -0.12893910212961046
+    elapsed_seconds: 17827.454
+  deferred_full_grid:
+    sigma_grid:
+      - 8.0
+      - 12.0
+      - 20.0
+    lambda_grid:
+      - 0.25
+      - 0.50
+      - 1.00
+    note: Split into separate Kaggle runs if the first three-variant run is stable enough to justify more CPU time.
+  sources:
+    exp148_lgb_mean:
+      description: exp148 GPU train v1 lgb_mean OOF prediction.
+      id_column: id
+      prediction_column: null
+      model_filter: lgb_mean
+      candidates:
+        - /kaggle/input/notebooks/kentookumura/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+        - /kaggle/input/exp148-train/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+        - /tmp/kaggle-output/exp148_train_v1/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+        - experiments/exp148_learned_likelihood_fulltrain_addonly_on_exp092/artifacts/viewer/exp148_lgb_mean_oof_viewer.csv
+    exp193_lgb_mean:
+      description: exp193 typewell late interval context add-only lgb_mean OOF prediction.
+      id_column: id
+      prediction_column: pred_tvt
+      model_filter: lgb_mean
+      candidates:
+        - /kaggle/input/notebooks/kentookumura/exp193-typewell-late-context-exp148-train/artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_predictions.csv.gz
+        - /kaggle/input/exp193-typewell-late-context-exp148-train/artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_predictions.csv.gz
+        - experiments/exp193_typewell_late_interval_context_features_addonly_on_exp148/kaggle/output/train_v1/artifacts/exp193_typewell_late_interval_context_features_addonly_on_exp148_predictions.csv.gz
+
+feature_cache:
+  exp072:
+    variant: pixiux_likpf_public_replay
+    deterministic_pf: true
+    seed_policy: stable_sha256_per_well
+    output_prefix: exp063_full_replay_feature_cache
+    n_jobs: 8
+    pf_seeds: 128
+    pf_particles: 500
+    fast: false
+    max_wells: null
+    keep_frame_for_comparison: false
+  hmm:
+    variant: lgb_oof_gaussian_emission_hmm
+    output_prefix: exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+    expected_feature_count: 7
+    fast: false
+    max_wells: null
+    outer_workers: 2
+    expected_artifacts:
+      - exp221_lgb_oof_gaussian_emission_hmm_on_exp148_lgb_oof_gaussian_emission_hmm_train_features.csv.gz
+      - exp221_lgb_oof_gaussian_emission_hmm_on_exp148_feature_schema.csv
+      - exp221_lgb_oof_gaussian_emission_hmm_on_exp148_by_well_generation_summary.csv
+      - exp221_lgb_oof_gaussian_emission_hmm_on_exp148_summary.json
+
+execution:
+  run_exp072_full_cache: false
+  run_hmm_cache: true
+  run_direct_comparison: true
+  direct_comparison_use_in_memory_exp072: false
+  run_reference_parity_checks: false
+  write_joint_summary: true
+  notes:
+    - Uses saved exp072 likPF cache as comparison baseline; does not regenerate exp072.
+    - Uses exp209 v5 runtime setting outer_workers=2 / numba_num_threads=2.
+    - v3 timeout recovery runs only sigma=20 / lambda=0.50, reducing active HMM+LGB variants from 3 to 1.
+    - No GPU model training, no LightGBM boosters, no control retraining, no submission.
+
+comparison:
+  baseline_experiment: exp072_exp063_full_replay_feature_cache
+  output_prefix: exp221_lgb_oof_gaussian_emission_hmm_on_exp148
+  baseline_feature_cache:
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  hmm_feature_cache:
+    - /kaggle/working/artifacts/exp221_lgb_oof_gaussian_emission_hmm_on_exp148_lgb_oof_gaussian_emission_hmm_train_features.csv.gz
+    - experiments/exp221_lgb_oof_gaussian_emission_hmm_on_exp148/artifacts/exp221_lgb_oof_gaussian_emission_hmm_on_exp148_lgb_oof_gaussian_emission_hmm_train_features.csv.gz
+  baseline_candidate_columns:
+    - likpf_mean
+    - pf_ancc
+    - pf_z
+    - beam_mean
+  lgb_baseline_sources:
+    - exp148_lgb_mean
+    - exp193_lgb_mean
+  primary_baselines:
+    - exp148_lgb_mean
+    - exp193_lgb_mean
+    - exp072_likpf_mean
+  hidden_like:
+    enabled: true
+    fold_assignment_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+  uncertainty_bins: 10
+  write_enriched_cache: false
+  step_delta_thresholds:
+    - 5.0
+    - 10.0
+    - 25.0
+  result_artifacts:
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148_overall_metrics.csv
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148_distance_bucket_metrics.csv
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148_hidden_like_metrics.csv
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148_by_well_delta.csv
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148_hmm_std_calibration.csv
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148_step_delta_rates.csv
+    - exp221_lgb_oof_gaussian_emission_hmm_on_exp148_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    inference:
+      enable_gpu: true
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp148-train
+      - kentookumura/exp193-typewell-late-context-exp148-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp148-train
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp111-learned-pf-likelihood-train
+      - kentookumura/exp112-learned-pf-likelihood-followup-train
+
+generator:
+  chunksize: 200000
+  include_candidate_values: false
+  default_candidate: likpf_mean
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+    - name: beam_mean
+      column: beam_mean
+    - name: likpf_mean
+      column: likpf_mean
+    - name: sc_ens
+      column: sc_ens
+    - name: hyb
+      column: hyb
+  row_context_columns:
+    - last_known_tvt
+    - pf_ancc_std
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+    - eval_len
+    - md_since
+    - likpf_mean_d
+  multiobs_global_columns:
+    - multiobs_score_max
+    - multiobs_score_mean
+    - multiobs_score_gap
+    - multiobs_top1_source_id
+    - multiobs_top1_mae
+    - multiobs_top1_ncc
+  feature_cache:
+    include_candidate_tvt: true
+    include_multiobs_scores: true
+    include_probability_features: true
+    include_expected_error_features: true
+  rawtest_replay:
+    variant: pixiux_likpf_public_replay
+    n_jobs: 8
+    pf_seeds: 128
+    pf_particles: 500
+    fast: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: hmm_no_rng_lgb_oof_fixed_inputs
+  stochastic_components: []
+  parallel_rng_policy: HMM consumes no RNG; outer job scheduling can change tiny floating point ordering, so compare RMSE and feature content hashes with documented tolerances.
+  feature_sha_policy: decompressed_content_sha_for_gzip plus raw gzip SHA recorded separately
+  record:
+    kernel_version: true
+    input_sha: false
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This experiment is a train-side no-training ensemble audit, not a deterministic submission anchor.
+    - LGB sigma/lambda are global grid values, not row-wise error-calibrated parameters.
+
+inference:
+  mode: lgb_emission_hmm_current_test_saved_exp148_lgb_mean
+  selected_candidate: hmm_lgb_exp148_lgb_mean_s2000_l0500
+  selected_source: exp148_lgb_mean
+  selected_sigma: 20.0
+  selected_lambda: 0.50
+  exp148_variant: learned_likelihood_confidence_addonly
+  exp148_mode: gpu_repro_guard_dp_threads8
+  exp148_model: lgb_mean
+  exp148_use_gpu: auto
+  strict_sample_ids: true
+  notes:
+    - Kaggle train v3 passed train-side gates; inference stays in this exp221 directory.
+    - exp148 saved LightGBM boosters generate current-test lgb_mean predictions inside this notebook before HMM inference.
+    - Visible test files are sample-only and are not used as a scoring checklist.

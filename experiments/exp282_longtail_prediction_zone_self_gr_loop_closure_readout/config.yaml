@@ -1,0 +1,291 @@
+experiment:
+  name: exp282_longtail_prediction_zone_self_gr_loop_closure_readout
+  description: >-
+    Audit whether target-free self-GR loop-closure edges from 1000+ ft
+    long-tail receiver rows to earlier 0-500 ft prediction-zone donor rows
+    recover same-TVT relationships before any correction is implemented.
+  route: pf_beam
+  status: train_side_readout_completed_guard_failed_branch_closed
+  created_at: "2026-07-19"
+  updated_at: "2026-07-19"
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+lineage:
+  parent: exp090_lateral_self_gr_match_pseudotail_probe
+  fixed_prediction_reference: exp263_last_anchor_better_candidate_confidence_pair_cache
+  parallel_comparison: exp281_exp226_residual_offset_exact_hmm_transition_probe
+  supporting_references:
+    - exp091_self_gr_candidate_feature
+    - exp134_exp131_long_tail_rescue_tuned
+    - exp223_exp072_lateral_self_gr_tail_rescue
+    - exp280_exp226_shift_likelihood_separability_readout
+  diff_summary: >-
+    Moves self-GR matching away from the known TVT prefix and into the unknown
+    prediction zone. Donors are fixed to 0-500 ft after prediction start and
+    receivers to 1000+ ft. The experiment freezes target-free multiscale
+    forward/reverse GR edges and confidence before attaching true TVT or the
+    fixed exp263 OOF prediction. It is a readout only and creates no corrected
+    prediction, model, PF/HMM path, inference output, or submission.
+
+validation:
+  strategy: group_safe_prediction_zone_self_gr_loop_closure_oof_readout
+  metric: rmse_tvt
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: full_train_unknown_suffix_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  fixed_prediction_reference:
+    candidate: exp263_fixed_exp226_w500_50_50
+    oof_rmse: 8.238331
+    public_lb: 7.800
+  confidence_scope:
+    mode: per_well_target_free_top_fraction
+    top_fraction: 0.10
+  guards:
+    required_edge_coverage: 1.0
+    required_finite_score_coverage: 1.0
+    minimum_high_confidence_within10_precision: 0.60
+    minimum_all_edge_positive_lift_folds: 5
+    minimum_high_confidence_positive_lift_folds: 5
+    minimum_high_confidence_better_median_delta_folds: 5
+    minimum_high_confidence_receiver_coverage: 0.01
+    minimum_donor_transfer_improved_folds: 5
+    minimum_pooled_donor_transfer_rmse_gain_ft: 0.10
+    require_positive_hidden_like_spatial_lift: true
+    require_positive_hidden_like_typewell_purged_lift: true
+  leakage_policy:
+    - Edge generation may read only well identity, raw row index, MD, GR, and TVT_input.
+    - Known TVT_input prefix is excluded from both donor and receiver pools.
+    - True TVT, target, error, oracle labels, and exp263 predictions are forbidden until every real and shuffled edge is frozen and content-hashed.
+    - Confidence uses only NCC rank, best-second gap rank, multiscale agreement, and segment support.
+    - Thresholds, windows, stride, tie-breaks, shuffled control, and guards are fixed before execution.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  known_tvt_column: TVT_input
+  gr_column: GR
+  md_column: MD
+  id_column: id
+  group_column: well
+  exp263_oof:
+    experiment: exp263_last_anchor_better_candidate_confidence_pair_cache
+    candidate: exp263_fixed_exp226_w500_50_50
+    attach_stage: after_edge_and_control_freeze
+  exp263_stage0:
+    kernel: kentookumura/exp263-last-anchor-pair-cache-train
+    kernel_version: 1
+    manifest_candidates:
+      - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+      - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+    expected_cache_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+    expected_canonical_id_sha256: de07df322a8dc3a981b556ea78c3ddcecb2e708a31e986cfe05873109d4ae9d3
+    identity_primitive: exp226_k16
+    fixed_formula: exp226_w500_50_50
+    fixed_formula_weights:
+      exp226_k16: 0.50
+      likpf_mean: 0.25
+      exact_hmm: 0.25
+    attach_stage: after_edge_and_control_freeze
+  hidden_like:
+    experiment: exp115_hidden_like_spatial_holdout_from_ppt
+    attach_stage: after_edge_and_control_freeze
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    valid_role_columns:
+      verification_like_spatial: verification_like_spatial_role
+      verification_like_typewell_purged: verification_like_typewell_purged_role
+    scopes:
+      - verification_like_spatial
+      - verification_like_typewell_purged
+
+model:
+  name: none_readout_only
+  estimator: none
+  trained_folds: 0
+  total_boosters: 0
+
+matching:
+  enabled: true
+  implementation_status: canonical_selfcontained_notebooks_executed_kaggle_cpu_v1
+  prediction_start_rule: row_after_last_finite_tvt_input
+  md_since_reference: last_known_md
+  donor_scope:
+    minimum_md_since_ft: 0.0
+    maximum_md_since_ft_exclusive: 500.0
+  receiver_scope:
+    minimum_md_since_ft: 1000.0
+    maximum_md_since_ft: null
+  preprocessing:
+    missing_gr: interpolate_then_prefix_or_full_mean_fallback
+    rolling_mean_rows: 5
+    normalize: per_window_zscore
+  search:
+    primary_half_window_rows: 25
+    auxiliary_half_window_rows: [8, 15]
+    center_stride_rows: 3
+    orientations: [forward, reverse]
+    score: normalized_cross_correlation
+    tie_break: score_desc_forward_first_donor_row_asc
+    best_second_gap: true
+  scale_agreement:
+    maximum_primary_row_distance: 25
+    require_same_orientation: true
+  segment_support:
+    minimum_consecutive_centers: 3
+    donor_step_tolerance_strides: 1
+  confidence:
+    components:
+      ncc_percentile: 0.25
+      best_second_gap_percentile: 0.25
+      multiscale_agreement: 0.25
+      segment_supported: 0.25
+  shuffled_control:
+    mode: within_well_donor_assignment_permutation
+    seed_derivation: sha256_experiment_seed_well_donor_shuffle
+    preserve_receiver_confidence_coverage_and_donor_pool: true
+
+audit:
+  output_prefix: exp282_longtail_prediction_zone_self_gr_loop_closure_readout
+  truth_attach_stage: after_real_and_shuffled_edge_content_sha
+  same_tvt_thresholds_ft: [2.0, 5.0, 10.0]
+  distance_scopes:
+    longtail_1000_1500:
+      minimum_md_since_ft: 1000.0
+      maximum_md_since_ft: 1500.0
+    longtail_1500_2500:
+      minimum_md_since_ft: 1500.0
+      maximum_md_since_ft: 2500.0
+    longtail_2500_plus:
+      minimum_md_since_ft: 2500.0
+      maximum_md_since_ft: null
+  scopes:
+    - overall
+    - fold
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+    - orientation
+    - by_well
+  donor_transfer:
+    enabled_for_post_freeze_readout_only: true
+    source: exp263_fixed_exp226_w500_50_50_donor_prediction
+    create_corrected_row_prediction: false
+  expected_artifacts:
+    - exp282_longtail_prediction_zone_self_gr_loop_closure_readout_edge_contract.json
+    - exp282_longtail_prediction_zone_self_gr_loop_closure_readout_target_free_edges.csv.gz
+    - exp282_longtail_prediction_zone_self_gr_loop_closure_readout_edge_schema.csv
+    - exp282_longtail_prediction_zone_self_gr_loop_closure_readout_overall_metrics.csv
+    - exp282_longtail_prediction_zone_self_gr_loop_closure_readout_fold_metrics.csv
+    - exp282_longtail_prediction_zone_self_gr_loop_closure_readout_scope_metrics.csv
+    - exp282_longtail_prediction_zone_self_gr_loop_closure_readout_orientation_metrics.csv
+    - exp282_longtail_prediction_zone_self_gr_loop_closure_readout_by_well_metrics.csv
+    - exp282_longtail_prediction_zone_self_gr_loop_closure_readout_donor_transfer_readout.csv
+    - exp282_longtail_prediction_zone_self_gr_loop_closure_readout_input_manifest.csv
+    - exp282_longtail_prediction_zone_self_gr_loop_closure_readout_summary.json
+
+execution:
+  stage: completed_kaggle_cpu_v1_guard_failed_branch_closed
+  active_variants: 1
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  hmm_variants: 0
+  pf_variants: 0
+  control_or_parent_retraining: false
+  process_order: sequential_wells
+  receiver_chunk_size: 256
+  progress_every_wells: 25
+  persist_full_pairwise_matrix: false
+  gpu: false
+  inference: false
+  submission: false
+  kaggle_push_approved: true
+  kernel:
+    id: kentookumura/exp282-longtail-self-gr-loop-closure-readout-train
+    id_no: 127838798
+    version: 1
+    status: COMPLETE
+    runtime_seconds: 248.2064151763916
+
+results:
+  status: train_side_readout_completed_guard_failed
+  decision: close_branch_without_parameter_rescue
+  canonical_rows: 3783989
+  wells: 773
+  eligible_receiver_centers: 997733
+  generated_edges: 997733
+  edge_coverage: 1.0
+  finite_score_coverage: 1.0
+  high_confidence_edges: 100103
+  high_confidence_receiver_coverage: 0.03322985139630904
+  high_confidence_within10: 0.5543090616664835
+  high_confidence_within10_lift_vs_shuffled: 0.0032566456549754097
+  high_confidence_donor_transfer_gain_ft: -6.894738630411748
+  technical_guard_passed: true
+  scientific_guard_passed: false
+  positive_lift_folds:
+    all_edges: 3
+    high_confidence: 4
+  donor_transfer_improved_folds: 0
+  hidden_like_positive_lift:
+    verification_like_spatial: true
+    verification_like_typewell_purged: true
+  frozen_edge_content_sha256: 2b9ecbb956e2b84ee61ddefeb54ed0fcca98b984e76ba1be0e7c9321f5f74c28
+  target_free_edges_raw_sha256: fa70053b4f290e2bb487bca2b48e99389b9db0f57e43b3df448c9b05b9e9d297
+  target_free_edges_decompressed_sha256: e2a425bde45ef8abea59838cf734856d6c5c27671503ce70305320ced9a408a1
+
+inference:
+  enabled: false
+  mode: disabled_readout_only
+  create_submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_real_edges_stable_sha256_local_rng_for_shuffled_control
+  stochastic_components:
+    - within_well_shuffled_donor_negative_control
+  parallel_rng_policy: local_rng_per_well_derived_from_stable_sha256
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Real edge generation is deterministic and sorted by well, receiver row, and donor tie-break.
+    - The shuffled negative control must not use Python hash or global RNG state.
+    - Edge logical content SHA is recorded before truth, exp263 prediction, fold, or hidden-like role attachment.
+    - A successful first run is not sufficient to declare a deterministic anchor.
+
+notes:
+  - Matching and readout were executed from the adopted canonical self-contained notebooks in Kaggle CPU version 1.
+  - On 2026-07-19 the user explicitly requested execution, approving canonical notebook adoption and one Kaggle CPU v1 run under the fixed zero-booster contract.
+  - exp281 is a parallel comparison and is not a prerequisite for implementation or execution.
+  - Technical guards passed, but the scientific guard failed; the branch is closed without a parameter rescue, correction, inference, or submission.

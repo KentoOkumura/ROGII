@@ -1,0 +1,146 @@
+experiment:
+  name: exp018_candidate_distribution_router
+  description: Route existing OOF candidate predictions by row distance and candidate confidence
+  route: ml_model
+  status: completed
+  created_at: "2026-06-05"
+  updated_at: "2026-06-05"
+
+lineage:
+  parent: exp013_model_diversity_or_postprocess
+  diff_summary: Use existing OOF candidate distributions to audit row-level routing instead of adding PF/beam or DTW/DWT signals as model features
+
+validation:
+  leakage_policy:
+    - Same-well OOF predictions come from prior GroupKFold-by-well experiments.
+    - This experiment trains no new residual model and creates no inference feature.
+    - Same-OOF router scores are recorded as optimistic diagnostics.
+    - Candidate and router selection support is audited with leave-one-original-fold-out and stable well-hash holdout selection.
+    - Optional PF/beam artifacts are skipped when absent rather than regenerated locally.
+
+data: {}
+
+model:
+  name: candidate_distribution_router_audit
+  source_experiment: exp013_model_diversity_or_postprocess
+  raw_anchor_variant: lightgbm_no_gr
+  raw_clean_cv: 13.549257
+  public_lb_anchor: 12.271
+
+audit:
+  chunk_rows: 250000
+  well_holdout_folds: 5
+  raw_candidate: raw_lightgbm_no_gr
+  source_candidates:
+    - name: raw_lightgbm_no_gr
+      path: data/external/kaggle-output/exp013_model_diversity_or_postprocess/train/artifacts/row_oof_predictions.csv
+      variant: lightgbm_no_gr
+      role: primary
+      optional: false
+    - name: control_hgb_no_gr
+      path: data/external/kaggle-output/exp013_model_diversity_or_postprocess/train/artifacts/row_oof_predictions.csv
+      variant: control_hgb_no_gr
+      role: model_diversity
+      optional: false
+    - name: dtw_dwt_no_gr
+      path: data/external/kaggle-output/exp017_deterministic_dtw_addonly/train/artifacts/row_oof_predictions.csv
+      variant: dtw_dwt_no_gr
+      role: alignment_candidate
+      optional: true
+    - name: pf_beam_no_gr
+      path: data/external/kaggle-output/exp015_public_pf_beam_scale_selector_features/train/artifacts/row_oof_predictions.csv
+      variant: pf_beam_no_gr
+      role: pf_beam_candidate
+      optional: true
+  distance_buckets:
+    - name: rows_0_49
+      max_step: 49
+    - name: rows_50_249
+      max_step: 249
+    - name: rows_250_999
+      max_step: 999
+    - name: rows_1000_2499
+      max_step: 2499
+    - name: rows_2500_plus
+      max_step: 1000000000
+  routers:
+    - name: raw_lightgbm_no_gr
+      method: fixed
+      selectable: true
+      params:
+        candidate: raw_lightgbm_no_gr
+    - name: last_anchor
+      method: fixed
+      selectable: false
+      params:
+        candidate: last_anchor
+    - name: hgb_lightgbm_equal_blend
+      method: weighted_blend
+      selectable: true
+      params:
+        weights:
+          raw_lightgbm_no_gr: 0.50
+          control_hgb_no_gr: 0.50
+    - name: dtw_lightgbm_equal_blend
+      method: weighted_blend
+      selectable: true
+      params:
+        weights:
+          raw_lightgbm_no_gr: 0.50
+          dtw_dwt_no_gr: 0.50
+    - name: near_anchor_mid_raw_far_dtw
+      method: distance_router
+      selectable: true
+      params:
+        default: raw_lightgbm_no_gr
+        rules:
+          - max_step: 49
+            candidate: last_anchor
+          - max_step: 249
+            candidate: raw_lightgbm_no_gr
+          - max_step: 1000000000
+            candidate: dtw_dwt_no_gr
+    - name: near_anchor_mid_raw_far_hgb_blend
+      method: distance_router
+      selectable: true
+      params:
+        default: raw_lightgbm_no_gr
+        rules:
+          - max_step: 49
+            candidate: last_anchor
+          - max_step: 999
+            candidate: raw_lightgbm_no_gr
+          - max_step: 1000000000
+            blend:
+              raw_lightgbm_no_gr: 0.70
+              control_hgb_no_gr: 0.30
+    - name: disagreement_damped_raw
+      method: disagreement_damped
+      selectable: true
+      params:
+        primary: raw_lightgbm_no_gr
+        references:
+          - control_hgb_no_gr
+          - dtw_dwt_no_gr
+        threshold: 12.0
+        shrink: 0.70
+        min_step: 250
+    - name: confidence_oracle_bucket
+      method: bucket_oracle
+      selectable: false
+      params:
+        candidates:
+          - last_anchor
+          - raw_lightgbm_no_gr
+          - control_hgb_no_gr
+          - dtw_dwt_no_gr
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+
+notes:
+  - This is an OOF artifact audit and is not intended for direct Kaggle submission.
+  - PF/beam is configured as optional because exp015 row OOF was removed locally; the audit will include it automatically if the artifact is restored.
+  - Same-OOF router/oracle rows are diagnostics only. Clean support must come from held-out selection audits.

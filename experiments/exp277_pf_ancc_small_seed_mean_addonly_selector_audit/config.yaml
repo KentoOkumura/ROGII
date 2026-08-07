@@ -1,0 +1,321 @@
+experiment:
+  name: exp277_pf_ancc_small_seed_mean_addonly_selector_audit
+  description: >-
+    Replaces the exp263/exp264 pf_ancc candidate with the frozen exp271 PF ANCC
+    mean4/mean8 paths, adds target-free disagreement only to the two-mean variant,
+    then audits downstream add-only value against the frozen exp264 Stage D control.
+  route: ensemble
+  status: corrected_mean4_nested_completed_score_guard_passed
+  created_at: "2026-07-18"
+
+lineage:
+  parent: exp271_pf_ancc_small_seed_mean_candidate_audit
+  selector_parent: exp264_exp263_candidate_confidence_dual_selector
+  candidate_bank_parent: exp263_last_anchor_better_candidate_confidence_pair_cache
+  downstream_model_anchor: exp218_gr_wavelet_rotation_confidence_features_on_exp148
+  selector_parent_stage: corrected_stage_a_v4_stage_c_v6_raw_test_only_88
+  downstream_control_parent_stage: corrected_stage_d_v3_clean_273
+  references:
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md pf_ancc_small_seed_mean_addonly_selector_audit
+  diff_summary: >-
+    Keeps the corrected exp264 raw-test-only MD/X/Y/Z/GR context, core-12 candidate
+    layout, outer/inner folds, dual selector objectives, compact adapter, clean 273
+    downstream surface, and three LightGBM configs. It replaces the existing pf_ancc
+    slot with mean4, mean8, or mean4+mean8 with seed/particle/cross-mean disagreement.
+    The corrected exp264 Stage D v3 clean-273 matched-control OOF is SHA-guarded and
+    is not retrained.
+
+validation:
+  strategy: outer5_inner4_nested_selector_then_fixed_control_downstream_addonly
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  outer_folds: 5
+  inner_folds: 4
+  group_column: well
+  score_rows: TVT_input_isna
+  expected_rows: 3783989
+  expected_wells: 773
+  leakage_policy:
+    - exp271 path and disagreement are frozen before raw horizontal TVT is joined for labels or evaluation.
+    - target, error, oracle, hidden-like role, catalog RMSE, and outer eligibility are forbidden selector features.
+    - outer-valid wells are excluded from selector fit, calibration, early stopping, and downstream fit.
+    - downstream outer-train compact uses inner OOF scores; outer-valid compact uses four-inner-model ensembles.
+    - hidden-like assignments are post-hoc metrics only.
+    - no hard top1, oracle routing, candidate averaging, raw-test PF regeneration, inference, or submission is produced.
+    - actual train/current-test headers must contain MD/X/Y/Z/GR before selector feature audit or fit.
+    - training-only formation raw/delta features are forbidden even when present in train horizontal files.
+
+data:
+  exp263_stage0_root_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts
+    - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1/artifacts
+    - experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/kaggle/output/train_v1_sample_partitions/artifacts
+  exp263_expected_stage0_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+  exp263_expected_catalog_sha256: 7cd748661b719bfcfb1ed21b9fe314366b1c089cc0dd224a9e4cbd4ba7e9e6e0
+  selector_parent_corrected_stage_a_kernel_version: 4
+  selector_parent_corrected_stage_a_feature_catalog_file_sha256: 3a443a1a5a71874499affdfe68ff07c8f40d0abbb86530f8808b45dee9781235
+  selector_parent_corrected_stage_a_feature_schema_file_sha256: b91ec1517a82641fe4d96f41c97872151f273a8bbfcb537284f91d47aacf1035
+  selector_parent_corrected_stage_a_feature_schema_logical_sha256: aaef4ffdd90667893b099b76a52f1957b22197aea9cee5e5b57bc81048ddd3a4
+  selector_parent_corrected_stage_c_kernel_version: 6
+  selector_parent_corrected_stage_c_model_manifest_sha256: 3f28b04a017f0edadb815be44bf6f6f039dbd115bb72b3401e2681d3002422d2
+  selector_parent_corrected_stage_c_compact_manifest_sha256: f4855726de446b8308a8acf80d6ff6cd6a789f18ef90e165b98fa05d12aecf1c
+  exp251_selected_feature_schema_patterns:
+    - inputs/exp251_v4_selected_feature_schema.csv
+    - experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/kaggle/output/train_v4_selected/artifacts/exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv
+    - "**/exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv"
+  exp251_expected_selected_feature_count: 295
+  candidate_contract: candidate_contract.yaml
+  exp271_candidate_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp271-pf-ancc-small-seed-mean-audit-train/artifacts/exp271_pf_ancc_small_seed_mean_candidate_audit_candidate_paths.csv.gz
+    - /tmp/kaggle-output/exp271-pf-ancc-small-seed-mean-audit-train/train_v2/artifacts/exp271_pf_ancc_small_seed_mean_candidate_audit_candidate_paths.csv.gz
+    - experiments/exp271_pf_ancc_small_seed_mean_candidate_audit/kaggle/output/train_v2/artifacts/exp271_pf_ancc_small_seed_mean_candidate_audit_candidate_paths.csv.gz
+    - "**/exp271_pf_ancc_small_seed_mean_candidate_audit_candidate_paths.csv.gz"
+  exp271_expected_raw_sha256: a01f2082717c17c5c22ef26dc91f7f87cc98cb48e2d4e0c92dc0a9a0b922590a
+  exp271_expected_decompressed_sha256: a7c48204d6782e62941e433b5d47ba5e03f6e441b8e601461be1c63ebcdca336
+  exp271_expected_schema_sha256: 9037c3e40cd7a4ad8535479dcad7ee16885c2214940a6c357915e8ec8b2a5ba9
+  exp264_fixed_control_oof_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-tvt-train/artifacts/stage_d_oof_predictions.parquet
+    - /tmp/kaggle-output/exp264-exp263-confidence-dual-selector-tvt-train/stage_d_v3_corrected/artifacts/stage_d_oof_predictions.parquet
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_d_v3_corrected/artifacts/stage_d_oof_predictions.parquet
+  exp264_fixed_control_oof_sha256: 7367983f3053186e0a6adf18c0f145302b0451332625fb679357f3c1326dafee
+  exp264_fixed_control_expected_rmse: 10.476169179272501
+  exp218_source_patterns:
+    - inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+    - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+  exp218_config_patterns:
+    - inputs/exp218_source/config.yaml
+    - experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+  exp218_clean_273_allowlist_patterns:
+    - inputs/exp218_clean_273_allowlist.csv
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+  exp218_clean_273_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
+  hidden_like_assignment_patterns:
+    - inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    - experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+  nested_variant_root_patterns:
+    mean4_only:
+      - /kaggle/input/notebooks/kentookumura/exp277-pf-ancc-mean4-selector/artifacts
+      - "**/mean4_only/artifacts"
+    mean8_only:
+      - /kaggle/input/notebooks/kentookumura/exp277-pf-ancc-mean8-selector/artifacts
+      - "**/mean8_only/artifacts"
+    mean4_mean8_disagreement:
+      - /kaggle/input/notebooks/kentookumura/exp277-pf-ancc-both-selector/artifacts
+      - "**/mean4_mean8_disagreement/artifacts"
+  downstream_variant_root_patterns:
+    mean4_only:
+      - /kaggle/input/notebooks/kentookumura/exp277-pf-ancc-mean4-downstream/artifacts
+      - "**/mean4_only/artifacts"
+    mean8_only:
+      - /kaggle/input/notebooks/kentookumura/exp277-pf-ancc-mean8-downstream/artifacts
+      - "**/mean8_only/artifacts"
+    mean4_mean8_disagreement:
+      - /kaggle/input/notebooks/kentookumura/exp277-pf-ancc-both-downstream/artifacts
+      - "**/mean4_mean8_disagreement/artifacts"
+
+candidate_bank:
+  base_candidate_count: 12
+  replacement_target: pf_ancc
+  replacement_position_policy: preserve_exp263_pf_ancc_slot
+  variants:
+    mean4_only:
+      external_candidates: [pf_ancc_seed_mean_4]
+      disagreement_enabled: false
+      expected_candidate_count: 12
+    mean8_only:
+      external_candidates: [pf_ancc_seed_mean_8]
+      disagreement_enabled: false
+      expected_candidate_count: 12
+    mean4_mean8_disagreement:
+      external_candidates: [pf_ancc_seed_mean_4, pf_ancc_seed_mean_8]
+      disagreement_enabled: true
+      expected_candidate_count: 13
+  single_candidate_control: mean4_only
+  raw_test_contract_if_mean8_independent: four_seed_mean
+  hard_selection_enabled: false
+
+features:
+  parent_surface: exp264_corrected_stage_c_v6_raw_test_only_88
+  schema_mode: per_variant_audit_then_sha_freeze
+  groups: [ctx, cand, conf, bank, formula, id]
+  missing_policy: native_nan_plus_validity_flags
+  exact_duplicate_policy: drop_after_deterministic_audit
+  constant_policy: drop_after_deterministic_audit
+  correlation_policy: report_only_for_abs_pearson_or_spearman_ge_0p999
+  raw_context:
+    horizontal_numeric_allowlist: [MD, X, Y, Z, GR]
+    forbidden_training_only_columns: [ANCC, ASTNU, ASTNL, EGFDU, EGFDL, BUDA]
+    add_delta_from_last_known_row: true
+    add_typewell_summary: true
+    forbidden_columns: [TVT, TVT_input, target, true_tvt]
+  audit:
+    base_rows_per_fold: 10000
+    correlation_long_rows: 50000
+    pearson_abs_threshold: 0.999
+    spearman_abs_threshold: 0.999
+  shape_windows: [32, 128, 512]
+
+model:
+  name: exp277_pf_ancc_replacement_nested_selector_downstream_addonly
+  objectives:
+    - name: pred_abs_error
+      estimator: lightgbm_regression_l1
+      label: candidate_abs_error
+    - name: p_within10
+      estimator: lightgbm_binary
+      label: candidate_within10
+  training:
+    max_train_base_rows_per_outer_fold: 60000
+    max_valid_base_rows_for_early_stopping: 30000
+    predict_base_row_chunk_size: 20000
+    num_boost_round: 1200
+    early_stopping_rounds: 80
+    log_evaluation_period: 100
+  lightgbm_common:
+    learning_rate: 0.035
+    num_leaves: 63
+    min_child_samples: 80
+    subsample: 0.85
+    subsample_freq: 1
+    colsample_bytree: 0.85
+    reg_alpha: 0.1
+    reg_lambda: 1.0
+    n_jobs: 8
+    deterministic: true
+    force_col_wise: true
+    verbosity: -1
+  nested_downstream_stage:
+    enabled: true
+    outer_folds: 5
+    inner_folds: 4
+    objectives: 2
+    planned_cpu_selector_boosters: 40
+    parent_control_retraining: false
+  downstream_tvt_stage:
+    enabled: true
+    lightgbm_config_indices: [0, 1, 2]
+    folds: 5
+    planned_gpu_boosters_per_variant: 15
+    control_retraining: false
+    fixed_control_variant: matched_control
+    feature_surface: exp218_clean_273_drop_107
+    expected_source_base_feature_count: 380
+    expected_base_feature_count: 273
+    expected_compact_feature_count: 74
+    expected_final_feature_count: 347
+    base_feature_allowlist: inputs/exp218_clean_273_allowlist.csv
+    base_feature_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
+    mode: gpu_repro_guard_dp_threads8
+    early_stopping_rounds: 250
+    log_evaluation_period: 100
+    matrix_copy_chunk_columns: 32
+
+execution:
+  stage: nested_selector_mean4_only
+  active_variant: mean4_only
+  run_approved: false
+  allowed_stages:
+    - design_only
+    - nested_selector_mean4_only
+    - nested_selector_mean8_only
+    - nested_selector_mean4_mean8_disagreement
+    - downstream_mean4_only
+    - downstream_mean8_only
+    - downstream_mean4_mean8_disagreement
+    - aggregate_compare
+  nested_selector_variants_per_run: 1
+  nested_selector_objectives: 2
+  nested_selector_outer_folds: 5
+  nested_selector_inner_folds: 4
+  nested_selector_boosters_per_run: 40
+  downstream_variants_per_run: 1
+  downstream_configs_per_variant: 3
+  downstream_folds: 5
+  downstream_boosters_per_run: 15
+  parent_control_retraining: false
+  inference_enabled: false
+  submission_enabled: false
+  kaggle_push_requires_user_approval: true
+
+guards:
+  technical:
+    expected_rows: 3783989
+    expected_wells: 773
+    expected_exp263_partitions: 60
+    candidate_value_coverage: 1.0
+    forbidden_feature_hits: 0
+  selector_score:
+    expected_error_mae_vs_outer_train_candidate_prior: improve_pooled_and_at_least_4_of_5_folds
+    within10_logloss_vs_outer_train_candidate_prior: improve_pooled_and_at_least_4_of_5_folds
+    within10_brier_vs_outer_train_candidate_prior: improve_pooled_and_at_least_4_of_5_folds
+  downstream_tvt_addonly:
+    require_primary_overall_improvement: true
+    min_improved_folds: 3
+    max_1000_plus_delta_rmse: 0.0
+    max_hidden_like_delta_rmse: 0.0
+    max_worst_well_regression: 0.25
+  mean8_dependency:
+    require_mean4_nonworse_than_mean8_overall_ft: 0.0
+    require_both_gain_over_mean4_ft: 0.0
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  batch_size: 50000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    machine_shape: null
+    kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp271-pf-ancc-small-seed-mean-audit-train
+    stage_kernel_sources:
+      nested_selector:
+        - kentookumura/exp263-last-anchor-pair-cache-train
+        - kentookumura/exp271-pf-ancc-small-seed-mean-audit-train
+      downstream_common:
+        - kentookumura/exp072-exp063-full-replay-feature-cache-train
+        - kentookumura/exp145-train
+        - kentookumura/exp264-exp263-confidence-dual-selector-tvt-train
+      downstream_variant_nested_source:
+        mean4_only: kentookumura/exp277-pf-ancc-mean4-selector
+        mean8_only: kentookumura/exp277-pf-ancc-mean8-selector
+        mean4_mean8_disagreement: kentookumura/exp277-pf-ancc-both-selector
+      aggregate_downstream_sources:
+        - kentookumura/exp277-pf-ancc-mean4-downstream
+        - kentookumura/exp277-pf-ancc-mean8-downstream
+        - kentookumura/exp277-pf-ancc-both-downstream
+    bootstrap_dependency_files:
+      - source: experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/kaggle/output/train_v4_selected/artifacts/exp251_raw_test_safe_dual_objective_candidate_ranker_selected_feature_schema.csv
+        destination: inputs/exp251_v4_selected_feature_schema.csv
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
+        destination: inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
+      - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml
+        destination: inputs/exp218_source/config.yaml
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
+        destination: inputs/exp218_clean_273_allowlist.csv
+      - source: experiments/exp237_hmm_exp226_candidate_selector_on_exp183/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  stochastic_feature_generation: false
+  pf_regeneration: false
+  fixed_pf_source_kernel: kentookumura/exp271-pf-ancc-small-seed-mean-audit-train
+  gzip_sha_policy: decompressed_content_sha_primary_raw_sha_secondary
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+
+inference:
+  enabled: false
+  create_submission: false
+  submit_to_kaggle: false

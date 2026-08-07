@@ -1,0 +1,242 @@
+{
+  "baseline": {
+    "cv_rmse": 8.50128118189582,
+    "experiment": "exp148_learned_likelihood_fulltrain_addonly_on_exp092",
+    "model": "lgb_mean",
+    "public_lb": 7.96
+  },
+  "created_at": "2026-07-03",
+  "cv": 8.5145263671875,
+  "decision": {
+    "delta_vs_exp148_lgb_mean": 0.0132451852916803,
+    "inference": "not_run",
+    "reason": "3-model lgb_mean OOF is worse than exp148 historical lgb_mean; individual lgb0/lgb1/lgb2 are also worse.",
+    "submit": "not_run"
+  },
+  "experiment": "exp180_learned_gr_window_matcher_features_on_exp148",
+  "kaggle_feature_cache": {
+    "bytes": 832228598,
+    "enable_gpu": false,
+    "enable_internet": false,
+    "feature_decompressed_sha256": "bd3d0f3f59c3a35aad6b00ec29117ac63b5af9de27e8231f86ae985b3f2f2abe",
+    "feature_file": "exp180_learned_gr_window_matcher_features_on_exp148_gr_matcher_train_features.csv.gz",
+    "feature_sha256": "e8ac74c1c0c29e16be411511e507cf72c88e71a39c934bce00b163954c2f487b",
+    "features": 61,
+    "id_no": 125817644,
+    "kernel": "kentookumura/exp180-gr-matcher-exp148-features",
+    "machine_shape": "None",
+    "rows": 3783989,
+    "status": "COMPLETE",
+    "url": "https://www.kaggle.com/code/kentookumura/exp180-gr-matcher-exp148-features",
+    "version": 1,
+    "wells": 773
+  },
+  "kaggle_train": {
+    "splits": {
+      "lgb0": {
+        "enable_gpu": false,
+        "enable_internet": false,
+        "folds": [
+          {
+            "best_iteration": 2600,
+            "fold": 0,
+            "rmse_tvt": 9.08828800711533
+          },
+          {
+            "best_iteration": 600,
+            "fold": 1,
+            "rmse_tvt": 8.796809980763829
+          },
+          {
+            "best_iteration": 405,
+            "fold": 2,
+            "rmse_tvt": 7.45742298689856
+          },
+          {
+            "best_iteration": 279,
+            "fold": 3,
+            "rmse_tvt": 8.228034485249612
+          },
+          {
+            "best_iteration": 271,
+            "fold": 4,
+            "rmse_tvt": 9.089228895333175
+          }
+        ],
+        "id_no": 125820850,
+        "kernel": "kentookumura/exp180-gr-matcher-exp148-train-lgb0",
+        "machine_shape": "None",
+        "output_dir": "experiments/exp180_learned_gr_window_matcher_features_on_exp148/kaggle/output/train_lgb0_v2",
+        "pooled_rmse_tvt": 8.554800137862696,
+        "prediction_sha256": "4d01fae9c9b8623ba9dbea48a1aaf30728d6e5a20c82c95d3e46efb3dbdd0af6",
+        "status": "COMPLETE",
+        "url": "https://www.kaggle.com/code/kentookumura/exp180-gr-matcher-exp148-train-lgb0",
+        "version": 2,
+        "version_1_failure": "Kernel died immediately after gr_matcher_join_start; treated as memory/OOM during feature join.",
+        "version_1_status": "ERROR"
+      },
+      "lgb1": {
+        "canonical_kernel": "kentookumura/exp180-gr-matcher-exp148-train-lgb1",
+        "canonical_status": "not_pushed_notebook_not_found_api_error",
+        "enable_gpu": false,
+        "enable_internet": false,
+        "folds": [
+          {
+            "best_iteration": 9999,
+            "fold": 0,
+            "rmse_tvt": 9.046106214260371
+          },
+          {
+            "best_iteration": 1119,
+            "fold": 1,
+            "rmse_tvt": 8.812865296041752
+          },
+          {
+            "best_iteration": 1507,
+            "fold": 2,
+            "rmse_tvt": 7.4285793285041155
+          },
+          {
+            "best_iteration": 1504,
+            "fold": 3,
+            "rmse_tvt": 8.52182804750065
+          },
+          {
+            "best_iteration": 1359,
+            "fold": 4,
+            "rmse_tvt": 8.992438219692668
+          }
+        ],
+        "id_no": 125829796,
+        "kernel": "kentookumura/exp180-gr-matcher-exp148-train-lgb1-r1",
+        "machine_shape": "None",
+        "output_dir": "experiments/exp180_learned_gr_window_matcher_features_on_exp148/kaggle/output/train_lgb1_r1",
+        "pooled_rmse_tvt": 8.581198811251788,
+        "prediction_sha256": "503bc7b140efee28d4edc47f8d49c673d1f4d9e8f867252c7beb4420c983b61c",
+        "status": "COMPLETE",
+        "url": "https://www.kaggle.com/code/kentookumura/exp180-gr-matcher-exp148-train-lgb1-r1",
+        "version": 1
+      },
+      "lgb2": {
+        "canonical_kernel": "kentookumura/exp180-gr-matcher-exp148-train-lgb2",
+        "canonical_status": "not_pushed_notebook_not_found_api_error",
+        "enable_gpu": false,
+        "enable_internet": false,
+        "folds": [
+          {
+            "best_iteration": 10000,
+            "fold": 0,
+            "rmse_tvt": 9.00151051526095
+          },
+          {
+            "best_iteration": 5082,
+            "fold": 1,
+            "rmse_tvt": 8.725075617316183
+          },
+          {
+            "best_iteration": 2086,
+            "fold": 2,
+            "rmse_tvt": 7.419170574179282
+          },
+          {
+            "best_iteration": 762,
+            "fold": 3,
+            "rmse_tvt": 8.589177172622394
+          },
+          {
+            "best_iteration": 1487,
+            "fold": 4,
+            "rmse_tvt": 9.051080981123539
+          }
+        ],
+        "id_no": 125829806,
+        "kernel": "kentookumura/exp180-gr-matcher-exp148-train-lgb2-r1",
+        "machine_shape": "None",
+        "output_dir": "experiments/exp180_learned_gr_window_matcher_features_on_exp148/kaggle/output/train_lgb2_r1",
+        "pooled_rmse_tvt": 8.5779985181889,
+        "prediction_sha256": "38e0506ad88568313e16249778d8cc1216e54e070f665ca554938e504486808b",
+        "status": "COMPLETE",
+        "url": "https://www.kaggle.com/code/kentookumura/exp180-gr-matcher-exp148-train-lgb2-r1",
+        "version": 1
+      }
+    }
+  },
+  "key_idea": "Add fold-safe learned GR window matcher probability, expected-error, margin, entropy, and negative-control gap features to exp148; completed train-side but rejected because lgb_mean OOF worsened vs exp148.",
+  "notes": "Feature cache and all three Kaggle CPU split trains completed. The downloaded split OOF predictions were aligned locally only to compute the cross-split lgb_mean metric. The 3-model lgb_mean RMSE is 8.5145263671875, worse than exp148 lgb_mean 8.50128118189582, so inference and submit were not run.",
+  "oof": {
+    "bucket_readout": {
+      "individual_1000_plus_rmse_tvt": {
+        "lgb0": 9.37612533569336,
+        "lgb1": 9.40521240234375,
+        "lgb2": 9.403876304626465
+      },
+      "individual_000_050_rmse_tvt": {
+        "lgb0": 0.8390793800354004,
+        "lgb1": 1.149559497833252,
+        "lgb2": 1.1224595308303833
+      },
+      "note": "Detailed hidden-like stress was skipped after global OOF rejected the experiment."
+    },
+    "ensemble_lgb_mean": {
+      "artifact": "experiments/exp180_learned_gr_window_matcher_features_on_exp148/kaggle/output/exp180_ensemble_lgb_mean_metrics.json",
+      "error_abs_mean": 5.3449554443359375,
+      "error_mean": -0.02966443821787834,
+      "pooled_rmse_tvt": 8.5145263671875,
+      "rows": 3783989,
+      "wells": 773,
+      "worst_wells_top10": [
+        {
+          "error_abs_mean": 43.064430236816406,
+          "rmse_tvt": 48.29558181762695,
+          "rows": 7964,
+          "well": "86454a6f"
+        },
+        {
+          "error_abs_mean": 40.914302825927734,
+          "rmse_tvt": 45.27809524536133,
+          "rows": 4655,
+          "well": "1b1eba53"
+        },
+        {
+          "error_abs_mean": 42.454673767089844,
+          "rmse_tvt": 45.117767333984375,
+          "rows": 6431,
+          "well": "fb03ae90"
+        }
+      ]
+    },
+    "feature_importance_readout": {
+      "grm_feature_count": 61,
+      "top_grm_features": [
+        "grm_no_gr_prob_beam_mean",
+        "grm_shuffled_prob_beam_mean",
+        "grm_no_gr_prob_pf_ancc",
+        "grm_no_gr_prob_likpf_mean"
+      ],
+      "top_grm_rank_range_across_splits": "48-76 for no-GR/shuffled probability features; expected-error features start around rank 122."
+    },
+    "individual_models": {
+      "lgb0": 8.554800137862696,
+      "lgb1": 8.581198811251788,
+      "lgb2": 8.5779985181889
+    }
+  },
+  "planned_run": {
+    "active_modes": [
+      "cpu_deterministic_threads8"
+    ],
+    "active_variants": [
+      "learned_gr_window_matcher_addonly"
+    ],
+    "control_retrain": false,
+    "folds": 5,
+    "kaggle_enable_gpu": false,
+    "lightgbm_configs": 3,
+    "total_boosters": 15
+  },
+  "private_lb": null,
+  "public_lb": null,
+  "route": "ml_model",
+  "status": "completed_train_side_rejected_no_submit",
+  "updated_at": "2026-07-04"
+}

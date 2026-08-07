@@ -1,0 +1,252 @@
+experiment:
+  name: exp276_exp264_compact_tail_risk_target_free_gate_audit
+  description: >-
+    exp264 Stage Dの大幅global改善を保ちながらtail regression wellsを事前識別できるか、
+    Stage C compactとraw-test生成可能contextだけのouter-fold target-free riskで監査する。
+  route: ml_model
+  status: completed_corrected_parent_revalidation_guard_failed_no_inference
+  created_at: "2026-07-18"
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+lineage:
+  parent: exp264_exp263_candidate_confidence_dual_selector
+  stage_c_source: exp264_stage_c_nested_compact_meta_version6_corrected
+  stage_d_source: exp264_stage_d_downstream_tvt_ablation_version3_corrected
+  references:
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md exp264_compact_tail_risk_target_free_gate_audit
+  diff_summary: >-
+    hidden-safeなcorrected exp264 Stage C v6 / Stage D v3へ入力だけを差し替え、
+    exp264の候補、selector、compact schema、TVT models、OOF予測を変更せず、25 compact
+    partitionとraw horizontal geometryをwell単位へ事前固定集約する。outer-trainのtarget-free
+    empirical rankだけからriskとq70/q80/q90を作り、outer-valid Stage D deltaは最後のreadoutに
+    だけ使う。追加学習、threshold/weight grid、current-test inference、submitは行わない。
+
+validation:
+  strategy: outer5_target_free_well_risk_quantile_gate_audit
+  metric: bad_well_rate_lift_recall_and_gated_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_isna
+  leakage_policy:
+    - risk feature、family方向、family重み、scope、quantileはStage D target/errorを読む前に固定する。
+    - downstream outer foldごとにrole=trainの4 partitionだけでmedian、rank、thresholdを決める。
+    - role=valid well、true TVT、actual error、by-well delta、worst-well IDをrisk fitへ使わない。
+    - Stage D OOFはrisk scoreとthresholdを凍結した後のreadoutとfallback評価にだけjoinする。
+    - current-test port、submission、guard緩和、有利なquantileの事後選択を行わない。
+
+data:
+  stage_c_kernel: kentookumura/exp264-exp263-confidence-dual-selector-train
+  stage_c_kernel_version: 6
+  stage_c_manifest_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-train/artifacts/nested_compact_manifest.json
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_c_v6/artifacts/nested_compact_manifest.json
+    - "**/nested_compact_manifest.json"
+  stage_c_partition_manifest_filename: nested_compact_partition_manifest.csv
+  stage_c_schema_filename: compact_meta_schema.json
+  stage_c_expected_manifest_sha256: f4855726de446b8308a8acf80d6ff6cd6a789f18ef90e165b98fa05d12aecf1c
+  stage_c_expected_partition_manifest_sha256: 17930b7b50da7c783bffb8db8e34a0f69e5e583e028bde5b356d50a63bfacf66
+  stage_c_expected_schema_file_sha256: e3a677610899cb33bf58262f4cf02f650300c8c2207c46b53588d3418162ea74
+  stage_c_expected_schema_logical_sha256: 23614916c99edbbd513bcefee958d26cdfae5b83fb05c232c19736f2708dd725
+  stage_d_kernel: kentookumura/exp264-exp263-confidence-dual-selector-tvt-train
+  stage_d_kernel_version: 3
+  stage_d_oof_patterns:
+    - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-tvt-train/artifacts/stage_d_oof_predictions.parquet
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/kaggle/output/stage_d_v3_corrected/artifacts/stage_d_oof_predictions.parquet
+    - "**/stage_d_oof_predictions.parquet"
+  stage_d_expected_oof_sha256: b11c5005ca566f76588f4e1735386c15b8f016b874701a82e1c0741c8b839ae2
+  raw_train_dir_patterns:
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - data/raw/train
+
+risk_features:
+  candidate_count: 12
+  scopes:
+    - name: prefix128
+      max_rows: 128
+    - name: early512
+      max_rows: 512
+    - name: full
+      max_rows: null
+  quantiles: [0.70, 0.80, 0.90]
+  family_weighting: equal_family_then_equal_feature
+  percentile_reference: downstream_outer_train_wells_only
+  missing_policy: outer_train_median_plus_explicit_missingness
+  families:
+    score_dispersion:
+      compact_columns:
+        - selector__pred_abs_error_std
+        - selector__p_within10_std
+        - selector__p_within10_candidate_entropy
+      aggregations: [mean, p90]
+      direction: high_is_risk
+    candidate_divergence:
+      compact_columns:
+        - selector__candidate_value_range
+        - selector__candidate_value_std
+      aggregations: [mean, p90]
+      direction: high_is_risk
+    top1_anchor_distance:
+      compact_columns:
+        - selector__primitive_pair_bank__pred_abs_error__top1_minus_anchor
+        - selector__primitive_pair_bank__p_within10__top1_minus_anchor
+        - selector__primitive_fixed_bank__pred_abs_error__top1_minus_anchor
+        - selector__primitive_fixed_bank__p_within10__top1_minus_anchor
+      transform: absolute
+      aggregations: [mean, p90]
+      direction: high_is_risk
+    confidence_coverage:
+      compact_columns:
+        - selector__confidence_valid_count
+        - selector__available_count
+      transform: candidate_count_minus_value
+      aggregations: [mean, p90]
+      direction: high_is_risk
+    geometry_context:
+      raw_columns: [MD, X, Y, Z, GR]
+      derived_signals:
+        - eval_length
+        - abs_anchor_delta_md
+        - abs_anchor_delta_x
+        - abs_anchor_delta_y
+        - abs_anchor_delta_z
+        - abs_step_md
+        - abs_step_x
+        - abs_step_y
+        - abs_step_z
+        - abs_anchor_delta_gr
+        - abs_step_gr
+        - gr_missing
+      direction: high_is_risk
+
+readout:
+  bad_well_thresholds_ft: [0.0, 0.25]
+  fallback_policy: matched_control_for_flagged_well_else_selector_compact_addonly
+  retain_predictions: true
+  update_cv_or_lb_anchor: false
+
+model:
+  name: none_zero_booster_target_free_quantile_gate_audit
+  trains_new_boosters: false
+  variants: 1
+  lightgbm_configs: 0
+  folds_trained: 0
+  total_boosters: 0
+  parent_control_retraining: false
+
+execution:
+  stage: target_free_tail_risk_gate_audit
+  run_approved: false
+  approved_at: "2026-07-21 12:27:02 JST"
+  approval_scope: one_corrected_parent_private_cpu_revalidation_no_inference_no_submission
+  kernel_id: kentookumura/exp276-target-free-tail-risk-gate-audit-train
+  kernel_version: 3
+  kernel_id_no: 127735777
+  expected_next_kernel_version: 3
+  pushed_at: "2026-07-21 12:36:27 JST"
+  completed_at: "2026-07-21 12:38 JST"
+  runtime_seconds: 104.01691794395447
+  kaggle_push_requires_user_approval: true
+  inference_enabled: false
+  submission_enabled: false
+  variants: 1
+  lightgbm_configs: 0
+  folds_trained: 0
+  total_boosters: 0
+  parent_control_retraining: false
+
+guards:
+  technical:
+    expected_stage_c_partitions: 25
+    expected_compact_rows: 18919945
+    expected_oof_rows: 3783989
+    expected_wells: 773
+    expected_folds: 5
+    expected_worsened_wells: 255
+    expected_over_0p25_wells: 220
+    required_train_valid_well_overlap: 0
+    required_valid_well_coverage: 1
+  tail_risk:
+    decision_quantiles: [0.70, 0.80, 0.90]
+    required_positive_lift_folds: 5
+    bad_thresholds_ft: [0.0, 0.25]
+    required_gated_control_improvement_folds: 5
+    minimum_pooled_improvement_retention_fraction: 0.50
+    maximum_pooled_worst_well_delta_ft: 0.25
+    all_quantiles_must_pass: true
+    family_or_single_quantile_cannot_rescue: true
+
+artifacts:
+  required:
+    - target_free_well_risk_features.parquet
+    - target_free_well_risk_scores.csv
+    - risk_feature_schema.json
+    - risk_preprocessors.json
+    - risk_fold_quantile_readout.csv
+    - risk_pooled_quantile_readout.csv
+    - gated_by_well_metrics.csv
+    - gated_oof_predictions.parquet
+    - target_free_gate_audit.png
+    - audit_summary.json
+    - input_manifest.json
+    - reproducibility_manifest.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 250000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp264-exp263-confidence-dual-selector-train
+      - kentookumura/exp264-exp263-confidence-dual-selector-tvt-train
+    train_dataset_sources: []
+    inference_kernel_sources: []
+    inference_dataset_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_well_row_sort_and_empirical_quantiles
+  stochastic_components: []
+  parallel_rng_policy: no_parallelism_no_rng
+  feature_sha_policy: input_byte_sha_partition_sha_and_logical_output_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - PF/Beam候補、selector、TVT modelは再実行せず保存済み生成物だけを読む。
+    - 旧Stage C v3 / Stage D v2はfeature availability leakageで無効のため読まない。
+    - corrected Stage C v6 / Stage D v3への入力差し替え以外はrisk contractを変更しない。
+    - 乱数は使わず、同一partition内容に対してrisk scoreとgateは決定的である。
+    - Kaggle rerun前はdeterministic diagnostic anchorと呼ばない。
+
+inference:
+  enabled: false
+  mode: disabled_train_side_audit_only
+  create_submission: false
+
+notes:
+  - guard PASSでもcurrent-test portは別実験・別承認とし、本実験では実装しない。
+  - guard FAILならquantile、family weight、feature subsetを事後gridせずbranchを閉じる。
+
+result:
+  guard_pass: false
+  branch_closed: true
+  current_test_port: false
+  submission: false
+  decision: reject_corrected_parent_target_free_tail_risk_gate_without_rescue_grid
+  historical_invalid_run:
+    kernel_version: 2
+    reason: parent_exp264_oof_feature_availability_leakage

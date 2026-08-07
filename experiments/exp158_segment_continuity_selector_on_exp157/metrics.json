@@ -1,0 +1,82 @@
+{
+  "experiment": "exp158_segment_continuity_selector_on_exp157",
+  "status": "completed_train_side_supported_no_submit",
+  "route": "pf_beam",
+  "parent": "exp157_candidate_ranker_feature_enrichment",
+  "key_idea": "Smooth exp157 PF/Beam/dense per-candidate predicted-error scores with a well-local Viterbi segment selector to reduce row-wise path switches.",
+  "kaggle_kernel": "kentookumura/exp158-segment-continuity-selector-on-exp157-train",
+  "kaggle_url": "https://www.kaggle.com/code/kentookumura/exp158-segment-continuity-selector-on-exp157-train",
+  "kaggle_version": 1,
+  "cv": 10.789163253079206,
+  "metrics": {
+    "rows": 3783989,
+    "wells": 773,
+    "runtime_seconds": 21394.100618839264,
+    "best_viterbi_variant": "viterbi_sw050_bias000_jw050_jf025_d150_std999999_md0000_seg001",
+    "best_viterbi_rmse_tvt": 10.789163253079206,
+    "best_viterbi_mae_tvt": 6.469585,
+    "best_viterbi_within_10ft": 0.792647,
+    "best_viterbi_oracle_label_accuracy": 0.26365,
+    "best_viterbi_nondefault_switch_rate": 0.6163263159591638,
+    "best_viterbi_total_path_switch_count": 11767,
+    "best_viterbi_path_switch_per_1000_rows": 3.1096813442110958,
+    "best_viterbi_max_path_switch_per_1000_rows": 24.09191994069681,
+    "exp157_rowwise_rmse_tvt": 10.795753131803645,
+    "exp157_rowwise_within_10ft": 0.792505,
+    "exp157_rowwise_total_path_switch_count": 277110,
+    "exp157_rowwise_path_switch_per_1000_rows": 73.23224248273449,
+    "likpf_mean_rmse_tvt": 11.594897672217703,
+    "likpf_mean_within_10ft": 0.772807,
+    "oracle_rmse_tvt": 4.564605,
+    "oracle_within_10ft": 0.960054,
+    "delta_rmse_vs_likpf_mean": -0.8057344191384974,
+    "delta_rmse_vs_exp157_rowwise": -0.006589878724438947,
+    "delta_within10_vs_likpf_mean": 0.019839645411231288,
+    "delta_within10_vs_exp157_rowwise": 0.00014217800316007612,
+    "by_well_vs_exp157_rowwise": {
+      "improved": 428,
+      "worsened": 345,
+      "same": 0,
+      "max_regression_rmse": 1.9064770140890275,
+      "max_improvement_rmse": -3.9196113589659802
+    },
+    "by_well_vs_likpf_mean": {
+      "improved": 480,
+      "worsened": 293,
+      "same": 0,
+      "max_regression_rmse": 35.763028727492944,
+      "max_improvement_rmse": -26.033387293549417
+    },
+    "worst_well_best_viterbi": {
+      "well": "86454a6f",
+      "rmse_tvt": 57.836738,
+      "within_10ft": 0.049598,
+      "path_switch_per_1000_rows": 11.803114
+    },
+    "recommendation": "segment_viterbi_supported_for_continuity_audit"
+  },
+  "runtime": {
+    "enable_gpu": false,
+    "new_boosters": 0,
+    "viterbi_variants": 180,
+    "control_retraining": false
+  },
+  "sha256": {
+    "exp099_train_feature_decompressed": "1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a",
+    "exp072_aux_source_decompressed": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350",
+    "exp157_feature_schema": "891226fdf0f82c384e2fcca77f3c7d47b964d5837251ce9594249951d4e5b87c",
+    "exp157_model_manifest": "ab25fbfc0c8b92915bfbd11e62c8ffa6d84eadb3d8abf10e039927e2df7d4fb1",
+    "metrics": "35828ea61896fae4b0cb463e7391cd62d59dc1abc6df1abd53863225fa172b2c",
+    "oof_predictions_decompressed": "7401d54395939100ca31fa131e74a16992d41936b86f3bc3f6142ed597f452a2",
+    "best_viterbi_prediction": "36f66b1547fbdac2d6bf3b3d8044d89ef0c0be0c4a6bd17e0c4874ec0f790b0f"
+  },
+  "artifacts": {
+    "output_dir": "experiments/exp158_segment_continuity_selector_on_exp157/kaggle/output/train_v1",
+    "summary": "experiments/exp158_segment_continuity_selector_on_exp157/kaggle/output/train_v1/artifacts/exp158_segment_continuity_selector_on_exp157_summary.json",
+    "metrics": "experiments/exp158_segment_continuity_selector_on_exp157/kaggle/output/train_v1/artifacts/exp158_segment_continuity_selector_on_exp157_metrics.csv",
+    "selection_distribution": "experiments/exp158_segment_continuity_selector_on_exp157/kaggle/output/train_v1/artifacts/exp158_segment_continuity_selector_on_exp157_selection_distribution.csv",
+    "by_well": "experiments/exp158_segment_continuity_selector_on_exp157/kaggle/output/train_v1/artifacts/exp158_segment_continuity_selector_on_exp157_by_well.csv",
+    "bucket_metrics": "experiments/exp158_segment_continuity_selector_on_exp157/kaggle/output/train_v1/artifacts/exp158_segment_continuity_selector_on_exp157_bucket_metrics.csv",
+    "oof_predictions": "experiments/exp158_segment_continuity_selector_on_exp157/kaggle/output/train_v1/artifacts/exp158_segment_continuity_selector_on_exp157_oof_predictions.csv.gz"
+  }
+}

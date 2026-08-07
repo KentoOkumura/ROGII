@@ -1,0 +1,47 @@
+{
+  "artifact_sha256": {
+    "bucket_metrics": "ac26be7267e913e77a0bb6d07a63877ee3c6a0553cf9d279318e09daba0e35d8",
+    "by_well": "a2f7604827eea15171122774fad180eb272bf859556926c17b0040bf0588b1cb",
+    "candidate_metrics": "623b4034c65a3bf078ee907df83fae9732f688a890973aeca702b6d9d760f6c0",
+    "feature_schema": "53d7fe00bad2ac17b6c2be5a0a02d69707e8d89a1a76c8c26b7eed33923de6dc",
+    "group_metrics": "aedabcba36f6fc1e407ffeb505be172feb951b582810d63a95311ea743850bd4",
+    "oof_predictions_decompressed": "e638132462b1bfea6fe5aa9a3a6a48278dd1de030d83f6a3eb6fd46d9dc7cc32",
+    "oof_predictions_raw": "94d39ad0ec2755899e319e651a046789091ffc46113dc7f55a6c54a27cf57d1c"
+  },
+  "best_z_slope_variant": {
+    "bias": -1.1009002926954201,
+    "candidate": "zsl_likpf_mean_a0p1_c10_z0p1_d5_pfz_agree",
+    "coverage": 1.0,
+    "delta_rmse_vs_primary_baseline": 0.002252946065393502,
+    "mae": 7.068923097858008,
+    "max_well_regression_vs_primary": 0.20451380548092501,
+    "rmse": 11.597150618283097,
+    "rows": 3783989,
+    "within10": 0.7727961154221115
+  },
+  "cv": 11.594897672217703,
+  "experiment": "exp140_z_slope_posthoc_correction_on_pfbeam_candidates",
+  "key_idea": "Apply small gated -dZ/dMD posthoc corrections to fixed PF/Beam candidates without rerunning PF/Beam.",
+  "metric": "rmse",
+  "notes": "Kaggle train v2 completed. Baseline likpf_mean remains best; the best Z-slope variant worsened RMSE by +0.002253 and within10 slightly worsened. No inference port or submission.",
+  "primary_baseline": {
+    "bias": -1.0994231121947302,
+    "candidate": "likpf_mean",
+    "coverage": 1.0,
+    "delta_rmse_vs_primary_baseline": 0.0,
+    "mae": 7.067632584311985,
+    "max_well_regression_vs_primary": 0.0,
+    "rmse": 11.594897672217703,
+    "rows": 3783989,
+    "within10": 0.772807479091509
+  },
+  "private_lb": null,
+  "public_lb": null,
+  "route": "pf_beam",
+  "rows": 3783989,
+  "runtime_seconds": 1290.2476069927216,
+  "status": "completed_train_side_rejected_no_submit",
+  "summary_path": "experiments/exp140_z_slope_posthoc_correction_on_pfbeam_candidates/kaggle/output/train_v2/artifacts/exp140_z_slope_posthoc_correction_on_pfbeam_candidates_summary.json",
+  "variant_count": 432,
+  "wells": 773
+}

@@ -1,0 +1,129 @@
+{
+  "experiment": "exp321_z_only_residual_gr_correction_ladder",
+  "status": "stage_ab_completed_gate_failed_stage_c_closed",
+  "route": "pf_beam",
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse_tvt_with_stage_specific_diagnostics",
+  "key_idea": "固定-ΔZのZ-only経路を、残差構造、GR shift識別力、exp226 window GR補正の3段階gateで監査する",
+  "created_at": "2026-07-21",
+  "updated_at": "2026-07-21",
+  "implementation_enabled": true,
+  "implementation_scope": "stage_ab_only",
+  "implementation_tests": {
+    "exp321_tests_passed": 10,
+    "targeted_tests_passed": 21,
+    "jupytext_roundtrip": "passed",
+    "py_compile": "passed",
+    "ruff_f821": "passed",
+    "strict_experiment_validation": "passed",
+    "template_validation": "passed",
+    "full_suite": {
+      "passed": 433,
+      "skipped": 1,
+      "failed": 2,
+      "unrelated_failures": "existing exp296 completed config versus stale pre-run test expectations"
+    }
+  },
+  "kaggle_run_ab": {
+    "approved": true,
+    "status": "complete",
+    "kernel_id": "kentookumura/exp321-z-only-residual-gr-ladder-train",
+    "kernel_version": 1,
+    "runtime": "cpu_internet_off",
+    "runtime_seconds": 611.9633495807648,
+    "active_variants": 1,
+    "fold_strata": 5,
+    "rows": 3783989,
+    "wells": 773,
+    "boosters": 0,
+    "parent_control_retraining": false
+  },
+  "stage_a": {
+    "passed": true,
+    "folds_meeting_relative_shape": {
+      "h256": 5,
+      "h512": 5
+    },
+    "required_folds": 4,
+    "technical_coverage": {
+      "finite_prediction": 1.0,
+      "row_identity": 1.0,
+      "well_identity": 1.0
+    },
+    "overall_h512": {
+      "z_direct_rmse": 107.49482425817837,
+      "geop_direct_rmse": 10.077950290784386,
+      "z_affine_quotient_rmse": 0.6092365247835112,
+      "geop_affine_quotient_rmse": 0.6690910884501773,
+      "z_vs_geop_affine_rmse_ratio": 0.9105434750217525,
+      "z_affine_sse_explained_fraction": 0.9999678783732008,
+      "z_cap4_oracle_rmse_gain_ft": 3.205123668773453,
+      "z_block_mean_abs_ft": 90.62889439287528,
+      "z_block_slope_abs_ft_per_row": 0.033651220262066586,
+      "z_lag1_correlation_mean": 0.9998270052020657
+    }
+  },
+  "stage_b": {
+    "passed": false,
+    "failure_checks": [
+      "bank_range_coverage",
+      "maximum_quantization_error"
+    ],
+    "folds_real_above_shuffled": {
+      "top1": 5,
+      "top3": 5,
+      "mrr": 5,
+      "sign": 5
+    },
+    "overall": {
+      "blocks": 7787,
+      "top1": 0.33299088223963014,
+      "top3": 0.5879029151149352,
+      "mrr": 0.5033988470613615,
+      "sign": 0.6858867343007576,
+      "shuffled_top1": 0.1090278669577501,
+      "shuffled_top3": 0.2772569667394375,
+      "shuffled_mrr": 0.2780978816711448,
+      "shuffled_sign": 0.4867086169256453,
+      "bank_range_coverage": 0.4940285090535508,
+      "quantization_coverage": 0.6042121484525491,
+      "maximum_quantization_error_ft": 384.73457627118563,
+      "oracle_shift_gain_rmse_mean": 55.1546803672312,
+      "top1_regret_rmse_mean": 38.38011664661633
+    },
+    "all_stress_scope_rank_checks_passed": true
+  },
+  "stage_c": {
+    "implemented": false,
+    "status": "blocked_by_stage_ab_gate_and_closed_without_rescue"
+  },
+  "artifacts": {
+    "decision_manifest_sha256": "00eb8e81d8b82ff5ae5774b5cced0f5655b14c935f7c8be5a9c53eb6827b309c",
+    "target_free_contract_sha256": "8ab762faff47b5d402064c88cfd0b6cdbc271c92b18e4ff1de1342b6c37186c4",
+    "target_free_path": {
+      "rows": 3783989,
+      "raw_sha256": "1763026f32b72e0f8fcd50ea005706a9cf3090bbb8d9370ed345e637b6289a04",
+      "decompressed_sha256": "c2ba110ac84f7d794807704391af53627fa6d7c14fc41742292a524bb7678b24",
+      "schema_sha256": "1b92f37561d4dbdba6f442db4c48bda4d95be46564399bcf50079ed15c23f1f0",
+      "logical_content_sha256": "a0154e64808e2085c32eb0a99e9826a4caadd5ad940e579e0dea33edcb0f38af"
+    },
+    "target_free_scores": {
+      "rows": 101231,
+      "raw_sha256": "fecf476742fdb0890ebffdd6d1d77c052d01d77b8ffbd819da9dca82b8a2ab5e",
+      "decompressed_sha256": "0636f6362f5a2f674a3d21d5bf0b5582a5020d5ed0ce4173d442e2fca24b231d",
+      "schema_sha256": "1c6d25e7f9dc5111979d406f9bf44a80e1d9bd9aaa38105b5265311001bbe10c",
+      "logical_content_sha256": "af4194f087d459a588077278116ecfca614288694402f2ec0d91e2c40b075e57"
+    },
+    "stage_a_blocks": {
+      "rows": 52909,
+      "logical_content_sha256": "68864f754b6989587c993183554db9e8016d3410807952233d0bb6347c26fd96"
+    },
+    "stage_b_readout": {
+      "rows": 7787,
+      "logical_content_sha256": "80786980bc8c37bc25101bf80392f024e0257c938f7adeef09d878573fa0fbcc"
+    }
+  },
+  "notes": "Stage A passed, but Stage B failed the frozen bank-range and quantization gates. Stage C, inference, and submission remain disabled; no threshold, shift-bank, sigma, or decoder rescue was run."
+}

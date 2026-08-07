@@ -1,0 +1,151 @@
+{
+  "experiment": "exp227_z_scale_replacement_on_exp218",
+  "status": "split_aggregate_completed_rejected",
+  "route": "ml_model",
+  "parent": "exp218_gr_wavelet_rotation_confidence_features_on_exp148",
+  "active_variant": "z_scale_replacement",
+  "planned_train": {
+    "runtime": "cpu",
+    "split_notebooks": [
+      "train_lgb0",
+      "train_lgb1",
+      "train_lgb2"
+    ],
+    "active_variants": 1,
+    "active_modes": 1,
+    "lightgbm_configs": 3,
+    "lightgbm_config_splits": [
+      0,
+      1,
+      2
+    ],
+    "folds": 5,
+    "boosters_per_split": 5,
+    "planned_boosters": 15,
+    "control_retraining": false
+  },
+  "kaggle_train": {
+    "started_at": "2026-07-09",
+    "completed_at": "2026-07-10",
+    "status": "complete",
+    "kernels": [
+      {
+        "split": "train_lgb0",
+        "kernel": "kentookumura/exp227-zscale-exp218-lgb0",
+        "version": 1,
+        "status": "KernelWorkerStatus.COMPLETE",
+        "url": "https://www.kaggle.com/code/kentookumura/exp227-zscale-exp218-lgb0",
+        "output_dir": "experiments/exp227_z_scale_replacement_on_exp218/kaggle/output/train_lgb0_v1",
+        "log": "experiments/exp227_z_scale_replacement_on_exp218/kaggle/output/train_lgb0_v1/exp227-zscale-exp218-lgb0.log"
+      },
+      {
+        "split": "train_lgb1",
+        "kernel": "kentookumura/exp227-zscale-exp218-lgb1",
+        "version": 1,
+        "status": "KernelWorkerStatus.COMPLETE",
+        "url": "https://www.kaggle.com/code/kentookumura/exp227-zscale-exp218-lgb1",
+        "output_dir": "experiments/exp227_z_scale_replacement_on_exp218/kaggle/output/train_lgb1_v1",
+        "log": "experiments/exp227_z_scale_replacement_on_exp218/kaggle/output/train_lgb1_v1/exp227-zscale-exp218-lgb1.log"
+      },
+      {
+        "split": "train_lgb2",
+        "kernel": "kentookumura/exp227-zscale-exp218-lgb2",
+        "version": 1,
+        "status": "KernelWorkerStatus.COMPLETE",
+        "url": "https://www.kaggle.com/code/kentookumura/exp227-zscale-exp218-lgb2",
+        "output_dir": "experiments/exp227_z_scale_replacement_on_exp218/kaggle/output/train_lgb2_v1",
+        "log": "experiments/exp227_z_scale_replacement_on_exp218/kaggle/output/train_lgb2_v1/exp227-zscale-exp218-lgb2.log"
+      }
+    ]
+  },
+  "feature_replacement": {
+    "drop_base_columns": [
+      "z",
+      "dz",
+      "dzdmd",
+      "slp_z"
+    ],
+    "replacement_feature_group": "well_scaled_z_dz",
+    "source_builder_parent": "exp224_well_scaled_z_dz_features_on_exp218",
+    "target_free": true
+  },
+  "references": {
+    "exp218_parent_lgb_mean_rmse_tvt": 8.475793751656624,
+    "exp218_public_lb": 7.843,
+    "exp148_feature_surface_lgb_mean_rmse_tvt": 8.50128118189582,
+    "exp224_addonly_lgb_mean_rmse_tvt": 8.538687041980328,
+    "exp224_delta_vs_exp218_rmse_tvt": 0.06289329032370361
+  },
+  "cv": {
+    "metric": "rmse_tvt",
+    "variant": "z_scale_replacement",
+    "mode": "cpu_deterministic_threads8",
+    "rows": 3783989,
+    "wells": 773,
+    "split_rmse_tvt": {
+      "lgb0": 8.665460920775375,
+      "lgb1": 8.578969302995215,
+      "lgb2": 8.59902178112092
+    },
+    "split_rmse_target": {
+      "lgb0": 8.66546090356837,
+      "lgb1": 8.578969202966412,
+      "lgb2": 8.599021936889832
+    },
+    "lgb_mean": {
+      "rmse_tvt": 8.561884246773019,
+      "rmse_target": 8.561884363571172,
+      "prediction_sha256": "38f7632b3e0442d1e667bff6b866cc3613775826e01ce22d76c6f395dac7c460"
+    },
+    "delta_vs_exp218_rmse_tvt": 0.08609049511639455,
+    "delta_vs_exp148_rmse_tvt": 0.06060306487719913,
+    "delta_vs_exp224_addonly_rmse_tvt": 0.02319720479269094,
+    "full_train_coverage_pass": {
+      "lgb0": true,
+      "lgb1": true,
+      "lgb2": true
+    },
+    "top_features_by_mean_importance": [
+      "slp_b_d_50",
+      "spatial_knn_dist",
+      "wsz_dz_over_likpf_tvt_p05_p95_range",
+      "ll_learned_pred_abs_error_beam_mean",
+      "grwr_fft_rotation_ratio_x_log1p_md_since"
+    ],
+    "worst_wells_top5": [
+      {
+        "well": "86454a6f",
+        "rows": 7964,
+        "rmse_tvt": 48.29667308202664
+      },
+      {
+        "well": "1b1eba53",
+        "rows": 4655,
+        "rmse_tvt": 45.45557253907648
+      },
+      {
+        "well": "fb03ae90",
+        "rows": 6431,
+        "rmse_tvt": 45.41822153141734
+      }
+    ]
+  },
+  "decision": {
+    "status": "reject_no_inference_no_submit",
+    "reason": "3-config OOF RMSE is worse than exp218 parent, exp148 feature-surface reference, and exp224 add-only.",
+    "inference": false,
+    "submit": false
+  },
+  "artifacts": {
+    "aggregate_summary": "experiments/exp227_z_scale_replacement_on_exp218/kaggle/output/train_split_aggregate_v1/artifacts/exp227_z_scale_replacement_on_exp218_split_aggregate_summary.json",
+    "aggregate_metrics": "experiments/exp227_z_scale_replacement_on_exp218/kaggle/output/train_split_aggregate_v1/artifacts/exp227_z_scale_replacement_on_exp218_split_aggregate_metrics.csv",
+    "aggregate_predictions": "experiments/exp227_z_scale_replacement_on_exp218/kaggle/output/train_split_aggregate_v1/artifacts/exp227_z_scale_replacement_on_exp218_split_aggregate_predictions.csv.gz",
+    "aggregate_by_well": "experiments/exp227_z_scale_replacement_on_exp218/kaggle/output/train_split_aggregate_v1/artifacts/exp227_z_scale_replacement_on_exp218_split_aggregate_by_well.csv",
+    "aggregate_bucket_tail_rank": "experiments/exp227_z_scale_replacement_on_exp218/kaggle/output/train_split_aggregate_v1/artifacts/exp227_z_scale_replacement_on_exp218_split_aggregate_bucket_metrics.csv",
+    "split_individual_bucket_metrics": "experiments/exp227_z_scale_replacement_on_exp218/kaggle/output/train_split_aggregate_v1/artifacts/exp227_z_scale_replacement_on_exp218_split_individual_bucket_metrics.csv",
+    "feature_importance_mean": "experiments/exp227_z_scale_replacement_on_exp218/kaggle/output/train_split_aggregate_v1/artifacts/exp227_z_scale_replacement_on_exp218_split_aggregate_feature_importance_mean.csv"
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "updated_at": "2026-07-10"
+}

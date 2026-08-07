@@ -1,0 +1,122 @@
+{
+  "experiment": "exp493_student_t_exact_hmm_full_replacement_on_exp264",
+  "status": "stage_c_completed_scientific_gate_failed_closed",
+  "decision": "FAIL_CLOSE_FIXED12_STUDENT_T_REPLACEMENT_SELECTOR",
+  "route": "ensemble",
+  "metric": "rmse",
+  "cv": 8.616237400142841,
+  "saved_parent_cv": 8.652531955610227,
+  "delta_vs_saved_parent_ft": -0.03629455546738569,
+  "fold_rmse": [
+    8.82761003396056,
+    8.547425036060813,
+    8.69826515915735,
+    8.566946237404876,
+    8.435310875227435
+  ],
+  "saved_parent_fold_rmse": [
+    8.991720025343861,
+    8.426634924939929,
+    8.900503340840876,
+    8.426473003260869,
+    8.499558672015853
+  ],
+  "fold_delta_rmse_ft": [
+    -0.1641099913833006,
+    0.1207901111208844,
+    -0.2022381816835263,
+    0.1404732341440073,
+    -0.0642477967884183
+  ],
+  "fold_improvements_vs_parent": 3,
+  "candidate_count": 12,
+  "changed_candidate_count": 4,
+  "fixed_fallback": {
+    "replacement_rmse": 8.160447730654221,
+    "parent_rmse": 8.238331546485645,
+    "delta_ft": -0.07788381583142368,
+    "policy": "report_only_because_exact_hmm_value_changes"
+  },
+  "selector_score_guard": {
+    "passed": true,
+    "expected_error_mae_improved_folds": 5,
+    "within10_logloss_improved_folds": 5,
+    "within10_brier_improved_folds": 5
+  },
+  "scientific_gate_passed": false,
+  "scientific_gate_checks": {
+    "all_technical_checks": true,
+    "selector_score_guard": true,
+    "pooled_nonworse_than_parent": true,
+    "improved_parent_folds": false,
+    "near_nonworse": true,
+    "distance_1000_plus_nonworse": true,
+    "hidden_like_nonworse": true,
+    "by_well_p95_nonworse": false,
+    "worst_well_nonworse": false
+  },
+  "tail": {
+    "near_0_250_delta_rmse_ft": -0.0038407911472484,
+    "distance_1000_plus_delta_rmse_ft": -0.0396632733488324,
+    "hidden_like_spatial_delta_rmse_ft": -0.1049284713048859,
+    "hidden_like_typewell_purged_delta_rmse_ft": -0.0676291424125246,
+    "by_well_p95_delta_rmse_ft": 0.5400958549515298,
+    "worst_well": "f6d009f4",
+    "worst_well_delta_rmse_ft": 10.472288432924444
+  },
+  "changed_family_usage": {
+    "top1_rows": 1372891,
+    "top1_fraction": 0.3628158009973073,
+    "policy": "report_only"
+  },
+  "execution": {
+    "active_variants": 1,
+    "objectives": 2,
+    "outer_folds": 5,
+    "inner_folds": 4,
+    "trained_cpu_selector_boosters_version_3": 40,
+    "cumulative_cpu_selector_boosters_versions_2_and_3": 80,
+    "parent_control_retraining": false,
+    "gpu_boosters": 0,
+    "downstream_tvt_training": false,
+    "inference": false,
+    "submission": false
+  },
+  "stage_c": {
+    "model_count": 40,
+    "compact_partition_count": 25,
+    "compact_rows": 18919945,
+    "outer_valid_score_long_rows": 45407868,
+    "technical_gate_passed": true,
+    "leakage_audit_passed": true
+  },
+  "kaggle_run": {
+    "kernel": "kentookumura/exp493-studentt-fixed12-replacement-selector-train",
+    "id_no": 129218034,
+    "version": 3,
+    "status": "complete",
+    "pushed_at_utc": "2026-07-31 03:49:34 UTC",
+    "completed_observed_at_utc": "2026-07-31 05:28:52 UTC",
+    "notebook_elapsed_seconds": 5896.184329532,
+    "runtime": "cpu",
+    "internet": false,
+    "selected_output_downloaded": true,
+    "full_output_archive_downloaded": false
+  },
+  "sha256": {
+    "replacement_decompressed": "668fe87da902955acee742c72d30724abb53f32050bb5d0a5c1b3dee0cbd626e",
+    "feature_schema": "b91ec1517a82641fe4d96f41c97872151f273a8bbfcb537284f91d47aacf1035",
+    "compact_schema": "e3a677610899cb33bf58262f4cf02f650300c8c2207c46b53588d3418162ea74",
+    "replacement_semantic_manifest": "a93d20c9cdc129c4ef8ec792d9beb80a55a54109cbd94858e878e799a43a7213",
+    "nested_selector_model_manifest": "2560711a4a2f333a31cc2b3b423ace9d7b3d31062c0513e0505376e4ff80d0ca",
+    "nested_outer_valid_candidate_score": "da4f6af616c3a87495d643cca3ef6e3e531cb2828dca769ef32fe7f4c6f9db89",
+    "nested_compact_manifest": "548514a2d775f42dbfc87a43f4e4d378c305b6f34d85722f10827ccc3e6fd5d9",
+    "scientific_gate": "1c024bbe1893edb4afc96c1141c284e7f0ea74e1156b13908e947d4e82066bf5",
+    "summary": "d3811e4fe49f272d7b992fabee681b9e42ea8cd44efeba9295736ae033620b74",
+    "reproducibility_manifest": "7e7c3d74512d6e4fe35fe3c9faa16b40f68865ea29fa2d798168763e894ef19b"
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "deterministic_anchor": false,
+  "notes": "Pooled and all fixed scopes improved, but only 3/5 folds improved and the frozen by-well p95 and worst-well gates failed. Close without weight, threshold, domain, gate, downstream, inference, or submission rescue."
+}

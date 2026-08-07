@@ -1,0 +1,347 @@
+experiment:
+  name: "exp423_same_typewell_gr_dtw_truth_warp_transfer_readout"
+  description: "same-typewell内のGR類似donorから正解TVT warpを転写する0-model OOF readout"
+  route: pf_beam
+  status: completed_closed
+  created_at: "2026-07-28"
+  updated_at: "2026-07-28"
+  stage: 0
+
+lineage:
+  parent: exp109_typewell_neighbor_prior_features
+  references:
+    - exp065
+    - exp099
+    - exp119
+    - exp230
+    - exp282
+  diff_summary: >-
+    same-typewell group平均priorを、GR constrained-DTWで選んだouter-train donor固有の
+    正解TVT増分をquery anchorへ転写するanalog path readoutへ置き換えて検証する。
+
+implementation:
+  enabled: true
+  design_approved: true
+  implementation_approved: true
+  implementation_approval_source: user_message_2026_07_28_implement_exp423
+  scaffold_created: true
+  canonical_notebooks_are_placeholders: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_is_placeholder: true
+  canonical_train_notebook_adoption_source: user_message_2026_07_28_run_exp423
+  compact_selfcontained_train_source_created: true
+  compact_selfcontained_train_notebook_created: true
+  jupytext_source_created: true
+  helper_code_created: false
+  tests_created: true
+  kaggle_package_created: true
+  kaggle_run_approved: true
+  kaggle_run_approval_source: user_message_2026_07_28_run_exp423
+  audit_execution_enabled: true
+  inference_enabled: false
+  submission_in_scope: false
+
+validation:
+  strategy: group_kfold_pseudo_tail_oof
+  n_folds: 5
+  expected_folds: [0, 1, 2, 3, 4]
+  expected_rows: 3783989
+  expected_wells: 773
+  group_column: well_id
+  seed: 42
+  row_inventory_source: exp099
+  fold_source: exp099
+  baseline_prediction_sources:
+    - exp099_likpf_mean
+    - exp109_best_fixed
+  outer_valid_truth_policy: late_join_after_freeze
+
+data:
+  raw_train_candidates:
+    - data/raw/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+  inputs:
+    exp099_feature_cache:
+      filename: exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+      candidates:
+        - experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts
+        - /kaggle/input/notebooks/kentookumura/exp099-pf-multiobs-likelihood-train/artifacts
+        - /kaggle/input/exp099-pf-multiobs-likelihood-train/artifacts
+      expected_raw_sha256: 4bd9df60f5c09f7a3029dac399afef73aa45b0158a7fd06a62a56f85fd0fde38
+      expected_decompressed_sha256: 1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a
+      prefreeze_safe_columns: [id, well, last_known_tvt, likpf_mean, md_since, eval_len]
+      postfreeze_truth_columns: [id, well, target, last_known_tvt]
+    exp065_cluster_assignments:
+      filename: common_typewell_cluster_assignments.csv
+      candidates:
+        - experiments/exp065_typewell_supertype_cluster_cv_audit/artifacts
+        - /kaggle/input/notebooks/kentookumura/exp065-typewell-supertype-cluster-cv-audit-train/artifacts
+        - /kaggle/input/exp065-typewell-supertype-cluster-cv-audit-train/artifacts
+      expected_raw_sha256: dcda8588cc1dd9261bafae7de00c890393e38b8a0ca0eb86fbba18a2cffc4a50
+      selected_method: native_overlap
+      selected_threshold: "1"
+    exp109_oof:
+      filename: exp109_typewell_neighbor_prior_features_oof_predictions.csv.gz
+      candidates:
+        - experiments/exp109_typewell_neighbor_prior_features/kaggle/output/train_v2/artifacts
+        - /kaggle/input/notebooks/kentookumura/exp109-typewell-neighbor-prior-train/artifacts
+        - /kaggle/input/exp109-typewell-neighbor-prior-train/artifacts
+      expected_raw_sha256: cc4c017baff6410ce8a0cf52e0a0e76d6f7309fd9b163eea43c0173b7e5fb660
+      expected_decompressed_sha256: ec1e105a3021badf7441768329e94dfce874f110927bf9af1a3968ddbc609e29
+      prefreeze_safe_columns:
+        - id
+        - well
+        - native_overlap_0p999_likpf_mean_corr_a0p2_c40
+    exp115_hidden_like_assignments:
+      filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      candidates:
+        - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+        - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+        - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      expected_raw_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+  query_region: pseudo_unknown_suffix
+  query_observed_columns:
+    - well_id
+    - row_idx
+    - MD
+    - GR
+    - typewell_group_id
+  query_forbidden_before_freeze:
+    - TVT_true
+  donor_pool:
+    split: outer_train_only
+    same_typewell_group: true
+    native_overlap: 1
+    min_group_donors: 2
+    top_k: 5
+  query_anchor: last_known_tvt_before_pseudo_suffix
+
+model:
+  name: none_analog_truth_warp_transfer_readout
+  family: zero_model
+  params: {}
+
+gr_similarity:
+  orientation: forward_only
+  smoothing:
+    method: centered_rolling_median
+    window_rows: 5
+  resampling:
+    axis: normalized_suffix_progress
+    n_points: 256
+    method: linear
+    extrapolate: false
+  normalization:
+    method: robust_zscore
+    center: median
+    scale: mad_times_1_4826
+    min_scale: 1.0e-6
+  support:
+    min_finite_fraction: 0.70
+    min_pair_common_fraction: 0.70
+  dtw:
+    point_cost: squared_difference
+    path_cost: mean_valid_point_cost
+    sakoe_chiba_band_points: 32
+    allowed_steps:
+      - [1, 1]
+      - [1, 0]
+      - [0, 1]
+    max_consecutive_horizontal_or_vertical: 4
+    tie_break:
+      - normalized_cost_asc
+      - donor_well_id_asc
+
+truth_warp_transfer:
+  mapping: monotone_linear_interpolation_of_dtw_path
+  donor_tvt_interpolation: linear_on_normalized_suffix_progress
+  formula: >-
+    query_anchor + donor_true_tvt(psi(query_progress))
+    - donor_true_tvt(psi(0))
+  output_grid: original_query_score_rows
+  require_anchor_continuity: true
+  require_finite_supported_output: true
+
+candidates:
+  primary: analog_top5_median
+  deployable:
+    analog_top1:
+      donor_rank: 1
+      role: selectability_diagnostic
+    analog_top5_median:
+      aggregation: rowwise_median
+      max_donors: 5
+      role: primary
+  post_freeze_only:
+    analog_top5_oracle_well:
+      selection_unit: whole_query_well
+      role: transferability_headroom
+      deployable: false
+  controls:
+    stable_random_same_group:
+      method: sha256_query_well_mod_sorted_eligible_donors
+    exp109_best_fixed:
+      role: primary_reference
+      source_experiment: exp109_typewell_neighbor_prior_features
+      source_variant: native_overlap_0p999_likpf_mean_corr_a0p2_c40
+      frozen_rmse: 11.143359520955189
+    exp099_likpf_mean:
+      role: baseline_reference
+  unsupported_fallback: exp109_best_fixed
+  prohibit_posthoc_primary_switch: true
+
+freeze_contract:
+  before_query_truth_join:
+    - row_inventory
+    - fold_assignment
+    - support_and_fallback
+    - donor_ranking_and_dtw_paths
+    - all_donor_analog_paths
+    - analog_top1
+    - analog_top5_median
+    - stable_random_same_group
+    - config_and_input_manifest
+    - schema_and_content_sha
+  allowed_truth_before_freeze:
+    donor_outer_train_tvt: analog_path_materialization_only
+    query_outer_valid_tvt: false
+  assertions:
+    donor_query_well_intersection: 0
+    query_truth_reads_before_freeze: 0
+    duplicate_row_identity: 0
+
+evaluation:
+  metric: rmse
+  primary_candidate: analog_top5_median
+  reference: exp109_best_fixed
+  hidden_like_role_columns:
+    hidden_like_spatial: verification_like_spatial_role
+    hidden_like_typewell_purged: verification_like_typewell_purged_role
+  reports:
+    - overall
+    - fold
+    - by_well
+    - bucket_1000_plus
+    - hidden_like_spatial_typewell_purged
+    - donor_rank
+    - dtw_diagnostics
+    - support_and_fallback
+  secondary:
+    - spearman_dtw_cost_vs_donor_path_rmse
+    - by_well_delta_quantiles
+
+success_gates:
+  logical_operator: all
+  technical:
+    donor_query_intersection_max: 0
+    query_truth_reads_before_freeze_max: 0
+    row_identity_violations_max: 0
+    supported_well_fraction_min: 0.90
+    supported_score_row_fraction_min: 0.90
+    supported_path_finite_fraction_min: 1.00
+    deterministic_content_sha_match: true
+  scientific:
+    oracle_vs_exp109_rmse_gain_min_ft: 0.30
+    oracle_nonworse_folds_min: 4
+    dtw_cost_error_spearman_min: 0.15
+    positive_spearman_folds_min: 4
+    top1_vs_random_rmse_gain_min_ft: 0.10
+    top1_vs_random_nonworse_folds_min: 4
+    primary_vs_exp109_rmse_gain_min_ft: 0.10
+    primary_nonworse_folds_min: 4
+    bucket_1000_plus_delta_max_ft: 0.00
+    hidden_like_delta_max_ft: 0.00
+    by_well_delta_p95_max_ft: 0.00
+    by_well_delta_worst_max_ft: 0.25
+
+decision:
+  technical_fail: invalid
+  oracle_fail: close_truth_warp_transfer
+  oracle_pass_selection_fail: headroom_only_selection_failed
+  all_gates_pass: design_separate_test_parity_and_candidate_integration_experiment
+  rescue_grid_allowed: false
+
+runtime:
+  device: cpu
+  use_amp: false
+  num_workers: 1
+  batch_size: null
+  new_training: false
+  pf_beam_execution: false
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp065-typewell-supertype-cluster-cv-audit-train
+      - kentookumura/exp109-typewell-neighbor-prior-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+execution:
+  audit_variants: 1
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  pf_well_runs: 0
+  hmm_well_runs: 0
+  beam_well_runs: 0
+  gpu_runs: 0
+  parent_control_reruns: 0
+  audit_run_approved: true
+  kaggle_package_approved: true
+  inference_approved: false
+  submission_approved: false
+
+outputs:
+  target_free:
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_target_free_candidate_freeze.csv.gz
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_dtw_path_diagnostics.csv.gz
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_fold_separation_audit.csv
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_analog_donor_paths.csv.gz
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_input_manifest.json
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_target_free_freeze_contract.json
+  post_freeze:
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_oof_predictions.csv.gz
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_scope_metrics.csv
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_fold_metrics.csv
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_by_well.csv
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_donor_error_readout.csv.gz
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_donor_rank_metrics.csv
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_dtw_spearman.csv
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_technical_gate.json
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_scientific_gate.json
+    - exp423_same_typewell_gr_dtw_truth_warp_transfer_readout_summary.json
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: true
+  seed_policy: no_rng_except_stable_sha256_negative_control
+  stochastic_components: []
+  parallel_rng_policy: single_process_and_stable_sort
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  expected_target_free_content_sha256: 6b5b54521ba6612665436f95d4ab3d42c711e8eb18a29bb2ad1916862849d3b3
+  record:
+    kernel_version: true
+    input_sha: true
+    row_inventory_sha: true
+    config_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  not_applicable:
+    model_sha: no_model
+    submission_sha: no_submission
+  notes:
+    - Kaggle version 2/3の独立再実行でlogical content SHAが一致し、deterministic anchorへ昇格した。
+    - 実装時もquery/outer-valid truthのlate joinを維持する。
+
+notes:
+  - compact self-contained Jupytext source/notebook、DTW、freeze、metric、gate、専用testを実装済み。
+  - 2026-07-28の実行依頼により正規train notebook採用、Kaggle package、CPU audit runを承認済み。
+  - Kaggle version 2の初回有効runでlogical content SHAを取得し、独立rerun referenceへ固定した。
+  - Kaggle version 3でlogical content SHAの独立再実行一致を確認した。
+  - technical coverageとscientific oracle/primary gateがFAILしたため、truth-warp transfer仮説をrescueなしで閉じる。
+  - 正規inference notebookはplaceholderのまま保持し、inference、submissionは未承認・未実行。
+  - hard clusteringは行わず、same-typewell groupをdonor pool guardとしてのみ使う。

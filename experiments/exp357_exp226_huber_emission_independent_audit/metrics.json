@@ -1,0 +1,179 @@
+{
+  "experiment": "exp357_exp226_huber_emission_independent_audit",
+  "status": "stage_1_override_completed_guard_failed_closed",
+  "route": "pf_beam",
+  "stage": "stage_1_exact_hmm_override",
+  "cv": 9.737195157482754,
+  "stage_0": {
+    "passed": false,
+    "decision": "stage_0_failed_close_without_rescue",
+    "stage_1_eligible": false,
+    "checks": {
+      "expected_folds": true,
+      "extreme_residual_regret_improvement": true,
+      "extreme_residual_top3_improvement": true,
+      "mrr_gap_vs_circular_not_worse": true,
+      "mrr_improved_folds": false,
+      "pooled_mrr_gain": false,
+      "pooled_top3_gain": false,
+      "row_identity_coverage": true,
+      "saved_gaussian_rank_parity": true,
+      "score_finite_coverage": true,
+      "stress_mrr_non_regression": false,
+      "stress_top3_non_regression": false,
+      "top3_gap_vs_circular_not_worse": true,
+      "top3_improved_folds": false
+    },
+    "improved_folds": {
+      "mrr": 2,
+      "top3": 2,
+      "reporting": 5
+    },
+    "overall": {
+      "wells": 773,
+      "rows": 3783989,
+      "blocks": 7787,
+      "huber_mrr": 0.3896675435490127,
+      "gaussian_mrr": 0.3896259847910034,
+      "huber_minus_gaussian_mrr": 0.00004155875800926356,
+      "huber_top3_rate": 0.45254912032875305,
+      "gaussian_top3_rate": 0.4524207011686144,
+      "huber_minus_gaussian_top3_rate": 0.00012841916013867083,
+      "huber_minus_gaussian_top1_regret_rmse_mean": -0.024805270362792342,
+      "huber_likelihood_top1_margin_mean": 0.017259621228067616,
+      "gaussian_likelihood_top1_margin_mean": 0.01832692728246507
+    },
+    "extreme_residual": {
+      "blocks": 174,
+      "block_share": 0.02234493386413253,
+      "top3_gain": 0.011494252873563204,
+      "regret_delta_ft": -0.652269722754049
+    },
+    "flattening_signal": true
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "metric": "rmse_tvt",
+  "artifacts_generated": true,
+  "artifact_directory": "Kaggle versions 1 and 2 output (not downloaded; metrics and SHA recorded from kernel logs)",
+  "runtime_seconds": 9597.242200136185,
+  "stage_0_runtime_seconds": 319.61734890937805,
+  "stage_1_runtime_seconds": 9597.242200136185,
+  "kaggle": {
+    "kernel_id": "kentookumura/exp357-huber-emission-independent-audit-train",
+    "kernel_version": 2,
+    "id_no": 128448451,
+    "url": "https://www.kaggle.com/code/kentookumura/exp357-huber-emission-independent-audit-train",
+    "cpu_only": true,
+    "internet_enabled": false
+  },
+  "implementation": {
+    "canonical_notebook_adopted": true,
+    "stage_1_implemented": true,
+    "inference_enabled": false,
+    "submission_enabled": false
+  },
+  "execution_contract": {
+    "stage_0_scientific_scores": 1,
+    "stage_0_saved_controls": 1,
+    "shift_candidates": 13,
+    "reporting_folds": 5,
+    "hmm_well_runs": 0,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "parent_control_retraining": false,
+    "stage_1_scientific_variants": 1,
+    "stage_1_hmm_well_runs": 773,
+    "stage_1_model_configs": 0,
+    "stage_1_trained_folds": 0,
+    "stage_1_boosters": 0
+  },
+  "stage_1": {
+    "status": "stage_1_completed_guard_failed",
+    "decision": "stage_1_failed_close_without_rescue",
+    "passed": false,
+    "execution_basis": "explicit_user_override_after_stage_0_fail",
+    "candidate": "huber_delta1p345_residual_offset_delta80_step035_rate41",
+    "rows": 3783989,
+    "wells": 773,
+    "candidate_rmse": 9.737195157482754,
+    "candidate_mae": 5.243597566221927,
+    "parent_rmse": 9.827419940583813,
+    "gain_vs_exp281_ft": 0.09022478310105875,
+    "exp226_rmse": 9.427109596582222,
+    "delta_vs_exp226_ft": 0.3100855609005322,
+    "improved_folds": 4,
+    "direct_promotion_passed": false,
+    "checks": {
+      "overall_gain_vs_exp281": true,
+      "improved_folds": true,
+      "required_scopes_non_regression": true,
+      "by_well_p95_non_regression": false,
+      "worst_well_regression": false,
+      "exp281_parent_rmse_parity": true,
+      "exp226_rmse_parity": true,
+      "finite_coverage": true,
+      "row_identity_coverage": true
+    },
+    "fold_rmse": {
+      "gaussian": [
+        7.987927146029812,
+        9.654036792257497,
+        10.124564750173887,
+        11.406236108460025,
+        9.66269555232156
+      ],
+      "huber": [
+        8.002738925429256,
+        9.618404899493047,
+        10.11322215513853,
+        11.045038961578657,
+        9.655770027729815
+      ]
+    },
+    "scope_metrics": {
+      "long_tail_1000_plus": {
+        "gaussian_rmse": 10.834742724918831,
+        "huber_rmse": 10.746974662087467,
+        "delta_rmse_vs_exp281": -0.08776806283136374
+      },
+      "hidden_like_spatial": {
+        "gaussian_rmse": 10.556607344123575,
+        "huber_rmse": 10.347980879726771,
+        "delta_rmse_vs_exp281": -0.20862646439680432
+      },
+      "hidden_like_typewell_purged": {
+        "gaussian_rmse": 10.304139332210916,
+        "huber_rmse": 10.302894338108104,
+        "delta_rmse_vs_exp281": -0.0012449941028123135
+      }
+    },
+    "by_well_p95_delta_rmse_vs_exp281": 0.003365290688930487,
+    "worst_well": "4a8ecc0b",
+    "worst_well_delta_rmse_vs_exp281": 1.4037152572037854,
+    "finite_coverage": 1.0,
+    "row_identity_coverage": 1.0,
+    "hmm_well_runs": 773,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "parent_control_retraining": false,
+    "inference": false,
+    "submission": false
+  },
+  "output_sha256": {
+    "target_free_score_content": "832552dded42940ac57cc9aac425d1ea1be7b0d6b6e17950d792f7e1c9a95902",
+    "target_free_score_decompressed": "65403a1c56e666782a9c7e423d2b8c42b27977fb43d24c57cdda5b1750f4029a",
+    "block_readout_content": "7a296bf21ada0c3366007cbeb77d9f231679e4ad36366cb218d85cf06a6c6276",
+    "block_readout_decompressed": "4e6870fbc4e597a1cfc677a768cdd46760b9207fce7c0d61a5715d336c4f231a",
+    "gate": "b79190de4e4d737a71f37373e2efd73a86b8e68712db952e21d245eb418e4dd7",
+    "stage_1_candidate_content": "784885201e8faf5ecb9d4a91d8722d3477572b2b9e837fb5d76cf72e0b50c4a6",
+    "stage_1_predictions_raw_gzip": "3560c7d069ddf27ed81b8eb22fba06a8ac9de3db1d27166861563bcf36841cad",
+    "stage_1_predictions_decompressed": "1a8e94c2d54227c1afe49e89982d97f636fbc1bf814500765a0efb4cf26221b8",
+    "stage_1_decoder_manifest_mapping": "0076116b30a8712dbba9f18bb05d17fd870957aa70014f2094be61c19d057847",
+    "stage_1_decoder_manifest_file": "a090784f1c9f9b69263dadea852ff4a0ad01151f13c656e6ebab1dcbba2fe236",
+    "stage_1_gate": "52b6f23e3d46e99ddc5940653edb80f723eb356c7022d313b116ec7700249829"
+  },
+  "notes": "Kaggle private CPU Stage 1 version 2 ran the actual fixed-Huber exact HMM on 773 wells. It improved the saved exp281 Gaussian HMM overall and in 4/5 folds, but failed the frozen by-well p95, worst-well, and exp226 direct-promotion gates. The branch is closed without rescue; inference and submission remain disabled."
+}

@@ -1,0 +1,341 @@
+experiment:
+  name: "exp046_hidden_branch_surrogate_audit"
+  description: Build an audit that checks unseen test-well inference changes on train wells masked to look like test wells before code submission.
+  route: pf_beam
+  status: completed
+  created_at: "2026-06-09"
+  updated_at: "2026-06-09"
+
+lineage:
+  parent: exp045_public_pf_meta_strict_parity_audit
+  diff_summary: Convert the exp034/035/045 unseen test-well inference work into an audit-only train-side surrogate report that forces visible train wells through the same candidate logic and records diff, range, distance bucket, and stratified-fold red flags.
+
+validation:
+  leakage_policy:
+    - Input PF/Beam rows come from exp029 pseudo-test artifacts where each train well was masked after a cutoff before public sel15 PF/Beam ran.
+    - The exp026-style anchor is regenerated per audit split, excluding validation wells from pseudo-tail model training.
+    - Residual and meta residual models train only on split-held rows; target_tvt is used only as supervised target and scoring label.
+    - Visible-train oracle columns are used only as a diff diagnostic to expose the public-sample changed_rows=0 blind spot, never as a model feature.
+    - Error diagnostic columns such as pf_error, last_anchor_error, and beam_error are not model features.
+    - exp044 stratified fold is a red-flag segment only; it is not used for hyperparameter tuning or primary selection.
+
+data:
+  feature_path: experiments/exp029_public_sel15_pf_oof_feature_generation/features/public_sel15_pf_oof_features.csv.gz
+  source_well_summary_path: experiments/exp029_public_sel15_pf_oof_feature_generation/artifacts/public_sel15_pf_oof_well_summary.csv
+  optional_stratified_metadata_path: experiments/exp044_stratified_groupkfold_cv_audit/artifacts/well_metadata_stratified_folds.csv
+
+model:
+  name: hidden_branch_surrogate_audit
+  target: target_tvt
+  base_prediction: exp026_pred
+  primary_strategy: drift_model
+  drift_strategy: drift_model
+  feature_set: no_gr_signal
+  strategies:
+    - last_anchor
+    - recent_linear
+    - drift_model
+  params:
+    recent_slope_window: 200
+    recent_slope_shrink: 0.5
+    max_abs_recent_slope: 0.08
+    min_known_rows: 2
+    gr_slope_window: 200
+    max_abs_gr_slope: 2.0
+    gr_roll_short: 25
+    gr_roll_long: 100
+    residual_shrink: 0.85
+    max_abs_residual: 80.0
+  drift_model:
+    estimator: LGBMRegressor
+    params:
+      n_estimators: 800
+      learning_rate: 0.03
+      num_leaves: 31
+      min_child_samples: 80
+      subsample: 0.9
+      colsample_bytree: 0.9
+      reg_lambda: 0.1
+      n_jobs: 2
+  training:
+    max_train_rows_per_fold: 300000
+    max_train_rows_final: 450000
+    max_train_rows_per_well: 800
+  features:
+    - exp026_pred
+    - pf_pred
+    - beam_pred
+    - last_anchor_tvt
+    - pf090_hold010
+    - exp026_minus_pf
+    - abs_exp026_minus_pf
+    - exp026_minus_last_anchor
+    - pf_pred_minus_last_anchor
+    - pf_beam_diff
+    - abs_pf_beam_diff
+    - beam_spread
+    - beam_min
+    - beam_max
+    - beam_final_cost_mean
+    - beam_final_cost_min
+    - pf_selected_scale_pred
+    - pf_scale_3
+    - pf_scale_5
+    - pf_scale_8
+    - pf_scale_12
+    - pf_seed_mean
+    - pf_seed_std
+    - pf_lik_best
+    - pf_lik_mean
+    - pf_lik_std
+    - pf_lik_gap_best_second
+    - pf_weight_entropy
+    - pf_weight_top
+    - pf_weight_best_second_gap
+    - pf_effective_seeds
+    - selector_code
+    - selector_scale
+    - selector_beam_weight
+    - selector_hold_weight
+    - selector_n_eval
+    - selector_z_span
+    - pseudo_cutoff_fraction
+    - cutoff_row
+    - row_idx
+    - prefix_length
+    - eval_step
+    - eval_fraction
+    - MD
+    - X
+    - Y
+    - Z
+    - GR
+    - gr_isna
+    - gr_prefix_availability
+    - gr_eval_availability
+    - pf_gr_sigma_mean
+    - pf_initial_rate_mean
+    - pf_mean_effective_particles
+    - pf_min_effective_particles
+    - pf_resample_count_mean
+
+postprocess:
+  selected_method: distance_bucket_shrink
+  methods:
+    distance_bucket_shrink:
+      name: exp014_bucket_shrink_params
+      buckets:
+        - {name: rows_0_49, max_step: 49, alpha: 0.20}
+        - {name: rows_50_249, max_step: 249, alpha: 0.5917180252647632}
+        - {name: rows_250_999, max_step: 999, alpha: 1.15}
+        - {name: rows_1000_2499, max_step: 2499, alpha: 1.15}
+        - {name: rows_2500_plus, max_step: 1000000000, alpha: 1.0490770312511664}
+
+runtime:
+  use_amp: false
+  num_workers: 2
+  batch_size: 32
+  chunk_rows: 500000
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp029-sel15-pf-oof-train
+
+audit:
+  well_holdout_folds: 5
+  reference_control: exp026_pseudo_tail_bucket_shrink
+  primary_reference_controls:
+    - exp026_pseudo_tail_bucket_shrink
+    - public_pf_selector
+    - pf090_hold010
+  split_systems:
+    - leave_one_original_fold_out
+    - well_hash_holdout
+    - stratified_groupkfold_holdout
+  controls:
+    - name: exp026_pseudo_tail_bucket_shrink
+      method: column
+      column: exp026_pred
+    - name: public_pf_selector
+      method: column
+      column: pf_pred
+    - name: pf090_hold010
+      method: blend
+      weights: {pf_pred: 0.90, last_anchor_tvt: 0.10}
+    - name: beam
+      method: column
+      column: beam_pred
+    - name: last_anchor
+      method: column
+      column: last_anchor_tvt
+  submitted_hidden_branches:
+    - name: exp031_pf090_hold010_hidden_branch
+      kind: alias
+      source: pf090_hold010
+      known_public_lb: 8.956
+      public_lb_delta_vs_exp027: 0.175
+    - name: exp033_ridge_residual_shrink0p5_clip20p0
+      kind: pf_residual
+      base_column: pf_pred
+      estimator: ridge
+      params: {alpha: 20.0}
+      features:
+        - pf_pred
+        - last_anchor_tvt
+        - beam_pred
+        - pf_selected_scale_pred
+        - pf_scale_3
+        - pf_scale_5
+        - pf_scale_8
+        - pf_scale_12
+        - pf_seed_mean
+        - pf_seed_std
+        - pf_lik_best
+        - pf_lik_mean
+        - pf_lik_std
+        - pf_lik_gap_best_second
+        - pf_weight_entropy
+        - pf_weight_top
+        - pf_weight_best_second_gap
+        - pf_effective_seeds
+        - pf_pred_minus_last_anchor
+        - pf_beam_diff
+        - abs_pf_beam_diff
+        - beam_spread
+        - beam_min
+        - beam_max
+        - beam_final_cost_mean
+        - beam_final_cost_min
+        - selector_code
+        - selector_scale
+        - selector_beam_weight
+        - selector_hold_weight
+        - selector_n_eval
+        - selector_z_span
+        - pseudo_cutoff_fraction
+        - cutoff_row
+        - row_idx
+        - prefix_length
+        - eval_step
+        - eval_fraction
+        - MD
+        - X
+        - Y
+        - Z
+        - GR
+        - gr_isna
+        - gr_prefix_availability
+        - gr_eval_availability
+        - pf_gr_sigma_mean
+        - pf_initial_rate_mean
+        - pf_mean_effective_particles
+        - pf_min_effective_particles
+        - pf_resample_count_mean
+      target_clip: 80.0
+      residual_shrink: 0.50
+      residual_clip: 20.0
+      max_train_rows: 500000
+      max_train_rows_per_bucket: 120000
+      seed: 42
+      known_public_lb: 14.961
+      public_lb_delta_vs_exp027: 6.180
+    - name: exp035_ridge_meta_residual_shrink0p75_clip60p0
+      kind: exp026_meta_residual
+      base_column: exp026_pred
+      estimator: ridge
+      params: {alpha: 30.0}
+      features:
+        - exp026_pred
+        - pf_pred
+        - beam_pred
+        - last_anchor_tvt
+        - pf090_hold010
+        - exp026_minus_pf
+        - abs_exp026_minus_pf
+        - exp026_minus_last_anchor
+        - pf_pred_minus_last_anchor
+        - pf_beam_diff
+        - abs_pf_beam_diff
+        - beam_spread
+        - beam_min
+        - beam_max
+        - pf_selected_scale_pred
+        - pf_scale_3
+        - pf_scale_5
+        - pf_scale_8
+        - pf_scale_12
+        - pf_seed_mean
+        - pf_seed_std
+        - pf_lik_best
+        - pf_lik_mean
+        - pf_lik_std
+        - pf_lik_gap_best_second
+        - pf_weight_entropy
+        - pf_weight_top
+        - pf_weight_best_second_gap
+        - pf_effective_seeds
+        - selector_code
+        - selector_scale
+        - selector_beam_weight
+        - selector_hold_weight
+        - selector_n_eval
+        - selector_z_span
+        - pseudo_cutoff_fraction
+        - cutoff_row
+        - row_idx
+        - prefix_length
+        - eval_step
+        - eval_fraction
+        - MD
+        - X
+        - Y
+        - Z
+        - GR
+        - gr_isna
+        - gr_prefix_availability
+        - gr_eval_availability
+        - pf_gr_sigma_mean
+        - pf_initial_rate_mean
+        - pf_mean_effective_particles
+        - pf_min_effective_particles
+        - pf_resample_count_mean
+      target_clip: 80.0
+      residual_shrink: 0.75
+      residual_clip: 60.0
+      max_train_rows: 550000
+      max_train_rows_per_bucket: 130000
+      seed: 42
+      known_public_lb: 13.738
+      public_lb_delta_vs_exp027: 4.957
+    - name: exp045_strict_parity_meta_same_feature_surrogate
+      kind: alias
+      source: exp035_ridge_meta_residual_shrink0p75_clip60p0
+      known_public_lb: 19.177
+      public_lb_delta_vs_exp027: 10.396
+  training_variants:
+    selected_variant: pseudo_tail_3_cutoffs_distance_balanced
+    variants:
+      - name: pseudo_tail_3_cutoffs_distance_balanced
+        cutoffs_per_well: 3
+        cutoff_quantiles: [0.45, 0.65, 0.82]
+        distance_balanced: true
+        max_rows_per_pseudo_tail: 260
+        balanced_rows_per_bucket: 60000
+  pseudo_tail:
+    min_prefix_rows: 200
+    min_pseudo_eval_rows: 250
+    cutoff_strategy: quantile
+  distance_buckets:
+    - {name: rows_0_49, max_step: 49}
+    - {name: rows_50_249, max_step: 249}
+    - {name: rows_250_999, max_step: 999}
+    - {name: rows_1000_2499, max_step: 2499}
+    - {name: rows_2500_plus, max_step: 1000000000}
+  public_lb_anchor:
+    experiment: exp027_public_replay_needless090_sel15_spread3
+    public_lb: 8.781
+
+notes:
+  - This is audit-only and must not create submission.csv.
+  - The visible-train oracle diff is intentionally diagnostic; it explains why public sample changed_rows=0 is not evidence that unseen test-well inference is safe.

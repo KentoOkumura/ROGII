@@ -1,0 +1,428 @@
+experiment:
+  name: exp358_exp209_missing_distance_emission_downweight
+  description: >-
+    Independent two-stage audit of distance-based evidence downweighting only
+    on raw-missing GR rows while retaining the trusted exp209 observation scale.
+  route: pf_beam
+  status: stage_1_completed_scientific_gate_failed_closed
+  created_at: "2026-07-23"
+  updated_at: "2026-07-25"
+
+lineage:
+  parent: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260723-exp358-exp209-missing-distance-emission-downweight
+  history: exp308_imputed_gr_confidence_downweight
+  references:
+    - exp339_exp209_geometry_gap_uncertainty_transfer
+    - exp346_exp209_finite_observed_scale_audit
+  diff_summary: >-
+    Removes the failed exp307 finite-MAD observation dependency. It keeps the
+    complete exp209 observation, diffusion, grid, momentum, prior, and output
+    contract fixed and changes only the log-emission multiplier at raw-missing rows.
+
+implementation:
+  enabled: true
+  scope: stage_0_passed_and_stage_1_train_side_candidate_audit
+  train_notebook_state: canonical_stage1_compact_selfcontained_executed
+  inference_notebook_state: compact_selfcontained_fail_closed_candidate_created
+  compact_selfcontained_source_created: true
+  stage_0_implemented: true
+  stage_1_implemented: true
+  canonical_notebook_adopted: true
+  canonical_stage_1_notebook_adopted: true
+  stage_1_execution_completed: true
+  stage_1_promotion_passed: false
+  canonical_stage_1_notebook_cell_source_sha256: 05677072435578e372c9e7819e006253adb3bfb388d8f422f7549cea3900b00c
+  inference_enabled: false
+  submission_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.score_rows
+
+validation:
+  strategy: exp209_missing_distance_technical_audit_then_grouped_hmm
+  metric: technical_contract_then_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  expected_wells: 773
+  expected_rows: 3783989
+  expected_folds: [0, 1, 2, 3, 4]
+  score_rows: unknown_suffix_truth_only_after_missing_surface_freeze
+  missing_fraction_buckets:
+    low: [0.0, 0.10]
+    mid: [0.10, 0.30]
+    high: [0.30, 1.0]
+    boundary_policy: left_closed_right_open_except_final_closed
+  truth_attachment: after_missing_surface_and_candidate_prediction_content_sha_freeze
+  leakage_policy:
+    - Raw missing masks, distances, weights, and interpolated GR are frozen before truth or error is joined.
+    - Unknown-suffix TVT, error, abs_error, oracle choice, and worst-well identity are forbidden from weight generation.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  horizontal_suffix: __horizontal_well.csv
+  typewell_suffix: __typewell.csv
+  expected_raw_well_identity_sha256: bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32
+  exp209_control:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    expected_hmm_cache_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    direct_rmse: 11.938287234887435
+    fixed_likpf_50_50_rmse: 10.269696146642758
+    usage_stage_0: not_loaded_zero_hmm_technical_audit
+    usage_stage_1: load_only_parent_control_no_rerun
+  saved_controls:
+    kernel_source: kentookumura/exp209-joint-exact-parity-train
+    hmm_cache_filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    exp072_cache_filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+      - /tmp/kaggle-output/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/train_v5/artifacts
+    raw_hmm_prediction_column: hmm_mean_tvt
+    likpf_anchor_column: last_known_tvt
+    likpf_delta_column: likpf_mean_d
+    expected_hmm_prediction_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    expected_exp072_cache_decompressed_sha256: 0503de0512302b06309d26e09fc06ba5095db0ef4d610b1508afe8c8d07ca536
+  fold_assignment:
+    source: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts
+    safe_columns: [well_id, row_idx, suffix_offset, fold]
+    truth_columns: [well_id, row_idx, tvt_true]
+    forbidden_decoder_columns: [tvt_geop, tvt_pred, gr_delta, tvt_true, error, abs_error]
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+  hidden_like_assignment:
+    source: exp115_hidden_like_spatial_holdout_from_ppt
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+    allowed_roles:
+      hidden_like_spatial: [train, valid]
+      hidden_like_typewell_purged: [train, valid, purged_train_excluded]
+    expected_role_counts:
+      hidden_like_spatial: {train: 573, valid: 200}
+      hidden_like_typewell_purged: {train: 557, valid: 200, purged_train_excluded: 16}
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+model:
+  name: exp209_missing_distance_emission_downweight
+  estimator: deterministic_exact_forward_backward
+  active_variants: [missing_distance_half_life_8_floor_0p25]
+  promotion_candidate: missing_distance_half_life_8_floor_0p25
+  emission:
+    control_family: capped_gaussian
+    control_formula: "-0.5 * min(z^2, 600)"
+    candidate_family: missing_distance_weighted_capped_gaussian
+    candidate_formula: "confidence_weight * (-0.5 * min(z^2, 600))"
+    emission_clip_z2: 600.0
+    normalization_constant: omitted_as_state_independent
+    application_count: 1
+  missing_weight:
+    raw_finite_observed: 1.0
+    missing_formula: max_floor_two_to_negative_distance_over_half_life
+    distance_unit: rows_to_nearest_raw_finite_gr
+    half_life_rows: 8
+    floor: 0.25
+    all_missing_well_fallback: 0.25
+    application: multiply_gaussian_log_emission_exactly_once
+  stage_0:
+    audit: full_missing_weight_surface_contract
+    pass_requires_all:
+      expected_wells: 773
+      expected_rows: 3783989
+      require_all_finite: true
+      require_observed_weight_exact_one: true
+      minimum_missing_weight: 0.25
+      require_missing_weight_strictly_below_one: true
+      require_missing_rows: true
+      require_missing_weight_above_floor: true
+      require_multiple_missing_weight_values: true
+      require_all_missing_well_fallback_exact_floor: true
+  stage_1:
+    enabled_condition: stage_0_all_gates_pass_and_separate_user_approval
+    active_variants: [missing_distance_half_life_8_floor_0p25]
+    hmm_well_runs: 773
+    pass_requires_all:
+      minimum_rmse_gain_vs_exp209_ft: 0.05
+      minimum_improved_folds: 4
+      require_1000_plus_non_regression: true
+      require_hidden_like_spatial_non_regression: true
+      require_hidden_like_typewell_purged_non_regression: true
+      require_by_well_p95_non_regression: true
+      maximum_worst_well_regression_ft: 0.25
+      require_fixed_likpf_blend_non_regression: true
+  fixed_parent:
+    interpolation: exact_exp209
+    observation_sigma: exact_exp209_zero_filled_residual
+    typewell: exact_exp209
+    sig_r: 0.002
+    sig_p: 0.02
+    effective_position_sigma_floor: 0.1225
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    momentum: 0.998
+    prior: exact_exp209
+    output: posterior_mean
+  fixed_hmm:
+    coordinate: absolute_tvt
+    step: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    band_pad: 100.0
+    sig_r: 0.002
+    sig_p: 0.02
+    lam: 1.0
+    start_sig: 0.75
+    r0_sig: 0.01
+    momentum: 0.998
+    sigma_mode: known_prefix_zero_fill_population_std
+    sigma_clip: [10.0, 60.0]
+    missing_gr_policy: linear_interpolate_both_directions_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+    output: posterior_mean
+    emission: missing_distance_weighted_capped_gaussian
+    emission_clip_z2: 600.0
+    rate_center: zero
+    evaluation_gr_policy: interpolate_both_directions_then_typewell_mean
+  forbidden:
+    - exp307_finite_mad_observation
+    - zero_weight_or_hard_missing_mask
+    - half_life_or_floor_grid
+    - sigma_rescaling
+    - transition_or_prior_change
+    - prediction_blend
+
+execution_contract:
+  stage_0: {technical_audits: 1, reporting_folds: 0, hmm_well_runs: 0, model_configs: 0, trained_folds: 0, boosters: 0}
+  stage_1_if_pass: {scientific_variants: 1, reporting_folds: 5, hmm_well_runs: 773, model_configs: 0, trained_folds: 0, boosters: 0}
+  scientific_variants: 1
+  reporting_folds: 5
+  hmm_well_runs: 773
+  model_configs: 0
+  lightgbm_configs: 0
+  trained_folds: 0
+  pf_well_runs: 0
+  beam_well_runs: 0
+  boosters: 0
+  parent_control_retraining: false
+
+references:
+  exp209_raw_hmm_rmse: 11.938287234887435
+  exp209_likpf_rmse: 11.5948976722
+  exp209_hmm_likpf_50_50_rmse: 10.269696146642758
+
+promotion_gates:
+  minimum_rmse_gain_vs_exp209_raw_hmm_ft: 0.05
+  minimum_improved_folds: 4
+  require_1000_plus_non_regression: true
+  require_hidden_like_spatial_non_regression: true
+  require_hidden_like_typewell_purged_non_regression: true
+  require_by_well_p95_delta_max: 0.0
+  maximum_worst_well_regression_ft: 0.25
+  require_fixed_likpf_50_50_non_regression: true
+  baseline_metric_absolute_tolerance: 1.0e-5
+  non_regression_tolerance_ft: 0.0
+
+guards:
+  technical:
+    require_all_input_sha_matches: true
+    require_saved_control_rmse_parity_atol_ft: 1.0e-5
+    require_expected_rows: 3783989
+    require_expected_wells: 773
+    require_id_row_order_fold_identity: true
+    require_finite_candidate_coverage: 1.0
+    require_posterior_normalization: true
+    require_all_well_status_pass: true
+    maximum_truth_rows_accessed_before_candidate_freeze: 0
+  forbidden:
+    - exp307_finite_mad_observation
+    - zero_weight_or_hard_missing_mask
+    - half_life_or_floor_grid
+    - sigma_rescaling
+    - transition_or_prior_change
+    - gaussian_parent_hmm_rerun
+    - likelihood_temperature_or_clip_search
+    - blend_weight_search
+    - same_oof_rescue
+    - inference_or_submission_without_separate_approval
+
+execution:
+  implementation_approved: true
+  implementation_approved_at: "2026-07-25"
+  implementation_authorization_source: user_message_implement_exp358
+  implementation_scope: stage_0_and_stage_1_train_side_candidate
+  canonical_notebook_adoption_approved_at: "2026-07-25"
+  canonical_notebook_adoption_authorization_source: user_message_execute_exp358
+  kaggle_push_approved: true
+  kaggle_push_approved_at: "2026-07-25"
+  kaggle_push_authorization_source: user_message_execute_exp358
+  kaggle_push_scope: one_stage_0_technical_audit_cpu_zero_hmm_no_control_rerun
+  one_run_authorization_consumed: true
+  stage_0_execution_completed: true
+  stage_0_execution_success: true
+  stage_1_implementation_approved: true
+  stage_1_implementation_approved_at: "2026-07-25"
+  stage_1_implementation_authorization_source: user_message_proceed_stage_1
+  stage_1_kaggle_push_approved: true
+  stage_1_kaggle_push_approved_at: "2026-07-25"
+  stage_1_kaggle_push_authorization_source: user_message_proceed_stage_1
+  stage_1_run_scope: one_variant_five_reporting_folds_773_hmm_runs_zero_parent_reruns
+  stage_1_one_run_authorization_consumed: true
+  stage_1_execution_completed: true
+  stage_1_execution_success: true
+  stage_1_promotion_passed: false
+  train_run_approved: false
+  active_stage: stage_1_completed_failed_closed
+  run_stage_0: false
+  run_stage_1: false
+  run_hmm: false
+  run_inference: false
+  create_submission: false
+
+audit:
+  output_prefix: exp358_exp209_missing_distance_emission_downweight
+  expected_stage_0_artifacts:
+    - exp358_exp209_missing_distance_emission_downweight_scientific_contract.json
+    - exp358_exp209_missing_distance_emission_downweight_raw_well_identity.csv
+    - exp358_exp209_missing_distance_emission_downweight_input_manifest.json
+    - exp358_exp209_missing_distance_emission_downweight_weight_surface.csv.gz
+    - exp358_exp209_missing_distance_emission_downweight_per_well_summary.csv
+    - exp358_exp209_missing_distance_emission_downweight_freeze_manifest.json
+    - exp358_exp209_missing_distance_emission_downweight_stage0_gate.json
+    - exp358_exp209_missing_distance_emission_downweight_stage0_summary.json
+  expected_stage_1_artifacts:
+    - exp358_exp209_missing_distance_emission_downweight_scientific_contract.json
+    - exp358_exp209_missing_distance_emission_downweight_input_control_manifest.json
+    - exp358_exp209_missing_distance_emission_downweight_predictions.csv.gz
+    - exp358_exp209_missing_distance_emission_downweight_raw_gr_emission_contract.csv.gz
+    - exp358_exp209_missing_distance_emission_downweight_observation_audit.csv.gz
+    - exp358_exp209_missing_distance_emission_downweight_by_well_variant_runtime.csv
+    - exp358_exp209_missing_distance_emission_downweight_overall_fold_scope_metrics.csv
+    - exp358_exp209_missing_distance_emission_downweight_by_well_metrics.csv
+    - exp358_exp209_missing_distance_emission_downweight_promotion_gate.json
+    - exp358_exp209_missing_distance_emission_downweight_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  numba_num_threads: 2
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    runtime_limit_seconds: 30600
+    train_kernel_id: kentookumura/exp358-missing-distance-emission-downweight-train
+    train_title: exp358 missing-distance emission downweight train
+    train_kernel_version: 2
+    train_kernel_id_no: 128528105
+    stage_1_target_kernel_version: 2
+    train_run_on_push: true
+    train_last_status: KernelWorkerStatus.COMPLETE
+    train_last_status_checked_at_utc: "2026-07-25 06:02:54 UTC"
+    stage_0_generated_at_utc: "2026-07-25T00:39:43.340668+00:00"
+    stage_0_runtime_seconds: 82.49706196784973
+    stage_1_generated_at_utc: "2026-07-25T06:01:43.583830+00:00"
+    stage_1_runtime_seconds: 17475.55788087845
+    kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+outcome:
+  decision: missing_distance_exp209_failed_close_without_rescue
+  technical_gate_passed: true
+  stage_0_technical_gate_passed: true
+  stage_1_reported_technical_gate_passed: false
+  scientific_gate_evaluated: true
+  scientific_gate_passed: false
+  failure_action: close_without_rescue_inference_or_submission
+  rows: 3783989
+  wells: 773
+  observed_rows: 2583152
+  missing_rows: 1200837
+  missing_fraction: 0.3173468527524789
+  all_missing_wells: 0
+  missing_weight:
+    minimum: 0.25
+    maximum: 0.9170040432046712
+    unique_count: 16
+    above_floor_rows: 1199379
+  execution_counts:
+    scientific_variants: 1
+    reporting_folds: 5
+    hmm_well_runs: 773
+    model_configs: 0
+    trained_folds: 0
+    pf_well_runs: 0
+    beam_well_runs: 0
+    boosters: 0
+    parent_control_reruns: 0
+  direct:
+    candidate_rmse: 12.012569787442315
+    control_rmse: 11.938287234887435
+    improvement_ft: -0.07428255255488025
+    folds_improved: 0
+  fixed_likpf_50_50:
+    candidate_rmse: 10.3066733932215
+    control_rmse: 10.269692505026358
+    improvement_ft: -0.036980888195142114
+  required_scope_improvement_ft:
+    md_since_1000_plus: -0.08277620493382365
+    hidden_like_spatial: -0.22496964566177624
+    hidden_like_typewell_purged: -0.22958685819473246
+  by_well:
+    improved_wells: 358
+    regressed_wells: 415
+    median_delta_rmse_candidate_minus_control: 0.0007862250499020007
+    p95_delta_rmse_candidate_minus_control: 0.4693701802022063
+    worst_well_id: f5859199
+    worst_delta_rmse_candidate_minus_control: 6.630365200487251
+  postrun_technical_audit:
+    reported_missing_weight_formula_exact: false
+    root_cause: post_gzip_csv_float_parse_bit_exact_guard
+    mismatched_missing_rows: 753
+    total_missing_rows: 1200837
+    maximum_absolute_weight_difference: 5.551115123125783e-17
+    allclose_atol_1e_16: true
+    substantive_formula_contract_passed: true
+    rerun_required: false
+  reproducibility:
+    package_remote_notebook_cell_source_sha256: fbe348f196f8a5ddcd74938a82480ca969da3e32d4020053ef666958f2c18356
+    scientific_contract_logical_sha256: 90e02546e56e9b0b3c1d58f944fa6f3fe82fc63c6467bfde8e4b94882399ab65
+    input_control_manifest_sha256: c07b2ee089457d07257661d452c8511452f9dd03ca41827fa3e3eaa480af00f0
+    prediction_decompressed_sha256: 5d5c1cb9a0682d5f352e56dd19fffd44574816ce26b0a0e85cfc49d16cc14742
+    raw_gr_emission_contract_decompressed_sha256: 36499c6d7d81eb90e98f9181f427db5023eda3857dc3877503e64ac1bdfb7e14
+    observation_audit_decompressed_sha256: bf88a2e069e0b8eb906b6a90fdf11e4e4374cf5153a0f3e7dc40b9ea4949e4d4
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_raw_well_and_row_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_fixed_threads_and_stable_reduction_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record: {kernel_version: true, input_sha: true, feature_schema_sha: true, feature_content_sha: true, model_manifest_sha: false, prediction_sha: true, submission_sha: false}
+
+inference: {enabled: false, create_submission: false}
+
+notes:
+  - Stage 0 compact self-contained train and fail-closed inference candidates were implemented on 2026-07-25.
+  - Canonical train notebook adoption and one Kaggle CPU Stage 0 run were approved and completed on 2026-07-25.
+  - Local notebook execution, inference, and submission are not approved.
+  - Stage 1 implementation and one fixed Kaggle CPU run were separately approved on 2026-07-25.
+  - Stage 1 Kaggle CPU version 2 completed and failed the preregistered scientific gate on 2026-07-25; the branch is closed without rescue.
+  - The reported Stage 1 formula-exact technical check failed only because 753 post-CSV parsed weights differed by at most one half-ULP; generation, application, range, and allclose-atol-1e-16 checks passed.
+  - Exp339 and exp346 are negative references, not dependencies.

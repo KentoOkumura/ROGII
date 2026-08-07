@@ -1,0 +1,313 @@
+experiment:
+  name: exp284_prefix_masked_wrong_mode_branch_recovery_backtest
+  description: >-
+    Mask the last 640 known-prefix rows, inject one GR-supported alternative
+    offset mode, retain the safe base and fixed self-GR top-3 branches, and
+    audit fixed-horizon evidence-based recovery without changing a decoder.
+  route: pf_beam
+  status: train_side_backtest_completed_guard_failed_branch_closed
+  created_at: "2026-07-19"
+  updated_at: "2026-07-19"
+
+overrides:
+  project_defaults:
+    - validation.strategy
+    - validation.metric
+    - validation.n_folds
+    - validation.group_column
+    - validation.score_rows
+
+lineage:
+  parent: exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout
+  geometry_reference: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction
+  emission_reference: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  shift_bank_reference: exp280_exp226_shift_likelihood_separability_readout
+  diff_summary: >-
+    Converts the exp283 proposal/evidence readout into a controlled known-prefix
+    masked backtest. A wrong GR-supported offset mode is injected at a visible
+    cut, while the safe base is always retained. Recovery and false switches are
+    scored only after all target-free branch and evidence tables are frozen.
+
+dependency:
+  scientific_execution_requires:
+    experiment: exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout
+    condition: all_technical_proposal_and_verifier_scientific_guards_pass
+  implementation_dependency: none_selfcontained_fixed_contract_reimplementation
+  current_status: user_authorized_independent_execution
+  gate_override:
+    authorized: true
+    authorized_at: "2026-07-19T15:51:36+09:00"
+    source: user_message_execute_after_independence_clarification
+    scope: one_fixed_contract_kaggle_cpu_v1_run
+    interpretation: exp284_controlled_backtest_stands_alone_and_does_not_assert_exp283_pass
+
+validation:
+  strategy: fixed_prefix_masked_wrong_mode_branch_recovery_backtest
+  metric: h256_recovery_rmse_and_false_switch
+  seed: 42
+  n_folds: 5
+  group_column: well_id
+  score_rows: masked_known_prefix_rows_after_fixed_event
+  expected_rows: 3783989
+  expected_wells: 773
+  expected_folds: [0, 1, 2, 3, 4]
+  guards:
+    minimum_eligible_wells: 100
+    required_mask_identity_coverage: 1.0
+    required_branch_finite_coverage: 1.0
+    required_evidence_finite_coverage: 1.0
+    required_post_cut_truth_access_before_freeze: 0
+    required_minimum_injected_abs_shift_ft: 10.0
+    minimum_safe_wrong_auc_each_fold: 0.60
+    minimum_safe_choice_accuracy_pooled: 0.60
+    minimum_safe_choice_accuracy_each_fold_exclusive: 0.50
+    minimum_full_gain_vs_wrong_h256_ft: 0.10
+    minimum_full_gain_vs_wrong_folds: 5
+    minimum_full_gain_vs_pair_h256_ft: 0.02
+    minimum_full_gain_vs_pair_folds: 3
+    require_h512_gain_not_below_h256: true
+    maximum_no_injection_false_switch_rate: 0.05
+    minimum_real_vs_shuffled_nonregressing_folds: 5
+  leakage_policy:
+    - TVT_input rows after the pseudo cut are masked before any generator receives the frame.
+    - Raw true TVT after the cut is unavailable until mask, injection, proposal, and evidence tables are frozen and hashed.
+    - The wrong shift is selected from visible pre-cut rows and a fixed shift bank without post-cut truth.
+    - The proposal ends at the event and future evidence starts on the following row.
+    - Truth-best branch and recovery labels are post-freeze readouts only.
+    - Cut, mask length, shift bank, K, horizons, likelihood, veto, and guards cannot be tuned on the same backtest truth.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  target_column: TVT
+  id_column: id
+  exp226_oof:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    safe_columns: [well_id, row_idx, suffix_offset, fold, tvt_geop]
+    forbidden_columns: [tvt_pred, gr_delta, tvt_true, error, abs_error]
+  exp226_kappa_by_fold:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+    candidates:
+      - /tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/train_v1/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_kappa_by_fold.csv
+    expected_sha256: 6cbded4c6ea157d141c4272a2e29c498515e3eaa6eff3ec4517078ae1d1aeff0
+    expected_terms: 12
+  hidden_like:
+    enabled: true
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    candidates:
+      - experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+pseudo_mask:
+  masked_rows: 640
+  minimum_visible_rows_before_cut: 512
+  cut_policy: last_contiguous_known_row_minus_640
+  observation_rows_after_cut: 128
+  event_row_offset_from_cut: 128
+  primary_future_rows: 256
+  diagnostic_future_rows: [128, 512]
+  cuts_per_well: 1
+
+wrong_mode_injection:
+  score_rows_before_cut: 128
+  shift_bank_ft: [-80.0, -40.0, -20.0, -10.0, -5.0, -2.0, 0.0, 2.0, 5.0, 10.0, 20.0, 40.0, 80.0]
+  minimum_abs_shift_ft: 10.0
+  mode_policy: highest_likelihood_eligible_local_maximum_else_highest_eligible
+  tie_policy: shift_bank_order
+  path_policy: safe_base_plus_constant_selected_shift
+  reference_path_on_visible_score_rows: observed_visible_tvt_input
+  emission: exp209_gaussian_raw_gr_typewell
+
+geometry_replay:
+  mode: exp226_fold_safe_donor_field_saved_kappa_at_pseudo_cut
+  source_truth_policy: other_fold_wells_only
+  target_truth_policy: never_read_before_all_target_free_tables_frozen
+  params:
+    theta0: 118.4
+    k_segments: 16
+    local_linear_k: 50
+    local_linear_bandwidth: 500.0
+    local_linear_ridge: 1.0
+    smooth_rho: 10.0
+    gate: 0.35
+    field_min_proj: 0.3
+    kbins: [0.0, 750.0, 1500.0, 2500.0, 4000.0, 1.0e18]
+    rot_max_deg: 60.0
+    ancc_theta_bandwidth: 1500.0
+
+self_gr_proposal:
+  rolling_mean_rows: 5
+  rolling_direction: causal_trailing
+  trailing_window_rows: [17, 31, 51]
+  primary_window_rows: 51
+  donor_stride_rows: 3
+  minimum_prediction_donor_gap_rows: 256
+  donor_sources: [known_prefix, earlier_prediction_zone]
+  orientations: [forward, reverse]
+  donor_center_dedup_rows: 25
+  anchor_dedup_ft: 2.0
+  multiscale_agreement: auxiliary_best_same_orientation_within_dedup_rows
+  tie_policy: ncc51_desc_multiscale_desc_known_prefix_forward_donor_row_asc
+  shuffled_assignment: stable_per_event_source_bank_permutation
+
+branches:
+  safe_base: visible_cut_tvt_plus_exp226_tvt_geop_increment
+  wrong_active: safe_base_plus_selected_shift
+  self_gr_contract: exp283_fixed_top3_h256
+  max_self_gr_alternatives: 3
+  always_keep_safe_base: true
+  policies:
+    - wrong_active_only
+    - safe_base_plus_wrong
+    - safe_base_plus_wrong_plus_selfgr_top3
+    - safe_base_plus_wrong_plus_shuffled_selfgr_top3
+    - no_injection_base_plus_selfgr_top3
+
+evidence:
+  checkpoints_rows: [128, 256, 512]
+  primary_horizon_rows: 256
+  primary_score: mean_cumulative_exp209_gaussian_raw_gr_typewell_log_likelihood
+  geometry_role: exp283_diagnostic_and_veto_only
+  emission:
+    sigma_mode: visible_prefix_residual_std
+    sigma_clip: [10.0, 60.0]
+    log_likelihood_clip: 600.0
+    missing_gr_policy: interpolate_within_allowed_window_then_typewell_mean
+    typewell_gr_policy: sort_tvt_ffill_bfill_then_linear_interp_endpoint_hold
+  geometry_veto:
+    maximum_anchor_shift_ft: 80.0
+    typewell_extension_ft: 40.0
+    require_finite_path_and_steps: true
+  selection: max_typewell_evidence_after_geometry_veto_else_safe_base
+  persistent_recovery: selected_truth_best_or_safe_at_checkpoint_and_never_returns_to_wrong
+
+negative_control:
+  shuffled_self_gr: stable_same_well_event_source_donor_assignment_shuffle
+  no_injection: active_branch_is_safe_base_with_same_cut_event_and_evidence
+  seed: 42
+  seed_policy: stable_sha256_per_well_event_source_local_rng
+
+model:
+  name: none_prefix_masked_recovery_backtest
+  estimator: none_deterministic_diagnostic
+  active_backtest_variants: [fixed_mask640_observe128_top3_h256]
+  fixed_policy_count: 5
+  active_variant_count: 1
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  booster_count: 0
+  hmm_regeneration_count: 0
+  pf_regeneration_count: 0
+  parent_control_retraining: false
+
+execution:
+  stage: train_side_backtest_completed_guard_failed_branch_closed
+  active_backtest_variants: 1
+  fixed_policy_count: 5
+  lightgbm_config_count: 0
+  trained_fold_count: 0
+  total_boosters: 0
+  hmm_well_runs: 0
+  pf_well_runs: 0
+  control_or_parent_retraining: false
+  gpu: false
+  inference: false
+  submission: false
+  successful_kaggle_version: 2
+  runtime_seconds: 11717.24375796318
+  technical_guard_passed: true
+  scientific_guard_passed: false
+  decision: close_without_parameter_rescue
+  kaggle_push_approved: true
+  approval_source: user_message_execute_2026_07_19
+  receiver_chunk_size: 256
+  progress_every_wells: 10
+  process_order: fold_then_sorted_well_single_process
+  expected_artifacts:
+    - exp284_prefix_masked_wrong_mode_branch_recovery_backtest_contract.json
+    - exp284_prefix_masked_wrong_mode_branch_recovery_backtest_mask_manifest.csv
+    - exp284_prefix_masked_wrong_mode_branch_recovery_backtest_injection_scores.csv.gz
+    - exp284_prefix_masked_wrong_mode_branch_recovery_backtest_target_free_proposals.csv.gz
+    - exp284_prefix_masked_wrong_mode_branch_recovery_backtest_target_free_branch_paths.csv.gz
+    - exp284_prefix_masked_wrong_mode_branch_recovery_backtest_target_free_evidence.csv.gz
+    - exp284_prefix_masked_wrong_mode_branch_recovery_backtest_target_free_policy_selection.csv.gz
+    - exp284_prefix_masked_wrong_mode_branch_recovery_backtest_overall_metrics.csv
+    - exp284_prefix_masked_wrong_mode_branch_recovery_backtest_fold_metrics.csv
+    - exp284_prefix_masked_wrong_mode_branch_recovery_backtest_pairwise_metrics.csv
+    - exp284_prefix_masked_wrong_mode_branch_recovery_backtest_by_well_metrics.csv
+    - exp284_prefix_masked_wrong_mode_branch_recovery_backtest_input_manifest.csv
+    - exp284_prefix_masked_wrong_mode_branch_recovery_backtest_summary.json
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_id: kentookumura/exp284-masked-wrong-mode-recovery-backtest-train
+    train_kernel_title: exp284 masked wrong mode recovery backtest train
+    train_kernel_version: 2
+    train_kernel_id_no: 127852894
+    train_kernel_url: https://www.kaggle.com/code/kentookumura/exp284-masked-wrong-mode-recovery-backtest-train
+    pushed_at: "2026-07-19T16:07:14+09:00"
+    completed_at: "2026-07-19T19:22:40+09:00"
+    monitoring: disabled_by_user_request
+    technical_retry_target_version: 2
+    version_1_failure:
+      pushed_at: "2026-07-19T15:56:06+09:00"
+      observed_at: "2026-07-19T16:02:07+09:00"
+      stage: fold_0_first_target_horizontal_load
+      exception: "ValueError: Usecols do not match columns, columns expected but not found: ['id']"
+      classification: technical_input_schema_mismatch_before_evaluation
+      fix: deterministic_audit_id_from_well_name_and_row_index
+    train_kernel_sources:
+      - kentookumura/exp226-k16-kappa-repro-train
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: deterministic_cut_shift_and_branch_order_stable_sha256_shuffled_control
+  stochastic_components: [stable_shuffled_donor_negative_control_only]
+  parallel_rng_policy: single_process_sorted_wells_and_local_rng_per_event
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Mask, injection, proposal, and evidence content SHA are frozen before post-cut truth attachment.
+    - This is a controlled diagnostic, not a prediction or submission anchor.
+
+inference:
+  enabled: false
+  mode: disabled_backtest_only
+  selected_candidate: null
+  create_submission: false
+
+notes:
+  - The self-contained implementation may be completed independently of exp283 artifacts.
+  - The user execution request on 2026-07-19 approves canonical notebook adoption and one fixed-contract Kaggle CPU v1 run.
+  - The original exp283 scientific gate was explicitly overridden by the user after the runtime-versus-scientific dependency clarification.
+  - The exp284 result must be interpreted as a standalone controlled backtest and cannot be reported as an exp283 PASS.
+  - No parameter rescue is allowed after a failed fixed backtest.
+  - Version 2 completed all technical guards but failed the fixed scientific and safety guards; the branch is closed.

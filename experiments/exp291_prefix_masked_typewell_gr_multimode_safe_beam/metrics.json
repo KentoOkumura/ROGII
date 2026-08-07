@@ -1,0 +1,201 @@
+{
+  "experiment": "exp291_prefix_masked_typewell_gr_multimode_safe_beam",
+  "parent": "exp284_prefix_masked_wrong_mode_branch_recovery_backtest",
+  "hypothesis": "Keep all eligible Type Well GR local modes with an unpruned safe base and require persistent checkpoint evidence to reduce false switches.",
+  "status": "train_side_backtest_completed_guard_failed_branch_closed",
+  "decision": "close_without_parameter_rescue",
+  "route": "pf_beam",
+  "metric": "h256_safe_anchored_selection_rmse_and_false_switch",
+  "cv": {
+    "eligible_wells": 766,
+    "ineligible_wells": 7,
+    "folds": [0, 1, 2, 3, 4],
+    "h256_rmse": {
+      "safe_base_only": 4.82748347302165,
+      "safe_plus_top1_typewell_mode": 18.713109608883688,
+      "safe_plus_all_typewell_modes": 22.199818424918465,
+      "safe_plus_matched_count_shuffled_modes": 17.360717911476897
+    },
+    "h256_gain_ft": {
+      "all_modes_vs_safe": -17.372334951896814,
+      "all_modes_vs_top1": -3.4867088160347777
+    },
+    "h512_gain_vs_safe_ft": -11.497240689184423,
+    "false_switch_rate": 0.34946236559139787,
+    "pairwise_evidence_auc_pooled": 0.6727374188311688,
+    "balanced_choice_accuracy_pooled": 0.5769074675324675,
+    "fold_safe_improved": 0,
+    "fold_top1_improved": 1,
+    "fold_real_nonregressing_vs_shuffle": 0
+  },
+  "fold_h256_rmse": {
+    "fold_0": {
+      "safe": 5.997705963165721,
+      "top1": 17.490210681812055,
+      "all_modes": 22.321669560680068,
+      "matched_shuffle": 17.757863705585976
+    },
+    "fold_1": {
+      "safe": 3.780375954201838,
+      "top1": 17.801157098085024,
+      "all_modes": 23.259545576398338,
+      "matched_shuffle": 17.083176453354483
+    },
+    "fold_2": {
+      "safe": 4.995289608907345,
+      "top1": 19.748614873395358,
+      "all_modes": 18.61918235574737,
+      "matched_shuffle": 17.83156660938094
+    },
+    "fold_3": {
+      "safe": 4.6416377655392935,
+      "top1": 17.30199904218401,
+      "all_modes": 22.263554961504212,
+      "matched_shuffle": 18.38186279458264
+    },
+    "fold_4": {
+      "safe": 4.432160841277648,
+      "top1": 20.96088387588459,
+      "all_modes": 24.16759472690975,
+      "matched_shuffle": 15.599986202500387
+    }
+  },
+  "pairwise": {
+    "overall": {
+      "pairs": 1814,
+      "events": 758,
+      "alternative_better_rate": 0.012127894156560088,
+      "evidence_auc": 0.6727374188311688,
+      "balanced_choice_accuracy": 0.5769074675324675
+    },
+    "fold_0": {
+      "evidence_auc": 0.8690807799442897,
+      "balanced_choice_accuracy": 0.6955431754874652
+    },
+    "fold_1": {
+      "evidence_auc": 0.6361788617886179,
+      "balanced_choice_accuracy": 0.5274390243902439
+    },
+    "fold_2": {
+      "evidence_auc": 0.5636856368563685,
+      "balanced_choice_accuracy": 0.3983739837398374
+    },
+    "fold_3": {
+      "evidence_auc": 0.6893063583815029,
+      "balanced_choice_accuracy": 0.5892341040462428
+    },
+    "fold_4": {
+      "evidence_auc": 0.4670487106017192,
+      "balanced_choice_accuracy": 0.5017908309455588
+    }
+  },
+  "guard": {
+    "passed": false,
+    "technical": {
+      "all_expected_folds": true,
+      "minimum_eligible_wells": true,
+      "mask_identity_coverage": true,
+      "safe_candidate_coverage": true,
+      "all_local_modes_retained_coverage": true,
+      "real_candidate_count_exact_coverage": true,
+      "branch_candidate_count_coverage": true,
+      "branch_finite_coverage": true,
+      "evidence_finite_coverage": true,
+      "heldout_post_cut_truth_access_before_freeze": true,
+      "self_gr_candidate_count": true
+    },
+    "pairwise": {
+      "auc_each_fold": false,
+      "balanced_choice_accuracy_each_fold": false,
+      "balanced_choice_accuracy_pooled": false
+    },
+    "performance": {
+      "gain_vs_safe_h256": false,
+      "gain_vs_safe_required_folds": false,
+      "gain_vs_top1_h256": false,
+      "gain_vs_top1_required_folds": false,
+      "h512_gain_not_below_h256": true
+    },
+    "safety": {
+      "safe_unique_best_false_switch": false,
+      "real_better_than_matched_shuffle_pooled": false,
+      "real_nonregressing_all_folds": false
+    }
+  },
+  "execution": {
+    "implemented": true,
+    "canonical_notebook_adopted": true,
+    "run": true,
+    "kaggle_push_approved": true,
+    "active_contracts": 1,
+    "fixed_policies": 4,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "hmm_pf_regenerations": 0,
+    "parent_control_retraining": false
+  },
+  "run": {
+    "status": "complete",
+    "kernel_worker_status": "COMPLETE",
+    "kernel_id": "kentookumura/exp291-typewell-multimode-safe-beam-backtest-train",
+    "kernel_version": 1,
+    "kernel_id_no": 127882960,
+    "url": "https://www.kaggle.com/code/kentookumura/exp291-typewell-multimode-safe-beam-backtest-train",
+    "generated_at_utc": "2026-07-19T14:00:58.748637+00:00",
+    "runtime_seconds": 6805.497161626816,
+    "runtime": "kaggle_cpu_single_process",
+    "enable_gpu": false,
+    "enable_internet": false,
+    "executed_config_sha256": "e6f995a79b8802c0ae49033598d42ca1ce64f0e587b475e24eb1dc66c8bed2ef",
+    "canonical_notebook_sha256": "17551b9e688c5ed75144f4b38f8ee7ab223302c2e67feebe85eab9b1373e9014",
+    "packaged_notebook_sha256": "8a45bb22597f84d06eec24c56f383abf62818875c858a2fe5018339fa92ee881",
+    "kernel_metadata_sha256": "e44abb5bba5032366218b19e7944b2408d4d37a661446b97d027b62e829ef095"
+  },
+  "truth_attachment": {
+    "heldout_post_cut_truth_access_before_freeze_count": 0,
+    "stage": "after_all_target_free_tables_persisted_and_content_hashed",
+    "frozen_content_sha256": {
+      "mask_manifest": "a5310c894c9e49a8e7a63cf1da75d44c74be26bd7b251af4bc10ce896d3accdb",
+      "shift_scores": "5e2b6cf1a34b95495b2f6e2a6c854fecbe9de4a8682d43dff503988ee774c849",
+      "candidates": "07bea4d3dceb6fa4404c4ca79df68c6ed8cdee46f275e74650ff8471a842cf3a",
+      "branch_paths": "2fd84727ed795628c942703aa6ab897f13565855005e753d19f36932f62a8b4c",
+      "evidence": "84d4d5e40e1c0a57dc02357b5d46f2c6cfb476571613980982e189d0833ba0e5",
+      "policy": "d914824e96159eeeab11028b54392507d2c4dbbca8b17656a2986d04b934bb17"
+    }
+  },
+  "file_sha256": {
+    "contract": "075b7a3403b09062104623b8f5a797c3de4e9ecc280fc3d5efdf4298d82d93a3",
+    "mask_manifest": "21cde30ee454ab9aad54728e8360d83bdc830a67275a43b8ad644cf4bd68973a",
+    "input_manifest": "71b039ac136d70156cb814eff7422ec42cf5e593218b4afe775392c3474a61e4",
+    "overall_metrics": "bd44eec71b23e1ce01da4705beb0c4b32325d6cc69f6d2cd7660bda14cc11da0",
+    "fold_metrics": "de683f950b52339fa6e2e6ce0887c6f0b9e767a9d5e24bd755b453dda4ddd6d5",
+    "pairwise_metrics": "d5d57a90c02a45a87527d65badffcfa25111c79df177be0d48e9255778b1c9bf",
+    "by_well_metrics": "9eaee195592c16870e488278f5b11459171f462e6d5adaf593ff4a41fbf9f59f",
+    "ineligible_wells": "04b30d6ba5be7a04ff7b3905925938b7dc1ca481f1c8ce5a5ea3b94d215568ae"
+  },
+  "implementation": {
+    "train_source_lines": 2365,
+    "train_sections": 10,
+    "train_notebook_cells": 22,
+    "train_source_sha256": "2d0a9978545a46c8f5bceafcc61e64e0d15f693fc07e8c95b1d8d351817ae386",
+    "train_notebook_sha256": "17551b9e688c5ed75144f4b38f8ee7ab223302c2e67feebe85eab9b1373e9014",
+    "inference_source_lines": 82,
+    "inference_sections": 4,
+    "inference_notebook_cells": 10,
+    "inference_source_sha256": "662fdb93a38730f0b6025189bb675f74bc6e62ecde39697ef6c491c1b2285be6",
+    "inference_notebook_sha256": "9db6a2d1ef6863bd2eafaa40bca1678c2aef84a485e3c5a42348145a988aa510",
+    "dedicated_tests_passed": 9,
+    "repository_tests_passed": 260,
+    "jupytext_sync_passed": true,
+    "py_compile_passed": true,
+    "ruff_passed": true,
+    "strict_experiment_validation_passed": true,
+    "template_validation_passed": true
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "inference": false,
+  "submission": false,
+  "next_action": "Keep the branch closed without same-backtest parameter rescue; do not build a decoder, inference, or submission from exp291."
+}

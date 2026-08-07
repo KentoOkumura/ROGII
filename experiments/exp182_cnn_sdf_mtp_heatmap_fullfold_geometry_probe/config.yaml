@@ -1,0 +1,224 @@
+experiment:
+  name: "exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe"
+  description: Full-fold and geometry-channel follow-up for the discussion-699853 CNN/SDF/MTP heatmap diagnostic.
+  route: ml_model
+  status: completed_train_side_gpu_probe
+  created_at: "2026-07-03"
+  updated_at: "2026-07-03"
+
+lineage:
+  parent: exp179_cnn_sdf_mtp_heatmap_probe
+  discussion_source: docs/discussions/rogii-wellbore-geology-prediction-699853-multi-trajectory-prediction-mtp-with-deep-cnn-for-welllog-inversion-fullcsv.md
+  implementation_source: exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe_train.py
+  diff_summary: Extends exp179 from a single-fold 5-channel smoke into a train-side full-fold geometry diagnostic. It keeps the target-free flat-prior typewell TVT window and closest-mode CNN/MTP objective, adds run specs for 5-fold real/shuffled/no-GR controls, geometry-only channel ablation, and a small larger-window probe. It remains diagnostic only and does not create a submission, replace PF/Beam paths, or use valid/test true TVT for input windows.
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+validation:
+  strategy: fullfold_groupkfold_heatmap_mtp_geometry_probe
+  metric: top3_within10_center_rate
+  seed: 42
+  n_folds: 5
+  active_fold_indices: [0, 1, 2, 3, 4]
+  group_column: well
+  score_rows: pseudo_tail_tvt_input_missing_equivalent_windows
+  secondary_metrics:
+    - target_in_grid_rate
+    - top1_within10_center_rate
+    - top5_within10_center_rate
+    - top10_within10_center_rate
+    - oracle_top10_center_rmse
+    - path_continuity_mae_ft
+    - real_vs_shuffled_margin
+    - real_vs_no_gr_margin
+    - worst_well_top3_within10_center_rate
+    - distance_bucket_top3_within10_center_rate
+  leakage_policy:
+    - Typewell TVT grid centers are generated from last finite TVT_input and known Z trajectory only, using flat-prior TVT = last_known_tvt - (Z - last_known_z).
+    - Horizontal history and prefix anchor channels use observed TVT_input prefix only. Evaluation-tail TVT is never written into heatmap inputs, normalization, candidate grid centers, run spec selection, or controls.
+    - Geometry channels use MD/X/Y/Z only and are available in hidden test.
+    - True TVT is used only as the supervised path target and for metrics on raw train pseudo-tail rows.
+    - Fold split is by well id. Window random split is forbidden.
+    - Shuffled-GR and no-GR controls are trained and evaluated under the same fold/sample schedule before any follow-up is considered.
+    - Direct TVT submission, PF weight replacement, hard candidate path replacement, softmax blend, inference port, and hidden-test regeneration are out of scope.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+
+model:
+  name: heatmap_cnn_mtp_fullfold_geometry_probe
+  estimator: pytorch_conv2d_path_head
+  target: nearest_typewell_tvt_bin_for_true_horizontal_tvt
+  base_input_channels:
+    - typewell_gr_heatmap
+    - horizontal_gr_heatmap
+    - typewell_minus_horizontal_gr
+    - tvt_history_sdf_from_observed_tvt_input_prefix
+    - observed_tvt_input_mask
+  geometry_input_channels:
+    - sin_dmd_dz_tangent
+    - cos_dmd_dz_tangent
+    - sin_dx_dy_direction
+    - cos_dx_dy_direction
+    - prefix_distance_prior
+    - row_location_prior
+  variants:
+    - real_gr
+    - shuffled_gr
+    - no_gr
+  channel_sets:
+    base:
+      include_geometry: false
+    geometry:
+      include_geometry: true
+  architecture:
+    channels: [32, 64, 64]
+    kernel_size: 3
+    path_modes: 10
+    use_group_norm: true
+    dropout: 0.05
+  training:
+    max_wells: null
+    max_train_wells: null
+    max_valid_wells: null
+    train_samples_per_well: 20
+    valid_samples_per_well: 14
+    default_horizontal_window_rows: 128
+    default_typewell_window_bins: 64
+    default_tvt_grid_half_width_ft: 192.0
+    default_history_scale_ft: 200.0
+    max_tail_rows: 2048
+    min_label_fraction: 0.35
+    center_target_tolerance_ft: 10.0
+    epochs: 4
+    learning_rate: 0.001
+    weight_decay: 0.0001
+    gradient_clip_norm: 1.0
+    use_amp: false
+    require_cuda: true
+    min_cuda_capability_major: 7
+    dataloader_shuffle: true
+  active_run_specs:
+    - name: base_real_w128_b64_fullfold
+      variant: real_gr
+      channel_set: base
+      fold_indices: [0, 1, 2, 3, 4]
+      horizontal_window_rows: 128
+      typewell_window_bins: 64
+      tvt_grid_half_width_ft: 192.0
+      history_scale_ft: 200.0
+    - name: base_shuffled_w128_b64_fullfold
+      variant: shuffled_gr
+      channel_set: base
+      fold_indices: [0, 1, 2, 3, 4]
+      horizontal_window_rows: 128
+      typewell_window_bins: 64
+      tvt_grid_half_width_ft: 192.0
+      history_scale_ft: 200.0
+    - name: base_no_gr_w128_b64_fullfold
+      variant: no_gr
+      channel_set: base
+      fold_indices: [0, 1, 2, 3, 4]
+      horizontal_window_rows: 128
+      typewell_window_bins: 64
+      tvt_grid_half_width_ft: 192.0
+      history_scale_ft: 200.0
+    - name: geometry_real_w128_b64_fullfold
+      variant: real_gr
+      channel_set: geometry
+      fold_indices: [0, 1, 2, 3, 4]
+      horizontal_window_rows: 128
+      typewell_window_bins: 64
+      tvt_grid_half_width_ft: 192.0
+      history_scale_ft: 200.0
+    - name: geometry_shuffled_w128_b64_fold01
+      variant: shuffled_gr
+      channel_set: geometry
+      fold_indices: [0, 1]
+      horizontal_window_rows: 128
+      typewell_window_bins: 64
+      tvt_grid_half_width_ft: 192.0
+      history_scale_ft: 200.0
+    - name: geometry_real_w256_b96_fold01
+      variant: real_gr
+      channel_set: geometry
+      fold_indices: [0, 1]
+      horizontal_window_rows: 256
+      typewell_window_bins: 96
+      tvt_grid_half_width_ft: 288.0
+      history_scale_ft: 260.0
+
+runtime:
+  use_amp: false
+  num_workers: 0
+  batch_size: 32
+  kaggle:
+    enable_gpu: true
+    machine_shape: NvidiaTeslaT4
+    enable_internet: false
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_global_seed_plus_stable_sha256_per_run_spec_fold_well_for_sample_order_and_shuffled_gr
+  stochastic_components:
+    - pytorch_cuda_conv_training
+    - adamw_optimizer
+    - dataloader_shuffle_with_seeded_generator
+  parallel_rng_policy: num_workers_zero_no_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    run_spec_manifest_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a GPU train-side diagnostic, not a deterministic submission anchor.
+    - torch.use_deterministic_algorithms is enabled with warn_only=True; CuDNN benchmark is disabled.
+    - Model, sample index, validation predictions, schema, run specs, and decompressed gzip content SHA are recorded after Kaggle train.
+
+audit:
+  mode: cnn_sdf_mtp_heatmap_fullfold_geometry_probe
+  output_prefix: exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe
+  topk_values: [1, 3, 5, 10]
+  distance_buckets:
+    - [0, 250]
+    - [250, 500]
+    - [500, 1000]
+    - [1000, 2000]
+    - [2000, 1000000000]
+  expected_train_artifacts:
+    - exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe_sample_index.csv.gz
+    - exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe_validation_predictions.csv.gz
+    - exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe_metrics.csv
+    - exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe_fold_metrics.csv
+    - exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe_well_metrics.csv
+    - exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe_distance_bucket_metrics.csv
+    - exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe_training_history.csv
+    - exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe_feature_schema.csv
+    - exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe_run_spec_manifest.json
+    - exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe_model_manifest.json
+    - exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe_summary.json
+
+inference:
+  mode: not_selected_train_side_diagnostic_only
+  selected_variant: null
+  notes:
+    - No inference notebook should be pushed for submission from this diagnostic.
+    - Follow-up requires full-fold real GR margin, worst-well guard, and distance-bucket guard before path feature or verifier work.
+
+notes:
+  - Implements backlog item cnn_sdf_mtp_heatmap_fullfold_geometry_probe.
+  - Kaggle train push requires explicit GPU cost confirmation.

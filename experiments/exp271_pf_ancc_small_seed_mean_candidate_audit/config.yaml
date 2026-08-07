@@ -1,0 +1,201 @@
+experiment:
+  name: exp271_pf_ancc_small_seed_mean_candidate_audit
+  description: >-
+    Replays the fixed first eight exp266 PF ANCC seeds, saves four-seed and
+    eight-seed mean paths, and audits their candidate headroom against the
+    frozen exp263 core-12 candidate bank without training a selector.
+  route: pf_beam
+  status: completed_train_side_candidate_audit
+  created_at: "2026-07-17"
+
+overrides:
+  project_defaults:
+    - validation.metric
+    - validation.n_folds
+
+lineage:
+  parent: exp266_pf_ancc_pf_z_multiseed_stability_audit
+  references:
+    - exp072_exp063_full_replay_feature_cache
+    - exp263_last_anchor_better_candidate_confidence_pair_cache
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md pf_ancc_small_seed_mean_candidate_audit
+  diff_summary: >-
+    Keeps the exact exp266 PF ANCC kernel, 600 particles, dynamics, seed
+    namespace, seed order, and arithmetic. It limits generation to the first
+    eight seeds, freezes mean-of-4 and mean-of-8 paths, and adds only a
+    no-training oracle/stability audit against the frozen exp263 core bank.
+
+validation:
+  strategy: full_train_exp072_pseudotail_fixed_small_seed_candidate_audit
+  metric: oracle_rmse_unique_best_and_stability
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: TVT_input_isna_exp072_rows
+  expected_rows: 3783989
+  expected_wells: 773
+  seed_counts: [4, 8]
+  block_rows: [128, 256, 512]
+  distance_bucket_edges_ft: [0.0, 50.0, 100.0, 250.0, 500.0, 1000.0]
+  tie_tolerance_ft: 1.0e-6
+  parity_tolerance_ft: 0.0
+  aggregate_rmse_tolerance_ft: 2.0e-6
+  expected_global_rmse:
+    pf_ancc_seed_mean_4: 13.126896158997736
+    pf_ancc_seed_mean_8: 13.027107212931408
+  leakage_policy:
+    - PF generation reads raw horizontal/typewell data and known TVT_input prefix only.
+    - True TVT, target, error, oracle, exp263 candidates, and exp266 phenotype labels are not passed to PF generation or seed aggregation.
+    - Target is joined only after the fixed seed paths, mean paths, and disagreement columns are frozen.
+    - Evaluation uses raw horizontal TVT parsed as float64, matching exp266 aggregate metrics; exp072 float32 target reconstruction is not used as truth.
+    - Seed counts, seed order, candidate bank, scope definitions, and tie policy are fixed before execution.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  exp072:
+    filename: exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    expected_sha256: 14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18
+    expected_decompressed_sha256: 99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350
+    expected_schema_sha256: 700d38149f583c3ab6574ea7b163c3c8709c2514b675bea381d822f82f4809b8
+  exp266:
+    kernel: kentookumura/exp266-pf-ancc-pf-z-multiseed-stability-train
+    kernel_version: 3
+    artifact_manifest_filename: artifact_manifest.csv
+    expected_artifact_manifest_sha256: 440a5e474b19290d667562c242ff7aec73420f6340e712d34d01a89bf45cd69c
+    aggregate_filename: aggregate_by_well.csv.gz
+  exp263:
+    kernel: kentookumura/exp263-last-anchor-pair-cache-train
+    kernel_version: 1
+    manifest_filename: cache_manifest.json
+    expected_manifest_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+    expected_schema_version: 1.0.0
+    expected_core_candidates: 12
+    core_candidate_ids:
+      - exp226_k16
+      - selfgr_hmm_a070
+      - exp192_likpf
+      - selfgr_hmm_a150
+      - hmm_peer_atlas
+      - likpf_mean
+      - exact_hmm
+      - pf_medoid_k8_m0
+      - pf_ancc
+      - exp103_xy_likpf_scale_12
+      - hmm_state_selfgr
+      - beam_mean
+  hidden_like_assignments:
+    filename: exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    bundled_path: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+
+model:
+  name: exact_exp266_pf_ancc_fixed_small_seed_candidate_audit
+  estimator: none_particle_filter_candidate_diagnostic
+  active_variants: [pf_ancc_seed_mean_4, pf_ancc_seed_mean_8]
+  active_variant_count: 1
+  pf_dynamics_variants: 1
+  pf:
+    algorithm: pf_ancc
+    particles: 600
+    generated_seed_count: 8
+    original_seed_index: 0
+    aggregate_seed_counts: [4, 8]
+    aggregation: mean
+    grid_step: 0.2
+    resample_threshold: 0.5
+  pf_ancc:
+    alpha: 0.998
+    rate_noise: 0.002
+    position_noise: 0.005
+    init_spread: 0.3
+    rough_position: 0.1
+    rough_rate: 0.001
+  gr_sigma:
+    minimum: 10.0
+    maximum: 60.0
+    default: 30.0
+
+audit:
+  bank_configurations:
+    core12: []
+    core12_plus_mean4: [pf_ancc_seed_mean_4]
+    core12_plus_mean8: [pf_ancc_seed_mean_8]
+    core12_plus_both: [pf_ancc_seed_mean_4, pf_ancc_seed_mean_8]
+  scopes: [row, block_128, block_256, block_512, whole_well]
+  disagreement_quantiles: 10
+  worst_well_top_k: 20
+  outputs:
+    candidate_paths: exp271_pf_ancc_small_seed_mean_candidate_audit_candidate_paths.csv.gz
+    exp266_parity: exp271_pf_ancc_small_seed_mean_candidate_audit_exp266_parity.csv
+    standalone_metrics: exp271_pf_ancc_small_seed_mean_candidate_audit_standalone_metrics.csv
+    oracle_metrics: exp271_pf_ancc_small_seed_mean_candidate_audit_oracle_metrics.csv
+    oracle_by_well: exp271_pf_ancc_small_seed_mean_candidate_audit_oracle_by_well.csv.gz
+    seed_disagreement_metrics: exp271_pf_ancc_small_seed_mean_candidate_audit_seed_disagreement_metrics.csv
+    seed_disagreement_buckets: exp271_pf_ancc_small_seed_mean_candidate_audit_seed_disagreement_buckets.csv
+    input_manifest: exp271_pf_ancc_small_seed_mean_candidate_audit_input_manifest.csv
+    artifact_manifest: exp271_pf_ancc_small_seed_mean_candidate_audit_artifact_manifest.csv
+    summary: exp271_pf_ancc_small_seed_mean_candidate_audit_summary.json
+
+execution:
+  active_variant_count: 1
+  pf_dynamics_variants: 1
+  generated_seed_count: 8
+  lightgbm_config_count: 0
+  fold_count: 0
+  total_boosters: 0
+  parent_control_retraining: false
+  inference_enabled: false
+  submission_enabled: false
+  progress_every_wells: 16
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  batch_size: null
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp266-pf-ancc-pf-z-multiseed-stability-train
+      - kentookumura/exp263-last-anchor-pair-cache-train
+    bootstrap_dependency_files:
+      - source: experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+        destination: inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  upstream_seed_namespace: exp266_pf_ancc_pf_z_multiseed_stability_audit
+  seed_policy: >-
+    seed0=exp072 stable_seed(pf_ancc,well); seed1..7=stable_sha256
+    (exp266_pf_ancc_pf_z_multiseed_stability_audit,train,pf_ancc,well,seed_index)
+  stochastic_components:
+    - pf_ancc_particle_initialization
+    - pf_ancc_process_noise
+    - pf_ancc_resampling
+  parallel_rng_policy: well_thread_parallel_each_well_seed_explicit_before_numba_kernel
+  feature_sha_policy: decompressed_content_sha_for_gzip_and_raw_plus_manifest_sha_for_parquet
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - Seed 0 exact parity and exp266 per-well mean4/mean8 RMSE parity are fail-closed.
+    - This is a train-side oracle/stability diagnostic, not a deterministic submission anchor.
+
+inference:
+  enabled: false
+  mode: disabled_train_side_candidate_audit_only
+  selected_candidate: null
+  create_submission: false
+
+notes:
+  - Kaggle CPU plan is one PF ANCC dynamics variant, eight fixed seeds, 600 particles, zero folds, and zero boosters.
+  - No parent/control retraining, selector training, raw-test inference, or submission is included.

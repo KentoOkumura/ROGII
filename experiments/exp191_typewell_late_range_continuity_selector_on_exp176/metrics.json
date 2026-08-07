@@ -1,0 +1,168 @@
+{
+  "experiment": "exp191_typewell_late_range_continuity_selector_on_exp176",
+  "status": "completed_train_side_supported_no_submit",
+  "route": "ensemble",
+  "parent": "exp176_typewell_late_range_pfbeam_candidate_prior",
+  "key_idea": "Apply exp158-style Viterbi continuity constraints to the exp176 typewell late-range prior candidate-error surface.",
+  "kaggle_kernel": "kentookumura/exp191-typewell-late-continuity-train",
+  "kaggle_url": "https://www.kaggle.com/code/kentookumura/exp191-typewell-late-continuity-train",
+  "kaggle_version": 1,
+  "kaggle_status": "COMPLETE",
+  "kaggle_output_dir": "experiments/exp191_typewell_late_range_continuity_selector_on_exp176/kaggle/output/train_v1",
+  "cv": {
+    "metric": "rmse_tvt",
+    "rows": 3783989,
+    "wells": 773,
+    "runtime_seconds": 19747.140142679214,
+    "best_viterbi": {
+      "variant": "viterbi_sw400_bias000_jw050_jf025_d075_std999999_md0000_seg012",
+      "rmse_tvt": 10.598006879875323,
+      "mae_tvt": 6.402336928494969,
+      "within_10ft": 0.7931106565056082,
+      "within_1ft": 0.2426772382266439,
+      "within_2ft": 0.3740034656548949,
+      "within_5ft": 0.604777128051905,
+      "oracle_label_accuracy": 0.2650507176421496,
+      "nondefault_rows": 2419510,
+      "nondefault_rate": 0.6394072498625128,
+      "path_switch_count": 3620,
+      "path_switch_per_1000_rows": 0.9566624004456672,
+      "max_path_switch_per_1000_rows_by_well": 4.045605001838911,
+      "params": {
+        "switch_penalty": 40.0,
+        "nondefault_bias": 0.0,
+        "jump_penalty_weight": 0.5,
+        "jump_free_ft": 25.0,
+        "jump_scale_ft": 25.0,
+        "max_abs_delta_vs_default": 75.0,
+        "max_pf_ancc_std": 999999.0,
+        "min_md_since": 0.0,
+        "min_segment_len": 12
+      }
+    },
+    "baselines": {
+      "oracle": {
+        "rmse_tvt": 4.564605114796885,
+        "mae_tvt": 2.3171664126922344,
+        "within_10ft": 0.960053530811004,
+        "oracle_label_accuracy": 1.0
+      },
+      "likpf_mean_single": {
+        "rmse_tvt": 11.594897672217703,
+        "mae_tvt": 7.067632584311985,
+        "within_10ft": 0.772807479091509,
+        "oracle_label_accuracy": 0.2639970676447526,
+        "path_switch_count": 0,
+        "path_switch_per_1000_rows": 0.0
+      },
+      "exp176_error_ranker_rowwise": {
+        "rmse_tvt": 10.641296370660122,
+        "mae_tvt": 6.43455877101519,
+        "within_10ft": 0.7918154624656678,
+        "oracle_label_accuracy": 0.2574391733168357,
+        "nondefault_rows": 2447051,
+        "nondefault_rate": 0.6466855479759587,
+        "path_switch_count": 261391,
+        "path_switch_per_1000_rows": 69.07816063947332,
+        "max_path_switch_per_1000_rows_by_well": 330.84185680566486
+      },
+      "exp158_best_viterbi": {
+        "rmse_tvt": 10.789163253079206,
+        "path_switch_count": 11767,
+        "path_switch_per_1000_rows": 3.1096813442110958
+      }
+    },
+    "deltas": {
+      "best_minus_likpf_mean_single_rmse_tvt": -0.9968907923423806,
+      "best_minus_exp176_error_ranker_rowwise_rmse_tvt": -0.04328949078479738,
+      "best_minus_exp158_best_viterbi_rmse_tvt": -0.19115637320388146,
+      "best_minus_exp176_rowwise_path_switch_count": -257771,
+      "best_minus_exp176_rowwise_path_switch_per_1000_rows": -68.12149823902765
+    },
+    "by_well_delta_vs_exp176_rowwise": {
+      "wells": 773,
+      "improved_wells": 417,
+      "worsened_wells": 356,
+      "same_wells": 0,
+      "mean_delta_rmse_tvt": -0.07557197111560106,
+      "median_delta_rmse_tvt": -0.019082898364085832,
+      "max_regression_rmse_tvt": 1.4504474657515534,
+      "max_regression_well": "6d1d74e1",
+      "max_improvement_rmse_tvt": -10.746657622135132,
+      "max_improvement_well": "57f05c51"
+    },
+    "distance_bucket_rmse_tvt": {
+      "000_050": {
+        "best": 0.5344953876040544,
+        "exp176_rowwise": 0.5067400918608761,
+        "delta": 0.027755295743178254
+      },
+      "050_100": {
+        "best": 1.1918178192665687,
+        "exp176_rowwise": 1.1774546347440917,
+        "delta": 0.01436318452247698
+      },
+      "100_250": {
+        "best": 2.3692066921586986,
+        "exp176_rowwise": 2.3520384159309804,
+        "delta": 0.017168276227718327
+      },
+      "250_500": {
+        "best": 4.006983823561699,
+        "exp176_rowwise": 3.942762869248506,
+        "delta": 0.06422095431319264
+      },
+      "500_1000": {
+        "best": 5.960930638627434,
+        "exp176_rowwise": 5.959487116467362,
+        "delta": 0.0014435221600717085
+      },
+      "1000_plus": {
+        "best": 11.631845509063157,
+        "exp176_rowwise": 11.6830615958608,
+        "delta": -0.051216086797643
+      }
+    },
+    "selection_distribution": {
+      "pf_ancc": 0.4101475982091914,
+      "beam_mean": 0.0492083882907693,
+      "likpf_mean": 0.3605927501374872,
+      "sc_ens": 0.00008483111340968486,
+      "hyb": 0.000057875432513149486,
+      "tvt_dense": 0.0220439330029764,
+      "tvt_densew": 0.0733540715895315,
+      "tvt_dense50": 0.0845105522241211
+    },
+    "recommendation": "segment_viterbi_supported_for_continuity_audit"
+  },
+  "runtime": {
+    "enable_gpu": false,
+    "new_boosters": 0,
+    "saved_parent_boosters_used": 15,
+    "viterbi_variants": 180,
+    "control_retraining": false
+  },
+  "sha256": {
+    "exp099_source_decompressed": "1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a",
+    "exp072_source_decompressed": "99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350",
+    "exp176_feature_schema": "f4643a36903f0a84b4f2e1f205581fcd4d6dfe18474372848a188c921126b612",
+    "exp176_model_manifest": "7f49128b9404898038765da8b48e7f687e60f40e4c69fff34e63eede17054845",
+    "metrics": "62b22ae67db50e13ede3e040f37faf7bbf969088a8fb613e09e5d06c6103fe9e",
+    "bucket_metrics": "731169a6ba9d8b08fd00aed22b4f2dbbdff4c0391fcbeb0e32a5028902bcbb12",
+    "by_well": "0d7f964806a5e101bf881c388b4097039c3d2af6c944e8e20926212860aff022",
+    "selection_distribution": "eb5505839bbccfe4a09508b0190ef90c2315813bfc578764f9ecef9ab84d313c",
+    "score_summary": "f350fb2f4a115450146ef93f943d73f93e23632effe26eaaaae4679003eaffc2",
+    "viterbi_params": "aad315a1f3cd1130203e570f00d1a2fe60e03beb995250cc9653638508400edc",
+    "oof_predictions_decompressed": "c940900bbd72ce5b3410a19dc47096780b1008e6df9d99a32c360657e0a7317c"
+  },
+  "artifacts": {
+    "metrics": "artifacts/exp191_typewell_late_range_continuity_selector_on_exp176_metrics.csv",
+    "oof_predictions": "artifacts/exp191_typewell_late_range_continuity_selector_on_exp176_oof_predictions.csv.gz",
+    "selection_distribution": "artifacts/exp191_typewell_late_range_continuity_selector_on_exp176_selection_distribution.csv",
+    "by_well": "artifacts/exp191_typewell_late_range_continuity_selector_on_exp176_by_well.csv",
+    "bucket_metrics": "artifacts/exp191_typewell_late_range_continuity_selector_on_exp176_bucket_metrics.csv",
+    "viterbi_params": "artifacts/exp191_typewell_late_range_continuity_selector_on_exp176_viterbi_params.csv",
+    "score_summary": "artifacts/exp191_typewell_late_range_continuity_selector_on_exp176_score_summary.csv",
+    "summary": "artifacts/exp191_typewell_late_range_continuity_selector_on_exp176_summary.json"
+  }
+}

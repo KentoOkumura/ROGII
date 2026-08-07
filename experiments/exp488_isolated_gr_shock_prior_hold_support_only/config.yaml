@@ -1,0 +1,375 @@
+experiment:
+  name: exp488_isolated_gr_shock_prior_hold_support_only
+  description: >-
+    Continue the frozen exp482 isolated-GR-shock intervention on a target-free
+    top-32 shock-support manifest without requiring zero-shock control wells.
+    Compare the candidate with the saved exp209 prediction on those same wells.
+  hypothesis: >-
+    The frozen exp482 trigger can improve the saved exp209 prediction on
+    shock-enriched wells even though the preregistered zero-shock-well control
+    requirement was infeasible.
+  route: pf_beam
+  status: stage0_failed_closed
+  created_at: "2026-07-30"
+  updated_at: "2026-07-30"
+
+lineage:
+  parent: exp482_isolated_gr_shock_prior_hold
+  evidence:
+    - exp408_hmm_message_rate_basin_audit
+    - exp440_ambiguity_gated_predictive_prior_hmm
+    - exp358_exp209_missing_distance_emission_downweight
+    - exp363_sticky_gr_reliability_exact_hmm
+    - exp389_exp209_huber_exact_hmm_emission
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+  steering: ../../.steering/20260730-exp488-isolated-gr-shock-prior-hold-support-only
+  diff_summary: >-
+    Preserve the exp482 trigger, HMM, readout, thresholds, support ordering,
+    and saved exp209 comparison. Change only Stage 0 sampling from support32
+    plus zero-shock control32 to target-free support32 with no external
+    zero-shock-well control group.
+
+design:
+  phase: late
+  priority: P3_low_independent_preflight
+  design_frozen: true
+  assumption: >-
+    The complete raw-GR suffix is observable at hidden inference, so a
+    noncausal future-message consistency check is allowed exactly as in the
+    parent forward-backward smoother.
+  independent_from_exp440: true
+  exp440_schedule_or_truth_used_for_trigger: false
+  scientific_variants: 1
+  same_oof_rescue_allowed: false
+  support_only_validation: true
+  zero_shock_control_required: false
+  implementation_authorized: true
+  canonical_notebook_adoption_authorized: true
+  kaggle_package_authorized: true
+  stage0_run_authorized: true
+  stage1_run_authorized: false
+  inference_authorized: false
+  submission_authorized: false
+
+implementation:
+  enabled: true
+  code_created: true
+  tests_created: true
+  jupytext_source_created: true
+  canonical_notebook_implemented: true
+  generic_template_notebooks_only: false
+  kaggle_package_created: true
+  kaggle_push_completed: true
+  stage0_completed: true
+  stage_a0_completed: true
+  stage_a1_completed: true
+  stage1_completed: false
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  expected_train_wells: 773
+  expected_suffix_rows: 3783989
+  raw_shock_census:
+    reads_true_tvt_fold_role_or_error: false
+    minimum_rows: 128
+    minimum_support_wells: 32
+  stage0_manifest:
+    total_wells: 32
+    support_wells: 32
+    control_wells: 0
+    support_sort:
+      - shock_count_desc
+      - suffix_rows_desc
+      - well_id_asc
+    freeze_before_truth_fold_role_attach: true
+  exp209_saved_control:
+    filename: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz
+    prediction_column: hmm_mean_tvt
+    expected_decompressed_sha256: 8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts
+      - /kaggle/input/exp209-joint-exact-parity-train/artifacts
+    patterns:
+      - "**/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation_amerhu_exact_hmm_smoother_default_train_features.csv.gz"
+    regenerate: false
+  fold_source:
+    filename: exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz
+    expected_decompressed_sha256: 709eb726cc30da523f017ed0dbd0371967b88a91ddcf25578eb9356f28e4c609
+    candidates:
+      - /kaggle/input/notebooks/kentookumura/exp226-k16-kappa-repro-train/artifacts
+      - /kaggle/input/exp226-k16-kappa-repro-train/artifacts
+    patterns:
+      - "**/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction_train_oof_predictions.csv.gz"
+
+model:
+  name: isolated_gr_shock_leave_one_out_prior_hold
+  estimator: deterministic_exact_hmm_message_readout
+  parent:
+    experiment: exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    state_transition_emission_prior_and_readout_changed: false
+  raw_shock:
+    source: raw_gr_only
+    raw_observed_required: true
+    window_radius_rows: 5
+    current_row_excluded: true
+    minimum_finite_neighbors_each_side: 3
+    center: neighbor_median
+    scale_formula: max(1.4826*neighbor_mad,1.0)
+    robust_z_min: 4.5
+    left_right_median_difference_scale_max: 2.0
+    suffix_boundary_exclusion_rows: 5
+    isolation_radius_rows: 2
+    collision_policy: suppress_entire_cluster
+  message_agreement:
+    predictive_mean_vs_loo_mean_max_ft: 1.05
+    predictive_or_loo_std_max_ft: 6.0
+  current_emission_conflict:
+    predictive_to_provisional_mean_shift_min_ft: 1.05
+    saved_parent_to_loo_output_difference_min_ft: 0.35
+  trigger:
+    logic: raw_shock_and_message_agreement_and_current_emission_conflict
+    uses_true_tvt_error_fold_role_episode_or_exp440_flag: false
+  intervention:
+    active_output: leave_one_current_observation_out_posterior_mean
+    inactive_output: saved_exp209_smoothed_posterior_mean
+    loo_formula: normalize(predictive_joint*future_beta)
+    modifies_parent_filtered_state: false
+    modifies_backward_message: false
+    modifies_later_predictions: false
+  fixed_from_exp209:
+    position_grid_step_ft: 0.35
+    n_rates: 41
+    rate_span: 0.10
+    rate_process_sigma: 0.002
+    position_process_sigma: 0.02
+    momentum: 0.998
+    emission_lambda: 1.0
+    sigma_mode: known_prefix_zero_fill_population_std
+    sigma_clip:
+      - 10.0
+      - 60.0
+    start_sigma_ft: 0.75
+    initial_rate_sigma: 0.01
+    band_pad_ft: 100.0
+    rate_center: zero
+    state_space: tvt_position_and_u_rate
+    transition: unchanged
+    prior: unchanged
+    emission: gaussian_typewell_gr
+    gr_preprocessing_and_missing_policy: unchanged
+    sigma_and_clip: unchanged
+    forward_backward_reduction_order: unchanged
+  forbidden:
+    - exp440_ambiguity_schedule_threshold_or_active_rows
+    - trigger_threshold_window_scale_floor_or_distance_grid
+    - consecutive_or_cluster_hold
+    - parent_state_or_future_output_propagation
+    - soft_blend_continuous_weight_huber_or_student_t_rescue
+    - true_error_fold_role_episode_or_well_id_trigger
+    - same_oof_rescue_selector_or_ml_feature_conversion
+
+validation:
+  strategy: raw_only_census_then_target_free_support32_mechanism_then_separately_authorized_full_oof
+  reporting_folds: 5
+  metric: rmse
+  metric_weighting: unweighted_suffix_rows
+  group_column: well_id
+  score_rows: train_unknown_suffix_rows
+  parent_prediction: saved_exp209
+  parent_prediction_rerun: false
+  truth_join: after_census_manifest_message_trigger_and_prediction_freeze
+  stage0:
+    role: shock_enriched_mechanism_only_not_cv_or_promotion
+    scientific_variants: 1
+    unchanged_parent_message_hmm_replays: 32
+    candidate_state_modifying_hmm_runs: 0
+    saved_parent_prediction_reruns: 0
+    lightgbm_configs: 0
+    trained_ml_folds: 0
+    boosters: 0
+    fitted_models: 0
+    pf_runs: 0
+    beam_runs: 0
+    gpu_runs: 0
+    technical:
+      expected_wells: 32
+      expected_support_wells: 32
+      support_only_manifest: true
+      parent_replay_prediction_max_abs_error_ft: 1.0e-5
+      posterior_normalization_max_error: 1.0e-6
+      finite_coverage_min: 1.0
+      final_trigger_rows_min: 32
+      final_trigger_wells_min: 16
+      final_trigger_folds_required: 5
+      final_trigger_fraction_max: 0.005
+      forbidden_reads_before_freeze: 0
+      full_runtime_projection_seconds_max: 30600
+      peak_rss_gb_max: 25
+    scientific:
+      candidate_better_fraction_on_trigger_rows_min: 0.60
+      trigger_row_sse_reduction_fraction_min: 0.10
+      improving_folds_min: 4
+      support_pooled_rmse_improvement_ft_min: 0.01
+      by_well_delta_p95_ft_max: 0.0
+      worst_well_regression_ft_max: 0.25
+    fail_action: stage0_failed_close_without_trigger_threshold_or_output_rescue
+    observed:
+      status: stage0_failed_closed
+      stage: stage_a0_a1_support32
+      decision: stage0_failed_close_without_trigger_threshold_or_output_rescue
+      passed: false
+      technical_passed: false
+      scientific_passed: false
+      raw_census_wells: 773
+      raw_isolated_shock_rows: 17047
+      raw_support_wells: 763
+      raw_zero_shock_wells: 10
+      evaluated_wells: 32
+      evaluated_rows: 183093
+      final_trigger_rows: 0
+      final_trigger_wells: 0
+      final_trigger_folds: 0
+      final_trigger_fraction: 0.0
+      parent_rmse_ft: 7.668975974817114
+      candidate_rmse_ft: 7.668975974817114
+      improvement_ft: 0.0
+      improving_folds: 0
+      by_well_delta_p95_ft: 0.0
+      worst_well_regression_ft: 0.0
+      stage0_elapsed_seconds: 1899.470163996
+      projected_full_runtime_seconds: 39059.748071987335
+      peak_rss_gb: 1.4179039001464844
+      parent_replay_prediction_parity_passed: false
+      truth_late_rows: 183093
+      truth_late_wells: 32
+      forbidden_reads_before_freeze: 0
+  stage1:
+    requires_stage0_all_pass: true
+    requires_separate_user_approval: true
+    scientific_variants: 1
+    unchanged_parent_message_hmm_replays: 773
+    candidate_state_modifying_hmm_runs: 0
+    saved_parent_prediction_reruns: 0
+    model_booster_pf_beam_gpu_runs: 0
+    direct_rmse_improvement_ft_min: 0.01
+    improving_folds_min: 4
+    trigger_row_sse_reduction_fraction_min: 0.10
+    required_nonworse_scopes:
+      - raw_gr_observed
+      - raw_gr_missing
+      - high_missing_fraction
+      - md_since_1000_plus
+      - hidden_like_spatial
+      - hidden_like_typewell_purged
+    by_well_delta_p95_ft_max: 0.0
+    worst_well_regression_ft_max: 0.25
+    fail_action: terminal_close_without_rescue_rerun_inference_or_submission
+
+runtime:
+  platform: kaggle_private_cpu_if_authorized
+  enable_gpu: false
+  enable_internet: false
+  num_workers: 1
+  numba_threads: 1
+  full_posterior_storage: false
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    planned_kernel_id: kentookumura/exp488-gr-shock-support-only-train
+    planned_title: exp488 gr shock support only train
+    train_kernel_version: 2
+    train_kernel_id_no: 129170127
+    train_status: complete
+    train_pushed_at_utc: "2026-07-30 12:32:09 UTC"
+    train_failed_at_utc: "2026-07-30 13:06:17 UTC"
+    train_v1_log_elapsed_seconds: 2032.356755164
+    train_v1_error: numpy_bool_gate_json_serialization
+    train_v2_pushed_at_utc: "2026-07-30 13:09:47 UTC"
+    train_completed_at_utc: "2026-07-30 13:42:12 UTC"
+    train_v2_log_elapsed_seconds: 1922.239474176
+    stage0_elapsed_seconds: 1899.470163996
+    train_url: https://www.kaggle.com/code/kentookumura/exp488-gr-shock-support-only-train
+    canonical_train_notebook_sha256: b7675f28dfb98050caa1e746137002edb778c5b0166790f25b15e1aa210f9ca5
+    canonical_inference_notebook_sha256: b1a78348c6d368ec7c12e1ff85a1965349b6f4ec361926aec259658fe11eeff8
+    bootstrap_files: []
+    kernel_sources:
+      - kentookumura/exp209-joint-exact-parity-train
+      - kentookumura/exp226-k16-kappa-repro-train
+
+execution:
+  selected_stage: stage0_support32
+  implementation_authorized: true
+  implementation_approval_source: user_message_remove_control_and_proceed_2026_07_30
+  stage0_approval_source: user_message_remove_control_and_proceed_2026_07_30
+  canonical_notebook_adoption_authorized: true
+  kaggle_package_authorized: true
+  stage0_run_authorized: true
+  stage1_run_authorized: false
+  inference_authorized: false
+  submission_authorized: false
+  run_parent_message_hmm: true
+  create_candidate_prediction: true
+  create_submission: false
+  scientific_variants: 1
+  stage0_raw_census_wells: 773
+  stage0_parent_message_hmm_replays: 32
+  stage1_parent_message_hmm_replays: 773
+  candidate_state_modifying_hmm_runs: 0
+  saved_parent_prediction_reruns: 0
+  lightgbm_configs: 0
+  trained_ml_folds: 0
+  boosters: 0
+  fitted_models: 0
+  pf_runs: 0
+  beam_runs: 0
+  gpu_runs: 0
+
+reproducibility:
+  seed: null
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_well_row_state_and_manifest_order
+  stochastic_components: []
+  parallel_rng_policy: no_rng_and_fixed_worker_shard_merge_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  freeze_order:
+    - raw_shock_census
+    - support32_manifest
+    - hmm_message_summary
+    - trigger_schedule
+    - candidate_prediction
+    - sha_readback
+    - truth_fold_role_error_join
+  record:
+    kernel_version: true
+    raw_identity_sha: true
+    input_sha: true
+    raw_shock_census_sha: true
+    manifest_sha: true
+    message_sha: true
+    trigger_sha: true
+    prediction_sha: true
+    metrics_sha: true
+    model_manifest_sha: false
+    submission_sha: false
+  notes:
+    - Initial successful execution is not a deterministic anchor.
+    - See docs/06_reproducibility.md before implementation or execution.
+
+notes:
+  - Design branched from terminal exp482 on 2026-07-30.
+  - The user explicitly removed the zero-shock-well control requirement.
+  - The exp482 trigger, intervention, thresholds, and no-rescue policy remain unchanged.
+  - Canonical train notebook adoption, Kaggle packaging, and support-only Stage A0/A1 are authorized.
+  - Stage 1, inference, and submission still require separate explicit authorization.
+  - Version 1 completed the 32-well computation but failed while serializing numpy.bool_ gate values.
+  - Version 2 changes only generic JSON conversion from numpy.bool_ to bool.
+  - Version 2 completed, but the frozen full trigger fired on 0 of 183093 rows.
+  - Candidate and saved parent predictions were therefore identical on support32.
+  - Technical runtime projection and saved-parent replay parity also failed.
+  - Stage 1, inference, submission, and same-data rescue are closed.

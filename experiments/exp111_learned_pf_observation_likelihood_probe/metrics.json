@@ -1,0 +1,57 @@
+{
+  "experiment": "exp111_learned_pf_observation_likelihood_probe",
+  "status": "completed_train_side_smoke_audit",
+  "route": "pf_beam",
+  "parent": "exp099_pf_multi_observation_likelihood_probe",
+  "kernel": {
+    "id": "kentookumura/exp111-learned-pf-likelihood-train",
+    "version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp111-learned-pf-likelihood-train",
+    "status": "COMPLETE",
+    "enable_gpu": false,
+    "enable_internet": false
+  },
+  "metrics": {
+    "rows": 3783989,
+    "wells": 773,
+    "candidate_rows": 3788690,
+    "runtime_seconds": 402.22703289985657,
+    "learned_within10_auc": 0.9133268861617552,
+    "baseline_multiobs_score_auc": 0.617355255419199,
+    "delta_auc_vs_multiobs_score": 0.29597163074255617,
+    "learned_within10_logloss": 0.3561572342883956,
+    "learned_within10_brier": 0.11581734874108576,
+    "observed_within10": 0.4704119365796621,
+    "pred_within10_mean": 0.4856162369251251,
+    "likpf_mean_single_rmse_fold0": 11.604409800913183,
+    "learned_prob_top1_rmse_fold0": 11.600926403354208,
+    "learned_error_top1_rmse_fold0": 11.579703112302719,
+    "diagnostic_top1_delta_rmse_vs_likpf": -0.0034833975589751986,
+    "learned_prob_top3_within10_coverage": 0.8928112355457956,
+    "learned_error_top3_within10_coverage": 0.8929550847390523,
+    "multiobs_score_top3_within10_coverage": 0.8320369309708633
+  },
+  "decision": {
+    "recommendation": "likelihood_supported_for_pf_weight_or_feature_followup",
+    "direct_replacement": "not_selected"
+  },
+  "artifacts": {
+    "output_dir": "experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1",
+    "summary": "experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_summary.json",
+    "metrics": "experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_metrics.csv",
+    "topk_metrics": "experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_topk_metrics.csv",
+    "calibration": "experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_calibration.csv",
+    "oof_likelihood_long": "experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_oof_likelihood_long.csv.gz",
+    "model_manifest": "experiments/exp111_learned_pf_observation_likelihood_probe/kaggle/output/train_v1/artifacts/exp111_learned_pf_observation_likelihood_probe_model_manifest.json"
+  },
+  "sha256": {
+    "input_decompressed": "1939d536b1e56f7c0ea3847cc386ef769b0d33759d16e816c9ce180f0532df9a",
+    "input_raw": "4bd9df60f5c09f7a3029dac399afef73aa45b0158a7fd06a62a56f85fd0fde38",
+    "schema": "203e4f9a280fe901f5f21d39b85c3e0e2a7fe10c466081c15015c7fb014a0413",
+    "oof_likelihood_long_decompressed": "3aa5e72e982417012a18f4172df1a233ef0f609cf91d48fb1250fc74fa9e89f8",
+    "model_manifest": "178e8b3124b817a2b230080fc041aaaee1b06941e5a4223a68cc31bf26e68010",
+    "oof_probability": "f4fb66ffd42de8c8ab07c0bdfe1d935ca89a1b6df216b68e701495ec671cc7f3",
+    "oof_predicted_error": "9260ec4a13ca98d7c70bb2ef4eb44df53aab2cdfc85a76cb43b9895bd403cc1d"
+  },
+  "notes": "Learned candidate likelihood strongly improves candidate-level within10 AUC over exp099 hand-crafted multiobs score. Direct top1 replacement is only tiny RMSE improvement and is not selected; use as PF weight or ML feature follow-up."
+}

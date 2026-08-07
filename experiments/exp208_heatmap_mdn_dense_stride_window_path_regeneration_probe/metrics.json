@@ -1,0 +1,137 @@
+{
+  "experiment": "exp208_heatmap_mdn_dense_stride_window_path_regeneration_probe",
+  "route": "pf_beam",
+  "metric": "rmse",
+  "parent": "exp202_heatmap_mdn_candidate_generator_probe",
+  "comparison": "exp207_heatmap_mdn_overlapping_window_path_stitch_probe",
+  "status": "kaggle_train_v1_complete_diagnostic_only",
+  "key_idea": "Regenerate dense stride heatmap MDN local paths from exp202 saved models and rerun exp207 stitch readout.",
+  "kaggle": {
+    "kernel": "kentookumura/exp208-hmdn-dense-stride-train",
+    "kernel_version": 1,
+    "url": "https://www.kaggle.com/code/kentookumura/exp208-hmdn-dense-stride-train",
+    "output": "experiments/exp208_heatmap_mdn_dense_stride_window_path_regeneration_probe/kaggle/output/train_v1",
+    "gpu": false,
+    "internet": false
+  },
+  "cv": null,
+  "private_lb": null,
+  "public_lb": null,
+  "dense_path_generation": {
+    "row_center_stride": 64,
+    "horizon": 128,
+    "topk": 10,
+    "samples": 25452,
+    "wells": 773,
+    "include_tail_stop": true,
+    "exp202_model_manifest_sha256": "480e341802dfe538243f8659cb25b11d349827450c7319b4a7b62a2c6340bc08",
+    "path_npz_sha256": "0ad4b4046e8c5b1865684bbab131e5f91ff07c19d225733811524d3037d3f1c2",
+    "path_samples_decompressed_sha256": "52812be9db9eaee830b667bd303f3dfe3c492f895821b4e038b89bfc71ed9238",
+    "dense_predictions_decompressed_sha256": "ee85a23310e81eb03d6051cc7d0dc31c148e02efc322b9b7662b80324d85a2bc"
+  },
+  "coverage": {
+    "cache_rows": 3783989,
+    "merged_rows": 1627462,
+    "row_coverage_rate_vs_cache": 0.4300916308160515,
+    "stitched_rows": 5030802,
+    "stitched_wide_rows": 1676934,
+    "source_wells": 773,
+    "source_overlap_wells": 773,
+    "source_overlap_pair_count": 24679,
+    "source_gap_pair_count": 0,
+    "source_windows_per_well_mean": 32.926261319534284,
+    "source_row_coverage_count_mean": 2169.384217335058
+  },
+  "localtopk10": {
+    "existing_union_on_stitched_rows": {
+      "rows": 1627462,
+      "candidate_count": 5,
+      "oracle_rmse": 5.139413348675699,
+      "oracle_mae": 2.597382185061195,
+      "within10": 0.9475225842446705
+    },
+    "stitched_only_top3": {
+      "rows": 1627462,
+      "candidate_count": 3,
+      "oracle_rmse": 47.18832248907132,
+      "oracle_mae": 30.93614258543364,
+      "within10": 0.2859648950328794,
+      "new_best_candidate_rate": 0.07162686440605065
+    },
+    "existing_plus_stitched_top3": {
+      "rows": 1627462,
+      "candidate_count": 8,
+      "oracle_rmse": 4.420752852890787,
+      "oracle_mae": 2.294243972387105,
+      "oracle_rmse_delta_vs_existing": -0.7186604957849125,
+      "within10": 0.9607026154834951,
+      "within_delta_vs_existing": 0.013180031238824608,
+      "new_best_candidate_rate": 0.07162686440605065
+    },
+    "distance_bucket_1000_plus": {
+      "rows": 855915,
+      "existing_oracle_rmse": 6.352450933675465,
+      "stitched_oracle_rmse": 47.97538710721694,
+      "union_oracle_rmse": 5.422416550444408,
+      "new_best_candidate_rate": 0.09217153572492595
+    },
+    "by_well": {
+      "wells": 773,
+      "improved": 509,
+      "same": 264,
+      "worse": 0,
+      "mean_delta": -0.3589154568622019,
+      "median_delta": -0.009009619298075977,
+      "best_well": "1b1eba53",
+      "best_well_existing_rmse": 37.534730852695304,
+      "best_well_union_rmse": 21.331056019270253,
+      "best_well_delta": -16.20367483342505
+    }
+  },
+  "localtopk5": {
+    "existing_plus_stitched_top3_oracle_rmse": 4.4260130795223205,
+    "existing_plus_stitched_top3_delta_vs_existing": -0.7134002691533787,
+    "stitched_only_top3_oracle_rmse": 49.38884388203995,
+    "within10": 0.9608992406581536,
+    "new_best_candidate_rate": 0.0704704625975906,
+    "by_well_improved": 513,
+    "by_well_same": 260,
+    "by_well_worse": 0
+  },
+  "physicality": {
+    "assignment_overlap_abs_mean_ft": 7.196697638196542,
+    "assignment_overlap_rows_total": 4740687,
+    "assignment_gap_boundary_abs_mean_ft": null,
+    "assignment_gap_boundary_abs_p95_ft": null,
+    "stitched_path_step_abs_mean_ft": 0.24728687365152627,
+    "stitched_curvature_abs_mean_ft": 0.4853357746136913,
+    "stitched_overlap_row_rate_mean": 0.9416566973855001,
+    "stitched_row_gap_count_total": 0
+  },
+  "comparison_to_exp207": {
+    "exp207_row_coverage_rate_vs_cache": 0.35233744072723255,
+    "exp208_row_coverage_rate_vs_cache": 0.4300916308160515,
+    "exp207_source_overlap_wells": 3,
+    "exp208_source_overlap_wells": 773,
+    "exp207_source_overlap_pair_count": 39,
+    "exp208_source_overlap_pair_count": 24679,
+    "exp207_stitched_only_top3_oracle_rmse": 50.79837704217831,
+    "exp208_stitched_only_top3_oracle_rmse": 47.18832248907132,
+    "exp207_existing_plus_stitched_top3_oracle_rmse": 4.418699605056702,
+    "exp208_existing_plus_stitched_top3_oracle_rmse": 4.420752852890787,
+    "decision": "dense_stride_improves_overlap_and_coverage_but_does_not_beat_exp207_oracle_top3"
+  },
+  "output_sha256": {
+    "candidate_union_metrics_csv_sha256": "bbf7cc3a2600dcf4f2bc24a443ff91be6873c1f56f3bfdd45149d3a3a9fd7579",
+    "candidate_union_distance_bucket_metrics_csv_sha256": "06206cd8f36259335591f8175575c6dd0d141af94dc10965750c08746f008f4d",
+    "candidate_union_by_well_csv_sha256": "fc617666aae39e022c6f90f2529119db9c5431499a7b3435c0cb412676bbab5f",
+    "source_window_coverage_csv_sha256": "7993b88b7f5e04e47edf7edcdbb9b77944af21bc62363337fe43178b4db5d6ba",
+    "stitched_path_rows_csv_decompressed_sha256": "2dfed5c4610d437e29c8a6d5d13f51dd0e7c055806fbd8bc65fbefb6b2de147e",
+    "stitched_window_assignments_csv_decompressed_sha256": "fe24df638eb9d223a799bec0d050c3f4d131556a229d86d4f53776fc20c64a6a"
+  },
+  "notes": [
+    "This is a train-side CPU diagnostic only.",
+    "No exp202 retraining, LightGBM training, inference, or submission was performed.",
+    "Dense paths are physically stitchable, but the dense stitch does not improve on exp207's existing+stitched top3 oracle RMSE."
+  ]
+}

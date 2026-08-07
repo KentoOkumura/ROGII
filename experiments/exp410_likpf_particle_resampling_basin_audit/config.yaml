@@ -1,0 +1,272 @@
+experiment:
+  name: exp410_likpf_particle_resampling_basin_audit
+  description: >-
+    Replays the unchanged exp072 500-particle x 128-seed likelihood PF on the
+    preregistered PF-specific persistent-offset wells and records particle
+    support, GR update, resampling ancestry, and seed aggregation diagnostics.
+  route: pf_beam
+  status: completed
+  created_at: "2026-07-26"
+  inference_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+lineage:
+  parent: exp072_exp063_full_replay_feature_cache
+  steering: ../../.steering/20260726-exp410-likpf-particle-resampling-basin-audit
+  references:
+    - exp209_exp072_exp205_joint_exact_parity_fast_cache_generation
+    - exp235_fixed_lag_particle_smoother_pf
+    - exp243_pf_seed_medoids
+    - exp408_hmm_message_rate_basin_audit
+    - docs/06_reproducibility.md
+  diff_summary: >-
+    The exp072 PF initialization, transition, Gaussian GR likelihood, ESS
+    threshold, systematic resampling, roughening, stable seed bank, and
+    arithmetic seed mean are unchanged. Only target-late diagnostic summaries
+    are added; no prediction candidate or scientific treatment is introduced.
+
+validation:
+  strategy: preregistered_pf_persistent_offset_internal_particle_audit
+  metric: mechanism_attribution_not_candidate_cv
+  seed: 42
+  reporting_folds: 5
+  expected_source_rows: 3783989
+  expected_source_wells: 773
+  expected_target_wells: 496
+  expected_target_suffix_rows: 2500744
+  expected_episodes: 839
+  expected_episode_rows: 819288
+  expected_episode_sse: 453149095.6093302
+  parity_atol_ft: 0.00001
+  leakage_policy:
+    - PF-specific scope is frozen from the saved exp072 likpf_mean, never from a regenerated candidate.
+    - Truth and episode data are used only by diagnostic accumulation and cause readout.
+    - Particle transition, likelihood, normalization, resampling, and output aggregation do not branch on truth, error, episode, fold, or hidden role.
+    - Exact replay parity against the SHA-fixed exp209 reconstruction is mandatory for every processed well.
+    - No threshold is tuned after reading the audit result.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  id_column: id
+  target_column: TVT
+  target_wells:
+    filename: pf_target_wells.csv
+    local: experiments/exp410_likpf_particle_resampling_basin_audit/assets/pf_target_wells.csv
+    expected_sha256: ae9d4fd7429ad2b51f8d620a0413e74cb55efccefbb30cce0e2031230548f30e
+  persistent_episodes:
+    filename: pf_persistent_offset_episodes.csv
+    local: experiments/exp410_likpf_particle_resampling_basin_audit/assets/pf_persistent_offset_episodes.csv
+    expected_sha256: 0bffbc6bd6d89fdbfa11aa86419df8dbd84b1819af717413f0ae3bfa82799804
+  persistent_asset_manifest:
+    filename: pf_persistent_asset_manifest.json
+    local: experiments/exp410_likpf_particle_resampling_basin_audit/assets/pf_persistent_asset_manifest.json
+  fixed_prediction_subset_content_sha256: b3aa657aeb24be33e710098823bd52ddf95c8484eefdda7160edee9c26198c5f
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_train_feature_cache_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+    - /kaggle/input/exp072-exp063-full-replay-feature-cache-train/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_train_feature_cache_expected_sha256: 14faee3a24de587b7190e7febffd33cc1256e418c7505f2d1e6f5f7c9b3c2f18
+  exp072_train_feature_cache_expected_decompressed_sha256: 99a3c70a19b2f22a8c76c5947b14692e7b8207ea45f38b8b1c5f327d320e1350
+  exp209_enriched_likpf_control_local: experiments/exp209_exp072_exp205_joint_exact_parity_fast_cache_generation/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+  exp209_enriched_likpf_control_candidates:
+    - /kaggle/input/notebooks/kentookumura/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+    - /kaggle/input/exp209-joint-exact-parity-train/artifacts/exp209_vs_exp072_exp205_enriched_hmm_exp072_train_features.csv.gz
+  exp209_enriched_likpf_control_expected_sha256: b50b4d1ee483b101d911a3bb3715a047836c028c1b29b9f986be0abeaebcb64b
+  exp209_enriched_likpf_control_expected_decompressed_sha256: ee3b548b0d38f78966742542e86fa31b7e64698d4762b924c924a5895d2ee3f4
+
+model:
+  name: exp072_likelihood_pf_internal_particle_audit
+  estimator: none_diagnostic_replay
+  fitted_model: false
+  replay:
+    split_key: train
+    observation_likelihood: raw_gr_gaussian_exp072
+    transition: classic_exp072_surface_state
+    seed_aggregation: arithmetic_mean
+  runtime:
+    particles: 500
+    seed_count: 128
+    resample_threshold: 0.5
+    init_spread: 4.5
+    momentum: 0.998
+    velocity_noise: 0.002
+    position_noise: 0.005
+    resample_pos_noise: 0.10
+    resample_velocity_noise: 0.001
+    grid_step: 0.2
+    gr_sigma_min: 10.0
+    gr_sigma_max: 60.0
+    gr_sigma_default: 30.0
+    min_known_prefix_rows: 160
+    min_eval_rows: 64
+
+audit:
+  output_prefix: exp410_likpf_particle_resampling_basin_audit
+  basin_radius_ft: 5.0
+  mass_floor: 0.01
+  log_odds_effect: 1.0986122886681098
+  dominant_row_fraction: 0.50
+  pre_episode_rows: 128
+  support_margin_ft: 0.0
+  truth_close_seed_radius_ft: 5.0
+  wrong_seed_radius_ft: 10.0
+  ancestor_unique_fraction_floor: 0.10
+  ancestor_max_offspring_fraction: 0.25
+  threshold_sensitivity:
+    basin_radius_ft: [3.0, 5.0, 10.0]
+    mass_floor: [0.002, 0.01, 0.05]
+    log_odds_effect: [0.09531017980432493, 0.4054651081081644, 1.0986122886681098]
+    dominant_row_fraction: [0.25, 0.50, 0.75]
+  expected_artifacts:
+    - exp410_likpf_particle_resampling_basin_audit_row_ledger.csv.gz
+    - exp410_likpf_particle_resampling_basin_audit_episode_summary.csv
+    - exp410_likpf_particle_resampling_basin_audit_cause_summary.csv
+    - exp410_likpf_particle_resampling_basin_audit_threshold_sensitivity.csv
+    - exp410_likpf_particle_resampling_basin_audit_well_manifest.csv
+    - exp410_likpf_particle_resampling_basin_audit_input_manifest.json
+    - exp410_likpf_particle_resampling_basin_audit_summary.json
+  counterfactual:
+    enabled: true
+    diagnostic_only: true
+    sentinel_max_wells: 12
+    sentinel_selection: top_episode_sse_well_per_exclusive_cause_then_global_episode_sse_fill
+    evaluation_scopes:
+      - all_suffix_rows
+      - all_fixed_episode_rows_for_selected_wells
+    variants:
+      baseline: {}
+      momentum_one:
+        momentum: 1.0
+      zero_process_noise:
+        velocity_noise: 0.0
+        position_noise: 0.0
+      process_noise_x3:
+        velocity_noise_multiplier: 3.0
+        position_noise_multiplier: 3.0
+      init_spread_x3:
+        init_spread_multiplier: 3.0
+      gr_sigma_x1p3:
+        gr_sigma_multiplier: 1.3
+      gr_sigma_x3:
+        gr_sigma_multiplier: 3.0
+      gr_emission_near_disabled:
+        gr_sigma_multiplier: 1000000.0
+      resample_threshold_0p1:
+        resample_threshold: 0.1
+      resampling_disabled:
+        resample_threshold: 0.0
+      roughening_x10:
+        resample_pos_noise_multiplier: 10.0
+        resample_velocity_noise_multiplier: 10.0
+      clamp_margin_x2:
+        clamp_margin_multiplier: 2.0
+    baseline_seed_readouts:
+      - arithmetic_seed_mean
+      - rowwise_seed_median
+      - full_suffix_log_likelihood_best_seed
+      - full_suffix_log_likelihood_weighted_seed_mean
+      - contiguous_seed_block0_mean
+      - contiguous_seed_block1_mean
+      - contiguous_seed_block2_mean
+      - contiguous_seed_block3_mean
+      - particle_mode_seed_mean
+      - particle_mode_seed_median
+      - truth_best_seed_per_row_oracle
+    particle_mode_readout:
+      histogram_bin_width_ft: 5.0
+      half_bin_shift: true
+      target_free: true
+      state_mutation: false
+    interpretation:
+      - Sentinel selection is target-late and only confirms mechanism on frozen PF-offset wells.
+      - Full-suffix likelihood readouts are target-free but offline and are not deployable online selectors.
+      - Truth-best seed is an oracle upper bound and never a prediction candidate.
+
+execution:
+  run_stage: counterfactual_strict_merge_completed
+  kaggle_execution_approved: true
+  rerun_enabled: false
+  approval_source: user_message_2026_07_26_execute_heavy_on_kaggle
+  active_pf_variants: 1
+  counterfactual_pf_variants: 12
+  counterfactual_preflight_wells: 1
+  counterfactual_preflight_well_runs: 12
+  counterfactual_max_wells: 12
+  counterfactual_max_well_runs: 144
+  counterfactual_total_max_well_runs_including_preflight: 156
+  full_target_wells: 496
+  full_target_suffix_rows: 2500744
+  well_shard_count: 4
+  active_well_shard_index: 0
+  shard_policy: deterministic_lpt_suffix_rows_frozen_in_asset
+  preflight_wells_per_shard: 1
+  parent_control_regeneration: true
+  parent_control_regeneration_reason: existing_outputs_do_not_persist_particle_stage_basin_or_ancestry
+  lightgbm_configs: 0
+  trained_folds: 0
+  boosters: 0
+  models: 0
+  hmm_well_runs: 0
+  beam_well_runs: 0
+  gpu_runs: 0
+  outer_workers: 1
+  numba_num_threads: 1
+  progress_every_wells: 1
+  conservative_full_shard_seconds: 14400
+  hard_runtime_seconds: 32400
+  hard_peak_rss_gb: 25
+  inference: false
+  submission: false
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    bootstrap_files:
+      - assets/pf_target_wells.csv
+      - assets/pf_persistent_offset_episodes.csv
+      - assets/pf_persistent_asset_manifest.json
+      - assets/pf_counterfactual_sentinel_wells.csv
+      - assets/pf_counterfactual_sentinel_manifest.json
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp209-joint-exact-parity-train
+    train_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp209-joint-exact-parity-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: exp072_sha256_modulo_plus_one_then_seed_index_numba_single_worker
+  stochastic_components:
+    - likelihood_pf_particle_initialization
+    - likelihood_pf_particle_propagation
+    - likelihood_pf_conditional_systematic_resampling
+    - likelihood_pf_resampling_roughening
+  parallel_rng_policy: no_thread_parallel_rng_one_well_one_numba_worker_stable_well_seed
+  feature_sha_policy: decompressed_and_logical_content_sha
+  record:
+    kernel_version: true
+    input_sha: true
+    prediction_sha: true
+    diagnostic_sha: true
+    model_sha: false
+    submission_sha: false
+
+inference:
+  enabled: false
+  mode: disabled_internal_train_side_diagnostic_only
+  create_submission: false
+
+notes:
+  - One unchanged exp072 PF replay per processed well; diagnostics do not add RNG calls.
+  - Four balanced CPU shards each contain 124 wells and about 625k suffix rows.
+  - No LightGBM, folds, boosters, GPU, HMM, Beam, inference, or submission.

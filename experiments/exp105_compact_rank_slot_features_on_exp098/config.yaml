@@ -1,0 +1,224 @@
+experiment:
+  name: "exp105_compact_rank_slot_features_on_exp098"
+  description: Compact the exp098 target-free selector rank-slot feature set by removing duplicate, low-utility, and rarely selected columns.
+  route: ml_model
+  status: completed_train_side_rejected
+  created_at: "2026-06-22"
+  updated_at: "2026-06-22"
+
+lineage:
+  parent: exp098_selector_rank_slot_features_on_exp073
+  base_surface_parent: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  comparison_parents:
+    - exp073_gpu_reproducibility_guard_for_exp063_full_replay
+    - exp077_full_replay_postprocess_guard
+    - exp092_u_projection_correction_disagreement_fullrun
+    - exp098_selector_rank_slot_features_on_exp073
+  implementation_source: compact_rank_slot_features_on_exp098.py
+  diff_summary: Reuses the exp098 target-free rank-slot generator on the same exp073/exp072 deterministic 196-feature surface, but trains only a compact rank-slot group that keeps per-slot delta, score, source_code, U-shape slope/curvature/resid_mad, rank score entropy/top1 margin, and top-3 U std/range while dropping pairwise duplicate deltas, u_diff/u_absdiff, u_corr/u_resid sign pairs, fit_degree, and low-utility source flags.
+
+validation:
+  strategy: groupkfold_by_well_compact_rank_slot_feature_audit_on_exp098
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Train features are read from exp072's raw-train-only deterministic feature cache.
+    - Candidate rank scores use only target-free PF/Beam/likelihood-PF diagnostics and candidate disagreements.
+    - Evaluation-zone true TVT is used only as the supervised LightGBM target and OOF metric, never to create rank slots or rank scores.
+    - Candidate TVT paths are not used as a direct selector, soft average, or postprocess replacement.
+    - GroupKFold is grouped by well; a well never appears in train and validation in the same fold.
+    - Inference is out of scope until pooled OOF, worst-well, path continuity, and raw-test feature parity are reviewed.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp072_summary_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_summary.json
+
+model:
+  name: exp105_compact_rank_slot_features_lgbm
+  source_experiment: exp098_selector_rank_slot_features_on_exp073
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  feature_source: exp072_exp063_full_replay_train_feature_cache
+  expected_base_feature_count: 196
+  expected_compact_rank_slot_feature_count: 22
+  target: target
+  base_prediction: last_known_tvt
+  estimator: lightgbm
+  lgb_config_family: exp063_public_pixiux_lgb0_lgb1_lgb2
+  rank_slot:
+    top_k: 3
+    degree: 3
+    robust_iters: 3
+    clip_sigma: 4.0
+    include_lgb_oof_features: false
+    compact_policy:
+      keep_source_encoding: source_code
+      keep_columns:
+        - rank*_candidate_minus_last_anchor
+        - rank*_score
+        - rank*_source_code
+        - rank_score_entropy
+        - rank_score_top1_margin
+        - rank*_u_slope
+        - rank*_u_curvature
+        - rank*_u_resid_mad
+        - rank_slot_u_std
+        - rank_slot_u_range
+      drop_columns:
+        - rank*_u_fit_degree
+        - rank*_u_diff
+        - rank*_u_absdiff
+        - rank*_u_corr
+        - rank*_u_resid
+        - rank*_u_abs_resid
+        - rank*_is_sc_ens
+        - rank*_is_hyb
+        - low-importance source flags
+        - pairwise candidate deltas duplicated by per-slot deltas
+    candidates:
+      - name: pf_ancc
+        source_column: pf_ancc
+        transform: absolute
+        family: pf
+        enabled: true
+      - name: beam_mean
+        source_column: beam_mean_d
+        transform: base_plus_delta
+        family: beam
+        enabled: true
+      - name: likpf_mean
+        source_column: likpf_mean_d
+        transform: base_plus_delta
+        family: likelihood_pf
+        enabled: true
+      - name: sc_ens
+        source_column: sc_ens_d
+        transform: base_plus_delta
+        family: ncc_scale_ensemble
+        enabled: true
+      - name: hyb
+        source_column: hyb_d
+        transform: base_plus_delta
+        family: public_hybrid
+        enabled: true
+  feature_ablation:
+    selected_variant: compact_rank_slot_features
+    active_variants:
+      - name: compact_rank_slot_features
+        description: Adds the compact 22-column rank-slot signal group to the exp073 196-feature base surface.
+        feature_groups:
+          - rank_slot_compact
+        enabled: true
+  training:
+    early_stopping_rounds: 250
+    max_train_rows: null
+    max_rows: null
+    save_models: true
+    save_predictions: true
+    top_n_importance: 50
+    active_modes:
+      - gpu_repro_guard_dp_threads8
+    modes:
+      gpu_repro_guard_dp_threads8:
+        description: GPU double precision plus fixed thread count and deterministic flags.
+        use_gpu: true
+        common_overrides:
+          gpu_use_dp: true
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+      cpu_deterministic_threads8:
+        description: CPU deterministic LightGBM control with fixed thread count.
+        use_gpu: false
+        common_overrides:
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+    inference_kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp105-compact-rank-slot-features-on-exp098-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_groupkfold_seed_no_new_pf_rng
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - gpu_lightgbm_training
+  parallel_rng_policy: LightGBM deterministic flags plus fixed n_jobs and num_threads; rank-slot feature generation itself has no RNG.
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a train-side compact feature audit, not a deterministic submission anchor.
+    - Source gzip cache decompressed content SHA is recorded by the train summary when available.
+
+audit:
+  mode: compact_rank_slot_features_on_exp098
+  output_prefix: exp105_compact_rank_slot_features_on_exp098
+  fast: false
+  reference_metrics:
+    exp073_raw_anchor_pooled_rmse: 9.526374749390682
+    exp077_policy_pooled_rmse: 9.470514801
+    exp092_best_lgb1_pooled_rmse: 9.322479895503927
+    exp098_lgb1_pooled_rmse: 9.35815105231876
+    exp098_lgb_mean_pooled_rmse: 9.427447987389971
+  expected_train_artifacts:
+    - exp105_compact_rank_slot_features_on_exp098_metrics.csv
+    - exp105_compact_rank_slot_features_on_exp098_by_well.csv
+    - exp105_compact_rank_slot_features_on_exp098_bucket_metrics.csv
+    - exp105_compact_rank_slot_features_on_exp098_rank_slot_feature_summary.csv
+    - exp105_compact_rank_slot_features_on_exp098_feature_importance.csv
+    - exp105_compact_rank_slot_features_on_exp098_feature_importance_mean.csv
+    - exp105_compact_rank_slot_features_on_exp098_feature_importance_mean_top.png
+    - exp105_compact_rank_slot_features_on_exp098_predictions.csv.gz
+    - exp105_compact_rank_slot_features_on_exp098_feature_schema.csv
+    - exp105_compact_rank_slot_features_on_exp098_lgb_models/manifest.json
+    - exp105_compact_rank_slot_features_on_exp098_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: compact_rank_slot_features
+  notes:
+    - Inference is intentionally out of scope until compact train-side OOF, worst-well, distance bucket, path continuity, and raw-test feature parity are reviewed.
+
+submission:
+  status: not_submitted
+  public_lb: null
+  private_lb: null
+  notes:
+    - Kaggle train v1 rejected the compact feature set; do not submit.
+    - Best compact model lgb2 RMSE 9.441103 is worse than exp098 lgb1 9.358151 and exp092 lgb1 9.322480.
+
+notes:
+  - Implements backlog item compact_rank_slot_features_on_exp098.
+  - PF/Beam candidates remain target-free structured features under route ml_model.
+  - Direct candidate selector and soft average remain out of scope.

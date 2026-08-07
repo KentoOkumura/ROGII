@@ -1,0 +1,321 @@
+experiment:
+  name: exp293_physics_only_candidate_bank_headroom_contract
+  description: >-
+    Fixes the twelve exp263 Stage-1 raw-test-regenerable physical candidates and
+    audits row, non-overlapping H128/H256/H512 block, and whole-well oracle
+    headroom before any GR scorer, selector, decoder, candidate generation, or model fit.
+  route: pf_beam
+  status: kaggle_cpu_audit_completed_support_pass_stage2_required
+  created_at: "2026-07-19"
+  inference_enabled: false
+
+overrides:
+  project_defaults:
+    - validation.metric
+
+lineage:
+  parent: exp263_last_anchor_better_candidate_confidence_pair_cache
+  references:
+    - exp286_geop_hmm_sparse_addonly_candidate_on_exp264
+    - exp281_exp226_residual_offset_exact_hmm_transition_probe
+    - exp290_piecewise_datum_physical_smoother
+    - exp291_prefix_masked_typewell_gr_multimode_safe_beam
+    - exp292_typewell_gr_warp_rate_identifiability_audit
+    - docs/06_reproducibility.md
+    - KAGGLE_DIRECTION.md physics_only_candidate_bank_headroom_contract
+  design_source: .steering/20260719-exp293-physics-only-candidate-bank-headroom-contract
+  downstream_contract: downstream_branch_contract.md
+  diff_summary: >-
+    Uses only the six exp263 raw-test primitives, their five fixed 50/50 raw-test
+    pairs, and exp226_w500_50_50. Adds no candidate or observation score. It
+    freezes the candidate bank, then reads truth only for row/block/whole-well
+    oracle SSE and a fixed support PASS/FAIL decision that routes work to Stage 2
+    or conditional Stage 4.
+
+validation:
+  strategy: fixed_deployable_physics_candidate_bank_oracle_headroom_audit
+  metric: h512_oracle_rmse_and_required_sse_headroom_recovery_to_6p5
+  seed: 42
+  n_folds: 5
+  trained_folds: 0
+  group_column: well
+  fold_policy: reuse_exp263_outer_fold_identity_without_refit
+  expected_rows: 3783989
+  expected_wells: 773
+  score_rows: train_prediction_suffix_rows
+  anchor_candidate: exp226_w500_50_50
+  anchor_oof_rmse: 8.2383315465
+  public_lb_goal: 6.5
+  oracle_horizons_rows: [1, 128, 256, 512]
+  primary_horizon_rows: 512
+  include_final_short_block: true
+  include_whole_well_oracle: true
+  support_pass:
+    maximum_pooled_h512_oracle_rmse: 5.5
+    maximum_each_fold_h512_oracle_rmse_exclusive: 6.5
+    require_h512_improvement_vs_anchor_all_folds: true
+    require_required_recovery_to_6p5_finite: true
+    maximum_required_recovery_to_6p5: 1.0
+  diagnostic_only_risk_flags:
+    - distance_1000_plus
+    - hidden_like_spatial
+    - hidden_like_typewell_purged
+    - by_well_p95_and_worst
+  leakage_policy:
+    - Candidate inputs accept identity, fold, well, row index, MD context, and candidate TVT values only.
+    - TVT, target, true_tvt, error, abs_error, and oracle columns are rejected before bank and block-assignment freeze.
+    - True TVT is loaded through a separate post-freeze readout loader.
+    - Truth never changes candidate membership, formula, order, block boundary, horizon, tie policy, subgroup, or support threshold.
+    - Oracle prediction rows are not persisted.
+
+data:
+  exp263_manifest:
+    patterns:
+      - /kaggle/input/notebooks/kentookumura/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+      - /kaggle/input/exp263-last-anchor-pair-cache-train/artifacts/cache_manifest.json
+      - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1/artifacts/cache_manifest.json
+      - /tmp/kaggle-output/exp263_last_anchor_better_candidate_confidence_pair_cache/train_v1_sample_partitions/artifacts/cache_manifest.json
+    expected_file_sha256: 85e60ac10b50197fa44ea29faffcbba81bd0746114bc53bae0f5cc537a26bb9e
+    expected_canonical_id_sha256: de07df322a8dc3a981b556ea78c3ddcecb2e708a31e986cfe05873109d4ae9d3
+    small_parity_filename: small_parity_sample.parquet
+  raw_train_dir_patterns:
+    - data/raw/train
+    - /kaggle/input/rogii-wellbore-geology-prediction/train
+    - /kaggle/input/competitions/rogii-wellbore-geology-prediction/train
+  raw_horizontal_glob: "*__horizontal_well.csv"
+  raw_columns:
+    truth: TVT
+    visible_input: TVT_input
+  hidden_like_assignment:
+    patterns:
+      - experiments/exp251_raw_test_safe_dual_objective_candidate_ranker/inputs/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/notebooks/kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+      - /kaggle/input/exp115-hidden-like-spatial-holdout-from-ppt-train/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+    expected_file_sha256: 5f9ac9fac6bb3725a7c613f09856a85bdf73b8206fd2edf1b79e8eaa9bca6597
+    well_column: well_id
+    role_columns:
+      hidden_like_spatial: verification_like_spatial_role
+      hidden_like_typewell_purged: verification_like_typewell_purged_role
+
+candidate_bank:
+  name: exp263_stage1_deployable12
+  expected_count: 12
+  order:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+    - exp226_k16__selfgr_hmm_a070
+    - exp226_k16__exact_hmm
+    - exp226_k16__likpf_mean
+    - selfgr_hmm_a070__likpf_mean
+    - likpf_mean__exact_hmm
+    - exp226_w500_50_50
+  primitives:
+    - exp226_k16
+    - selfgr_hmm_a070
+    - likpf_mean
+    - exact_hmm
+    - pf_ancc
+    - beam_mean
+  pairs:
+    exp226_k16__selfgr_hmm_a070: {exp226_k16: 0.5, selfgr_hmm_a070: 0.5}
+    exp226_k16__exact_hmm: {exp226_k16: 0.5, exact_hmm: 0.5}
+    exp226_k16__likpf_mean: {exp226_k16: 0.5, likpf_mean: 0.5}
+    selfgr_hmm_a070__likpf_mean: {selfgr_hmm_a070: 0.5, likpf_mean: 0.5}
+    likpf_mean__exact_hmm: {likpf_mean: 0.5, exact_hmm: 0.5}
+  fixed_formula:
+    exp226_w500_50_50: {exp226_k16: 0.5, likpf_mean: 0.25, exact_hmm: 0.25}
+  formula_float_contract: match_exp263_stage1_float_operation_order
+  formula_parity_max_abs_ft: 0.001
+  expected_oof_rmse_tolerance_ft: 0.001
+  expected_oof_rmse:
+    exp226_k16: 9.42710967407494
+    selfgr_hmm_a070: 11.349942882774709
+    likpf_mean: 11.594897672217703
+    exact_hmm: 11.938287416925935
+    pf_ancc: 14.493051
+    beam_mean: 15.774327
+    exp226_k16__selfgr_hmm_a070: 8.53271508582674
+    exp226_k16__exact_hmm: 8.635074349079765
+    exp226_k16__likpf_mean: 8.813822138574935
+    selfgr_hmm_a070__likpf_mean: 10.123456412256017
+    likpf_mean__exact_hmm: 10.269696262188775
+    exp226_w500_50_50: 8.2383315465
+  excluded_from_primary:
+    - geop_hmm
+    - exp268_initial_rate_candidates
+    - exp270_posterior_mode_candidates
+    - exp271_pf_seed_mean_candidates
+    - exp291_typewell_shift_modes
+    - exp292_gr_selected_rate_modes
+    - train_only_candidates
+    - ml_predictions
+    - selector_outputs
+
+audit:
+  name: physics_only_candidate_bank_headroom
+  output_prefix: exp293_physics_only_candidate_bank_headroom_contract
+  work_chunk_rows: 100000
+  tie_atol_squared_ft: 0.000000001
+  distance_buckets_ft:
+    000_050: [0.0, 50.0]
+    050_100: [50.0, 100.0]
+    100_250: [100.0, 250.0]
+    250_500: [250.0, 500.0]
+    500_1000: [500.0, 1000.0]
+    1000_plus: [1000.0, .inf]
+  block_partition:
+    origin: first_prediction_suffix_row_per_well
+    kind: non_overlapping_rows
+    horizons_rows: [128, 256, 512]
+    include_final_short_block: true
+  oracle:
+    objective: minimum_sum_squared_tvt_error
+    row_tie_policy: candidate_order
+    block_tie_policy: candidate_order
+    whole_well_tie_policy: candidate_order
+    persist_oracle_prediction: false
+  headroom:
+    target_rmse: 6.5
+    formula: (anchor_sse-target_sse)/(anchor_sse-oracle_sse)
+    report_for: [row, h128, h256, h512, whole_well]
+  metrics:
+    - pooled_rmse
+    - fold_rmse
+    - distance_bucket_rmse
+    - h512_required_recovery_to_6p5
+    - candidate_choice_count
+    - candidate_unique_best_count
+    - by_well_rmse
+    - hidden_like_rmse
+  expected_artifacts:
+    - exp293_physics_only_candidate_bank_headroom_contract.json
+    - exp293_physics_only_candidate_bank_input_manifest.csv
+    - exp293_physics_only_candidate_bank_manifest.json
+    - exp293_physics_only_candidate_bank_formula_parity.csv
+    - exp293_physics_only_candidate_bank_block_assignment.csv.gz
+    - exp293_physics_only_candidate_bank_oracle_metrics.csv
+    - exp293_physics_only_candidate_bank_fold_metrics.csv
+    - exp293_physics_only_candidate_bank_subgroup_metrics.csv
+    - exp293_physics_only_candidate_bank_by_well.csv
+    - exp293_physics_only_candidate_bank_choice_counts.csv
+    - exp293_physics_only_candidate_bank_sha_manifest.csv
+    - exp293_physics_only_candidate_bank_summary.json
+  forbidden_actions:
+    - add_or_remove_candidate
+    - tune_formula_or_weight
+    - candidate_score_or_selector
+    - candidate_average_or_softmax_output
+    - gr_likelihood_or_registration_fit
+    - hmm_pf_or_beam_regeneration
+    - train_model
+    - persist_oracle_prediction
+    - raw_test_inference
+    - submission
+
+downstream:
+  contract_version: 1
+  design_locked_at: "2026-07-19"
+  contract_file: downstream_branch_contract.md
+  branch_after_exp293:
+    support_pass: stage2_prefix_calibrated_latent_registration_gr_evidence
+    support_fail: stage4_mode_loss_triggered_candidate_birth_beam
+  branch_after_stage2:
+    pass: stage3_joint_physics_candidate_registration_semimarkov_smoother
+    fail: stop_observation_identifiability_branch_no_automatic_stage4
+  stage4_return: rerun_same_headroom_contract_then_stage2_only_after_support_pass
+
+model:
+  name: none_oracle_headroom_audit
+  estimator: none
+  target: post_freeze_true_tvt_readout_only
+  params: {}
+
+execution:
+  implementation: true
+  implementation_authorized_at: "2026-07-19"
+  implementation_authorization_source: user_message_implement_exp293
+  kaggle_execution_authorized_at: "2026-07-19"
+  kaggle_execution_authorization_source: user_message_run_exp293
+  kaggle_run_attempt: 2
+  previous_failed_kernel_versions: [1]
+  active_audit_contracts: 1
+  lightgbm_config_count: 0
+  evaluation_fold_count: 5
+  trained_fold_count: 0
+  total_boosters: 0
+  hmm_pf_well_runs: 0
+  control_or_parent_retraining: false
+  gpu: false
+  inference: false
+  submission: false
+  kaggle_push_approved: false
+  kaggle_inference_push_approved: false
+  canonical_train_notebook_adopted: true
+  canonical_inference_notebook_adopted: false
+  kaggle_run_completed: true
+  completed_kernel_version: 2
+  completed_kernel_id_no: 127891171
+  one_run_authorization_consumed: true
+
+outcome:
+  support_passed: true
+  next_branch: stage2_prefix_calibrated_latent_registration_gr_evidence
+  rows: 3783989
+  wells: 773
+  primary_h512_oracle_rmse: 3.683762664246268
+  primary_h512_required_recovery_to_6p5: 0.4718252068199111
+  maximum_fold_h512_oracle_rmse: 4.117907517019054
+  fold_h512_oracle_rmse:
+    fold_0: 3.998261835467578
+    fold_1: 3.745012750858579
+    fold_2: 3.317686149616357
+    fold_3: 4.117907517019054
+    fold_4: 3.141066949307809
+  candidate_bank_content_sha256: 29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474
+  oracle_readout_content_sha256: 69d14a236205eaa1aaafa09abf9bb9b1984797fec54f2fb6533f8243f0a97003
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    train_kernel_sources:
+      - kentookumura/exp263-last-anchor-pair-cache-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+    inference_kernel_sources: []
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_rng_stable_fold_well_row_candidate_order
+  stochastic_components: []
+  parallel_rng_policy: single_process_no_rng_fixed_reduction_order
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    bank_manifest_sha: true
+    block_assignment_sha: true
+    oracle_readout_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - Fixed-input deterministic diagnostic only; never a deterministic submission anchor.
+    - Candidate bank and block assignment must be content-frozen before truth is loaded.
+
+notes:
+  - Compact self-contained train and fail-closed inference candidates plus eleven contract tests are implemented and statically validated.
+  - The compact train notebook is approved for adoption as the canonical train notebook; inference remains unadopted and disabled.
+  - One fixed-contract private Kaggle CPU audit is authorized; inference and submission remain unauthorized.
+  - Version 1 stopped before candidate loading because the package omitted downstream_branch_contract.md; version 2 embeds and validates its fixed SHA without changing the scientific contract.
+  - Version 2 completed on Kaggle CPU and passed every technical and scientific support check; the fixed next branch is Stage 2.
+  - The one-run train push authorization is consumed. Any rerun, inference, or submission requires new approval.
+  - The canonical downstream design is downstream_branch_contract.md and may change only through an explicit user-approved redesign.

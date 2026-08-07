@@ -1,0 +1,182 @@
+experiment:
+  name: "exp099_pf_multi_observation_likelihood_probe"
+  description: Audit target-free multi-observation GR likelihood scoring for existing PF/Beam/likelihood-PF TVT candidates.
+  route: pf_beam
+  status: completed_train_side_audit
+  created_at: "2026-06-21"
+  updated_at: "2026-06-21"
+
+lineage:
+  parent: exp093_pf_candidate_coverage_then_ranker_audit
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  diagnostic_parents:
+    - exp087_prefix_backtest_tvt_confidence
+    - exp091_self_gr_likelihood_pf_beam_probe
+    - exp093_pf_candidate_coverage_then_ranker_audit
+  implementation_source: pf_multi_observation_likelihood_probe.py
+  diff_summary: Keeps the exp072 deterministic PF/Beam/likelihood-PF train cache fixed and re-scores existing PF/Beam candidates using multiple target-free GR observations around each row. It creates top1, softmax, and likPF-blend diagnostic candidates without rerunning PF, changing beam pruning, training a supervised ranker, or producing a submission.
+
+validation:
+  strategy: train_well_pseudotail_candidate_likelihood_audit
+  metric: rmse
+  secondary_metrics:
+    - topk_within_1ft
+    - topk_within_2ft
+    - topk_within_5ft
+    - topk_within_10ft
+    - oracle_rank_headroom
+    - target_free_rank_score_top1
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Existing PF/Beam/likelihood-PF candidates are read from exp072's raw-train-only deterministic feature cache.
+    - Multi-observation likelihood uses raw horizontal GR, row index, finite prefix TVT_input, and candidate TVT values only.
+    - Evaluation-zone true TVT is materialized as last_known_tvt + target only for scoring candidate RMSE, oracle headroom, and rank metrics.
+    - Candidate rank scores are target-free multi-observation likelihood scores; supervised ranker training is intentionally out of scope.
+    - This experiment does not create an inference notebook candidate or submission.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+
+model:
+  name: none_multi_observation_likelihood_audit_only
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  target: true_tvt_for_scoring_only
+  base_prediction: last_known_tvt
+  estimator: none
+  multi_observation_likelihood:
+    observation_offsets: [-24, -12, 0, 12, 24]
+    gr_rolling_window: 5
+    gr_scale: 18.0
+    out_of_range_scale: 80.0
+    softmax_temperatures: [0.15, 0.30]
+    likpf_blend_weights: [0.25, 0.50]
+    primary_threshold_ft: 10
+    score_candidates:
+      - pf_ancc
+      - beam_mean
+      - likpf_mean
+      - sc_ens
+      - hyb
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_candidate_audit
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+  parallel_rng_policy: no_parallel_rng_in_exp099
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: false
+    submission_sha: false
+  notes:
+    - This is a train-side likelihood probe, not a deterministic submission anchor.
+    - Source gzip cache decompressed content SHA is recorded in the summary JSON.
+
+audit:
+  mode: pf_multi_observation_likelihood_probe
+  output_prefix: exp099_pf_multi_observation_likelihood_probe
+  max_rows: null
+  save_candidate_long: true
+  thresholds_ft: [1, 2, 5, 10]
+  topk_values: [1, 2, 3, 5, 10]
+  extra_source_columns:
+    - md_since
+    - eval_len
+    - pf_ancc_std
+    - likpf_mean_d
+  candidates:
+    - name: last_anchor_tvt
+      role: anchor
+      source_column: last_known_tvt
+      transform: absolute
+      enabled: true
+    - name: pf_ancc
+      role: selected_pf
+      source_column: pf_ancc
+      transform: absolute
+      enabled: true
+    - name: beam_mean
+      role: selected_beam
+      source_column: beam_mean_d
+      transform: base_plus_delta
+      enabled: true
+    - name: likpf_mean
+      role: likelihood_pf
+      source_column: likpf_mean_d
+      transform: base_plus_delta
+      enabled: true
+    - name: sc_ens
+      role: ncc_scale_ensemble
+      source_column: sc_ens_d
+      transform: base_plus_delta
+      enabled: true
+    - name: hyb
+      role: public_hybrid
+      source_column: hyb_d
+      transform: base_plus_delta
+      enabled: true
+  candidate_sets:
+    - name: baseline_primary
+      candidates: [pf_ancc, beam_mean, likpf_mean, sc_ens, hyb]
+    - name: baseline_plus_multiobs
+      candidates:
+        - pf_ancc
+        - beam_mean
+        - likpf_mean
+        - sc_ens
+        - hyb
+        - multiobs_top1
+        - multiobs_softmax_t0p15
+        - multiobs_softmax_t0p3
+        - likpf_multiobs_blend_w0p25
+        - likpf_multiobs_blend_w0p5
+  expected_train_artifacts:
+    - exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+    - exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+    - exp099_pf_multi_observation_likelihood_probe_candidate_metrics.csv
+    - exp099_pf_multi_observation_likelihood_probe_rank_metrics.csv
+    - exp099_pf_multi_observation_likelihood_probe_bucket_metrics.csv
+    - exp099_pf_multi_observation_likelihood_probe_by_well.csv
+    - exp099_pf_multi_observation_likelihood_probe_multiobs_well_summary.csv
+    - exp099_pf_multi_observation_likelihood_probe_row_context.csv.gz
+    - exp099_pf_multi_observation_likelihood_probe_candidate_long.csv.gz
+    - exp099_pf_multi_observation_likelihood_probe_feature_schema.csv
+    - exp099_pf_multi_observation_likelihood_probe_summary.json
+
+inference:
+  mode: not_selected_candidate_audit_only
+  selected_variant: null
+  notes:
+    - This experiment is train-side diagnostic only.
+    - If multi-observation likelihood improves target-free top1 ranking without weak-bucket regressions, use it as scorer/ranker feature material before any inference port.
+
+notes:
+  - Implements the requested backlog item pf_multi_observation_likelihood_probe.
+  - Does not directly replace TVT predictions, train a hidden branch, rerun PF/Beam, or submit.
+  - A positive result supports likelihood scorer features; a negative result should close this scoring variant before supervised ranker work.

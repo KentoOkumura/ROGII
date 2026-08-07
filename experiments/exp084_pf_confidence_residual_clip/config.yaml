@@ -1,0 +1,139 @@
+experiment:
+  name: "exp084_pf_confidence_residual_clip"
+  description: Run PF/Beam-confidence residual clipping as a separated fixed inference policy on top of the exp073 deterministic full replay ML anchor.
+  route: ml_model
+  status: submitted_noop_not_adopted
+  created_at: "2026-06-20"
+  updated_at: "2026-06-20"
+
+lineage:
+  parent: exp077_full_replay_postprocess_guard
+  cache_parent: exp072_exp063_full_replay_feature_cache
+  implementation_source: exp063_full_replay_reproducibility_guard.py
+  public_replay_source: public_notebook_replay_audit.py
+  diff_summary: Separates the pf_confidence_residual_clip backlog from exp077 by keeping exp077 as the longtail_likpf submitted anchor and running pf_confidence_residual_clip_q995 as its own fixed inference policy.
+
+validation:
+  strategy: exp077_fixed_policy_inference_port
+  metric: rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: exp073_oof_rows
+  leakage_policy:
+    - No new supervised model is fit in this experiment.
+    - The fixed policy uses exp073 saved boosters and regenerated raw test PF/Beam/likelihood-PF features.
+    - The residual clip limit is fixed from exp073 selected OOF target_delta q0.995.
+    - PF/Beam normalization percentiles are computed from target-free inference features when not pinned.
+    - This experiment exists because pf_confidence_residual_clip is a separate backlog item from exp077's selected longtail_likpf anchor.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp073_oof_predictions_local: /tmp/kaggle-output/exp073_gpu_reproducibility_guard_for_exp063_full_replay/train_v2/artifacts/exp063_full_replay_repro_guard_predictions.csv.gz
+
+model:
+  name: exp084_pf_confidence_residual_clip
+  source_experiment: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  feature_cache_experiment: exp072_exp063_full_replay_feature_cache
+  feature_source: exp072_exp063_full_replay_train_feature_cache
+  expected_feature_count: 196
+  target: target
+  base_prediction: last_known_tvt
+  estimator: lightgbm
+  lgb_config_family: exp063_public_pixiux_lgb0_lgb1_lgb2
+  training:
+    early_stopping_rounds: 250
+    max_train_rows: null
+    max_rows: null
+    save_models: true
+    save_predictions: true
+    active_modes:
+      - gpu_repro_guard_dp_threads8
+    modes:
+      gpu_repro_guard_dp_threads8:
+        description: GPU double precision plus fixed thread count and deterministic flags.
+        use_gpu: true
+        common_overrides:
+          gpu_use_dp: true
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+      cpu_deterministic_threads8:
+        description: CPU deterministic LightGBM control with fixed thread count.
+        use_gpu: false
+        common_overrides:
+          deterministic: true
+          force_col_wise: true
+          n_jobs: 8
+          num_threads: 8
+
+runtime:
+  use_amp: false
+  num_workers: 8
+  kaggle:
+    enable_gpu: true
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp073-full-replay-repro-guard-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+    inference_kernel_sources:
+      - kentookumura/exp073-full-replay-repro-guard-train
+
+audit:
+  mode: exp073_oof_postprocess_guard
+  output_prefix: exp084_pf_confidence_residual_clip
+  fast: false
+  selected_mode: gpu_repro_guard_dp_threads8
+  selected_model: lgb_mean
+  clip_quantiles:
+    - 0.99
+    - 0.995
+    - 0.999
+  expected_train_artifacts:
+    - exp084_pf_confidence_residual_clip_metrics.csv
+    - exp084_pf_confidence_residual_clip_bucket_metrics.csv
+    - exp084_pf_confidence_residual_clip_predictions.csv.gz
+    - exp084_pf_confidence_residual_clip_summary.json
+    - exp063_full_replay_repro_guard_feature_importance_by_fold.csv
+    - exp063_full_replay_repro_guard_feature_importance_mean.csv
+    - exp063_full_replay_repro_guard_feature_importance_mean_top40.png
+
+inference:
+  mode: saved_lgb_booster_inference_with_exp063_raw_test_feature_replay
+  deterministic_pf: true
+  seed_policy: stable_sha256_per_well
+  selected_mode: gpu_repro_guard_dp_threads8
+  selected_model: lgb_mean
+  postprocess_policy: pf_confidence_residual_clip_q995
+  postprocess_params:
+    pf_confidence_residual_clip:
+      residual_clip_quantile: 0.995
+      residual_clip_limit: 66.5908203125
+      pf_std_p75: null
+      beam_std_abs_p75: null
+      min_instability: 1.0
+      max_instability: 3.0
+  model_manifest_path: null
+  regenerate_test_features: true
+  feature_generation:
+    n_jobs: 8
+    pf_seeds: 128
+    pf_particles: 500
+    fast: false
+    use_gpu: auto
+  notes:
+    - This run intentionally executes pf_confidence_residual_clip_q995 rather than exp077's selected longtail_likpf_tiny_gate_w006 anchor.
+    - The inference path loads exp073 full replay saved boosters and regenerates raw test PF/Beam/likelihood-PF features with stable per-well seeds.
+
+notes:
+  - exp077 was restored locally to postprocess_policy longtail_likpf_tiny_gate_w006 before this experiment was split out.
+  - exp084 is the separated Kaggle run for the KAGGLE_DIRECTION backlog item pf_confidence_residual_clip.
+  - The copied train audit path remains available for reference, but the requested run is the inference notebook.

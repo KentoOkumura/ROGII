@@ -1,0 +1,89 @@
+{
+  "experiment": "exp417_scale5_seed_aggregation_promotion_audit",
+  "status": "stage_a_failed_closed_no_rescue",
+  "route": "pf_beam",
+  "parent": "exp404_scale5_sigma_gr_likelihood_pf_ablation",
+  "scientific_control": "exp072_exp063_full_replay_feature_cache",
+  "source": "kaggle_train_v1_logs_and_output",
+  "kaggle": {
+    "kernel_id": "kentookumura/exp417-scale5-seed-agg-promotion-audit-train",
+    "kernel_id_no": 128917131,
+    "kernel_version": 1,
+    "is_private": true,
+    "device": "cpu",
+    "internet": false
+  },
+  "cv": 10.914522073423171,
+  "control_cv": 11.59489788373621,
+  "gain_ft": 0.6803758103130395,
+  "public_lb": null,
+  "private_lb": null,
+  "prediction_candidate": false,
+  "promotion_gate_passed": false,
+  "decision": "fixed_scale5_seed_aggregation_rejected_close_without_rescue",
+  "rows": 3783989,
+  "wells": 773,
+  "runtime_seconds": 154.21503901481628,
+  "fixed_aggregation": {
+    "control": "arithmetic_seed_mean",
+    "candidate": "full_suffix_likelihood_temperature_5_weighted_seed_mean",
+    "temperature": 5.0,
+    "same_pf_seed_bank": true,
+    "particles": 500,
+    "seeds": 128,
+    "target_free": true,
+    "causal_online": false,
+    "batch_inference_compatible": true
+  },
+  "technical_gate": {
+    "passed": true,
+    "all_input_sha_matches": true,
+    "saved_control_parity_passed": true,
+    "finite_prediction_coverage": 1.0,
+    "truth_attached_after_prediction_freeze": true,
+    "stage_a_pf_well_runs": 0,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "hmm_well_runs": 0,
+    "beam_well_runs": 0,
+    "gpu_runs": 0
+  },
+  "scientific_gate": {
+    "passed": false,
+    "improved_folds": 5,
+    "minimum_improved_folds": 4,
+    "raw_gr_observed_gain_ft": 0.744954600209498,
+    "all_required_scope_non_regression": true,
+    "fixed_hmm_likpf_50_50_gain_ft": 0.18478646708237534,
+    "by_well_improved": 516,
+    "by_well_regressed": 257,
+    "by_well_delta_p95_ft": 2.9416884826255085,
+    "maximum_by_well_delta_p95_ft": 0.0,
+    "worst_well_id": "70925e23",
+    "worst_well_regression_ft": 25.311274575082955,
+    "maximum_worst_well_regression_ft": 0.25,
+    "failed_checks": [
+      "by_well_delta_p95",
+      "worst_well_regression"
+    ]
+  },
+  "sha256": {
+    "parent_prediction_logical_content": "5f4b6e715081b598b0a34607ad0c81339d0ecd5882ea3a45dd79f33123959a00",
+    "stage_a_prediction_logical_content": "62b22b65cd3f946c5d48fa0da10859180e1b5ade7f3da063f3a7d429ab5dead9",
+    "scientific_contract": "715e755e625281980cb9573f5f905d4a326ab64844d64fbe8b3be7a27978b7e9",
+    "input_manifest": "704d417144f5f7da55748f4c517a70b8e80d2755712fa1f3a2adbbfa2c79e445",
+    "artifact_manifest": "375a65e3463a4313707a76b670616c58e22bd74774c5b1a18f3e1a180a7e7078"
+  },
+  "validation": {
+    "dedicated_and_common_tests": 19,
+    "tests_passed": true,
+    "py_compile_passed": true,
+    "ruff_passed": true,
+    "jupytext_roundtrip_passed": true,
+    "strict_experiment_validation_passed": true,
+    "downloaded_artifact_manifest_rows": 7,
+    "downloaded_artifact_manifest_verified": true
+  },
+  "notes": "Pooled, fold, scope, parity, fixed-blend, SHA, and truth-late checks passed, but the preregistered by-well p95 and worst-well guards failed. The fixed scale-5 direct PF candidate is rejected without same-OOF rescue. Inference and submission were not run."
+}

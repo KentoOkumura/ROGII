@@ -1,0 +1,140 @@
+{
+  "experiment": "exp362_segment_local_donor_slope_exact_hmm",
+  "route": "pf_beam",
+  "status": "completed_postrun_support_audit_failed_closed",
+  "created_at": "2026-07-23",
+  "updated_at": "2026-07-24",
+  "metric": "rmse",
+  "cv": 11.161677222752134,
+  "public_lb": null,
+  "private_lb": null,
+  "parent": "exp209_exp072_exp205_joint_exact_parity_fast_cache_generation",
+  "key_idea": "Raw outer-train K16 donor slopes were intended to define a local-gradient rate prior for exp209 exact HMM.",
+  "kaggle": {
+    "kernel_id": "kentookumura/exp362-segment-local-donor-slope-exact-hmm-train",
+    "kernel_version": 1,
+    "kernel_id_no": 128368310,
+    "url": "https://www.kaggle.com/code/kentookumura/exp362-segment-local-donor-slope-exact-hmm-train",
+    "status": "COMPLETE",
+    "cpu_only": true,
+    "internet_enabled": false,
+    "runtime_seconds": 19777.653140535
+  },
+  "execution_contract": {
+    "scientific_variants": 1,
+    "reporting_folds": 5,
+    "hmm_well_runs": 773,
+    "model_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "gpu": false,
+    "parent_control_retraining": false
+  },
+  "gate": {
+    "decision": "close_without_parameter_fallback_hmm_blend_selector_inference_or_submission_rescue",
+    "notebook_technical_gate_passed": true,
+    "notebook_scientific_gate_passed": false,
+    "postrun_support_audit_passed": false,
+    "final_passed": false,
+    "valid_as_intended_local_donor_slope_test": false
+  },
+  "overall": {
+    "rows": 3783989,
+    "wells": 773,
+    "candidate_rmse": 11.161677222752134,
+    "parent_rmse": 11.938287234887435,
+    "improvement_ft": 0.7766100121353006,
+    "improved_folds": 3,
+    "minimum_improved_folds": 4
+  },
+  "folds": {
+    "fold_0": {
+      "candidate_rmse": 10.218922563101282,
+      "parent_rmse": 11.075149136452394,
+      "improvement_ft": 0.8562265733511119
+    },
+    "fold_1": {
+      "candidate_rmse": 12.635563640494716,
+      "parent_rmse": 12.444774810815568,
+      "improvement_ft": -0.190788829679148
+    },
+    "fold_2": {
+      "candidate_rmse": 9.805174363038118,
+      "parent_rmse": 12.795685865230453,
+      "improvement_ft": 2.9905115021923354
+    },
+    "fold_3": {
+      "candidate_rmse": 10.892623559735258,
+      "parent_rmse": 11.598032809138614,
+      "improvement_ft": 0.7054092494033561
+    },
+    "fold_4": {
+      "candidate_rmse": 11.965838914560203,
+      "parent_rmse": 11.648854233530665,
+      "improvement_ft": -0.31698468102953825
+    }
+  },
+  "stress_scopes": {
+    "distance_1000_plus_improvement_ft": 0.8588766841000623,
+    "hidden_like_spatial_improvement_ft": 0.2731865422272506,
+    "hidden_like_typewell_purged_improvement_ft": 0.35196554302303973,
+    "candidate_by_well_p95_minus_parent_by_well_p95_ft": -2.896173573706985,
+    "worst_well_id": "86454a6f",
+    "worst_well_delta_ft": 52.74142579338134,
+    "improved_wells": 462,
+    "worsened_wells": 311
+  },
+  "postrun_support_audit": {
+    "target_segments": 12368,
+    "accepted_local_gradient_segments": 0,
+    "prefix_rate_segments": 12368,
+    "mu_equals_prefix_rate_segments": 12368,
+    "finite_gradient_segments": 0,
+    "effective_donors_ge_10_segments": 0,
+    "fallback_reason_counts": {
+      "effective_donors": 11596,
+      "nearest_distance": 772
+    },
+    "saved_fallback_flag_false_segments": 12368,
+    "saved_fallback_flag_is_valid": false,
+    "saved_fallback_flag_bug": "estimate fallback was overwritten by prefix-rate fallback in the target-row dictionary merge",
+    "observed_variant": "prefix_rate_only_residual_exact_hmm",
+    "interpretation": "The RMSE is not evidence for the intended local donor-slope intervention."
+  },
+  "technical": {
+    "finite_prediction_coverage": 1.0,
+    "duplicate_rows": 0,
+    "truth_access_before_freeze": 0,
+    "exp226_artifacts_resolved": 0,
+    "fold_donor_exclusion_passed": true,
+    "posterior_normalization_max_abs_error": 3.774758283725532e-15,
+    "parent_control_decompressed_sha256": "8e2f42367b7b8b28e73094eae642c57c75dc8a7ebcfbc3826b0f2067b37f7ae5",
+    "parent_rmse_absolute_difference": 1.8211256502809192e-07
+  },
+  "reproducibility": {
+    "deterministic_anchor": false,
+    "rerun_parity_checked": false,
+    "raw_identity_sha256": "bbb687a1998092578583ce259309b49031d095bde57cbb26c0ab8808d2379b32",
+    "raw_input_manifest_sha256": "6b655880faed30e8e600ea4ae79c3a3944e75cf3b6de0f18f6ed213ab819aa47",
+    "scientific_contract_sha256": "2e80fd0573acc601e3b5fe28e6673725c3e7038a1393d0ae6110ed46dd4b2128",
+    "fold_assignment_logical_sha256": "42b26e2e3981516282ea81d35988ccf6c3c50d62ee6d876fd6b2f9c543b340e5",
+    "donor_segment_ledger_logical_sha256": "92a6f7e9f86b9a122d1c76563dd247ba38bd13bb118a09218061358093951f33",
+    "donor_segment_ledger_decompressed_sha256": "cafa600907428ccec08de02d10c8527dabd95663e3b7b3af1899bda5a10d414c",
+    "target_segment_prior_logical_sha256": "b84487c4c91e072261091f730f3cd4ecd26a12879749a1aba1e72573b14c5a91",
+    "target_segment_prior_decompressed_sha256": "84318915a313e652592308865884d7adb79fec53bb3c4d8e304c2f561fcc70c9",
+    "rowwise_schedule_logical_sha256": "d6cbf1a717cd461418939689921888009857d7c0202467d620982f69900a3cb7",
+    "rowwise_schedule_decompressed_sha256": "5cabe7f395724ff709519f68a9ad3af0b3db81e5a0e7721a39b4fa61d74498e8",
+    "prediction_logical_sha256": "bdf616e00bdebb496093d3d05526aebce01381281c4b1c46f7b77e72e57415cb",
+    "prediction_decompressed_sha256": "e1d672ff9743b92c33a40bec8d4cf3b0a8c29cdbbb37948992f0809522e3e7ef",
+    "sha_manifest_raw_sha256": "5ac384b2153cf962132dff9bec12a46e95a5a549e190ac6a594632625adf5fc3",
+    "kernel_log_raw_sha256": "839a08237196d2eeb7d6d2fd49e7c9eeb33cdf66c1f8b6f8fac720233bfebdbd",
+    "downloaded_kaggle_metrics_raw_sha256": "1a25603c3ee43e5f272b5c5c9a49098347a2ead474cfbe3fe079ae7d9cbd64ef",
+    "downloaded_summary_raw_sha256": "2ff74531862402b7274e5ac2b98a1aac58d636d2007903c430d4a89d0feebe0b",
+    "downloaded_tracked_artifact_raw_sha_checks": 10,
+    "downloaded_tracked_artifact_raw_sha_mismatches": 0
+  },
+  "canonical_notebook_adopted": true,
+  "inference_enabled": false,
+  "submission_enabled": false,
+  "notes": "Kaggle CPU version 1 completed. The notebook scientific gate failed, and post-run audit showed that every target segment fell back to the prefix rate. The branch is closed without rerun, rescue, inference, or submission."
+}

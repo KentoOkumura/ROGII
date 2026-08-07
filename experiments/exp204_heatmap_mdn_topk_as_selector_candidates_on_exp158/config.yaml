@@ -1,0 +1,510 @@
+experiment:
+  name: "exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158"
+  description: Closed selector-candidate experiment; heatmap-derived path generation route is rejected after exp202/203/207/208/210/212/215 diagnostics.
+  route: pf_beam
+  status: closed_rejected_heatmap_path_generation_route
+  created_at: "2026-07-05"
+  updated_at: "2026-07-07"
+
+lineage:
+  parent: exp203_heatmap_mdn_candidates_into_selector_features
+  selector_parent: exp184_cnn_sdf_mtp_heatmap_path_features_on_exp158
+  feature_only_parent: exp203_heatmap_mdn_candidates_into_selector_features
+  ranker_parent: exp157_candidate_ranker_feature_enrichment
+  continuity_parent: exp158_segment_continuity_selector_on_exp157
+  heatmap_path_parent: exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe
+  heatmap_mdn_parent: exp202_heatmap_mdn_candidate_generator_probe
+  feature_cache_parent: exp072_exp063_full_replay_feature_cache
+  multiobs_parent: exp099_pf_multi_observation_likelihood_probe
+  stress_parent: exp115_hidden_like_spatial_holdout_from_ppt
+  implementation_source: heatmap_mdn_topk_as_selector_candidates_on_exp158.py
+  diff_summary: >
+    Historical implementation that extended exp203's heatmap MDN feature-only
+    selector by adding exp202 hmdn_top1 ... hmdn_top10 row-interpolated TVT paths
+    to the selectable candidate set. This path source is now considered
+    insufficient for the normal selector-candidate premise because exp210 showed
+    that covered-row heatmap paths do not provide full-grid trajectory coverage.
+    Exp212 fixed full-grid rows but was fallback-heavy, and exp215 fixed
+    fallback coverage but still produced weak learned-only / weighted paths.
+    Do not rerun exp204 as-is or with exp212/exp215 heatmap paths. The
+    heatmap-derived path generation route is closed as diagnostic history only.
+
+validation:
+  strategy: train_well_pseudotail_candidate_selector_oof_plus_viterbi_with_exp202_hmdn_top10_candidates
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within_10ft
+    - oracle_label_accuracy
+    - selection_distribution
+    - path_switch_count
+    - bucket_rmse
+    - subgroup_rmse
+    - worst_well_rmse
+    - hmdn_confidence_bucket_rmse
+    - hmdn_sparse_distance_bucket_rmse
+    - hmdn_candidate_selection_rate
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Candidate values and target-free likelihood features are read from exp099 v2 and exp072 train-side pseudo-tail caches.
+    - Selectable candidates are exp184's eight candidates plus exp202 hmdn_top1 ... hmdn_top10 row-interpolated TVT paths.
+    - Dense candidates are reconstructed as last_known_tvt plus tvt_dense*_d columns, matching exp157/184.
+    - Exp184 hmpf features use exp182 validation predictions exactly as the parent did.
+    - Exp204 hmdn features and selectable candidates use exp202 heatmap candidate CSV columns available at feature time: predicted topK TVT, scores, score margin, entropy, path-step stats, prior center, row_center, and sparse sample geometry.
+    - Exp202 true_center_tvt, target_in_grid, best_mode, abs-error, within10, oracle-best, and true-error rank columns are never loaded as features.
+    - Sparse exp202 heatmap candidate rows are expanded to selector rows by within-well row-index interpolation before candidate labels are built.
+    - Candidate-long labels use oracle-best candidate index and absolute candidate error only as training labels, not as feature columns.
+    - Viterbi local costs use OOF predicted-error scores from the newly trained 18-candidate ranker. Transition penalties use candidate path geometry and target-free guard features only.
+    - exp115 hidden-like roles are used only for result subgroup metrics, never for training features.
+    - This is a train-side audit; no inference port or submission candidate is selected.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp072_train_feature_cache_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
+  exp072_feature_schema_local: experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_feature_schema.csv
+  exp182_validation_predictions_local: experiments/exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe/kaggle/output/train_v1/artifacts/exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe_validation_predictions.csv.gz
+  exp182_sample_index_local: experiments/exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe/kaggle/output/train_v1/artifacts/exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe_sample_index.csv.gz
+  exp182_summary_local: experiments/exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe/kaggle/output/train_v1/artifacts/exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe_summary.json
+  exp202_heatmap_candidates_local: experiments/exp202_heatmap_mdn_candidate_generator_probe/kaggle/output/train_v1/artifacts/exp202_heatmap_mdn_candidate_generator_probe_heatmap_candidates.csv.gz
+  exp202_summary_local: experiments/exp202_heatmap_mdn_candidate_generator_probe/kaggle/output/train_v1/artifacts/exp202_heatmap_mdn_candidate_generator_probe_summary.json
+  exp115_fold_assignments_local: experiments/exp115_hidden_like_spatial_holdout_from_ppt/artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv
+
+model:
+  name: heatmap_mdn_topk_as_selector_candidates_on_exp158
+  target: oracle_best_candidate_and_candidate_abs_error
+  base_prediction: candidate_selected_tvt
+  estimator:
+    - lightgbm_multiclass
+    - lightgbm_candidate_binary
+    - lightgbm_candidate_error_ranker
+  trains_new_boosters: true
+  planned_selector_candidates: 18
+  planned_lightgbm_configs: 3
+  planned_folds: 5
+  planned_boosters: 15
+  control_or_parent_retraining: false
+
+ranker:
+  mode: supervised_candidate_selector_with_exp202_heatmap_mdn_top10_selectable_candidates
+  max_rows: null
+  include_candidate_values: false
+  log_period: 100
+  generated_candidate_columns:
+    - hmdn_top1_tvt
+    - hmdn_top2_tvt
+    - hmdn_top3_tvt
+    - hmdn_top4_tvt
+    - hmdn_top5_tvt
+    - hmdn_top6_tvt
+    - hmdn_top7_tvt
+    - hmdn_top8_tvt
+    - hmdn_top9_tvt
+    - hmdn_top10_tvt
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+    - name: beam_mean
+      column: beam_mean
+    - name: likpf_mean
+      column: likpf_mean
+    - name: sc_ens
+      column: sc_ens
+    - name: hyb
+      column: hyb
+    - name: tvt_dense
+      column: tvt_dense
+    - name: tvt_densew
+      column: tvt_densew
+    - name: tvt_dense50
+      column: tvt_dense50
+    - name: hmdn_top1
+      column: hmdn_top1_tvt
+    - name: hmdn_top2
+      column: hmdn_top2_tvt
+    - name: hmdn_top3
+      column: hmdn_top3_tvt
+    - name: hmdn_top4
+      column: hmdn_top4_tvt
+    - name: hmdn_top5
+      column: hmdn_top5_tvt
+    - name: hmdn_top6
+      column: hmdn_top6_tvt
+    - name: hmdn_top7
+      column: hmdn_top7_tvt
+    - name: hmdn_top8
+      column: hmdn_top8_tvt
+    - name: hmdn_top9
+      column: hmdn_top9_tvt
+    - name: hmdn_top10
+      column: hmdn_top10_tvt
+  context_columns:
+    - last_known_tvt
+    - pf_ancc_std
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+    - eval_len
+    - md_since
+    - likpf_mean_d
+  multiobs_feature_columns:
+    - multiobs_score_max
+    - multiobs_score_mean
+    - multiobs_score_gap
+    - multiobs_top1_source_id
+    - multiobs_top1_mae
+    - multiobs_top1_ncc
+    - multiobs_score_pf_ancc
+    - multiobs_mae_pf_ancc
+    - multiobs_ncc_pf_ancc
+    - multiobs_score_beam_mean
+    - multiobs_mae_beam_mean
+    - multiobs_ncc_beam_mean
+    - multiobs_score_likpf_mean
+    - multiobs_mae_likpf_mean
+    - multiobs_ncc_likpf_mean
+    - multiobs_score_sc_ens
+    - multiobs_mae_sc_ens
+    - multiobs_ncc_sc_ens
+    - multiobs_score_hyb
+    - multiobs_mae_hyb
+    - multiobs_ncc_hyb
+  optional_columns:
+    - multiobs_top1
+    - multiobs_softmax_t0p15
+    - multiobs_softmax_t0p3
+    - likpf_multiobs_blend_w0p25
+    - likpf_multiobs_blend_w0p5
+  candidate_pairwise_scope: base_only
+  feature_enrichment:
+    enabled: true
+    prefix: crfe_
+    max_missing_rate: 0.0
+    min_md_scale: 25.0
+    min_dense_scale: 10.0
+    near_md_threshold: 50.0
+    primary_dense_candidate: tvt_densew
+    auxiliary_candidate_columns:
+      - tvt_dense
+      - tvt_densew
+      - tvt_dense50
+    auxiliary_columns:
+      - tvt_dense_d
+      - tvt_densew_d
+      - tvt_dense50_d
+      - dense_std
+      - dense_dist
+      - pf_vs_dense
+    dense_delta_columns:
+      tvt_dense: tvt_dense_d
+      tvt_densew: tvt_densew_d
+      tvt_dense50: tvt_dense50_d
+    reference_candidates:
+      - likpf_mean
+      - beam_mean
+      - pf_ancc
+    base_feature_columns:
+      - tvt_dense_d
+      - tvt_densew_d
+      - tvt_dense50_d
+      - dense_std
+      - dense_dist
+      - pf_vs_dense
+  heatmap_path_features:
+    enabled: true
+    prefix: hmpf_
+    max_missing_rate: 0.0
+    interpolation: linear_by_well_row_index
+    primary_run_spec: base_real_w128_b64_fullfold
+    shuffled_run_spec: base_shuffled_w128_b64_fullfold
+    no_gr_run_spec: base_no_gr_w128_b64_fullfold
+    excluded_run_specs:
+      - geometry_real_w128_b64_fullfold
+      - geometry_shuffled_w128_b64_fold01
+      - geometry_real_w256_b96_fold01
+    topk_ranks: [1, 2, 3, 5, 10]
+    confidence_eps: 0.000001
+    min_score_scale: 0.005
+    min_candidate_scale_ft: 10.0
+    nearest_sample_warn_distance_rows: 512
+    base_feature_columns:
+      - hmpf_source_valid
+      - hmpf_nearest_sample_distance_rows
+      - hmpf_row_coverage_left
+      - hmpf_row_coverage_right
+      - hmpf_real_top1_tvt
+      - hmpf_real_top1_minus_last
+      - hmpf_real_top1_score
+      - hmpf_real_top1_top2_score_margin
+      - hmpf_real_top1_top3_score_margin
+      - hmpf_real_score_entropy
+      - hmpf_real_score_top3_mass
+      - hmpf_real_score_top5_mass
+      - hmpf_real_top3_tvt_mean
+      - hmpf_real_top3_tvt_std
+      - hmpf_real_top3_tvt_range
+      - hmpf_real_top5_tvt_mean
+      - hmpf_real_top5_tvt_std
+      - hmpf_real_top10_tvt_mean
+      - hmpf_real_top10_tvt_std
+      - hmpf_real_path_step_abs_mean_ft
+      - hmpf_real_path_step_abs_max_ft
+      - hmpf_real_prior_center_minus_last
+      - hmpf_real_top1_minus_prior_center
+      - hmpf_real_top3_mean_minus_prior_center
+      - hmpf_real_top1_minus_likpf_mean
+      - hmpf_real_top1_minus_beam_mean
+      - hmpf_real_top1_minus_pf_ancc
+      - hmpf_real_top1_minus_tvt_densew
+      - hmpf_real_top3_mean_minus_likpf_mean
+      - hmpf_real_top3_mean_minus_tvt_densew
+      - hmpf_real_top1_vs_candidate_mean_abs
+      - hmpf_real_top1_vs_candidate_min_abs
+      - hmpf_real_top3_mean_vs_candidate_mean_abs
+      - hmpf_real_score_top1_rank01
+      - hmpf_real_confidence_proxy
+      - hmpf_real_confidence_x_longtail
+      - hmpf_real_vs_shuffled_top1_score_gap
+      - hmpf_real_vs_no_gr_top1_score_gap
+      - hmpf_real_vs_shuffled_margin_gap
+      - hmpf_real_vs_no_gr_margin_gap
+      - hmpf_real_vs_shuffled_top1_tvt_abs_delta
+      - hmpf_real_vs_no_gr_top1_tvt_abs_delta
+      - hmpf_shuffled_top1_score
+      - hmpf_no_gr_top1_score
+      - hmpf_shuffled_score_entropy
+      - hmpf_no_gr_score_entropy
+  heatmap_mdn_candidate_features:
+    enabled: true
+    prefix: hmdn_
+    max_missing_rate: 0.0
+    interpolation: linear_by_well_row_index
+    topk_ranks: [1, 2, 3, 5, 10]
+    confidence_eps: 0.000001
+    min_candidate_scale_ft: 10.0
+    nearest_sample_warn_distance_rows: 512
+    base_feature_columns:
+      - hmdn_source_valid
+      - hmdn_nearest_sample_distance_rows
+      - hmdn_row_coverage_left
+      - hmdn_row_coverage_right
+      - hmdn_top1_tvt
+      - hmdn_top1_minus_last
+      - hmdn_top1_score
+      - hmdn_top1_top2_score_margin
+      - hmdn_top1_top3_score_margin
+      - hmdn_score_entropy
+      - hmdn_score_top3_mass
+      - hmdn_score_top5_mass
+      - hmdn_top3_tvt_mean
+      - hmdn_top3_tvt_std
+      - hmdn_top3_tvt_range
+      - hmdn_top5_tvt_mean
+      - hmdn_top5_tvt_std
+      - hmdn_top10_tvt_mean
+      - hmdn_top10_tvt_std
+      - hmdn_top10_tvt_range
+      - hmdn_path_step_abs_mean_ft
+      - hmdn_path_step_abs_max_ft
+      - hmdn_prior_center_minus_last
+      - hmdn_top1_minus_prior_center
+      - hmdn_top3_mean_minus_prior_center
+      - hmdn_top1_minus_likpf_mean
+      - hmdn_top1_minus_beam_mean
+      - hmdn_top1_minus_pf_ancc
+      - hmdn_top1_minus_tvt_densew
+      - hmdn_top3_mean_minus_likpf_mean
+      - hmdn_top3_mean_minus_tvt_densew
+      - hmdn_top1_vs_candidate_mean_abs
+      - hmdn_top3_mean_vs_candidate_mean_abs
+      - hmdn_top3_vs_candidate_min_abs
+      - hmdn_top5_vs_candidate_min_abs
+      - hmdn_top10_vs_candidate_min_abs
+      - hmdn_top3_any_candidate_within10_proxy
+      - hmdn_top5_any_candidate_within10_proxy
+      - hmdn_top10_any_candidate_within10_proxy
+      - hmdn_score_top1_rank01
+      - hmdn_confidence_proxy
+      - hmdn_confidence_x_longtail
+  multiclass_lgbm:
+    max_train_rows_per_fold: 500000
+    max_valid_rows_per_fold: 160000
+    params:
+      n_estimators: 600
+      learning_rate: 0.045
+      num_leaves: 63
+      max_bin: 63
+      min_child_samples: 120
+      subsample: 0.85
+      subsample_freq: 1
+      colsample_bytree: 0.85
+      reg_alpha: 0.1
+      reg_lambda: 1.0
+      device_type: gpu
+      gpu_use_dp: false
+      n_jobs: -1
+      verbose: -1
+  long_models:
+    max_train_rows_per_fold: 120000
+    max_valid_rows_per_fold: 120000
+    predict_chunk_rows: 50000
+    binary_lgbm:
+      params:
+        n_estimators: 550
+        learning_rate: 0.045
+        num_leaves: 63
+        max_bin: 63
+        min_child_samples: 160
+        subsample: 0.85
+        subsample_freq: 1
+        colsample_bytree: 0.85
+        reg_alpha: 0.1
+        reg_lambda: 1.0
+        device_type: gpu
+        gpu_use_dp: false
+        n_jobs: -1
+        verbose: -1
+    error_lgbm:
+      params:
+        n_estimators: 550
+        learning_rate: 0.04
+        num_leaves: 63
+        max_bin: 63
+        min_child_samples: 160
+        subsample: 0.85
+        subsample_freq: 1
+        colsample_bytree: 0.85
+        reg_alpha: 0.1
+        reg_lambda: 1.0
+        device_type: gpu
+        gpu_use_dp: false
+        n_jobs: -1
+        verbose: -1
+
+selector:
+  mode: heatmap_mdn_topk_as_selector_candidates_on_exp158
+  default_candidate: likpf_mean
+  ranker_variant: lgb_candidate_error_ranker
+  allowed_switch_candidates:
+    - pf_ancc
+    - beam_mean
+    - sc_ens
+    - hyb
+    - tvt_dense
+    - tvt_densew
+    - tvt_dense50
+    - hmdn_top1
+    - hmdn_top2
+    - hmdn_top3
+    - hmdn_top4
+    - hmdn_top5
+    - hmdn_top6
+    - hmdn_top7
+    - hmdn_top8
+    - hmdn_top9
+    - hmdn_top10
+  log_period: 10
+  viterbi_grid:
+    switch_penalty: [0.0, 5.0, 10.0, 20.0, 40.0]
+    nondefault_bias: [0.0]
+    jump_penalty_weight: [0.0, 0.5, 1.0]
+    jump_free_ft: [25.0]
+    jump_scale_ft: 25.0
+    max_abs_delta_vs_default: [75.0, 150.0, 999999.0]
+    max_pf_ancc_std: [999999.0]
+    min_md_since: [0.0]
+    min_segment_len: [1, 12, 36, 96]
+  historical_baselines:
+    likpf_mean_rmse: 11.594897672217703
+    exp157_rowwise_rmse: 10.79579983712686
+    exp158_continuity_rmse: 10.789163253
+    exp184_best_viterbi_rmse: 10.560650324533297
+    exp202_existing_union_oracle_rmse: 5.068679052719509
+    exp202_existing_plus_heatmap_top10_oracle_rmse: 2.745528139819464
+    exp202_existing_plus_heatmap_top10_new_best_candidate_rate: 0.2525411199408612
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: true
+    machine_shape: NvidiaTeslaT4
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp072-exp063-full-replay-feature-cache-train
+      - kentookumura/exp182-cnn-sdf-mtp-geometry-probe-train
+      - kentookumura/exp202-heatmap-mdn-candgen-train
+      - kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_groupkfold_and_lightgbm_seed_with_fixed_candidate_long_subsample
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - upstream_exp099_likelihood_pf_oof_candidates
+    - upstream_exp182_pytorch_cuda_heatmap_models
+    - upstream_exp202_pytorch_cuda_heatmap_mdn_candidate_models
+    - lightgbm_histogram_training
+    - candidate_long_training_row_subsample
+  parallel_rng_policy: no_parallel_rng_in_feature_generation
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    model_manifest_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is a train-side selector audit, not a deterministic submission anchor.
+    - Hmpf feature expansion and hmdn candidate interpolation are deterministic given upstream prediction CSVs, row order, and config.
+    - Candidate-long model training samples row indices with a fixed local RNG seed per fold to cap memory.
+    - Kaggle train v3 uses NvidiaTeslaT4 GPU runtime and LightGBM GPU params.
+    - Viterbi selection is deterministic given OOF score surface, candidate values, config, and row order.
+
+audit:
+  mode: heatmap_mdn_topk_as_selector_candidates_on_exp158
+  output_prefix: exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158
+  expected_train_artifacts:
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_metrics.csv
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_oof_predictions.csv.gz
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_selection_distribution.csv
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_by_well.csv
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_bucket_metrics.csv
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_subgroup_metrics.csv
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_viterbi_params.csv
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_score_summary.csv
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_feature_importance.csv
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_feature_importance_mean.csv
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_feature_schema.csv
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_heatmap_feature_schema.csv
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_heatmap_feature_summary.csv
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_heatmap_mdn_feature_schema.csv
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_heatmap_mdn_feature_summary.csv
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_model_manifest.json
+    - exp204_heatmap_mdn_topk_as_selector_candidates_on_exp158_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - No inference notebook candidate is selected by this implementation.
+    - A positive OOF result still needs worst-well, near-row, distance bucket, path switch, exp115 hidden-like, hmdn sparse-coverage, and raw-test/current-test parity review before inference work.
+
+notes:
+  - Backlog item heatmap_mdn_topk_as_selector_candidates_on_exp158 is closed/rejected.
+  - Historical planned Kaggle train cost was 1 active 18-candidate selector variant, 3 LightGBM configs, 5 folds, 15 boosters.
+  - Parent/control retraining is not included.
+  - Heatmap MDN/MTP paths are not used as selectable candidates, direct replacements, weighted TVT, PF weight replacements, postprocess blends, inference ports, or submissions.

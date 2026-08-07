@@ -1,0 +1,59 @@
+{
+  "clean_postprocess_supported": true,
+  "exp013_fixed_bucket_alphas_cv": 13.501824,
+  "experiment": "exp014_postprocess_cv_audit",
+  "in_sample_bucket_refit_cv": 13.501824,
+  "last_anchor_cv": 15.909853,
+  "leave_one_original_fold_out_bucket_fit_cv": 13.535596,
+  "metric": "rmse",
+  "metrics": [
+    {
+      "candidate": "raw_lightgbm_no_gr",
+      "delta_vs_raw": 0.0,
+      "rmse": 13.549257,
+      "rows": 3783989
+    },
+    {
+      "candidate": "last_anchor",
+      "delta_vs_raw": 2.360595,
+      "rmse": 15.909853,
+      "rows": 3783989
+    },
+    {
+      "candidate": "exp013_fixed_bucket_alphas",
+      "delta_vs_raw": -0.047434,
+      "rmse": 13.501824,
+      "rows": 3783989
+    },
+    {
+      "candidate": "in_sample_bucket_refit",
+      "delta_vs_raw": -0.047434,
+      "rmse": 13.501824,
+      "rows": 3783989
+    },
+    {
+      "candidate": "leave_one_original_fold_out_bucket_fit",
+      "delta_vs_raw": -0.013661,
+      "rmse": 13.535596,
+      "rows": 3783989
+    },
+    {
+      "candidate": "well_bucket_holdout_fit",
+      "delta_vs_raw": -0.038567,
+      "rmse": 13.51069,
+      "rows": 3783989
+    }
+  ],
+  "notes": "raw_clean_cv=13.549257; exp013_oof_fit=13.501824; no submission",
+  "raw_clean_cv": 13.549257,
+  "rows": 3783989,
+  "selected_clean_cv": 13.535596,
+  "source_experiment": "exp013_model_diversity_or_postprocess",
+  "source_oof_predictions": "data/external/kaggle-output/exp013_model_diversity_or_postprocess/train/artifacts/row_oof_predictions.csv",
+  "source_variant": "lightgbm_no_gr",
+  "status": "completed",
+  "updated_at": "2026-06-04T14:05:29.936778+00:00",
+  "well_bucket_holdout_fit_cv": 13.51069,
+  "cv": 13.535596,
+  "key_idea": "Audit exp013 distance-bucket shrink alpha with held-out folds; leave-one-fold-out CV 13.535596, well-bucket holdout 13.510690"
+}

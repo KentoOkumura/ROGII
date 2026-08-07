@@ -1,0 +1,62 @@
+contract:
+  name: exp506_mean_reversion_correction_meta_blend
+  version: 3
+  frozen_at: "2026-08-04"
+  design_only: false
+  implementation_complete: true
+  kaggle_run_approved: true
+
+anchor_resolution:
+  prerequisite: exp497_stage_e_terminal
+  pass_source: exp497_saved_selected_oof_if_non_exp413
+  fallback_source: exp413_saved_stage_d_oof
+  decision_may_use_exp506_outcomes: false
+  terminal_status: completed_gate_failed_closed
+  exp497_promotion_gate_passed: false
+  resolved_anchor: exp413_saved_stage_d_oof
+  resolved_anchor_oof_sha256: 9bd2d17778b3b27d771b12cbff72def8b87e6cdf14062e1c0ba192434cef4a9d
+
+primary:
+  id: anchor_plus_exp490_minus_exp357
+  correction: exp490_prediction_minus_exp357_parent_prediction
+  prediction: anchor_plus_lambda_times_correction
+  intercept: false
+  objective: suffix_row_unweighted_sse
+  fit: other_four_outer_folds
+  apply: held_outer_fold
+  lambda_bounds: [0.0, 0.10]
+  deployment: median_of_five_meta_fold_lambdas
+  full_oof_refit: false
+  selectable: true
+
+report_only_control:
+  id: anchor_exp490_convex_blend
+  prediction: anchor_plus_weight_times_exp490_minus_anchor
+  fit: other_four_outer_folds
+  apply: held_outer_fold
+  weight_bounds: [0.0, 0.10]
+  selectable: false
+  may_rescue_primary: false
+
+gate:
+  all_and: true
+  pooled_gain_min_ft: 0.03
+  nonworse_folds_required: 5
+  fixed_scope_max_delta_ft: 0.0
+  by_well_p95_max_delta_ft: 0.25
+  by_well_worst_max_delta_ft: 0.25
+  lambda_strict_interior_meta_folds_required: 5
+  lambda_range_max: 0.05
+  fail_decision: FAIL_CLOSE_WITHOUT_WEIGHT_SCOPE_COMPONENT_OR_GATE_RESCUE
+
+prohibited:
+  - tau_or_alpha_fade
+  - cutoff_or_depth_bucket
+  - row_well_or_scope_weight
+  - hard_or_conditional_router
+  - intercept_or_negative_weight
+  - three_way_stack
+  - component_grid
+  - same_oof_global_refit
+  - public_lb_tuning
+  - gate_relaxation

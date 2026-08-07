@@ -1,0 +1,282 @@
+{
+  "scope": {
+    "rows": 3783989,
+    "wells": 773,
+    "persistent_episodes": 638
+  },
+  "kernel": {
+    "position_step_ft": 0.35,
+    "configured_sig_p_ft": 0.02,
+    "effective_sigma_floor_ft": 0.12249999999999998,
+    "cells": 5,
+    "raw_md_step": {
+      "rows": 3783989,
+      "minimum_ft": 1.0,
+      "maximum_ft": 1.0,
+      "rows_not_exactly_1ft": 0,
+      "rows_below_1ft": 0,
+      "rows_nonpositive": 0,
+      "guard": "Computed before exp209's max(raw dMD, 1.0) clamp."
+    },
+    "actual_motion_moment_tradeoff": {
+      "configured_sig_p_ft": 0.02,
+      "configured_variance_ft2": 0.0004,
+      "current_effective_sigma_ft": 0.12249999999999998,
+      "current_kernel_variance_mean_ft2": 0.004578120931314918,
+      "phase_minimax_sigma_ft": 0.2325,
+      "phase_minimax_abs_bias_mean_ft": 0.0001033744980641833,
+      "phase_minimax_abs_bias_max_ft": 0.0004525407245208335,
+      "phase_minimax_kernel_variance_mean_ft2": 0.053720439058572905,
+      "phase_minimax_variance_ratio_vs_current": 11.734167765451193,
+      "exact_mean_minimum_variance_mean_ft2": 0.005262124757762252,
+      "exact_mean_minimum_variance_max_ft2": 0.030600000000022554,
+      "exact_mean_minimum_variance_ratio_vs_configured": 13.15531189440563,
+      "guard": "Truth-late position-moment diagnostic. Exact-mean minimum variance is the two-adjacent-cell lower bound; it is not an HMM intervention."
+    },
+    "initial_state_prior": {
+      "start_position_sigma_ft": 0.75,
+      "initial_rate_sigma": 0.01,
+      "position_mean_bias_abs_max_ft": 6.938893903907228e-17,
+      "position_mean_bias_abs_quantiles_ft": {
+        "min": 3.9898639947466563e-17,
+        "p10": 3.9898639947466563e-17,
+        "median": 3.9898639947466563e-17,
+        "p90": 3.9898639947466563e-17,
+        "p95": 3.9898639947466563e-17,
+        "p99": 6.938893903907228e-17,
+        "max": 6.938893903907228e-17
+      },
+      "position_variance_ft2_quantiles": {
+        "min": 0.5625,
+        "p10": 0.5625,
+        "median": 0.5625,
+        "p90": 0.5625,
+        "p95": 0.5625,
+        "p99": 0.5625,
+        "max": 0.5625
+      },
+      "rate_mean_bias_abs_max": 3.9995864491160216e-07,
+      "rate_mean_bias_abs_quantiles": {
+        "min": 0.0,
+        "p10": 0.0,
+        "median": 9.336281747707176e-15,
+        "p90": 3.1529657981699266e-09,
+        "p95": 3.4568561518011356e-07,
+        "p99": 3.9995864491160216e-07,
+        "max": 3.9995864491160216e-07
+      },
+      "rate_variance_quantiles": {
+        "min": 9.998266255962275e-05,
+        "p10": 9.999983128623667e-05,
+        "median": 9.999999999931133e-05,
+        "p90": 9.999999999999999e-05,
+        "p95": 9.999999999999999e-05,
+        "p99": 0.0001,
+        "max": 0.0001
+      },
+      "rate_edge_mass_quantiles": {
+        "min": 7.694598626706419e-23,
+        "p10": 5.139886799121182e-19,
+        "median": 4.567360206276476e-12,
+        "p90": 7.433598001628205e-07,
+        "p95": 6.691570120873332e-05,
+        "p99": 8.029865084357665e-05,
+        "max": 8.029865084479379e-05
+      },
+      "guard": "Reconstructs exp209's sampled initial position/rate priors on each well's actual grids."
+    },
+    "rate_transition_first_step": {
+      "source_rows": 31693,
+      "probability_floor_rows": 0,
+      "probability_cap_rows": 0,
+      "interior_mean_error_abs_max": 3.469446951953614e-18,
+      "initial_prior_weighted_boundary_mass_loss_quantiles": {
+        "min": 0.0,
+        "p10": 0.0,
+        "median": 2.7411406477995115e-13,
+        "p90": 4.460158808949899e-08,
+        "p95": 3.394446745130786e-06,
+        "p99": 4.014942073360395e-06,
+        "max": 4.014942073360395e-06
+      },
+      "initial_prior_weighted_boundary_conditional_mean_error_abs_quantiles": {
+        "min": 0.0,
+        "p10": 1.734723475976807e-18,
+        "median": 2.057035097813298e-14,
+        "p90": 2.4575477486354913e-09,
+        "p95": 1.549242464038425e-07,
+        "p99": 1.8115651627403917e-07,
+        "max": 1.8115651627403917e-07
+      },
+      "guard": "All raw suffix dMD values are exactly 1 ft here, so the first-step kernel represents every row's local rate-transition formula. Boundary metrics are weighted by the initial prior only and do not measure later decoded edge occupancy."
+    },
+    "true_centered_bias_ft_per_row": {
+      "mean": -0.00011915347266134378,
+      "abs_mean": 0.011552571978690009,
+      "quantiles": {
+        "min": -0.04870663903429097,
+        "p10": -0.021404893448170183,
+        "median": -6.305956323141037e-20,
+        "p90": 0.021404893448170183,
+        "p95": 0.027905152720422696,
+        "p99": 0.03903444495166221,
+        "max": 0.04870663903432293
+      },
+      "fraction_abs_gt_0p02": 0.22595414521553842,
+      "fraction_abs_gt_0p04": 0.01614063888663524
+    },
+    "truth_centered_rate_mean_reversion_position_bias": {
+      "momentum": 0.998,
+      "definition": "-(1 - momentum) * true_rate * dMD^2",
+      "abs_mean_ft_per_row": 6.892693926968678e-05,
+      "quantiles_ft_per_row": {
+        "min": -0.03130000000000658,
+        "p10": -9.99999999985449e-05,
+        "median": -2.0000000004074555e-05,
+        "p90": 8.00000000017463e-05,
+        "p95": 0.00010000000000218287,
+        "p99": 0.00013999999999941804,
+        "max": 0.018439999999998707
+      },
+      "abs_mean_ratio_vs_position_kernel_bias": 0.005966371765251072,
+      "guard": "Interior truth-centered local expectation only; this does not include rate-grid boundaries, emissions, or the decoded rate distribution."
+    },
+    "best_rate_grid_representation_error_ft_per_row": {
+      "abs_mean": 0.0013666463852439162,
+      "abs_quantiles": {
+        "min": 6.305956323141037e-20,
+        "p10": 1.7456568749486141e-13,
+        "median": 0.0002840459130658852,
+        "p90": 0.001659060475080347,
+        "p95": 0.0025843435202768383,
+        "p99": 0.018706639033936066,
+        "max": 15.589034444953896
+      }
+    },
+    "supported_compensating_rate_shift": {
+      "abs_mean": 0.02623759931555048,
+      "abs_quantiles": {
+        "min": 0.0,
+        "p10": 6.54837295499533e-13,
+        "median": 0.025000000000727607,
+        "p90": 0.045000000001164164,
+        "p95": 0.049999999999345165,
+        "p99": 0.050000000001164155,
+        "max": 0.051000000001025905
+      }
+    },
+    "supported_compensating_rate_diffusion_rows_proxy": {
+      "sig_r_per_sqrt_md": 0.002,
+      "definition": "compensating_rate_shift^2 / (sig_r^2 * dMD)",
+      "quantiles": {
+        "min": 0.0,
+        "p10": 1.0720297089428566e-19,
+        "median": 156.2500000090951,
+        "p90": 506.2500000261937,
+        "p95": 624.9999999836291,
+        "p99": 625.000000029104,
+        "max": 650.2500000261606
+      },
+      "guard": "This is a local variance-timescale proxy, not an exact first-passage time; it omits mean reversion, changing targets, emissions, and smoothing."
+    },
+    "rate_grid_edge": {
+      "truth_nearest_rate_edge_fraction": 0.0052468440050962096,
+      "best_compensating_rate_edge_fraction": 0.06240689388896215,
+      "persistent_episodes_true_edge_ge_0p10": 19,
+      "persistent_episode_sse_fraction_true_edge_ge_0p10": 0.06568922124563735,
+      "persistent_episodes_compensating_edge_ge_0p10": 211,
+      "persistent_episode_sse_fraction_compensating_edge_ge_0p10": 0.40481197774988376,
+      "compensating_edge_outward_probability_quantiles": {
+        "min": 0.035555555553938675,
+        "p10": 0.059999999999999845,
+        "median": 0.059999999999999845,
+        "p90": 0.059999999999999845,
+        "p95": 0.059999999999999845,
+        "p99": 0.059999999999999845,
+        "max": 0.059999999999999845
+      },
+      "episode_compensating_edge_log_mass_loss_vs_rmse_spearman": 0.6176008306463378,
+      "episode_compensating_edge_fraction_vs_rmse_partial_spearman": 0.3052323815401196,
+      "guard": "Truth-nearest and oracle-compensating states are truth-late local diagnostics, not decoded posterior rate-edge occupancy."
+    },
+    "five_cell_phase_bias": {
+      "fixed_sigma_readout": [
+        {
+          "sigma_ft": 0.1225,
+          "sigma_in_grid_steps": 0.35000000000000003,
+          "maximum_abs_bias_ft": 0.04876510511808782,
+          "phase_abs_mean_bias_ft": 0.030883776208447844
+        },
+        {
+          "sigma_ft": 0.15,
+          "sigma_in_grid_steps": 0.4285714285714286,
+          "maximum_abs_bias_ft": 0.02154643762175959,
+          "phase_abs_mean_bias_ft": 0.013709737679895253
+        },
+        {
+          "sigma_ft": 0.175,
+          "sigma_in_grid_steps": 0.5,
+          "maximum_abs_bias_ft": 0.007908920450835216,
+          "phase_abs_mean_bias_ft": 0.005034937657067463
+        },
+        {
+          "sigma_ft": 0.2,
+          "sigma_in_grid_steps": 0.5714285714285715,
+          "maximum_abs_bias_ft": 0.002286491567323773,
+          "phase_abs_mean_bias_ft": 0.0014624064610350713
+        },
+        {
+          "sigma_ft": 0.245,
+          "sigma_in_grid_steps": 0.7000000000000001,
+          "maximum_abs_bias_ft": 0.0008483250520201768,
+          "phase_abs_mean_bias_ft": 0.00038013147332899923
+        },
+        {
+          "sigma_ft": 0.35,
+          "sigma_in_grid_steps": 1.0,
+          "maximum_abs_bias_ft": 0.01563919087773996,
+          "phase_abs_mean_bias_ft": 0.0072232553540633945
+        }
+      ],
+      "minimum_maximum_abs_bias": {
+        "sigma_ft": 0.23249999999999998,
+        "maximum_abs_bias_ft": 0.00045263018593255655,
+        "phase_abs_mean_bias_ft": 0.00034619746803616534
+      },
+      "minimum_phase_abs_mean_bias": {
+        "sigma_ft": 0.2365,
+        "maximum_abs_bias_ft": 0.000550971329251998,
+        "phase_abs_mean_bias_ft": 0.0003377452167069337
+      },
+      "guard": "This is a deterministic five-cell numerical phase audit, not an HMM CV parameter selection."
+    }
+  },
+  "association": {
+    "well_prediction_error_vs_cumulative_kernel_bias_corr_median": 0.5914992642987675,
+    "wells_with_positive_error_vs_cumulative_bias_corr": 635,
+    "well_end_bias_vs_end_error_spearman": 0.2967495570544275,
+    "episode_pre128_bias_vs_mean_error_spearman": 0.6346494459309281,
+    "episode_pre128_rate_mean_reversion_bias_vs_mean_error_spearman": 0.5743561743697115,
+    "episode_pre128_rate_mean_reversion_bias_sign_match_fraction": 0.7241379310344828,
+    "episode_pre128_rate_mean_reversion_bias_vs_mean_error_partial_spearman_controlling_kernel_bias": 0.38573920517116644,
+    "episode_pre128_bias_vs_rmse_spearman": -0.053070660230862834,
+    "episode_abs_pre128_bias_vs_rmse_spearman": 0.07900083541196698,
+    "episode_pre128_bias_vs_mean_error_partial_spearman_controlling_initial_rate": 0.5510281448109985,
+    "episode_signed_offset_rank_r2": {
+      "kernel_bias_only": 0.40277991922043377,
+      "rate_mean_reversion_bias_only": 0.3298850150366103,
+      "initial_rate_mismatch_only": 0.16765435238235793,
+      "kernel_bias_plus_initial_rate_mismatch": 0.4203811396885013,
+      "kernel_plus_rate_mean_reversion_bias": 0.4916431225220089,
+      "kernel_plus_rate_mean_reversion_plus_initial_rate": 0.49291269782724156
+    },
+    "episode_pre128_sign_match_fraction": 0.8510971786833855,
+    "episode_pre128_sign_match_sse_fraction": 0.835617558216045,
+    "episode_onset_sign_match_fraction": 0.8526645768025078,
+    "episode_onset_sign_match_sse_fraction": 0.8172657160987128,
+    "episode_representation_abs_error_vs_rmse_spearman": 0.38075264544424336,
+    "episode_supported_rate_shift_abs_vs_rmse_spearman": 0.18811089458919183,
+    "episode_compensating_diffusion_rows_proxy_vs_rmse_spearman": 0.203106250091371
+  },
+  "interpretation_guard": "Truth-centered kernel bias is a counterfactual transition diagnostic, not a deployable feature. Association establishes a directional mechanism but does not alone separate forward, backward, and emission contributions or prove that changing sig_p improves CV."
+}

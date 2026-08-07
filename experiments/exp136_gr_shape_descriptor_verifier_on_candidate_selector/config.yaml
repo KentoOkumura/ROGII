@@ -1,0 +1,215 @@
+experiment:
+  name: "exp136_gr_shape_descriptor_verifier_on_candidate_selector"
+  description: Use exp131 GR shape descriptor scores as a conservative verifier over exp101 candidate selector decisions.
+  route: pf_beam
+  status: implemented_pending_kaggle_train
+  created_at: "2026-06-26"
+  updated_at: "2026-06-26"
+
+lineage:
+  parent: exp102_confidence_gated_likpf_fallback_on_exp101
+  cache_parent: exp099_pf_multi_observation_likelihood_probe
+  diagnostic_parents:
+    - exp101_pf_candidate_ranker_or_nway_classifier
+    - exp102_confidence_gated_likpf_fallback_on_exp101
+    - exp131_gr_shape_descriptor_matching_ablation
+  implementation_source: gr_shape_descriptor_verifier_on_candidate_selector.py
+  diff_summary: Reconstructs exp101 OOF candidate score surfaces, recomputes exp131-style GR shape descriptor scores from raw train GR, and evaluates descriptor-gated low-switch verifier policies where likPF remains the default path.
+
+validation:
+  strategy: exp101_oof_posthoc_descriptor_verifier
+  metric: rmse
+  secondary_metrics:
+    - within_10ft
+    - switch_rate
+    - selection_distribution
+    - path_switch_count
+    - bucket_rmse
+    - worst_well_rmse
+  seed: 42
+  n_folds: 5
+  group_column: well
+  score_rows: TVT_input_missing_equivalent_exp063_rows
+  leakage_policy:
+    - Candidate values and target-free likelihood features are read from exp099 v2 train-side pseudo-tail cache.
+    - GR descriptor scores use raw horizontal GR and visible TVT_input prefix only.
+    - exp101 true TVT labels are reconstructed only for final evaluation and oracle controls.
+    - Gate predicates use exp101 OOF model scores, target-free feature columns, and GR descriptor scores only.
+    - The GroupKFold split is grouped by well and matches exp101.
+    - This is a train-side posthoc audit; no submission candidate is selected.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  exp099_train_feature_cache_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_train_features.csv.gz
+  exp099_train_feature_schema_local: experiments/exp099_pf_multi_observation_likelihood_probe/kaggle/output/train_v2/artifacts/exp099_pf_multi_observation_likelihood_probe_multiobs_likelihood_probe_feature_schema.csv
+  exp101_artifact_dir_local: experiments/exp101_pf_candidate_ranker_or_nway_classifier/kaggle/output/train_v1/artifacts
+  exp101_model_manifest: exp101_pf_candidate_ranker_or_nway_classifier_model_manifest.json
+  exp101_feature_schema: exp101_pf_candidate_ranker_or_nway_classifier_feature_schema.csv
+
+model:
+  name: gr_shape_descriptor_verifier_on_candidate_selector
+  target: posthoc_candidate_verification
+  base_prediction: likpf_mean
+  estimator: exp101_saved_lightgbm_booster_inference_only
+
+gate:
+  mode: gr_shape_descriptor_verifier_on_candidate_selector
+  default_candidate: likpf_mean
+  ranker_variant: lgb_candidate_error_ranker
+  allowed_switch_candidates:
+    - pf_ancc
+    - beam_mean
+  max_rows: null
+  log_period: 25
+  max_train_rows_per_fold: 650000
+  min_segment_lengths:
+    - 1
+    - 8
+    - 24
+  candidates:
+    - name: pf_ancc
+      column: pf_ancc
+    - name: beam_mean
+      column: beam_mean
+    - name: likpf_mean
+      column: likpf_mean
+    - name: sc_ens
+      column: sc_ens
+    - name: hyb
+      column: hyb
+  context_columns:
+    - last_known_tvt
+    - pf_ancc_std
+    - beam_mean_d
+    - sc_ens_d
+    - hyb_d
+    - eval_len
+    - md_since
+    - likpf_mean_d
+  multiobs_feature_columns:
+    - multiobs_score_max
+    - multiobs_score_mean
+    - multiobs_score_gap
+    - multiobs_top1_source_id
+    - multiobs_top1_mae
+    - multiobs_top1_ncc
+    - multiobs_score_pf_ancc
+    - multiobs_mae_pf_ancc
+    - multiobs_ncc_pf_ancc
+    - multiobs_score_beam_mean
+    - multiobs_mae_beam_mean
+    - multiobs_ncc_beam_mean
+    - multiobs_score_likpf_mean
+    - multiobs_mae_likpf_mean
+    - multiobs_ncc_likpf_mean
+    - multiobs_score_sc_ens
+    - multiobs_mae_sc_ens
+    - multiobs_ncc_sc_ens
+    - multiobs_score_hyb
+    - multiobs_mae_hyb
+    - multiobs_ncc_hyb
+  optional_columns:
+    - multiobs_top1
+    - multiobs_softmax_t0p15
+    - multiobs_softmax_t0p3
+    - likpf_multiobs_blend_w0p25
+    - likpf_multiobs_blend_w0p5
+  switch_rate_caps:
+    - 0.0025
+    - 0.005
+    - 0.01
+  max_abs_delta_vs_likpf:
+    - 20.0
+    - 35.0
+  max_pf_ancc_std:
+    - 20.0
+    - 999999.0
+  confidence_scores:
+    - conservative_margin
+    - descriptor_joint_margin
+    - descriptor_conservative_margin
+  descriptor:
+    score_variant: combo_descriptor_real
+    score_floors:
+      - 0.25
+      - 0.35
+    margin_vs_default_min:
+      - 0.0
+      - 0.05
+    gr_rolling_window: 5
+    window_offsets: [-24, -12, 0, 12, 24]
+    derivative_offsets: [-12, 0, 12]
+    shift_offsets: [-6, 0, 6]
+    derivative_step: 3
+    gr_scale: 18.0
+    derivative_scale: 9.0
+    energy_scale: 18.0
+    shape_scale: 1.0
+    band_scale: 16.0
+    log_period_wells: 50
+  baselines:
+    - likpf_mean_single
+    - exp101_error_ranker_rowwise
+    - oracle
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp099-pf-multiobs-likelihood-train
+      - kentookumura/exp101-pf-cand-ranker-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: fixed_exp101_groupkfold_and_sampled_long_frame_seed_no_new_rng_for_descriptor
+  stochastic_components:
+    - upstream_pf_beam_cache_from_exp072
+    - upstream_exp101_lightgbm_training
+  parallel_rng_policy: no_new_parallel_rng
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    exp101_model_manifest_sha: true
+    descriptor_summary_sha: true
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - No new model is trained in exp136.
+    - Descriptor scores are deterministic functions of raw train GR, visible TVT_input prefix, and candidate TVT paths.
+    - This is a train-side audit, not a deterministic submission anchor.
+
+audit:
+  mode: gr_shape_descriptor_verifier_on_candidate_selector
+  output_prefix: exp136_gr_shape_descriptor_verifier_on_candidate_selector
+  expected_train_artifacts:
+    - exp136_gr_shape_descriptor_verifier_on_candidate_selector_metrics.csv
+    - exp136_gr_shape_descriptor_verifier_on_candidate_selector_oof_predictions.csv.gz
+    - exp136_gr_shape_descriptor_verifier_on_candidate_selector_selection_distribution.csv
+    - exp136_gr_shape_descriptor_verifier_on_candidate_selector_by_well.csv
+    - exp136_gr_shape_descriptor_verifier_on_candidate_selector_bucket_metrics.csv
+    - exp136_gr_shape_descriptor_verifier_on_candidate_selector_gate_params.csv
+    - exp136_gr_shape_descriptor_verifier_on_candidate_selector_score_summary.csv
+    - exp136_gr_shape_descriptor_verifier_on_candidate_selector_descriptor_well_summary.csv
+    - exp136_gr_shape_descriptor_verifier_on_candidate_selector_summary.json
+
+inference:
+  mode: not_selected_train_side_audit_only
+  selected_variant: null
+  notes:
+    - No inference notebook candidate is selected by this implementation.
+    - Descriptor-gated variants must beat likPF globally and pass worst-well, near-row, longtail, and raw-test parity guards before any inference port.
+
+notes:
+  - Implements the KAGGLE_DIRECTION backlog item gr_shape_descriptor_verifier_on_candidate_selector.
+  - Does not use descriptor score argmax, softmax weighted average, direct candidate replacement, or submission generation.

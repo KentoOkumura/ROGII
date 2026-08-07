@@ -1,0 +1,59 @@
+{
+  "artifact_sha256": {
+    "bucket_metrics": "3f17da6953cb859b0b7ff935b6567d741ae923889fd6b4ed0eb5068e976a8497",
+    "by_well": "5268d90e0ad5f97365a5e05517df7ed9e1c867036f108c6d465cd2cb258ccd87",
+    "candidate_metrics": "846331be7e9d207687e6998ea7a53f00fd5c4484d224f4efd0e924b01e5d5de5",
+    "feature_schema": "372fdb7b67b52f386e08d1b850034d5fe6217e1e220121a1bca0e993ecca704e",
+    "neighbor_summary": "c3bf95feebfd64982f7b49a044a63298303fef227b1c46ff1099240a9cc37c29",
+    "oof_predictions_decompressed": "9ffa9f9a026d43d3c0721a549fdff0aaf0acbd73d6c8209218ad9a45a314fe29",
+    "oof_predictions_raw": "7a328efd941b4acce476622d3e65e775c65bc9a385c600cdfed9efe3f0d75aa0",
+    "signal_metrics": "e21268970a1f532864bff302614406ecae72b0c7dff820bd834254044191f9d8",
+    "well_geometry_summary": "079fbd65ed92bbe21a1cbf0006c445562fc451c026daa805c526d34496c4bf2a"
+  },
+  "best_candidate": {
+    "bias": -0.8799032235930456,
+    "candidate": "xy_plus_trajectory_shape_k8_likpf_mean_corr_a0p2_c40",
+    "candidate_type": "spatial_neighbor_prior",
+    "coverage": 1.0,
+    "mae": 7.062013290054986,
+    "rmse": 11.151818387393098,
+    "rows": 3783989,
+    "variant": "xy_plus_trajectory_shape_k8",
+    "within10": 0.7792845063767363
+  },
+  "by_well_delta_vs_likpf": {
+    "improved_wells": 416,
+    "max_improvement_rmse": -6.606688003856554,
+    "max_regression_rmse": 6.508120974020748,
+    "same_wells": 0,
+    "worse_wells": 357,
+    "wells": 773
+  },
+  "cv": 11.151818387393098,
+  "delta_best_minus_likpf_rmse": -0.4430792848246057,
+  "experiment": "exp114_spatial_neighbor_prior_signal_audit",
+  "kaggle_kernel": "kentookumura/exp114-spatial-neighbor-prior-signal-audit-train",
+  "kaggle_kernel_version": 1,
+  "likpf_baseline": {
+    "bias": -1.0994231121947302,
+    "candidate": "likpf_mean",
+    "candidate_type": "baseline",
+    "coverage": 1.0,
+    "mae": 7.067632584311985,
+    "rmse": 11.594897672217703,
+    "rows": 3783989,
+    "variant": "baseline",
+    "within10": 0.772807479091509
+  },
+  "metric": "rmse",
+  "notes": "Kaggle train v1 completed. Spatial trajectory-shape prior clipped correction improves global RMSE and all distance buckets but has large by-well regressions, so no direct inference port or submit.",
+  "parent": "exp099_pf_multi_observation_likelihood_probe",
+  "private_lb": null,
+  "public_lb": null,
+  "recommendation": "no_direct_submit_use_as_ml_add_only_or_confidence_feature",
+  "route": "ensemble",
+  "rows": 3783989,
+  "status": "completed_train_side_audit_supported_no_submit",
+  "summary_path": "experiments/exp114_spatial_neighbor_prior_signal_audit/kaggle/output/train_v1/artifacts/exp114_spatial_neighbor_prior_signal_audit_summary.json",
+  "wells": 773
+}

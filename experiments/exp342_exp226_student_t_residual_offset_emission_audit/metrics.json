@@ -1,0 +1,162 @@
+{
+  "experiment": "exp342_exp226_student_t_residual_offset_emission_audit",
+  "status": "stage_1_override_completed_guard_failed_closed",
+  "route": "pf_beam",
+  "stage": "stage_1_override",
+  "stage_0": {
+    "status": "stage_0_completed_guard_failed_closed",
+    "wells": 773,
+    "rows": 3783989,
+    "blocks": 7787,
+    "student_t_mrr": 0.390292295849635,
+    "gaussian_mrr": 0.3896259847910034,
+    "student_t_minus_gaussian_mrr": 0.0006663110586315746,
+    "student_t_top3_rate": 0.4535764736098626,
+    "gaussian_top3_rate": 0.4524207011686144,
+    "student_t_minus_gaussian_top3_rate": 0.001155772441248204,
+    "improved_folds_mrr": 5,
+    "improved_folds_top3": 4,
+    "extreme_residual_blocks": 174,
+    "extreme_residual_top3_gain": 0.022988505747126436,
+    "extreme_residual_regret_delta_ft": -0.6927007547175457,
+    "promotion_gate_passed": false,
+    "decision": "stage_0_failed_close_without_rescue"
+  },
+  "stage_1": {
+    "status": "stage_1_completed_guard_failed",
+    "execution_basis": "explicit_user_override_after_stage_0_fail",
+    "stage_0_prerequisite_passed": false,
+    "wells": 773,
+    "rows": 3783989,
+    "candidate_metrics": {
+      "student_t_residual_offset_hmm": {
+        "rmse": 9.779771695236851,
+        "mae": 5.261317430953917,
+        "bias": 0.12339385963583316,
+        "within5": 0.6903344592175082,
+        "within10": 0.8369791772650502
+      },
+      "gaussian_residual_offset_hmm": {
+        "rmse": 9.827419940583813,
+        "mae": 5.290694173726774,
+        "bias": 0.16950769066466148,
+        "within5": 0.6898598278166242,
+        "within10": 0.83706797244918
+      },
+      "exp226_pred": {
+        "rmse": 9.427109596582222,
+        "mae": 6.1485277973937595
+      },
+      "exp263_fixed": {
+        "rmse": 8.2383317454837,
+        "mae": 5.3984852745157825
+      }
+    },
+    "fold_rmse": [
+      {
+        "fold": 0,
+        "gaussian_parent": 7.987927146029812,
+        "student_t": 8.156277696662736,
+        "student_t_minus_gaussian": 0.16835055063292348
+      },
+      {
+        "fold": 1,
+        "gaussian_parent": 9.654036792257497,
+        "student_t": 9.826211392757006,
+        "student_t_minus_gaussian": 0.17217460049950972
+      },
+      {
+        "fold": 2,
+        "gaussian_parent": 10.124564750173887,
+        "student_t": 10.070256755676814,
+        "student_t_minus_gaussian": -0.0543079944970728
+      },
+      {
+        "fold": 3,
+        "gaussian_parent": 11.406236108460025,
+        "student_t": 11.267740845834181,
+        "student_t_minus_gaussian": -0.13849526262584355
+      },
+      {
+        "fold": 4,
+        "gaussian_parent": 9.66269555232156,
+        "student_t": 9.325939872340973,
+        "student_t_minus_gaussian": -0.33675567998058753
+      }
+    ],
+    "scope_delta_rmse_vs_exp281": {
+      "long_tail_1000_plus": -0.049642958020283956,
+      "hidden_like_spatial": 0.014173988931201364,
+      "hidden_like_typewell_purged": 0.22013604804345377
+    },
+    "promotion_guard": {
+      "passed": false,
+      "direct_promotion_passed": false,
+      "gain_vs_exp281_ft": 0.047648245346961104,
+      "minimum_gain_vs_exp281_ft": 0.05,
+      "improved_folds": 3,
+      "minimum_improved_folds": 4,
+      "by_well_p95_delta_rmse_vs_exp281": 1.0637928594142707,
+      "worst_well": "77b0d905",
+      "worst_well_delta_rmse_vs_exp281": 12.89360164555763,
+      "delta_vs_exp226_ft": 0.35266209865462983,
+      "finite_coverage": 1.0,
+      "row_identity_coverage": 1.0,
+      "failed_checks": [
+        "overall_gain_vs_exp281",
+        "improved_folds",
+        "required_scopes_non_regression",
+        "by_well_p95_non_regression",
+        "worst_well_regression",
+        "direct_promotion_maximum_rmse"
+      ],
+      "decision": "stage_1_failed_close_without_rescue"
+    },
+    "execution_contract": {
+      "active_variants": 1,
+      "hmm_well_runs": 773,
+      "model_configs": 0,
+      "trained_folds": 0,
+      "boosters": 0,
+      "parent_control_retraining": false,
+      "gpu": false,
+      "inference": false,
+      "submission": false
+    }
+  },
+  "public_lb": null,
+  "private_lb": null,
+  "kaggle": {
+    "kernel": "kentookumura/exp342-student-t-residual-offset-emission-train",
+    "kernel_id_no": 128356155,
+    "runs": [
+      {
+        "kernel_version": 1,
+        "stage": "stage_0",
+        "runtime_seconds": 468.1274166107178,
+        "completed_at_utc": "2026-07-23T12:21:25.092017+00:00"
+      },
+      {
+        "kernel_version": 2,
+        "stage": "stage_1_override",
+        "runtime_seconds": 14789.392991542816,
+        "completed_at_utc": "2026-07-23T17:01:51.609982+00:00"
+      }
+    ]
+  },
+  "artifact_sha256": {
+    "stage_0": {
+      "target_free_score_content": "37ef297488d87d732c634ee31dd3d463e2760d22631f8d757e7a735d4d4a941f",
+      "block_readout_content": "79d40fec3163163822a8210b8313ecfa17a457b7d93ad4512a2bb1b34006f0c7",
+      "gate": "adbe2476841a2b361f8aff4593283196c9700d8de4d83c8e9723a0aae6cdd95a"
+    },
+    "stage_1": {
+      "candidate_content": "9af93eecb7bfcf0b43bbfbe9a0d759abf6031b0744da637147b05cbac72c38b7",
+      "decoder_manifest_content": "17453228ad41ede225ff2b6b51e35c2908d20fbf4a58ef78d0b31cfb6246ff4f",
+      "predictions_decompressed": "767bf0726e696fc291923438ae2f87fafc1642b857f5c26bfaa9361505e9820b",
+      "gate": "fe217ee638993ed3f7977ee5b479f56909520c22cb9eb0077bfadc70a3aaa790"
+    }
+  },
+  "inference_enabled": false,
+  "submission_enabled": false
+}

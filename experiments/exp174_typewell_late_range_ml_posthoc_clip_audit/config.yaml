@@ -1,0 +1,139 @@
+experiment:
+  name: "exp174_typewell_late_range_ml_posthoc_clip_audit"
+  description: No-training audit for conditional typewell late-range posthoc shrink/clip on fixed ML OOF predictions.
+  route: ml_model
+  status: completed_train_side_rejected_no_submit
+  created_at: "2026-07-03"
+  updated_at: "2026-07-03"
+
+overrides:
+  project_defaults:
+    - validation.n_folds
+
+lineage:
+  parent: exp148_learned_likelihood_fulltrain_addonly_on_exp092
+  comparison_parents:
+    - exp092_u_projection_correction_disagreement_fullrun
+    - exp073_gpu_reproducibility_guard_for_exp063_full_replay
+  implementation_source: typewell_late_range_ml_posthoc_clip_audit.py
+  diff_summary: Keeps exp148 ML OOF predictions fixed and applies a small target-free conditional typewell-range lower-bound shrink/clip grid to rows whose predicted TVT falls into the front part of the typewell range despite a late known prefix.
+
+validation:
+  strategy: fixed_oof_prediction_posthoc_audit
+  metric: rmse
+  secondary_metrics:
+    - mae
+    - within10
+    - changed_rows
+    - changed_wells
+    - test_like_subset_rmse
+    - near_000_050_rmse
+    - tail_1000_plus_rmse
+    - max_well_regression_vs_baseline
+  seed: 42
+  n_folds: 0
+  group_column: well
+  score_rows: exp148_oof_prediction_rows
+  leakage_policy:
+    - Source ML OOF predictions are fixed outputs from parent experiments.
+    - Posthoc gate uses only typewell TVT range, last known TVT_input, and predicted TVT.
+    - True TVT is used only for scoring, bucket readout, and reporting.
+    - No lower bound is selected for inference during implementation.
+
+data:
+  raw_dir: data/raw
+  train_dir: data/raw/train
+  test_dir: data/raw/test
+  sample_submission: data/raw/sample_submission.csv
+  target_column: TVT
+  id_column: id
+  submission_target_column: tvt
+  prediction_sources:
+    - name: exp148_lgb_mean
+      parent: exp148_learned_likelihood_fulltrain_addonly_on_exp092
+      filename: exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+      local_path: experiments/exp148_learned_likelihood_fulltrain_addonly_on_exp092/artifacts/exp148_learned_likelihood_fulltrain_addonly_on_exp092_predictions.csv.gz
+      variant: learned_likelihood_confidence_addonly
+      model: lgb_mean
+      required: true
+    - name: exp092_lgb_mean_optional
+      parent: exp092_u_projection_correction_disagreement_fullrun
+      filename: exp092_u_projection_correction_disagreement_fullrun_predictions.csv.gz
+      local_path: experiments/exp092_u_projection_correction_disagreement_fullrun/artifacts/exp092_u_projection_correction_disagreement_fullrun_predictions.csv.gz
+      variant: null
+      model: lgb_mean
+      required: false
+    - name: exp073_lgb_mean_optional
+      parent: exp073_gpu_reproducibility_guard_for_exp063_full_replay
+      filename: exp073_gpu_reproducibility_guard_for_exp063_full_replay_predictions.csv.gz
+      local_path: experiments/exp073_gpu_reproducibility_guard_for_exp063_full_replay/artifacts/exp073_gpu_reproducibility_guard_for_exp063_full_replay_predictions.csv.gz
+      variant: null
+      model: lgb_mean
+      required: false
+
+model:
+  name: typewell_late_range_ml_posthoc_clip_audit
+  estimator: none_posthoc_audit
+  target: true_tvt_for_scoring_only
+  source_experiment: exp148_learned_likelihood_fulltrain_addonly_on_exp092
+  posthoc:
+    known_last_pct_min: [0.75, 0.80]
+    fixed_lower_bounds: [0.55, 0.60, 0.65, 0.70]
+    known_last_margins: [0.05, 0.10, 0.15, 0.20]
+    alphas: [0.25, 0.50, 1.00]
+    min_typewell_span: 1.0
+    save_oof_top_k: 12
+    baseline_model: lgb_mean
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  kaggle:
+    enable_gpu: false
+    enable_internet: false
+    kernel_sources:
+      - kentookumura/exp148-train
+
+reproducibility:
+  seed: 42
+  deterministic_anchor: false
+  seed_policy: no_new_rng_posthoc_grid
+  stochastic_components:
+    - upstream_exp148_lightgbm_oof_predictions
+  parallel_rng_policy: no_parallel_rng_in_exp174
+  feature_sha_policy: decompressed_content_sha_for_gzip
+  record:
+    kernel_version: true
+    input_sha: true
+    feature_schema_sha: true
+    feature_content_sha: true
+    model_manifest_sha: false
+    prediction_sha: true
+    submission_sha: false
+  notes:
+    - This is not a deterministic submission anchor because it is a train-side no-training posthoc audit on upstream OOF predictions.
+    - Source prediction gzip decompressed content SHA and generated OOF gzip decompressed SHA are recorded in summary JSON.
+
+audit:
+  mode: typewell_late_range_ml_posthoc_clip_audit
+  output_prefix: exp174_typewell_late_range_ml_posthoc_clip_audit
+  primary_source: exp148_lgb_mean
+  expected_train_artifacts:
+    - exp174_typewell_late_range_ml_posthoc_clip_audit_candidate_metrics.csv
+    - exp174_typewell_late_range_ml_posthoc_clip_audit_bucket_metrics.csv
+    - exp174_typewell_late_range_ml_posthoc_clip_audit_by_well.csv
+    - exp174_typewell_late_range_ml_posthoc_clip_audit_group_metrics.csv
+    - exp174_typewell_late_range_ml_posthoc_clip_audit_changed_summary.csv
+    - exp174_typewell_late_range_ml_posthoc_clip_audit_source_summary.csv
+    - exp174_typewell_late_range_ml_posthoc_clip_audit_oof_predictions.csv.gz
+    - exp174_typewell_late_range_ml_posthoc_clip_audit_summary.json
+
+inference:
+  mode: not_implemented_train_side_audit_only
+  selected_policy: null
+  notes:
+    - Positive OOF results require raw-test parity, front-half exception, and worst-well guard review before any inference port.
+
+notes:
+  - Implements KAGGLE_DIRECTION backlog typewell_late_range_ml_posthoc_clip_audit.
+  - GPU training cost is zero: active posthoc variants are deterministic grid candidates, LightGBM configs 0, folds 0, boosters 0, control retraining none.

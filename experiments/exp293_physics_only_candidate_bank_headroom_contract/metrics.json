@@ -1,0 +1,97 @@
+{
+  "experiment": "exp293_physics_only_candidate_bank_headroom_contract",
+  "status": "kaggle_cpu_audit_completed_support_pass_stage2_required",
+  "route": "pf_beam",
+  "parent": "exp263_last_anchor_better_candidate_confidence_pair_cache",
+  "hypothesis": "The fixed exp263 deployable12 bank retains enough H512 oracle support to make a physics-only Public LB 6.5 route plausible.",
+  "change_from_parent": "Adds only frozen row/H128/H256/H512/whole-well oracle readouts; candidate values, generation, formulas, folds, and suffix rows remain unchanged.",
+  "candidate_bank": "exp263_stage1_deployable12",
+  "candidate_count": 12,
+  "rows": 3783989,
+  "wells": 773,
+  "primary_horizon_rows": 512,
+  "anchor_oof_rmse": 8.2383317454837,
+  "public_lb_goal": 6.5,
+  "cv": null,
+  "public_lb": null,
+  "private_lb": null,
+  "support_passed": true,
+  "technical_passed": true,
+  "scientific_support_passed": true,
+  "oracle_rmse": {
+    "row": 3.4464069416,
+    "h128": 3.49243953521,
+    "h256": 3.55282885137,
+    "h512": 3.683762664246268,
+    "whole_well": 4.78490388136
+  },
+  "required_recovery_to_6p5": {
+    "row": 0.457564150083,
+    "h128": 0.460189337274,
+    "h256": 0.463733237126,
+    "h512": 0.4718252068199111,
+    "whole_well": 0.569654722584
+  },
+  "fold_h512": {
+    "fold_0": {"rows": 757738, "oracle_rmse": 3.998261835467578, "required_recovery_to_6p5": 0.48620345938455917},
+    "fold_1": {"rows": 756650, "oracle_rmse": 3.745012750858579, "required_recovery_to_6p5": 0.5132921361536008},
+    "fold_2": {"rows": 756255, "oracle_rmse": 3.317686149616357, "required_recovery_to_6p5": 0.38445926912047534},
+    "fold_3": {"rows": 757101, "oracle_rmse": 4.117907517019054, "required_recovery_to_6p5": 0.5218549147741935},
+    "fold_4": {"rows": 756245, "oracle_rmse": 3.141066949307809, "required_recovery_to_6p5": 0.4487172906611966}
+  },
+  "risk_subgroup_h512": {
+    "1000_plus": {"rows": 3012442, "anchor_rmse": 9.042324105268692, "oracle_rmse": 4.009693516725507, "required_recovery_to_6p5": 0.6015533808565353},
+    "hidden_like_spatial": {"rows": 972463, "anchor_rmse": 8.74810807355481, "oracle_rmse": 3.5405125409618887, "required_recovery_to_6p5": 0.5356643755039993},
+    "hidden_like_typewell_purged": {"rows": 976449, "anchor_rmse": 8.694131824888098, "oracle_rmse": 3.5316302405164315, "required_recovery_to_6p5": 0.5282049531403011}
+  },
+  "by_well_h512": {
+    "p95_rmse": 7.080306347056116,
+    "worst_rmse": 25.698447374110383,
+    "worst_well": "91b301ce"
+  },
+  "execution_contract": {
+    "active_audit_contracts": 1,
+    "lightgbm_configs": 0,
+    "trained_folds": 0,
+    "boosters": 0,
+    "hmm_pf_well_runs": 0,
+    "inference": false,
+    "submission": false
+  },
+  "tests": {
+    "dedicated_passed": 11,
+    "repository_passed": 298,
+    "repository_failed": 0
+  },
+  "kaggle": {
+    "kernel_id": "kentookumura/exp293-physics-bank-headroom-audit-train",
+    "kernel_id_no": 127891171,
+    "url": "https://www.kaggle.com/code/kentookumura/exp293-physics-bank-headroom-audit-train",
+    "runtime": "private_cpu",
+    "gpu": false,
+    "tpu": false,
+    "internet": false,
+    "runs": [
+      {"version": 1, "status": "error_before_candidate_loading", "reason": "downstream_branch_contract.md was omitted from the bootstrap"},
+      {"version": 2, "status": "complete", "audit_runtime_seconds": 200.094, "total_notebook_runtime_seconds": 209.393}
+    ]
+  },
+  "sha256": {
+    "executed_config": "bb75990e6a144c27d87e6da37db17babe645922ed809a035e2b6c6f02770222d",
+    "candidate_bank_content": "29477141685662bae7417e788ec5dbe914c2220b7f4cc45ab01befa4e5e3b474",
+    "truth_content": "e9067327058431278a0fd994e8e6005b76ab99acbd3942118974599afb69a8d0",
+    "block_assignment_file": "49571a6e674f9cec2729e47ccf7c7740417c2f560eeb7b5d5dcf47ab3475667c",
+    "block_assignment_decompressed": "b0755c22aa8d791012d3f605e2f1b66063ce9bb6ba46ddd4b48dca77cce032d7",
+    "oracle_readout_content": "69d14a236205eaa1aaafa09abf9bb9b1984797fec54f2fb6533f8243f0a97003",
+    "summary_file": "57e94684cbc12ed1611db0d18b474324992e4bf1f9f369f2a6e4c9da82ac236f"
+  },
+  "artifact_verification": {
+    "output_dir": "kaggle/output/train_v2/artifacts",
+    "manifest_entries": 11,
+    "file_sha_mismatches": 0,
+    "gzip_decompressed_sha_mismatches": 0,
+    "oracle_prediction_persisted": false
+  },
+  "next_branch": "stage2_prefix_calibrated_latent_registration_gr_evidence",
+  "notes": "The fixed deployable12 bank has strong H512 oracle support. This is an attainability bound, not a deployable selector score. Inference and submission remain disabled."
+}

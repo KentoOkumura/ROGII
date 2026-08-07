@@ -1,0 +1,103 @@
+{
+  "artifacts": {
+    "fold_balance_summary": "artifacts/fold_balance_summary.csv",
+    "fold_bucket_distribution": "artifacts/fold_bucket_distribution.csv",
+    "oof_source_status": "artifacts/oof_source_status.csv",
+    "stratified_oof_segment_metrics": "artifacts/stratified_oof_segment_metrics.csv",
+    "stratified_oof_well_metrics": "artifacts/stratified_oof_well_metrics.csv",
+    "well_metadata_stratified_folds": "artifacts/well_metadata_stratified_folds.csv"
+  },
+  "cv": null,
+  "experiment": "exp044_stratified_groupkfold_cv_audit",
+  "metric": "rmse",
+  "n_folds": 5,
+  "n_wells": 773,
+  "notes": "Generated 773-well stratified fold metadata and re-aggregated exp013/exp017 OOF metrics; StratifiedGroupKFold is a hypothesis-driven red-flag report only, not a primary CV, candidate selection criterion, or tuning target.",
+  "oof_overall": [
+    {
+      "candidate": "exp014_bucket_shrink_params",
+      "rmse": 13.501824,
+      "rows": 3783989,
+      "segment": "all",
+      "segment_type": "overall",
+      "source": "exp013_lightgbm_no_gr",
+      "variant": "lightgbm_no_gr",
+      "wells": 773
+    },
+    {
+      "candidate": "last_anchor",
+      "rmse": 15.909853,
+      "rows": 3783989,
+      "segment": "all",
+      "segment_type": "overall",
+      "source": "exp013_lightgbm_no_gr",
+      "variant": "lightgbm_no_gr",
+      "wells": 773
+    },
+    {
+      "candidate": "raw",
+      "rmse": 13.549257,
+      "rows": 3783989,
+      "segment": "all",
+      "segment_type": "overall",
+      "source": "exp013_lightgbm_no_gr",
+      "variant": "lightgbm_no_gr",
+      "wells": 773
+    },
+    {
+      "candidate": "exp014_bucket_shrink_params",
+      "rmse": 13.911474,
+      "rows": 3783989,
+      "segment": "all",
+      "segment_type": "overall",
+      "source": "exp017_dtw_dwt_no_gr",
+      "variant": "dtw_dwt_no_gr",
+      "wells": 773
+    },
+    {
+      "candidate": "last_anchor",
+      "rmse": 15.909853,
+      "rows": 3783989,
+      "segment": "all",
+      "segment_type": "overall",
+      "source": "exp017_dtw_dwt_no_gr",
+      "variant": "dtw_dwt_no_gr",
+      "wells": 773
+    },
+    {
+      "candidate": "raw",
+      "rmse": 13.949718,
+      "rows": 3783989,
+      "segment": "all",
+      "segment_type": "overall",
+      "source": "exp017_dtw_dwt_no_gr",
+      "variant": "dtw_dwt_no_gr",
+      "wells": 773
+    }
+  ],
+  "oof_sources": [
+    {
+      "path": "data/external/kaggle-output/exp013_model_diversity_or_postprocess/train/artifacts/row_oof_predictions.csv",
+      "reason": "processed",
+      "rows_read": 7567978,
+      "rows_used": 3783989,
+      "source": "exp013_lightgbm_no_gr",
+      "variant": "lightgbm_no_gr"
+    },
+    {
+      "path": "data/external/kaggle-output/exp017_deterministic_dtw_addonly/train/artifacts/row_oof_predictions.csv",
+      "reason": "processed",
+      "rows_read": 7567978,
+      "rows_used": 3783989,
+      "source": "exp017_dtw_dwt_no_gr",
+      "variant": "dtw_dwt_no_gr"
+    }
+  ],
+  "private_lb": null,
+  "public_lb": null,
+  "seed": 42,
+  "status": "completed",
+  "strat_labels": 49,
+  "updated_at": "2026-06-09T09:56:10.434984+00:00",
+  "key_idea": "Diagnostic StratifiedGroupKFold stress report over signed azimuth / TVT / spatial / eval length / GR buckets; no new model or submission"
+}
