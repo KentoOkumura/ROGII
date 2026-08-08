@@ -2,25 +2,28 @@
 
 ## 状態
 
-実装・静的検証中。Kaggle OOF、inference、late submissionは未実行。
+完了（再現未達）。Kaggle CPUで773坑井、3,783,989行のOOF予測を完了したが、RMSEは`40.8896`で、3位チームの公開OOF `5.9703`を再現できなかった。推論は開始直後に停止し、提出は行っていない。
 
 ## 仮説
 
-Kaggle discussion 733319で公開された3位解法のHMM部分を基に実装する。元コードは非公開であり、状態の刻み方、遷移値、self-referenceの重み、Local-DTWの詳細は推定または近似している。このため、元チームのHMMの忠実な再現ではない。
-原チームのコードと未公開hyperparameterは取得できないため、source parityではない。
+3位チームの公開説明にあるTVT位置、地層の傾き、GRのずれ、参照波形の選択を隠れ状態とし、base、Local-DTW、fine-binの3種類を固定比率で混合すれば、既存の単一参照波形HMMより改善すると仮定した。
 
-公開された4要素のhidden state、sibling/self reference、prefix-in-model、Student-t(df=1)、exact forward-backward、3 family固定混合、物理projectionを保持する。未公開値は実行前に`config.yaml`へ固定し、OOFやLBを見た救済調整を行わない。
+元コード、状態の刻み、遷移確率、self-referenceの重み、Local-DTWの詳細は非公開である。この実装は推定値と簡略化を含む近似で、3位チームの忠実な再現ではない。
 
 ## 検証方針
 
-well GroupKFoldのvalidation fold全体をsibling atlasから除外し、target-free predictionをSHA凍結した後だけ真のTVTで評価する。hidden inferenceはruntimeのtrain/test/sample submissionを動的列挙し、sample IDと1対1に整列する。
+5-foldのGroupKFoldを使い、検証坑井を兄弟井の参照波形作成から除外した。予測内容のSHA256を確定した後だけ未知区間の正解TVTを結合し、全行RMSEを計算した。
 
 ## 所見
 
-数値所見はまだない。原チームのOOF 5.9703、Public 6.207、Private 6.229は外部参照値であり、exp515の実績ではない。
+- 全体RMSE: `40.88961598374063`
+- 3種類の個別RMSE: `40.9076 / 40.9562 / 40.8700`
+- 3位チームの公開OOF: `5.9703`
+- 有限値、重複ID、参照元からの検証坑井除外、事後確率の正規化は確認済み。
+- 後の診断では、直線予測の周囲`±10 ft`に設けたTVT候補から正解が外れる行が60.75%あり、候補範囲だけによる最小RMSEも38.40だった。
 
-## 次のアクション
+この結果が否定するのは、今回推定した状態範囲、遷移確率、参照波形、Local-DTW近似の組み合わせである。3位チームが説明したHMM全体の有効性は判断できない。
 
-Kaggle CPU train/inferenceのtechnical gateを通し、固定版を1回だけlate submitする。
+## 終了判断
 
-この実験はコンペ終了後に行う。提出前の検証を通った固定版を1回だけ提出し、Notebook titleとsubmission messageに`LATE SUBMIT`を明記する。
+ユーザー指示により2026-08-08に完了した。再現未達時は推論へ進まないという指示に従い、推論結果とsubmission.csvは使用せず、late submissionも行わない。

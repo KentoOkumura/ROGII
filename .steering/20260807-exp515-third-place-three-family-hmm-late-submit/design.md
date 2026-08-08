@@ -57,3 +57,7 @@ same-typewell groupは、train typewell GRのnative exact-overlapを調べたexp
 - 再現性リスク: Numba/thread reductionの微小差。state/merge順を固定し、submission content SHAを記録する。
 - 手法忠実性リスク: 非公開パラメータとLocal-DTW詳細は一致不能。resultで原CV 5.9703との単純parityを主張しない。
 - 過度な縮小 / proxy化リスク: `±10 ft` offset bandがraw posteriorを切る可能性がある。boundary posterior massを記録し、ただし同一run後にbandを拡張して救済しない。
+
+## 終了時の判断
+
+Kaggle CPUの全773坑井OOFはRMSE `40.88961598374063`で、3位チームの公開OOF `5.9703`を再現できなかった。後の診断で、`±10 ft`のTVT候補から正解が外れる行は60.75%、候補範囲だけによる最小RMSEは38.40と確認した。ユーザー指示により推論と提出を停止し、今回の近似実装だけを閉じて完了する。

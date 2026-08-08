@@ -31,7 +31,7 @@
 - 手法契約の `input / target / output / loss / decode / context unit` がコードと一致する。
 - 実装区分と実験名が実装した機構を正確に表す。
 - `proxy` の場合は、省略点、検証不能な主張、ユーザー承認が記録されている。
-- TODO
+- OOFが公開値を再現できない場合は、後続のユーザー指示を優先し、推論・提出を停止した事実を記録する。
 - deterministic anchor として扱う場合は、feature content SHA、model SHA、prediction SHA、submission SHA、Kaggle kernel version が記録されている。
 - gzip 生成物を比較する場合は、raw `.csv.gz` SHA ではなく decompressed content SHA を主証拠として記録している。
 - 3 family、hidden-state 4要素、prefix 128、rate 256、reference bin 0.25/0.0625、Student-t df=1、fixed weights、projectionのコード契約testが通る。

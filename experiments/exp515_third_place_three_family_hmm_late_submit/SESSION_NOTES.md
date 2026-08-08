@@ -8,9 +8,9 @@
 ## 現在の状態
 
 - Route: `pf_beam`
-- 状態: implementation/static validation/package complete; pre-push session guard waiting
-- submission phase: `post_competition_late_submission`
-- CV / Public LB / Private LB: 未実行 / 未提出 / 未提出
+- 状態: 完了。train OOF再現失敗、inference停止、未提出
+- submission phase: `post_competition_late_submission`（未実施）
+- CV / Public LB / Private LB: `40.88961598374063` / 未提出 / 未提出
 - source code parity: 不可能（3位code非公開）
 
 ## 2026-08-07 設計
@@ -60,13 +60,13 @@
 - `2026-08-07 13:08 UTC`時点でもKaggle UIを操作できるbrowser connectorはなく、CPU/GPUの`active / limit`は未確認のためpushしていない。
 - その後、ユーザーから実行指示が繰り返されたため、CPU/GPUの`active / limit`を取得できないことを説明済みのうえで、既存sessionを停止せずCPU trainをpushする指示として記録した。
 
-## 次のアクション
+## 終了時の確認
 
 1. [x] self-contained Jupytext train/inferenceとcontract testsを実装する。
 2. [x] staticとsynthetic exactnessを通す。local raw smokeはNumba不足のためKaggleへ移す。
-3. [ ] ユーザーからKaggle UIのCPU/GPU `active / limit`または画面画像を受け、CPU空き確認後にtrainをpushする。
-4. [ ] Kaggle CPU train/inferenceを実行する。
-5. [ ] submit-check後、固定messageでlate submitし記録を更新する。
+3. [x] Kaggle CPU trainを実行してCVを確認する。
+4. [x] 再現失敗を受けたユーザー指示に従い、inferenceを停止する。
+5. [x] late submissionを行わないことを記録する。
 
 ## 2026-08-07 Kaggle train実行
 
@@ -74,3 +74,23 @@
 - URL: `https://www.kaggle.com/code/kentookumura/exp515-third-place-hmm-late-submit-train`
 - push用Notebookのtitleは`exp515 third place HMM LATE SUBMIT train`。CPU、private、internet offで実行中。
 - `2026-08-07 13:25:38 UTC`時点でOOFは`7 / 773`坑井。1坑井あたり約29〜45秒で、単純外挿では完了まで約8時間。Kaggle側の実行は継続する。
+- version 1は773坑井、3,783,989行を完了した。全体RMSE `40.88961598374063`、fold別`34.6540 / 47.8384 / 37.2798 / 39.2300 / 43.9388`、実行時間`27,668.99秒`。
+- 3種類の個別RMSEは`40.9076 / 40.9562 / 40.8700`。公開された3位チームのOOF `5.9703`とは大きく離れ、今回の近似実装では再現できなかった。
+- 有限値、重複ID、検証坑井の参照データからの除外、事後確率の正規化など、Notebook内の提出前確認はすべて通過した。
+- OOF予測は3,783,989行、decompressed content SHA256は`15545d4c6ecde072337e7c2ef8f6fbd7e0007e511461157b29003bc308bc7fb4`。
+- `2026-08-07 23:33:26 UTC`にinference metadataを再確認した。CPU、GPU/TPU off、private、internet off、run-on-pushであり、CPU実行なのでGPU/TPU quota確認は不要と判断した。
+
+## 2026-08-07 inference停止
+
+- `kentookumura/exp515-third-place-hmm-late-submit-inference` version 1を開始した直後、ユーザーから「再現できていないのなら推論には進まないでください」と指示を受けた。
+- CLIにsession停止コマンドがなく、公式APIの`CancelKernelSession`はHTTP 403だった。状態が`RUNNING`であることを確認後、これ以上実行させないためKaggle上の推論Notebookだけを削除した。削除時刻は`2026-08-07 23:36:05 UTC`。
+- ローカルのNotebook、設定、コードは保持している。推論結果およびsubmissionは作成・使用せず、late submissionも行わない。
+
+## 2026-08-08 完了
+
+- ユーザーの「exp515を完了にしてください」という判断により、状態を`completed`へ更新した。
+- 結果は再現未達として確定し、今回の近似実装には追加調整を行わない。
+- Kaggle全773坑井OOFは完了済み。推論結果、submission.csv、Public / Private LBはなく、late submissionは0回で終了する。
+- 今回の結果で閉じるのは、直線予測の周囲`±10 ft`のTVT候補、推定した遷移確率、3つの固定伸縮率によるLocal-DTW近似を組み合わせた実装だけである。
+- exp518ではTVT候補とLocal-DTWを修正したが、10坑井の動作確認で公開OOFを再現できず、別の完了済み実験として記録した。
+- 完了時の再検査はstrict experiment validationを通過し、`NUMBA_DISABLE_JIT=1`で専用test `10 passed`を確認した。

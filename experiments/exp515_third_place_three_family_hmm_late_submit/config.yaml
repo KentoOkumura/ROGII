@@ -1,14 +1,14 @@
 experiment:
   name: exp515_third_place_three_family_hmm_late_submit
   description: >-
-    Post-competition implementation based on the 3rd-place three-family HMM
-    description in Kaggle discussion 733319. Unpublished state grids,
-    transitions, and Local-DTW details are approximated. One fixed late
-    submission is run without LB-driven retuning.
+    Completed post-competition proxy based on the 3rd-place three-family HMM
+    description in Kaggle discussion 733319. The full train OOF did not
+    reproduce the reported score, so inference was cancelled and no late
+    submission was made.
   route: pf_beam
-  status: implementing_late_submit_reproduction_audit
+  status: completed
   created_at: "2026-08-07"
-  updated_at: "2026-08-07"
+  updated_at: "2026-08-08"
 
 lineage:
   parent: kaggle_3rd_place_solution_discussion_733319
@@ -190,6 +190,8 @@ execution_contract:
   parent_control_reruns: 0
   gpu: false
   late_submission_attempts: 1
+  executed_train_hmm_well_runs: 2319
+  actual_late_submission_attempts: 0
 
 runtime:
   use_amp: false
@@ -215,6 +217,7 @@ late_submission:
   message: "LATE SUBMIT | exp515 | 3rd-place 3-family HMM writeup reconstruction | fixed v1"
   kernel_train_slug: exp515-third-place-hmm-late-submit-train
   kernel_inference_slug: exp515-third-place-hmm-late-submit-inference
+  closed_without_submission: true
 
 guards:
   technical:
@@ -263,3 +266,4 @@ reproducibility:
 notes:
   - This is explicitly a LATE SUBMIT / post-competition reproduction audit.
   - Reported 3rd-place scores are external references, never this experiment's results.
+  - Completed on 2026-08-08 as a reproduction failure; inference was cancelled and no submission was made.
