@@ -234,6 +234,8 @@ task infer-local EXP=expXXX_title EXTRA_ARGS="--allow-local --debug"
 task update-summary
 ```
 
+ユーザーが実験の完了を判断した場合は、回答を終了する前に `AGENTS.md` の完了時のGit手順を再確認して従う。手順の詳細はこのskillへ複製しない。
+
 完了調査レポートを新規作成する場合:
 
 ```bash
