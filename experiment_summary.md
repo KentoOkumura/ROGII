@@ -489,6 +489,7 @@ graph TD
     exp514_exp413_likpf_seed_bank_reuse_on_exp512[exp514_exp413_likpf_seed_bank_reuse_on_exp512]
     exp515_third_place_three_family_hmm_late_submit[exp515_third_place_three_family_hmm_late_submit]
     exp516_sixth_place_pfa_tw_late_submit[exp516_sixth_place_pfa_tw_late_submit]
+    exp518_third_place_absolute_tvt_local_dtw_hmm_late_submit[exp518_third_place_absolute_tvt_local_dtw_hmm_late_submit]
     exp001_baseline --> exp002_drift_minimal
     exp002_drift_minimal --> exp003_residual_ablation
     exp003_residual_ablation --> exp004_gr_gating
@@ -1015,6 +1016,7 @@ graph TD
     exp512_hjyact_v2_final_10pct_hedge_on_exp413 --> exp514_exp413_likpf_seed_bank_reuse_on_exp512
     kaggle_3rd_place_solution_discussion_733319[kaggle_3rd_place_solution_discussion_733319]
     kaggle_3rd_place_solution_discussion_733319 --> exp515_third_place_three_family_hmm_late_submit
+    kaggle_3rd_place_solution_discussion_733319 --> exp518_third_place_absolute_tvt_local_dtw_hmm_late_submit
     kaggle_discussion_733226_and_public_kernel_126919690[kaggle_discussion_733226_and_public_kernel_126919690]
     kaggle_discussion_733226_and_public_kernel_126919690 --> exp516_sixth_place_pfa_tw_late_submit
 ```
@@ -1516,6 +1518,7 @@ graph TD
 | exp514_exp413_likpf_seed_bank_reuse_on_exp512 | アンサンブル | exp512_hjyact_v2_final_10pct_hedge_on_exp413 | completed_stage_b_scientific_fail_stage_d_v4_technical_pass_no_resubmit | - | - | - | Design-frozen runtime/scientific audit that generates the exp413 x1.0, 500-particle, 128-seed likelihood-PF bank once per dynamic well and reuses it for both exp413 scale-5 features and the SP45 scale-3/5/8/12 selector plus seed-branch summary. The legacy SP45 bank is replaced scientifically, not treated as an exact optimization. | 2026-08-05 |
 | exp515_third_place_three_family_hmm_late_submit | PF/Beam | kaggle_3rd_place_solution_discussion_733319 | implementing_late_submit_reproduction_audit | - | - | - | Post-competition implementation based on the 3rd-place three-family HMM description in Kaggle discussion 733319. Unpublished state grids, transitions, and Local-DTW details are approximated. One fixed late submission is run without LB-driven retuning. | 2026-08-07 |
 | exp516_sixth_place_pfa_tw_late_submit | PF/Beam | kaggle_discussion_733226_and_public_kernel_126919690 | implemented_static_and_package_validation_passed_waiting_gpu_quota_refresh | - | - | - | Faithful component replay of the 6th-place public submission source's single pfA x typewell-GR particle filter: GR-free physical anchor, learned emission, 600 particles, 32 seeds, and whole-interval ancestral smoothing. The fixed output is submitted once as an explicit post-competition LATE SUBMIT. | 2026-08-07 |
+| exp518_third_place_absolute_tvt_local_dtw_hmm_late_submit | PF/Beam | kaggle_3rd_place_solution_discussion_733319 | 完了 | - | - | - | Post-competition correction of the exp515 3rd-place HMM reconstruction. The hidden TVT position is represented as an absolute TVT around the saved exp374 absolute-TVT HMM posterior mean instead of a last-rate straight baseline, and Local-DTW uses time-varying local reference offsets. | 2026-08-08 |
 
 <!-- END AUTO EXPERIMENT SUMMARY -->
 
