@@ -56,8 +56,7 @@ notebook は、人間が上から読んで実験の目的、入力、比較 vari
 3. test prediction と postprocess。
 4. `submission.csv` 作成と形式確認用の要約表示。
 
-notebook の実行結果は Kaggle 環境を正とします。`task train-local` / `task infer-local` は通常使わず、ローカル smoke debug が必要な場合だけ `--allow-local` を明示します。
-ユーザーが明示的に依頼した場合を除き、最初の notebook 実行は Kaggle 上で行います。ローカルでは notebook の編集、設定検証、Kaggle push 用 notebook 生成までに留めます。
+notebook の最初のフル実行と公式評価は Kaggle 上で行います。local smoke に必要な入力、依存関係、生成物が揃っていれば、別途のユーザー承認なしに `--allow-local` を付けてsmoke debugを実行できます。local smokeの結果だけで公式スコアやKaggle実行完了を判断しません。
 
 ```bash
 task execute-notebook-local EXP=expXXX_title NOTEBOOK=train EXTRA_ARGS="--allow-local --debug"
@@ -67,7 +66,7 @@ task execute-notebook-local EXP=expXXX_title NOTEBOOK=inference EXTRA_ARGS="--al
 ## 結果の記録
 
 ```bash
-task record-exp EXP=expXXX_title STATUS=usable CV=0.123 PUBLIC_LB=0.120 NOTES="stable baseline"
+task record-exp EXP=expXXX_title STATUS=running CV=0.123 PUBLIC_LB=0.120 NOTES="recorded result; awaiting user decision"
 task compare-exp
 task update-summary
 ```
@@ -156,11 +155,13 @@ deterministic anchor として扱う実験では、単に seed を固定した�
 
 ## 必須ログ
 
-- `experiments/<exp>/README.md`: status、リスク、利用可否。
-- `experiments/<exp>/SESSION_NOTES.md`: 実行コマンドと現在の作業ログ。
-- `experiments/<exp>/result.md`: 最終解釈。
-- `experiments/<exp>/metrics.json`: 機械可読なスコア要約。
+- `experiments/<exp>/README.md`: 状態概要と正の記録へのリンク。
+- `experiments/<exp>/SESSION_NOTES.md`: 実行コマンドと現在の作業ログの正。
+- `experiments/<exp>/result.md`: 解釈、実行証拠、ユーザーの採否判断の正。
+- `experiments/<exp>/metrics.json`: CV/LBなど機械処理する数値の正。
 - `experiment_summary.md`: 実験間の比較。
+
+statusは当面`metrics.json`の1フィールドで管理します。`planned`、`running`、`debug_completed`、`scaffold_completed`、`failed`は実行状態、`usable`、`completed`、`deprecated`、`discarded`はユーザー判断後だけ設定する状態です。`leak-risk`は検証リークの注意表示で、採否や完了を意味しません。
 
 ## 提出前チェック
 

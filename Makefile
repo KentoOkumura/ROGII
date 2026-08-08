@@ -27,7 +27,7 @@ include .env
 export
 endif
 
-.PHONY: validate-template validate-config new-exp new-steering new-survey-report update-survey-index validate-surveys validate-exp train-local infer-local dl-kaggle-comp submit-check submit-code pipeline-local prepare-kaggle-notebooks push-kaggle-train push-kaggle-infer execute-notebook-local kaggle-status kaggle-logs kaggle-output record-submission record-exp compare-exp update-summary app oof-app viewer viewer-smoke fmt test
+.PHONY: validate-template validate-config new-exp new-steering new-survey-report update-survey-index validate-surveys validate-exp train-local infer-local dl-kaggle-comp submit-check submit-code pipeline-local prepare-kaggle-notebooks push-kaggle-train push-kaggle-infer execute-notebook-local kaggle-status kaggle-logs kaggle-output record-submission record-exp compare-exp metric-weighted-tail-error-map pf-beam-disagreement-error-map update-summary app oof-app viewer viewer-smoke fmt test
 
 validate-template:
 	.venv/bin/python scripts/validate_project.py
@@ -112,6 +112,12 @@ record-exp:
 
 compare-exp:
 	.venv/bin/python scripts/compare_experiments.py $(EXTRA_ARGS)
+
+metric-weighted-tail-error-map:
+	.venv/bin/python scripts/metric_weighted_tail_error_map.py $(EXTRA_ARGS)
+
+pf-beam-disagreement-error-map:
+	.venv/bin/python scripts/pf_beam_disagreement_error_map.py $(EXTRA_ARGS)
 
 update-summary:
 	.venv/bin/python scripts/update_experiment_summary.py

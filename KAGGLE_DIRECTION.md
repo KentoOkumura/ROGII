@@ -2833,7 +2833,7 @@
 
 ## アイデアバックログ
 
-全実験共通の候補はここに集約します。個別実験として着手する場合は、対応する `.steering/YYYYMMDD-expXXX-title/` に仮説、変更点、検証方法、成功条件、リスクを切り出します。日付つきの詳細な実行ログ、CV、LB、失敗理由は `experiment_summary.md`、`submissions/SUBMISSIONS.md`、各実験の `SESSION_NOTES.md` / `result.md` を正とし、この節では現行判断に必要な要約だけを残します。完了済み項目はバックログから削除し、判断履歴は前節の完了済み詳細メモと各実験記録で追跡します。
+全実験共通の候補はここに集約します。この節と `docs/backlog/` の作成・更新・削除は `kaggle-strategy` を正規の手順とします。この節は優先度と現行判断の索引とし、新しくバックログ化する未着手候補の詳細は `docs/backlog/<candidate>.md` を正にします。個別実験として着手する場合は、対応する `.steering/YYYYMMDD-expXXX-title/` に詳細を移し、`kaggle-strategy` の手順で元の未着手行と `docs/backlog/<candidate>.md` を削除します。日付つきの実行ログ、CV、LB、失敗理由は `experiment_summary.md`、`submissions/SUBMISSIONS.md`、各実験の `SESSION_NOTES.md` / `result.md` を正とします。完了済み項目はバックログから削除し、判断履歴は前節の完了済み詳細メモと各実験記録で追跡します。この規則より前から詳細ファイルなしで存在する候補は一括補完せず、次に更新または実験化するときに作成します。
 
 ### 実装済み・Kaggle実行中 / train待ち
 

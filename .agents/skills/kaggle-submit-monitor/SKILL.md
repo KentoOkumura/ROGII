@@ -26,7 +26,7 @@ nohup python .agents/skills/kaggle-submit-monitor/scripts/monitor_submission.py 
 ```
 
 4. ログパスと `tail -f` コマンドを報告する。
-5. スコアが確定したら、対応する実験の `SESSION_NOTES.md`、`result.md`、`metrics.json`、`submissions/SUBMISSIONS.md`、`experiment_summary.md` に CV/LB と提出状態を記録する。
+5. スコアが確定したら、CV/LBなど機械処理する数値を対応する実験の`metrics.json`、提出履歴を`submissions/SUBMISSIONS.md`、監視と提出の証拠を`SESSION_NOTES.md`、解釈を`result.md`へ記録し、`experiment_summary.md`を更新する。同じCV/LBを複数のMarkdownへ手作業で転記しない。
 
 ## 出力契約
 

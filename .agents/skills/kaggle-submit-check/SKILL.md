@@ -61,8 +61,8 @@ task update-summary
 
 記録先:
 - `SESSION_NOTES.md`: submit-check、提出コマンド、状態、次アクション。
-- `result.md`: 最終評価と解釈。日本語で記載する。
-- `metrics.json`: CV/LB 要約。
+- `result.md`: 提出結果の解釈、実行証拠、ユーザーの採否判断。日本語で記載する。
+- `metrics.json`: CV/LBなど機械処理する数値の正。
 - `experiment_summary.md`: 実験横断の要約。
 - `submissions/SUBMISSIONS.md`: 提出履歴。
 

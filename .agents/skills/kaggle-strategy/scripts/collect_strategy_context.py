@@ -24,6 +24,7 @@ def interesting(path: Path) -> bool:
     text = str(path).lower()
     return (
         name in {"kaggle_direction.md", "claudesummary.md", "submissions.md", "session_notes.md", "readme.md"}
+        or "docs/backlog/" in text and name != "_template.md"
         or "daily_report" in text
         or "daily_reports" in text
         or "experiment" in text

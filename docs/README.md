@@ -9,10 +9,13 @@
 - `05_workflow.md`: 実験、記録、提出の手順。
 - `06_reproducibility.md`: seed、PF/Beam、GPU/CPU、Kaggle bootstrap、SHA 記録の再現性ガード。
 - `glossary.md`: コンペや実験管理で使う用語。
+- `backlog/`: 未着手の実験候補の詳細。`KAGGLE_DIRECTION.md`を優先度と要約の索引とする。
 - `official/`: 公式ルール、データ説明、メトリックメモ、Kaggle API で取得した公式ページ要約。
 - `discussions/`: Kaggle ディスカッションのアーカイブと要約。
+- `notebooks/`: `kaggle-notebook-fetch`で取得した公開Notebookとmetadata。
 - `papers/`: 関連論文または論文要約。
 - `surveys/`: 完了した実験調査、モデル説明、OOF／結果EDA、特徴量・failure mode、複数実験比較、論文・公開Notebook調査。`surveys/README.md`を実験番号・種類・トピック別の検索入口とする。
+- `analysis/`: 旧形式の分析文書。新規の完了レポートは追加せず、既存文書は次に更新または再利用するときに`surveys/`へ移す。
 
 ## ROGII 初期設定
 

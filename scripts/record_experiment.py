@@ -17,6 +17,7 @@ ALLOWED_STATUSES = {
     "usable",
     "completed",
     "failed",
+    "discarded",
     "deprecated",
     "leak-risk",
     "debug_completed",

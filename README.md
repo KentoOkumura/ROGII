@@ -4,7 +4,7 @@ Kaggle コンペの調査、実験、検証、提出、記録を一貫して管�
 
 作業単位は `experiments/expXXX_title/` にまとめ、実装前の狙いと設計は `.steering/YYYYMMDD-expXXX-title/` に残します。コンペ単位の設定は `project.yml`、実験横断の戦略や履歴は `KAGGLE_DIRECTION.md` と `experiment_summary.md`、完了した調査レポートの検索入口は `docs/surveys/README.md` に集約します。
 
-この README は人間向けの入口です。エージェント向けの詳細ルールは `AGENTS.md`、詳しい作業手順は `docs/agent-playbooks.md` を参照してください。
+この README は人間向けの入口です。エージェント向けの詳細ルールは `AGENTS.md`、作業別の参照入口は `docs/agent-playbooks.md`、実際の手順は各 `.agents/skills/*/SKILL.md` を参照してください。
 
 ## クイックスタート
 
@@ -42,9 +42,11 @@ make validate-exp EXP=exp001_baseline EXTRA_ARGS="--allow-todo"
 | 領域 | 管理する内容 |
 | --- | --- |
 | コンペ設定 | `project.yml` に competition、data、validation、submission、Kaggle runtime を記録 |
+| 未着手候補 | `KAGGLE_DIRECTION.md` を索引、`docs/backlog/<candidate>.md` を候補詳細の正として管理 |
 | 実験計画 | `.steering/` に要件、設計、タスクリストを作成 |
 | 実験コード | `experiments/<exp>/` に `config.yaml`、`settings.py`、train/inference notebook、記録ファイルを配置 |
 | 共通コード | 複数実験で使う処理を `src/` に集約 |
+| 公開Notebook資料 | 取得した公開Notebookとmetadataを `docs/notebooks/` に保存 |
 | 調査レポート | 完了した実験調査、モデル説明、OOF／結果EDA、外部調査を `docs/surveys/` に集約し、生成索引で検索 |
 | 調査コード | その場限りの分析コードと生の表・図を `studies/` に保存 |
 | 提出管理 | `submission.csv` の形式検証、Kaggle Notebook 実行、提出履歴の記録 |
@@ -70,11 +72,11 @@ make validate-exp EXP=exp001_baseline EXTRA_ARGS="--allow-todo"
 | --- | --- |
 | `kaggle-platform` | Kaggle API、認証、データ取得、`project.yml` 設定、コンペ資料の準備 |
 | `colab-notebook-runner` | Kaggle GPU quota が限られる場合の Colab notebook、Google Drive、runtime/session 対応 |
-| `kaggle-review-exp` | 実験の作成、コピー、Kaggle 実行、`SESSION_NOTES` や `metrics.json` の記録確認 |
+| `kaggle-review-exp` | 承認済みbacklog候補のsteering移行、実験の作成・実行・記録・レビュー。backlog更新はStrategyへ引き渡す |
 | `kaggle-review` | 学習/推論コード、notebook、OOF、失敗実行のレビュー |
-| `kaggle-oof-readout` | OOF、feature importance、feature cache、by-well metrics を結合した誤差分析 |
-| `kaggle-idea-forge` | 停滞時や次実験の発想時に、既存案の微調整に偏らない反証可能な候補を独立生成 |
-| `kaggle-strategy` | 実験履歴、提出履歴、調査メモを読んだ次の実験方針の整理 |
+| `kaggle-oof-readout` | OOF、feature importance、feature cache、by-well metricsを結合した誤差分析。候補保存はStrategyへ引き渡す |
+| `kaggle-idea-forge` | 反証可能な候補の独立生成。候補をbacklogへ直接保存しない |
+| `kaggle-strategy` | 戦略と優先順位を整理し、アイデアbacklogを作成・更新・削除する唯一のSkill |
 | `kaggle-submit-check` | `submission.csv`、Kaggle Notebook、`kernel-metadata.json` の提出前検証 |
 | `kaggle-submit-monitor` | `kaggle competitions submit` 後の scoring 監視と LB 記録 |
 | `kaggle-notebook-fetch` | 上位公開 notebook をメタデータ付きでローカル保存 |
@@ -103,7 +105,7 @@ task validate-exp EXP=exp002_next_idea EXTRA_ARGS="--allow-todo"
 
 `config.yaml` と実装をコンペに合わせて埋めた後、学習前に厳格な検証を実行します。
 
-Kaggle Notebook の slug は 50 文字以内にし、`kernel-metadata.json` の `id` と `title` 由来 slug を一致させます。実験ディレクトリ名全体では上限を超える場合、実験番号、意味のある短縮名、`train` / `inference` の種別を残して短縮します。push 直前には Kaggle UI の Active Sessions で対象 CPU / GPU session が上限未満であることを確認します。
+Kaggle Notebook の slug は 50 文字以内にし、`kernel-metadata.json` の `id` と `title` 由来 slug を一致させます。実験ディレクトリ名全体では上限を超える場合、実験番号、意味のある短縮名、`train` / `inference` の種別を残して短縮します。push直前には使用resourceを特定し、GPU / TPUの場合だけCLIで残quotaを確認します。Kaggle UIのActive Sessions確認はpush前条件にせず、同時session上限エラーが返った場合だけ待機または停止対象をユーザーへ確認します。
 
 ```bash
 task validate-exp EXP=exp002_next_idea
@@ -134,10 +136,10 @@ task submit-check EXP=exp002_next_idea SUBMISSION=/tmp/kaggle-output/exp002_next
 
 主な記録先:
 
-- `experiments/<exp>/README.md`: status、CV/LB、利用可否、リスク、次に使う実験
-- `experiments/<exp>/SESSION_NOTES.md`: 実行したコマンド、作業ログ、エラー、途中結果
-- `experiments/<exp>/result.md`: 最終評価、解釈、採用/不採用理由
-- `experiments/<exp>/metrics.json`: スクリプトから読めるスコア要約
+- `experiments/<exp>/README.md`: 状態概要と正の記録へのリンク
+- `experiments/<exp>/SESSION_NOTES.md`: 実行したコマンド、作業ログ、エラー、途中結果の正
+- `experiments/<exp>/result.md`: 解釈、実行証拠、ユーザーの採用/不採用判断の正
+- `experiments/<exp>/metrics.json`: CV/LBなど機械処理する数値の正
 - `experiment_summary.md`: 実験間の比較、lineage、主要な発見
 - `submissions/SUBMISSIONS.md`: Kaggle に提出した履歴
 - `docs/surveys/README.md`: 完了した調査レポートを実験番号・種類・トピックから探す入口
@@ -145,7 +147,7 @@ task submit-check EXP=exp002_next_idea SUBMISSION=/tmp/kaggle-output/exp002_next
 スコアを記録し、比較表を更新する例:
 
 ```bash
-task record-exp EXP=exp002_next_idea STATUS=usable CV=0.123 PUBLIC_LB=0.120 NOTES="stable baseline"
+task record-exp EXP=exp002_next_idea STATUS=running CV=0.123 PUBLIC_LB=0.120 NOTES="recorded result; awaiting user decision"
 task compare-exp
 task update-summary
 ```
@@ -168,7 +170,7 @@ task record-submission EXP=exp002_next_idea EXTRA_ARGS="--cv 0.123 --public-lb 0
 task update-summary
 ```
 
-実験の status は `planned`、`running`、`usable`、`failed`、`deprecated`、`leak-risk` を基本にします。CV と LB が合わない場合は、追加のチューニングに進む前に検証設計、データ分割、前処理差分、提出形式を確認します。
+実験のstatusは当面`metrics.json`の1フィールドで管理します。`planned`、`running`、`debug_completed`、`scaffold_completed`、`failed`は実行状態です。`usable`、`completed`、`deprecated`、`discarded`はユーザー判断後だけ設定します。`leak-risk`は検証リークの注意表示で、採否や完了を意味しません。CVとLBが合わない場合は、追加のチューニングに進む前に検証設計、データ分割、前処理差分、提出形式を確認します。
 
 `config.yaml` の `experiment.route` は、ML を主対象にする `ml_model`、PF/Beam を主対象にする `pf_beam`、両方が予測生成に本質的に寄与する `ensemble` のいずれかにします。
 
@@ -209,7 +211,7 @@ task submit-check EXP=exp002_next_idea SUBMISSION=/tmp/kaggle-output/exp002_next
 - `experiments/<exp>/<exp>_train.ipynb`
 - `experiments/<exp>/<exp>_inference.ipynb`
 
-Kaggle Notebook のフル実行と公式評価を正とします。local smoke に必要な入力、依存関係、生成物がローカルに揃っている場合は、`task train-local` / `task infer-local` / `task execute-notebook-local` を使用できます。local smoke の結果だけで公式スコアや Kaggle 実行完了を判断しません。
+Kaggle Notebook の最初のフル実行と公式評価を Kaggle 上で行います。local smoke に必要な入力、依存関係、生成物がローカルに揃っている場合は、別途のユーザー承認なしに `task train-local` / `task infer-local` / `task execute-notebook-local` をsmoke debugとして使用できます。local smoke の結果だけで公式スコアや Kaggle 実行完了を判断しません。
 
 ```bash
 task execute-notebook-local EXP=exp002_next_idea NOTEBOOK=train EXTRA_ARGS="--allow-local --debug"
@@ -260,8 +262,11 @@ submit 後に `task record-submission` と `task update-summary` で履歴へ反
 - `.steering/`: 実装前の要件、設計、タスクリスト
 - `app/`: 実験や OOF を確認する Streamlit アプリ
 - `data/`: ローカルデータキャッシュ。Git には入れません
-- `docs/`: 公式情報、メトリック、検証方針、完了した調査レポート
+- `docs/`: 公式情報、未着手候補、保存済み公開Notebook、検証方針、調査レポート
+- `docs/backlog/`: 未着手の実験候補の詳細。`KAGGLE_DIRECTION.md`を索引とする
+- `docs/notebooks/`: 取得した公開Notebookとmetadata
 - `docs/surveys/`: 実験調査、モデル説明、OOF／結果EDA、特徴量・failure mode、複数実験比較、外部調査の正
+- `docs/analysis/`: 旧形式の分析文書。新規追加せず、次に触れる文書から`docs/surveys/`へ移行する
 - `experiments/`: 実験ごとのコード、設定、出力、記録
 - `notebooks/`: notebook 作業用
 - `scripts/`: テンプレート作成、検証、提出準備、記録更新用スクリプト

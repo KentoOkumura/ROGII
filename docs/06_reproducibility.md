@@ -46,7 +46,9 @@ PF/Beam 系の実験では、次を満たさない限り deterministic anchor �
 - GPU と CPU を比較した場合は、CV 差分と submission 差分の abs mean / abs max / mean。
 - rerun した場合は、version ごとの feature content SHA、prediction SHA、submission SHA、byte-identical 判定。
 
-## 採用判断
+## 再現性上の提出候補条件
+
+ここでは再現性の観点から提出候補として扱える条件だけを定めます。実験の完了、採用、不採用はこれらの条件だけで確定せず、比較結果と未解決事項を整理したうえでユーザーが判断します。
 
 - `submission.csv` が複数 rerun で byte-identical、または差分が説明済みで submission SHA が固定されている場合だけ deterministic submission anchor とする。
 - CV だけが再現していても、hidden test feature regeneration が stochastic なら deterministic anchor ではない。

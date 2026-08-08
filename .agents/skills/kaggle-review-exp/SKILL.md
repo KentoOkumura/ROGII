@@ -1,6 +1,6 @@
 ---
 name: kaggle-review-exp
-description: "`experiments/expXXX_name` 配下の Kaggle 実験を作成、コピー、実装、実行、debug、記録、要約、レビューする。実験開始、steering docs、train/inference Notebook実装、Code competitionのhidden test対応、過去実験のコピー、Kaggle train/inference実行、`SESSION_NOTES`/result/metricsの記録、`expXXX`のレビュー、実験ドキュメント確認、実験結果の信頼性監査を求められたときに使う。"
+description: "`docs/backlog/` の候補を実験へ移行し、`experiments/expXXX_name` 配下の Kaggle 実験を作成、コピー、実装、実行、debug、記録、要約、レビューする。実験開始、backlogからsteering docsへの引き継ぎ、train/inference Notebook実装、Code competitionのhidden test対応、過去実験のコピー、Kaggle train/inference実行、`SESSION_NOTES`/result/metricsの記録、`expXXX`のレビュー、実験ドキュメント確認、実験結果の信頼性監査を求められたときに使う。"
 ---
 
 # Kaggle 実験ワークフローとレビュー
@@ -42,7 +42,10 @@ Kaggle GPU を使う train push の前に、必ず次を確認する。
    - 最近の `experiments/*/SESSION_NOTES.md` を確認する。
    - 特定手法の実装依頼では、参照sourceと手法契約を特定する。
    - 同じ親実験または機構familyの直近の子実験を `parameter / add-only / selector-only / postprocess / mechanism / representation` に分類し、representation auditの発動条件を確認する。
-2. 実験を作成または変更する前に、steering docs を作る。
+   - `KAGGLE_DIRECTION.md` の未着手候補から実験化する場合は、対応する `docs/backlog/<candidate>.md` とそこから参照される根拠を読む。未着手表だけから設計を再構成しない。
+   - 導入前の候補で詳細ファイルがない場合は、コード作成前に `kaggle-strategy` を使って詳細ファイルを作り、推測できない事項を未決としてユーザーへ確認する。このskillから `docs/backlog/` を直接更新しない。
+2. backlog候補から実験化する場合は、採番やコード作成の前に、固定するもの、変更するもの、最小検証、成功条件、停止条件、実行しないこと、未決事項を短く提示する。重要な解釈差または未決事項があればユーザー確認まで停止する。`設計可能・実験化未承認` は実験作成の承認を意味しない。
+3. ユーザーの実験化承認後、実験を作成または変更する前に steering docs を作る。
 
 ```bash
 task new-steering EXP=expXXX_title
@@ -54,8 +57,8 @@ Task が使えない場合は Makefile の同等コマンドを使う。
 make new-steering EXP=expXXX_title
 ```
 
-3. リポジトリに `templates/steering/` があれば、それを元に `.steering/YYYYMMDD-expXXX-title/{requirements.md,design.md,tasklist.md}` を埋める。
-4. 実験を作成、またはコピーする。
+4. リポジトリに `templates/steering/` があれば、それを元に `.steering/YYYYMMDD-expXXX-title/{requirements.md,design.md,tasklist.md}` を埋める。backlogから移行する場合は、詳細ファイルの根拠、仮説、親との差分、固定事項、最小検証、成功条件、停止条件、実行しないこと、未決事項、判断履歴を欠落なく移す。移行確認後、`kaggle-strategy` を使って元の `docs/backlog/<candidate>.md` と未着手バックログ行を削除する。このskillからバックログを直接変更しない。
+5. 実験を作成、またはコピーする。
 
 ```bash
 task new-exp EXP=expXXX_title
@@ -72,7 +75,7 @@ make new-exp EXP=expXXX_title SOURCE=experiments/expYYY_parent
    - 学習、推論、提出は原則として同じ `experiments/expXXX_title/` で管理する。train-side CV が良かった候補を inference port / submit するだけなら新しい exp を作らず、同じ実験の `<exp>_inference.ipynb`、`SESSION_NOTES.md`、`result.md`、`metrics.json`、`submissions/SUBMISSIONS.md` を更新する。
    - 新しい exp を作るのは、仮説、特徴量面、モデル構造、評価条件、route の主目的が変わる場合に限定する。過去に学習・推論を分けて作成済みの exp は履歴として維持する。
 
-5. 明らかに再利用できるコードでない限り、実装は実験フォルダ内に置く。
+6. 明らかに再利用できるコードでない限り、実装は実験フォルダ内に置く。
    - 実験固有のロジックは `experiments/expXXX_title/` に置く。
    - 共通 utility は `src/` に置く。
    - その場限りの調査コードと生の表・図は `studies/` に置く。完了した調査結論は、対象が単一実験でも `docs/surveys/` にメタデータ付きレポートとして記録する。
@@ -85,7 +88,7 @@ make new-exp EXP=expXXX_title SOURCE=experiments/expYYY_parent
    - 既存の同名 `.ipynb` はユーザーの明示承認なしに上書きしない。試行時は `_compact_selfcontained_train.py` / `_compact_selfcontained_inference.py` のような別名で生成し、採用判断後に正規名へ反映する。
    - marimo は標準採用しない。notebook の正は通常の `.ipynb` とし、上位ロジックは `.ipynb` のセルに展開する。重い helper や再利用ロジックだけを補助 `.py` に残す。
    - 既存の `.py` 実装を読める notebook に寄せるだけなら、新しい実験番号は切らない。仮説、特徴量、モデル構造、評価条件、route の主目的、推論方針、提出候補が変わる場合だけ新しい exp を作る。
-6. フル実行の前に validation と静的チェックを実行する。フル実行と公式評価は Kaggle 上で行い、local smoke に必要な入力、依存関係、生成物がローカルに揃っている場合だけ local smoke を行う。
+7. フル実行の前に validation と静的チェックを実行する。最初のフル実行と公式評価は Kaggle 上で行う。local smoke に必要な入力、依存関係、生成物がローカルに揃っている場合は、別途のユーザー承認なしにsmoke debugを行ってよい。
 
 Jupytext 変換と検証:
 
@@ -213,22 +216,24 @@ task push-kaggle-infer EXP=expXXX_title
 
 Kaggle output をローカルに取得した場合だけ、`kaggle-submit-check` の手順で提出形式を確認する。
 
-local smoke に必要な入力、依存関係、生成物がローカルに揃っている場合だけ、local smoke debug を実行する。
+local smoke に必要な入力、依存関係、生成物がローカルに揃っている場合だけ、local smoke debug を実行する。結果だけで公式スコアやKaggle実行完了を判断しない。
 
 ```bash
 task train-local EXP=expXXX_title EXTRA_ARGS="--allow-local --debug"
 task infer-local EXP=expXXX_title EXTRA_ARGS="--allow-local --debug"
 ```
 
-7. 信頼できる結果は毎回記録する。
+8. 信頼できる結果は毎回記録する。
    - `SESSION_NOTES.md`: コマンド、現在の状態、出力、失敗、次アクション。
-   - `result.md`: 最終評価と解釈。日本語で記載する。
-   - `metrics.json`: 機械的に読める CV/LB 要約。
+   - `result.md`: 解釈、実行証拠、ユーザーの採否判断の正。日本語で記載する。
+   - `metrics.json`: CV/LBなど機械処理する数値の正。
+   - 実験の`README.md`: 状態概要と正の記録へのリンク。CV/LBを手作業で重複記録しない。
    - `experiment_summary.md`: 実験横断の要約。
    - `submissions/SUBMISSIONS.md`: 提出した場合の提出履歴。
-   - `KAGGLE_DIRECTION.md`: 実装済みアイデアを「アイデアバックログ」から削除し、実験から見えた次候補を追加する。追加時は既存候補も含めて優先度を見直す。
+   - `KAGGLE_DIRECTION.md`: 実験結果と現行判断を記録する。アイデアバックログ節の削除・追加・更新が必要な場合は、候補、根拠、非使用条件、移行状態を `kaggle-strategy` へ引き渡し、同じターンで反映する。このskillからアイデアバックログ節や `docs/backlog/` を直接変更しない。
    - train CV、inference output、submit-check、code submit、Public LB は同じ実験記録に追記し、推論化だけを別実験として `experiment_summary.md` に分けない。
    - 通常の実験結果を記録するだけなら`result.md`で完結させる。実験構成・モデル説明、OOF／結果EDA、特徴量・failure mode、複数実験比較として再利用できる完了調査になった場合は、`docs/surveys/README.md`で既存レポートを探し、既存レポートの更新または新規surveyレポート作成を行う。
+   - statusは`metrics.json`の単一フィールドを維持する。`planned`、`running`、`debug_completed`、`scaffold_completed`、`failed`は実行状態とする。`usable`、`completed`、`deprecated`、`discarded`はユーザーが判断した後だけ設定する。`leak-risk`は注意表示で、採否や完了を意味しない。既存実験の`config.yaml`に残るstatusは互換読み取り専用とし、次の状態更新は`metrics.json`へ記録する。
 
 ```bash
 task update-summary
@@ -257,8 +262,9 @@ surveyレポート本文には、結論、証拠範囲、実験構成・モデ�
 - 学習時と推論時の前処理が一致していること。
 - すべての結果に、コマンド、config、CV、生成物、解釈、次アクションがあること。
 - 結果と次アクションが `ml_model` / `pf_beam` / `ensemble` のどの route の anchor を更新するのか明確であること。
-- 実装済みの backlog 項目を残さないこと。
-- 新規 backlog 項目は、完了した実験の証拠とつながっており、優先度が既存項目と比較して見直されていること。
+- 実装済みの backlog 項目を残さないため、必要な削除を `kaggle-strategy` へ引き渡して反映済みであること。
+- 新規 backlog 候補は、完了した実験の証拠、非使用条件、未決事項を `kaggle-strategy` へ引き渡し、`docs/backlog/<candidate>.md` と `KAGGLE_DIRECTION.md` の整合および既存候補との優先度見直しが完了していること。
+- backlogから始めた実験は、steering docsに固定事項、変更事項、最小検証、成功条件、停止条件、実行しないこと、判断履歴が引き継がれ、重要な未決事項が`なし`であること。
 
 ## 実験レイアウト
 
@@ -269,9 +275,9 @@ surveyレポート本文には、結論、証拠範囲、実験構成・モデ�
 - `<exp>_train.ipynb`: 学習 notebook。実験コードの正の編集対象。
 - `<exp>_inference.ipynb`: 推論 notebook。実験コードの正の編集対象。
 - `SESSION_NOTES.md`: 現在の状態、実行したコマンド、結果、次のアクション。
-- `result.md`: 最終評価と解釈。日本語で記載する。
-- 実験配下に `README.md` を置く場合も日本語で記載する。
-- `metrics.json`: ツールから読める CV/LB 要約。
+- `result.md`: 解釈、実行証拠、ユーザーの採否判断の正。日本語で記載する。
+- 実験配下の`README.md`: 状態概要と正の記録へのリンク。日本語で記載する。
+- `metrics.json`: ツールから読めるCV/LBなど数値の正。
 - `artifacts/`、`features/`、`variants/`: 実験で生成した出力。提出 CSV はローカル実験ディレクトリには常設せず、Kaggle Notebook output として扱う。本文では artifact ではなく「生成物」と書く。
 
 ## Notebook 実装ルール

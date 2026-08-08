@@ -1,11 +1,11 @@
 ---
 name: kaggle-oof-readout
-description: "Create repeatable Kaggle OOF error readouts for experiments by joining out-of-fold predictions, feature importance, feature caches, by-well metrics, and bucket summaries. Use when analyzing where a Kaggle model is good or bad, turning OOF diagnostics into follow-up backlog items, or implementing experiments like exp086_oof_feature_importance_error_readout."
+description: "Create repeatable Kaggle OOF error readouts for experiments by joining out-of-fold predictions, feature importance, feature caches, by-well metrics, and bucket summaries. Use when analyzing where a Kaggle model is good or bad, identifying follow-up candidates to pass to `kaggle-strategy`, or implementing experiments like exp086_oof_feature_importance_error_readout."
 ---
 
 # Kaggle OOF Readout
 
-Use this skill to turn existing OOF predictions and feature artifacts into a repeatable diagnostic experiment. It is for analysis and backlog steering, not for anchor updates or direct submissions.
+Use this skill to turn existing OOF predictions and feature artifacts into a repeatable diagnostic experiment. It is for analysis and candidate evidence, not for anchor updates, direct submissions, or backlog persistence.
 
 ## Standard Workflow
 
@@ -15,7 +15,7 @@ Use this skill to turn existing OOF predictions and feature artifacts into a rep
 4. Put all code/config/notebooks under `experiments/expXXX_title/`.
 5. Keep `experiment.route: ml_model` unless the readout primarily audits PF/Beam generation itself.
 6. Run the first full readout on Kaggle. Local smoke is optional only when the needed artifacts are locally complete.
-7. Record run evidence in `SESSION_NOTES.md`, `result.md`, `metrics.json`, `experiment_summary.md`, and update/remove the corresponding `KAGGLE_DIRECTION.md` backlog item.
+7. Record run evidence in `SESSION_NOTES.md`, `result.md`, `metrics.json`, and `experiment_summary.md`. When the corresponding backlog item must be added, updated, or removed, pass the candidate, evidence, and non-use constraints to `kaggle-strategy` in the same turn. Do not edit the backlog directly from this skill.
 8. When the completed readout provides a reusable OOF interpretation, model explanation, feature/failure analysis, or cross-experiment comparison, update an existing metadata-indexed report in `docs/surveys/` or create one. `docs/surveys/README.md` is the discovery entry point.
 
 ## Inputs To Prefer
@@ -81,11 +81,11 @@ In `docs/surveys/`:
 - Use `oof_analysis` plus any relevant `experiment_review`, `model_explanation`, `feature_analysis`, or `comparison` metadata types.
 - Run `task update-survey-index` and `task validate-surveys` before considering the readout documentation complete.
 
-In `KAGGLE_DIRECTION.md`:
+For backlog handoff:
 
-- Remove the completed readout backlog item.
-- Add a short judgment memo with the source artifacts, main findings, and non-use constraints.
-- Update downstream backlog rows with specific feature/bucket candidates and risk notes.
+- Do not create, update, or remove the `KAGGLE_DIRECTION.md` idea backlog section or `docs/backlog/` from this skill.
+- Pass the completed readout item, source artifacts, main findings, non-use constraints, specific feature/bucket candidates, risk notes, and requested add/update/remove action to `kaggle-strategy`.
+- Confirm that `kaggle-strategy` applied the backlog change before treating the handoff as complete.
 
 ## Validation
 

@@ -62,12 +62,12 @@ For MCP Server: pass API key as `Authorization: Bearer <token>` header.
 | Download model variation version | `model_download()` | `kaggle models variations versions download` | `download_model_variation_version` | Yes |
 | Create / update model + variation | — | `kaggle models create` | `create_model` / `update_model` / `update_model_variation` | Yes |
 | Forums (list / topics / threads) | — | `kaggle forums list`, `kaggle forums topics list/show` | `list_forums` / `list_forum_topics` / `get_forum` / `get_forum_topic` | Yes |
-| Hackathon overview | — | — | `get_hackathon_overview` ([guide](references/hackathon-endpoints.md)) | Yes |
+| Hackathon overview | — | — | `get_hackathon_overview` ([guide](hackathon/references/hackathon-endpoints.md)) | Yes |
 | Hackathon writeups (list / fetch / by topic / by slug) | — | — | `list_hackathon_write_ups` / `get_writeup` / `get_writeup_by_topic` / `get_writeup_by_slug` / `get_resolved_writeup_links` | Yes |
 | Hackathon tracks | — | — | `list_hackathon_tracks` | Yes |
 | Hackathon writeup CSV export (host/judge) | — | — | `download_hackathon_write_ups` 🔒 | Yes |
-| Benchmarks | — | `kaggle benchmarks auth/init/tasks` | `create_benchmark_task_from_prompt` / `get_benchmark_leaderboard` ([guide](references/benchmark-endpoints.md)) | Yes |
-| Episodes (simulation logs / replays) | — | — | `get_episode_agent_logs` / `get_episode_replay` / `list_submission_episodes` ([guide](references/episode-endpoints.md)) | Yes |
+| Benchmarks | — | `kaggle benchmarks auth/init/tasks` | `create_benchmark_task_from_prompt` / `get_benchmark_leaderboard` ([guide](hackathon/references/benchmark-endpoints.md)) | Yes |
+| Episodes (simulation logs / replays) | — | — | `get_episode_agent_logs` / `get_episode_replay` / `list_submission_episodes` ([guide](hackathon/references/episode-endpoints.md)) | Yes |
 | Authorize / user profile | — | — | `authorize` / `get_user_profile` | Yes |
 | Generic search | — | — | `search_content` | Yes |
 | Register account | — | — | — | UI only |

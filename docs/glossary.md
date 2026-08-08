@@ -5,8 +5,8 @@
 | CV | 交差検証スコア | ローカル検証の結果。 |
 | LB | リーダーボードスコア | Kaggle の public/private スコア。 |
 | 検証リークリスク | 推論時に使えない情報が検証に混入している可能性。 | 旧表記: Leak risk。該当する実験は `leak-risk` として記録する。 |
-| 利用可能 | 派生実験や提出に使える状態。 | 旧表記: Usable。検証内容の記録が必要。 |
-| 非推奨 | 履歴として残すが、再利用しない状態。 | 旧表記: Deprecated。可能なら代替実験を併記する。 |
+| 利用可能 | ユーザーが派生実験や提出に使えると判断した状態。 | 旧表記: Usable。エージェントだけでは確定しない。 |
+| 非推奨 | ユーザーが履歴として残すが再利用しないと判断した状態。 | 旧表記: Deprecated。エージェントだけでは確定せず、可能なら代替実験を併記する。 |
 | TVT | True Vertical Thickness | このコンペの target。train では `TVT`、submission では `tvt`。 |
 | TVT_input | 既知区間の target copy | evaluation zone では NaN。提出対象行の判定にも使う。 |
 | MD | Measured Depth | wellbore の長さ方向の深度。単位 ft。 |

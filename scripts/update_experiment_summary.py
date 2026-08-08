@@ -88,6 +88,8 @@ def record_from_experiment(experiment_dir: Path) -> ExperimentRecord | None:
     name = str(experiment.get("name") or experiment_dir.name)
     route = display_route(experiment.get("route") or metrics.get("route"))
     parent = display_value(lineage.get("parent"))
+    # New experiments keep status in metrics.json. The config fallback is for
+    # existing experiments created before that source-of-truth rule.
     status = display_status(metrics.get("status") or experiment.get("status"))
     cv = display_value(metrics.get("cv"))
     public_lb = display_value(metrics.get("public_lb"))
