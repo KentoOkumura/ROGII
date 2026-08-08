@@ -11,7 +11,7 @@ from pathlib import Path
 import yaml
 
 
-HERE = Path(__file__).resolve().parent
+HERE = Path(__file__).resolve().parents[1]
 ROOT = HERE.parents[1]
 SOURCE = HERE / "exp516_sixth_place_pfa_tw_late_submit_compact_selfcontained_inference.py"
 PUBLIC_CONFIG = HERE / "pf_banks_config_v96_public.json"

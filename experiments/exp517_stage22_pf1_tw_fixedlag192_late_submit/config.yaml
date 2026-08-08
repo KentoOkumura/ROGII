@@ -1,0 +1,221 @@
+experiment:
+  name: exp517_stage22_pf1_tw_fixedlag192_late_submit
+  description: >-
+    Corrected reconstruction of the published stage 2-2 system in the same
+    experiment that previously submitted the contract-mismatched one-PF
+    direct v1. Generate five original-Optuna PF trajectories with typewell GR
+    and fixed-lag 192, then fit the public tabular stack. The evaluated v2
+    reproduced the reported CV and Public score regime approximately, but did
+    not reproduce the reported Private score.
+  hypothesis: >-
+    Repeating the public one-PF feature family for pf_1, pf_2, pf_3, r0, and
+    r1 fixed-lag-192 trajectories and fitting the public 5-model tabular stack
+    reproduces the stage 2-2 CV 7.50 regime.
+  route: ensemble
+  status: corrected_v2_late_submission_pending
+  created_at: "2026-08-07"
+  updated_at: "2026-08-08"
+  train_enabled: true
+  inference_enabled: true
+
+lineage:
+  parent: exp516_sixth_place_pfa_tw_late_submit
+  steering: ../../.steering/20260807-exp517-stage22-pf1-tw-fixedlag192-late-submit
+  public_kernel: k256net/public20th-private6th-pf-pf-pf-pf-and-bagging
+  public_kernel_id_no: 126919690
+  public_script_version_id: 340359218
+  public_notebook_sha256: b44f7889d6abdf9b027d33cb6c6b45f23902d609fae8d06f332914017784c924
+  public_v96_config_sha256: 80e973d5f5e0e39be758a03f399cdd3d81d9e79320da8db6fbddbc25c2a202f3
+  references:
+    - ../../docs/discussions/rogii-wellbore-geology-prediction-733226.md
+    - ../../docs/notebooks/rogii-wellbore-geology-prediction/solution_6th/k256net__public20th-private6th-pf-pf-pf-pf-and-bagging/kernel-metadata.json
+    - ../../docs/06_reproducibility.md
+  diff_summary: >-
+    Preserve v1 as a failed one-PF direct history. Correct v2 in the same exp
+    by using the released original Optuna group of five banks, fixed-lag 192,
+    GR-only likelihood, and the public Ravaghi LightGBM/CatBoost/Ridge
+    tabular contract. Disable later robust/tempered likelihood, anchor,
+    learned emission, alternative GR representations, and full smoothing.
+
+model:
+  name: stage22_fivepf_fixedlag192_public_tabular_stack
+  family: particle_filter_features_plus_tabular_stack
+  learned_components: [lightgbm, catboost, ridge]
+
+authorization:
+  design_approved: true
+  design_source: user_correction_2026_08_08_implement_reproduction_without_renaming
+  implementation_approved: true
+  kaggle_package_approved: true
+  kaggle_run_approved: true
+  competition_late_submission_approved: true
+  late_submission_scope: one_fixed_post_competition_submission
+  corrected_v2_run_approved: true
+  corrected_v2_submission_requires_cv_gate: true
+
+method_contract:
+  fidelity: historical_contract_reconstruction
+  component: stage22_fivepf_twgr_fixedlag192_public_tabular
+  input:
+    horizontal_columns: [MD, Z, GR, TVT_input]
+    typewell_columns: [TVT, GR]
+    tabular_base: ravaghi_public_artifact_schema
+    pf_banks: [pf_1, pf_2, pf_3, r0_seed32, r1_seed32]
+    anchor_source: none
+    emission_source: none
+  target_objective: regress_tvt_minus_last_known_tvt
+  output: row_residual_prediction
+  loss:
+    tabular: rmse
+    observation: public_power_gr_likelihood_only
+  decode: >-
+    five_pf_feature_concatenation_then_3lgb_2cat_positive_ridge_then_pf09_tau85_sg17
+  context_unit: one_well_suffix_fixedlag192_plus_row_tabular_groupkfold_by_well
+  post_stage22_disabled:
+    - student_t_likelihood
+    - likelihood_tempering
+    - ps_combo
+    - gr_free_anchor
+    - learned_emission
+    - self_neighbor_representations
+    - whole_interval_smoothing
+
+validation:
+  official_metric: rmse
+  primary: groupkfold_oof_postprocessed_rmse
+  published_stage22_system:
+    label: five_input_plus_smooth_plus_tabular
+    cv: 7.50
+    public: 6.724
+    private: 7.404
+    external_reference_only: false
+    comparable_after_v2_contract_execution: true
+  parent_exp516_late_result:
+    public: 10.056
+    private: 8.552
+    reference_only: true
+  no_lb_retuning: true
+  cv_gate:
+    target: 7.50
+    required_before_inference_or_submission: true
+    observed: 7.536732106480146
+    absolute_delta: 0.03673210648014624
+    score_regime_match: true
+    exact_numeric_match: false
+    status: pass
+
+pf:
+  active_banks: [pf_1, pf_2, pf_3, r0_seed32, r1_seed32]
+  active_representations: [tw]
+  config_file: pf_banks_config_v96_public.json
+  public_config_sha256: 80e973d5f5e0e39be758a03f399cdd3d81d9e79320da8db6fbddbc25c2a202f3
+  generation_seed: 4423098
+  n_particles_by_bank:
+    pf_1: 600
+    pf_2: 600
+    pf_3: 600
+    r0_seed32: 400
+    r1_seed32: 400
+  n_seeds: 32
+  smooth_mode: fixedlag
+  smooth_lag: 192
+  well_chunk: 40
+  grid_step: 0.2
+  anchor_enabled: false
+  learned_emission_weight: 0.0
+  physics_bank: false
+  state: [position_tvt_plus_z, formation_rate]
+  direct_submission_column: none
+
+tabular:
+  target: TVT_minus_last_known_tvt
+  folds: 5
+  group: well
+  lightgbm_configs: 3
+  catboost_configs: 2
+  ridge:
+    positive: true
+    alpha: 1.6602834637650032
+  postprocess:
+    model_weight: 0.91
+    pf1_weight: 0.09
+    tau: 85
+    savgol_window: 17
+    savgol_poly: 3
+
+execution_contract:
+  scientific_variants: 1
+  pf_banks: 5
+  representations: 1
+  particle_starts_per_well: 83200
+  anchor_gru_models: 0
+  public_encoder_models: 0
+  lightgbm_configs: 3
+  catboost_configs: 2
+  folds: 5
+  trained_lightgbm_models: 15
+  trained_catboost_models: 10
+  ridge_models: 5
+  boosters: 25
+  parent_control_reruns: 0
+  v1_late_submission_attempts: 1
+  v2_late_submission_attempts: 1
+
+train_v2_result:
+  kernel: kentookumura/exp517-stage22-5pf-fl192-tab-train
+  kernel_version: 2
+  status: complete
+  runtime_seconds: 14603.467695807
+  rows: 3783989
+  wells: 773
+  features: 280
+  ridge_rmse: 7.531449304772903
+  postprocess_rmse: 7.536732106480146
+  postprocess_sg_diagnostic_rmse: 7.536165228821222
+  oof_content_sha256: 31ce9041decf340de0f91a0d33de86bb68b35541e9d995158e17dcd6a3d695bc
+
+runtime:
+  use_amp: false
+  num_workers: 1
+  batch_size: 1
+  enable_gpu: true
+  accelerator: NvidiaTeslaT4
+  machine_shape: NvidiaTeslaT4
+  gpu_count_expected: 2
+  enable_tpu: false
+  enable_internet: false
+  kaggle:
+    enable_gpu: true
+    enable_tpu: false
+    enable_internet: false
+    machine_shape: NvidiaTeslaT4
+    kernel_sources:
+      - k256net/public20th-private6th-pf-pf-pf-pf-and-bagging
+    inference_kernel_sources:
+      - k256net/public20th-private6th-pf-pf-pf-pf-and-bagging
+
+late_submission:
+  enabled: true
+  phase: post_competition_late_submission
+  purpose: corrected_stage22_reproduction_after_cv_gate
+  one_shot_fixed_version: false
+  allow_lb_retuning: false
+  message: "LATE SUBMIT | exp517 | corrected stage2-2 5PF fixedlag192 tabular v2"
+  kernel_train_slug: exp517-stage22-5pf-fl192-tab-train
+  kernel_train_title: "exp517 stage22 5pf fl192 tab train"
+  kernel_inference_slug: exp517-stage22-5pf-fl192-tab-infer
+  kernel_inference_title: "exp517 stage22 5pf fl192 tab infer"
+  v2_submission_ref: 55340618
+  v2_submission_status: pending
+
+history:
+  v1:
+    contract: pf_1_twgr_fixedlag192_direct_mean
+    status: contract_mismatch_failed
+    source_sha256: f01b011475a2c205658e06edac9df6ba435e9296590e4561b75ff40053113b29
+    submission_ref: 55327703
+    public: 7.825
+    private: 9.689
+    note: >-
+      Preserved evidence only. It omitted four PF banks and the tabular model,
+      so it is not a stage 2-2 reproduction and is not renamed as one.

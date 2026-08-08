@@ -7,10 +7,10 @@
 ## 現在の状態
 
 - Route: `pf_beam`
-- 状態: faithful component実装・static/package検証完了、Kaggle GPU quota refresh待ち
+- 状態: 完了。Kaggle inference version 2完走、submit-check PASS、late submission scoring完了
 - Source: discussion 733226 / public kernel id_no `126919690`
 - Submission phase: `post_competition_late_submission`
-- CV / late LB: なし / 未提出
+- CV / late LB: exp516の新規CVは未計測 / Public `10.056`・Private `8.552`
 - 公式run: 1 bank × 1 representation × 600 particles × 32 seeds
 - anchor: 5 folds × 3 seeds = 15 GRU models
 - learned emission: 公開checkpoint 5本、再学習0
@@ -68,8 +68,31 @@
 - version 2 push直前`2026-08-07 13:27:01 UTC`のGPU quotaはused `43.94h` / remaining `1.06h` / total `45.00h` / refresh `2026-08-08 00:00 UTC`。version 1の消費は約0.01h。ユーザー承認済みのquotaリスクを維持して同じcanonical kernelへpushする。
 - canonical kernel version 2のpushに成功した。pull後もid_no `129988663`、private、T4、internet offを維持し、Kaggle側Notebookに`PUBLIC_CONFIG_TEXT_SHA256`とtext SHA比較が含まれることを確認した。
 
+## 2026-08-07 Kaggle inference version 2公開commit run完走・提出前監査
+
+- 公開commit runのKaggle statusは`KernelWorkerStatus.COMPLETE`。runtimeはTesla T4 x2、anchor `1197.892s`、learned-emission similarity `1.856s`、PF `13.483s`。
+- 公開commit runのcurrent visible testは3井・14,151行。anchorは5 folds × 3 seeds = 15 GRU models、PFは単体`pfA × twGR`、600 particles × 32 seeds、`smooth_mode=full`で実行された。
+- anchor fold別validation CVは`[10.7746, 8.2256, 9.7432, 11.3848, 9.7516]`。これはanchor GRUの内部診断で、exp516 PF単体の公式CVではない。
+- 公開commit run execution manifestのanchor SHA `f2042f78...0877`、fold artifact SHA `b453735b...4171`、similarity SHA `8fb1ab7b...1ccf`、candidate content SHA `92d76209...1ea3`、submission SHA `feee82f8...80c`を取得した。
+- 公開commit runのKaggle output `submission.csv`を取得し、同梱checkerはFAIL 0 / WARN 0でPASS。列`id,tvt`、14,151行、ID順・集合がruntime `sample_submission.csv`と完全一致、重複0、欠損0、有限値、SHAはmanifestと一致した。
+- manual auditでもprivate / T4 / internet off / competition sourceを確認した。runtime sampleをschema/orderの正としてtest井を動的列挙し、公開test固有の井ID・行数・予測値による分岐はない。
+
+## 2026-08-07 LATE SUBMIT scoring
+
+- kernel version 2をmessage `LATE SUBMIT | exp516 | 6th-place pfA x twGR standalone faithful replay | fixed v1`で1回だけ提出した。
+- submission refは`55326266`、submitted atは`2026-08-07 13:54:14.097000 UTC`。28分後に`COMPLETE`となり、Public `10.056`、Private `8.552`を取得した。
+- code submission scoringではversion 2がhidden testへ差し替えられて再実行された。数値スコア付き`COMPLETE`はhidden-compatible実行の完走証拠だが、hidden well数、工程別runtime、prediction/submission SHAはKaggle APIから取得できない。上記3井・14,151行・runtime・SHAをhidden実測として扱わない。
+- 作者報告のstage 2-4 standalone `twGR-prior PF alone`はPublic `7.88`、Private `7.78`。exp516差は`+2.176 / +0.772 ft RMSE`で、報告スコアは再現しなかった。
+- 一方、exp516はfinal public sourceの`pfA × twGR`をsingle-bank / single-representationで実行する契約で、報告表のstage 2-4契約と最終v96 source契約が同一であることは一次資料から証明できない。特にwriteupはstage 2-2をfixed-lag 192として説明し、final configはwhole-interval smoothingとlearned emissionを含む。したがって差をPF family全体の否定や実装バグと断定しない。
+- negative scopeは`(GR-free anchor + final-v96 pfA learned emission, twGR representation, standalone direct smoothed-mean decode, no fusion, code-submission hidden rerun, 600 particles × 32 seeds, T4 x2)`に限定する。91候補、TCN、GBM、candidate-curve NN、他representation、de-shrinkを含む6位最終systemは評価していない。
+- one-shot契約を消費したため、parameter、seed、smoother、emission、postprocessをlate LBに合わせる再提出はしない。
+
 ## 次のアクション
 
-1. `2026-08-08 00:00 UTC`以降に`kaggle quota --format json`でGPU refreshを確認する。
-2. 固定inferenceをpushし、output取得・submit-check後に1回late submitする。
-3. scoring監視後、結果・SHA・runtimeを公式記録へ反映する。
+1. 同じexp516からの追加late submissionは行わない。
+2. score mismatchを追う必要がある場合だけ、stage 2-4 standalone契約とfinal v96 `pfA`契約のsource-context差を0-submissionで監査する。
+
+## 2026-08-08 ユーザー完了判断
+
+- ユーザーの明示判断により、作者報告スコア未再現の結論を維持したままstatusを`completed`とした。
+- 採用や性能再現成功への変更ではない。追加late submissionは行わない。

@@ -1,0 +1,100 @@
+{
+  "experiment": "exp517_stage22_pf1_tw_fixedlag192_late_submit",
+  "status": "completed",
+  "execution_status": "official_scoring_complete",
+  "user_decision": "completed",
+  "route": "ensemble",
+  "fidelity": "historical_contract_reconstruction",
+  "cv": 7.536732106480146,
+  "ridge_cv": 7.531449304772903,
+  "sg_diagnostic_cv": 7.536165228821222,
+  "absolute_delta_from_published": 0.03673210648014624,
+  "score_regime_match": true,
+  "exact_numeric_match": false,
+  "public_lb": 6.778,
+  "private_lb": 7.816,
+  "published_stage22_system": {
+    "cv": 7.5,
+    "public": 6.724,
+    "private": 7.404,
+    "comparable_after_v2_contract_execution": true
+  },
+  "execution_contract_v2": {
+    "scientific_variants": 1,
+    "pf_banks": 5,
+    "representations": 1,
+    "lightgbm_configs": 3,
+    "catboost_configs": 2,
+    "folds": 5,
+    "base_models": 25,
+    "ridge_models": 5,
+    "control_reruns": 0
+  },
+  "train_v2": {
+    "kernel": "kentookumura/exp517-stage22-5pf-fl192-tab-train",
+    "kernel_version": 2,
+    "status": "complete",
+    "runtime_seconds": 14603.467695807,
+    "gpu_names": ["Tesla T4", "Tesla T4"],
+    "rows": 3783989,
+    "wells": 773,
+    "feature_count": 280,
+    "pf_runtime_seconds": 4145.889948429,
+    "oof_content_sha256": "31ce9041decf340de0f91a0d33de86bb68b35541e9d995158e17dcd6a3d695bc",
+    "models": 25,
+    "ridge_models": 5
+  },
+  "inference_v2": {
+    "kernel": "kentookumura/exp517-stage22-5pf-fl192-tab-infer",
+    "kernel_version": 1,
+    "status": "complete",
+    "rows": 14151,
+    "wells": 3,
+    "feature_count": 280,
+    "pf_runtime_seconds": 55.61816615200007,
+    "submission_sha256": "7a89df26198d04a7419c166a2f645f6b8a376d9d0924e4ffc3b7bffaa097ae45",
+    "candidate_content_sha256": "661bd05214e9ae9bfac3ecfdd713fb0f97806556c83cbb1c40c5e765273d810b",
+    "submit_check_fail": 0,
+    "submit_check_warn": 0
+  },
+  "submission_v2": {
+    "ref": 55340618,
+    "status": "complete",
+    "submitted_at": "2026-08-08T04:18:59.837000",
+    "observed_complete_at": "2026-08-08T05:40:04Z",
+    "public_lb": 6.778,
+    "private_lb": 7.816,
+    "scoring_elapsed_seconds": null,
+    "scoring_elapsed_note": "monitor stopped by user after 22 minutes; exact completion time unavailable"
+  },
+  "reproduction_assessment": {
+    "published_cv": 7.5,
+    "cv_delta": 0.03673210648014624,
+    "cv_relative_delta_percent": 0.4897614197352832,
+    "published_public_lb": 6.724,
+    "public_lb_delta": 0.054,
+    "published_private_lb": 7.404,
+    "private_lb_delta": 0.412,
+    "cv_regime_reproduced": true,
+    "public_lb_reproduced": true,
+    "private_lb_reproduced": false,
+    "full_stage22_lb_reproduced": false
+  },
+  "v2_improvement_over_contract_mismatch_v1": {
+    "public_lb_delta": -1.047,
+    "private_lb_delta": -1.873
+  },
+  "history": {
+    "v1": {
+      "status": "contract_mismatch_failed",
+      "route": "pf_beam",
+      "contract": "pf_1_twgr_fixedlag192_direct_mean",
+      "submission_ref": 55327703,
+      "public_lb": 7.825,
+      "private_lb": 9.689,
+      "source_sha256": "f01b011475a2c205658e06edac9df6ba435e9296590e4561b75ff40053113b29",
+      "technical_generation": "pass",
+      "stage22_method_contract": "fail"
+    }
+  }
+}

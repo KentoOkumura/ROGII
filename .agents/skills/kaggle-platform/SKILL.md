@@ -258,6 +258,20 @@ Kaggle CLI の notebook 監視での注意:
 - `kaggle kernels status <kernel>` は `GetKernelSessionStatus` 500 を返すことがあるため、完了判定の主経路にしない。
 - `kaggle kernels push` が `Your kernel title does not resolve to the specified id` または詳細なしの `SaveKernel` 400 を返す場合は、`kernel-metadata.json` の `id` と `title` から生成される slug が一致し、50 文字以内か確認する。まず同じ `EXP=expXXX_title` のまま package を再生成し、上記ルールで決めた canonical id/title へそろえる。実験番号を切り直さない。
 - 上記 400 の復旧では、`task prepare-kaggle-notebooks EXP=expXXX_title EXTRA_ARGS="--notebook train --kernel-id username/expXXX-title-train --title 'expXXX title train' --run-on-push --strict"` のように `--kernel-id` と `--title` を同時指定してから同じ push コマンドを再実行する。inference も同じ形で `expXXX-title-inference` / `expXXX title inference` にする。
+
+#### Code competition submit guard
+
+Notebook-only code competitionをCLIから提出するときは、kernelとversionだけでなく、kernel output内の提出ファイル名を`-f`で必ず指定する。`-f submission.csv`はローカルCSVのupload指定ではなく、指定kernel versionが生成したoutput file名である。
+
+```bash
+kaggle competitions submit COMPETITION \
+  -k OWNER/KERNEL_SLUG \
+  -v KERNEL_VERSION \
+  -f submission.csv \
+  -m "MESSAGE"
+```
+
+提出直前に`kaggle kernels files OWNER/KERNEL_SLUG --page-size 200`で`submission.csv`が存在することを確認する。`-k` / `-v`だけの`CreateCodeSubmission`が400になった場合は、`kaggle competitions submissions`で新しいrefが作成されていないことを確認し、同じkernel slug・version・messageのまま`-f submission.csv`だけを補って再実行する。別slug、別version、再push、予測変更で回避しない。
 - 400 後に長い title だけを変える、別の実験名へ移す、別 slug を試す、という順で増殖させない。canonical id/title に寄せ直した理由、元の失敗 message、再 push した kernel id を `SESSION_NOTES.md` に記録する。
 - push 後は、同じ kernel id で再 push する前に必ず `kaggle kernels pull <kernel> -p /tmp/kaggle-pull/<slug> -m` で notebook の存在を確認する。
 - `kaggle kernels pull <kernel> -m` が成功して `id_no` が返る場合は、private kernel が CLI list/search に見えなくても Kaggle 側に存在すると扱う。

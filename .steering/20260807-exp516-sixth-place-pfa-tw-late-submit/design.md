@@ -17,7 +17,7 @@
 - loss: PF本体なし。GR likelihoodは`|GR-observed - GR-typewell(TVT)| / sigma`のpower likelihood、anchor Gaussian kernel、learned similarity exponential factor。anchor GRUはmasked Huber loss（delta 8 ft）。
 - decode / postprocess: final particle weightsを全祖先へ逆伝播し各seedのsmoothed pathを得て、seed log-likelihoodでsoft averageする。追加blend、gain、projectionなし。
 - context unitと予測範囲: known-prefix境界で初期化したhidden suffix whole-well。anchor field構築はtrain field context。
-- この実験が支持 / 棄却できる主張: 公開`pfA × twGR` componentを現在のhidden testで再生成し、late-sub score・runtime・再現性を監査できる。
+- この実験が支持 / 棄却できる主張: 公開`pfA × twGR` componentをdynamic code submissionとして再生成し、late-sub scoreを監査できる。工程別runtimeとartifact SHAは公開commit runで監査し、Kaggle APIから取得できないhidden runtime / well数 / output SHAは主張しない。
 - この実験では判断できない主張: 91候補のdiversity、row-level bagging、TCN/GBM、Submission A/B、6位最終scoreの再現。
 - 実験名と実装機構の整合: `sixth_place_pfa_tw_late_submit`は6位解法の単体`pfA × twGR`とpost-competition submissionだけを表し、full 6th-place solutionとは呼ばない。
 

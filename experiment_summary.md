@@ -489,6 +489,7 @@ graph TD
     exp514_exp413_likpf_seed_bank_reuse_on_exp512[exp514_exp413_likpf_seed_bank_reuse_on_exp512]
     exp515_third_place_three_family_hmm_late_submit[exp515_third_place_three_family_hmm_late_submit]
     exp516_sixth_place_pfa_tw_late_submit[exp516_sixth_place_pfa_tw_late_submit]
+    exp517_stage22_pf1_tw_fixedlag192_late_submit[exp517_stage22_pf1_tw_fixedlag192_late_submit]
     exp518_third_place_absolute_tvt_local_dtw_hmm_late_submit[exp518_third_place_absolute_tvt_local_dtw_hmm_late_submit]
     exp001_baseline --> exp002_drift_minimal
     exp002_drift_minimal --> exp003_residual_ablation
@@ -1019,6 +1020,7 @@ graph TD
     kaggle_3rd_place_solution_discussion_733319 --> exp518_third_place_absolute_tvt_local_dtw_hmm_late_submit
     kaggle_discussion_733226_and_public_kernel_126919690[kaggle_discussion_733226_and_public_kernel_126919690]
     kaggle_discussion_733226_and_public_kernel_126919690 --> exp516_sixth_place_pfa_tw_late_submit
+    exp516_sixth_place_pfa_tw_late_submit --> exp517_stage22_pf1_tw_fixedlag192_late_submit
 ```
 
 ## スコア表
@@ -1517,7 +1519,8 @@ graph TD
 | exp513_hjyact_v2_final_standalone_public_lb_audit | アンサンブル | exp512_hjyact_v2_final_10pct_hedge_on_exp413 | kaggle_two_run_visible_final_parity_pass_hidden_rng_nondeterminism_detected_no_submit | - | - | - | Replay the complete hjyact version-2 final prediction used as the public component of exp512, submit it without exp413 or any additional blend, and measure its Public LB under this repository's hidden-safe implementation. | 2026-08-05 |
 | exp514_exp413_likpf_seed_bank_reuse_on_exp512 | アンサンブル | exp512_hjyact_v2_final_10pct_hedge_on_exp413 | completed_stage_b_scientific_fail_stage_d_v4_technical_pass_no_resubmit | - | - | - | Design-frozen runtime/scientific audit that generates the exp413 x1.0, 500-particle, 128-seed likelihood-PF bank once per dynamic well and reuses it for both exp413 scale-5 features and the SP45 scale-3/5/8/12 selector plus seed-branch summary. The legacy SP45 bank is replaced scientifically, not treated as an exact optimization. | 2026-08-05 |
 | exp515_third_place_three_family_hmm_late_submit | PF/Beam | kaggle_3rd_place_solution_discussion_733319 | 完了 | 40.88961598374063 | - | - | Completed post-competition proxy based on the 3rd-place three-family HMM description in Kaggle discussion 733319. The full train OOF did not reproduce the reported score, so inference was cancelled and no late submission was made. | 2026-08-08 |
-| exp516_sixth_place_pfa_tw_late_submit | PF/Beam | kaggle_discussion_733226_and_public_kernel_126919690 | implemented_static_and_package_validation_passed_waiting_gpu_quota_refresh | - | - | - | Faithful component replay of the 6th-place public submission source's single pfA x typewell-GR particle filter: GR-free physical anchor, learned emission, 600 particles, 32 seeds, and whole-interval ancestral smoothing. The fixed output is submitted once as an explicit post-competition LATE SUBMIT. | 2026-08-07 |
+| exp516_sixth_place_pfa_tw_late_submit | PF/Beam | kaggle_discussion_733226_and_public_kernel_126919690 | 完了 | - | 10.056 | 8.552 | Faithful component replay of the 6th-place public submission source's single pfA x typewell-GR particle filter: GR-free physical anchor, learned emission, 600 particles, 32 seeds, and whole-interval ancestral smoothing. The fixed output is submitted once as an explicit post-competition LATE SUBMIT. | 2026-08-07 |
+| exp517_stage22_pf1_tw_fixedlag192_late_submit | アンサンブル | exp516_sixth_place_pfa_tw_late_submit | 完了 | 7.536732106480146 | 6.778 | 7.816 | Corrected reconstruction of the published stage 2-2 system in the same experiment that previously submitted the contract-mismatched one-PF direct v1. Generate five original-Optuna PF trajectories with typewell GR and fixed-lag 192, then fit the public tabular stack. The evaluated v2 reproduced the reported CV and Public score regime approximately, but did not reproduce the reported Private score. | 2026-08-07 |
 | exp518_third_place_absolute_tvt_local_dtw_hmm_late_submit | PF/Beam | kaggle_3rd_place_solution_discussion_733319 | 完了 | - | - | - | Post-competition correction of the exp515 3rd-place HMM reconstruction. The hidden TVT position is represented as an absolute TVT around the saved exp374 absolute-TVT HMM posterior mean instead of a last-rate straight baseline, and Local-DTW uses time-varying local reference offsets. | 2026-08-08 |
 
 <!-- END AUTO EXPERIMENT SUMMARY -->

@@ -50,7 +50,7 @@ task submit-check EXP=expXXX_title SUBMISSION=/tmp/kaggle-output/expXXX_title/in
 
 ローカル実験ディレクトリに提出 CSV を常設しない。Kaggle output を取得した場合だけ、その取得物に対して `task submit-check` を実行する。
 
-4. PASS / WARN / FAIL を報告する。実際の submit はユーザーが明示的に依頼した場合だけ `kaggle-platform` の手順で行い、submit 後の監視は `kaggle-submit-monitor` に委譲する。
+4. PASS / WARN / FAIL を報告する。code competitionでは、Kaggle outputに存在する提出ファイル名（通常`submission.csv`）も引き渡し情報として明記する。実際の submit はユーザーが明示的に依頼した場合だけ `kaggle-platform` の手順で行い、`-k OWNER/SLUG -v VERSION -f submission.csv`の4点を省略しない。submit 後の監視は `kaggle-submit-monitor` に委譲する。
 
 5. submit が行われてスコアが分かったら、リポジトリに記録する。
 
