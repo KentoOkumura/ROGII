@@ -1,6 +1,16 @@
 # exp510_exp413_exact_public_preoverride_hedge 結果
 
-## 状態
+## 仮説
+
+公開sourceの高いPublic LBにはdual-pipelineの相補性とPublic固有処理が混在している。
+well固有処理を行う前の予測だけをexp413へ事前に固定比率で加えれば、Public固有処理を遮断しながら、
+公開データ分布への別系統の予測を組み合わせられると仮定した。
+
+## 実行証拠
+
+構造化された数値と実験statusは[`metrics.json`](metrics.json)、設定と系譜は
+[`config.yaml`](config.yaml)、実行コマンドと時系列の経過は
+[`SESSION_NOTES.md`](SESSION_NOTES.md)を正とする。以下の数値はそれらを参照した比較と説明である。
 
 hidden-safe修正版Kaggle version 4は14,151行・3 wellを`385.108 sec`で完走し、
 `technical_gate_pass`。公開test固定exp413 sidecarを廃止し、dynamic sample上でexp413を再生成した。
@@ -9,7 +19,7 @@ submit-check FAIL/WARN 0を確認してref `55231514`として提出し、627分
 submission ref `55225634`はhidden rerun失敗の履歴として維持する。公開source titleや上流LBは
 exp510の結果ではない。
 
-## 実装結果
+### 実装結果
 
 - archived source SHA `4d071298...623eb`とpre-override cell境界を固定した。
 - 候補sourceはprojected-SP45、保存Pipeline-B 3 booster推論、`0.55/0.45` public component、
@@ -24,7 +34,7 @@ exp510の結果ではない。
 - dynamic exp413が書いたCSVを即時に読み戻してfixed blendへ渡し、従来のexact component boundaryを
   維持する。static public-test sidecarはruntime inputに含めない。
 
-## 静的検証
+### 静的検証
 
 | 項目 | 結果 |
 | --- | --- |
@@ -40,7 +50,7 @@ exp510の結果ではない。
 | Kaggle visible technical gate | version 4 PASS、14,151 rows / 3 wells、385.11秒 |
 | Kaggle code submission | version 4 ref 55231514 COMPLETE、627分、Public LB 7.201。過去ref 55225634はhidden rerun FAIL |
 
-## Kaggle実行結果
+### Kaggle実行結果
 
 - kernel: `kentookumura/exp510-exp413-exact-public-preoverride-inference` version 4。
 - version 1はJupytext code-cell marker欠落により`run_particle_filter`未定義で失敗し、marker 1行と
@@ -54,7 +64,7 @@ exp510の結果ではない。
   `7209a4bd...4e52`でversion 2と完全一致。output archive取得後のsubmission形式検証もPASSした。
 - parent/publicを含む新規学習、GPU、外部提出はいずれも0。保存boosterは75 + 3 = 78本を読んだ。
 
-## scoring結果と再監査
+### scoring結果と再監査
 
 - ref `55231514`は`2026-08-04 16:48:01 UTC`にCOMPLETEを観測した。提出から627分、
   CLI/APIの`publicScore`は`7.201`。
@@ -72,7 +82,7 @@ exp510の結果ではない。
 - 以上から技術実装はPASSを維持する。一方、Public LBではexp413比の測定可能な改善がなく、
   public hedge仮説は支持されない。honest OOFもないためexp413をanchorとして維持する。
 
-## hidden rerun失敗
+### hidden rerun失敗
 
 - raw API: scriptVersionId `340025138`、status `COMPLETE`、score空欄。
 - Kaggleの`errorDescription`はhidden datasetでの未処理例外という汎用文言で、tracebackは非公開。
@@ -89,6 +99,12 @@ exp510の結果ではない。
 version 4はdynamic sample契約、公開current-test exact parity、hidden code rerun完走を満たした。
 ただし対応するhonest OOFとPrivate安全性はなく、Public LBもexp413と公開3桁で同値だったため、
 科学的promotionやdeterministic anchorとは判断しない。
+
+## ユーザー判断
+
+- 判断: 未判断
+- 正規inference notebookへの採用、科学的promotion、anchor更新は承認されていない。
+- version 4の実行と提出は承認済みだが、それ自体を実験結果の採用判断とは扱わない。
 
 ## 次
 
