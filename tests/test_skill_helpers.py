@@ -61,9 +61,11 @@ def test_strategy_context_only_preloads_high_priority_backlog(tmp_path: Path) ->
         path.write_text(relative)
     direction = tmp_path / "KAGGLE_DIRECTION.md"
     direction.write_text(
-        "| P2 | [`candidate_p2`](docs/backlog/candidate_p2.md) | summary | dep | state |\n"
+        "| P2 | `HYP-20260812-01` | "
+        "[`candidate_p2`](docs/backlog/candidate_p2.md) | summary | dep | state |\n"
         "| P4・P2 evidence依存 | "
-        "[`candidate_p4`](docs/backlog/candidate_p4.md) | summary | dep | state |\n"
+        "`HYP-20260812-02` | [`candidate_p4`](docs/backlog/candidate_p4.md) | "
+        "summary | dep | state |\n"
     )
     backlog = tmp_path / "docs" / "backlog"
     backlog.mkdir(parents=True, exist_ok=True)

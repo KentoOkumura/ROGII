@@ -81,6 +81,8 @@ def test_parent_copy_replaces_identity_and_resets_execution_records(
         "  status: completed\n"
         "lineage:\n"
         "  parent: exp000_base\n"
+        "  hypothesis_id: HYP-20260801-01\n"
+        "  backlog_candidate: parent_candidate\n"
         "  diff_summary: parent diff\n"
         "model:\n"
         "  name: retained_model\n"
@@ -92,9 +94,7 @@ def test_parent_copy_replaces_identity_and_resets_execution_records(
 
     destination = tmp_path / "experiments" / "exp002_child"
     new_experiment.copy_tree(source, destination, force=False, copy_tests=False)
-    new_experiment.replace_parent_experiment_identity(
-        destination, "exp001_parent", "exp002_child"
-    )
+    new_experiment.replace_parent_experiment_identity(destination, "exp001_parent", "exp002_child")
     new_experiment.reset_parent_records(destination, "exp002_child", "exp001_parent")
 
     assert not (destination / "exp001_parent_train.ipynb").exists()
@@ -111,6 +111,8 @@ def test_parent_copy_replaces_identity_and_resets_execution_records(
     assert config["experiment"]["route"] == "pf_beam"
     assert "status" not in config["experiment"]
     assert config["lineage"]["parent"] == "exp001_parent"
+    assert config["lineage"]["hypothesis_id"] == "TODO"
+    assert config["lineage"]["backlog_candidate"] == "TODO"
     assert config["lineage"]["diff_summary"] == "TODO"
     assert config["model"]["name"] == "retained_model"
     assert "ルート:" not in (destination / "README.md").read_text()

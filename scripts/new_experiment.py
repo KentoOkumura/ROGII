@@ -152,6 +152,8 @@ def reset_parent_records(
     if not isinstance(lineage, dict):
         raise ValueError("source experiment config.yaml lineage must contain a mapping")
     lineage["parent"] = source_experiment
+    lineage["hypothesis_id"] = "TODO"
+    lineage["backlog_candidate"] = "TODO"
     lineage["diff_summary"] = "TODO"
     config_path.write_text(yaml.safe_dump(config, sort_keys=False, allow_unicode=True))
 

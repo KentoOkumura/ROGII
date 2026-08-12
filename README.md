@@ -69,6 +69,7 @@ make validate-exp EXP=exp001_baseline EXTRA_ARGS="--allow-todo"
 | 領域 | 管理する内容 |
 | --- | --- |
 | コンペ設定 | `project.yml` に competition、data、validation、submission、Kaggle runtime を記録 |
+| 検証中の上位仮説 | `KAGGLE_DIRECTION.md` で複数の未着手候補・実験と残っている問いを対応付ける |
 | 未着手候補 | `KAGGLE_DIRECTION.md` を索引、`docs/backlog/<candidate>.md` を候補詳細の正として管理 |
 | 実験計画 | `.steering/` に要件、設計、タスクリストを作成 |
 | 実験コード | `experiments/<exp>/` に `config.yaml`、`settings.py`、train/inference notebook、記録ファイルを配置 |
@@ -82,6 +83,7 @@ make validate-exp EXP=exp001_baseline EXTRA_ARGS="--allow-todo"
 ## 機能一覧
 
 - 新規実験ディレクトリをテンプレートまたは既存実験から作成できます。
+- 複数の未着手候補・実験を共通の上位仮説IDで追跡できます。
 - 実験前に steering document を作成し、仮説、設計、成功条件を明文化できます。
 - `project.yml` と各実験の `config.yaml` を検証し、TODO や設定漏れを検出できます。
 - Kaggle 上の学習・推論、提出形式チェックを `task` で統一して実行できます。
@@ -168,7 +170,7 @@ CV は live logs、notebook cell、Kaggle UI から記録できます。提出�
 - `Makefile`: `task` が使えない環境向けの代替コマンド
 - `project.yml`: コンペ単位のメタデータ、データ、検証、提出、Kaggle runtime の正
 - `SUBMISSIONS.md`: submission refを専用列に持つ提出履歴
-- `KAGGLE_DIRECTION.md`: コンペ戦略、検証方針、現在の重点、アイデアバックログ
+- `KAGGLE_DIRECTION.md`: コンペ戦略、検証方針、現在の重点、検証中の上位仮説、アイデアバックログ
 - `experiment_summary.md`: 実験比較と自動更新される要約
 - `docs/surveys/README.md`: 完了した調査レポートの生成索引
 - `docs/agent-playbooks.md`: 実験、提出、レビュー、分析の作業別参照索引

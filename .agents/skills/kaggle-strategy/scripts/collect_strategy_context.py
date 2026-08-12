@@ -22,7 +22,8 @@ SCORE_RE = re.compile(
 HEADING_RE = re.compile(r"^#{1,4}\s+(.+)$", re.MULTILINE)
 EXPERIMENT_NUMBER_RE = re.compile(r"^exp(\d+)")
 BACKLOG_LINK_RE = re.compile(
-    r"^\| (?P<priority>[^|]+) \| \[`(?P<name>[a-z0-9_]+)`\]"
+    r"^\| (?P<priority>[^|]+) \| `(?:HYP-\d{8}-\d{2}|未整理)` \| "
+    r"\[`(?P<name>[a-z0-9_]+)`\]"
     r"\(docs/backlog/(?P=name)\.md\) \|"
 )
 ACTIVE_PRIORITY_RE = re.compile(r"(?:^|・)(?:最優先|P[0-2])(?:・|$)")

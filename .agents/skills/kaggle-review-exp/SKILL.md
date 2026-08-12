@@ -41,7 +41,7 @@ Kaggle GPU を使う train push の前に、必ず次を確認する。
    - 最近の `experiments/*/SESSION_NOTES.md` を確認する。
    - 特定手法の実装依頼では、参照sourceと手法契約を特定する。
    - 同じ親実験または機構familyの直近の子実験で変更した処理を確認し、target、output、decode、context unitを変える案まで見直す必要があるか判断する。
-   - `KAGGLE_DIRECTION.md` の未着手候補から実験化する場合は、対応する `docs/backlog/<candidate>.md` とそこから参照される根拠を読む。未着手表だけから設計を再構成しない。
+   - `KAGGLE_DIRECTION.md` の未着手候補から実験化する場合は、対応する上位仮説、`docs/backlog/<candidate>.md`、そこから参照される根拠を読む。未着手表だけから設計を再構成しない。
    - 導入前の候補で詳細ファイルがない場合は、コード作成前に `kaggle-strategy` を使って詳細ファイルを作り、推測できない事項を未決としてユーザーへ確認する。このskillから `docs/backlog/` を直接更新しない。
 2. backlog候補から実験化する場合は、採番やコード作成の前に、固定するもの、変更するもの、最小検証、成功条件、停止条件、実行しないこと、未決事項を短く提示する。重要な解釈差または未決事項があればユーザー確認まで停止する。`設計可能・実験化未承認` は実験作成の承認を意味しない。
 3. ユーザーの実験化承認後、実験を作成または変更する前に steering docs を作る。
@@ -56,7 +56,7 @@ Task が使えない場合は Makefile の同等コマンドを使う。
 make new-steering EXP=expXXX_title
 ```
 
-4. リポジトリに`templates/steering/`があれば、それを元に`.steering/YYYYMMDD-expXXX-title/{requirements.md,design.md,tasklist.md}`を埋める。backlogから移行する場合は、詳細ファイルの根拠、仮説、親との差分、固定事項、最小検証、成功条件、停止条件、実行しないこと、未決事項、判断履歴を`requirements.md`へ欠落なく移す。`design.md`は実装対応と承認済み差分、`tasklist.md`は作業順序と確認項目だけを持つ。移行確認後、`kaggle-strategy`を使って元の`docs/backlog/<candidate>.md`と未着手バックログ行を削除する。このskillからバックログを直接変更しない。
+4. リポジトリに`templates/steering/`があれば、それを元に`.steering/YYYYMMDD-expXXX-title/{requirements.md,design.md,tasklist.md}`を埋める。backlogから移行する場合は、詳細ファイルの上位仮説ID、上位仮説のうちこの実験が検証する範囲、残る検証、根拠、具体的な仮説、親との差分、固定事項、最小検証、成功条件、停止条件、実行しないこと、未決事項、判断履歴を`requirements.md`へ欠落なく移す。`design.md`は実装対応と承認済み差分、`tasklist.md`は作業順序と確認項目だけを持つ。移行確認後、`kaggle-strategy`を使って元の`docs/backlog/<candidate>.md`と未着手バックログ行を削除し、「検証中の仮説」の対応候補を対応実験へ更新する。このskillからバックログを直接変更しない。
 5. 実験を作成、またはコピーする。
 
 ```bash
@@ -66,7 +66,7 @@ task new-exp EXP=expXXX_title SOURCE=experiments/expYYY_parent
 
 親実験のテストも新実験へ引き継ぐ必要がある場合だけ、明示的に`--copy-tests`を指定する。既定では、親実験名や旧契約を参照するテストの誤コピーを防ぐためコピーしない。
 
-親実験からコピーした場合、`new-exp`はファイル名とテキスト内の親実験IDを新実験IDへ置換し、`README.md`、`SESSION_NOTES.md`、`result.md`、`metrics.json`を未実行状態へ戻す。`config.yaml`は親の設定を引き継ぐが、`experiment.name`、作成日、説明、`lineage.parent`、`lineage.diff_summary`を新実験用に初期化する。コピー後は入力元として保持すべき親パスまで置換されていないか確認し、仮説、差分、構造化された実行証拠を親から引き継いだまま実装済みと扱わない。
+親実験からコピーした場合、`new-exp`はファイル名とテキスト内の親実験IDを新実験IDへ置換し、`README.md`、`SESSION_NOTES.md`、`result.md`、`metrics.json`を未実行状態へ戻す。`config.yaml`は親の設定を引き継ぐが、`experiment.name`、作成日、説明、`lineage.parent`、`lineage.hypothesis_id`、`lineage.backlog_candidate`、`lineage.diff_summary`を新実験用に初期化する。backlogからの移行内容に合わせて上位仮説IDと候補名を設定する。コピー後は入力元として保持すべき親パスまで置換されていないか確認し、仮説、差分、構造化された実行証拠を親から引き継いだまま実装済みと扱わない。
 
 ```bash
 task new-exp EXP=expXXX_title SOURCE=experiments/expYYY_parent EXTRA_ARGS="--copy-tests"
@@ -256,7 +256,7 @@ task update-summary
 - 結果と次アクションが `ml_model` / `pf_beam` / `ensemble` のどの route の anchor を更新するのか明確であること。
 - 実装済みの backlog 項目を残さないため、必要な削除を `kaggle-strategy` へ引き渡して反映済みであること。
 - 新規 backlog 候補は、完了した実験の証拠、非使用条件、未決事項を `kaggle-strategy` へ引き渡し、`docs/backlog/<candidate>.md` と `KAGGLE_DIRECTION.md` の整合および既存候補との優先度見直しが完了していること。
-- backlogから始めた実験は、steering docsに固定事項、変更事項、最小検証、成功条件、停止条件、実行しないこと、判断履歴が引き継がれ、重要な未決事項が`なし`であること。
+- backlogから始めた実験は、steering docsと`config.yaml`に上位仮説IDと候補名が引き継がれ、steering docsにこの実験の検証範囲、残る検証、固定事項、変更事項、最小検証、成功条件、停止条件、実行しないこと、判断履歴が欠落せず、重要な未決事項が`なし`であること。
 
 ## 実験レイアウト
 

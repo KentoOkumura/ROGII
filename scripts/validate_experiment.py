@@ -31,6 +31,11 @@ STRICT_CONFIG_KEYS = [
     "lineage.diff_summary",
     "model.name",
 ]
+OPTIONAL_STRICT_CONFIG_KEYS = [
+    "lineage.hypothesis_id",
+    "lineage.backlog_candidate",
+]
+HYPOTHESIS_ID_RE = re.compile(r"HYP-\d{8}-\d{2}")
 STRICT_EFFECTIVE_CONFIG_KEYS = [
     "validation.strategy",
     "validation.metric",
@@ -105,9 +110,7 @@ def validate_required_directories(
     legacy_layout: bool,
     errors: list[str],
 ) -> None:
-    missing_dirs = [
-        dirname for dirname in REQUIRED_DIRS if not (experiment_dir / dirname).is_dir()
-    ]
+    missing_dirs = [dirname for dirname in REQUIRED_DIRS if not (experiment_dir / dirname).is_dir()]
     if legacy_layout and missing_dirs:
         print(
             "WARNING: legacy experiment is missing generated directories; they will be "
@@ -210,6 +213,23 @@ def main() -> None:
                 if is_todo(value):
                     errors.append(f"config value still TODO: {key}")
 
+            for key in OPTIONAL_STRICT_CONFIG_KEYS:
+                value = get_nested(config, key)
+                if value is not None and is_todo(value):
+                    errors.append(f"config value still TODO: {key}")
+
+            hypothesis_id = get_nested(config, "lineage.hypothesis_id")
+            if (
+                hypothesis_id is not None
+                and not is_todo(hypothesis_id)
+                and hypothesis_id != "N/A"
+                and (
+                    not isinstance(hypothesis_id, str)
+                    or not HYPOTHESIS_ID_RE.fullmatch(hypothesis_id)
+                )
+            ):
+                errors.append("invalid lineage.hypothesis_id: expected HYP-YYYYMMDD-NN or N/A")
+
             for key in STRICT_EFFECTIVE_CONFIG_KEYS:
                 value = get_nested(effective_config, key)
                 if is_todo(value):
@@ -225,9 +245,7 @@ def main() -> None:
                 if raw_value is None or is_todo(raw_value) or default_value is None:
                     continue
                 if raw_value != default_value and key not in project_default_overrides:
-                    errors.append(
-                        f"config value differs from project.yml without override: {key}"
-                    )
+                    errors.append(f"config value differs from project.yml without override: {key}")
 
         route = get_nested(config, "experiment.route")
         if route is not None:
