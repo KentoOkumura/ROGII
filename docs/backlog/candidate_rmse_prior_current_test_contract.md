@@ -6,12 +6,19 @@
 - 作成日: 2026-08-12
 - 最終更新日: 2026-08-12
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
-- 期待する成果: `candidate_rmse_prior_current_test_contract`: exp415で確立したbounded nudgeをcurrent-testへ持ち出す前に、5 fold modelのscoreと各fit-partition RMSE priorをどの順序でensembleするかを一意に定める
+- 期待する成果: exp415の保存済みOOF・設計資料だけを使い、5 fold modelのscoreと各fit-partition RMSE priorの集約順による差を大会後の設計監査として整理する
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低・P3・design-only・未採番
+- 優先度: P3
+- 優先度の理由: 大会後のdesign-only・未採番
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
-## 移行前の記録
+## 現行の実行範囲
+
+- コンペの最終提出締切後であるため、保存済みOOF・model identity・fit RMSE tableの設計監査だけを行う。
+- current-test predictionの生成、raw-test artifactの新規作成、推論候補化、Kaggle Notebook実行、submissionは、監査結果にかかわらず行わない。
+- 下記の「移行前の記録」は履歴であり、現行の実行条件ではない。
+
+## 移行前の記録（履歴）
 
 次の5項目は、移行前の索引に記録されていた内容を変更せず転記したものです。
 
@@ -43,7 +50,7 @@
 
 ## 最小の反証可能な検証
 
-まずmodel / prediction / booster 0のdesign auditで、現行exp264 inferenceのscore aggregation、candidate TVT、model-fold identity、fit RMSE tableの対応を固定する。OOF科学値を再最適化せず、1つのfold-ensemble式、同じ`0.25 ft`risk cap、current-test artifact/SHA契約を事前登録できた場合だけ別expへ切り出す
+保存済みmodel / prediction / booster 0のdesign auditで、exp264で使ったscore aggregation、candidate TVT、model-fold identity、fit RMSE tableの対応と、集約順による数式上の差を固定する。OOF科学値を再最適化せず、current-test predictionは生成しない。
 
 ## 成功条件と停止条件
 
@@ -51,7 +58,7 @@
 
 ## 実行しないこと
 
-exp415 OOFでaggregation順、RMSE係数、blend、cap、candidate subsetを選ばない。5 fold平均を単一outer-valid結果と同一視しない。raw-test score artifact parityと別の一般化検証なしにinference / submissionへ進めず、現行P1/P2を追い越さない
+exp415 OOFでaggregation順、RMSE係数、blend、cap、candidate subsetを選ばない。5 fold平均を単一outer-valid結果と同一視しない。監査条件を満たしてもcurrent-test prediction、raw-test inference、submissionへ進めない。
 
 ## リスク
 
@@ -69,6 +76,7 @@ exp415 OOFでaggregation順、RMSE係数、blend、cap、candidate subsetを選�
 ## 判断履歴
 
 - 2026-08-12: 移行前の内容を変更せず個別ファイルへ移した。未整理項目を推測で補わないため、状態を `検討メモ・設計不可` とした。
+- 2026-08-12: 最終提出締切後の現行方針に合わせ、保存済み証拠による設計監査だけに限定し、推論・提出への移行を禁止した。移行前の記録は履歴として残した。
 
 ## 次セッションへの引き継ぎ確認
 

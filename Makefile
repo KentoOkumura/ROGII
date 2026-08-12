@@ -17,18 +17,19 @@ NOTEBOOK ?= inference
 KERNEL ?=
 KERNEL_VERSION ?= 1
 COMPETITION ?=
-PROJECT_COMPETITION = $(shell .venv/bin/python scripts/project_value.py competition.slug)
+PROJECT_COMPETITION = $(shell PYTHONDONTWRITEBYTECODE=1 .venv/bin/python scripts/project_value.py competition.slug)
 RESOLVED_COMPETITION = $(if $(strip $(COMPETITION)),$(COMPETITION),$(PROJECT_COMPETITION))
 MESSAGE ?= $(EXP)
 OUTPUT_FILE ?= submission.csv
 OUT ?= /tmp/kaggle-output/$(EXP)/$(NOTEBOOK)
-VIEWER_DATA ?= data/raw
+PROJECT_VIEWER_DATA = $(shell PYTHONDONTWRITEBYTECODE=1 .venv/bin/python scripts/project_value.py data.raw_dir)
+VIEWER_DATA ?= $(PROJECT_VIEWER_DATA)
 UV_CACHE_DIR ?= /tmp/uv-cache
 PYTHONDONTWRITEBYTECODE ?= 1
 export UV_CACHE_DIR
 export PYTHONDONTWRITEBYTECODE
 
-.PHONY: validate-template validate-config check-strategy-docs new-exp new-steering new-survey-report update-survey-index validate-surveys validate-exp check-exp check-skills check-skill-modules test-exp test-common train-local infer-local dl-kaggle-comp fetch-kaggle-notebooks archive-kaggle-discussions submit-check submit-code pipeline-local prepare-kaggle-notebooks push-kaggle-train push-kaggle-infer execute-notebook-local kaggle-status kaggle-logs kaggle-output record-submission record-exp compare-exp metric-weighted-tail-error-map pf-beam-disagreement-error-map update-summary app oof-app viewer viewer-smoke fmt test
+.PHONY: validate-template validate-config check-strategy-docs new-exp new-steering new-survey-report update-survey-index validate-surveys validate-exp check-exp check-skills check-skill-modules test-exp test-common train-local infer-local dl-kaggle-comp fetch-kaggle-notebooks archive-kaggle-discussions submit-check submit-code pipeline-local prepare-kaggle-notebooks push-kaggle-notebook push-kaggle-train push-kaggle-infer execute-notebook-local kaggle-status kaggle-logs kaggle-output record-submission record-exp compare-exp metric-weighted-tail-error-map pf-beam-disagreement-error-map update-summary app oof-app viewer viewer-smoke fmt test
 
 validate-template:
 	.venv/bin/python scripts/validate_project.py
@@ -38,7 +39,7 @@ validate-template:
 	.venv/bin/python scripts/check_markdown_links.py
 
 validate-config:
-	.venv/bin/python scripts/validate_project.py --strict
+	.venv/bin/python scripts/validate_project.py --strict $(VALIDATE_ARGS)
 	.venv/bin/python scripts/check_strategy_docs.py
 	.venv/bin/python scripts/update_survey_index.py --check --allow-draft
 	.venv/bin/python scripts/update_experiment_summary.py --check
@@ -121,13 +122,15 @@ pipeline-local:
 prepare-kaggle-notebooks:
 	.venv/bin/python scripts/prepare_kaggle_notebooks.py --experiment $(EXP) --strict $(EXTRA_ARGS)
 
+push-kaggle-notebook:
+	.venv/bin/python scripts/validate_kaggle_metadata.py --package-dir experiments/$(EXP)/kaggle/$(NOTEBOOK)
+	.venv/bin/kaggle kernels push -p experiments/$(EXP)/kaggle/$(NOTEBOOK)
+
 push-kaggle-train:
-	.venv/bin/python scripts/validate_kaggle_metadata.py --package-dir experiments/$(EXP)/kaggle/train
-	.venv/bin/kaggle kernels push -p experiments/$(EXP)/kaggle/train
+	$(MAKE) push-kaggle-notebook EXP=$(EXP) NOTEBOOK=train
 
 push-kaggle-infer:
-	.venv/bin/python scripts/validate_kaggle_metadata.py --package-dir experiments/$(EXP)/kaggle/inference
-	.venv/bin/kaggle kernels push -p experiments/$(EXP)/kaggle/inference
+	$(MAKE) push-kaggle-notebook EXP=$(EXP) NOTEBOOK=inference
 
 execute-notebook-local:
 	.venv/bin/python scripts/execute_experiment_notebook.py --experiment $(EXP) --notebook $(NOTEBOOK) $(EXTRA_ARGS)

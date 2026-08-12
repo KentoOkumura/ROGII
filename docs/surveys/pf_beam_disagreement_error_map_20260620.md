@@ -17,6 +17,8 @@ summary: "PF・Beam・MLを773 wellsで比較し、PF直接置換を否定する
 
 # PF・Beam disagreementとwell別誤差の監査
 
+- 対応する上位仮説: なし
+
 作成日: 2026-06-20
 
 ## 結論

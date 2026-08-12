@@ -143,25 +143,25 @@ uv run python .agents/skills/kaggle-platform/modules/kllm/hackathon/scripts/fetc
 
 1. リポジトリの `AGENTS.md` を local source of truth として扱う。
 2. `project.yml`、`KAGGLE_DIRECTION.md`、`docs/official/evaluation.md` を読む。
-3. コンペ固有の field を埋める。
-   - `competition.slug`
-   - `competition.url`
-   - `defaults.metric`
-   - `defaults.primary_validation`
-   - `submission.id_column`
-   - `submission.target_columns`
-   - `submission.sample_file`
-4. 公式 metric と submission-format のメモを `docs/official/evaluation.md` に置く。
-5. template validationを実行する。
-6. raw competition dataは`data.raw_dir`で設定した場所へ置く。`task dl-kaggle-comp`はcompetition archiveを取得し、path traversalとsymbolic linkを拒否して安全に展開する。既存ファイルはsizeとZIP memberのchecksumが一致する場合だけスキップし、異なる場合は上書きせず停止する。外部データは`data/external/`に分ける。
-7. `submission.sample_file`が存在することを確認してから、strict config validationを実行する。
+3. 新しいコンペへ転用する場合は、既存コンペの値を流用せず、次のfieldを公式資料と実データに照らしてすべて確認する。値が未確定なら`TODO`へ戻し、推測で埋めない。
+   - `competition`: `name`、`platform`、`slug`、`url`、`is_code_competition`
+   - `data`: `raw_dir`、`train_dir`、`test_dir`、`processed_dir`、`target_column`、`group_column`、`score_rows`
+   - `defaults`: `seed`、`metric`、`primary_validation`、`n_folds`
+   - `submission`: `sample_file`、`output_file`、`id_column`、`target_columns`、`allow_extra_columns`
+   - `metadata`: `owner`、`notes`
+   - `runtime.kaggle`: `enable_gpu`、`enable_internet`、`time_limit_hours`
+   - リポジトリ構成を変える場合だけ`paths`も更新する。
+4. `docs/01_competition.md`から`docs/04_data.md`と`docs/official/evaluation.md`を新しい公式情報へ更新する。旧コンペの`KAGGLE_DIRECTION.md`、`docs/backlog/`、`SUBMISSIONS.md`、`experiments/`、`.steering/`、`docs/surveys/`を新コンペの証拠として引き継がない。残す履歴が必要なら新コンペの現行索引から分離する。
+5. raw competition dataは`data.raw_dir`で設定した場所へ置く。`task dl-kaggle-comp`はcompetition archiveを取得し、path traversalとsymbolic linkを拒否して安全に展開する。既存ファイルはsizeとZIP memberのchecksumが一致する場合だけスキップし、異なる場合は上書きせず停止する。外部データは`data/external/`に分ける。
+6. `data.train_dir`、`data.test_dir`、`submission.sample_file`を`data.raw_dir`内に置き、設定した各パスが存在することを確認する。Kaggle runtimeではcompetition input rootを`data.raw_dir`に対応させ、この3つを相対解決する。
+7. intended competition slugを`--expected-competition`で明示し、strict config validationを実行する。これにより、コピー元のslugやURLが残った状態を検出する。
 
 `Taskfile.yml` がある場合は `task` commands を優先する。
 
 ```bash
 task validate-template
 task dl-kaggle-comp
-task validate-config
+task validate-config VALIDATE_ARGS="--expected-competition <competition-slug>"
 ```
 
 Task が使えない場合は、同等の Makefile コマンドを使う。
@@ -169,7 +169,7 @@ Task が使えない場合は、同等の Makefile コマンドを使う。
 ```bash
 make validate-template
 make dl-kaggle-comp
-make validate-config
+make validate-config VALIDATE_ARGS="--expected-competition <competition-slug>"
 ```
 
 ガードレール:
@@ -178,43 +178,49 @@ make validate-config
 
 ### ROGII repo notebook-first Kaggle flow
 
-このリポジトリでは、実験コードの正の編集対象は notebook。
+実験化、steering、実験ディレクトリ作成、notebook実装、実験記録は
+`kaggle-review-exp`が担当する。この節は、実験契約で必要と判断され、静的検証を通過した
+notebook packageの生成、metadata検証、Kaggle CLIによるpushと実行だけを担当する。
+
+このリポジトリでは、実験コードの正の編集対象はnotebook。新規実験の雛形は次の2種類を持つ。
+実験契約でauditやdiagnosticなど別の実行単位が必要なら、同じ命名規則で任意の種別を追加できる。
+実験契約に不要なnotebookは実装・pushしない。
 
 - `experiments/<exp>/<exp>_train.ipynb`
 - `experiments/<exp>/<exp>_inference.ipynb`
-- notebook のフル実行と公式評価は Kaggle で行う。local smoke に必要な入力、依存関係、生成物がローカルに揃っている場合だけ、`task train-local` / `task infer-local` / `task execute-notebook-local`へ`--allow-local`を渡してlocal smokeを行う
+- 追加する場合は`experiments/<exp>/<exp>_<kind>.ipynb`。`<kind>`は小文字英数字とunderscoreだけを使う
+- notebook のフル実行と公式評価は Kaggle で行う。local smoke の可否と実行手順は`kaggle-review-exp`に従う
 
-新規実験から Kaggle 実行までの標準手順:
-
-```bash
-task new-steering EXP=expXXX_title
-task new-exp EXP=expXXX_title
-task validate-exp EXP=expXXX_title EXTRA_ARGS="--allow-todo"
-```
-
-静的確認:
+`kaggle-review-exp`で対象実験の静的確認を完了してから、必要なnotebookだけをprepare・pushする。
 
 ```bash
 task validate-exp EXP=expXXX_title
 ```
 
-Kaggle train notebook を作成し、pushして実行:
+trainが必要な場合:
 
 ```bash
 task prepare-kaggle-notebooks EXP=expXXX_title EXTRA_ARGS="--notebook train --run-on-push"
 task push-kaggle-train EXP=expXXX_title
 ```
 
-Kaggle inference notebook を作成し、pushして実行:
+inferenceが必要な場合:
 
 ```bash
 task prepare-kaggle-notebooks EXP=expXXX_title EXTRA_ARGS="--notebook inference --run-on-push"
 task push-kaggle-infer EXP=expXXX_title
 ```
 
+auditなど追加のnotebook種別が必要な場合:
+
+```bash
+task prepare-kaggle-notebooks EXP=expXXX_title EXTRA_ARGS="--notebook audit --run-on-push"
+task push-kaggle-notebook EXP=expXXX_title NOTEBOOK=audit
+```
+
 #### Push 前の runtime resource / quota 確認
 
-`uv run kaggle kernels push`、`task push-kaggle-train`、`task push-kaggle-infer` の直前に次を行う。prepareだけでpushしない場合は対象外。
+`task push-kaggle-notebook`またはそのtrain/inference用aliasの直前に次を行う。prepareだけでpushしない場合は対象外。リポジトリ内ではvalidatorを迂回する直接の`kaggle kernels push`を使わない。
 
 1. 生成済み`kernel-metadata.json`の`enable_gpu`、`enable_tpu`、`machine_shape`を読み、`enable_tpu`が`false`で、今回のnotebookがCPU / GPUのどちらを使うか特定する。
 2. GPUを使う場合は`uv run kaggle quota --format json`で週次残時間とrefresh時刻を確認し、想定runtimeに足りるか判断する。CPU pushではquota commandは不要。
@@ -226,16 +232,16 @@ Kaggle CLI 2.2.3はアカウント全体のActive Sessions数を取得できな�
 
 注意:
 - 通常は`--kernel-id`と`--title`を省略し、`prepare-kaggle-notebooks`が`project.yml`のowner、実験名、notebook種別から互いに一致するcanonical kernel id / titleを生成する。生成された`kernel-metadata.json`の`id`末尾slugと`title`由来slugが一致し、50文字以内で、既存notebookと衝突しないことを確認する。
-- `prepare-kaggle-notebooks`はowner、competition source、50文字上限、id/title由来slugの一致を検証し、不正なら失敗する。`push-kaggle-train` / `push-kaggle-infer`も生成済みpackageを再検証してからKaggle CLIを呼ぶため、warningを無視してpushしない。
+- `prepare-kaggle-notebooks`はowner、competition source、50文字上限、id/title由来slugの一致を検証し、不正なら失敗する。`push-kaggle-notebook`とtrain/inference用aliasも生成済みpackageを再検証してからKaggle CLIを呼ぶため、warningを無視してpushしない。
 - 自動生成slugが50文字を超える場合、既存notebookと衝突する場合、または意味のある短縮が必要な場合だけ、実験番号、識別に必要な短縮名、notebook種別を残した`--kernel-id`と`--title`を明示する。機械的な末尾切り捨てや実験番号だけの短縮は行わず、実験名との対応を`SESSION_NOTES.md`に記録する。片方だけ指定した場合は、`--kernel-id` / `--kernel-id-prefix`からtitle、または`--title`からidを生成する。上限超過、不一致、衝突を解消できない場合はpushしない。
-- Kaggle runtime は CPU がデフォルト。GPU が必要な実験だけ `project.yml` または生成済み metadata で明示的に有効化する。
-- P100ではなくT4を使う必要があるnotebookは、生成済み`kernel-metadata.json`に`"enable_gpu": true`と`"machine_shape": "NvidiaTeslaT4"`を入れる。直接CLIへ`--accelerator NvidiaTeslaT4`を渡す場合も、先に`uv run python scripts/validate_kaggle_metadata.py --package-dir experiments/expXXX_title/kaggle/train`を実行してから`uv run kaggle kernels push -p experiments/expXXX_title/kaggle/train --accelerator NvidiaTeslaT4`を実行する。
+- Kaggle runtime は CPU がデフォルト。GPU、internet、machine shapeの正は、共通値を`project.yml`の`runtime.kaggle`、実験全体の上書きを`experiments/<exp>/config.yaml`の`runtime.kaggle`、notebook別の上書きを`runtime.kaggle.<kind>`へ記録する。この順で後の設定を優先し、生成済み`kernel-metadata.json`は手編集しない。prepare後とpush直前の検証は、現在の正のNotebook・設定と生成package、bootstrap ZIPのmanifest・内容を比較し、同じ有効値から計算した`enable_gpu`、`enable_internet`、`machine_shape`との不一致も拒否する。
+- P100ではなくT4を使う必要があるnotebookは、正の`config.yaml`へ`runtime.kaggle.<kind>.enable_gpu: true`と`runtime.kaggle.<kind>.machine_shape: NvidiaTeslaT4`を記録してpackageを再生成し、`task push-kaggle-notebook`でpushする。
 - Kaggle 側に反映された accelerator は、push 後に `uv run kaggle kernels pull <kernel> -p /tmp/kaggle-pull/<slug> -m` で metadata を取得し、`machine_shape` が `NvidiaTeslaT4` になっていることを確認する。UI 表示も併せて見るとよい。
 - Kaggle CLI の metadata key は snake_case の `machine_shape` を優先する。古いメモや外部投稿に `machineShape` と書かれていても、このリポジトリの notebook 生成では `machine_shape` を正とする。
 - `prepare-kaggle-notebooks` は `competition_sources` を metadata に入れるため、通常は Kaggle UI の Input 追加は不要。
-- Kaggle CLI の `kernels push` は `code_file` の notebook 本体だけを API に送る。生成 notebook には、`settings.py`、`config.yaml`、`metrics.json`、実験補助 `.py`、`project.yml`、`src/` を復元する base64 zip bootstrap セルが入る。`metrics.json`を含めることで、Notebook側の部分更新でも既存のstatus、CV/LB、実行証拠を保持する。
+- Kaggle CLI の `kernels push` は `code_file` の notebook 本体だけを API に送る。生成 notebook には、既定で`settings.py`、`config.yaml`、`metrics.json`、実験補助 `.py`、`project.yml`、`src/` を復元する base64 zip bootstrap セルが入る。`runtime.kaggle.<kind>.include_experiment_sources: false`では実験側のsupport files、`--no-src`では`src/`を除外する。後者はrepositoryの`src/`をimportしないNotebookだけで使う。`metrics.json`を含めることで、Notebook側の部分更新でも既存のstatus、CV/LB、実行証拠を保持する。
 - 編集対象は常に `experiments/<exp>/<exp>_*.ipynb`。`experiments/<exp>/kaggle/` は push 用の生成物。
-- train-side CV の評価だけなら、Kaggle output archive は取得しない。`uv run kaggle kernels logs -f owner/slug`、notebook cell 出力、Kaggle UI 上の metrics を根拠に記録する。`submission.csv`、OOF、`metrics.json`、feature importance、model manifest、SHA、後続実験の入力、提出形式検証など実ファイル確認が必要な場合だけ `task kaggle-output` / `uv run kaggle kernels output` を使う。
+- train-side CV の評価だけなら、Kaggle output archive は取得しない。`task kaggle-logs KERNEL=owner/slug`、notebook cell 出力、Kaggle UI 上の metrics を根拠に記録する。`submission.csv`、OOF、`metrics.json`、feature importance、model manifest、SHA、後続実験の入力、提出形式検証など実ファイル確認が必要な場合だけ `task kaggle-output KERNEL=<kernel> OUT=<out>` を使う。
 
 Kaggle CLI の notebook 監視での注意:
 - Codex の managed sandbox では `api.kaggle.com` への DNS/network access が制限されることがある。`kaggle kernels push/pull/logs -f/output/status`、`kaggle competitions submit/submissions` など Kaggle API にアクセスする CLI は、最初から host 側のネットワーク許可付きで実行する。sandbox で一度失敗させてから「DNS 解決で落ちたので再実行」と説明する運用はしない。
@@ -248,14 +254,13 @@ Kaggle CLI の notebook 監視での注意:
 
 #### Code competition submit guard
 
+`AGENTS.md`のsubmission承認条件を満たすことを確認してから、以下の操作へ進む。
+
 Notebook-only code competitionをCLIから提出するときは、kernelとversionだけでなく、kernel output内の提出ファイル名を`-f`で必ず指定する。`-f submission.csv`はローカルCSVのupload指定ではなく、指定kernel versionが生成したoutput file名である。
 
 ```bash
-uv run kaggle competitions submit COMPETITION \
-  -k OWNER/KERNEL_SLUG \
-  -v KERNEL_VERSION \
-  -f submission.csv \
-  -m "MESSAGE"
+task submit-code COMPETITION=COMPETITION KERNEL=OWNER/KERNEL_SLUG \
+  KERNEL_VERSION=KERNEL_VERSION OUTPUT_FILE=submission.csv MESSAGE="MESSAGE"
 ```
 
 提出直前に`uv run kaggle kernels files OWNER/KERNEL_SLUG --page-size 200`で`submission.csv`が存在することを確認する。`-k` / `-v`だけの`CreateCodeSubmission`が400になった場合は、`uv run kaggle competitions submissions`で新しいrefが作成されていないことを確認し、同じkernel slug・version・messageのまま`-f submission.csv`だけを補って再実行する。別slug、別version、再push、予測変更で回避しない。
@@ -263,8 +268,8 @@ uv run kaggle competitions submit COMPETITION \
 - push 後は、同じ kernel id で再 push する前に必ず `uv run kaggle kernels pull <kernel> -p /tmp/kaggle-pull/<slug> -m` で notebook の存在を確認する。
 - `uv run kaggle kernels pull <kernel> -m` が成功して `id_no` が返る場合は、private kernel が CLI list/search に見えなくても Kaggle 側に存在すると扱う。
 - queue / provisioning 中、または notebook がまだ stdout/stderr を出していない間は live SSE の表示が空でも正常と扱う。`print(..., flush=True)` は stdout の反映を早めるが、rich display、HTML、widget など stdout/stderr 以外の出力は notebook cell / Kaggle UI で確認する。
-- live SSE が一時的に空、または接続が終了しても、認証ミス、slug ミス、実行失敗と即断しない。同じ canonical kernel id のまま `pull` と Kaggle UI を確認し、必要なら同じ `uv run kaggle kernels logs -f owner/slug` を再実行する。
-- output は必要時に `uv run kaggle kernels output <kernel> -p <out>` で確認する。実行直後に空でも、status 500、live SSE にまだ stdout/stderr がない、`kernels list` 非表示だけを理由に別 slug で再 push しない。
+- live SSE が一時的に空、または接続が終了しても、認証ミス、slug ミス、実行失敗と即断しない。同じ canonical kernel id のまま `pull` と Kaggle UI を確認し、必要なら同じ `task kaggle-logs KERNEL=owner/slug` を再実行する。
+- output は必要時に `task kaggle-output KERNEL=<kernel> OUT=<out>` で確認する。実行直後に空でも、status 500、live SSE にまだ stdout/stderr がない、`kernels list` 非表示だけを理由に別 slug で再 push しない。
 - slug / title を変えて再 push すると Kaggle 上に別 notebook が作られることがある。再実行は原則として同じ canonical kernel id に version 追加で行い、slug を変える場合は既存 kernel の存在確認と重複リスクを `SESSION_NOTES.md` に記録する。
 - logs/output 取得の失敗理由、UI 側の状態、完了後に再取得できたかを実験の `SESSION_NOTES.md` に残す。
 
@@ -317,7 +322,7 @@ Kaggle とやり取りする 4 つの方法（kagglehub、kaggle-cli、MCP Serve
 - **Kaggle コンペに参加する:** 登録、data download、submission 作成、submit を行う。
 - **Kaggle dataset を download する:** 任意の public dataset を検索して download する。
 - **Kaggle model を download する:** pre-trained models（LLM、CV など）を download する。
-- **Kaggle で notebook を実行する:** KKB の CPU/GPU で notebook を push して実行する。このリポジトリではTPUを扱わない。
+- **Kaggle で notebook を実行する:** Repository Template Setupの手順でnotebookをpushして実行する。
 - **Kaggle に公開する:** dataset、model、notebook を upload する。
 - **Kaggle の進め方を知る:** tier、medal、rank up の方法を説明する。
 - **その他:** Kaggle に関する自由な相談。
@@ -354,7 +359,7 @@ Kaggle とやり取りする 4 つの方法（kagglehub、kaggle-cli、MCP Serve
 **書き込み operation**（account の resource を作成または変更）:
 - dataset、notebook、model の作成/公開（既定では private）
 - competition への prediction submit
-- Kaggle Kernel Backend（KKB）への notebook push と実行
+- Kaggle Notebook実行環境へのnotebook pushと実行
 - API activity による badge 獲得（profile-visible）
 
 **Phase 5 (Streaks)** は daily execution 用の local shell script を生成するが、cron job や launchd plist を自動 install しない。必要であればユーザーが手動で schedule を設定する。
@@ -374,9 +379,10 @@ Kaggle とやり取りする 4 つの方法（kagglehub、kaggle-cli、MCP Serve
 - `modules/comp-report/scripts/competition_details.py`: competition ごとの files、leaderboard、kernels
 
 **Kaggle Interaction (kllm):**
+- `modules/kllm/scripts/repo_uv_env.sh`: CLI wrapperが共通利用するrepo-local uv環境の初期化。直接実行しない
 - `modules/kllm/scripts/network_check.sh`: Kaggle API 到達性確認
 - `modules/kllm/scripts/cli_download.sh`: CLI 経由で dataset/model download
-- `modules/kllm/scripts/cli_execute.sh`: KKB で notebook 実行
+- `modules/kllm/scripts/cli_execute.sh`: Kaggle Notebook実行環境でnotebookを実行
 - `modules/kllm/scripts/cli_competition.sh`: competitionの確認、data download、既存submissionとleaderboardの表示。submitは行わない
 - `modules/kllm/scripts/cli_publish.sh`: dataset/notebook/model を publish
 - `modules/kllm/scripts/poll_kernel.sh`: 互換用の旧ファイル名。live logsを追跡してからoutputをdownloadし、status pollingは行わない

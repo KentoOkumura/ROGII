@@ -78,7 +78,7 @@ Progress, the downloaded Titanic example submission, and the generated daily scr
 - `scripts/badge_tracker.py` — JSON progress persistence
 - `scripts/phase_1_instant_api.py` — Instant API badges
 - `scripts/phase_2_competition.py` — Competition badges
-- `scripts/phase_3_pipeline.py` — Pipeline badges (requires KKB)
+- `scripts/phase_3_pipeline.py` — Pipeline badges (requires Kaggle Notebook execution)
 - `scripts/phase_4_manual.py` — Browserで行う手動操作の案内
 - `scripts/phase_5_streaks.py` — Streak automation setup
 - `scripts/utils.py` — Shared utilities

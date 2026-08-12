@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from check_strategy_docs import registered_hypothesis_ids
 from config_utils import (
     ROOT,
     deep_merge,
@@ -36,11 +37,13 @@ OPTIONAL_STRICT_CONFIG_KEYS = [
     "lineage.backlog_candidate",
 ]
 HYPOTHESIS_ID_RE = re.compile(r"HYP-\d{8}-\d{2}")
+BACKLOG_CANDIDATE_RE = re.compile(r"[a-z0-9_]+")
 STRICT_EFFECTIVE_CONFIG_KEYS = [
     "validation.strategy",
     "validation.metric",
     "validation.seed",
     "validation.n_folds",
+    "reproducibility.seed",
     "data.target_column",
     "data.id_column",
     "data.sample_submission",
@@ -50,6 +53,7 @@ PROJECT_BACKED_KEYS = [
     "validation.metric",
     "validation.seed",
     "validation.n_folds",
+    "reproducibility.seed",
     "data.id_column",
     "data.sample_submission",
     "data.submission_target_column",
@@ -119,6 +123,109 @@ def validate_required_directories(
         return
     for dirname in missing_dirs:
         errors.append(f"missing required directory: {dirname}")
+
+
+def validate_lineage(
+    config: dict[str, Any],
+    errors: list[str],
+    *,
+    registered_ids: set[str] | None = None,
+) -> None:
+    hypothesis_id = get_nested(config, "lineage.hypothesis_id")
+    backlog_candidate = get_nested(config, "lineage.backlog_candidate")
+
+    if (
+        hypothesis_id is not None
+        and not is_todo(hypothesis_id)
+        and hypothesis_id != "N/A"
+        and (not isinstance(hypothesis_id, str) or not HYPOTHESIS_ID_RE.fullmatch(hypothesis_id))
+    ):
+        errors.append("invalid lineage.hypothesis_id: expected HYP-YYYYMMDD-NN or N/A")
+
+    if (
+        backlog_candidate is not None
+        and not is_todo(backlog_candidate)
+        and backlog_candidate != "N/A"
+        and (
+            not isinstance(backlog_candidate, str)
+            or not BACKLOG_CANDIDATE_RE.fullmatch(backlog_candidate)
+        )
+    ):
+        errors.append(
+            "invalid lineage.backlog_candidate: expected a docs/backlog candidate name or N/A"
+        )
+
+    if (
+        hypothesis_id is not None
+        and backlog_candidate is not None
+        and not is_todo(hypothesis_id)
+        and not is_todo(backlog_candidate)
+        and (hypothesis_id == "N/A") != (backlog_candidate == "N/A")
+    ):
+        errors.append(
+            "lineage.hypothesis_id and lineage.backlog_candidate must both be tracked values "
+            "or both be N/A"
+        )
+
+    if (
+        registered_ids is not None
+        and isinstance(hypothesis_id, str)
+        and HYPOTHESIS_ID_RE.fullmatch(hypothesis_id)
+        and hypothesis_id not in registered_ids
+    ):
+        errors.append(
+            "unregistered lineage.hypothesis_id: register it in KAGGLE_DIRECTION.md or a "
+            "final/superseded survey before validating the experiment"
+        )
+
+
+def validate_config_contract(
+    config: dict[str, Any],
+    *,
+    allow_todo: bool,
+    project_defaults: dict[str, Any],
+    registered_ids: set[str],
+    errors: list[str],
+) -> None:
+    """Validate config values while always checking completed lineage values."""
+    effective_config = deep_merge(project_defaults, config)
+    validate_lineage(config, errors, registered_ids=registered_ids)
+
+    if not allow_todo:
+        for key in STRICT_CONFIG_KEYS:
+            value = get_nested(config, key)
+            if is_todo(value):
+                errors.append(f"config value still TODO: {key}")
+
+        for key in OPTIONAL_STRICT_CONFIG_KEYS:
+            value = get_nested(config, key)
+            if value is not None and is_todo(value):
+                errors.append(f"config value still TODO: {key}")
+
+        for key in STRICT_EFFECTIVE_CONFIG_KEYS:
+            value = get_nested(effective_config, key)
+            if is_todo(value):
+                errors.append(f"effective config value still TODO: {key}")
+
+        project_default_overrides = get_nested(config, "overrides.project_defaults")
+        if not isinstance(project_default_overrides, list):
+            project_default_overrides = []
+
+        for key in PROJECT_BACKED_KEYS:
+            raw_value = get_nested(config, key)
+            default_value = get_nested(project_defaults, key)
+            if raw_value is None or is_todo(raw_value) or default_value is None:
+                continue
+            if raw_value != default_value and key not in project_default_overrides:
+                errors.append(f"config value differs from project.yml without override: {key}")
+
+    route = get_nested(config, "experiment.route")
+    if route is not None:
+        if is_todo(route) and not allow_todo:
+            errors.append("config value still TODO: experiment.route")
+        elif not is_todo(route) and route not in ALLOWED_ROUTES:
+            allowed_routes = ", ".join(sorted(ALLOWED_ROUTES))
+            errors.append(f"invalid experiment.route: {route}. allowed: {allowed_routes}")
 
 
 def main() -> None:
@@ -205,55 +312,13 @@ def main() -> None:
                 "config experiment.name does not match the experiment directory: "
                 f"{config_experiment_name!r}"
             )
-        project_defaults = project_experiment_defaults(load_project_config())
-        effective_config = deep_merge(project_defaults, config)
-        if not args.allow_todo:
-            for key in STRICT_CONFIG_KEYS:
-                value = get_nested(config, key)
-                if is_todo(value):
-                    errors.append(f"config value still TODO: {key}")
-
-            for key in OPTIONAL_STRICT_CONFIG_KEYS:
-                value = get_nested(config, key)
-                if value is not None and is_todo(value):
-                    errors.append(f"config value still TODO: {key}")
-
-            hypothesis_id = get_nested(config, "lineage.hypothesis_id")
-            if (
-                hypothesis_id is not None
-                and not is_todo(hypothesis_id)
-                and hypothesis_id != "N/A"
-                and (
-                    not isinstance(hypothesis_id, str)
-                    or not HYPOTHESIS_ID_RE.fullmatch(hypothesis_id)
-                )
-            ):
-                errors.append("invalid lineage.hypothesis_id: expected HYP-YYYYMMDD-NN or N/A")
-
-            for key in STRICT_EFFECTIVE_CONFIG_KEYS:
-                value = get_nested(effective_config, key)
-                if is_todo(value):
-                    errors.append(f"effective config value still TODO: {key}")
-
-            project_default_overrides = get_nested(config, "overrides.project_defaults")
-            if not isinstance(project_default_overrides, list):
-                project_default_overrides = []
-
-            for key in PROJECT_BACKED_KEYS:
-                raw_value = get_nested(config, key)
-                default_value = get_nested(project_defaults, key)
-                if raw_value is None or is_todo(raw_value) or default_value is None:
-                    continue
-                if raw_value != default_value and key not in project_default_overrides:
-                    errors.append(f"config value differs from project.yml without override: {key}")
-
-        route = get_nested(config, "experiment.route")
-        if route is not None:
-            if is_todo(route) and not args.allow_todo:
-                errors.append("config value still TODO: experiment.route")
-            elif not is_todo(route) and route not in ALLOWED_ROUTES:
-                allowed_routes = ", ".join(sorted(ALLOWED_ROUTES))
-                errors.append(f"invalid experiment.route: {route}. allowed: {allowed_routes}")
+        validate_config_contract(
+            config,
+            allow_todo=args.allow_todo,
+            project_defaults=project_experiment_defaults(load_project_config()),
+            registered_ids=registered_hypothesis_ids(ROOT),
+            errors=errors,
+        )
 
     metrics_path = experiment_dir / "metrics.json"
     if metrics_path.exists():

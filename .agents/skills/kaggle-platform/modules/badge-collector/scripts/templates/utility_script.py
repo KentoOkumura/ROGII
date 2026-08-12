@@ -1,7 +1,7 @@
 """Badge Collector — Utility Script.
 
 A simple utility script (not a notebook) for Kaggle badge collection.
-Utility scripts run as .py files on Kaggle Kernel Backend.
+Utility scripts run as .py files in the Kaggle Notebook execution environment.
 """
 
 import json

@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `exp490_k16_segment_model_evidence_transfer_readout`: exp357のno-reversionとexp490のmean-reversionを二つのdynamics expertとみなし、K16区間ごとのblocked Huber GR NLL差が区間benefitへ転移するかだけをtruth-lateで測る
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 中・P2・0-model / 0-HMM・exp490 algorithm preflight
+- 優先度: P2
+- 優先度の理由: 0-model / 0-HMM・exp490 algorithm preflight
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

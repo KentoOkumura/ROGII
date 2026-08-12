@@ -1,11 +1,11 @@
 """Phase 3: Pipeline badges (~3 badges).
 
-Performs prerequisite actions that require KKB notebook execution and output:
+Performs prerequisite actions that require Kaggle Notebook execution and output:
   - Dataset Pipeline Creator (create dataset from notebook output)
   - Model Pipeline Creator (create model from notebook output)
-  - R Markdown Coder (push and execute R Markdown on KKB)
+  - R Markdown Coder (push and execute R Markdown as a Kaggle Notebook)
 
-These badges require notebooks to execute on Kaggle Kernel Backend (KKB),
+These badges require execution in the Kaggle Notebook environment,
 so the workflow follows live logs until the execution stream closes.
 """
 
@@ -104,15 +104,15 @@ def _dataset_pipeline(username: str) -> bool:
         }
         (tmp / "kernel-metadata.json").write_text(json.dumps(metadata, indent=2))
 
-        # Push notebook to KKB
+        # Push the Kaggle Notebook
         run_kaggle_cli(["kernels", "push", "-p", str(tmp)])
         print(f"  [OK] Pipeline notebook pushed: {nb_slug}")
-        print("  Waiting for KKB execution to complete...")
+        print("  Waiting for Kaggle Notebook execution to complete...")
 
         # Follow the primary live SSE path until the execution stream closes.
         if not _follow_kernel_logs(username, nb_slug):
             print("  [FAIL] Notebook execution failed or timed out")
-            set_status("dataset_pipeline_creator", "failed", "KKB execution failed")
+            set_status("dataset_pipeline_creator", "failed", "Kaggle Notebook execution failed")
             return False
 
         # Download notebook output
@@ -224,11 +224,11 @@ def _model_pipeline(username: str) -> bool:
         # Push notebook
         run_kaggle_cli(["kernels", "push", "-p", str(tmp)])
         print(f"  [OK] Model pipeline notebook pushed: {nb_slug}")
-        print("  Waiting for KKB execution to complete...")
+        print("  Waiting for Kaggle Notebook execution to complete...")
 
         if not _follow_kernel_logs(username, nb_slug):
             print("  [FAIL] Notebook execution failed or timed out")
-            set_status("model_pipeline_creator", "failed", "KKB execution failed")
+            set_status("model_pipeline_creator", "failed", "Kaggle Notebook execution failed")
             return False
 
         # Download output

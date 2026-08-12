@@ -18,7 +18,6 @@
 | DTW | Dynamic Time Warping | 二つの系列を非線形に対応付ける動的時間伸縮法。 |
 | RNG | Random Number Generator | 乱数生成器。再現性を管理するときはseedと生成単位を記録する。 |
 | SHA | Secure Hash Algorithmによるhash値 | 内容同一性の証拠。使用したalgorithmと、圧縮前後のどちらをhashしたかを明示する。 |
-| KKB | Kaggle Notebookの実行基盤 | このリポジトリ内でKaggle Kernel Backendを指す略記。ユーザーへの初出ではKaggle Notebook実行と併記する。 |
 | `検討メモ・設計不可` | 結果や実装方針に影響する未決事項が残るbacklog状態。 | このリポジトリ内の管理用語。推測で実装せず、ユーザー確認を行う。 |
 | `設計可能・実験化未承認` | 実験境界が揃い未決事項がないが、実験化は承認されていないbacklog状態。 | このリポジトリ内の管理用語。 |
 | `planned` / `running` / `debug_completed` / `scaffold_completed` / `failed` | 実験の実行状態。 | `metrics.json`のstatusに記録する。状態変更の規則は`AGENTS.md`を正とする。 |
@@ -52,6 +51,10 @@
 | artifact | 実験で保存した特徴量、予測、metrics、modelなどの出力。 | 配置規則は`AGENTS.md`を正とする。 |
 | hidden test | Kaggleの本番採点時にだけ与えられるtest data。 | public sampleとデータ構成が異なる場合がある。 |
 | parity | trainとinferenceでseed、粒子数、特徴列、欠損処理などの条件を一致させること。 | 何を一致させたかを具体的に記録する。 |
+| `hidden-like` | `exp115_hidden_like_spatial_holdout_from_ppt`で作成した`verification_like_spatial_role`と`verification_like_typewell_purged_role`の2つの評価subgroup。 | exp115由来の実験固有名称。Kaggleのhidden testや、train wellの途中以降を隠すsurrogate validationとは別物。使用時は2区分のどちらか、または両方かを明記する。 |
+| `public-core` | exp497で、Public LB固有処理とexp413のfinal予測・selector出力を内部入力から除き、wellを分離したfoldで独立に学習した予測branch。 | exp497の設計文書で使われた実験固有名称。一般的なensemble分類として使わず、必要な場合は`exp497 strict public-core`と出所を併記する。 |
+| `truth-late` | targetを参照しない特徴だけで比較bucketや判定規則を固定し、その後に正解`TVT`を結合して評価する分析順序。 | 移行前の候補で使われたこのリポジトリ内の略記。新しい説明では、target結合前に固定する対象と、結合後に計算する評価を具体的に書く。 |
+| `terminal close` | 対象実験または分岐について、記録した停止条件に従い追加探索を行わないとした過去の判断。 | 移行前の記録で使われた略記であり、`metrics.json`の実験statusではない。新しい記録では、停止した範囲とユーザー判断を具体的に書く。 |
 | train well の途中以降を隠した疑似 test 条件 | train well の途中から先の `TVT_input` を NaN にして、本番 test のように予測させる代理条件。 | 以前は pseudo-hidden と書いていた。 |
 | surrogate validation | 本番採点の代わりに、train wellの途中以降を隠した疑似test条件で挙動を見る補助検証。 | 本番評価ではないことを明記する。 |
 | evaluation setting | 同じ候補を比較するためのdata、split、評価行、後処理条件。 | 条件を具体的に列挙する。 |

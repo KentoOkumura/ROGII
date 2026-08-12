@@ -14,6 +14,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/repo_uv_env.sh"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../../../.." && pwd)"
 KAGGLE=(uv run --project "${REPO_ROOT}" kaggle)
 

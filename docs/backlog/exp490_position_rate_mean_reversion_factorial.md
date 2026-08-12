@@ -8,16 +8,17 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `exp490_position_rate_mean_reversion_factorial`: exp490で同時変更したoffset centerとrate centerをposition-only / rate-onlyへ分離し、pooled gainとtail harmの因果成分を識別する
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低-中・P3・CPU fixed32・2 scientific variants別承認
+- 優先度: P3
+- 優先度の理由: CPU fixed32・2 scientific variants別承認
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録
 
-次の5項目は、移行前の索引に記録されていた内容を変更せず転記したものです。
+次の5項目は、移行前の索引に記録されていた内容へ大会後の運用条件だけを反映したものです。
 
 | 優先度 | アイデア | 先行条件 / 依存 | 検証方法 | 注意点 |
 | --- | --- | --- | --- | --- |
-| 低-中・P3・CPU fixed32・2 scientific variants別承認 | `exp490_position_rate_mean_reversion_factorial`: exp490で同時変更したoffset centerとrate centerをposition-only / rate-onlyへ分離し、pooled gainとtail harmの因果成分を識別する | exp424/441/411/412はrate dynamics単独介入のnegative contextだが、exp490のK16 geometry-centered coordinateでoffset/rate寄与は未識別。複数variant数とCPUコストを実行前に明示承認し、保存exp357をcontrolにする | fixed32で2 candidates×32=64 HMM well-runs、親rerun0。persistent episode SSE、recovery、under-response、matched-control pooled/p95、fold方向、runtimeを各variant独立判定しwinnerを選ばない。full773は独立PASS candidateへの別承認のみ | half-life/sigma/momentum/grid/emission/gate、position+rate再現、blend/selector、same-fixed32 winner救済は禁止。最終提出作業とP2 readout/add-onlyを追い越さない |
+| 低-中・P3・CPU fixed32・2 scientific variants別承認 | `exp490_position_rate_mean_reversion_factorial`: exp490で同時変更したoffset centerとrate centerをposition-only / rate-onlyへ分離し、pooled gainとtail harmの因果成分を識別する | exp424/441/411/412はrate dynamics単独介入のnegative contextだが、exp490のK16 geometry-centered coordinateでoffset/rate寄与は未識別。複数variant数とCPUコストを実行前に明示承認し、保存exp357をcontrolにする | fixed32で2 candidates×32=64 HMM well-runs、親rerun0。persistent episode SSE、recovery、under-response、matched-control pooled/p95、fold方向、runtimeを各variant独立判定しwinnerを選ばない。full773は独立PASS candidateへの別承認のみ | half-life/sigma/momentum/grid/emission/gate、position+rate再現、blend/selector、same-fixed32 winner救済は禁止。大会後の原因分析に限定し、inference/submissionは行わない。P2 readout/add-onlyより後に扱う |
 
 ## 観測事実と仮定の整理状態
 
@@ -51,7 +52,7 @@ fixed32で2 candidates×32=64 HMM well-runs、親rerun0。persistent episode SSE
 
 ## 実行しないこと
 
-half-life/sigma/momentum/grid/emission/gate、position+rate再現、blend/selector、same-fixed32 winner救済は禁止。最終提出作業とP2 readout/add-onlyを追い越さない
+half-life/sigma/momentum/grid/emission/gate、position+rate再現、blend/selector、same-fixed32 winner救済は禁止。大会後の原因分析に限定し、inference/submissionは行わない。P2 readout/add-onlyより後に扱う
 
 ## リスク
 

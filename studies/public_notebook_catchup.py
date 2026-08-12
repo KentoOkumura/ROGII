@@ -500,9 +500,10 @@ def render_markdown(
         'EXTRA_ARGS="--limit 20 '
         "--output-dir docs/notebooks/rogii-wellbore-geology-prediction/date_run_recent "
         '--sort-by dateRun --force --retries 3"',
-        "UV_CACHE_DIR=/tmp/uv-cache uv run python studies/public_notebook_catchup.py --as-of "
-        f"{as_of}",
+        f"uv run python studies/public_notebook_catchup.py --as-of {as_of}",
         "```",
+        "",
+        "`task`が利用できない環境では、同じ変数と引数で`make fetch-kaggle-notebooks`を使う。",
         "",
         "## Replay Queue",
         "",

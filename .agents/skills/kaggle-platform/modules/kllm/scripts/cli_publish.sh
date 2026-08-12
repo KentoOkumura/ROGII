@@ -25,6 +25,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/repo_uv_env.sh"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../../../.." && pwd)"
 KAGGLE=(uv run --project "${REPO_ROOT}" kaggle)
 
@@ -69,7 +70,7 @@ case "${ACTION}" in
         echo "--- Pushing notebook ---"
         "${KAGGLE[@]}" kernels push -p "${DIR}"
 
-        echo "Notebook published (private) and execution triggered on KKB."
+        echo "Notebook published (private) and Kaggle Notebook execution triggered."
         ;;
 
     model)

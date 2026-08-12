@@ -87,6 +87,6 @@ K=16単独、GR単独、U projection単独、v6移植ミスは原因として棄
 一部だが、v6 reproductionの実装不具合ではない。
 
 詳細は
-`docs/analysis/exp226_offset_root_cause_audit_20260727.md`、
+`docs/surveys/exp226_offset_root_cause_audit_20260727.md`、
 機械可読生成物は
 `studies/exp226_offset_root_cause_audit_20260727/`を正とする。

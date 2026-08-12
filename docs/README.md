@@ -16,13 +16,10 @@
 - `discussions/`: Kaggle ディスカッションのアーカイブと要約。
 - `notebooks/`: `kaggle-notebook-fetch`で取得した公開Notebookとmetadata。
 - `papers/`: 関連論文または論文要約。
-- `surveys/`: 完了した実験調査、モデル説明、OOF／結果EDA、特徴量・failure mode、複数実験比較、論文・公開Notebook調査。`surveys/README.md`を実験番号・種類・トピック別の検索入口とする。
+- `surveys/`: 完了した実験調査、モデル説明、OOF／結果EDA、特徴量・failure mode、複数実験比較、論文・公開Notebook調査。`surveys/README.md`を上位仮説・実験番号・種類・トピック別の検索入口とする。
 - `analysis/`: 旧形式の分析文書。新規の完了レポートは追加せず、既存文書は次に更新または再利用するときに`surveys/`へ移す。
 - `images/`: ドキュメントから参照する図や画像。
 
-## ROGII 初期設定
+## コンペ固有の設定
 
-- 公式情報取得日: 2026-05-27
-- 評価指標: RMSE、minimize
-- CV 方針: `well_id` の GroupKFold、`TVT_input` NaN 行のみ評価
-- 提出: Notebook-only、internet disabled、`submission.csv`
+機械可読な設定は[`project.yml`](../project.yml)を正とします。公式情報、評価指標、CV設計、データ仕様の説明は上記の`01_competition.md`から`04_data.md`を参照し、この索引には設定値を重複記録しません。

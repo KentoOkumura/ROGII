@@ -60,6 +60,41 @@ def test_submission_ref_must_be_one_exact_numeric_ref() -> None:
         record_submission.validate_submission_ref("123,456")
 
 
+def test_submission_notes_require_unambiguous_status_and_runtime_keys() -> None:
+    notes = "submission_status=COMPLETE; scoring_elapsed_minutes=12"
+
+    assert record_submission.validate_notes(notes) == notes
+    assert record_submission.validate_notes(None) is None
+    with pytest.raises(SystemExit, match="submission_status"):
+        record_submission.validate_notes("scoring completed")
+    with pytest.raises(SystemExit, match="submission_status"):
+        record_submission.validate_notes("status=COMPLETE")
+    with pytest.raises(SystemExit, match="Markdown table cell"):
+        record_submission.validate_notes("first line\nsecond line")
+
+
+def test_new_submission_history_includes_record_source_contract(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    history = tmp_path / "SUBMISSIONS.md"
+    monkeypatch.setattr(record_submission, "SUBMISSIONS_PATH", history)
+
+    record_submission.ensure_table()
+
+    content = history.read_text()
+    assert "詳細な時系列の正" in content
+    assert "CV/LBとNotebook実行時間の正" in content
+    assert "`submission_status`" in content
+    assert record_submission.TABLE_HEADER in content
+
+
+def test_current_submission_notes_follow_note_contract() -> None:
+    for line in record_submission.SUBMISSIONS_PATH.read_text().splitlines():
+        cells = record_submission.parse_table_row(line)
+        if cells is not None and cells[11] != "-":
+            assert record_submission.validate_notes(cells[11]) == cells[11]
+
+
 def test_submission_history_has_a_dedicated_ref_column() -> None:
     assert "| submission ref |" in record_submission.TABLE_HEADER
     assert record_submission.TABLE_HEADER.count("|") == record_submission.TABLE_SEPARATOR.count("|")
@@ -99,9 +134,7 @@ def test_existing_submission_ref_is_updated_in_place(
     experiment_dir = experiments_dir / "exp123_test"
     experiment_dir.mkdir(parents=True)
     metrics_path = experiment_dir / "metrics.json"
-    metrics_path.write_text(
-        json.dumps({"cv": 0.1234, "public_lb": 0.12, "private_lb": None})
-    )
+    metrics_path.write_text(json.dumps({"cv": 0.1234, "public_lb": 0.12, "private_lb": None}))
     submission = tmp_path / "submission.csv"
     submission.write_text("id,target\n1,2.0\n")
     monkeypatch.setattr(record_submission, "SUBMISSIONS_PATH", history)
@@ -118,12 +151,8 @@ def test_existing_submission_ref_is_updated_in_place(
     monkeypatch.setattr(record_submission, "parse_args", lambda: args)
     record_submission.main()
 
-    original_row = next(
-        line for line in history.read_text().splitlines() if line.startswith("| v")
-    )
-    metrics_path.write_text(
-        json.dumps({"cv": 0.1234, "public_lb": 0.12, "private_lb": 0.11})
-    )
+    original_row = next(line for line in history.read_text().splitlines() if line.startswith("| v"))
+    metrics_path.write_text(json.dumps({"cv": 0.1234, "public_lb": 0.12, "private_lb": 0.11}))
     args.notes = None
     record_submission.main()
 

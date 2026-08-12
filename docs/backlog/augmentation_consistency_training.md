@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `augmentation_consistency_training`: **データ拡張の学習安定化**。originalとaugmented viewのinverse変換後predictionを一致させ、synthetic corruptionへの過適合を抑える
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低-中（単体augmentation通過後）
+- 優先度: P3
+- 優先度の理由: 単体augmentation通過後
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

@@ -8,16 +8,17 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `exp490_mean_reversion_mechanism_risk_addonly_on_exp413`: exp490をhard候補採用せず、correction、signed physical consensus、K16/rho/posterior、strict nested benefit/risk scoreの小blockをexp413 final370へadd-onlyする
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 中・P2・ML add-only・15 GPU boosters別承認
+- 優先度: P2
+- 優先度の理由: ML add-only・15 GPU boosters別承認
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録
 
-次の5項目は、移行前の索引に記録されていた内容を変更せず転記したものです。
+次の5項目は、移行前の索引に記録されていた内容へ大会後の運用条件だけを反映したものです。
 
 | 優先度 | アイデア | 先行条件 / 依存 | 検証方法 | 注意点 |
 | --- | --- | --- | --- | --- |
-| 中・P2・ML add-only・15 GPU boosters別承認 | `exp490_mean_reversion_mechanism_risk_addonly_on_exp413`: exp490をhard候補採用せず、correction、signed physical consensus、K16/rho/posterior、strict nested benefit/risk scoreの小blockをexp413 final370へadd-onlyする | 今回readoutでsigned7追加はbeneficial AUC`0.659944→0.671898`、5/5 foldで独立情報を示した一方、hard gateと固定blendはtail FAIL。exp502はselector compact replacementでありadd-onlyではない。現行final-slot完了と、GPU新規variant明示承認を先行条件にする | outer5/inner4でwell-level auxiliary scoreをstrict nested生成し、raw correctionとtarget-free interactionだけを追加する。exp413保存controlは再学習せず、新規1 variant×3 configs×5 folds=15 boosters。pooled gain、5 fold、MD/hidden-like、by-well p95/worst、feature利用をall-AND判定 | benefit/risk threshold、hard well/row router、worst ID、exp490 top1、weight/tau/grid、親再学習は禁止。fixed10 outcomeのtruth labelをvalid側featureへ漏らさない。inference/submissionはtrain PASS後の別承認 |
+| 中・P2・ML add-only・15 GPU boosters別承認 | `exp490_mean_reversion_mechanism_risk_addonly_on_exp413`: exp490をhard候補採用せず、correction、signed physical consensus、K16/rho/posterior、strict nested benefit/risk scoreの小blockをexp413 final370へadd-onlyする | 今回readoutでsigned7追加はbeneficial AUC`0.659944→0.671898`、5/5 foldで独立情報を示した一方、hard gateと固定blendはtail FAIL。exp502はselector compact replacementでありadd-onlyではない。GPU新規variantの明示承認を先行条件とし、大会後の分析・学習に限定する | outer5/inner4でwell-level auxiliary scoreをstrict nested生成し、raw correctionとtarget-free interactionだけを追加する。exp413保存controlは再学習せず、新規1 variant×3 configs×5 folds=15 boosters。pooled gain、5 fold、MD/hidden-like、by-well p95/worst、feature利用をall-AND判定 | benefit/risk threshold、hard well/row router、worst ID、exp490 top1、weight/tau/grid、親再学習は禁止。fixed10 outcomeのtruth labelをvalid側featureへ漏らさない。inference/submissionは行わない |
 
 ## 観測事実と仮定の整理状態
 
@@ -35,7 +36,7 @@
 
 ## 親実験からの差分
 
-- 先行条件 / 依存: 今回readoutでsigned7追加はbeneficial AUC`0.659944→0.671898`、5/5 foldで独立情報を示した一方、hard gateと固定blendはtail FAIL。exp502はselector compact replacementでありadd-onlyではない。現行final-slot完了と、GPU新規variant明示承認を先行条件にする
+- 先行条件 / 依存: 今回readoutでsigned7追加はbeneficial AUC`0.659944→0.671898`、5/5 foldで独立情報を示した一方、hard gateと固定blendはtail FAIL。exp502はselector compact replacementでありadd-onlyではない。GPU新規variantの明示承認を先行条件とし、大会後の分析・学習に限定する
 - 変更するもの: 未整理
 - 固定するもの: 未整理
 - 再利用するコード / config / 生成物: 未整理
@@ -51,7 +52,7 @@ outer5/inner4でwell-level auxiliary scoreをstrict nested生成し、raw correc
 
 ## 実行しないこと
 
-benefit/risk threshold、hard well/row router、worst ID、exp490 top1、weight/tau/grid、親再学習は禁止。fixed10 outcomeのtruth labelをvalid側featureへ漏らさない。inference/submissionはtrain PASS後の別承認
+benefit/risk threshold、hard well/row router、worst ID、exp490 top1、weight/tau/grid、親再学習は禁止。fixed10 outcomeのtruth labelをvalid側featureへ漏らさない。inference/submissionは行わない
 
 ## リスク
 

@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `frozen_exp218_pseudostart_prediction_parity`: **test-time適応の再開前readout**。local-linear proxyではなくexp218自身をpseudo startで再生成し、known-prefix backtestがconfidence evidenceになるかだけを監査する
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低-中・再開条件付き
+- 優先度: P3
+- 優先度の理由: 再開条件付き
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

@@ -97,9 +97,7 @@ def update_metrics(path: Path, updates: dict[str, Any]) -> dict[str, Any]:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary_path = path.with_name(f".{path.name}.tmp")
     try:
-        temporary_path.write_text(
-            json.dumps(metrics, indent=2, ensure_ascii=False) + "\n"
-        )
+        temporary_path.write_text(json.dumps(metrics, indent=2, ensure_ascii=False) + "\n")
         temporary_path.replace(path)
     finally:
         if temporary_path.exists():
@@ -135,6 +133,53 @@ def allow_local_notebook_execution() -> bool:
     return os.environ.get("EXPERIMENT_ALLOW_LOCAL", "0") == "1"
 
 
+def raw_relative_path(
+    raw_value: Any,
+    target_value: Any,
+    default_name: str,
+    *,
+    field: str,
+) -> Path:
+    """Map a configured repository path to its location in a Kaggle competition input."""
+    raw_path = Path("data/raw" if is_todo_value(raw_value) else str(raw_value))
+    target_path = (
+        raw_path / default_name
+        if is_todo_value(target_value)
+        else Path(str(target_value))
+    )
+    try:
+        relative = target_path.relative_to(raw_path)
+    except ValueError as exc:
+        raise ValueError(f"{field} must be inside data.raw_dir for Kaggle runtime") from exc
+    if ".." in relative.parts:
+        raise ValueError(f"{field} must not escape data.raw_dir for Kaggle runtime")
+    return relative
+
+
+def project_kaggle_input_paths(project_config: dict[str, Any]) -> tuple[Path, Path, Path]:
+    raw_dir = get_nested(project_config, "data.raw_dir")
+    return (
+        raw_relative_path(
+            raw_dir,
+            get_nested(project_config, "data.train_dir"),
+            "train",
+            field="data.train_dir",
+        ),
+        raw_relative_path(
+            raw_dir,
+            get_nested(project_config, "data.test_dir"),
+            "test",
+            field="data.test_dir",
+        ),
+        raw_relative_path(
+            raw_dir,
+            get_nested(project_config, "submission.sample_file"),
+            "sample_submission.csv",
+            field="submission.sample_file",
+        ),
+    )
+
+
 def kaggle_competition_input_dir(project_config: dict[str, Any]) -> Path | None:
     slug = get_nested(project_config, "competition.slug")
     input_root = KAGGLE_INPUT_ROOT
@@ -144,17 +189,14 @@ def kaggle_competition_input_dir(project_config: dict[str, Any]) -> Path | None:
         candidate = input_root / str(slug)
         if candidate.exists():
             return candidate
+    train_relative, test_relative, sample_relative = project_kaggle_input_paths(project_config)
     for candidate in sorted(input_root.iterdir()):
         if not candidate.is_dir():
             continue
-        if (candidate / "train").is_dir() and (candidate / "test").is_dir():
+        if (candidate / train_relative).is_dir() and (candidate / test_relative).is_dir():
             return candidate
-        if (candidate / "sample_submission.csv").exists():
+        if (candidate / sample_relative).is_file():
             return candidate
-    for candidate in sorted(input_root.rglob("sample_submission.csv")):
-        parent = candidate.parent
-        if (parent / "train").is_dir() or (parent / "test").is_dir():
-            return parent
     return None
 
 
@@ -165,11 +207,12 @@ def project_experiment_defaults(project_config: dict[str, Any]) -> dict[str, Any
     data_dir = get_nested(project_config, "paths.data_dir") or "data"
     raw_dir = get_nested(project_config, "data.raw_dir") or f"{data_dir}/raw"
     processed_dir = get_nested(project_config, "data.processed_dir") or f"{data_dir}/processed"
+    seed = get_nested(project_config, "defaults.seed")
     defaults: dict[str, Any] = {
         "validation": {
             "strategy": get_nested(project_config, "defaults.primary_validation"),
             "n_folds": get_nested(project_config, "defaults.n_folds"),
-            "seed": get_nested(project_config, "defaults.seed"),
+            "seed": seed,
             "metric": get_nested(project_config, "defaults.metric"),
             "group_column": get_nested(project_config, "data.group_column"),
             "score_rows": get_nested(project_config, "data.score_rows"),
@@ -188,6 +231,7 @@ def project_experiment_defaults(project_config: dict[str, Any]) -> dict[str, Any
             "competition": project_config.get("competition", {}),
             "submission": project_config.get("submission", {}),
         },
+        "reproducibility": {"seed": seed},
     }
 
     runtime = project_config.get("runtime")
@@ -244,12 +288,14 @@ class ExperimentPaths:
     @property
     def train_data_dir(self) -> Path:
         local_path = self.resolve_config_path("data.train_dir", self.raw_data_dir / "train")
-        return self.kaggle_path_or_local(local_path, "train")
+        relative = self.kaggle_input_relative_path("data.train_dir", "train")
+        return self.kaggle_path_or_local(local_path, relative)
 
     @property
     def test_data_dir(self) -> Path:
         local_path = self.resolve_config_path("data.test_dir", self.raw_data_dir / "test")
-        return self.kaggle_path_or_local(local_path, "test")
+        relative = self.kaggle_input_relative_path("data.test_dir", "test")
+        return self.kaggle_path_or_local(local_path, relative)
 
     @property
     def sample_submission_path(self) -> Path:
@@ -257,7 +303,11 @@ class ExperimentPaths:
             "data.sample_submission",
             self.raw_data_dir / "sample_submission.csv",
         )
-        return self.kaggle_path_or_local(local_path, "sample_submission.csv")
+        relative = self.kaggle_input_relative_path(
+            "data.sample_submission",
+            "sample_submission.csv",
+        )
+        return self.kaggle_path_or_local(local_path, relative)
 
     @property
     def processed_data_dir(self) -> Path:
@@ -300,7 +350,19 @@ class ExperimentPaths:
     def resolve_project_path(self, dotted_key: str, default: str | Path) -> Path:
         return self.resolve_path(get_nested(load_project_config(), dotted_key), default)
 
-    def kaggle_path_or_local(self, local_path: Path, relative: str | None = None) -> Path:
+    def kaggle_input_relative_path(self, dotted_key: str, default_name: str) -> Path:
+        return raw_relative_path(
+            get_nested(self.config, "data.raw_dir"),
+            get_nested(self.config, dotted_key),
+            default_name,
+            field=dotted_key,
+        )
+
+    def kaggle_path_or_local(
+        self,
+        local_path: Path,
+        relative: str | Path | None = None,
+    ) -> Path:
         if is_kaggle_runtime():
             kaggle_input = kaggle_competition_input_dir(load_project_config())
             if kaggle_input is None:

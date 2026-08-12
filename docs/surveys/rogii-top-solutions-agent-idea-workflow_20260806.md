@@ -32,6 +32,8 @@ summary: 最終上位8解法を比較し、source-hidden blind benchmark 2回で
 
 # ROGII 上位解法と agent-driven Kaggle 着想ワークフロー
 
+- 対応する上位仮説: なし
+
 作成日: 2026-08-06
 
 ## まず持ち帰るべき5点
@@ -204,7 +206,7 @@ well-level GroupKFoldは必要だが十分ではない。neighbor availability�
 
 `(signal, representation, role, fusion, validation regime, compute regime)`
 
-closureは`instantiation closed`、`role closed`、`mechanism closed`の3段階に分ける。mechanism全体を閉じるのは、複数roleの独立検証またはtask invariantとの矛盾がある場合だけとする。
+negative resultが棄却できる範囲は、実装した具体案だけ、同じ使い方をした複数実装、情報や仕組み自体の3段階に分ける。情報や仕組み自体を棄却するのは、異なる使い方での独立検証または既知の制約との矛盾がある場合だけとする。
 
 ## agent運用についてwriteupが示した事実
 

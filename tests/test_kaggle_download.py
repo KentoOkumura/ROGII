@@ -114,8 +114,8 @@ def test_main_downloads_extracts_and_checks_sample_file(
 
     assert commands == [
         [
-            "uv",
-            "run",
+            sys.executable,
+            "-m",
             "kaggle",
             "competitions",
             "download",

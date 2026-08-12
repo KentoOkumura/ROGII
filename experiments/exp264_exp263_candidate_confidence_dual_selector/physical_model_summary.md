@@ -819,4 +819,4 @@ reference submission の Public LB は **7.562** で、固定物理 blend の7.8
 - [HMM persistent offset原因監査](../../docs/analysis/hmm_exp209_offset_cause_audit_20260725.md)
 - [HMM actual-message直接監査](../exp408_hmm_message_rate_basin_audit/result.md)
 - [PF particle / seed basin原因監査](../exp410_likpf_particle_resampling_basin_audit/result.md)
-- [exp226 offset根本原因監査](../../docs/analysis/exp226_offset_root_cause_audit_20260727.md)
+- [exp226 offset根本原因監査](../../docs/surveys/exp226_offset_root_cause_audit_20260727.md)

@@ -26,6 +26,8 @@ summary: "GR matchingの外部知見と既存実験を統合し、直接TVT決�
 
 # GR matching deep research: ROGII Wellbore Geology Prediction
 
+- 対応する上位仮説: なし
+
 調査日: 2026-06-25
 
 ## 結論

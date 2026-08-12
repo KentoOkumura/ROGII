@@ -3,6 +3,9 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -101,3 +104,19 @@ def test_validation_evidence_is_recorded_in_metrics(tmp_path: Path, monkeypatch)
     assert validation["infinite_value_count"] == 0
     assert validation["fallback_rows"] == 7
     assert metrics["evidence"]["artifacts"]["submission_sha"] == report.submission_sha256
+
+
+def test_build_report_rejects_string_allow_extra_columns(monkeypatch) -> None:
+    config = {
+        "submission": {
+            "sample_file": "sample_submission.csv",
+            "id_column": "id",
+            "target_columns": ["tvt"],
+            "allow_extra_columns": "false",
+        }
+    }
+    monkeypatch.setattr(VALIDATOR, "load_project_config", lambda: config)
+    args = SimpleNamespace(sample=None, submission="submission.csv")
+
+    with pytest.raises(ValueError, match="allow_extra_columns must be true or false"):
+        VALIDATOR.build_report(args)

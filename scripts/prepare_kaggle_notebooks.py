@@ -15,62 +15,28 @@ from typing import Any
 import yaml
 
 try:
-    from .config_utils import ROOT, get_nested, is_todo, load_project_config
+    from .config_utils import (
+        ROOT,
+        effective_kaggle_runtime,
+        get_nested,
+        is_todo,
+        kaggle_runtime_errors,
+        load_project_config,
+        validate_notebook_kind,
+    )
 except ImportError:  # Direct execution: `uv run python scripts/prepare_kaggle_notebooks.py`
-    from config_utils import ROOT, get_nested, is_todo, load_project_config
+    from config_utils import (
+        ROOT,
+        effective_kaggle_runtime,
+        get_nested,
+        is_todo,
+        kaggle_runtime_errors,
+        load_project_config,
+        validate_notebook_kind,
+    )
 
 IGNORE_PATTERNS = shutil.ignore_patterns("__pycache__", ".pytest_cache", ".ruff_cache")
 NOTEBOOK_KINDS = ("train", "inference")
-EXTRA_NOTEBOOK_KINDS = (
-    "replacement_preflight",
-    "selector_train",
-    "signed_selector_train",
-    "downstream_gpu_train",
-    "current_test_inference",
-    "selector_inference",
-    "rawtest_copcf_parity",
-    "inference_copcf_parity",
-    "pfbeam_features",
-    "pfbeam_features_fold0",
-    "pfbeam_features_fold1",
-    "pfbeam_features_fold2",
-    "pfbeam_features_fold3",
-    "pfbeam_features_fold4",
-    "prefix_crop_features",
-    "gr_matcher_features",
-    "guard",
-    "train_variant0",
-    "train_variant1",
-    "train_variant2",
-    "train_variant3",
-    "train_source",
-    "train_fold0",
-    "train_fold1",
-    "train_fold2",
-    "train_fold3",
-    "train_fold4",
-    "counterfactual_variant0",
-    "counterfactual_variant1",
-    "counterfactual_variant2",
-    "counterfactual_variant3",
-    "counterfactual_preflight",
-    "train_lgb0",
-    "train_lgb1",
-    "train_lgb2",
-    "train_aggregate",
-    "dual_cache_streaming_train",
-    "multiview_cache_m1000",
-    "multiview_cache_m250",
-    "multiview_cache_p250",
-    "multiview_cache_p1000",
-    "integrated_train",
-    "tvt_train",
-    "oof_selector_confidence_probe",
-    "oof_likpf_128_paths_probe",
-    "stage_a_fixed32",
-    "stage_b_fixed32",
-    "stage_d_visible",
-)
 DEFAULT_KERNELSPEC = {
     "display_name": "Python 3 (ipykernel)",
     "language": "python",
@@ -81,6 +47,7 @@ DEFAULT_LANGUAGE_INFO = {
     "pygments_lexer": "ipython3",
 }
 MAX_KERNEL_SLUG_LENGTH = 50
+_UNSET = object()
 
 
 def parse_args() -> argparse.Namespace:
@@ -90,9 +57,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--experiment", required=True, help="Experiment name, e.g. expXXX_model")
     parser.add_argument(
         "--notebook",
-        choices=(*NOTEBOOK_KINDS, *EXTRA_NOTEBOOK_KINDS, "both"),
         default="both",
-        help="Notebook package to prepare.",
+        metavar="KIND",
+        help=(
+            "Notebook suffix to prepare, or 'both' for train and inference. "
+            "Suffixes use lowercase letters, digits, and underscores."
+        ),
     )
     parser.add_argument(
         "--kernel-id",
@@ -113,7 +83,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--title",
         default=None,
-        help="Explicit Kaggle title. Only valid when --notebook is train or inference.",
+        help="Explicit Kaggle title. Only valid with a single notebook kind.",
     )
     parser.add_argument(
         "--title-prefix",
@@ -184,7 +154,7 @@ def suffixed_kernel_id(kernel_id_prefix: str | None, kind: str) -> str | None:
     username, _, slug = kernel_id_prefix.partition("/")
     if not username or not slug:
         raise ValueError("--kernel-id-prefix must look like username/kernel-slug")
-    return f"{username}/{slug}-{kind}"
+    return f"{username}/{slug}-{kaggle_slug(kind)}"
 
 
 def kaggle_slug(value: str) -> str:
@@ -194,21 +164,36 @@ def kaggle_slug(value: str) -> str:
 def metadata_validation_errors(
     metadata: dict[str, Any],
     *,
-    expected_enable_internet: bool | None = None,
+    expected_enable_gpu: bool | object = _UNSET,
+    expected_enable_internet: bool | object = _UNSET,
+    expected_machine_shape: str | None | object = _UNSET,
 ) -> list[str]:
     errors: list[str] = []
-    if metadata.get("enable_tpu") not in (None, False):
+    if metadata.get("enable_tpu") is not False:
         errors.append(
-            "enable_tpu is unsupported by this repository; use CPU or GPU metadata"
+            "enable_tpu is unsupported by this repository and must be explicitly false"
+        )
+    if expected_enable_gpu is not _UNSET and metadata.get("enable_gpu") is not expected_enable_gpu:
+        errors.append(
+            "enable_gpu does not match effective runtime config: "
+            f"expected {expected_enable_gpu}, got {metadata.get('enable_gpu')!r}"
         )
     if (
-        expected_enable_internet is not None
+        expected_enable_internet is not _UNSET
         and metadata.get("enable_internet") is not expected_enable_internet
     ):
         errors.append(
-            "enable_internet does not match project.yml: "
+            "enable_internet does not match effective runtime config: "
             f"expected {expected_enable_internet}, got "
             f"{metadata.get('enable_internet')!r}"
+        )
+    if (
+        expected_machine_shape is not _UNSET
+        and metadata.get("machine_shape") != expected_machine_shape
+    ):
+        errors.append(
+            "machine_shape does not match effective runtime config: "
+            f"expected {expected_machine_shape!r}, got {metadata.get('machine_shape')!r}"
         )
     for key in ("id", "title"):
         value = metadata.get(key)
@@ -226,9 +211,7 @@ def metadata_validation_errors(
     if separator != "/" or not owner or not kernel_slug or "/" in kernel_slug:
         errors.append("id must use owner/kernel-slug format")
     elif len(kernel_slug) > MAX_KERNEL_SLUG_LENGTH:
-        errors.append(
-            f"kernel slug exceeds {MAX_KERNEL_SLUG_LENGTH} characters: {kernel_slug}"
-        )
+        errors.append(f"kernel slug exceeds {MAX_KERNEL_SLUG_LENGTH} characters: {kernel_slug}")
 
     title = str(metadata.get("title") or "")
     title_slug = kaggle_slug(title)
@@ -236,8 +219,7 @@ def metadata_validation_errors(
         errors.append("title does not produce a non-empty Kaggle slug")
     elif kernel_slug and title_slug != kernel_slug:
         errors.append(
-            "id/title slug mismatch: "
-            f"id uses {kernel_slug!r}, title resolves to {title_slug!r}"
+            f"id/title slug mismatch: id uses {kernel_slug!r}, title resolves to {title_slug!r}"
         )
 
     return errors
@@ -255,11 +237,7 @@ def copy_src(destination_dir: Path) -> None:
 
 
 def is_experiment_support_file(path: Path) -> bool:
-    return (
-        path.suffix == ".py"
-        or path.suffix in {".yaml", ".yml"}
-        or path.name == "metrics.json"
-    )
+    return path.suffix == ".py" or path.suffix in {".yaml", ".yml"} or path.name == "metrics.json"
 
 
 def copy_experiment_sources(experiment_dir: Path, destination_dir: Path) -> None:
@@ -291,11 +269,7 @@ def collect_support_files(
         src_dir = ROOT / "src"
         if src_dir.exists():
             for path in sorted(src_dir.rglob("*")):
-                if (
-                    path.is_file()
-                    and "__pycache__" not in path.parts
-                    and path.suffix != ".pyc"
-                ):
+                if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc":
                     support_files[str(path.relative_to(ROOT))] = path.read_bytes()
     for item in bootstrap_files or []:
         relative_path = Path(str(item))
@@ -407,7 +381,7 @@ def write_kaggle_notebook(
 def selected_kinds(value: str) -> tuple[str, ...]:
     if value == "both":
         return NOTEBOOK_KINDS
-    return (value,)
+    return (validate_notebook_kind(value),)
 
 
 def build_metadata(
@@ -545,6 +519,10 @@ def prepare_one(
 
 def main() -> None:
     args = parse_args()
+    try:
+        notebook_kinds = selected_kinds(args.notebook)
+    except ValueError as exc:
+        raise SystemExit(f"invalid --notebook value: {exc}") from exc
     if args.kernel_id and args.notebook == "both":
         raise SystemExit("--kernel-id is only valid with a single --notebook kind")
     if args.title and args.notebook == "both":
@@ -602,25 +580,6 @@ def main() -> None:
         experiment_config,
         "runtime.kaggle.guard_model_sources",
     )
-    enable_gpu = get_nested(
-        experiment_config,
-        "runtime.kaggle.enable_gpu",
-    )
-    if enable_gpu is None:
-        enable_gpu = get_nested(config, "runtime.kaggle.enable_gpu")
-    enable_internet = get_nested(
-        experiment_config,
-        "runtime.kaggle.enable_internet",
-    )
-    if enable_internet is None:
-        enable_internet = get_nested(config, "runtime.kaggle.enable_internet")
-    machine_shape = get_nested(experiment_config, "runtime.kaggle.machine_shape")
-    if machine_shape is None:
-        machine_shape = get_nested(experiment_config, "runtime.kaggle.machineShape")
-    if machine_shape is None:
-        machine_shape = get_nested(config, "runtime.kaggle.machine_shape")
-    if machine_shape is None:
-        machine_shape = get_nested(config, "runtime.kaggle.machineShape")
     default_kernel_sources = (
         [str(value) for value in configured_kernel_sources]
         if isinstance(configured_kernel_sources, list)
@@ -643,7 +602,11 @@ def main() -> None:
     )
 
     prepared: list[tuple[Path, list[str]]] = []
-    for kind in selected_kinds(args.notebook):
+    for kind in notebook_kinds:
+        runtime_settings = effective_kaggle_runtime(config, experiment_config, kind)
+        runtime_errors = kaggle_runtime_errors(runtime_settings)
+        if runtime_errors:
+            raise ValueError("; ".join(runtime_errors))
         kind_bootstrap_files = get_nested(
             experiment_config,
             f"runtime.kaggle.{kind}.bootstrap_files",
@@ -670,27 +633,14 @@ def main() -> None:
                 else None
             )
         )
-        resolved_include_experiment_sources = (
-            bool(kind_include_experiment_sources)
-            if kind_include_experiment_sources is not None
-            else True
-        )
-        kind_enable_gpu = get_nested(
-            experiment_config,
-            f"runtime.kaggle.{kind}.enable_gpu",
-        )
-        resolved_enable_gpu = kind_enable_gpu if kind_enable_gpu is not None else enable_gpu
-        kind_machine_shape = get_nested(
-            experiment_config,
-            f"runtime.kaggle.{kind}.machine_shape",
-        )
-        if kind_machine_shape is None:
-            kind_machine_shape = get_nested(
-                experiment_config,
-                f"runtime.kaggle.{kind}.machineShape",
+        if kind_include_experiment_sources is not None and not isinstance(
+            kind_include_experiment_sources, bool
+        ):
+            raise ValueError(
+                f"runtime.kaggle.{kind}.include_experiment_sources must be true or false"
             )
-        resolved_machine_shape = (
-            kind_machine_shape if kind_machine_shape is not None else machine_shape
+        resolved_include_experiment_sources = (
+            kind_include_experiment_sources if kind_include_experiment_sources is not None else True
         )
         explicit_kernel_id = {
             "train": args.train_kernel_id,
@@ -701,32 +651,59 @@ def main() -> None:
         kernel_id = explicit_kernel_id or suffixed_kernel_id(args.kernel_id_prefix, kind)
         kind_configured_kernel_sources = get_nested(
             experiment_config,
-            f"runtime.kaggle.{kind}_kernel_sources",
+            f"runtime.kaggle.{kind}.kernel_sources",
         )
+        if kind_configured_kernel_sources is None:
+            kind_configured_kernel_sources = get_nested(
+                experiment_config,
+                f"runtime.kaggle.{kind}_kernel_sources",
+            )
         kind_configured_dataset_sources = get_nested(
             experiment_config,
-            f"runtime.kaggle.{kind}_dataset_sources",
+            f"runtime.kaggle.{kind}.dataset_sources",
         )
+        if kind_configured_dataset_sources is None:
+            kind_configured_dataset_sources = get_nested(
+                experiment_config,
+                f"runtime.kaggle.{kind}_dataset_sources",
+            )
         kind_configured_model_sources = get_nested(
             experiment_config,
-            f"runtime.kaggle.{kind}_model_sources",
+            f"runtime.kaggle.{kind}.model_sources",
         )
+        if kind_configured_model_sources is None:
+            kind_configured_model_sources = get_nested(
+                experiment_config,
+                f"runtime.kaggle.{kind}_model_sources",
+            )
         if kind == "train":
-            kind_configured_kernel_sources = configured_train_kernel_sources
-            kind_configured_dataset_sources = configured_train_dataset_sources
-            kind_configured_model_sources = configured_train_model_sources
+            if kind_configured_kernel_sources is None:
+                kind_configured_kernel_sources = configured_train_kernel_sources
+            if kind_configured_dataset_sources is None:
+                kind_configured_dataset_sources = configured_train_dataset_sources
+            if kind_configured_model_sources is None:
+                kind_configured_model_sources = configured_train_model_sources
         elif kind == "inference":
-            kind_configured_kernel_sources = configured_inference_kernel_sources
-            kind_configured_dataset_sources = configured_inference_dataset_sources
-            kind_configured_model_sources = configured_inference_model_sources
+            if kind_configured_kernel_sources is None:
+                kind_configured_kernel_sources = configured_inference_kernel_sources
+            if kind_configured_dataset_sources is None:
+                kind_configured_dataset_sources = configured_inference_dataset_sources
+            if kind_configured_model_sources is None:
+                kind_configured_model_sources = configured_inference_model_sources
         elif kind in {"prefix_crop_features", "gr_matcher_features"}:
-            kind_configured_kernel_sources = default_kernel_sources
-            kind_configured_dataset_sources = default_dataset_sources
-            kind_configured_model_sources = default_model_sources
+            if kind_configured_kernel_sources is None:
+                kind_configured_kernel_sources = default_kernel_sources
+            if kind_configured_dataset_sources is None:
+                kind_configured_dataset_sources = default_dataset_sources
+            if kind_configured_model_sources is None:
+                kind_configured_model_sources = default_model_sources
         elif kind == "guard":
-            kind_configured_kernel_sources = configured_guard_kernel_sources
-            kind_configured_dataset_sources = configured_guard_dataset_sources
-            kind_configured_model_sources = configured_guard_model_sources
+            if kind_configured_kernel_sources is None:
+                kind_configured_kernel_sources = configured_guard_kernel_sources
+            if kind_configured_dataset_sources is None:
+                kind_configured_dataset_sources = configured_guard_dataset_sources
+            if kind_configured_model_sources is None:
+                kind_configured_model_sources = configured_guard_model_sources
         elif (
             kind in {"selector_train", "signed_selector_train", "downstream_gpu_train"}
             or kind.startswith("train_lgb")
@@ -776,11 +753,9 @@ def main() -> None:
                 competition_slug=str(competition_slug) if competition_slug is not None else None,
                 competition_name=str(competition_name) if competition_name is not None else None,
                 owner=str(owner) if owner is not None and not is_todo(owner) else None,
-                enable_gpu=bool(resolved_enable_gpu) if resolved_enable_gpu is not None else None,
-                enable_internet=bool(enable_internet) if enable_internet is not None else None,
-                machine_shape=(
-                    str(resolved_machine_shape) if resolved_machine_shape is not None else None
-                ),
+                enable_gpu=runtime_settings["enable_gpu"],
+                enable_internet=runtime_settings["enable_internet"],
+                machine_shape=runtime_settings.get("machine_shape"),
                 run_on_push=args.run_on_push,
                 copy_repository_src=not args.no_src,
                 bootstrap_files=resolved_bootstrap_files,

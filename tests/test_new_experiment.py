@@ -81,7 +81,7 @@ def test_parent_copy_replaces_identity_and_resets_execution_records(
         "  status: completed\n"
         "lineage:\n"
         "  parent: exp000_base\n"
-        "  hypothesis_id: HYP-20260801-01\n"
+        "  hypothesis_id: HYP-19000101-93\n"
         "  backlog_candidate: parent_candidate\n"
         "  diff_summary: parent diff\n"
         "model:\n"

@@ -26,6 +26,8 @@ summary: "外部データ、公開生成物、コンペ内候補生成を比較�
 
 # ROGII external data and data generation survey
 
+- 対応する上位仮説: なし
+
 調査日: 2026-07-07
 
 ## 結論

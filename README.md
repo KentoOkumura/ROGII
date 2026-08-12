@@ -22,25 +22,34 @@ uv sync --locked --extra dev
 task validate-template
 ```
 
-ルートの`task test` / `make test`は共通テストと実験固有テストを収集するため、全テストを扱う前にNotebook依存も同期します。
+検証範囲の判断は`AGENTS.md`の運用ルールを正とします。
 
-```bash
-uv sync --locked --extra dev --extra notebook
-task test
-```
-
-通常の実験変更では全テストを実行せず、対象実験だけを非破壊で確認します。`task test` / `make test`は、共通基盤やテンプレートを広く変更した場合、または全件確認を明示した場合に使います。
+実験単位の確認コマンド:
 
 ```bash
 task check-exp EXP=exp001_baseline
 task test-exp EXP=exp001_baseline
 ```
 
-リポジトリ共通コードや同梱skillを変更した場合は、実験固有テストを収集せず、対応する共通検証だけを実行します。`check-skills`は各`SKILL.md`のfrontmatter・名前・本文、存在する`agents/openai.yaml`のUI metadata、skill内のPythonコードを検査します。`agents/openai.yaml`自体は推奨ファイルなので、存在しないskillも許可します。
+skillの確認コマンド。`check-skills`は各`SKILL.md`のfrontmatter・名前・本文、存在する`agents/openai.yaml`のUI metadata、skill内のPythonコードを検査します。`agents/openai.yaml`自体は推奨ファイルなので、存在しないskillも許可します。
 
 ```bash
 task check-skills
+```
+
+ルートテストのファイル指定とテンプレート検証のコマンド例:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 UV_CACHE_DIR=/tmp/uv-cache uv run --extra dev --extra notebook pytest -q tests/test_target.py
+task validate-template
+```
+
+共通テストと全件検証のコマンド。全件検証では、共通テストと実験固有テストを収集する前にNotebook依存も同期します。
+
+```bash
 task test-common
+uv sync --locked --extra dev --extra notebook
+task test
 ```
 
 Notebook や Streamlit アプリを使う場合:
@@ -68,14 +77,14 @@ make validate-exp EXP=exp001_baseline EXTRA_ARGS="--allow-todo"
 
 | 領域 | 管理する内容 |
 | --- | --- |
-| コンペ設定 | `project.yml` に competition、data、validation、submission、Kaggle runtime を記録 |
+| コンペ設定 | `project.yml` に competition、data、defaults、submission、metadata、runtime.kaggle を記録。リポジトリ構成を変える場合だけ paths も更新 |
 | 検証中の上位仮説 | `KAGGLE_DIRECTION.md` で複数の未着手候補・実験と残っている問いを対応付ける |
 | 未着手候補 | `KAGGLE_DIRECTION.md` を索引、`docs/backlog/<candidate>.md` を候補詳細の正として管理 |
 | 実験計画 | `.steering/` に要件、設計、タスクリストを作成 |
-| 実験コード | `experiments/<exp>/` に `config.yaml`、`settings.py`、train/inference notebook、記録ファイルを配置 |
+| 実験コード | `experiments/<exp>/` に `config.yaml`、`settings.py`、実験に必要なtrain/inference/audit/diagnostic notebook、記録ファイルを配置 |
 | 共通コード | 複数実験で使う処理を `src/` に集約 |
 | 公開Notebook資料 | 取得した公開Notebookとmetadataを `docs/notebooks/` に保存 |
-| 調査レポート | 完了した実験調査、モデル説明、OOF／結果EDA、外部調査を `docs/surveys/` に集約し、生成索引で検索 |
+| 調査レポート | 完了した実験調査、モデル説明、OOF／結果EDA、外部調査を `docs/surveys/` に集約し、上位仮説・実験番号・種類・トピック別の生成索引で検索 |
 | 調査コード | その場限りの分析コードと生の表・図を `studies/` に保存 |
 | 提出管理 | `submission.csv` の形式検証、Kaggle Notebook 実行、提出履歴の記録 |
 | 実験比較 | `metrics.json`、`experiment_summary.md`、`SUBMISSIONS.md` で結果を追跡 |
@@ -86,10 +95,10 @@ make validate-exp EXP=exp001_baseline EXTRA_ARGS="--allow-todo"
 - 複数の未着手候補・実験を共通の上位仮説IDで追跡できます。
 - 実験前に steering document を作成し、仮説、設計、成功条件を明文化できます。
 - `project.yml` と各実験の `config.yaml` を検証し、TODO や設定漏れを検出できます。
-- Kaggle 上の学習・推論、提出形式チェックを `task` で統一して実行できます。
+- 実験契約に必要な Kaggle Notebook の実行、提出形式チェックを `task` で統一して実行できます。
 - Kaggle 実行用の notebook ディレクトリと `kernel-metadata.json` を生成できます。
 - 実験結果と提出履歴を Markdown と JSON に記録し、比較表を更新できます。
-- 完了した調査レポートを実験番号・種類・トピック別に自動索引化できます。
+- 完了した調査レポートを上位仮説・実験番号・種類・トピック別に自動索引化できます。
 - Streamlit アプリで実験結果や OOF 分析を確認できます。
 - Codex 用の repo-local skills を `.agents/skills/` に置き、Kaggle 作業の手順を共有できます。
 
@@ -101,11 +110,11 @@ make validate-exp EXP=exp001_baseline EXTRA_ARGS="--allow-todo"
 | --- | --- |
 | `kaggle-platform` | Kaggle API、認証、データ取得、`project.yml` 設定、コンペ資料の準備 |
 | `colab-notebook-runner` | Kaggle GPU quota が限られる場合の Colab notebook、Google Drive、runtime/session 対応 |
-| `kaggle-review-exp` | 承認済みbacklog候補のsteering移行、実験の作成・実行・記録・レビュー。backlog更新はStrategyへ引き渡す |
+| `kaggle-review-exp` | 承認済み実験のsteering、作成・実行・記録・レビュー。backlog経由では仮説・backlog更新をStrategyへ引き渡す |
 | `kaggle-review` | 学習/推論コード、notebook、OOF、失敗実行のレビュー |
-| `kaggle-oof-readout` | OOF、feature importance、feature cache、by-well metricsを結合した誤差分析。候補保存はStrategyへ引き渡す |
-| `kaggle-idea-forge` | 反証可能な候補の独立生成。候補をbacklogへ直接保存しない |
-| `kaggle-strategy` | 戦略と優先順位を整理し、アイデアbacklogを作成・更新・削除する唯一のSkill |
+| `kaggle-oof-readout` | OOF、feature importance、feature cache、by-well metricsを結合した誤差分析。仮説・候補の保存はStrategyへ引き渡す |
+| `kaggle-idea-forge` | 反証可能な候補の独立生成。検証中の仮説やbacklogへ直接保存しない |
+| `kaggle-strategy` | 上位仮説、戦略、優先順位を整理し、検証中の仮説とアイデアbacklogを作成・更新・削除する唯一のSkill |
 | `kaggle-submit-check` | `submission.csv`、Kaggle Notebook、`kernel-metadata.json` の提出前検証 |
 | `kaggle-submit-monitor` | `kaggle competitions submit` 後の scoring 監視と LB 記録 |
 | `kaggle-notebook-fetch` | 上位公開 notebook をメタデータ付きでローカル保存 |
@@ -116,12 +125,12 @@ make validate-exp EXP=exp001_baseline EXTRA_ARGS="--allow-todo"
 
 ## 標準ワークフロー
 
-初回は`project.yml`のコンペ固有項目を埋めてtemplate validationを行い、Kaggle認証後にコンペデータを取得します。`dl-kaggle-comp`は取得したzipを`data.raw_dir`へ安全に展開し、設定した`submission.sample_file`が存在することまで確認します。その後にstrict config validationを行います。詳しい設定項目は`kaggle-platform`の「Repository Template Setup」を正とします。
+初回は`project.yml`のコンペ固有項目を埋めてtemplate validationを行い、Kaggle認証後にコンペデータを取得します。`data.train_dir`、`data.test_dir`、`submission.sample_file`は`data.raw_dir`内に設定します。`dl-kaggle-comp`は取得したzipを`data.raw_dir`へ安全に展開し、設定した`submission.sample_file`が存在することまで確認します。その後にstrict config validationを行います。詳しい設定項目は`kaggle-platform`の「Repository Template Setup」を正とします。
 
 ```bash
 task validate-template
 task dl-kaggle-comp
-task validate-config
+task validate-config VALIDATE_ARGS="--expected-competition <competition-slug>"
 ```
 
 `submission.sample_file`を別の方法で配置済みなら、データ取得は省略できます。初期設定の検証後、steering documentを作ってから実験ディレクトリを作成します。
@@ -132,7 +141,7 @@ task new-exp EXP=exp002_next_idea SOURCE=experiments/exp001_baseline
 task validate-exp EXP=exp002_next_idea EXTRA_ARGS="--allow-todo"
 ```
 
-以後の実装、Kaggle train/inference、記録、レビューは `kaggle-review-exp`、Kaggle CLI と kernel 操作は `kaggle-platform` を使います。提出物の実ファイルを検証する場合は `kaggle-submit-check`、submit 後の監視は `kaggle-submit-monitor` を使います。ライフサイクル全体は `docs/05_workflow.md`、作業別の入口は `docs/agent-playbooks.md` を参照してください。
+以後の実装、実験契約に必要な Kaggle Notebook の実行、記録、レビューは `kaggle-review-exp`、Kaggle CLI と kernel 操作は `kaggle-platform` を使います。提出物の実ファイルを検証する場合は `kaggle-submit-check`、submit 後の監視は `kaggle-submit-monitor` を使います。ライフサイクル全体は `docs/05_workflow.md`、作業別の入口は `docs/agent-playbooks.md` を参照してください。
 
 ## 記録と判断
 
@@ -142,7 +151,7 @@ task validate-exp EXP=exp002_next_idea EXTRA_ARGS="--allow-todo"
 
 データ配置は `AGENTS.md`、コンペ設定は `project.yml` を正とします。Kaggle Notebook のフル実行と公式評価を基準にし、local smoke だけで公式スコアや Kaggle 実行完了を判断しません。
 
-CV は live logs、notebook cell、Kaggle UI から記録できます。提出物、OOF、model manifest、feature importance、SHA など実ファイルの確認が必要な場合だけ Kaggle output を取得します。Notebook-only code submission は対象 kernel version の `submission.csv` を確認して一度だけ実行し、同じ提出に raw CLI と task の両方を使いません。詳しい操作と失敗時の切り分けは `kaggle-platform` を参照してください。
+Kaggle outputを取得する条件とNotebook-only code submissionの操作手順は`kaggle-platform`を正とします。実際のsubmissionに必要なユーザー承認は`AGENTS.md`を参照してください。
 
 ## リポジトリ構成
 
@@ -168,9 +177,9 @@ CV は live logs、notebook cell、Kaggle UI から記録できます。提出�
 - `AGENTS.md`: エージェント向けの最優先運用ルール
 - `Taskfile.yml`: 推奨コマンド定義
 - `Makefile`: `task` が使えない環境向けの代替コマンド
-- `project.yml`: コンペ単位のメタデータ、データ、検証、提出、Kaggle runtime の正
+- `project.yml`: コンペ単位の competition、data、defaults、submission、metadata、runtime.kaggle の正。リポジトリ構成を変える場合だけ paths も更新
 - `SUBMISSIONS.md`: submission refを専用列に持つ提出履歴
-- `KAGGLE_DIRECTION.md`: コンペ戦略、検証方針、現在の重点、検証中の上位仮説、アイデアバックログ
+- `KAGGLE_DIRECTION.md`: 現在の重点、比較基準、検証中の上位仮説、未着手候補の索引
 - `experiment_summary.md`: 実験比較と自動更新される要約
 - `docs/surveys/README.md`: 完了した調査レポートの生成索引
 - `docs/agent-playbooks.md`: 実験、提出、レビュー、分析の作業別参照索引
@@ -203,8 +212,8 @@ CV戦略:
 
 成功条件:
 - task validate-exp EXP=exp002_agg_features が通る
-- debug train/inference が通る
-- metrics.json と Kaggle inference output の submission.csv が生成される
+- この実験で必要なtrain notebookのdebugが通る
+- metrics.jsonにCVと実行証拠が保存される
 
 リスク:
 - 集約特徴量の fit 範囲を誤るとリークする
@@ -216,7 +225,7 @@ CV戦略:
 ## 人間が確認すること
 
 - 公式ルール、外部データ可否、提出回数、Notebook の internet/GPU 制約
-- `project.yml` の competition、data、validation、submission、runtime 設定
+- `project.yml` の competition、data、defaults、submission、metadata、runtime.kaggle 設定。リポジトリ構成を変える場合は paths も確認
 - Kaggle API token や秘密情報が Git に入っていないこと
 - CV と LB がずれた場合の原因調査
 - 採用する実験、提出する実験、public/private LB の確認

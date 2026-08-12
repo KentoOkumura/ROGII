@@ -54,7 +54,7 @@ uv run python .agents/skills/kaggle-platform/shared/check_all_credentials.py --r
 | Upload dataset file / version | `dataset_upload()` | `kaggle datasets create` / `kaggle datasets version` | `upload_dataset_file` / `update_dataset_metadata` | Yes |
 | Search notebooks | — | `kaggle kernels list` | `search_notebooks` | Yes |
 | Get notebook info | — | — | `get_notebook_info` / `list_notebook_files` | Yes |
-| Execute notebook (KKB) | — | `kaggle kernels push/logs -f/output` | `create_notebook_session` → `get_notebook_session_status` → `download_notebook_output[_zip]` | Yes |
+| Execute a Kaggle Notebook | — | `kaggle kernels push/logs -f/output` | `create_notebook_session` → `get_notebook_session_status` → `download_notebook_output[_zip]` | Yes |
 | Cancel notebook session | — | — | `cancel_notebook_session` | Yes |
 | Save / version notebook | — | `kaggle kernels push` | `save_notebook` | Yes |
 | List models | — | `kaggle models list` | `list_models` | Yes |
@@ -132,7 +132,7 @@ bash .agents/skills/kaggle-platform/modules/kllm/scripts/cli_download.sh owner/d
 path = kagglehub.model_download("owner/model/framework/variation")
 ```
 
-### Execute Notebook on KKB
+### Execute a Kaggle Notebook
 ```bash
 uv run kaggle kernels push -p ./notebook-dir
 uv run kaggle kernels logs -f username/kernel-slug
@@ -208,10 +208,11 @@ The paths below are relative to this `modules/kllm/` directory. Repository-root 
 
 - `../../shared/check_all_credentials.py` — Verify Kaggle credentials without printing their values
 - `../registration/scripts/configure_token.py` — Store an API token entered locally with hidden input
+- `scripts/repo_uv_env.sh` — Internal shared initialization for writable repo-local uv execution; do not invoke directly
 - `scripts/network_check.sh` — Check network reachability to Kaggle API endpoints
 - `scripts/poll_kernel.sh <kernel-slug> [output-dir]` — Legacy filename; follow live logs and then download output without status polling
 - `scripts/cli_download.sh` — Download datasets and models via kaggle-cli
-- `scripts/cli_execute.sh <notebook-dir> <kernel-slug> [output-dir]` — Execute a notebook on KKB
+- `scripts/cli_execute.sh <notebook-dir> <kernel-slug> [output-dir]` — Execute a Kaggle Notebook
 - `scripts/cli_competition.sh <competition> [download-dir]` — Inspect a competition and download raw competition data; never submit
 - `scripts/cli_publish.sh <dataset|notebook|model> <dir> [model-handle]` — Publish resources
 - `scripts/kagglehub_download.py` — Download datasets and models via kagglehub

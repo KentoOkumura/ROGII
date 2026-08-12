@@ -255,7 +255,8 @@ def _submit_community(username: str) -> bool:
 def _code_submission(username: str) -> bool:
     """Make a code-based submission for two badge criteria.
 
-    Creates a notebook that generates a submission file and submits via KKB.
+    Creates a notebook that generates a submission file in the Kaggle
+    Notebook execution environment.
     """
     badge_ids = ["code_submitter", "notebook_modeler"]
     actionable = [b for b in badge_ids if should_attempt(b)]
@@ -330,7 +331,7 @@ def _code_submission(username: str) -> bool:
 
         run_kaggle_cli(["kernels", "push", "-p", str(tmp)])
         print(f"  [OK] Code submission notebook pushed: {nb_slug}")
-        print("  NOTE: Notebook will execute on KKB. Follow logs with:")
+        print("  NOTE: The Kaggle Notebook will execute remotely. Follow logs with:")
         print(f"    uv run kaggle kernels logs -f {username}/{nb_slug}")
 
         for bid in actionable:

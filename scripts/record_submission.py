@@ -21,8 +21,25 @@ TABLE_HEADER = (
     "| バージョン | 日付 | 実験 | ファイル | 行数 | 列 | SHA256 | "
     "CV | Public LB | Private LB | submission ref | メモ |\n"
 )
-TABLE_SEPARATOR = (
-    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+TABLE_SEPARATOR = "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+HISTORY_INTRO = (
+    "# 提出履歴\n\n"
+    "この表はsubmission ref単位の横断履歴であり、各提出の最終スナップショットを"
+    "保持します。採点状態と所要時間の詳細な時系列の正は対応実験の"
+    "`SESSION_NOTES.md`、CV/LBとNotebook実行時間の正は`metrics.json`です。"
+    "CV/LBは`record-submission`が`metrics.json`から取得します。メモ欄に横断比較用の"
+    "最終値を置く場合は、Kaggle submissionの採点状態を`submission_status`、"
+    "Notebook全体の実行時間を`notebook_runtime_seconds`、提出から採点確定までの"
+    "所要時間を`scoring_elapsed_minutes`で記録します。Notebook内の部分処理時間は"
+    "処理名を付けた`*_elapsed_seconds`とし、意味が曖昧な`status`、`runtime`は"
+    "使いません。\n\n"
+)
+AMBIGUOUS_NOTE_KEY_RE = re.compile(r"(?<![A-Za-z_])(?:status|runtime)\s*=", re.IGNORECASE)
+UNKEYED_COMPLETE_RE = re.compile(
+    r"\bscoring (?:is )?(?:complete|completed)\b|"
+    r"\bKaggle CLI verified COMPLETE\b|"
+    r"(?:^|;\s*)complete(?:;|$)",
+    re.IGNORECASE,
 )
 
 
@@ -41,7 +58,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--notes",
         default=None,
-        help="Notes for a new row, or replacement notes when updating an existing ref",
+        help=(
+            "Final snapshot notes for a new row, or replacement notes when updating an "
+            "existing ref. Use submission_status, notebook_runtime_seconds, "
+            "scoring_elapsed_minutes, and named *_elapsed_seconds keys."
+        ),
     )
     parser.add_argument(
         "--allow-missing-file",
@@ -83,10 +104,29 @@ def validate_new_version(version: str) -> None:
 def validate_submission_ref(value: str) -> str:
     submission_ref = value.strip()
     if re.fullmatch(r"\d+", submission_ref) is None:
-        raise SystemExit(
-            f"submission ref must be the exact numeric Kaggle ref: {value!r}"
-        )
+        raise SystemExit(f"submission ref must be the exact numeric Kaggle ref: {value!r}")
     return submission_ref
+
+
+def validate_notes(value: str | None) -> str | None:
+    if value is None:
+        return None
+    notes = value.strip()
+    if not notes:
+        raise SystemExit("submission notes must not be empty")
+    if "\n" in notes or "\r" in notes or "|" in notes:
+        raise SystemExit("submission notes must fit in one Markdown table cell")
+    if AMBIGUOUS_NOTE_KEY_RE.search(notes):
+        raise SystemExit(
+            "use submission_status, notebook_runtime_seconds, "
+            "scoring_elapsed_minutes, or a named *_elapsed_seconds key in notes"
+        )
+    if (
+        UNKEYED_COMPLETE_RE.search(notes)
+        and re.search(r"(?<![A-Za-z_])submission_status\s*=", notes, re.IGNORECASE) is None
+    ):
+        raise SystemExit("record a final scoring state with submission_status=... in notes")
+    return notes
 
 
 def display_metric(value: Any) -> str:
@@ -107,15 +147,10 @@ def experiment_scores(experiment: str) -> tuple[str, str, str]:
     try:
         metrics = json.loads(metrics_path.read_text())
     except json.JSONDecodeError as exc:
-        raise SystemExit(
-            f"invalid metrics JSON: {display_path(metrics_path)}: {exc}"
-        ) from exc
+        raise SystemExit(f"invalid metrics JSON: {display_path(metrics_path)}: {exc}") from exc
     if not isinstance(metrics, dict):
         raise SystemExit(f"{display_path(metrics_path)} must contain a JSON object")
-    return tuple(
-        display_metric(metrics.get(key))
-        for key in ("cv", "public_lb", "private_lb")
-    )
+    return tuple(display_metric(metrics.get(key)) for key in ("cv", "public_lb", "private_lb"))
 
 
 def resolve_path(path: str) -> Path:
@@ -143,7 +178,7 @@ def csv_shape(path: Path) -> tuple[str, str]:
 
 def ensure_table() -> None:
     if not SUBMISSIONS_PATH.exists():
-        SUBMISSIONS_PATH.write_text("# 提出履歴\n\n" + TABLE_HEADER + TABLE_SEPARATOR)
+        SUBMISSIONS_PATH.write_text(HISTORY_INTRO + TABLE_HEADER + TABLE_SEPARATOR)
 
 
 def parse_table_row(line: str) -> list[str] | None:
@@ -156,9 +191,7 @@ def parse_table_row(line: str) -> list[str] | None:
     return cells
 
 
-def find_submission_row(
-    lines: list[str], submission_ref: str
-) -> tuple[int, list[str]] | None:
+def find_submission_row(lines: list[str], submission_ref: str) -> tuple[int, list[str]] | None:
     matches: list[tuple[int, list[str]]] = []
     for index, line in enumerate(lines):
         cells = parse_table_row(line)
@@ -197,6 +230,7 @@ def display_path(path: Path) -> str:
 
 def main() -> None:
     args = parse_args()
+    notes = validate_notes(args.notes)
     SUBMISSIONS_PATH.parent.mkdir(parents=True, exist_ok=True)
     ensure_table()
 
@@ -222,9 +256,7 @@ def main() -> None:
                 f"submission ref {submission_ref} already uses {version}, not {args.version}"
             )
         if cells[2] != args.experiment:
-            raise SystemExit(
-                f"submission ref {submission_ref} already belongs to {cells[2]}"
-            )
+            raise SystemExit(f"submission ref {submission_ref} already belongs to {cells[2]}")
         if file_path.exists():
             existing_hash = cells[6]
             if existing_hash != "-" and existing_hash != file_hash:
@@ -234,8 +266,8 @@ def main() -> None:
             if existing_hash == "-":
                 cells[3:7] = [display_file, rows, columns, file_hash]
         cells[7:10] = [cv, public_lb, private_lb]
-        if args.notes is not None:
-            cells[11] = args.notes
+        if notes is not None:
+            cells[11] = notes
         lines[index] = render_table_row(cells)
         write_lines(lines)
         print(f"Updated submission {version} for {args.experiment}")
@@ -255,7 +287,7 @@ def main() -> None:
         public_lb,
         private_lb,
         submission_ref,
-        args.notes or "-",
+        notes or "-",
     ]
     lines.append(render_table_row(cells))
     write_lines(lines)

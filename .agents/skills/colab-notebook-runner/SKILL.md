@@ -11,7 +11,8 @@ Use this skill when moving an existing `experiments/expXXX_name/*_train.ipynb` w
 
 1. Keep the original experiment ID. Do not create a new Kaggle experiment only because the runtime changes from Kaggle Notebook to Colab.
 2. Prefer a Colab-specific runner notebook instead of mutating the canonical Kaggle train notebook. Name it `<exp>_colab_train.ipynb` unless the user requests otherwise.
-3. Store long-running logs and run metadata under `<exp>/colab_runs/` on Google Drive.
+3. Store long-running logs and run metadata under
+   `experiments/<exp>/artifacts/colab_runs/` on Google Drive.
 4. For large inputs, never rely on DriveFS direct reads for heavy training. Copy large `.csv.gz`, model, or feature-cache artifacts from Drive to `/content/...` first, then pass the `/content` path to the experiment code.
 5. Use foreground execution only for short smoke tests. Use Drive-backed log files for long runs so the result survives CLI or browser disconnects.
 
@@ -98,12 +99,17 @@ UV_CACHE_DIR=/tmp/uv-cache uv run --extra dev ruff check experiments/<exp>/<exp>
 rg -n "__file__|Path\\(__file__\\)" experiments/<exp>/<exp>_colab_train.py
 ```
 
-Use `scripts/create_colab_train_notebook.py` to create a Colab runner notebook:
+`scripts/create_colab_train_notebook.py` is an exp092-specific reference generator. It is not a
+generic entry point for arbitrary experiments because its imported module, function arguments,
+cache contract, and completion summary are specific to
+`exp092_u_projection_correction_disagreement_fullrun`. For another experiment, adapt a Jupytext
+source using the workflow above and explicitly define that experiment's entry point and inputs.
+
+Create the exp092 runner with:
 
 ```bash
 uv run python .agents/skills/colab-notebook-runner/scripts/create_colab_train_notebook.py \
   --repo-root . \
-  --experiment exp092_u_projection_correction_disagreement_fullrun \
   --output experiments/exp092_u_projection_correction_disagreement_fullrun/exp092_u_projection_correction_disagreement_fullrun_colab_train.ipynb \
   --drive-root /content/drive/MyDrive/Kaggle/ROGII \
   --cache-source experiments/exp072_exp063_full_replay_feature_cache/artifacts/exp063_full_replay_feature_cache_pixiux_likpf_public_replay_train_features.csv.gz
@@ -135,7 +141,8 @@ When the user asks to "run it", "create an execution record", or similar wording
 experiment, a Colab CLI smoke test is not enough. Treat the run as successful only when the
 experiment reaches its real completion condition, for example:
 
-- `latest_done_summary.json` exists under `<exp>/colab_runs/`.
+- `latest_done_summary.json` exists under
+  `experiments/<exp>/artifacts/colab_runs/`.
 - The summary/metrics file contains the expected experiment name, active variants, active modes,
   fold/config coverage, and final CV metrics.
 - `latest_failed.txt` is absent, or any failure has been explicitly handled and recorded.
@@ -210,7 +217,7 @@ print("cache", cache.exists(), cache.stat().st_size if cache.exists() else None)
      completion.
 
 5. Start the full experiment as a background process with Drive-backed files.
-   - Write a run script under `<exp>/colab_runs/`.
+   - Write a run script under `experiments/<exp>/artifacts/colab_runs/`.
    - Redirect stdout/stderr to a Drive log.
    - Write `latest_run.json` with `run_id`, `pid`, `run_py`, `log_path`, `pid_path`,
      `completion_condition`, and `failure_condition`.
@@ -232,10 +239,10 @@ print("cache", cache.exists(), cache.stat().st_size if cache.exists() else None)
      feature summaries, feature schema, feature-importance summary/plot, and model manifest.
    - Skip heavy `predictions.csv.gz` and model `.txt` files unless inference, submission, or a later
      experiment explicitly needs them.
-   - Store Colab output under a Kaggle-like local folder, for example
-     `experiments/<exp>/kaggle/output/colab_run_<run_id>/`, and add a
+   - Store retained Colab output with the experiment artifacts, for example
+     `experiments/<exp>/artifacts/colab_runs/<run_id>/`, and add a
      `minimal_output_manifest.json`.
-   - Validate downloaded JSON locally and hand the evidence to `kaggle-review-exp` for recording under the source-of-truth split in `AGENTS.md`. Update `KAGGLE_DIRECTION.md` only when the experiment lifecycle requires it; route idea-backlog changes through `kaggle-strategy`.
+   - Validate downloaded JSON locally and hand the evidence to `kaggle-review-exp` for recording under the source-of-truth split in `AGENTS.md`. If the experiment lifecycle requires a change to the active-hypothesis or idea-backlog sections of `KAGGLE_DIRECTION.md`, pass the evidence and requested change to `kaggle-strategy`; do not edit those sections from this skill.
 
 ## Validation Before Full Run
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Execute a Jupyter notebook on Kaggle's Kernel Backend (KKB) using kaggle-cli.
+# Execute a Jupyter notebook in the Kaggle Notebook execution environment using kaggle-cli.
 #
 # Workflow:
 #   1. kaggle kernels push   — upload notebook and trigger execution
@@ -22,6 +22,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/repo_uv_env.sh"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../../../.." && pwd)"
 KAGGLE=(uv run --project "${REPO_ROOT}" kaggle)
 
@@ -53,10 +54,10 @@ echo "============================================================"
 echo "Step 1: Push notebook to Kaggle (triggers execution)"
 echo "============================================================"
 
-# Push the notebook — this uploads the code and starts execution on KKB
+# Push the notebook — this uploads the code and starts Kaggle Notebook execution
 "${KAGGLE[@]}" kernels push -p "${NOTEBOOK_DIR}"
 
-echo "Notebook pushed. Execution started on KKB."
+echo "Notebook pushed. Kaggle Notebook execution started."
 echo ""
 
 echo "============================================================"

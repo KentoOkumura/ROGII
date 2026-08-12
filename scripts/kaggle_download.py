@@ -3,6 +3,7 @@ from __future__ import annotations
 import shutil
 import stat
 import subprocess
+import sys
 import zipfile
 import zlib
 from pathlib import Path
@@ -90,8 +91,8 @@ def main() -> None:
     data_dir.mkdir(parents=True, exist_ok=True)
 
     command = [
-        "uv",
-        "run",
+        sys.executable,
+        "-m",
         "kaggle",
         "competitions",
         "download",

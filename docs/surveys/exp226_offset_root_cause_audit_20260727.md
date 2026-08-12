@@ -1,4 +1,32 @@
+---
+title: exp226 オフセット根本原因監査
+date: 2026-07-27
+types:
+  - experiment_review
+  - model_explanation
+  - oof_analysis
+  - comparison
+hypotheses: []
+experiments:
+  - exp226
+  - exp228
+  - exp280
+  - exp281
+  - exp285
+  - exp298
+  - exp333
+topics:
+  - error_analysis
+  - cumulative_drift
+  - candidate_path
+  - offset
+status: final
+summary: "exp226のOOF誤差をK16区間、persistent episode、donor距離、GR・U補正、公開実装parityから監査し、相対増分の累積とabsolute re-anchor不在を主要機構として整理した。"
+---
+
 # exp226 オフセット根本原因監査 2026-07-27
+
+- 対応する上位仮説: なし
 
 ## 結論
 
@@ -366,7 +394,7 @@ K16/H512 quotient、segment間継承、episode onset形状、donor距離依存�
 再実行:
 
 ```bash
-.venv/bin/python studies/exp226_offset_root_cause_audit.py
+uv run python studies/exp226_offset_root_cause_audit.py
 ```
 
 メモリ制約下でも同じ結果を再生成できるよう、OOFはwell連続性を検証しながら

@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `rgt_edge_cycle_path_rejection_readout`: exp386の固定graph/path contractでcycle residualとroute全棄却の段階だけを分解する
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低・P4・exp406 FAILで先行条件成立・0-prediction・別承認待ち
+- 優先度: P4
+- 優先度の理由: exp406 FAILで先行条件成立・0-prediction・別承認待ち
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

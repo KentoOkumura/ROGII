@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
+"""Create the exp092-specific Colab train runner notebook."""
+
 from __future__ import annotations
 
 import argparse
 import json
 from pathlib import Path
 from typing import Any
+
+EXPERIMENT = "exp092_u_projection_correction_disagreement_fullrun"
 
 
 def markdown(source: str) -> dict[str, Any]:
@@ -23,11 +27,11 @@ def code(source: str) -> dict[str, Any]:
 
 def make_notebook(
     *,
-    experiment: str,
     drive_root: str,
     cache_source: str,
     local_cache_dir: str,
 ) -> dict[str, Any]:
+    experiment = EXPERIMENT
     cache_name = Path(cache_source).name
     local_cache = f"{local_cache_dir.rstrip('/')}/{cache_name}"
     return {
@@ -75,10 +79,20 @@ if torch is not None:
             markdown("## 3. Validate Drive Layout\n"),
             code(
                 """from pathlib import Path
+import yaml
+
+project_path = DRIVE_ROOT / "project.yml"
+project_config = {}
+if project_path.exists():
+    project_config = yaml.safe_load(project_path.read_text()) or {}
+train_dir_value = project_config.get("data", {}).get("train_dir", "data/raw/train")
+TRAIN_DIR = Path(str(train_dir_value))
+if not TRAIN_DIR.is_absolute():
+    TRAIN_DIR = DRIVE_ROOT / TRAIN_DIR
 
 required = [
-    DRIVE_ROOT / "project.yml",
-    DRIVE_ROOT / "data/raw/train",
+    project_path,
+    TRAIN_DIR,
     EXP_DIR / "config.yaml",
     EXP_DIR / "settings.py",
     EXP_DIR / "u_projection_correction_disagreement_fullrun.py",
@@ -92,7 +106,8 @@ if not all(p.exists() for p in required):
     missing = [str(p) for p in required if not p.exists()]
     raise FileNotFoundError("Missing required Colab inputs:\\n" + "\\n".join(missing))
 
-print("train_files:", len(list((DRIVE_ROOT / "data/raw/train").glob("*"))))
+print("train_dir:", TRAIN_DIR)
+print("train_files:", len(list(TRAIN_DIR.glob("*"))))
 """
             ),
             markdown("## 4. Copy Large Cache to /content\n"),
@@ -146,7 +161,7 @@ import textwrap
 import json
 import time
 
-RUN_DIR = EXP_DIR / "colab_runs"
+RUN_DIR = EXP_DIR / "artifacts" / "colab_runs"
 RUN_DIR.mkdir(parents=True, exist_ok=True)
 
 run_id = time.strftime("run_%Y%m%d_%H%M%S_highmem_local_cache")
@@ -166,6 +181,8 @@ import time
 ROOT = Path("{drive_root}")
 EXP_NAME = "{experiment}"
 EXP = ROOT / "experiments" / EXP_NAME
+RUN_DIR = EXP / "artifacts" / "colab_runs"
+RUN_DIR.mkdir(parents=True, exist_ok=True)
 LOCAL_CACHE = Path("{local_cache}")
 os.chdir(ROOT)
 sys.path.insert(0, str(EXP))
@@ -215,11 +232,11 @@ try:
         top_n_importance=int(cfg_get(config, "model.training.top_n_importance", 40)),
     )
     summary["colab_elapsed_seconds_outer"] = round(time.time() - t0, 3)
-    (EXP / "colab_runs/latest_done_summary.json").write_text(json.dumps(summary, indent=2))
+    (RUN_DIR / "latest_done_summary.json").write_text(json.dumps(summary, indent=2))
     print("DONE exp092 highmem local_cache", flush=True)
     print(json.dumps(summary, indent=2)[:12000], flush=True)
 except Exception:
-    (EXP / "colab_runs/latest_failed.txt").write_text(traceback.format_exc())
+    (RUN_DIR / "latest_failed.txt").write_text(traceback.format_exc())
     print("FAILED exp092 highmem local_cache", flush=True)
     traceback.print_exc()
     raise
@@ -248,7 +265,7 @@ print(json.dumps(latest, indent=2))
 import json
 import subprocess
 
-RUN_DIR = EXP_DIR / "colab_runs"
+RUN_DIR = EXP_DIR / "artifacts" / "colab_runs"
 latest = json.loads((RUN_DIR / "latest_run.json").read_text())
 print(json.dumps(latest, indent=2))
 
@@ -282,13 +299,13 @@ print("done:", done.exists(), done.stat().st_size if done.exists() else None)
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Create a Colab-first Kaggle train notebook.")
-    parser.add_argument("--repo-root", default=".", help="Repository root used to resolve output.")
-    parser.add_argument(
-        "--experiment",
-        required=True,
-        help="Experiment directory name under experiments/.",
+    parser = argparse.ArgumentParser(
+        description=(
+            "Create the exp092_u_projection_correction_disagreement_fullrun "
+            "Colab train runner notebook."
+        )
     )
+    parser.add_argument("--repo-root", default=".", help="Repository root used to resolve output.")
     parser.add_argument("--output", required=True, help="Output .ipynb path.")
     parser.add_argument("--drive-root", default="/content/drive/MyDrive/Kaggle/ROGII")
     parser.add_argument("--cache-source", required=True, help="Cache path relative to drive root.")
@@ -304,7 +321,6 @@ def main() -> None:
         output = repo_root / output
     output.parent.mkdir(parents=True, exist_ok=True)
     notebook = make_notebook(
-        experiment=args.experiment,
         drive_root=args.drive_root,
         cache_source=args.cache_source,
         local_cache_dir=args.local_cache_dir,

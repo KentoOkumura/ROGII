@@ -17,6 +17,8 @@ summary: "well-log相関、geosteering、formation推定などの関連研究を
 
 # 関連研究調査: ROGII Wellbore Geology Prediction
 
+- 対応する上位仮説: なし
+
 調査日: 2026-05-28
 
 ## クエリ

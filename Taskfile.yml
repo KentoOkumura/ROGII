@@ -20,11 +20,12 @@ vars:
   KERNEL: '{{.KERNEL | default ""}}'
   KERNEL_VERSION: '{{.KERNEL_VERSION | default "1"}}'
   COMPETITION:
-    sh: uv run python scripts/project_value.py competition.slug
+    sh: PYTHONDONTWRITEBYTECODE=1 UV_CACHE_DIR=/tmp/uv-cache uv run python scripts/project_value.py competition.slug
   MESSAGE: '{{.MESSAGE | default .EXP}}'
   OUTPUT_FILE: '{{.OUTPUT_FILE | default "submission.csv"}}'
   OUT: '{{.OUT | default (printf "/tmp/kaggle-output/%s/%s" .EXP .NOTEBOOK)}}'
-  VIEWER_DATA: '{{.VIEWER_DATA | default "data/raw"}}'
+  VIEWER_DATA:
+    sh: PYTHONDONTWRITEBYTECODE=1 UV_CACHE_DIR=/tmp/uv-cache uv run python scripts/project_value.py data.raw_dir
   UV_CACHE_DIR: '{{.UV_CACHE_DIR | default "/tmp/uv-cache"}}'
 
 env:
@@ -44,7 +45,7 @@ tasks:
   validate-config:
     desc: Validate project.yml strictly while allowing indexed survey drafts.
     cmds:
-      - uv run python scripts/validate_project.py --strict
+      - uv run python scripts/validate_project.py --strict {{.VALIDATE_ARGS}}
       - uv run python scripts/check_strategy_docs.py
       - uv run python scripts/update_survey_index.py --check --allow-draft
       - uv run python scripts/update_experiment_summary.py --check
@@ -172,21 +173,27 @@ tasks:
           SUBMISSION: "{{.SUBMISSION}}"
 
   prepare-kaggle-notebooks:
-    desc: Prepare train/inference notebooks and require push-ready Kaggle metadata.
+    desc: Prepare one notebook suffix, or train and inference by default, with push-ready metadata.
     cmds:
       - uv run python scripts/prepare_kaggle_notebooks.py --experiment {{.EXP}} --strict {{.EXTRA_ARGS}}
 
-  push-kaggle-train:
-    desc: Push the prepared train notebook to Kaggle.
+  push-kaggle-notebook:
+    desc: Validate and push the prepared NOTEBOOK package to Kaggle.
     cmds:
-      - uv run python scripts/validate_kaggle_metadata.py --package-dir experiments/{{.EXP}}/kaggle/train
-      - uv run kaggle kernels push -p experiments/{{.EXP}}/kaggle/train
+      - uv run python scripts/validate_kaggle_metadata.py --package-dir experiments/{{.EXP}}/kaggle/{{.NOTEBOOK}}
+      - uv run kaggle kernels push -p experiments/{{.EXP}}/kaggle/{{.NOTEBOOK}}
+
+  push-kaggle-train:
+    desc: Compatibility alias that pushes NOTEBOOK=train.
+    cmds:
+      - task: push-kaggle-notebook
+        vars: {EXP: "{{.EXP}}", NOTEBOOK: train}
 
   push-kaggle-infer:
-    desc: Push the prepared inference notebook to Kaggle.
+    desc: Compatibility alias that pushes NOTEBOOK=inference.
     cmds:
-      - uv run python scripts/validate_kaggle_metadata.py --package-dir experiments/{{.EXP}}/kaggle/inference
-      - uv run kaggle kernels push -p experiments/{{.EXP}}/kaggle/inference
+      - task: push-kaggle-notebook
+        vars: {EXP: "{{.EXP}}", NOTEBOOK: inference}
 
   execute-notebook-local:
     desc: Debug-only local notebook execution; pass --allow-local explicitly.
@@ -250,7 +257,7 @@ tasks:
       - uv run streamlit run app/oof_analysis_app.py
 
   viewer:
-    desc: Run Tom's ROGII PySide viewer on this repository's data/raw folder.
+    desc: Run Tom's ROGII PySide viewer on the configured raw data folder.
     cmds:
       - UV_CACHE_DIR="{{.UV_CACHE_DIR}}" uv run --extra viewer python scripts/run_rogii_viewer.py --dataset "{{.VIEWER_DATA}}" {{.EXTRA_ARGS}}
 

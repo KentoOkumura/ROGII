@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `exp516_stage24_vs_final_v96_contract_attribution_readout`: 作者報告stage 2-4 standalone `twGR-prior PF alone`と、exp516が再現したfinal-v96 `pfA × twGR`の契約差だけを特定する
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低・P4・source/saved-output only・0-PF・0-submit
+- 優先度: P4
+- 優先度の理由: source/saved-output only・0-PF・0-submit
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

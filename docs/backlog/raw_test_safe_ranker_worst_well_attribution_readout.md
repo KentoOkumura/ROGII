@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `raw_test_safe_ranker_worst_well_attribution_readout`: exp251 130列版と295列版で共通して悪化した`fb03ae90`と、exp259の最大差分回帰`aed44918`のcandidate-family偏りを保存済み予測で分解する
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 中・再訪前readout
+- 優先度: P3
+- 優先度の理由: 再訪前readout
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

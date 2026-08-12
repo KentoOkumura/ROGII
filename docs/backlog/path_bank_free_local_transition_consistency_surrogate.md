@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `path_bank_free_local_transition_consistency_surrogate`: path bankを生成せず、固定exp209 grammarから各rowの隣接state/rate feasibilityだけを直接計算する局所構造lossの識別性と計算量を先行監査する
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低・P4・GPU前0-fit・design-only
+- 優先度: P4
+- 優先度の理由: GPU前0-fit・design-only
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

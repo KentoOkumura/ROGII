@@ -6,12 +6,19 @@
 - 作成日: 2026-08-12
 - 最終更新日: 2026-08-12
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
-- 期待する成果: `outer_train_selector_well_risk_discriminator`: exp255 assertiveのglobal gainを維持しつつ、補正で悪化するwellをouter-trainだけから識別する
+- 期待する成果: exp255 assertiveで悪化するwellをouter-trainだけから識別できたか、保存済みOOF上で大会後の原因分析として確認する
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 中・再開条件付き
+- 優先度: P3
+- 優先度の理由: 大会後のOOF原因分析・再開条件付き
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
-## 移行前の記録
+## 現行の実行範囲
+
+- 保存済みのexp255 OOF、exp238 nested score、outer-fold情報だけを使い、well単位の悪化識別可能性を大会後の原因分析として確認する。
+- raw-test featureやpredictionの生成、推論候補化、Kaggle Notebook実行、submissionは、分析結果にかかわらず行わない。
+- 下記の「移行前の記録」は履歴であり、現行の実行条件ではない。
+
+## 移行前の記録（履歴）
 
 次の5項目は、移行前の索引に記録されていた内容を変更せず転記したものです。
 
@@ -43,7 +50,7 @@
 
 ## 最小の反証可能な検証
 
-outer foldごとにouter-train wellsだけで`delta_rmse > 0.25` riskを学習しouter-validへ適用する。exp238 fallbackを常に保持し、overall / near / 1000+ / hidden-like非悪化、3/5 folds改善、worst-well +0.25 ft以下を全通過した場合だけ推論候補化する
+保存済みOOFをouter foldごとに分け、outer-train wellsだけで`delta_rmse > 0.25` riskを学習してouter-validへ適用する。overall / near / 1000+ / hidden-like、fold、worst-wellを原因分析として記録し、通過しても推論候補化しない。
 
 ## 成功条件と停止条件
 
@@ -51,7 +58,7 @@ outer foldごとにouter-train wellsだけで`delta_rmse > 0.25` riskを学習�
 
 ## 実行しないこと
 
-exp255同一OOFでthreshold/gridを選ばない。candidate値、alpha、clipを同時調整しない。hard top1、guard緩和、outer-valid target/error feature、通過前のraw-test inference / submitは禁止。exp255では106 wellsが+0.25 ft超悪化したため優先度は高ではなく再開条件付きとする
+exp255同一OOFでthreshold/gridを選ばない。candidate値、alpha、clipを同時調整しない。hard top1、guard緩和、outer-valid target/error featureを使わない。分析条件を満たしてもraw-test inference、推論候補化、submissionへ進めない。
 
 ## リスク
 
@@ -69,6 +76,7 @@ exp255同一OOFでthreshold/gridを選ばない。candidate値、alpha、clipを
 ## 判断履歴
 
 - 2026-08-12: 移行前の内容を変更せず個別ファイルへ移した。未整理項目を推測で補わないため、状態を `検討メモ・設計不可` とした。
+- 2026-08-12: 最終提出締切後の現行方針に合わせ、保存済みOOFによる原因分析だけに限定し、推論・提出への移行を禁止した。移行前の記録は履歴として残した。
 
 ## 次セッションへの引き継ぎ確認
 

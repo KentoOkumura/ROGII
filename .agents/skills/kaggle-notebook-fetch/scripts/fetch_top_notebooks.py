@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import re
 import subprocess
 import sys
@@ -56,10 +57,36 @@ def kernel_ref(row: dict[str, str]) -> str | None:
     return None
 
 
+def validate_pulled_kernel(target: Path) -> str | None:
+    metadata_path = target / "kernel-metadata.json"
+    if not metadata_path.is_file():
+        return "kernel-metadata.json is missing"
+    try:
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return f"kernel-metadata.json is unreadable: {exc}"
+    if not isinstance(metadata, dict):
+        return "kernel-metadata.json must contain an object"
+    code_file = metadata.get("code_file")
+    if not isinstance(code_file, str) or not code_file.strip():
+        return "kernel-metadata.json has no code_file"
+    target_root = target.resolve()
+    code_path = (target / code_file).resolve()
+    if not code_path.is_relative_to(target_root):
+        return f"code_file resolves outside the target directory: {code_file}"
+    if not code_path.is_file():
+        return f"code_file is missing: {code_file}"
+    if code_path.stat().st_size == 0:
+        return f"code_file is empty: {code_file}"
+    return None
+
+
 def pull_kernel(ref: str, output_dir: Path, force: bool, dry_run: bool, retries: int) -> str:
     target = output_dir / slugify(ref)
     if target.exists() and not force:
-        return f"skip existing {ref} -> {target}"
+        validation_error = validate_pulled_kernel(target)
+        if validation_error is None:
+            return f"skip complete {ref} -> {target}"
     if dry_run:
         return f"would pull {ref} -> {target}"
     target.mkdir(parents=True, exist_ok=True)
@@ -78,8 +105,13 @@ def pull_kernel(ref: str, output_dir: Path, force: bool, dry_run: bool, retries:
     for attempt in range(1, retries + 1):
         proc = subprocess.run(cmd, text=True, capture_output=True)
         if proc.returncode == 0:
-            return f"pulled {ref} -> {target}"
-        last_error = (proc.stderr or proc.stdout).strip().splitlines()[-1]
+            validation_error = validate_pulled_kernel(target)
+            if validation_error is None:
+                return f"pulled {ref} -> {target}"
+            last_error = validation_error
+        else:
+            output = (proc.stderr or proc.stdout).strip().splitlines()
+            last_error = output[-1] if output else f"kaggle exited with {proc.returncode}"
         if attempt < retries:
             time.sleep(2 * attempt)
     return f"failed {ref} -> {target}: {last_error}"
@@ -115,10 +147,13 @@ def main() -> int:
             writer.writeheader()
             writer.writerows(rows)
 
+    failures = 0
     for ref in refs:
-        print(pull_kernel(ref, output_dir, args.force, args.dry_run, args.retries))
-    print(f"total_refs={len(refs)} output_dir={output_dir}")
-    return 0
+        result = pull_kernel(ref, output_dir, args.force, args.dry_run, args.retries)
+        print(result)
+        failures += result.startswith("failed ")
+    print(f"total_refs={len(refs)} failures={failures} output_dir={output_dir}")
+    return 1 if failures else 0
 
 
 if __name__ == "__main__":

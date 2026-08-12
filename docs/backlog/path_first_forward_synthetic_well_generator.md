@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `path_first_forward_synthetic_well_generator`: **データ拡張**。real typewellと実path blockを起点にTVT path・trajectory・GR・missingnessを順に生成し、competition-specificな仮想wellを作る
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低・高リスク
+- 優先度: P4
+- 優先度の理由: 高リスク
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

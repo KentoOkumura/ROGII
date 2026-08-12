@@ -90,7 +90,7 @@ ALL_BADGES: list[Badge] = [
     Badge("model_pipeline_creator", "Model Pipeline Creator", "models", 3,
           "Create a model from notebook output", True),
     Badge("r_markdown_coder", "R Markdown Coder", "notebooks", 3,
-          "Push and execute an R Markdown notebook on KKB", True),
+          "Push and execute an R Markdown Kaggle Notebook", True),
 
     # ── Phase 4: Browser badges (~8) ──────────────────────────────────────
 

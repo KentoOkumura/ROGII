@@ -151,6 +151,10 @@ def test_project_yml_supplies_experiment_defaults() -> None:
 
     assert get_nested(defaults, "validation.metric") == get_nested(project, "defaults.metric")
     assert get_nested(defaults, "validation.seed") == get_nested(project, "defaults.seed")
+    assert get_nested(defaults, "reproducibility.seed") == get_nested(
+        project,
+        "defaults.seed",
+    )
     assert get_nested(defaults, "data.id_column") == get_nested(project, "submission.id_column")
     assert get_nested(defaults, "data.sample_submission") == get_nested(
         project,
@@ -172,6 +176,10 @@ def test_experiment_template_does_not_duplicate_project_defaults() -> None:
 
     assert template_config["validation"] == {}
     assert template_config["data"] == {}
+    assert "seed" not in template_config["reproducibility"]
+
+    settings = (ROOT / "templates" / "experiment" / "settings.py").read_text()
+    assert '"reproducibility": {"seed": seed}' in settings
 
 
 def test_experiment_template_declares_route() -> None:

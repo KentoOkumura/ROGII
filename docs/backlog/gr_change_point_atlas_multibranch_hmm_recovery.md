@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `gr_change_point_atlas_multibranch_hmm_recovery`: 通常時は現行HMM/PFを維持し、GR regime changeとposterior崩壊を検出した時だけhorizontal GR atlasから代替TVT候補を提案し、有限区間の複数branchでmode slipから再捕捉する
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 保留
+- 優先度: P4
+- 優先度の理由: 旧表記「保留」から移行（詳細理由は未記録）
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

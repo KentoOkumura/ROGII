@@ -350,12 +350,15 @@ def build_report(args: argparse.Namespace) -> SubmissionValidationReport:
     target_columns = (
         [str(value) for value in target_value] if isinstance(target_value, list) else []
     )
+    allow_extra_columns = get_nested(config, "submission.allow_extra_columns")
+    if not isinstance(allow_extra_columns, bool):
+        raise ValueError("submission.allow_extra_columns must be true or false in project.yml")
     return validate_submission_files(
         resolve_path(args.submission),
         resolve_path(str(sample_value)),
         id_column=id_column,
         target_columns=target_columns,
-        allow_extra_columns=bool(get_nested(config, "submission.allow_extra_columns")),
+        allow_extra_columns=allow_extra_columns,
     )
 
 

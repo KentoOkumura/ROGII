@@ -20,6 +20,8 @@ summary: "exp237・exp251のselector入力とexp238 downstream adapterを区別�
 
 # Selector入力特徴量カタログと重要度（exp237 / exp251 v4）
 
+- 対応する上位仮説: なし
+
 ## 結論
 
 - exp238のnested selector入力は、直接の親であるexp237のcandidate-long **320列**である。exp238の`nsel_*` 35列はselectorの入力ではなく、selectorが出した候補別予測誤差をTVTモデルへ渡すadapterである。

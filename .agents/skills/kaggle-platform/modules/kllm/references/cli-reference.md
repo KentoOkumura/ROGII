@@ -144,7 +144,7 @@ Kaggle CLI 2.2.3 では notebook のログ取得を `kaggle kernels logs -f OWNE
 
 ### kernel-metadata.json
 
-以下は Kaggle CLI の汎用的な field 構成例である。このリポジトリの運用では metadata を手作業で流用せず、`prepare-kaggle-notebooks` で生成し、`enable_internet: false` と `enable_tpu: false` を維持する。TPU は未対応のため選択しない。
+以下は Kaggle CLI の汎用的な field 構成例である。リポジトリ固有のmetadata生成・検証手順は、[`kaggle-platform`のRepository Template Setup](../../../SKILL.md#repository-template-setup)を正とする。
 
 ```json
 {
@@ -168,7 +168,7 @@ Kaggle CLI 2.2.3 では notebook のログ取得を `kaggle kernels logs -f OWNE
 
 NvidiaTeslaP100, NvidiaTeslaT4, NvidiaTeslaT4Highmem, NvidiaTeslaA100, NvidiaL4, NvidiaL4X1, NvidiaH100, NvidiaRtxPro6000, TpuV38, Tpu1VmV38, TpuV5E8, TpuV6E8.
 
-上記は Kaggle CLI が列挙する platform 全体の値であり、このリポジトリで利用可能な構成の一覧ではない。TPU accelerator は選択しない。
+上記は Kaggle CLI が列挙する platform 全体の値であり、アカウントやruntimeごとの利用可否を保証する一覧ではない。
 
 ## Models
 

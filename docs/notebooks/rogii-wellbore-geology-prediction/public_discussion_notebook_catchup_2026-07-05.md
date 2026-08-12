@@ -129,7 +129,7 @@ Decision:
 | `omidbaghchehsaraei/tabm-rogii-wellbore-geology` | `date_run_recent_20260705/omidbaghchehsaraei__tabm-rogii-wellbore-geology/` | TabM BatchEnsemble。LightGBMで上位110 features選択、GroupKFold 5、Ravaghi/PF features依存。出力スコアなし。 |
 | `omidbaghchehsaraei/resnet-rogii-wellbore-geology` | `date_run_recent_20260705/omidbaghchehsaraei__resnet-rogii-wellbore-geology/` | Tabular ResNet。TabMと同じfeature table route。出力スコアなし。 |
 | `busyaprime/persistence-is-the-geosteering-baseline-to-beat` | `date_run_recent_20260705/busyaprime__persistence-is-the-geosteering-baseline-to-beat/` | carry-forward baseline分布、dip extrapolationが危険、error grows like sqrt(distance)の整理。既存方針と一致。 |
-| `paulodmayra/rogii-geologia-v92-geographic-restoration` | `date_run_recent_20260705/paulodmayra__rogii-geologia-v92-geographic-restoration/` | `kaggle kernels pull` で取得したコード本体が0行。評価対象外。 |
+| `paulodmayra/rogii-geologia-v92-geographic-restoration` | `date_run_recent_20260611/paulodmayra__rogii-geologia-v92-geographic-restoration/` | 2026-07-05の再取得はcode fileが0バイトだったが、同じmetadataの非空sourceを2026-06-11取得分に保存済み。参照先は有効な既存archiveへ統一し、不完全な重複取得は保持しない。 |
 
 ## Discussion Readout
 
@@ -150,4 +150,3 @@ Decision:
 2. 次に小さく切るなら、`heel_calibrated_shift_landscape_confidence_features_on_exp148` のような add-only confidence feature実験。ただし exp133のdirect failureを明記し、direct replacementは禁止。
 3. その前に study として、現行 anchors の by-well residualを `oracle ceiling / tail concentration / public-like subset / seed band` で読み直すと、次の候補選別精度が上がる。
 4. `lucifer` contact override、`yusuke` anti-posterior public micro-tune、Gold/profile wrapperは hidden-safe methodとしては採用しない。
-

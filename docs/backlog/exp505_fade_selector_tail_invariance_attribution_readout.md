@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `exp505_fade_selector_tail_invariance_attribution_readout`: fade候補top1率`55.2414%`、pooled gain`0.021574771 ft`、全7 scope改善にもかかわらず、raw exp501からp95 / worstが`0.000036536 / 0.173168079 ft`しか縮小しなかった原因を保存artifactだけで分解する
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低・P4・saved-artifact-only・0-model・selector tail原因分解
+- 優先度: P4
+- 優先度の理由: saved-artifact-only・0-model・selector tail原因分解
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

@@ -17,6 +17,13 @@ END_MARKER = "<!-- END AUTO SURVEY INDEX -->"
 ALLOWED_STATUSES = {"draft", "final", "superseded"}
 TAG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 EXPERIMENT_PATTERN = re.compile(r"^exp\d+$")
+HYPOTHESIS_PATTERN = re.compile(r"^HYP-\d{8}-\d{2}$")
+HYPOTHESIS_FIND_PATTERN = re.compile(r"HYP-\d{8}-\d{2}")
+PLACEHOLDER_PATTERN = re.compile(
+    r"(?:TODO|TBD|FIXME)|\{\{[^{}\n]+\}\}",
+    flags=re.IGNORECASE,
+)
+BODY_HYPOTHESIS_PATTERN = re.compile(r"(?m)^- 対応する上位仮説:\s*(?P<value>.+?)\s*$")
 
 
 @dataclass(frozen=True)
@@ -25,10 +32,12 @@ class SurveyReport:
     title: str
     report_date: str
     types: tuple[str, ...]
+    hypotheses: tuple[str, ...]
     experiments: tuple[str, ...]
     topics: tuple[str, ...]
     status: str
     summary: str
+    superseded_by: str | None
 
 
 def parse_args() -> argparse.Namespace:
@@ -48,7 +57,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def _front_matter(path: Path) -> dict[str, object]:
+def _document_parts(path: Path) -> tuple[dict[str, object], str]:
     text = path.read_text()
     lines = text.splitlines()
     if not lines or lines[0].strip() != "---":
@@ -62,7 +71,8 @@ def _front_matter(path: Path) -> dict[str, object]:
     metadata = yaml.safe_load("\n".join(lines[1:end_index]))
     if not isinstance(metadata, dict):
         raise ValueError(f"{path}: YAML front matter must be a mapping")
-    return metadata
+    body = "\n".join(lines[end_index + 1 :]).lstrip()
+    return metadata, body
 
 
 def _required_text(metadata: dict[str, object], key: str, path: Path) -> str:
@@ -78,8 +88,9 @@ def _string_list(
     path: Path,
     *,
     allow_empty: bool,
+    allow_missing: bool = False,
 ) -> tuple[str, ...]:
-    value = metadata.get(key)
+    value = metadata.get(key, [] if allow_missing else None)
     if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
         raise ValueError(f"{path}: {key} must be a list of strings")
     normalized = tuple(dict.fromkeys(item.strip() for item in value if item.strip()))
@@ -101,21 +112,70 @@ def _iso_date(value: object, path: Path) -> str:
     raise ValueError(f"{path}: date must use YYYY-MM-DD")
 
 
+def _superseded_by_filename(value: object, path: Path) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{path}: superseded reports must set superseded_by")
+    filename = value.strip()
+    if Path(filename).name != filename or not filename.endswith(".md"):
+        raise ValueError(f"{path}: superseded_by must be a Markdown filename in docs/surveys")
+    return filename
+
+
+def _validate_supersession_chain(path: Path, successor: str) -> None:
+    origin = path.resolve()
+    seen = {origin}
+    current_path = path
+    current_successor = successor
+
+    while True:
+        successor_path = current_path.parent / current_successor
+        resolved_successor = successor_path.resolve()
+        if resolved_successor in seen:
+            raise ValueError(f"{path}: superseded_by chain contains a cycle")
+        if not successor_path.is_file():
+            raise ValueError(
+                f"{current_path}: superseded_by must reference an existing replacement report"
+            )
+        seen.add(resolved_successor)
+
+        successor_metadata, _ = _document_parts(successor_path)
+        successor_status = successor_metadata.get("status")
+        if successor_status == "final":
+            return
+        if successor_status != "superseded":
+            raise ValueError(f"{path}: superseded_by chain must terminate at a final report")
+
+        current_path = successor_path
+        current_successor = _superseded_by_filename(
+            successor_metadata.get("superseded_by"),
+            current_path,
+        )
+
+
 def load_report(path: Path) -> SurveyReport:
-    metadata = _front_matter(path)
+    metadata, body = _document_parts(path)
     title = _required_text(metadata, "title", path)
     report_date = _iso_date(metadata.get("date"), path)
     types = _string_list(metadata, "types", path, allow_empty=False)
+    hypotheses = _string_list(
+        metadata,
+        "hypotheses",
+        path,
+        allow_empty=True,
+        allow_missing=True,
+    )
     experiments = _string_list(metadata, "experiments", path, allow_empty=True)
     topics = _string_list(metadata, "topics", path, allow_empty=False)
     status = _required_text(metadata, "status", path)
     summary = _required_text(metadata, "summary", path)
+    superseded_by_value = metadata.get("superseded_by")
 
     invalid_types = [value for value in types if not TAG_PATTERN.fullmatch(value)]
     invalid_topics = [value for value in topics if not TAG_PATTERN.fullmatch(value)]
     invalid_experiments = [
         value for value in experiments if not EXPERIMENT_PATTERN.fullmatch(value)
     ]
+    invalid_hypotheses = [value for value in hypotheses if not HYPOTHESIS_PATTERN.fullmatch(value)]
     if invalid_types:
         raise ValueError(f"{path}: invalid types: {', '.join(invalid_types)}")
     if invalid_topics:
@@ -125,20 +185,49 @@ def load_report(path: Path) -> SurveyReport:
             f"{path}: experiments must be short ids such as exp238: "
             f"{', '.join(invalid_experiments)}"
         )
+    if invalid_hypotheses:
+        raise ValueError(
+            f"{path}: hypotheses must use HYP-YYYYMMDD-NN: {', '.join(invalid_hypotheses)}"
+        )
     if status not in ALLOWED_STATUSES:
         raise ValueError(f"{path}: status must be one of {', '.join(sorted(ALLOWED_STATUSES))}")
-    if status != "draft" and "TODO" in summary.upper():
-        raise ValueError(f"{path}: non-draft summary must not contain TODO")
+    superseded_by: str | None = None
+    if status == "superseded":
+        superseded_by = _superseded_by_filename(superseded_by_value, path)
+        _validate_supersession_chain(path, superseded_by)
+    elif superseded_by_value is not None and superseded_by_value != "":
+        raise ValueError(f"{path}: superseded_by is only valid when status is superseded")
+    if status != "draft" and PLACEHOLDER_PATTERN.search(summary):
+        raise ValueError(f"{path}: non-draft summary must not contain placeholders")
+    if status != "draft" and PLACEHOLDER_PATTERN.search(body):
+        raise ValueError(f"{path}: non-draft body must not contain placeholders")
+
+    body_hypothesis_match = BODY_HYPOTHESIS_PATTERN.search(body)
+    if status != "draft" and body_hypothesis_match is None:
+        raise ValueError(f"{path}: non-draft reports must declare corresponding hypotheses")
+    if hypotheses and body_hypothesis_match is None:
+        raise ValueError(f"{path}: reports with hypotheses metadata must declare them in the body")
+    if body_hypothesis_match is not None:
+        body_value = body_hypothesis_match.group("value").strip()
+        body_hypotheses = tuple(dict.fromkeys(HYPOTHESIS_FIND_PATTERN.findall(body_value)))
+        if set(body_hypotheses) != set(hypotheses):
+            raise ValueError(f"{path}: body hypothesis declaration must match hypotheses metadata")
+        if status != "draft" and not hypotheses and body_value != "なし":
+            raise ValueError(
+                f"{path}: a non-hypothesis report must declare '対応する上位仮説: なし'"
+            )
 
     return SurveyReport(
         path=path,
         title=title,
         report_date=report_date,
         types=types,
+        hypotheses=hypotheses,
         experiments=experiments,
         topics=topics,
         status=status,
         summary=summary,
+        superseded_by=superseded_by,
     )
 
 
@@ -163,6 +252,10 @@ def _report_link(report: SurveyReport) -> str:
     return f"[{report.title}]({report.path.name})"
 
 
+def _replacement_link(report: SurveyReport) -> str:
+    return f"[後継]({report.superseded_by})" if report.superseded_by else "-"
+
+
 def _grouped_index(reports: list[SurveyReport], field: str, heading: str) -> list[str]:
     grouped: dict[str, list[SurveyReport]] = {}
     for report in reports:
@@ -185,20 +278,23 @@ def render_generated_index(reports: list[SurveyReport]) -> str:
         BEGIN_MARKER,
         "## レポート一覧",
         "",
-        "| 日付 | レポート | 種類 | 実験 | トピック | 状態 | 一行要約 |",
-        "| --- | --- | --- | --- | --- | --- | --- |",
+        "| 日付 | レポート | 種類 | 上位仮説 | 実験 | トピック | 状態 | 後継 | 一行要約 |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     if reports:
         for report in reports:
             lines.append(
                 "| "
                 f"{report.report_date} | {_report_link(report)} | {_code_list(report.types)} | "
+                f"{_code_list(report.hypotheses)} | "
                 f"{_code_list(report.experiments)} | {_code_list(report.topics)} | "
-                f"`{report.status}` | {_escape_cell(report.summary)} |"
+                f"`{report.status}` | {_replacement_link(report)} | "
+                f"{_escape_cell(report.summary)} |"
             )
     else:
-        lines.append("| - | - | - | - | - | - | - |")
+        lines.append("| - | - | - | - | - | - | - | - | - |")
 
+    lines.extend([""] + _grouped_index(reports, "hypotheses", "上位仮説別"))
     lines.extend([""] + _grouped_index(reports, "experiments", "実験番号別"))
     lines.extend([""] + _grouped_index(reports, "types", "種類別"))
     lines.extend([""] + _grouped_index(reports, "topics", "トピック別"))

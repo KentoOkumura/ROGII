@@ -12,12 +12,13 @@
 - Kaggle 公開 notebook の vote 上位 20 件。
 - 既存の score ascending 上位 20 件メモ: `score_ascending/solution_summary.md`。
 
-取得コマンド:
+現在の再取得コマンド:
 
 ```bash
-kaggle kernels list --competition rogii-wellbore-geology-prediction --sort-by voteCount --page-size 20 -v
-python3 .agents/skills/kaggle-notebook-fetch/scripts/fetch_top_notebooks.py --competition rogii-wellbore-geology-prediction --limit 20 --output-dir docs/notebooks/rogii-wellbore-geology-prediction/vote_top
+task fetch-kaggle-notebooks COMPETITION=rogii-wellbore-geology-prediction EXTRA_ARGS="--limit 20 --output-dir docs/notebooks/rogii-wellbore-geology-prediction/vote_top --sort-by voteCount"
 ```
+
+`task`が利用できない環境では、同じ変数と引数で`make fetch-kaggle-notebooks`を使う。
 
 保存先:
 

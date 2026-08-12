@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `fixed13_selector_incumbent_reranking_instability_readout`: 13候補selector再学習が追加候補を選ばない行でも既存12候補の順位を変え、候補横断で同じwell tailを壊すかだけを診断する
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低・P4・0-booster・fixed13原因確認時のみ・未採番
+- 優先度: P4
+- 優先度の理由: 0-booster・fixed13原因確認時のみ・未採番
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

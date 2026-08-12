@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import os
 import subprocess
 import sys
@@ -61,22 +62,26 @@ def test_strategy_context_only_preloads_high_priority_backlog(tmp_path: Path) ->
         path.write_text(relative)
     direction = tmp_path / "KAGGLE_DIRECTION.md"
     direction.write_text(
-        "| P2 | `HYP-20260812-01` | "
+        "| P2 | `HYP-19000101-91` | "
         "[`candidate_p2`](docs/backlog/candidate_p2.md) | summary | dep | state |\n"
-        "| P4・P2 evidence依存 | "
-        "`HYP-20260812-02` | [`candidate_p4`](docs/backlog/candidate_p4.md) | "
+        "| P4 | "
+        "`HYP-19000101-92` | [`candidate_p4`](docs/backlog/candidate_p4.md) | "
         "summary | dep | state |\n"
+        "| 中・P2 | `HYP-19000101-93` | "
+        "[`candidate_invalid`](docs/backlog/candidate_invalid.md) | summary | dep | state |\n"
     )
     backlog = tmp_path / "docs" / "backlog"
     backlog.mkdir(parents=True, exist_ok=True)
     (backlog / "candidate_p2.md").write_text("# P2")
     (backlog / "candidate_p4.md").write_text("# P4")
+    (backlog / "candidate_invalid.md").write_text("# invalid")
 
     selected = collector.candidate_files(tmp_path, max_files=10)
     relative = [path.relative_to(tmp_path).as_posix() for path in selected]
 
     assert "docs/backlog/candidate_p2.md" in relative
     assert "docs/backlog/candidate_p4.md" not in relative
+    assert "docs/backlog/candidate_invalid.md" not in relative
 
 
 def test_experiment_reviewer_uses_current_canonical_paths(tmp_path: Path) -> None:
@@ -355,6 +360,98 @@ def test_notebook_fetch_uses_kaggle_from_current_interpreter(monkeypatch) -> Non
 
     assert observed[:3] == [sys.executable, "-m", "kaggle"]
     assert rows == [{"ref": "owner/example", "title": "Example"}]
+
+
+def test_notebook_fetch_skips_only_complete_existing_pull(tmp_path: Path, monkeypatch) -> None:
+    fetcher = load_module(
+        "fetch_top_notebooks_complete_pull",
+        ROOT / ".agents/skills/kaggle-notebook-fetch/scripts/fetch_top_notebooks.py",
+    )
+    target = tmp_path / "owner__example"
+    target.mkdir()
+    (target / "kernel-metadata.json").write_text(
+        '{"code_file": "example.py"}', encoding="utf-8"
+    )
+    (target / "example.py").write_text("print('ok')\n", encoding="utf-8")
+
+    def unexpected_run(*args, **kwargs):
+        raise AssertionError("complete existing pull must not call Kaggle")
+
+    monkeypatch.setattr(fetcher.subprocess, "run", unexpected_run)
+
+    result = fetcher.pull_kernel("owner/example", tmp_path, False, False, 1)
+
+    assert result.startswith("skip complete owner/example")
+
+
+def test_notebook_fetch_retries_incomplete_existing_pull(tmp_path: Path, monkeypatch) -> None:
+    fetcher = load_module(
+        "fetch_top_notebooks_incomplete_pull",
+        ROOT / ".agents/skills/kaggle-notebook-fetch/scripts/fetch_top_notebooks.py",
+    )
+    target = tmp_path / "owner__example"
+    target.mkdir()
+    (target / "kernel-metadata.json").write_text(
+        '{"code_file": "example.py"}', encoding="utf-8"
+    )
+    (target / "example.py").write_text("", encoding="utf-8")
+    calls = 0
+
+    def fake_run(command, **kwargs):
+        nonlocal calls
+        calls += 1
+        (target / "example.py").write_text("print('repaired')\n", encoding="utf-8")
+        return subprocess.CompletedProcess(command, 0, stdout="")
+
+    monkeypatch.setattr(fetcher.subprocess, "run", fake_run)
+
+    result = fetcher.pull_kernel("owner/example", tmp_path, False, False, 1)
+
+    assert calls == 1
+    assert result.startswith("pulled owner/example")
+
+
+def test_notebook_fetch_rejects_empty_code_after_successful_cli(
+    tmp_path: Path, monkeypatch
+) -> None:
+    fetcher = load_module(
+        "fetch_top_notebooks_empty_pull",
+        ROOT / ".agents/skills/kaggle-notebook-fetch/scripts/fetch_top_notebooks.py",
+    )
+    target = tmp_path / "owner__example"
+
+    def fake_run(command, **kwargs):
+        target.mkdir(exist_ok=True)
+        (target / "kernel-metadata.json").write_text(
+            '{"code_file": "example.py"}', encoding="utf-8"
+        )
+        (target / "example.py").write_text("", encoding="utf-8")
+        return subprocess.CompletedProcess(command, 0, stdout="")
+
+    monkeypatch.setattr(fetcher.subprocess, "run", fake_run)
+
+    result = fetcher.pull_kernel("owner/example", tmp_path, False, False, 1)
+
+    assert result.startswith("failed owner/example")
+    assert "code_file is empty" in result
+
+
+def test_archived_notebook_metadata_points_to_nonempty_source() -> None:
+    archive = ROOT / "docs" / "notebooks"
+    offenders: list[str] = []
+    for metadata_path in archive.rglob("kernel-metadata.json"):
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        code_file = metadata.get("code_file")
+        if not isinstance(code_file, str) or not code_file.strip():
+            offenders.append(f"{metadata_path}: missing code_file")
+            continue
+        code_path = metadata_path.parent / code_file
+        if not code_path.is_file():
+            offenders.append(f"{metadata_path}: missing {code_file}")
+        elif code_path.stat().st_size == 0:
+            offenders.append(f"{metadata_path}: empty {code_file}")
+
+    assert not offenders, "\n".join(offenders)
 
 
 def test_badge_streak_single_run_reports_actions_but_does_not_verify_badges(

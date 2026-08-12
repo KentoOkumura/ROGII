@@ -22,6 +22,8 @@ summary: "HMM、PF、exp226のwell別失敗を比較し、whole-well offset、�
 
 # HMM / PF / exp226 well pattern readout 2026-07-12
 
+- 対応する上位仮説: なし
+
 ## 目的
 
 このメモは、2026-07-11 から 2026-07-12 のセッションで行った well 単位の診断を集約する。

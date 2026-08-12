@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `exp495_prefix_mad_suffix_transfer_failure_attribution_readout`: exp495 v1 Stage 0Aとv4 Stage 0Bの保存uncertainty / schedule / prediction / well / episode / fold readoutだけで、prefix MADの弱いtransferとGaussian rate観測の悪化がどのfold・prefix support・suffix horizon・geometry regime shiftに集中するかを事前固定bucketで分解する
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低・P4・saved-artifact-only・0-HMM・`exp495`後続readout
+- 優先度: P4
+- 優先度の理由: saved-artifact-only・0-HMM・`exp495`後続readout
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

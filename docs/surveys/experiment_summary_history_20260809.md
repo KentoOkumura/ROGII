@@ -13,6 +13,8 @@ summary: "旧experiment_summary.mdから退避した、主な発見と変更履�
 
 # ROGII 実験横断メモ履歴（2026-08-09退避）
 
+- 対応する上位仮説: なし
+
 この文書は旧 experiment_summary.md の手書き部分です。現在の比較表はルートの experiment_summary.md、数値は各実験の metrics.json、解釈と採否判断は result.md を正とします。
 
 ## 主な発見

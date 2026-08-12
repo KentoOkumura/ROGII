@@ -23,6 +23,8 @@ summary: "visible sampleで候補予測を比較し、global blendではなくwe
 
 # visible tailの候補別・well別誤差監査
 
+- 対応する上位仮説: なし
+
 作成日: 2026-06-16
 
 ## 結論

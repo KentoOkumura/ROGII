@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `tvt_input_pfbeam_offset_confidence_features_on_exp148`: exp169 prefix offset を補正値ではなく confidence feature にする
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 中
+- 優先度: P3
+- 優先度の理由: 旧表記「中」から移行（詳細理由は未記録）
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

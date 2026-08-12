@@ -5,6 +5,7 @@
 ## 基本方針
 
 - 実験記録全体の役割分担は`AGENTS.md`を正とする。再現性については、実行前に決めるseed、fold、feature schema、入力生成物、model configを設定として残し、実行後に確定するruntime情報とSHAを構造化された証拠として、取得過程を時系列ログとして記録する。
+- `project.yml`の`defaults.seed`を、新規実験の`validation.seed`と`reproducibility.seed`の共通既定値とする。実験固有にどちらかを変える場合は`config.yaml`で明示し、`overrides.project_defaults`に変更したkeyを追加して、分ける理由を再現性方針へ記録する。
 - stochastic な処理は global RNG に依存させず、`np.random.default_rng(seed)` のような局所 RNG を渡す。
 - `joblib.Parallel(... prefer="threads")` や thread pool 内で global RNG を使わない。並列順序で乱数消費が変わるため、well id、fold id、variant 名などの immutable key から stable seed を作る。
 - PF/Beam、likelihood-PF、DTW sampling、seed bagging など候補生成が stochastic な実験では、per-well stable seed を必須にする。難しい場合は deterministic mode として `n_jobs=1` を用意し、その制約を記録する。
@@ -24,13 +25,13 @@ PF/Beam 系の実験では、次を満たさない限り deterministic anchor �
 
 ## Kaggle package bootstrap
 
-`prepare-kaggle-notebooks` が作る Kaggle notebook には、`config.yaml`、`metrics.json`、補助 `.py`、`project.yml`、`src/` を復元する bootstrap ZIP が埋め込まれる。`metrics.json`はNotebook側の部分更新で既存のstatus、CV/LB、実行証拠を保持するために含める。生成後に `kaggle/<kind>/config.yaml`、`metrics.json`、補助 `.py` を手で直しただけでは、Kaggle 実行時の notebook 先頭セルが古い内容を展開することがある。
+`prepare-kaggle-notebooks` が作る Kaggle notebook には、既定では`config.yaml`、`metrics.json`、補助 `.py`、`project.yml`、`src/` を復元する bootstrap ZIP が埋め込まれる。`runtime.kaggle.<kind>.include_experiment_sources: false`を明示した場合だけ、実験側の`config.yaml`、`metrics.json`、補助`.py`は埋め込まれない。`--no-src`を指定した場合は`src/`も埋め込まれないため、repositoryの`src/`をimportしないNotebookだけで使う。`metrics.json`はNotebook側の部分更新で既存のstatus、CV/LB、実行証拠を保持するために含める。生成後に `kaggle/<kind>/config.yaml`、`metrics.json`、補助 `.py` を手で直しただけでは、Kaggle 実行時の notebook 先頭セルが古い内容を展開することがある。
 
 運用ルール:
 
-- 原則として正の編集対象は `experiments/<exp>/config.yaml`、`<exp>_train.ipynb`、`<exp>_inference.ipynb`、補助 `.py` とし、編集後は `prepare-kaggle-notebooks` を再実行する。
-- CPU/GPU など派生 package を手で作る場合は、`kernel-metadata.json` だけでなく notebook bootstrap ZIP 内の support files も同じ設定になっていることを確認する。
-- push 前に、生成 notebook の bootstrap ZIP から `config.yaml` と `metrics.json` を取り出し、設定、既存status、CV/LB、実行証拠が期待どおりか確認する。runtime resourceは`kernel-metadata.json`の`enable_gpu`と`enable_tpu: false`で確認する。
+- 原則として正の編集対象は`experiments/<exp>/config.yaml`、実験契約に必要な`<exp>_<kind>.ipynb`、補助`.py`とし、編集後は対象notebookについて`prepare-kaggle-notebooks`を再実行する。新規雛形の`train`と`inference`以外にauditやdiagnosticを分ける場合も、`<kind>`は小文字英数字とunderscoreだけを使う。
+- CPU/GPU などの派生設定も正の`config.yaml`へ記録し、対象packageを再生成する。`kernel-metadata.json`、生成notebook、`kaggle/<kind>/`内のsupport filesは手編集しない。
+- push 前は`push-kaggle-notebook`が呼ぶvalidatorで、現在の正のNotebook・設定と生成package、bootstrap ZIPのmanifest・内容が一致することを確認する。不一致ならpushせず、対象notebookについて`prepare-kaggle-notebooks`を再実行する。runtime resource、quota、TPU、Active Sessionsに関するpush前手順は[`kaggle-platform`](../.agents/skills/kaggle-platform/SKILL.md)を正とし、この文書には複製しない。
 - v1 が設定不整合で失敗した場合は、同じ canonical kernel id に v2 として再 pushする。原因、修正、再実行コマンドは`SESSION_NOTES.md`、失敗・成功したkernel versionと生成物SHAは`metrics.json`へ分担して残す。
 
 ## 記録する証拠
@@ -76,7 +77,7 @@ task record-exp EXP=expXXX_title EXTRA_ARGS="--evidence kaggle.kernel_id=owner/s
 ## 提出前チェック
 
 - `task validate-exp EXP=<exp>` が通る。
-- Kaggle package の metadata と bootstrap 内 config が一致している。
+- `push-kaggle-notebook`のvalidatorが通り、現在の正のNotebook・設定、package、bootstrap ZIPが一致している。
 - `uv run kaggle kernels pull <kernel> -p /tmp/kaggle-pull/<slug> -m` で同じ kernel id の存在を確認している。
 - 実ファイルの検証が必要な場合はoutputを取得し、`task submit-check EXP=<exp> SUBMISSION=<path>`が通り、検証結果とsubmission SHAが対象実験の`metrics.json`へ保存されている。`task`が利用できない環境では同じ変数で`make submit-check`を使う。ローカルに取得しないcode submissionは、Kaggle上の`submission.csv`の存在とnotebook内の形式検証結果を記録する。
 - command、version、SHA、解釈、次アクションが`AGENTS.md`で定めた正本へ分担され、同じ情報を複数ファイルへ手作業で転記していない。

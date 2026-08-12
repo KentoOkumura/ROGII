@@ -12,6 +12,7 @@ TODO
 
 ## 対象と証拠範囲
 
+- 対応する上位仮説: {{ HYPOTHESES }}
 - 対象実験: TODO
 - 入力データ・OOF・生成物: TODO
 - 評価方法: TODO

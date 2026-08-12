@@ -12,7 +12,8 @@
 # - credentials and machine-local settings
 # - raw/derived competition data and local Python environments
 # - copied Kaggle upload packages, downloaded Kaggle outputs, feature caches,
-#   model weights, and prediction/submission files
+#   model weights, and generated prediction/submission files in the output
+#   locations ignored below
 #
 # Standard cache and credential rules below still apply inside tracked
 # directories (for example, studies/__pycache__/ remains ignored).
@@ -64,15 +65,12 @@ token.json
 !/experiments/*/artifacts/.gitkeep
 /experiments/*/submission/
 /experiments/*/kaggle/
+/submission.csv
+/experiments/*/submission.csv
 
 # Legacy generated-output locations. New outputs belong under artifacts/.
 /experiments/*/features/
 /experiments/*/variants/
-
-# Submission polling logs are transient. Durable submission facts belong in
-# experiments/<exp>/{metrics.json,SESSION_NOTES.md,result.md} and
-# SUBMISSIONS.md.
-/logs/
 
 # One-off analysis tables and figures belong under studies/.
 /artifacts/

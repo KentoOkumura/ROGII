@@ -8,16 +8,17 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `pseudo_tail_model_family_bagging`: pseudo-tail 系の model family bagging を多様性診断として残す
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低
+- 優先度: P4
+- 優先度の理由: 旧表記「低」から移行（詳細理由は未記録）
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録
 
-次の5項目は、移行前の索引に記録されていた内容を変更せず転記したものです。
+次の5項目は、移行前の索引に記録されていた内容へ大会後の運用条件だけを反映したものです。
 
 | 優先度 | アイデア | 先行条件 / 依存 | 検証方法 | 注意点 |
 | --- | --- | --- | --- | --- |
-| 低 | `pseudo_tail_model_family_bagging`: pseudo-tail 系の model family bagging を多様性診断として残す | exp053 / exp061 以降の pseudo-tail artifacts。主戦場は exp073 / exp148 系 | seed/model family の OOF 相関、bucket 別補完性、fixed blend の上限だけを確認する | exp073 / exp148 系に近づかない限り推論化しない。提出枠を使う優先度は低い |
+| 低 | `pseudo_tail_model_family_bagging`: pseudo-tail 系の model family bagging を多様性診断として残す | exp053 / exp061 以降の pseudo-tail artifacts。主戦場は exp073 / exp148 系 | seed/model family の OOF 相関、bucket 別補完性、fixed blend の上限だけを確認する | 大会後の分析・学習に限定し、inference/submissionは行わない。exp073 / exp148 系に近づかない場合は追加検証を止める |
 
 ## 観測事実と仮定の整理状態
 
@@ -51,7 +52,7 @@ seed/model family の OOF 相関、bucket 別補完性、fixed blend の上限�
 
 ## 実行しないこと
 
-exp073 / exp148 系に近づかない限り推論化しない。提出枠を使う優先度は低い
+大会後の分析・学習に限定し、inference/submissionは行わない。exp073 / exp148 系に近づかない場合は追加検証を止める
 
 ## リスク
 

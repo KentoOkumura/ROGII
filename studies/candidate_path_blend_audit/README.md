@@ -12,8 +12,8 @@ well-outer-fold で学習した凸結合を比較する再現用 study です。
 実行:
 
 ```bash
-.venv/bin/python studies/candidate_path_blend_audit/run_blend_audit.py
-.venv/bin/python studies/candidate_path_blend_audit/run_robustness_readout.py
+uv run python studies/candidate_path_blend_audit/run_blend_audit.py
+uv run python studies/candidate_path_blend_audit/run_robustness_readout.py
 ```
 
 主な出力:

@@ -27,7 +27,7 @@
 | MCP Server | https://www.kaggle.com/docs/mcp | MCP endpoint for AI agents |
 | Organizations | https://www.kaggle.com/docs/organizations | Organization profiles and member management |
 | Packages | https://www.kaggle.com/docs/packages | Pre-installed packages and custom installs |
-| TPU | https://www.kaggle.com/docs/tpu | Kaggle TPU documentation; this repository's notebook generation does not support TPU |
+| TPU | https://www.kaggle.com/docs/tpu | Kaggle TPU documentation |
 | Efficient GPU | https://www.kaggle.com/docs/efficient-gpu-usage | GPU tips, mixed precision, gradient checkpointing |
 
 ---
@@ -129,18 +129,10 @@ upload直前にdataset docs、UI、利用中のCLIで現在値を確認する。
 ### Runtime resources and limits
 
 Available CPU, memory, disk, accelerator types, session limits, access
-requirements, and weekly quota are mutable platform settings. Before execution:
-
-1. Inspect the generated `kernel-metadata.json` to identify the requested resource
-   and verify that `enable_tpu` is `false`. Stop if TPU is requested because this
-   repository's notebook generation and metadata validation do not support it.
-2. For GPU, run `uv run kaggle quota --format json` and compare the live remaining
-   time and refresh time with the expected notebook runtime.
-3. Inspect the actual runtime for device and memory details, and check the
-   official notebook documentation or UI for limits not exposed by the CLI.
-
-Do not copy a fixed quota or hardware value from this reference into an
-operational decision or experiment record.
+requirements, and weekly quota are mutable platform settings. Verify current
+values at execution time instead of copying a fixed quota or hardware value from
+this reference. Repository operations must follow the canonical pre-push procedure
+in [`kaggle-platform`](../../../SKILL.md); it is not duplicated here.
 
 ### Languages & Docker
 
@@ -384,10 +376,9 @@ uv sync --locked --extra kaggle-platform
 
 ## 11. TPU (https://www.kaggle.com/docs/tpu)
 
-Kaggle platformのTPU仕様は公式資料で確認する。このリポジトリの
-`prepare-kaggle-notebooks`とmetadata検証はTPUに対応せず、
-`enable_tpu: true`を拒否する。TPU用コードやpackageをこのテンプレートから
-生成できると解釈せず、必要な場合は未対応として停止する。
+Kaggle platformのTPU仕様は公式資料で確認する。リポジトリ固有のruntime対応範囲と
+notebook生成手順は、[`kaggle-platform`のRepository Template Setup](../../../SKILL.md#repository-template-setup)
+を正とする。
 
 ---
 
@@ -396,9 +387,10 @@ Kaggle platformのTPU仕様は公式資料で確認する。このリポジト�
 ### Runtime contract
 
 Available GPU models, device count, VRAM, session limits, and weekly quota are
-mutable. Inspect `kernel-metadata.json`, query `uv run kaggle quota --format json`,
-and use `nvidia-smi` or the framework device API in the actual runtime. Do not
-select an implementation from a fixed hardware list in this reference.
+mutable. Do not select an implementation from a fixed hardware list in this
+reference. Repository pre-push checks follow the canonical procedure in
+[`kaggle-platform`](../../../SKILL.md); this section only retains general runtime
+tips.
 
 ### Tips
 

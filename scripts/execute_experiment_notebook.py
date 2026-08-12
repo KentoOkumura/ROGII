@@ -6,9 +6,7 @@ import subprocess
 import sys
 import tempfile
 
-from config_utils import ROOT
-
-NOTEBOOK_KINDS = ("train", "inference")
+from config_utils import ROOT, validate_notebook_kind
 
 
 def parse_args() -> argparse.Namespace:
@@ -16,7 +14,12 @@ def parse_args() -> argparse.Namespace:
         description="Execute an experiment notebook locally for explicit smoke debugging only."
     )
     parser.add_argument("--experiment", required=True, help="Experiment name, e.g. expXXX_model")
-    parser.add_argument("--notebook", choices=NOTEBOOK_KINDS, required=True)
+    parser.add_argument(
+        "--notebook",
+        type=validate_notebook_kind,
+        required=True,
+        help="Notebook filename suffix, using lowercase letters, digits, and underscores.",
+    )
     parser.add_argument("--debug", action="store_true")
     parser.add_argument("--max-wells", type=int, default=None)
     parser.add_argument(

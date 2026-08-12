@@ -13,6 +13,8 @@ summary: "KAGGLE_DIRECTION.mdから退避した、2026-08-09までの実験横�
 
 # ROGII 戦略判断履歴（2026-08-09退避）
 
+- 対応する上位仮説: なし
+
 この文書は退避時点までの判断履歴です。現在の戦略とbacklogはルートの KAGGLE_DIRECTION.md、実験結果は各実験の result.md と metrics.json を正とします。
 
 ## 戦略メモ
@@ -458,8 +460,7 @@ summary: "KAGGLE_DIRECTION.mdから退避した、2026-08-09までの実験横�
   learned residual layer不在はv6の性能上限だが移植不具合ではない。truth利用oracleは
   deployable correctionではなく、exp285/281/333のnegative tail guardを維持し、
   本監査だけを根拠にoffset値のhard correctionやsame-OOF rescueを追加しない。
-  詳細は旧形式の`docs/analysis/exp226_offset_root_cause_audit_20260727.md`に残っている。
-  次に更新または再利用するときに内容を確認して`docs/surveys/`へ移す。
+  詳細は`docs/surveys/exp226_offset_root_cause_audit_20260727.md`へ集約した。
 
 - 2026-07-26、ユーザー判断により `scale5_likpf_full_replacement_on_exp335` を
   `exp413_scale5_likpf_full_replacement_on_exp335` として設計確定し、その後の

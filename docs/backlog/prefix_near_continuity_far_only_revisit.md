@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `prefix_near_continuity_far_only_revisit`: prefix continuityをfeatureまたはselector補助として再訪する余地だけを残す
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低・P4・exp349 closed・独立根拠待ち
+- 優先度: P4
+- 優先度の理由: exp349 closed・独立根拠待ち
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

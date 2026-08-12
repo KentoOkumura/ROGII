@@ -82,9 +82,9 @@ model、candidate selector、refinerが別modelの予測やscoreを入力に使�
 
 必ず次を分ける。
 
-- `instantiation closed`: 実装した具体案だけが棄却。
-- `role closed`: 同じroleの複数実装が棄却。
-- `mechanism closed`: 複数roleの独立検証またはtask invariantとの矛盾で棄却。
+- 実装した具体案だけを棄却できる証拠。
+- 同じ使い方をした複数の実装まで棄却できる証拠。
+- 異なる使い方での独立検証または既知の制約との矛盾により、情報や仕組み自体を棄却できる証拠。
 
 negative result内のpositive submetric、oracle headroom、特定bucket、coverage、誤差非相関性を抽出する。一つでも残ればfamily全体を閉じない。
 
@@ -182,7 +182,7 @@ uv run python .agents/skills/kaggle-idea-forge/scripts/validate_portfolio.py ide
 
 validatorの構造PASSはideaの科学的妥当性を証明しない。source-hidden評価では、agentに期待解や採点rubricを渡さず、別のjudgeが後からmechanism recallと安全性を採点する。
 
-idea portfolioの作成だけでは、候補を採用、実験化、またはバックログへ追加しない。このskillでは `KAGGLE_DIRECTION.md` のアイデアバックログ節と `docs/backlog/` を作成・更新・削除しない。ユーザーが選んだ候補の「バックログ化」「バックログへ追加」を明示的に依頼した場合は、同じターンで `kaggle-strategy` を使い、選択したidea card、根拠、reject理由、未解決入力を引き渡す。portfolioに不足項目があれば推測せず、未決事項として引き渡す。採番、steering、実装、Kaggle実行は別のユーザー承認を必要とする。
+idea portfolioの作成だけでは、候補を採用、実験化、またはバックログへ追加しない。このskillでは `KAGGLE_DIRECTION.md` の「検証中の仮説」「アイデアバックログ」節と `docs/backlog/` を作成・更新・削除しない。ユーザーが選んだ候補の「バックログ化」「バックログへ追加」を明示的に依頼した場合は、同じターンで `kaggle-strategy` を使い、選択したidea card、根拠、reject理由、未解決入力を引き渡す。portfolioに不足項目があれば推測せず、未決事項として引き渡す。採番、steering、実装、Kaggle実行は別のユーザー承認を必要とする。
 
 ## 停止条件
 

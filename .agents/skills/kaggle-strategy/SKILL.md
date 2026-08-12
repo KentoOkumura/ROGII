@@ -18,7 +18,7 @@ uv run python .agents/skills/kaggle-strategy/scripts/collect_strategy_context.py
 ```
 
 2. 収集結果から、情報量の多いファイルを読む。
-   - `docs/surveys/README.md`の実験番号・種類・トピック別索引と、そこから選んだ関連レポート
+   - `docs/surveys/README.md`の上位仮説・実験番号・種類・トピック別索引と、そこから選んだ関連レポート
    - コンペ概要、または存在する場合は `KAGGLE_DIRECTION.md`
    - `experiment_summary.md`
    - `SUBMISSIONS.md`
@@ -29,7 +29,7 @@ uv run python .agents/skills/kaggle-strategy/scripts/collect_strategy_context.py
 
 次の実験を提案するときは、少なくとも `experiment_summary.md`、`KAGGLE_DIRECTION.md`、`SUBMISSIONS.md`、最近の `experiments/*/SESSION_NOTES.md` を読む。
 
-同梱collectorは正本、未着手索引でP0からP2に置かれた候補の詳細を先に収集し、残りの枠を実験番号が新しい順の`SESSION_NOTES.md`、`metrics.json`、`result.md`で埋める。P3以下の詳細は、対象候補を検討するときだけ個別に読む。`.pytest_cache`、Kaggle package、生成物、旧`daily_reports`や`claudeSummary.md`は戦略文脈に含めない。
+同梱collectorは正本を先に収集し、未着手索引では`P0`から`P2`の候補詳細を優先する。残りの枠は、実験番号が新しい順の`SESSION_NOTES.md`、`metrics.json`、`result.md`で埋める。優先度の定義と記録形式は`AGENTS.md`に従い、`P3`と`P4`の詳細は対象候補を検討するときだけ個別に読む。
 
 3. 作業を提案する前に、安定したベースラインと信頼できるCVの有無、探索の進み具合、停滞の証拠、締切までの時間を具体的に整理する。固定した段階名へ当てはめず、これらの状態から次の作業を説明する。
 
@@ -40,15 +40,17 @@ uv run python .agents/skills/kaggle-strategy/scripts/collect_strategy_context.py
 `KAGGLE_DIRECTION.md` の「検証中の仮説」「アイデアバックログ」節と `docs/backlog/` の作成、内容更新、対応関係・状態・優先度変更、削除はこのskillだけで行う。他skillから候補を受け取る場合は、候補本文だけでなく、根拠ファイル、採らなかった案、未決事項、追加または削除の理由も受け取る。不足を推測で補わない。
 
 1. 同名候補、実装済み実験、閉じたbranchがないか検索する。
-2. 候補が検証する上位仮説を特定する。既存仮説ならそのIDを使い、新しい反証可能な問いならリポジトリ全体を検索して未使用の`HYP-YYYYMMDD-NN`を発行し、「検証中の仮説」に追加する。主仮説を複数にせず、既存候補・実験へ根拠なくIDを付けない。
-3. `KAGGLE_DIRECTION.md` の未着手表へ、上位仮説ID、優先度、要約、依存、状態、詳細ファイルへの相対リンクを追加し、「検証中の仮説」の対応候補も更新する。
+2. 候補が検証する上位仮説を特定する。既存仮説ならそのIDを使い、新しい反証可能な問いならリポジトリ全体を検索して未使用の`HYP-YYYYMMDD-NN`を発行し、「検証中の仮説」に追加する。`AGENTS.md`で予約した自動テスト用IDは発行しない。仮説と残っている問いを空欄やplaceholderのまま登録せず、主仮説を複数にせず、既存候補・実験へ根拠なくIDを付けない。
+3. `KAGGLE_DIRECTION.md` の未着手表へ、上位仮説ID、`P0`から`P4`の優先度token、要約、依存、状態、詳細ファイルへの相対リンクを追加し、「検証中の仮説」の対応候補も更新する。優先度列に理由を連結せず、理由は候補詳細の別フィールドへ記録する。未着手候補が0件なら表のヘッダーだけを残し、ダミー候補を作らない。
 4. `docs/backlog/_TEMPLATE.md` から `docs/backlog/<candidate>.md` を作る。上位仮説ID、この候補が直接検証する範囲、この候補だけで上位仮説を判断できるか、判断に残る検証に加え、根拠、採らなかった案、固定事項、停止条件を同じセッションで記録する。
 5. 結果や実装方針に影響する未決事項があれば、推測で埋めず `検討メモ・設計不可` とする。未決事項が`なし`で必要項目が埋まる場合だけ `設計可能・実験化未承認` とする。
 6. 追加後に既存候補を含めて優先度を見直す。バックログ化だけの依頼では、採番、steering、実装、Kaggle実行を行わない。
 
 導入前から詳細ファイルのない候補は一括補完しない。次にその候補を更新または実験化するとき、コード作成前に詳細ファイルを作成し、重要な解釈をユーザーへ確認する。
 
-`kaggle-idea-forge`、`kaggle-review-exp`、`kaggle-oof-readout` などから候補を受け取った場合も、同じ手順で重複、閉じたbranch、上位仮説、根拠、優先度を確認してから反映する。実験化に伴う削除依頼では、上位仮説IDを含む詳細がsteering docsと`config.yaml`へ移行済みであることを確認し、未着手行と詳細ファイルを削除して「検証中の仮説」の対応候補を対応実験へ更新する。
+`kaggle-idea-forge`、`kaggle-review-exp`、`kaggle-oof-readout` などから候補を受け取った場合も、同じ手順で重複、閉じたbranch、上位仮説、根拠、優先度を確認してから反映する。実験化に伴う削除依頼では、上位仮説IDと候補名がsteering docsと`config.yaml`へ移行済みであることを確認し、未着手行と詳細ファイルを削除して「検証中の仮説」の対応候補を、実験ディレクトリ名をバッククォートで囲んだコード表記のラベル、同名の`experiments/<exp>/`をリンク先とする対応実験へ更新する。複数実験は`<br>`で区切る。
+
+上位仮説を閉じる場合は、関連実験の証拠と残っている問いを整理してユーザーに支持、棄却、保留の判断を求める。判断後、`docs/surveys/README.md`の手順で上位仮説IDを本文とfront matterの`hypotheses`へ記録した実験横断レポートを保存し、上位仮説別索引への反映を確認してから「検証中の仮説」から外す。
 
 4. 簡潔な戦略メモを出す。
    - 現在のフェーズと、フェーズ認識のずれ。
@@ -60,6 +62,7 @@ uv run python .agents/skills/kaggle-strategy/scripts/collect_strategy_context.py
    - もう少し長いロードマップが有用なら、期待値の高い次の 2-4 実験。
    - リスク管理: leakage、CV/LB 乖離、実行時間、提出回数制限。
    - `KAGGLE_DIRECTION.md` の「アイデアバックログ」に、完了済み・実装済みの候補が残っていないか。
+   - 「検証中の仮説」の対応候補・対応実験と、各実験の`config.yaml`の系譜が一致しているか。
    - 実験結果から出た次候補が backlog に反映され、既存候補も含めて優先度が見直されているか。
 
 回答には次を含める。
@@ -82,3 +85,4 @@ uv run python .agents/skills/kaggle-strategy/scripts/collect_strategy_context.py
 - 実験ディレクトリや steering ディレクトリは作らない。バックログを追加・更新する場合の `docs/backlog/<candidate>.md` はこの制限の例外とする。ログやメモが不足している場合は、不足している証拠を明示しつつ、最小限の次アクションを示す。
 - backlog を更新する場合は、実装済みアイデアを削除し、次候補の追加と同時に全候補の優先度を再評価する。
 - 新しい未着手候補を追加する場合は、`KAGGLE_DIRECTION.md` の行と `docs/backlog/<candidate>.md` を必ず同じ変更で作る。表の短い説明だけを実装引き継ぎとして扱わない。
+- `設計可能・実験化未承認`へ変更する前に、詳細の必須項目が埋まり、placeholderがなく、「未決事項」が`なし`であることを確認する。

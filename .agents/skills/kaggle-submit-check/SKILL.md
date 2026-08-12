@@ -5,7 +5,7 @@ description: "Kaggle 提出前に、提出物と notebook metadata を検証し�
 
 # Kaggle 提出チェック
 
-ローカルで、アップロードしない事前チェックを実行する。このスキルでは、ユーザーが明示的に依頼しない限り、submit、push、upload を行わない。
+ローカルで、アップロードしない事前チェックを実行する。このスキルはsubmit、push、uploadを行わない。
 
 ## 手順
 
@@ -50,7 +50,7 @@ Kaggle 実験リポジトリ内で作業する場合:
 
 3. `kaggle-platform` の手順で取得された Kaggle output がある場合、Kaggle 上で生成された `submission.csv` を手順2のコマンドでsample submissionに対して検証する。ローカル実験ディレクトリに提出CSVを常設しない。
 
-4. PASS / WARN / FAIL と`metrics.json`へ保存した証拠を報告する。code competitionでは、Kaggle outputに存在する提出ファイル名（通常`submission.csv`）も引き渡し情報として明記する。実際の submit はユーザーが明示的に依頼した場合だけ `kaggle-platform` の手順で行い、`-k OWNER/SLUG -v VERSION -f submission.csv`の4点を省略しない。submit 後の監視は `kaggle-submit-monitor` に委譲する。
+4. PASS / WARN / FAIL と`metrics.json`へ保存した証拠を報告する。code competitionでは、Kaggle outputに存在する提出ファイル名（通常`submission.csv`）も引き渡し情報として明記する。実際のsubmitは`AGENTS.md`の承認条件と`kaggle-platform`の操作手順へ委譲する。submit後の監視は`kaggle-submit-monitor`に委譲する。
 
 5. submit が行われてスコアが分かったら、リポジトリに記録する。
 

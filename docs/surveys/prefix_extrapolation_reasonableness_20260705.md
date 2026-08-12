@@ -15,6 +15,8 @@ summary: "known prefixからの直接外挿はlong tailで不安定であり、�
 ---
 
 # Prefix Extrapolation Reasonableness Audit 2026-07-05
+
+- 対応する上位仮説: なし
 ## Scope
 - Input: `data/raw/train` train horizontal wells, 773 usable wells.
 - Fits use only `TVT_input` known-prefix rows. Metrics use the hidden/evaluation rows where train `TVT` is available.

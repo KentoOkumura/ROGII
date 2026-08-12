@@ -22,11 +22,11 @@ SCORE_RE = re.compile(
 HEADING_RE = re.compile(r"^#{1,4}\s+(.+)$", re.MULTILINE)
 EXPERIMENT_NUMBER_RE = re.compile(r"^exp(\d+)")
 BACKLOG_LINK_RE = re.compile(
-    r"^\| (?P<priority>[^|]+) \| `(?:HYP-\d{8}-\d{2}|未整理)` \| "
+    r"^\| (?P<priority>P[0-4]) \| `(?:HYP-\d{8}-\d{2}|未整理)` \| "
     r"\[`(?P<name>[a-z0-9_]+)`\]"
     r"\(docs/backlog/(?P=name)\.md\) \|"
 )
-ACTIVE_PRIORITY_RE = re.compile(r"(?:^|・)(?:最優先|P[0-2])(?:・|$)")
+ACTIVE_PRIORITIES = {"P0", "P1", "P2"}
 
 
 def experiment_sort_key(path: Path) -> tuple[int, int, str]:
@@ -42,7 +42,7 @@ def prioritized_backlog_files(root: Path) -> list[Path]:
     selected: list[Path] = []
     for line in direction.read_text(errors="replace").splitlines():
         match = BACKLOG_LINK_RE.match(line)
-        if match and ACTIVE_PRIORITY_RE.search(match.group("priority")):
+        if match and match.group("priority") in ACTIVE_PRIORITIES:
             selected.append(root / "docs" / "backlog" / f"{match.group('name')}.md")
     return selected
 

@@ -6,13 +6,21 @@
 
 ## ROGII viewer
 
-Kaggle discussion 700424 で共有された Tom さんの PySide viewer は `tools/rogii-viewer/` に配置しています。このディレクトリは外部 clone として `.gitignore` しています。
+Kaggle discussion 700424 で共有された Tom さんの PySide viewer は、使用する環境ごとに`tools/rogii-viewer/`へcloneします。このディレクトリは外部ツールとして`.gitignore`しているため、新規cloneしたリポジトリには含まれません。
+
+初回だけ、リポジトリルートで次を実行します。すでに`tools/rogii-viewer/`がある場合は再実行しません。
+
+```bash
+git clone https://github.com/tom99763/rogii-viewer tools/rogii-viewer
+```
+
+配置後に起動します。
 
 ```bash
 task viewer
 ```
 
-既定では `data/raw` を dataset folder として開きます。別のデータ置き場を使う場合:
+既定では`project.yml`の`data.raw_dir`で設定した場所をdataset folderとして開きます。現在の設定値は`data/raw`です。今回だけ別のデータ置き場を使う場合:
 
 ```bash
 task viewer VIEWER_DATA=/path/to/rogii-wellbore-geology-prediction

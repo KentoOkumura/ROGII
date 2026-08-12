@@ -856,7 +856,7 @@ def write_report(
             "- `experiments/exp238_nested_hmm_exp226_selector_rank_slot_addonly_on_exp218/{config.yaml,result.md,metrics.json}`",
             "- Kaggle output `kentookumura/exp238-nested-rank-slot-exp218-train` v5 feature importance artifact。",
             "- Kaggle output `kentookumura/exp237-hmm-exp226-candidate-selector-exp183-train` v1 candidate readout / residual correlation。",
-            "- `studies/feature_replacement_audit/README.md`とそのcorr-prune outputs。",
+            "- `docs/surveys/exp148_exp092_feature_replacement_audit_20260704.md`と`studies/feature_replacement_audit/outputs/`。",
             "- `experiments/exp198_exact_replacement_prune_on_exp148/result.md`。",
             "- `experiments/exp252_pf_seed_medoid_selectability_audit/result.md`。",
             "- `experiments/exp019_pf_beam_candidate_quality_audit/result.md`、`exp091_self_gr_likelihood_pf_beam_probe/result.md`、`exp093_pf_candidate_coverage_then_ranker_audit/result.md`。",

@@ -1,15 +1,20 @@
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import prepare_kaggle_notebooks as notebook_prep  # noqa: E402
+from config_utils import effective_kaggle_runtime, kaggle_runtime_errors  # noqa: E402
 from prepare_kaggle_notebooks import (  # noqa: E402
     build_metadata,
     build_support_bundle,
     make_support_cell,
     metadata_validation_errors,
+    selected_kinds,
+    suffixed_kernel_id,
 )
 
 
@@ -110,9 +115,62 @@ def test_metadata_validation_rejects_tpu() -> None:
     }
 
     assert any(
-        "enable_tpu is unsupported" in error
-        for error in metadata_validation_errors(metadata)
+        "enable_tpu is unsupported" in error for error in metadata_validation_errors(metadata)
     )
+
+
+def test_arbitrary_safe_notebook_kind_is_supported() -> None:
+    assert selected_kinds("feature_audit2") == ("feature_audit2",)
+    assert suffixed_kernel_id("owner/exp123", "feature_audit2") == (
+        "owner/exp123-feature-audit2"
+    )
+
+
+@pytest.mark.parametrize("kind", ["../audit", "Audit", "audit-name", "_audit", ""])
+def test_unsafe_notebook_kind_is_rejected(kind: str) -> None:
+    with pytest.raises(ValueError, match="notebook kind"):
+        selected_kinds(kind)
+
+
+def test_effective_runtime_prefers_notebook_specific_experiment_config() -> None:
+    project = {
+        "runtime": {
+            "kaggle": {
+                "enable_gpu": False,
+                "enable_internet": False,
+            }
+        }
+    }
+    experiment = {
+        "runtime": {
+            "kaggle": {
+                "enable_gpu": True,
+                "audit": {
+                    "enable_gpu": False,
+                    "enable_internet": True,
+                    "machine_shape": "NvidiaTeslaT4",
+                },
+            }
+        }
+    }
+
+    settings = effective_kaggle_runtime(project, experiment, "audit")
+
+    assert settings == {
+        "enable_gpu": False,
+        "enable_internet": True,
+        "machine_shape": "NvidiaTeslaT4",
+    }
+    assert kaggle_runtime_errors(settings) == []
+
+
+def test_effective_runtime_rejects_string_boolean() -> None:
+    settings = {
+        "enable_gpu": "false",
+        "enable_internet": False,
+    }
+
+    assert "runtime.kaggle.enable_gpu must be true or false" in kaggle_runtime_errors(settings)
 
 
 def test_support_cell_uses_zip_bootstrap_not_inline_file_json() -> None:

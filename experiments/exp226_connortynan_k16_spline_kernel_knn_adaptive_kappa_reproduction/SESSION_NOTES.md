@@ -219,7 +219,7 @@ segmentへほぼ定数offsetとして継承される。遠いdonor、長いsuffi
 global bias、row order、特定fold、K16境界jump、K=16単独、v6 port bugは否定した。
 
 詳細:
-`docs/analysis/exp226_offset_root_cause_audit_20260727.md`
+`docs/surveys/exp226_offset_root_cause_audit_20260727.md`
 
 生成物:
 `studies/exp226_offset_root_cause_audit_20260727/`

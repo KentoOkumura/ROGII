@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `five_surface_global_stratigraphic_potential_contract`: exp436でsource supportが十分だったANCC / ASTNU / ASTNL / EGFDU / EGFDLの5面だけを、target/truthを見る前に固定したglobal potential contractとして再設計できるか確認する
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低-中・P3・target-free fixed-five design・別実験/別承認待ち
+- 優先度: P3
+- 優先度の理由: target-free fixed-five design・別実験/別承認待ち
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

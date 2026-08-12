@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `longtail_only_exact_datum_augmentation`: exp259で見えた1000+改善だけを原因分離し、exact datum viewをlong-tail outer-train rowsへ限定する
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低・再訪条件付き
+- 優先度: P4
+- 優先度の理由: 再訪条件付き
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

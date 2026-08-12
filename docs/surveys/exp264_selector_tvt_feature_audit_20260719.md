@@ -21,6 +21,8 @@ summary: "exp264の12候補bank、hidden-safe selector、compact特徴、最終T
 
 # exp264 selector / TVT feature audit
 
+- 対応する上位仮説: なし
+
 作成日: 2026-07-19
 
 対象: `exp264_exp263_candidate_confidence_dual_selector` の修正版Stage A v4 / Stage B v5 / Stage C v6 / Stage D v3 / inference v4。

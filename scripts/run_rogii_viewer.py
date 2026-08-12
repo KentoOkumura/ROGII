@@ -7,9 +7,11 @@ import os
 import sys
 from pathlib import Path
 
+from config_utils import load_project_config, project_path
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 VIEWER_ROOT = REPO_ROOT / "tools" / "rogii-viewer"
-DEFAULT_DATASET = REPO_ROOT / "data" / "raw"
+DEFAULT_DATASET = project_path(load_project_config(), "data.raw_dir")
 
 
 def running_under_wsl() -> bool:

@@ -8,7 +8,8 @@
 - 依頼原文: 旧 `KAGGLE_DIRECTION.md` の未着手表にあった記録を、内容を補完せず個別ファイルへ移行する。
 - 期待する成果: `exp494_stack_tail_attribution_readout`: exp494の平均改善とwell-tail悪化が併存した原因をfamily別寄与と符号整合で分解する
 - 親実験 / 比較対象: 未整理。下記の「先行条件 / 依存」の原文を参照する。
-- 優先度と理由: 低・P4・saved-artifact-only・0-model・tail原因分解
+- 優先度: P4
+- 優先度の理由: saved-artifact-only・0-model・tail原因分解
 - `KAGGLE_DIRECTION.md` の対応箇所: [未着手バックログ](../../KAGGLE_DIRECTION.md#未着手バックログ)
 
 ## 移行前の記録

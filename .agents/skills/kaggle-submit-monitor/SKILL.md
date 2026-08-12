@@ -32,7 +32,7 @@ nohup uv run python .agents/skills/kaggle-submit-monitor/scripts/monitor_submiss
 ```
 
 5. 一時ログのパスと`tail -f`コマンドを報告する。一時ログをGitへ追加しない。
-6. スコアが確定したら、まず`task record-exp EXP=expXXX PUBLIC_LB=...`（Private LB判明後は`PRIVATE_LB=...`も指定）を実行する。次に`task record-submission EXP=expXXX SUBMISSION=/path/to/submission.csv SUBMISSION_REF=...`を実行し、同じrefは既存行を更新する。code competitionのoutputをローカル取得していない場合は、Kaggle側で対象ファイルを確認してから`SUBMISSION=submission.csv EXTRA_ARGS="--allow-missing-file"`を指定する。監視固有のsubmission ref、scoring status、score確定までの所要時間と解釈は`AGENTS.md`の役割分担に従って一度だけ記録し、Kaggle Notebook実行時間とsubmission scoring所要時間を混同しない。
+6. スコアが確定したら、まず`task record-exp EXP=expXXX PUBLIC_LB=...`（Private LB判明後は`PRIVATE_LB=...`も指定）を実行する。次に`task record-submission EXP=expXXX SUBMISSION=/path/to/submission.csv SUBMISSION_REF=...`を実行し、同じrefは既存行を更新する。code competitionのoutputをローカル取得していない場合は、Kaggle側で対象ファイルを確認してから`SUBMISSION=submission.csv EXTRA_ARGS="--allow-missing-file"`を指定する。submission ref、提出日時、scoring status、score確定までの所要時間の詳細な時系列は`SESSION_NOTES.md`を正とし、`SUBMISSIONS.md`には横断比較に必要な最終スナップショットだけを記録する。スナップショットのキーは`submission_status`と`scoring_elapsed_minutes`を使い、Kaggle Notebook実行時間とsubmission scoring所要時間を混同しない。結果の解釈は`result.md`へ記録する。
 
 ## 出力契約
 

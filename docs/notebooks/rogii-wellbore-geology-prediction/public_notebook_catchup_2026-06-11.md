@@ -14,11 +14,13 @@
 Run these before regenerating this report when network/Kaggle credentials are available:
 
 ```bash
-python3 .agents/skills/kaggle-notebook-fetch/scripts/fetch_top_notebooks.py --competition rogii-wellbore-geology-prediction --limit 20 --output-dir docs/notebooks/rogii-wellbore-geology-prediction/vote_top --sort-by voteCount --force
-python3 .agents/skills/kaggle-notebook-fetch/scripts/fetch_top_notebooks.py --competition rogii-wellbore-geology-prediction --limit 20 --output-dir docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_latest --sort-by scoreAscending --force
-python3 .agents/skills/kaggle-notebook-fetch/scripts/fetch_top_notebooks.py --competition rogii-wellbore-geology-prediction --limit 20 --output-dir docs/notebooks/rogii-wellbore-geology-prediction/date_run_recent --sort-by dateRun --force --retries 3
-uv run python scripts/public_notebook_catchup.py --as-of 2026-06-11
+task fetch-kaggle-notebooks COMPETITION=rogii-wellbore-geology-prediction EXTRA_ARGS="--limit 20 --output-dir docs/notebooks/rogii-wellbore-geology-prediction/vote_top --sort-by voteCount --force"
+task fetch-kaggle-notebooks COMPETITION=rogii-wellbore-geology-prediction EXTRA_ARGS="--limit 20 --output-dir docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_latest --sort-by scoreAscending --force"
+task fetch-kaggle-notebooks COMPETITION=rogii-wellbore-geology-prediction EXTRA_ARGS="--limit 20 --output-dir docs/notebooks/rogii-wellbore-geology-prediction/date_run_recent --sort-by dateRun --force --retries 3"
+uv run python studies/public_notebook_catchup.py --as-of 2026-06-11
 ```
+
+`task`が利用できない環境では、同じ変数と引数で`make fetch-kaggle-notebooks`を使う。
 
 ## Replay Queue
 
