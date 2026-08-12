@@ -36,6 +36,7 @@ tasks:
     desc: Validate repository template files while allowing indexed survey drafts.
     cmds:
       - uv run python scripts/validate_project.py
+      - uv run python scripts/check_strategy_docs.py
       - uv run python scripts/update_survey_index.py --check --allow-draft
       - uv run python scripts/update_experiment_summary.py --check
       - uv run python scripts/check_markdown_links.py
@@ -44,9 +45,15 @@ tasks:
     desc: Validate project.yml strictly while allowing indexed survey drafts.
     cmds:
       - uv run python scripts/validate_project.py --strict
+      - uv run python scripts/check_strategy_docs.py
       - uv run python scripts/update_survey_index.py --check --allow-draft
       - uv run python scripts/update_experiment_summary.py --check
       - uv run python scripts/check_markdown_links.py
+
+  check-strategy-docs:
+    desc: Validate KAGGLE_DIRECTION.md size and backlog index/detail consistency.
+    cmds:
+      - uv run python scripts/check_strategy_docs.py
 
   new-exp:
     desc: Create a new self-contained experiment folder.

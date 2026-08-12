@@ -41,6 +41,7 @@ task validate-surveys
 
 | 日付 | レポート | 種類 | 実験 | トピック | 状態 | 一行要約 |
 | --- | --- | --- | --- | --- | --- | --- |
+| 2026-08-12 | [ROGII方針文書の移行前スナップショット](rogii-direction-migration-snapshot_20260812.md) | `strategy` | - | `history` | `final` | 2026-08-12の分割移行直前のKAGGLE_DIRECTION.md全文を保存した。 |
 | 2026-08-09 | [ROGII戦略判断履歴](rogii_strategy_history_20260809.md) | `strategy` | - | `history`, `strategy` | `final` | KAGGLE_DIRECTION.mdから退避した、2026-08-09までの実験横断の判断履歴。 |
 | 2026-08-09 | [ROGII実験横断メモ履歴](experiment_summary_history_20260809.md) | `comparison` | - | `history`, `experiment_summary` | `final` | 旧experiment_summary.mdから退避した、主な発見と変更履歴の手書き記録。 |
 | 2026-08-06 | [ROGII 上位解法と agent-driven Kaggle 着想ワークフロー](rogii-top-solutions-agent-idea-workflow_20260806.md) | `survey`, `literature_review`, `comparison` | `exp179`, `exp182`, `exp202`, `exp210`, `exp212`, `exp215`, `exp223`, `exp235`, `exp413`, `exp512` | `winning_solution`, `agent_workflow`, `prompt_design`, `skill_design`, `candidate_path`, `validation_shift`, `blind_evaluation`, `idea_generation` | `final` | 最終上位8解法を比較し、source-hidden blind benchmark 2回でtop 5の15/16・全12案の16/16機構再発見を確認したkaggle-idea-forgeを実装した。 |
@@ -127,7 +128,7 @@ task validate-surveys
 | `literature_review` | [ROGII 上位解法と agent-driven Kaggle 着想ワークフロー](rogii-top-solutions-agent-idea-workflow_20260806.md)<br>[ROGII external data and data generation survey](rogii_external_data_and_generation_20260707.md)<br>[関連研究調査 ROGII Wellbore Geology Prediction](maybe_related_research.md) |
 | `model_explanation` | [exp490 再利用戦略調査](exp490_reuse_strategy_20260804.md)<br>[exp264 selector / TVT feature audit](exp264_selector_tvt_feature_audit_20260719.md)<br>[exp238 selector / TVT feature audit](exp238_selector_tvt_feature_audit_20260716.md)<br>[Selector入力特徴量カタログと重要度](selector_feature_catalog_20260716.md) |
 | `oof_analysis` | [exp490 再利用戦略調査](exp490_reuse_strategy_20260804.md)<br>[exp264 selector / TVT feature audit](exp264_selector_tvt_feature_audit_20260719.md)<br>[候補パス平均・凸結合の全横断監査](candidate_path_blend_audit_20260716.md)<br>[exp238 selector / TVT feature audit](exp238_selector_tvt_feature_audit_20260716.md)<br>[HMM・PF・exp226のwell別失敗パターン監査](hmm_pf_exp226_well_pattern_readout_20260712.md)<br>[Prefix Extrapolation Reasonableness Audit](prefix_extrapolation_reasonableness_20260705.md)<br>[PF・Beam disagreementとwell別誤差の監査](pf_beam_disagreement_error_map_20260620.md)<br>[visible tailの候補別・well別誤差監査](metric_weighted_tail_error_map_20260616.md) |
-| `strategy` | [ROGII戦略判断履歴](rogii_strategy_history_20260809.md) |
+| `strategy` | [ROGII方針文書の移行前スナップショット](rogii-direction-migration-snapshot_20260812.md)<br>[ROGII戦略判断履歴](rogii_strategy_history_20260809.md) |
 | `survey` | [ROGII 上位解法と agent-driven Kaggle 着想ワークフロー](rogii-top-solutions-agent-idea-workflow_20260806.md)<br>[ROGII external data and data generation survey](rogii_external_data_and_generation_20260707.md)<br>[GR matching deep research](gr_matching_deep_research_20260625.md)<br>[関連研究調査 ROGII Wellbore Geology Prediction](maybe_related_research.md) |
 
 ## トピック別
@@ -150,7 +151,7 @@ task validate-surveys
 | `geosteering` | [関連研究調査 ROGII Wellbore Geology Prediction](maybe_related_research.md) |
 | `gr_matching` | [GR matching deep research](gr_matching_deep_research_20260625.md)<br>[関連研究調査 ROGII Wellbore Geology Prediction](maybe_related_research.md) |
 | `hidden_safe` | [exp264 selector / TVT feature audit](exp264_selector_tvt_feature_audit_20260719.md)<br>[ROGII external data and data generation survey](rogii_external_data_and_generation_20260707.md) |
-| `history` | [ROGII戦略判断履歴](rogii_strategy_history_20260809.md)<br>[ROGII実験横断メモ履歴](experiment_summary_history_20260809.md) |
+| `history` | [ROGII方針文書の移行前スナップショット](rogii-direction-migration-snapshot_20260812.md)<br>[ROGII戦略判断履歴](rogii_strategy_history_20260809.md)<br>[ROGII実験横断メモ履歴](experiment_summary_history_20260809.md) |
 | `hmm` | [exp490 再利用戦略調査](exp490_reuse_strategy_20260804.md)<br>[候補パス平均・凸結合の全横断監査](candidate_path_blend_audit_20260716.md)<br>[HMM・PF・exp226のwell別失敗パターン監査](hmm_pf_exp226_well_pattern_readout_20260712.md) |
 | `idea_generation` | [ROGII 上位解法と agent-driven Kaggle 着想ワークフロー](rogii-top-solutions-agent-idea-workflow_20260806.md) |
 | `licensing` | [ROGII external data and data generation survey](rogii_external_data_and_generation_20260707.md) |

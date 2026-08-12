@@ -50,6 +50,33 @@ def test_strategy_context_prioritizes_canonical_and_recent_records(tmp_path: Pat
     assert ".pytest_cache/README.md" not in relative
 
 
+def test_strategy_context_only_preloads_high_priority_backlog(tmp_path: Path) -> None:
+    collector = load_module(
+        "collect_strategy_context_priority_backlog",
+        ROOT / ".agents/skills/kaggle-strategy/scripts/collect_strategy_context.py",
+    )
+    for relative in collector.CANONICAL_FILES:
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(relative)
+    direction = tmp_path / "KAGGLE_DIRECTION.md"
+    direction.write_text(
+        "| P2 | [`candidate_p2`](docs/backlog/candidate_p2.md) | summary | dep | state |\n"
+        "| P4・P2 evidence依存 | "
+        "[`candidate_p4`](docs/backlog/candidate_p4.md) | summary | dep | state |\n"
+    )
+    backlog = tmp_path / "docs" / "backlog"
+    backlog.mkdir(parents=True, exist_ok=True)
+    (backlog / "candidate_p2.md").write_text("# P2")
+    (backlog / "candidate_p4.md").write_text("# P4")
+
+    selected = collector.candidate_files(tmp_path, max_files=10)
+    relative = [path.relative_to(tmp_path).as_posix() for path in selected]
+
+    assert "docs/backlog/candidate_p2.md" in relative
+    assert "docs/backlog/candidate_p4.md" not in relative
+
+
 def test_experiment_reviewer_uses_current_canonical_paths(tmp_path: Path) -> None:
     reviewer = load_module(
         "review_exp_docs",
@@ -283,8 +310,7 @@ def test_competition_report_mcp_enrichment_requires_api_token() -> None:
     assert "`--require api-token`で追加確認" in skill
     assert "does not accept\n> legacy username/key credentials" in comp_report
     assert (
-        "legacy username/key credentials alone cannot authenticate the MCP call"
-        in normalized_kllm
+        "legacy username/key credentials alone cannot authenticate the MCP call" in normalized_kllm
     )
     assert "cannot authenticate this call" in overview
 

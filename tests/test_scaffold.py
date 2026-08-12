@@ -85,6 +85,7 @@ def test_repository_control_files_exist() -> None:
         "scripts/compare_experiments.py",
         "scripts/update_experiment_summary.py",
         "scripts/check_markdown_links.py",
+        "scripts/check_strategy_docs.py",
         "templates/steering/requirements.md",
         "templates/steering/design.md",
         "templates/steering/tasklist.md",

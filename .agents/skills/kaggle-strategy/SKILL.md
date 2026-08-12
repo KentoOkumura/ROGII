@@ -23,13 +23,13 @@ uv run python .agents/skills/kaggle-strategy/scripts/collect_strategy_context.py
    - `experiment_summary.md`
    - `SUBMISSIONS.md`
    - `**/SESSION_NOTES.md`
-   - `docs/backlog/*.md`
+   - `KAGGLE_DIRECTION.md` の未着手索引から選んだ候補の `docs/backlog/<candidate>.md`
    - legacyの`docs/experiment/*.md`、`docs/experiments/*.md`、または類似の実験ドキュメントが残る場合は、`docs/surveys/`に正がないか先に確認する
    - `**/metrics.json`
 
 次の実験を提案するときは、少なくとも `experiment_summary.md`、`KAGGLE_DIRECTION.md`、`SUBMISSIONS.md`、最近の `experiments/*/SESSION_NOTES.md` を読む。
 
-同梱collectorは正本を先に収集し、残りの枠を実験番号が新しい順の`SESSION_NOTES.md`、`metrics.json`、`result.md`で埋める。`.pytest_cache`、Kaggle package、生成物、旧`daily_reports`や`claudeSummary.md`は戦略文脈に含めない。
+同梱collectorは正本、未着手索引でP0からP2に置かれた候補の詳細を先に収集し、残りの枠を実験番号が新しい順の`SESSION_NOTES.md`、`metrics.json`、`result.md`で埋める。P3以下の詳細は、対象候補を検討するときだけ個別に読む。`.pytest_cache`、Kaggle package、生成物、旧`daily_reports`や`claudeSummary.md`は戦略文脈に含めない。
 
 3. 作業を提案する前に、安定したベースラインと信頼できるCVの有無、探索の進み具合、停滞の証拠、締切までの時間を具体的に整理する。固定した段階名へ当てはめず、これらの状態から次の作業を説明する。
 

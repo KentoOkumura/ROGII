@@ -21,12 +21,29 @@ SCORE_RE = re.compile(
 )
 HEADING_RE = re.compile(r"^#{1,4}\s+(.+)$", re.MULTILINE)
 EXPERIMENT_NUMBER_RE = re.compile(r"^exp(\d+)")
+BACKLOG_LINK_RE = re.compile(
+    r"^\| (?P<priority>[^|]+) \| \[`(?P<name>[a-z0-9_]+)`\]"
+    r"\(docs/backlog/(?P=name)\.md\) \|"
+)
+ACTIVE_PRIORITY_RE = re.compile(r"(?:^|・)(?:最優先|P[0-2])(?:・|$)")
 
 
 def experiment_sort_key(path: Path) -> tuple[int, int, str]:
     match = EXPERIMENT_NUMBER_RE.match(path.name.lower())
     number = int(match.group(1)) if match else -1
     return (number, path.stat().st_mtime_ns, path.name)
+
+
+def prioritized_backlog_files(root: Path) -> list[Path]:
+    direction = root / "KAGGLE_DIRECTION.md"
+    if not direction.is_file():
+        return []
+    selected: list[Path] = []
+    for line in direction.read_text(errors="replace").splitlines():
+        match = BACKLOG_LINK_RE.match(line)
+        if match and ACTIVE_PRIORITY_RE.search(match.group("priority")):
+            selected.append(root / "docs" / "backlog" / f"{match.group('name')}.md")
+    return selected
 
 
 def candidate_files(root: Path, max_files: int) -> list[Path]:
@@ -41,11 +58,8 @@ def candidate_files(root: Path, max_files: int) -> list[Path]:
     for relative in CANONICAL_FILES:
         add(root / relative)
 
-    backlog_dir = root / "docs" / "backlog"
-    if backlog_dir.exists():
-        for path in sorted(backlog_dir.glob("*.md")):
-            if path.name != "_TEMPLATE.md":
-                add(path)
+    for path in prioritized_backlog_files(root):
+        add(path)
 
     experiments_dir = root / "experiments"
     experiment_dirs = []
