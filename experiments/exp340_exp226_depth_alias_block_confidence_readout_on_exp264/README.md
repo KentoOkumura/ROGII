@@ -36,7 +36,7 @@ compact self-containedのtrain/inferenceと正規Notebookを実装済み。train
 
 ## 文書
 
-- Steering: `../../.steering/20260722-exp340-exp226-depth-alias-block-confidence-readout-on-exp264/`
+- Steering: `../../docs/legacy/steering/20260722-exp340-exp226-depth-alias-block-confidence-readout-on-exp264/`
 - 設定: `config.yaml`
 - 結果: `result.md`
 - 成果物: `kaggle/output/train_v1/artifacts/`

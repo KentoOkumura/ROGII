@@ -15,7 +15,7 @@ exp100 の best `pf_z_xy_slope` は単発 PF 候補で、exp072 `likpf_mean` は
 ## 実装内容
 
 - `exp103_pf_z_xy_likpf_ensemble_parity` を exp100 から作成した。
-- `.steering/20260621-exp103-pf-z-xy-likpf-ensemble-parity/` に requirements / design / tasklist を記入した。
+- `docs/legacy/steering/20260621-exp103-pf-z-xy-likpf-ensemble-parity/` に requirements / design / tasklist を記入した。
 - `pf_z_xy_likpf_ensemble_parity.py` を実装した。
 - `config.yaml` を parity audit 用に更新した。
 - train / inference notebook を exp103 名で作り直した。

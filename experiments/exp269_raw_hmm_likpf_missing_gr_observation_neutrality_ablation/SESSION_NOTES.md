@@ -11,7 +11,7 @@
 
 ### 実装内容
 
-- `.steering/20260717-exp269-raw-hmm-likpf-missing-gr-observation-neutrality-ablation/`で要件、1変更、再現性、Stage 1 guardを事前固定。
+- `docs/legacy/steering/20260717-exp269-raw-hmm-likpf-missing-gr-observation-neutrality-ablation/`で要件、1変更、再現性、Stage 1 guardを事前固定。
 - raw GR欠損判定は補間前horizontal `GR`のnon-finiteだけから作成。
 - exp209と同じGR emissionを構築した後、raw-missing evaluation rowの全stateを`0.0f`へ置換。
 - notebookのHMM呼び出しにはself-GR/LGB unaryを渡さず、configにも`lgb_emission`を持たせない。

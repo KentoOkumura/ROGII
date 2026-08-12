@@ -36,7 +36,7 @@ make new-exp EXP=exp265_target_free_pairwise_candidate_divergence_soft_experts_o
 .venv/bin/python -m pytest -q tests/test_candidate_pairwise_regime.py
 ```
 
-- `.steering/20260717-exp265-target-free-pairwise-candidate-divergence-soft-experts-on-exp264/`
+- `docs/legacy/steering/20260717-exp265-target-free-pairwise-candidate-divergence-soft-experts-on-exp264/`
   に仮説、Stage 0/1境界、guardを固定した。
 - `src/candidate_pairwise_regime.py`にprimitive cache reader、block fingerprint、outer-fold KMeans、
   centroid-matched stability、exp264 Parquet batch audit、artifact writerを実装した。

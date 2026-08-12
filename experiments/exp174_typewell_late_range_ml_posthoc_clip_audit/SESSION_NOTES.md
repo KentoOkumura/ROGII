@@ -111,7 +111,7 @@ kaggle kernels output kentookumura/exp174-typewell-late-clip-train -p /tmp/kaggl
 
 ## 変更点
 
-- `.steering/20260703-exp174-typewell-late-range-ml-posthoc-clip-audit/` に requirements / design / tasklist を記入した。
+- `docs/legacy/steering/20260703-exp174-typewell-late-range-ml-posthoc-clip-audit/` に requirements / design / tasklist を記入した。
 - `config.yaml` を exp148 OOF primary の no-training posthoc audit 用に更新した。
 - `typewell_late_range_ml_posthoc_clip_audit.py` を追加した。
 - train notebook の正となる `exp174_typewell_late_range_ml_posthoc_clip_audit_train.py` を追加した。

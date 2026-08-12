@@ -23,7 +23,7 @@ make new-exp EXP=exp099_pf_multi_observation_likelihood_probe SOURCE=experiments
 
 実装内容:
 
-- `.steering/20260621-exp099-pf-multi-observation-likelihood-probe/` を作成し、requirements / design / tasklist を記入する。
+- `docs/legacy/steering/20260621-exp099-pf-multi-observation-likelihood-probe/` を作成し、requirements / design / tasklist を記入する。
 - `config.yaml` を train-side multi-observation likelihood audit 用に更新した。
 - `pf_multi_observation_likelihood_probe.py` を追加し、既存候補を複数 GR 観測点で再採点する target-free likelihood と、top1 / softmax / likPF blend 診断候補を実装した。
 - train notebook を、設定確認、入力前提、監査実行、出力 preview、metrics 保存のセル構成に更新した。

@@ -4,7 +4,7 @@
 
 ## 主な参照先
 
-- 承認済み実験のsteering、作成、Notebook実装、実行、記録、実験レビュー: [`kaggle-review-exp`](../.agents/skills/kaggle-review-exp/SKILL.md)。backlog経由では検証中の仮説とbacklog側の更新・削除を`kaggle-strategy`へ引き渡す。
+- 承認済み実験の作成、requirementsへの契約移行、Notebook実装、実行、記録、実験レビュー: [`kaggle-review-exp`](../.agents/skills/kaggle-review-exp/SKILL.md)。backlog経由では検証中の仮説とbacklog側の更新・削除を`kaggle-strategy`へ引き渡す。
 - Kaggle API / CLI、Notebook push、ログ・output取得: [`kaggle-platform`](../.agents/skills/kaggle-platform/SKILL.md)
 - コード、Notebook、失敗実行、OOFのレビュー: [`kaggle-review`](../.agents/skills/kaggle-review/SKILL.md)
 - 提出ファイルとNotebook metadataの検証: [`kaggle-submit-check`](../.agents/skills/kaggle-submit-check/SKILL.md)

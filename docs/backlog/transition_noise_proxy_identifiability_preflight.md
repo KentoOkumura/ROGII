@@ -18,7 +18,7 @@
 
 | 優先度 | アイデア | 先行条件 / 依存 | 検証方法 | 注意点 |
 | --- | --- | --- | --- | --- |
-| 低・P4・CPU・0-HMM/0-booster・transition-noise再訪前のみ | `transition_noise_proxy_identifiability_preflight`: well-adaptive transition noiseを再実行する前に、known-prefix-only proxyがwell間差を持ちmapping後もclipへ崩壊しないかをtarget-freeに検査する | exp338は全773 wellsがupper clipとなりdirect `+2.124061 ft`、0/5 foldsでterminal close済み。独立した新proxy仮説とユーザー確認がある場合だけ別steeringへ切り出し、現行P1/P2を追い越さない | HMM・prediction・truthなしでproxyのdistinct値、分位点、IQR、well間変動、support/fallback、事前固定mapping後のlow/high clip率をfreezeする。clip率`<=0.5`と実質的なbetween-well variationをAND gateにし、FAILならHMMへ進めない | exp338の式/clip/shrinkageを救済しない。同じOOFでproxy/window/clipを選ばず、unknown-suffix truth/error/formationを読まない。具体的proxyと閾値は実装前に別設計・別承認する |
+| 低・P4・CPU・0-HMM/0-booster・transition-noise再訪前のみ | `transition_noise_proxy_identifiability_preflight`: well-adaptive transition noiseを再実行する前に、known-prefix-only proxyがwell間差を持ちmapping後もclipへ崩壊しないかをtarget-freeに検査する | exp338は全773 wellsがupper clipとなりdirect `+2.124061 ft`、0/5 foldsでterminal close済み。独立した新proxy仮説とユーザー確認がある場合だけ別実験の`requirements.md`へ契約を記録して実験化し、現行P1/P2を追い越さない | HMM・prediction・truthなしでproxyのdistinct値、分位点、IQR、well間変動、support/fallback、事前固定mapping後のlow/high clip率をfreezeする。clip率`<=0.5`と実質的なbetween-well variationをAND gateにし、FAILならHMMへ進めない | exp338の式/clip/shrinkageを救済しない。同じOOFでproxy/window/clipを選ばず、unknown-suffix truth/error/formationを読まない。具体的proxyと閾値は実装前に別設計・別承認する |
 
 ## 観測事実と仮定の整理状態
 
@@ -36,7 +36,7 @@
 
 ## 親実験からの差分
 
-- 先行条件 / 依存: exp338は全773 wellsがupper clipとなりdirect `+2.124061 ft`、0/5 foldsでterminal close済み。独立した新proxy仮説とユーザー確認がある場合だけ別steeringへ切り出し、現行P1/P2を追い越さない
+- 先行条件 / 依存: exp338は全773 wellsがupper clipとなりdirect `+2.124061 ft`、0/5 foldsでterminal close済み。独立した新proxy仮説とユーザー確認がある場合だけ別実験の`requirements.md`へ契約を記録して実験化し、現行P1/P2を追い越さない
 - 変更するもの: 未整理
 - 固定するもの: 未整理
 - 再利用するコード / config / 生成物: 未整理

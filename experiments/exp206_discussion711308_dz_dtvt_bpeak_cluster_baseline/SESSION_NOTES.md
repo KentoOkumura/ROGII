@@ -6,7 +6,7 @@ KAGGLE_DIRECTION backlog `discussion711308_dz_dtvt_bpeak_cluster_baseline` を�
 
 ## 2026-07-06 実装
 
-- `.steering/20260706-exp206-discussion711308-dz-dtvt-bpeak-cluster-baseline/` を作成し、requirements / design / tasklist を記入。
+- `docs/legacy/steering/20260706-exp206-discussion711308-dz-dtvt-bpeak-cluster-baseline/` を作成し、requirements / design / tasklist を記入。
 - `experiments/exp206_discussion711308_dz_dtvt_bpeak_cluster_baseline/` を template から作成。
 - Route: `pf_beam`
 - GPU 学習: なし

@@ -26,7 +26,7 @@ incumbent rerankingの交絡を除いて評価できる。
 - GaussianとHuberは共存しない。
 
 詳細は`candidate_contract.yaml`、`feature_contract.yaml`、
-`.steering/20260730-exp492-huber-exact-hmm-full-replacement-on-exp264/`を参照する。
+`docs/legacy/steering/20260730-exp492-huber-exact-hmm-full-replacement-on-exp264/`を参照する。
 
 ## 固定した評価量
 

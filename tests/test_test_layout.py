@@ -488,7 +488,6 @@ def test_standard_kaggle_notebook_flow_uses_generated_id_and_title() -> None:
     assert explicit_standard_command not in review_skill
     assert "通常は`--kernel-id`と`--title`を省略" in platform_skill
     assert "このskillへコマンドを複製しない" in review_skill
-    assert "task new-steering" not in platform_skill
     assert "task new-exp" not in platform_skill
 
 
@@ -522,15 +521,15 @@ def test_workflow_delegates_push_resource_checks_to_platform_skill() -> None:
 def test_approved_experiment_entry_supports_direct_and_backlog_paths() -> None:
     agents = (ROOT / "AGENTS.md").read_text()
     workflow = (ROOT / "docs" / "05_workflow.md").read_text()
-    requirements = (ROOT / "templates" / "steering" / "requirements.md").read_text()
+    requirements = (ROOT / "templates" / "experiment" / "requirements.md").read_text()
     review_skill = (ROOT / ".agents/skills/kaggle-review-exp/SKILL.md").read_text()
     review_ui = yaml.safe_load(
         (ROOT / ".agents/skills/kaggle-review-exp/agents/openai.yaml").read_text()
     )
 
     assert "backlog経由か直接承認かを問わず `kaggle-review-exp`" in agents
-    assert "ユーザーが直接実験化を承認した場合は、形式的なbacklogを作らず" in workflow
-    assert "ユーザーが直接実験化を承認した場合は、形式的なbacklogを作らない" in review_skill
+    assert "ユーザーが直接実験化を承認した場合は、形式的なbacklogを作らない" in workflow
+    assert "直接承認では、依頼原文" in review_skill
     assert "## 実験化の入口・引き継ぎ・承認" in requirements
     assert "`直接承認`、またはbacklog時の状態" in requirements
     assert "when applicable" in review_ui["interface"]["default_prompt"]
@@ -853,19 +852,17 @@ def test_submission_history_uses_unambiguous_status_and_elapsed_time_keys() -> N
     assert re.search(r"(?<![A-Za-z_])(?:status|runtime)=", submissions) is None
 
 
-def test_steering_contract_is_not_duplicated_in_design() -> None:
-    template = ROOT / "templates" / "steering"
-    requirements = (template / "requirements.md").read_text()
-    design = (template / "design.md").read_text()
-    tasklist = (template / "tasklist.md").read_text()
+def test_experiment_requirements_consolidates_contract_and_implementation() -> None:
+    requirements = (ROOT / "templates" / "experiment" / "requirements.md").read_text()
 
     assert "## 判断履歴" in requirements
+    assert "## 手法契約" in requirements
+    assert "## 実装方法" in requirements
+    assert "## 受け入れ基準" in requirements
     assert "- input: TODO" in requirements
     assert "- target / objective: TODO" in requirements
-    assert "- input: TODO" not in design
-    assert "- target / objective: TODO" not in design
-    assert "`requirements.md`だけに記録する" in tasklist
-    assert "`requirements.md` と `design.md` に記録する" not in tasklist
+    assert "- inputの実装箇所と変換: TODO" in requirements
+    assert not (ROOT / "templates" / "steering").exists()
 
 
 def test_ci_uses_repository_automation_targets() -> None:

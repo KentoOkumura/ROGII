@@ -13,7 +13,7 @@
 - route、設定、系譜、再現性方針: [`config.yaml`](config.yaml)
 - 証拠への参照、結果の解釈、ユーザー判断: [`result.md`](result.md)
 - 実行コマンド、途中経過、失敗と修正: [`SESSION_NOTES.md`](SESSION_NOTES.md)
-- 実装前の要件と設計: [`.steering/20260804-exp510-exp413-exact-public-preoverride-hedge`](../../.steering/20260804-exp510-exp413-exact-public-preoverride-hedge/)
+- 実装前の要件と設計: [`docs/legacy/steering/20260804-exp510-exp413-exact-public-preoverride-hedge`](../../docs/legacy/steering/20260804-exp510-exp413-exact-public-preoverride-hedge/)
 
 ## 実行入口
 

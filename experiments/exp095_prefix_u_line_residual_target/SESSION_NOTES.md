@@ -2,7 +2,7 @@
 
 ## 2026-06-20 実装
 
-- `.steering/20260620-exp095-prefix-u-line-residual-target/` を作成。
+- `docs/legacy/steering/20260620-exp095-prefix-u-line-residual-target/` を作成。
 - `experiments/exp095_prefix_u_line_residual_target/` を `exp080_u_space_target_ablation` からコピーして作成。
 - 実装元を `prefix_u_line_residual_target.py` に整理。
 - `dTVT` control と `prefix_u_line_alpha1p0` / `prefix_u_line_alpha0p5` を同一 folds / 同一 features / `lgb0` で比較する config に更新。

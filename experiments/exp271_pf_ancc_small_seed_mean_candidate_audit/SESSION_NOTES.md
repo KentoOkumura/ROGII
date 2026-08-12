@@ -38,7 +38,7 @@ exp266の固定先頭4/8 seed PF ANCC meanを全train pseudo-tailへ保存し、
 
 ## 実装
 
-- steering: `.steering/20260717-exp271-pf-ancc-small-seed-mean-candidate-audit/`
+- steering: `docs/legacy/steering/20260717-exp271-pf-ancc-small-seed-mean-candidate-audit/`
 - 12章 / 1,500行超のcompact self-contained Jupytext trainを実装した。
 - exp266 exact PF ANCC kernel、raw input、固定seed生成、exp072/266 parity、exp263 core bank loader、
   row/block/well oracle、distance/hidden-like/worst-well、seed disagreement、SHA保存を展開した。

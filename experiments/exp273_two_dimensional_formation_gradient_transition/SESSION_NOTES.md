@@ -74,7 +74,7 @@ backlog `two_dimensional_formation_gradient_transition`を、exp209 raw exact HM
     make new-steering EXP=exp273_two_dimensional_formation_gradient_transition
     make new-exp EXP=exp273_two_dimensional_formation_gradient_transition SOURCE=experiments/exp268_multi_scale_initial_rate_candidates
 
-- steering: `.steering/20260717-exp273-two-dimensional-formation-gradient-transition/`
+- steering: `docs/legacy/steering/20260717-exp273-two-dimensional-formation-gradient-transition/`
 - experiment: `experiments/exp273_two_dimensional_formation_gradient_transition/`
 - `kaggle-review-exp` skillと`docs/06_reproducibility.md`を確認した。
 

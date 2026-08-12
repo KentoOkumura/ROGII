@@ -12,7 +12,7 @@
 
 ## 実装内容
 
-- `.steering/20260626-exp135-tvt-dense-high-drift-confidence-gate-on-exp092/` を作成。
+- `docs/legacy/steering/20260626-exp135-tvt-dense-high-drift-confidence-gate-on-exp092/` を作成。
 - `experiments/exp135_tvt_dense_high_drift_confidence_gate_on_exp092/` を exp126 から作成。
 - 実装本体を `tvt_dense_high_drift_confidence_gate_on_exp092.py` に置き換えた。
 - `config.yaml` を exp092 base / exp073 reference / exp072 dense feature cache の no-training posthoc audit に更新した。

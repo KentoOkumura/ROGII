@@ -3,7 +3,7 @@
 ## 2026-07-04 実装
 
 - ユーザー依頼により `typewell_late_range_pfbeam_generation_soft_prior` の実装を開始。
-- `.steering/20260704-exp186-typewell-late-range-pfbeam-generation-soft-prior/` を作成。
+- `docs/legacy/steering/20260704-exp186-typewell-late-range-pfbeam-generation-soft-prior/` を作成。
 - `experiments/exp186_typewell_late_range_pfbeam_generation_soft_prior/` を新規作成。
 - Route: `pf_beam`
 - GPU 学習: なし

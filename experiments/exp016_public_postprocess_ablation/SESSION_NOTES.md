@@ -15,7 +15,7 @@
 
 - 2026-06-05: `uv run python scripts/new_steering.py --experiment exp016_public_postprocess_ablation` で steering docs を作成。
 - 2026-06-05: `uv run python scripts/new_experiment.py --name exp016_public_postprocess_ablation` で実験を作成。
-- 2026-06-05: `.steering/20260605-exp016-public-postprocess-ablation/{requirements.md,design.md,tasklist.md}` を記入。
+- 2026-06-05: `docs/legacy/steering/20260605-exp016-public-postprocess-ablation/{requirements.md,design.md,tasklist.md}` を記入。
 - 2026-06-05: `config.yaml` を OOF 後処理 ablation 用に更新。
 - 2026-06-05: `audit_public_postprocess.py` を追加。
 - 2026-06-05: `uv run python experiments/exp016_public_postprocess_ablation/audit_public_postprocess.py` を実行し、artifacts と `metrics.json` を生成。

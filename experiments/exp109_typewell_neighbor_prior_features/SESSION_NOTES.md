@@ -25,7 +25,7 @@ task push-kaggle-train EXP=exp109_typewell_neighbor_prior_features
 
 ## 変更点
 
-- `.steering/20260622-exp109-typewell-neighbor-prior-features/` を作成。
+- `docs/legacy/steering/20260622-exp109-typewell-neighbor-prior-features/` を作成。
 - `experiments/exp109_typewell_neighbor_prior_features/` を作成。
 - `config.yaml` を exp065 / exp099 入力の train-side audit に更新。
 - `typewell_neighbor_prior_features.py` を追加。

@@ -3,7 +3,7 @@
 ## 2026-07-04 実装
 
 - ユーザー依頼により `typewell_late_range_hard_window_pct40_full_cache_replacement` backlog の実装を開始。
-- `.steering/20260704-exp196-typewell-late-range-hard-window-pct40-full-cache-replacement/` を作成。
+- `docs/legacy/steering/20260704-exp196-typewell-late-range-hard-window-pct40-full-cache-replacement/` を作成。
 - `experiments/exp196_typewell_late_range_hard_window_pct40_full_cache_replacement/` を exp192 から作成。
 - Route: `pf_beam`
 - GPU 学習: なし。CPU-only full replay train feature cache generation。

@@ -49,7 +49,7 @@
 
 ## 実装確認
 
-- 2026-06-30: `.steering/20260630-exp161-prefix-crop-window-features-on-exp148/` を作成。
+- 2026-06-30: `docs/legacy/steering/20260630-exp161-prefix-crop-window-features-on-exp148/` を作成。
 - 2026-06-30: exp148 から `experiments/exp161_prefix_crop_window_features_on_exp148/` を作成。
 - 2026-06-30: CPU 実行 config に変更。
 - 2026-06-30: `.venv/bin/python -m py_compile ...` は PASS。

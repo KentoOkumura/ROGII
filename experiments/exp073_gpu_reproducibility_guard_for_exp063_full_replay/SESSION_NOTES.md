@@ -14,7 +14,7 @@
 
 ## 実装内容
 
-- `.steering/20260614-exp073-gpu-reproducibility-guard-for-exp063-full-replay/` を作成。
+- `docs/legacy/steering/20260614-exp073-gpu-reproducibility-guard-for-exp063-full-replay/` を作成。
 - `experiments/exp073_gpu_reproducibility_guard_for_exp063_full_replay/` を exp070 から作成し、exp073 用に差し替え。
 - `exp063_full_replay_reproducibility_guard.py` を実装。
   - train は exp072 の full replay train cache を読む。

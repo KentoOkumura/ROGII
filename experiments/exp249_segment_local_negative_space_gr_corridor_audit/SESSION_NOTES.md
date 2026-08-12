@@ -51,7 +51,7 @@ make new-exp EXP=exp249_segment_local_negative_space_gr_corridor_audit SOURCE=ex
 ```
 
 - exp246のself-contained audit notebookを構成参照元としてコピーした。
-- `.steering/20260714-exp249-segment-local-negative-space-gr-corridor-audit/`にStage 0/1、再現性、禁止事項を記録した。
+- `docs/legacy/steering/20260714-exp249-segment-local-negative-space-gr-corridor-audit/`にStage 0/1、再現性、禁止事項を記録した。
 
 ### 2026-07-14 実装
 

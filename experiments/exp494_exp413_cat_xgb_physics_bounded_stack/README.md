@@ -99,5 +99,5 @@ exp494は不採用、exp413をscientific / overall submitted anchorとして維�
 ensemble-route Public-LB referenceとなる。robust scientific promotionとは分ける。
 
 詳細は
-`.steering/20260730-exp494-exp413-cat-xgb-physics-bounded-stack/`、
+`docs/legacy/steering/20260730-exp494-exp413-cat-xgb-physics-bounded-stack/`、
 `frozen_input_contract.yaml`、`ensemble_contract.yaml`を参照する。

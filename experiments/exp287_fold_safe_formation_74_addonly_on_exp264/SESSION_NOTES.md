@@ -21,7 +21,7 @@ exp218監査でfull-train formation reference依存とされたbase-replay 74列
 
 ## 実装内容
 
-- `.steering/20260719-exp287-fold-safe-formation-74-addonly-on-exp264/`を作成した。
+- `docs/legacy/steering/20260719-exp287-fold-safe-formation-74-addonly-on-exp264/`を作成した。
 - audit CSVの`status=fail`かつ`family=base_replay`かつ
   `dependency=full_train_formation_reference`に一致する74列をSHA・列順込みで固定した。
 - `src/fold_safe_formation_pipeline.py`へ次を実装した。

@@ -10,7 +10,7 @@
 
 ## 実装内容
 
-- `.steering/20260620-exp085-u-projection-feature-ablation/` を作成。
+- `docs/legacy/steering/20260620-exp085-u-projection-feature-ablation/` を作成。
 - `experiments/exp085_u_projection_feature_ablation/` を exp080 から作成。
 - `settings.py` の experiment name を exp085 に更新。
 - `config.yaml` を U-space projection feature ablation 用に更新。

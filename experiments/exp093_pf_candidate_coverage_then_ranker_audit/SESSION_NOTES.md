@@ -23,7 +23,7 @@ make new-exp EXP=exp093_pf_candidate_coverage_then_ranker_audit
 
 実装内容:
 
-- `.steering/20260620-exp093-pf-candidate-coverage-then-ranker-audit/` を作成し、requirements / design / tasklist を記入した。
+- `docs/legacy/steering/20260620-exp093-pf-candidate-coverage-then-ranker-audit/` を作成し、requirements / design / tasklist を記入した。
 - `config.yaml` を train-side candidate coverage audit 用に更新した。
 - `pf_candidate_coverage_then_ranker_audit.py` を追加し、exp091 の self-GR 候補生成を再利用しつつ、candidate set 別 oracle coverage、bucket coverage、ranker readiness 判定を実装した。
 - train notebook を、設定確認、入力前提、監査実行、出力 preview、metrics 保存のセル構成に更新した。

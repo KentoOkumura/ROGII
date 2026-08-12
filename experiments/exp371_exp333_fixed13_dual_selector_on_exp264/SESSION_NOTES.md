@@ -34,7 +34,7 @@ candidate-long dual selectorをfixed13として再学習する。
 
 ## 設計
 
-- `.steering/20260724-exp371-exp333-fixed13-dual-selector-on-exp264/`を先に作成した。
+- `docs/legacy/steering/20260724-exp371-exp333-fixed13-dual-selector-on-exp264/`を先に作成した。
 - exp263 fixed12の候補順序・formula・fixed fallback 7本を固定した。
 - `exp333_segment_offset`を13本目、primary domainの12本目へ追加した。
 - exp333にsource-native confidenceはないため、`confidence_valid=false`とし、

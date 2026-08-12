@@ -40,7 +40,7 @@ exp244 mixed augmentationの効果をearly-only / late-onlyへmatched attributio
 
 ### 実装
 
-- `.steering/20260716-exp260-matched-early-late-attribution-on-exp244/`を作成。
+- `docs/legacy/steering/20260716-exp260-matched-early-late-attribution-on-exp244/`を作成。
 - exp260実験ディレクトリを作成。
 - exp244 official + 4 pseudo cacheを1回だけmemmapへstreamするJupytext trainを実装。
 - variantごとにoffset maskを適用し、各foldでouter-valid source wellを除外する。

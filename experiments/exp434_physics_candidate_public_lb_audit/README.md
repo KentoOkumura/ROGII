@@ -11,7 +11,7 @@
 - 作成日: 2026-07-29
 - 親実験: `exp263_last_anchor_better_candidate_confidence_pair_cache`
 - steering:
-  `.steering/20260729-exp434-physics-candidate-public-lb-audit/`
+  `docs/legacy/steering/20260729-exp434-physics-candidate-public-lb-audit/`
 
 ## 仮説
 

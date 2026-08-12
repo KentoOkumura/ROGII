@@ -51,7 +51,7 @@ make new-steering EXP=exp247_missing_gr_masking
 make new-exp EXP=exp247_missing_gr_masking SOURCE=experiments/exp221_lgb_oof_gaussian_emission_hmm_on_exp148
 ```
 
-- `.steering/20260714-exp247-missing-gr-masking/`に要件、1変更設計、再現性方針を記載した。
+- `docs/legacy/steering/20260714-exp247-missing-gr-masking/`に要件、1変更設計、再現性方針を記載した。
 - exp221 sourceからexact HMM kernelを継承し、実験固有のnotebookとconfigへ分離した。
 
 ### 2026-07-14 実装・静的検証

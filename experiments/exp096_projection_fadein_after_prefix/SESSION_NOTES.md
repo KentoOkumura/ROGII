@@ -27,7 +27,7 @@ make prepare-kaggle-notebooks EXP=exp096_projection_fadein_after_prefix EXTRA_AR
 
 実装した内容:
 
-- `.steering/20260621-exp096-projection-fadein-after-prefix/` を作成し、requirements/design/tasklist を記入。
+- `docs/legacy/steering/20260621-exp096-projection-fadein-after-prefix/` を作成し、requirements/design/tasklist を記入。
 - `config.yaml` に exp094 follow-up として fade-in projection grid を記入。
 - `projection_fadein_after_prefix.py` に row-wise beta fade-in を実装。
 - train/inference notebook 名と import を exp096 用に更新。

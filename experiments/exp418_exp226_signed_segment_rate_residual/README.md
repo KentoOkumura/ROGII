@@ -34,7 +34,7 @@ signed residual rateを予測して先頭補正0から連続積分すれば、�
 - hard gate: pooled、fold、near、1000+、hidden-like、boundary、by-well p95/worst
 
 詳細なtarget、basis、gateは
-`.steering/20260727-exp418-exp226-signed-segment-rate-residual/design.md`
+`docs/legacy/steering/20260727-exp418-exp226-signed-segment-rate-residual/design.md`
 を正とする。
 
 ## 実行入口

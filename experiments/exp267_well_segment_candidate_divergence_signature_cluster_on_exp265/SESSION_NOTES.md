@@ -47,7 +47,7 @@ stableなwell clusterとexp264 selector add-onlyの前提を、学習前に0 boo
 
 ## 実装
 
-- `.steering/20260717-exp267-well-segment-candidate-divergence-signature-cluster-on-exp265/`
+- `docs/legacy/steering/20260717-exp267-well-segment-candidate-divergence-signature-cluster-on-exp265/`
   に仮説、18特徴、fold-safe処理、guard、禁止事項を固定した。
 - `src/well_segment_candidate_divergence.py`へsignature、outer-fold KMeans、semantic soft membership、
   stability、post-assignment Parquet streaming、生成物/SHA保存を実装した。

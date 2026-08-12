@@ -55,7 +55,7 @@ worst-wellも悪化したため不採用とする。whole-well oracleは`-0.1786
 - `config.yaml`
 - `SESSION_NOTES.md`
 - `result.md`
-- `.steering/20260717-exp273-two-dimensional-formation-gradient-transition/`
+- `docs/legacy/steering/20260717-exp273-two-dimensional-formation-gradient-transition/`
 
 ## 読み方
 

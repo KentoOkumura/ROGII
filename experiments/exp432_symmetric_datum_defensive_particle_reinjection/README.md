@@ -22,7 +22,7 @@
 - event後はparent PFへ戻り、branch labelはancestry監査だけに使う。
 - PFはx1.0、500 particles、128 seeds、Gaussian evidence T=5。
 
-数式、RNG、gateは [steering design](../../.steering/20260728-exp432-symmetric-datum-defensive-particle-reinjection/design.md) を正とする。
+数式、RNG、gateは [steering design](../../docs/legacy/steering/20260728-exp432-symmetric-datum-defensive-particle-reinjection/design.md) を正とする。
 
 ## Stage 0実行量
 

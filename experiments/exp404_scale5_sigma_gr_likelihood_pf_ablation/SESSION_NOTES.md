@@ -19,7 +19,7 @@ version 2は`.bin` gzipのcompression推論、version 3はpandas間の文字列d
 - CV: x1.0 `10.914522073423171` / x1.3 `11.174615008412255`
 - LB: まだなし
 - steering:
-  `.steering/20260726-exp404-scale5-sigma-gr-likelihood-pf-ablation/`
+  `docs/legacy/steering/20260726-exp404-scale5-sigma-gr-likelihood-pf-ablation/`
 - 正規train / inference Notebook: compact候補を採用済み
 - 別名compact self-contained train / inference候補: 実装済み
 - 専用test: 12件PASS

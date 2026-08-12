@@ -11,7 +11,7 @@
 
 ## 実装内容
 
-- `.steering/20260620-exp090-lateral-self-gr-match-pseudotail-probe/` を作成し、requirements / design / tasklist を記入。
+- `docs/legacy/steering/20260620-exp090-lateral-self-gr-match-pseudotail-probe/` を作成し、requirements / design / tasklist を記入。
 - `experiments/exp090_lateral_self_gr_match_pseudotail_probe/` を exp089 から作成。
 - `settings.py` の experiment name を exp090 に更新。
 - `config.yaml` を lateral self-GR match probe 用に更新。

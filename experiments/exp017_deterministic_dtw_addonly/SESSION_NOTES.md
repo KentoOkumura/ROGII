@@ -18,7 +18,7 @@
 - 2026-06-05: `uv run python scripts/new_steering.py --experiment exp017_deterministic_dtw_addonly` で steering docs を作成。
 - 2026-06-05: `uv run python scripts/new_experiment.py --name exp017_deterministic_dtw_addonly --source experiments/exp015_public_pf_beam_scale_selector_features` で exp015 から実験を作成。
 - 2026-06-05: notebook 名を exp017 に変更し、`settings.py` の `EXPERIMENT_NAME` を更新。
-- 2026-06-05: `.steering/20260605-exp017-deterministic-dtw-addonly/{requirements.md,design.md,tasklist.md}` に仮説、設計、タスクを記入。
+- 2026-06-05: `docs/legacy/steering/20260605-exp017-deterministic-dtw-addonly/{requirements.md,design.md,tasklist.md}` に仮説、設計、タスクを記入。
 - 2026-06-05: `config.yaml` を exp017 用に置換し、`control_lightgbm_no_gr` と `dtw_dwt_no_gr` の 2 variants を定義。
 - 2026-06-05: `baseline.py` に deterministic DTW/DWT feature generator を追加。
 - 2026-06-05: `uv run python -m py_compile experiments/exp017_deterministic_dtw_addonly/baseline.py experiments/exp017_deterministic_dtw_addonly/settings.py` が通過。

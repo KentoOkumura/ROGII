@@ -32,7 +32,7 @@ leakage guard:
 
 実装メモ:
 
-- `.steering/20260705-exp203-heatmap-mdn-candidates-into-selector-features/` を作成。
+- `docs/legacy/steering/20260705-exp203-heatmap-mdn-candidates-into-selector-features/` を作成。
 - `experiments/exp203_heatmap_mdn_candidates_into_selector_features/` を exp184 から作成。
 - 実装本体を `heatmap_mdn_candidates_into_selector_features.py` にリネームし、exp202 source reader と `hmdn_` feature block を追加。
 

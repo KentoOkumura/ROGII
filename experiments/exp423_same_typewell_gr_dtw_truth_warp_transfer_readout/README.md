@@ -10,7 +10,7 @@
 - 作成日: 2026-07-28
 - 親実験: `exp109_typewell_neighbor_prior_features`
 - steering:
-  `.steering/20260728-exp423-same-typewell-gr-dtw-truth-warp-transfer-readout/`
+  `docs/legacy/steering/20260728-exp423-same-typewell-gr-dtw-truth-warp-transfer-readout/`
 
 ## 仮説
 

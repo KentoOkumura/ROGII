@@ -10,7 +10,7 @@ exp101 は `lgb_candidate_error_ranker` が `pf_ancc` を 35.98% 選べるよう
 
 ### 実装内容
 
-- `.steering/20260621-exp102-confidence-gated-likpf-fallback-on-exp101/` を作成。
+- `docs/legacy/steering/20260621-exp102-confidence-gated-likpf-fallback-on-exp101/` を作成。
 - `experiments/exp102_confidence_gated_likpf_fallback_on_exp101/` を exp101 から派生作成。
 - `confidence_gated_likpf_fallback_on_exp101.py` を追加。
   - exp099 v2 train feature cache を読み込む。

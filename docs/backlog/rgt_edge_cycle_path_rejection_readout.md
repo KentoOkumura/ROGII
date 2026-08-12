@@ -18,7 +18,7 @@
 
 | 優先度 | アイデア | 先行条件 / 依存 | 検証方法 | 注意点 |
 | --- | --- | --- | --- | --- |
-| 低・P4・exp406 FAILで先行条件成立・0-prediction・別承認待ち | `rgt_edge_cycle_path_rejection_readout`: exp386の固定graph/path contractでcycle residualとroute全棄却の段階だけを分解する | exp386 v1はRGT coverage `0.989847`とleakage/resourceをPASSしたが、cycle residual p95 `2.363303`、graph query / bank / finite-path coverage 0でStage 0 FAIL。独立GR-firstのexp406もgraph query `0.451157`、finite row coverage `0.755026`、full投影`65,543.109 sec`でtechnical FAILしたため、GR graph救済ではなくFormation側の既存route棄却段階を分解する先行条件だけが成立した。既存P1/P2/P3候補を追い越さずP4を維持する | 着手する場合だけ、exp386の同じ5 graph solves / fixed16でreject countをtarget-free保存する。prediction、truth join、scenario採用は0。新しいsteeringで「どの保存生成物だけで足りるか」を先に確認し、不要なgraph再計算を避ける | exp386/exp406 FAILを再分類しない。exp406のGR edge/solverとの混在、neighbor/stretch/Huber/scenario-count/diversity/monotonicity閾値grid、target GR/Formation/truth、best rejection rescue、full run、exp387再開は禁止 |
+| 低・P4・exp406 FAILで先行条件成立・0-prediction・別承認待ち | `rgt_edge_cycle_path_rejection_readout`: exp386の固定graph/path contractでcycle residualとroute全棄却の段階だけを分解する | exp386 v1はRGT coverage `0.989847`とleakage/resourceをPASSしたが、cycle residual p95 `2.363303`、graph query / bank / finite-path coverage 0でStage 0 FAIL。独立GR-firstのexp406もgraph query `0.451157`、finite row coverage `0.755026`、full投影`65,543.109 sec`でtechnical FAILしたため、GR graph救済ではなくFormation側の既存route棄却段階を分解する先行条件だけが成立した。既存P1/P2/P3候補を追い越さずP4を維持する | 着手する場合だけ、exp386の同じ5 graph solves / fixed16でreject countをtarget-free保存する。prediction、truth join、scenario採用は0。新しい実験の`requirements.md`で「どの保存生成物だけで足りるか」を先に確認し、不要なgraph再計算を避ける | exp386/exp406 FAILを再分類しない。exp406のGR edge/solverとの混在、neighbor/stretch/Huber/scenario-count/diversity/monotonicity閾値grid、target GR/Formation/truth、best rejection rescue、full run、exp387再開は禁止 |
 
 ## 観測事実と仮定の整理状態
 
@@ -44,7 +44,7 @@
 
 ## 最小の反証可能な検証
 
-着手する場合だけ、exp386の同じ5 graph solves / fixed16でreject countをtarget-free保存する。prediction、truth join、scenario採用は0。新しいsteeringで「どの保存生成物だけで足りるか」を先に確認し、不要なgraph再計算を避ける
+着手する場合だけ、exp386の同じ5 graph solves / fixed16でreject countをtarget-free保存する。prediction、truth join、scenario採用は0。新しい実験の`requirements.md`で「どの保存生成物だけで足りるか」を先に確認し、不要なgraph再計算を避ける
 
 ## 成功条件と停止条件
 

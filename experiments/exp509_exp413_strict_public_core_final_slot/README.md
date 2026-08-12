@@ -85,7 +85,7 @@ prediction = 0.8628352666928758 * exp413
 - `ensemble_contract.yaml`: blendの機械可読契約
 - `output_contract.md`: 将来生成物の契約
 - `SESSION_NOTES.md`: 設計判断とblocker
-- steering: `../../.steering/20260804-exp509-exp413-strict-public-core-final-slot/`
+- steering: `../../docs/legacy/steering/20260804-exp509-exp413-strict-public-core-final-slot/`
 
 ## 次
 

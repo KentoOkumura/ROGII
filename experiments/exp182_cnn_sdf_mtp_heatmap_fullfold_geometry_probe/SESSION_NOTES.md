@@ -38,12 +38,12 @@
 make new-steering EXP=exp180_cnn_sdf_mtp_heatmap_fullfold_geometry_probe
 make new-exp EXP=exp180_cnn_sdf_mtp_heatmap_fullfold_geometry_probe SOURCE=experiments/exp179_cnn_sdf_mtp_heatmap_probe
 mv experiments/exp180_cnn_sdf_mtp_heatmap_fullfold_geometry_probe experiments/exp182_cnn_sdf_mtp_heatmap_fullfold_geometry_probe
-mv .steering/20260703-exp180-cnn-sdf-mtp-heatmap-fullfold-geometry-probe .steering/20260703-exp182-cnn-sdf-mtp-heatmap-fullfold-geometry-probe
+mv docs/legacy/steering/20260703-exp180-cnn-sdf-mtp-heatmap-fullfold-geometry-probe docs/legacy/steering/20260703-exp182-cnn-sdf-mtp-heatmap-fullfold-geometry-probe
 ```
 
 変更点:
 
-- `.steering/20260703-exp182-cnn-sdf-mtp-heatmap-fullfold-geometry-probe/` に要件、設計、tasklist を記入。
+- `docs/legacy/steering/20260703-exp182-cnn-sdf-mtp-heatmap-fullfold-geometry-probe/` に要件、設計、tasklist を記入。
 - `config.yaml` を exp180 の full-fold geometry diagnostic 用に更新。
 - train notebook source を run spec 型に拡張。
 - inference notebook source は diagnostic-only guard に更新。

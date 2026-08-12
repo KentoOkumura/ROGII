@@ -26,7 +26,7 @@ make prepare-kaggle-notebooks EXP=exp114_spatial_neighbor_prior_signal_audit EXT
 .venv/bin/ruff check experiments/exp114_spatial_neighbor_prior_signal_audit/spatial_neighbor_prior_signal_audit.py
 ```
 
-- `.steering/20260623-exp114-spatial-neighbor-prior-signal-audit/` を作成し、requirements / design / tasklist を記入した。
+- `docs/legacy/steering/20260623-exp114-spatial-neighbor-prior-signal-audit/` を作成し、requirements / design / tasklist を記入した。
 - `config.yaml` に `ensemble` route、exp099 parent、fold-safe leakage policy、4 つの spatial neighbor variant、出力契約を追加した。
 - `spatial_neighbor_prior_signal_audit.py` を追加した。
 - train notebook を入力確認、audit 実行、生成物確認セルに更新した。

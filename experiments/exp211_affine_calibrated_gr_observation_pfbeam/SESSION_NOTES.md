@@ -44,7 +44,7 @@ make prepare-kaggle-notebooks EXP=exp211_affine_calibrated_gr_observation_pfbeam
 
 結果:
 
-- steering: `.steering/20260707-exp211-affine-calibrated-gr-observation-pfbeam`
+- steering: `docs/legacy/steering/20260707-exp211-affine-calibrated-gr-observation-pfbeam`
 - experiment: `experiments/exp211_affine_calibrated_gr_observation_pfbeam`
 - `jupytext --test`: train / inference とも PASS
 - `py_compile`: PASS

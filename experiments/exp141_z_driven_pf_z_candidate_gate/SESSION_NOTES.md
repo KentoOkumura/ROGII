@@ -18,7 +18,7 @@
 uv run python scripts/new_steering.py --experiment exp140_z_driven_pf_z_candidate_gate
 uv run python scripts/new_experiment.py --name exp140_z_driven_pf_z_candidate_gate
 mv experiments/exp140_z_driven_pf_z_candidate_gate experiments/exp141_z_driven_pf_z_candidate_gate
-mv .steering/20260627-exp140-z-driven-pf-z-candidate-gate .steering/20260627-exp141-z-driven-pf-z-candidate-gate
+mv docs/legacy/steering/20260627-exp140-z-driven-pf-z-candidate-gate docs/legacy/steering/20260627-exp141-z-driven-pf-z-candidate-gate
 uv run python -m py_compile experiments/exp141_z_driven_pf_z_candidate_gate/z_driven_pf_z_candidate_gate.py experiments/exp141_z_driven_pf_z_candidate_gate/settings.py
 python3 -m json.tool experiments/exp141_z_driven_pf_z_candidate_gate/exp141_z_driven_pf_z_candidate_gate_train.ipynb
 python3 -m json.tool experiments/exp141_z_driven_pf_z_candidate_gate/exp141_z_driven_pf_z_candidate_gate_inference.ipynb
@@ -38,7 +38,7 @@ kaggle kernels logs kentookumura/exp141-z-pfz-gate-train > experiments/exp141_z_
 
 - 当初 `exp140_z_driven_pf_z_candidate_gate` として作成したが、既存 `exp140_z_slope_posthoc_correction_on_pfbeam_candidates` と番号衝突していたため、`exp141_z_driven_pf_z_candidate_gate` に改番した。
 - 旧番号で誤って Kaggle に push した kernel `kentookumura/exp140-z-pfz-gate-train` version 1 は、誤番号 run として扱い、この実験の正式結果には使わない。
-- `.steering/20260627-exp141-z-driven-pf-z-candidate-gate/` に改番。
+- `docs/legacy/steering/20260627-exp141-z-driven-pf-z-candidate-gate/` に改番。
 - `experiments/exp141_z_driven_pf_z_candidate_gate/` に改番。
 - `config.yaml` を `pf_beam` route、exp072 cache parent、low-frequency `pf_z` gate grid に更新。
 - `z_driven_pf_z_candidate_gate.py` を追加。

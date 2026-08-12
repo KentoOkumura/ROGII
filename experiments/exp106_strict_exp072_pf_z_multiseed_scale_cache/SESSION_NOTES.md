@@ -15,7 +15,7 @@
 ## 実装内容
 
 - `exp106_strict_exp072_pf_z_multiseed_scale_cache` を `exp104_pf_z_seedbag_scale_cache` から作成した。
-- `.steering/20260622-exp106-strict-exp072-pf-z-multiseed-scale-cache/` に requirements / design / tasklist を記入した。
+- `docs/legacy/steering/20260622-exp106-strict-exp072-pf-z-multiseed-scale-cache/` に requirements / design / tasklist を記入した。
 - `config.yaml` を exp106 用に更新し、`model.strict_pf_z` に exp072 `pf_z` と同じ PF パラメータを置いた。
 - 実装対象を `strict_exp072_pf_z_multiseed_scale_cache.py` とし、出力 prefix を `exp106_strict_exp072_pf_z_multiseed_scale_cache` に変更した。
 - 予定候補:

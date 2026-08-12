@@ -34,7 +34,7 @@ make new-exp EXP=exp433_rsd_sparse_anchor_direct_oof_readout
 ```
 
 - steering:
-  `.steering/20260728-exp433-rsd-sparse-anchor-direct-oof-readout/`
+  `docs/legacy/steering/20260728-exp433-rsd-sparse-anchor-direct-oof-readout/`
 - experiment:
   `experiments/exp433_rsd_sparse_anchor_direct_oof_readout/`
 - route:

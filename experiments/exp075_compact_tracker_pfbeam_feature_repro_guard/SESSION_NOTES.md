@@ -10,7 +10,7 @@
 
 ## 実装内容
 
-- `.steering/20260616-exp075-compact-tracker-pfbeam-feature-repro-guard/` を作成。
+- `docs/legacy/steering/20260616-exp075-compact-tracker-pfbeam-feature-repro-guard/` を作成。
 - exp074 を source として exp075 を作成。
 - `compact_tracker_surface_audit.py` を `compact_tracker_pfbeam_repro_guard.py` にリネーム。
 - `run_pfbeam_feature_generation()` を追加し、raw train から `ravaghi_vs_pixiux_public_replay_tracker_features_train.csv.gz` を 1 回生成する構成にした。

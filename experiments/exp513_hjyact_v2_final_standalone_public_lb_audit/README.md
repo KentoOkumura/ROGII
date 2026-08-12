@@ -85,7 +85,7 @@ submit-checkとLBは未評価である。
 - 正規inference Notebook: template placeholder、未採用
 - train Notebook: 学習なし、template placeholder、実行禁止
 - source/model契約: `standalone_contract.yaml` / `model_manifest.yaml`
-- steering: `../../.steering/20260805-exp513-hjyact-v2-final-standalone-public-lb-audit/`
+- steering: `../../docs/legacy/steering/20260805-exp513-hjyact-v2-final-standalone-public-lb-audit/`
 
 ## 所見
 

@@ -12,7 +12,7 @@ outer-trainだけで選ぶtail制約付きscalar shrinkで安全に保持でき�
 - 親: `exp263_last_anchor_better_candidate_confidence_pair_cache`
 - CV / LB: `8.238331667 / なし`
 - steering:
-  `.steering/20260726-exp403-exp333-exp355-tail-constrained-physics-shrink/`
+  `docs/legacy/steering/20260726-exp403-exp333-exp355-tail-constrained-physics-shrink/`
 - 正規train Notebook: compact self-contained候補を採用済み
 - `settings.py`: 未編集
 - compact self-contained Jupytext train/inference候補: 実装済み

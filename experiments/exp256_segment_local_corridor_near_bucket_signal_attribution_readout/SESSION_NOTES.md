@@ -55,7 +55,7 @@ distance-conditioned base error、candidate family / well の構成、risk=1 飽
 ### 2026-07-15 実験作成
 
 - `task` は環境に無かったため、同等の `make new-steering` / `make new-exp` を使用した。
-- `.steering/20260715-exp256-segment-local-corridor-near-bucket-signal-attribution-readout/` を作成した。
+- `docs/legacy/steering/20260715-exp256-segment-local-corridor-near-bucket-signal-attribution-readout/` を作成した。
 - self-contained Jupytext train source と inference fail-closed guard を実装した。
 
 ### 2026-07-15 push前検証

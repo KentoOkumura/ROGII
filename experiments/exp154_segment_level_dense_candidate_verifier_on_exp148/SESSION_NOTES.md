@@ -13,7 +13,7 @@
 
 ## 実装内容
 
-- `.steering/20260628-exp154-segment-level-dense-candidate-verifier-on-exp148/` を作成。
+- `docs/legacy/steering/20260628-exp154-segment-level-dense-candidate-verifier-on-exp148/` を作成。
 - `experiments/exp154_segment_level_dense_candidate_verifier_on_exp148/` を exp135 からコピーして作成。
 - backlog の比較対象を旧 exp092 から現 ML route submitted anchor の exp148 に更新した。
 - 実装本体を `segment_level_dense_candidate_verifier_on_exp148.py` にリネームし、base prediction を exp148 `lgb_mean` OOF に変更した。

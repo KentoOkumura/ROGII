@@ -12,7 +12,7 @@
 
 ## 実装内容
 
-- `.steering/20260628-exp156-test-batch-covariate-context-audit/` を作成。
+- `docs/legacy/steering/20260628-exp156-test-batch-covariate-context-audit/` を作成。
 - `experiments/exp156_test_batch_covariate_context_audit/` を exp154 からコピーして作成。
 - 実装本体を `test_batch_covariate_context_audit.py` に変更した。
 - exp148 `lgb_mean` OOF、exp073 reference OOF、exp072 PF/Beam/dense feature cache を読む posthoc audit にした。

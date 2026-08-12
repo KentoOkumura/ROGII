@@ -35,7 +35,7 @@ outcomeに対する0-booster target-free prefix stability readoutとして実装
 
 ## 実装
 
-- `.steering/20260718-exp278-formation-gradient-prefix-stability-risk-readout-on-exp273/`へ
+- `docs/legacy/steering/20260718-exp278-formation-gradient-prefix-stability-risk-readout-on-exp273/`へ
   要件、設計、tasklistを作成した。
 - self-contained Jupytext train sourceを9章で実装した。同じexp directoryのhelper importはない。
 - exp273のSVD geometryとHuber IRLSを再実装し、full-prefixのvalidity/fallback/geometry/

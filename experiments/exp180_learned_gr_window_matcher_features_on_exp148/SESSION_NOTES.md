@@ -42,7 +42,7 @@
 
 ## 実装確認
 
-- 2026-07-03: `.steering/20260703-exp180-learned-gr-window-matcher-features-on-exp148/` を作成。
+- 2026-07-03: `docs/legacy/steering/20260703-exp180-learned-gr-window-matcher-features-on-exp148/` を作成。
 - 2026-07-03: `experiments/exp180_learned_gr_window_matcher_features_on_exp148/` を exp161 scaffold から作成し、exp180 用に rename。
 - 2026-07-03: `learned_gr_window_matcher_features_on_exp148.py` に fold-safe learned GR matcher scorer feature builder を実装。
 - 2026-07-03: `scripts/prepare_kaggle_notebooks.py` に `gr_matcher_features` notebook kind を追加。

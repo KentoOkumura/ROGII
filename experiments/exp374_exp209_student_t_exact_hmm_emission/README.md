@@ -93,7 +93,7 @@ direct path RMSEを改善できるかもしれない。
 ## 参照
 
 - steering:
-  `.steering/20260724-exp374-exp209-student-t-exact-hmm-emission/`
+  `docs/legacy/steering/20260724-exp374-exp209-student-t-exact-hmm-emission/`
 - 再現性:
   `docs/06_reproducibility.md`
 - バックログ:

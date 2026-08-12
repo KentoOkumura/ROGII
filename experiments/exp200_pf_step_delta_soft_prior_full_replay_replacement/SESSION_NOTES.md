@@ -3,7 +3,7 @@
 ## 2026-07-05 実装
 
 - ユーザー依頼により `pf_step_delta_soft_prior_full_replay_replacement` の実装を開始。
-- `.steering/20260705-exp200-pf-step-delta-soft-prior-full-replay-replacement/` を作成。
+- `docs/legacy/steering/20260705-exp200-pf-step-delta-soft-prior-full-replay-replacement/` を作成。
 - `experiments/exp200_pf_step_delta_soft_prior_full_replay_replacement/` を `exp186` から scaffold し、実装本体は exp072 baseline full replay code を `step_delta_public_replay.py` として取り込み直した。
 - Route: `pf_beam`
 - GPU 学習: なし

@@ -16,7 +16,7 @@
 
 主な変更:
 
-- `.steering/20260705-exp202-heatmap-mdn-candidate-generator-probe/` を作成。
+- `docs/legacy/steering/20260705-exp202-heatmap-mdn-candidate-generator-probe/` を作成。
 - `experiments/exp202_heatmap_mdn_candidate_generator_probe/` を作成。
 - exp182 の 5ch heatmap CNN/MTP train source を土台に、`id`、mode score margin / entropy、heatmap topK candidate CSV、existing-plus-heatmap union oracle readout を追加。
 - `config.yaml` を `pf_beam` route、candidate generator probe、exp099 candidate cache readout 用に更新。

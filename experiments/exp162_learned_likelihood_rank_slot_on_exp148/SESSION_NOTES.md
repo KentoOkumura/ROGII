@@ -2,7 +2,7 @@
 
 ## 2026-06-30 実装
 
-- `.steering/20260630-exp162-learned-likelihood-rank-slot-on-exp148/` を作成。
+- `docs/legacy/steering/20260630-exp162-learned-likelihood-rank-slot-on-exp148/` を作成。
 - `experiments/exp162_learned_likelihood_rank_slot_on_exp148/` を exp148 から作成。
 - 親実験は `exp148_learned_likelihood_fulltrain_addonly_on_exp092`。
 - exp148 の U-projection / learned likelihood confidence surface は残し、exp145 の candidate 別 `learned_prob_*` と `learned_pred_abs_error_*` で rank1/rank2/rank3 を作る `llrs_` 特徴を add-only する。

@@ -11,7 +11,7 @@
 
 ## 実装内容
 
-- `.steering/20260620-exp084-pf-confidence-residual-clip/` を作成。
+- `docs/legacy/steering/20260620-exp084-pf-confidence-residual-clip/` を作成。
 - `experiments/exp084_pf_confidence_residual_clip/` を exp077 から作成。
 - exp077 に実装済みだった `pf_confidence_residual_clip_q995` inference policy を、独立 exp として実行できるように分離。
 - `config.yaml` の `inference.postprocess_policy` を `pf_confidence_residual_clip_q995` に設定。

@@ -62,4 +62,4 @@ Gaussian--Student-t disagreementの0-booster feature-only監査は、
 独立した必要性とユーザー承認が生じた場合だけ別実験として検討する。
 
 詳細は`result.md`、`metrics.json`、`SESSION_NOTES.md`、
-`.steering/20260730-exp493-student-t-exact-hmm-full-replacement-on-exp264/`を参照する。
+`docs/legacy/steering/20260730-exp493-student-t-exact-hmm-full-replacement-on-exp264/`を参照する。

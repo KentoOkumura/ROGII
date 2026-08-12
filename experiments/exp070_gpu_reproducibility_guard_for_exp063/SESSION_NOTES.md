@@ -13,7 +13,7 @@
 ## 実装内容
 
 - exp063 から実験フォルダをコピーして exp070 を作成。
-- `.steering/20260613-exp070-gpu-reproducibility-guard-for-exp063/` を作成。
+- `docs/legacy/steering/20260613-exp070-gpu-reproducibility-guard-for-exp063/` を作成。
 - `config.yaml` を exp063 output 固定の LightGBM reproducibility guard に置換。
 - `exp063_reproducibility_guard.py` を追加。
   - exp063 の `ravaghi_vs_pixiux_public_replay_tracker_features_train.csv.gz` を読む。

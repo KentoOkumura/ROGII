@@ -18,7 +18,7 @@
 
 | 優先度 | アイデア | 先行条件 / 依存 | 検証方法 | 注意点 |
 | --- | --- | --- | --- | --- |
-| 低・P4・CPU・0-booster・exp306 RTS再訪前のみ | `exp306_rts_remaining20_nonconvergence_profile`: Stage 0 RTS Bで32 iterationsに達して残った20 FAIL（horizontal 7 / typewell 13）が、単純な反復予算不足か重み更新の振動・停滞かをtarget-freeに切り分ける | exp306内のRTS A/Bは事前gridを使い切って不適格として閉鎖済み。L1 full auditの判断や現行P1/P2を追い越さず、RTSを再訪する独立理由とユーザー確認がある場合だけ別steeringへ切り出す | 保存statusのseries kind、rows、final relative changeを固定し、必要なら同じ20 series・同じ`32,1e-4`を診断再生してiteration-wise relative change、weight minimum、state deltaの軌跡だけを保存する。solver設定、output、科学scoreは変更せず、budget-limited / oscillatory / numericalを事前規則で分類する | max iterations/tolerance/df/scale/Q/R/gridをこのreadoutで試さない。truth/error/formation/MRR/top3/RMSE、denoiser品質、predictionを読まない。診断結果を見て都合のよい救済値を選ばず、変更するなら単一設定とgateをさらに別expで事前固定する |
+| 低・P4・CPU・0-booster・exp306 RTS再訪前のみ | `exp306_rts_remaining20_nonconvergence_profile`: Stage 0 RTS Bで32 iterationsに達して残った20 FAIL（horizontal 7 / typewell 13）が、単純な反復予算不足か重み更新の振動・停滞かをtarget-freeに切り分ける | exp306内のRTS A/Bは事前gridを使い切って不適格として閉鎖済み。L1 full auditの判断や現行P1/P2を追い越さず、RTSを再訪する独立理由とユーザー確認がある場合だけ別実験の`requirements.md`へ契約を記録して実験化する | 保存statusのseries kind、rows、final relative changeを固定し、必要なら同じ20 series・同じ`32,1e-4`を診断再生してiteration-wise relative change、weight minimum、state deltaの軌跡だけを保存する。solver設定、output、科学scoreは変更せず、budget-limited / oscillatory / numericalを事前規則で分類する | max iterations/tolerance/df/scale/Q/R/gridをこのreadoutで試さない。truth/error/formation/MRR/top3/RMSE、denoiser品質、predictionを読まない。診断結果を見て都合のよい救済値を選ばず、変更するなら単一設定とgateをさらに別expで事前固定する |
 
 ## 観測事実と仮定の整理状態
 
@@ -36,7 +36,7 @@
 
 ## 親実験からの差分
 
-- 先行条件 / 依存: exp306内のRTS A/Bは事前gridを使い切って不適格として閉鎖済み。L1 full auditの判断や現行P1/P2を追い越さず、RTSを再訪する独立理由とユーザー確認がある場合だけ別steeringへ切り出す
+- 先行条件 / 依存: exp306内のRTS A/Bは事前gridを使い切って不適格として閉鎖済み。L1 full auditの判断や現行P1/P2を追い越さず、RTSを再訪する独立理由とユーザー確認がある場合だけ別実験の`requirements.md`へ契約を記録して実験化する
 - 変更するもの: 未整理
 - 固定するもの: 未整理
 - 再利用するコード / config / 生成物: 未整理

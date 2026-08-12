@@ -25,7 +25,7 @@
 
 ## 実装内容
 
-- `.steering/20260620-exp088-sequence-model-residual-diversity/` を作成。
+- `docs/legacy/steering/20260620-exp088-sequence-model-residual-diversity/` を作成。
 - `experiments/exp088_sequence_model_residual_diversity/` を exp086 から作成し、diagnostic input resolver を流用。
 - `sequence_model_residual_diversity.py` を追加。
   - exp073 OOF prediction から selected mode/model (`gpu_repro_guard_dp_threads8` / `lgb_mean`) を読む。

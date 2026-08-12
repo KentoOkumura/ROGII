@@ -117,7 +117,7 @@ fixed exp072 candidateを変更せず、MD-local GR mismatch DAGのminimum-bottl
     make new-exp EXP=exp250_segment_local_negative_space_gr_corridor_audit SOURCE=experiments/exp246_negative_space_gr_barrier_audit
 
 - ユーザー指示により、誤って結び付いていたexp249から現行contractを分離した。
-- .steering/20260714-exp250-segment-local-negative-space-gr-corridor-audit/に現行contract、Stage 0/1、guard、再現性を記録した。
+- docs/legacy/steering/20260714-exp250-segment-local-negative-space-gr-corridor-audit/に現行contract、Stage 0/1、guard、再現性を記録した。
 
 ### 2026-07-14 実装
 

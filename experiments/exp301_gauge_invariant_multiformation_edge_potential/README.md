@@ -9,7 +9,7 @@
 - 作成日: 2026-07-20
 - 親実験: なし。独立physical family
 - 比較: exp226、exp289、exp293
-- 設計の正: `.steering/20260720-exp301-gauge-invariant-multiformation-edge-potential/`
+- 設計の正: `docs/legacy/steering/20260720-exp301-gauge-invariant-multiformation-edge-potential/`
 - 案2/案3の正: `reserved_followup_contract.md`
 
 ## 仮説

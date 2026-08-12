@@ -46,7 +46,7 @@ Kaggle train push 前に再確認する。
 
 ### 実装ファイル
 
-- `.steering/20260707-exp215-mtp-full-tail-heatmap-path-generator-probe/`
+- `docs/legacy/steering/20260707-exp215-mtp-full-tail-heatmap-path-generator-probe/`
 - `experiments/exp215_mtp_full_tail_heatmap_path_generator_probe/config.yaml`
 - `experiments/exp215_mtp_full_tail_heatmap_path_generator_probe/exp215_mtp_full_tail_heatmap_path_generator_probe_train.py`
 - `experiments/exp215_mtp_full_tail_heatmap_path_generator_probe/exp215_mtp_full_tail_heatmap_path_generator_probe_inference.py`

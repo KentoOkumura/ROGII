@@ -79,7 +79,7 @@ branch massを配った。same-sampleでtrigger、prior、shift、readout、gate
 - Stage 1 / inference / submission: 未実施・禁止
 
 詳細な契約は
-`.steering/20260728-exp425-symmetric-datum-reanchor-exact-hmm/`と
+`docs/legacy/steering/20260728-exp425-symmetric-datum-reanchor-exact-hmm/`と
 `config.yaml`を正とする。
 
 ## 次

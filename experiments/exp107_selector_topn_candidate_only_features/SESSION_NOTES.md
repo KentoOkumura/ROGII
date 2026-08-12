@@ -15,7 +15,7 @@
 
 ### 実装メモ
 
-- `.steering/20260622-exp107-selector-topn-candidate-only-features/` を作成。
+- `docs/legacy/steering/20260622-exp107-selector-topn-candidate-only-features/` を作成。
 - exp098 を親として実験ディレクトリを作成。
 - 実装ファイルを `selector_topn_candidate_only_features.py` にリネームし、出力 prefix を exp107 に変更。
 - `build_selector_topn_candidate_only_features()` で、top1/top2/top3 に入った候補だけから特徴量を生成するように変更。

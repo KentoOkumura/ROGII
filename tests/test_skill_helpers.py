@@ -135,7 +135,7 @@ def test_experiment_reviewer_does_not_treat_global_context_as_target_evidence(
 
     assert scopes["KAGGLE_DIRECTION.md"] == "context"
     assert scopes["result.md"] == "target evidence"
-    assert "Missing evidence in target experiment/steering records" in output
+    assert "Missing evidence in target experiment records" in output
     assert "Core evidence categories are present in target" not in output
 
 
@@ -162,7 +162,7 @@ def test_experiment_reviewer_requires_canonical_target_records(tmp_path: Path) -
     assert reviews[0]["scope"] == "supporting material"
     assert not has_target
     assert missing == list(reviewer.CHECKS)
-    assert "No canonical target experiment or steering records were found." in output
+    assert "No canonical target experiment records were found." in output
 
 
 def test_credential_checker_prefers_environment_token(

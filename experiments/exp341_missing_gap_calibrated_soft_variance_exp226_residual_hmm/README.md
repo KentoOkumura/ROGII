@@ -29,5 +29,5 @@ notebookはscaffold placeholderのまま保持する。FAIL tableを使った実
 
 ## 文書
 
-- Steering: `../../.steering/20260722-exp341-missing-gap-calibrated-soft-variance-exp226-residual-hmm/`
+- Steering: `../../docs/legacy/steering/20260722-exp341-missing-gap-calibrated-soft-variance-exp226-residual-hmm/`
 - 設定: `config.yaml`

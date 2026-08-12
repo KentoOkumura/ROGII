@@ -23,7 +23,7 @@ uv run python scripts/new_experiment.py --name exp169_tvt_input_pfbeam_offset_ca
 
 実装内容:
 
-- `.steering/20260702-exp169-tvt-input-pfbeam-offset-calibration/` を作成し、requirements / design / tasklist を記入した。
+- `docs/legacy/steering/20260702-exp169-tvt-input-pfbeam-offset-calibration/` を作成し、requirements / design / tasklist を記入した。
 - exp140 を親に実験ディレクトリを作成し、exp169 用に config / settings / notebooks を更新した。
 - exp072 の `public_notebook_replay_audit.py` をコピーし、prefix holdout replay に再利用する。
 - `tvt_input_pfbeam_offset_calibration.py` を実装した。

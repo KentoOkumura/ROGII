@@ -12,7 +12,7 @@ exp099 は multi-observation likelihood で oracle headroom を増やしたが�
 
 ### 実装内容
 
-- `.steering/20260622-exp111-learned-pf-observation-likelihood-probe/` を作成。
+- `docs/legacy/steering/20260622-exp111-learned-pf-observation-likelihood-probe/` を作成。
 - `experiments/exp111_learned_pf_observation_likelihood_probe/` を exp101 から派生作成。
 - `learned_pf_observation_likelihood_probe.py` を追加。
   - exp099 v2 train feature cache を読み込む。

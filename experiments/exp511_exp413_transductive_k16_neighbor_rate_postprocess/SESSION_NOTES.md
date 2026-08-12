@@ -150,7 +150,7 @@ exp226 の周辺井戸 local-linear K16 rate 推定を、保存済み exp413 Sta
 ## コマンドログ
 
 - `make new-steering EXP=exp511_exp413_transductive_k16_neighbor_rate_postprocess`
-  で `.steering/20260804-exp511-exp413-transductive-k16-neighbor-rate-postprocess/` を作成した。
+  で `docs/legacy/steering/20260804-exp511-exp413-transductive-k16-neighbor-rate-postprocess/` を作成した。
 - steeringのrequirements / design / tasklistへ数式、固定parameter、validation、gate、
   再現性、リスク、未承認範囲を記録した。
 - `make new-exp EXP=exp511_exp413_transductive_k16_neighbor_rate_postprocess`

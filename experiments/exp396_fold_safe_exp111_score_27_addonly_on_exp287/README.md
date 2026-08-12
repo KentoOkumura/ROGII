@@ -84,7 +84,7 @@ inferenceはfail-closed候補だけで、正規inference notebookは未採用・
 - 学習notebook候補: `exp396_fold_safe_exp111_score_27_addonly_on_exp287_compact_selfcontained_train.ipynb`
 - fail-closed推論候補: `exp396_fold_safe_exp111_score_27_addonly_on_exp287_compact_selfcontained_inference.py`
 - fail-closed推論notebook候補: `exp396_fold_safe_exp111_score_27_addonly_on_exp287_compact_selfcontained_inference.ipynb`
-- 設計: `.steering/20260725-exp396-fold-safe-exp111-score-27-addonly-on-exp287/`
+- 設計: `docs/legacy/steering/20260725-exp396-fold-safe-exp111-score-27-addonly-on-exp287/`
 
 Kaggle Notebook実行を正とする。Stage A kernelは
 [`kentookumura/exp396-foldsafe-exp111-score27-exp287-train`](https://www.kaggle.com/code/kentookumura/exp396-foldsafe-exp111-score27-exp287-train)

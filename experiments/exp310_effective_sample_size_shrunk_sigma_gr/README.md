@@ -34,7 +34,7 @@ exp307のscale auditだけで、median `n_eff/n <= 0.5`または`n_eff < 50`のw
 
 設計時点では精度所見はない。自己相関はscaleを直接膨らませず、well別raw scaleをpriorへ縮約する信頼度だけに使う。
 
-詳細は[steering design](../../.steering/20260721-exp310-effective-sample-size-shrunk-sigma-gr/design.md)を正とする。
+詳細は[steering design](../../docs/legacy/steering/20260721-exp310-effective-sample-size-shrunk-sigma-gr/design.md)を正とする。
 
 ## 結果
 

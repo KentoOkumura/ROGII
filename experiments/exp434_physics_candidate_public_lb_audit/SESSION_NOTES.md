@@ -28,7 +28,7 @@
 ### 作成
 
 - steering:
-  `.steering/20260729-exp434-physics-candidate-public-lb-audit/`
+  `docs/legacy/steering/20260729-exp434-physics-candidate-public-lb-audit/`
 - experiment:
   `experiments/exp434_physics_candidate_public_lb_audit/`
 - route:

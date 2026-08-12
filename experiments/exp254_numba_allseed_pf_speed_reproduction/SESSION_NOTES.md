@@ -54,7 +54,7 @@ all-seed JITとseed bank再集約の速度・parity・決定性を監査する�
     make new-steering EXP=exp254_numba_allseed_pf_speed_reproduction
     make new-exp EXP=exp254_numba_allseed_pf_speed_reproduction
 
-- steering: `.steering/20260715-exp254-numba-allseed-pf-speed-reproduction/`
+- steering: `docs/legacy/steering/20260715-exp254-numba-allseed-pf-speed-reproduction/`
 - 親: `exp243_pf_seed_medoids`
 - route: `pf_beam`
 

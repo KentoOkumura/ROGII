@@ -23,7 +23,7 @@ KAGGLE_DIRECTION backlog `exp226_direct_residual_correction` を実装する。e
 
 ## 実装内容
 
-- `.steering/20260709-exp228-direct-residual-correction-on-exp226/` を作成。
+- `docs/legacy/steering/20260709-exp228-direct-residual-correction-on-exp226/` を作成。
 - `experiments/exp228_direct_residual_correction_on_exp226/` を exp218 からコピーして作成。
 - `direct_residual_correction_on_exp226.py`
   - exp218 feature surface generation を再利用。

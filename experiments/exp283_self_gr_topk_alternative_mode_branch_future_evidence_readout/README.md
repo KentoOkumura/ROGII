@@ -65,6 +65,6 @@ scientific promotionは付与せず、triggered multibranch decoderの先行条�
 
 ## 参照
 
-- steering: `.steering/20260719-exp283-self-gr-topk-alternative-mode-branch-future-evidence-readout/`
+- steering: `docs/legacy/steering/20260719-exp283-self-gr-topk-alternative-mode-branch-future-evidence-readout/`
 - 設定: `config.yaml`
 - 実行記録: `SESSION_NOTES.md`

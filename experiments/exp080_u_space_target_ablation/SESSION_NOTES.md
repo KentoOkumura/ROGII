@@ -10,7 +10,7 @@
 
 ## 実装内容
 
-- `.steering/20260618-exp080-u-space-target-ablation/` を作成。
+- `docs/legacy/steering/20260618-exp080-u-space-target-ablation/` を作成。
 - `experiments/exp080_u_space_target_ablation/` を exp073 から作成。
 - `settings.py` の experiment name を exp080 に更新。
 - `config.yaml` を U-space target ablation 用に更新。

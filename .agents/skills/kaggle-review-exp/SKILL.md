@@ -1,6 +1,6 @@
 ---
 name: kaggle-review-exp
-description: "ユーザーが実験化を承認した Kaggle 実験を、`docs/backlog/` 経由または直接承認から steering へ引き継ぎ、`experiments/expXXX_name` 配下で作成、コピー、実装、実行、debug、記録、要約、レビューする。backlog候補と上位仮説の系譜移行、直接承認からの実験開始、実験契約に必要な train・inference・audit・diagnostic などの Notebook 実装と Kaggle 実行、Code competitionのhidden test対応、過去実験のコピー、`SESSION_NOTES`/result/metricsの記録、`expXXX`のレビュー、実験ドキュメント確認、実験結果の信頼性監査を求められたときに使う。"
+description: "ユーザーが実験化を承認した Kaggle 実験を、`docs/backlog/` 経由または直接承認から`experiments/expXXX_name/requirements.md`へ引き継ぎ、実験を作成、コピー、実装、実行、debug、記録、要約、レビューする。backlog候補と上位仮説の系譜移行、直接承認からの実験開始、実験契約に必要な train・inference・audit・diagnostic などの Notebook 実装と Kaggle 実行、Code competitionのhidden test対応、過去実験のコピー、`SESSION_NOTES`/result/metricsの記録、`expXXX`のレビュー、実験ドキュメント確認、実験結果の信頼性監査を求められたときに使う。"
 ---
 
 # Kaggle 実験ワークフローとレビュー
@@ -13,7 +13,7 @@ description: "ユーザーが実験化を承認した Kaggle 実験を、`docs/b
 
 ユーザーが特定手法、論文、公開notebook、discussionの実装を求めた場合は、実験作成やコード編集の前に次を行う。
 
-1. 一次資料または参照実装を確認し、`input -> target/objective -> output -> loss -> decode -> context unit`を手法契約として`.steering/.../requirements.md`だけに記録する。`design.md`には契約本文を複製せず、各項目の実装箇所、処理方法、承認済み差分を記録する。
+1. 一次資料または参照実装を確認し、`input -> target/objective -> output -> loss -> decode -> context unit`の手法契約、各項目の実装箇所、処理方法、承認済み差分を同じ実験の`requirements.md`だけに記録する。
 2. 実装範囲を`docs/glossary.md`の定義に従って`faithful`、`staged-faithful`、`proxy`のいずれかに分類する。
 3. `proxy` の場合は、省略する機構、proxyで検証できない主張、完全実装との追加コストをユーザーに示す。明示承認を得るまで、実験フォルダ作成、コード実装、Kaggle pushを行わない。
 4. 実験名と記録には実装した機構だけを書く。入力だけに使った表現をoutput headやtraining objectiveの実装と呼ばない。
@@ -35,30 +35,17 @@ Kaggle GPU を使う train push の前に、必ず次を確認する。
 
 ## 実験ライフサイクル
 
-1. 現在の流れを把握する。
-   - 存在する場合は `AGENTS.md` を読む。
-   - `KAGGLE_DIRECTION.md`、`experiment_summary.md`、`docs/surveys/README.md`から対象実験・トピックの完了調査を読む。
-   - 最近の `experiments/*/SESSION_NOTES.md` を確認する。
-   - 特定手法の実装依頼では、参照sourceと手法契約を特定する。
-   - 同じ親実験または機構familyの直近の子実験で変更した処理を確認し、target、output、decode、context unitを変える案まで見直す必要があるか判断する。
-   - `KAGGLE_DIRECTION.md` の未着手候補から実験化する場合は、対応する上位仮説、`docs/backlog/<candidate>.md`、そこから参照される根拠を読む。未着手表だけから設計を再構成しない。
-   - 導入前の候補で詳細ファイルがない場合は、コード作成前に `kaggle-strategy` を使って詳細ファイルを作り、推測できない事項を未決としてユーザーへ確認する。このskillから `docs/backlog/` を直接更新しない。
-2. backlog候補から実験化する場合は、採番やコード作成の前に、固定するもの、変更するもの、最小検証、成功条件、停止条件、実行しないこと、未決事項を短く提示する。重要な解釈差または未決事項があればユーザー確認まで停止する。`設計可能・実験化未承認` は実験作成の承認を意味しない。
-   - ユーザーが直接実験化を承認した場合は、形式的なbacklogを作らない。依頼原文と承認、親実験、根拠、固定するもの、変更するもの、最小検証、成功条件、停止条件、実行しないことをsteeringへ直接記録する。明示的に紐づける既存仮説がなければ、`lineage.hypothesis_id`と`lineage.backlog_candidate`は`N/A`とする。
-3. ユーザーの実験化承認後、実験を作成または変更する前に steering docs を作る。
-
-```bash
-task new-steering EXP=expXXX_title
-```
-
-Task が使えない場合は Makefile の同等コマンドを使う。
-
-```bash
-make new-steering EXP=expXXX_title
-```
-
-4. リポジトリに`templates/steering/`があれば、それを元に`.steering/YYYYMMDD-expXXX-title/{requirements.md,design.md,tasklist.md}`を埋める。backlogから移行する場合は、詳細ファイルの上位仮説ID、上位仮説のうちこの実験が検証する範囲、残る検証、根拠、具体的な仮説、親との差分、固定事項、最小検証、成功条件、停止条件、実行しないこと、未決事項、判断履歴を`requirements.md`へ欠落なく移す。`design.md`は実装対応と承認済み差分、`tasklist.md`は作業順序と確認項目だけを持つ。移行確認後、`kaggle-strategy`を使って元の`docs/backlog/<candidate>.md`と未着手バックログ行を削除し、「検証中の仮説」の対応候補を対応実験へ更新する。このskillからバックログを直接変更しない。
-5. 実験を作成、またはコピーする。
+1. 実験化の入口を特定し、必要最小限の文脈だけを読む。
+   - 対象名が指定された設計済みbacklogでは、最初に対応する`docs/backlog/<candidate>.md`を読む。次に、その文書から直接参照される根拠、親実験の`requirements.md`と`config.yaml`、変更対象コードだけを読む。
+   - この経路では、実装に必要だと判明するまで`KAGGLE_DIRECTION.md`全体、`experiment_summary.md`、`docs/surveys/README.md`、最近の`SESSION_NOTES.md`、無関係な候補・実験、リポジトリ全体のファイル一覧を読まない。exp番号の採番には`experiments/`直下の名前だけを確認する。
+   - 直接承認では、依頼原文、明示された一次資料、親実験の`requirements.md`と`config.yaml`、変更対象コードだけを読む。形式的なbacklogは作らない。
+   - 対象候補や親実験が特定されていない戦略相談、依存関係の矛盾、参照切れ、現行記録だけでは契約を復元できない場合に限り、目的を明示して追加ファイルを読む。
+   - 実装区分と変更classの判定には`docs/glossary.md`を読む。廃止前の`docs/legacy/steering/`は、対象実験に`requirements.md`がなく、過去契約の確認が実際に必要な場合だけ読む。
+2. 承認と未決事項を確認する。
+   - 候補が`設計可能・実験化未承認`で未決事項が`なし`なら、ユーザーの「実装してください」を実験化承認として扱い、同じ内容を再確認せず進める。
+   - backlog候補から実験化する場合は、固定するもの、変更するもの、最小検証、成功条件、停止条件、実行しないことを短く提示する。重要な解釈差または未決事項がある場合だけ、コード作成前にユーザーへ確認する。
+   - 導入前の候補で詳細ファイルがない場合は、`kaggle-strategy`を使って詳細ファイルを作り、推測できない事項を未決としてユーザーへ確認する。このskillから`docs/backlog/`を直接更新しない。
+3. 実験を作成またはコピーし、同じ実験の`requirements.md`を埋める。
 
 ```bash
 task new-exp EXP=expXXX_title
@@ -67,7 +54,7 @@ task new-exp EXP=expXXX_title SOURCE=experiments/expYYY_parent
 
 親実験のテストも新実験へ引き継ぐ必要がある場合だけ、明示的に`--copy-tests`を指定する。既定では、親実験名や旧契約を参照するテストの誤コピーを防ぐためコピーしない。
 
-親実験からコピーした場合、`new-exp`はファイル名とテキスト内の親実験IDを新実験IDへ置換し、`README.md`、`SESSION_NOTES.md`、`result.md`、`metrics.json`を未実行状態へ戻す。`config.yaml`は親の設定を引き継ぐが、`experiment.name`、作成日、説明、`lineage.parent`、`lineage.hypothesis_id`、`lineage.backlog_candidate`、`lineage.diff_summary`を新実験用に初期化する。backlogからの移行内容に合わせて上位仮説IDと候補名を設定する。コピー後は入力元として保持すべき親パスまで置換されていないか確認し、仮説、差分、構造化された実行証拠を親から引き継いだまま実装済みと扱わない。
+親実験からコピーした場合、`new-exp`はファイル名とテキスト内の親実験IDを新実験IDへ置換し、`README.md`、`requirements.md`、`SESSION_NOTES.md`、`result.md`、`metrics.json`を新実験用の未実行状態へ戻す。`config.yaml`は親の設定を引き継ぐが、`experiment.name`、作成日、説明、`lineage.parent`、`lineage.hypothesis_id`、`lineage.backlog_candidate`、`lineage.diff_summary`を新実験用に初期化する。backlogからの移行内容に合わせて上位仮説IDと候補名を設定する。コピー後は入力元として保持すべき親パスまで置換されていないか確認し、仮説、差分、構造化された実行証拠を親から引き継いだまま実装済みと扱わない。
 
 ```bash
 task new-exp EXP=expXXX_title SOURCE=experiments/expYYY_parent EXTRA_ARGS="--copy-tests"
@@ -80,10 +67,14 @@ make new-exp EXP=expXXX_title
 make new-exp EXP=expXXX_title SOURCE=experiments/expYYY_parent
 ```
 
+   - backlogから移行する場合は、候補詳細の上位仮説ID、検証範囲、残る検証、根拠、具体的な仮説、親との差分、固定事項、実装方法、最小検証、成功条件、停止条件、実行しないこと、未決事項、判断履歴を`requirements.md`へ欠落なく移し、`config.yaml`のlineageと一致させる。移行確認後、`kaggle-strategy`へ元の候補詳細と未着手行の削除、検証中の仮説の対応実験更新を引き渡す。
+   - 直接承認では、依頼原文と承認、親実験、根拠、固定事項、変更事項、実装方法、最小検証、成功条件、停止条件、実行しないことを`requirements.md`へ記録する。明示的に紐づける既存仮説がなければlineageは`N/A`とする。
+   - 作業順序、途中の判断、コマンド、進捗は`SESSION_NOTES.md`へ記録し、`design.md`や`tasklist.md`は作らない。
+
    - 学習、推論、提出は原則として同じ `experiments/expXXX_title/` で管理する。train-side CV が良かった候補を inference port / submit するだけなら新しい exp を作らず、同じ実験の `<exp>_inference.ipynb`、`SESSION_NOTES.md`、`result.md`、`metrics.json`と、リポジトリ直下の`SUBMISSIONS.md`を更新する。
    - 新しい exp を作るのは、仮説、特徴量面、モデル構造、評価条件、route の主目的が変わる場合に限定する。過去に学習・推論を分けて作成済みの exp は履歴として維持する。
 
-6. 明らかに再利用できるコードでない限り、実装は実験フォルダ内に置く。
+4. 明らかに再利用できるコードでない限り、実装は実験フォルダ内に置く。
    - 実験固有のロジックは `experiments/expXXX_title/` に置く。
    - 実験固有のテストは`experiments/expXXX_title/tests/`に置く。複数実験やリポジトリ全体の契約を検証するテストだけをルートの`tests/`に置く。
    - 共通 utility は `src/` に置く。
@@ -97,7 +88,7 @@ make new-exp EXP=expXXX_title SOURCE=experiments/expYYY_parent
    - 既存の同名 `.ipynb` はユーザーの明示承認なしに上書きしない。試行時は `_compact_selfcontained_train.py` / `_compact_selfcontained_inference.py` のような別名で生成し、採用判断後に正規名へ反映する。
    - marimo は標準採用しない。notebook の正は通常の `.ipynb` とし、上位ロジックは `.ipynb` のセルに展開する。重い helper や再利用ロジックだけを補助 `.py` に残す。
    - 既存の `.py` 実装を読める notebook に寄せるだけなら、新しい実験番号は切らない。仮説、特徴量、モデル構造、評価条件、route の主目的、推論方針、提出候補が変わる場合だけ新しい exp を作る。
-7. フル実行の前に validation と静的チェックを実行する。最初のフル実行と公式評価は Kaggle 上で行う。local smoke に必要な入力、依存関係、生成物がローカルに揃っている場合は、別途のユーザー承認なしにsmoke debugを行ってよい。
+5. フル実行の前に validation と静的チェックを実行する。最初のフル実行と公式評価は Kaggle 上で行う。local smoke に必要な入力、依存関係、生成物がローカルに揃っている場合は、別途のユーザー承認なしにsmoke debugを行ってよい。
 
 Jupytext 変換と検証:
 
@@ -218,7 +209,7 @@ local smoke に必要な入力、依存関係、生成物がローカルに揃�
 必要なnotebookに対応する`task train-local ...`、`task infer-local ...`、または任意の種別を指定できる
 `task execute-notebook-local EXP=<exp> NOTEBOOK=<kind> EXTRA_ARGS="--allow-local ..."`だけを使う。
 
-8. `AGENTS.md`の役割分担に従い、信頼できる結果と実行証拠を同じ実験の正本へ記録する。
+6. `AGENTS.md`の役割分担に従い、信頼できる結果と実行証拠を同じ実験の正本へ記録する。
    - train CV、inference output、submit-check、code submit、Public LBは同じ実験に追記し、推論化だけを別実験として分けない。
    - 「検証中の仮説」またはアイデアバックログ節の変更が必要な場合は、上位仮説ID、候補、根拠、非使用条件、移行状態を`kaggle-strategy`へ引き渡す。このskillから直接変更しない。
    - 通常の実験結果と証拠の解釈だけなら`result.md`で完結させる。独立した完了分析レポートを作る場合は、対象が単一実験でも実験横断でも`docs/surveys/README.md`の手順を使う。
@@ -245,7 +236,7 @@ task update-summary
 - 結果と次アクションが `ml_model` / `pf_beam` / `ensemble` のどの route の anchor を更新するのか明確であること。
 - 実装済みの backlog 項目を残さないため、必要な削除を `kaggle-strategy` へ引き渡して反映済みであること。
 - 新規 backlog 候補は、完了した実験の証拠、非使用条件、未決事項を `kaggle-strategy` へ引き渡し、`docs/backlog/<candidate>.md` と `KAGGLE_DIRECTION.md` の整合および既存候補との優先度見直しが完了していること。
-- backlogから始めた実験は、steering docsと`config.yaml`に上位仮説IDと候補名が引き継がれ、steering docsにこの実験の検証範囲、残る検証、固定事項、変更事項、最小検証、成功条件、停止条件、実行しないこと、判断履歴が欠落せず、重要な未決事項が`なし`であること。
+- backlogから始めた実験は、`requirements.md`と`config.yaml`に上位仮説IDと候補名が引き継がれ、`requirements.md`に検証範囲、残る検証、固定事項、変更事項、実装方法、最小検証、成功条件、停止条件、実行しないこと、判断履歴が欠落せず、重要な未決事項が`なし`であること。
 
 ## 実験レイアウト
 
@@ -290,7 +281,7 @@ Kaggle Notebook が実行の正なので、実験契約に必要な`<exp>_train.
 uv run python .agents/skills/kaggle-review-exp/scripts/review_exp_docs.py EXP_ID --root .
 ```
 
-reviewer の `target evidence` は対象実験直下の `README.md`、`SESSION_NOTES.md`、`result.md`、`metrics.json`、`config.yaml` と対応する steering 文書だけを指す。実験内の補助資料は `supporting material`、`KAGGLE_DIRECTION.md`、全体summary、提出履歴、surveyは `context` として表示され、対象実験の不足を補った扱いにはしない。記録の不足を終了コードでも検出する場合は `--strict` を付ける。
+reviewer の `target evidence` は対象実験直下の `README.md`、`requirements.md`、`SESSION_NOTES.md`、`result.md`、`metrics.json`、`config.yaml`だけを指す。実験内の補助資料は `supporting material`、`KAGGLE_DIRECTION.md`、全体summary、提出履歴、surveyは `context` として表示され、対象実験の不足を補った扱いにはしない。記録の不足を終了コードでも検出する場合は `--strict` を付ける。
 
 4. スクリプトが関連ありと判断したファイルを読む。
 5. 次をレビューする。

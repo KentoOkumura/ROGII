@@ -59,7 +59,7 @@ make new-exp EXP=exp376_exp226_formation_conditioned_k16_donor_kernel
 
 作成先:
 
-- `.steering/20260724-exp376-exp226-formation-conditioned-k16-donor-kernel/`
+- `docs/legacy/steering/20260724-exp376-exp226-formation-conditioned-k16-donor-kernel/`
 - `experiments/exp376_exp226_formation_conditioned_k16_donor_kernel/`
 
 初期design/implementation段階ではKaggle package/push/run、推論、提出を

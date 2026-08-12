@@ -36,6 +36,7 @@ def test_template_files_exist() -> None:
     template_dir = ROOT / "templates" / "experiment"
     required = [
         "README.md",
+        "requirements.md",
         "config.yaml",
         "settings.py",
         "{{EXPERIMENT_NAME}}_train.ipynb",
@@ -74,7 +75,6 @@ def test_repository_control_files_exist() -> None:
         "scripts/execute_experiment_notebook.py",
         "scripts/prepare_kaggle_notebooks.py",
         "scripts/validate_kaggle_metadata.py",
-        "scripts/new_steering.py",
         "scripts/new_survey_report.py",
         "scripts/update_survey_index.py",
         "scripts/kaggle_download.py",
@@ -86,9 +86,7 @@ def test_repository_control_files_exist() -> None:
         "scripts/update_experiment_summary.py",
         "scripts/check_markdown_links.py",
         "scripts/check_strategy_docs.py",
-        "templates/steering/requirements.md",
-        "templates/steering/design.md",
-        "templates/steering/tasklist.md",
+        "templates/experiment/requirements.md",
         "templates/survey/report.md",
         "docs/surveys/README.md",
         "docs/01_competition.md",

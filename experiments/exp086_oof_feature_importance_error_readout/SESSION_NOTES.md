@@ -15,7 +15,7 @@
 
 ## 実装内容
 
-- `.steering/20260620-exp086-oof-feature-importance-error-readout/` を作成。
+- `docs/legacy/steering/20260620-exp086-oof-feature-importance-error-readout/` を作成。
 - `experiments/exp086_oof_feature_importance_error_readout/` を exp077 から作成。
 - ユーザー指定の `exp073_...` は新規実験 ID としては使わず、最新 `exp085` の次として `exp086_oof_feature_importance_error_readout` にした。
 - `oof_feature_importance_error_readout.py` を追加。

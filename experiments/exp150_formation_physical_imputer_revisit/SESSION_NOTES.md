@@ -21,7 +21,7 @@ uv run python scripts/new_steering.py --experiment exp150_formation_physical_imp
 uv run python scripts/new_experiment.py --name exp150_formation_physical_imputer_revisit --source experiments/exp138_ancc_surface_predictability_audit
 ```
 
-- `.steering/20260627-exp150-formation-physical-imputer-revisit/` を作成。
+- `docs/legacy/steering/20260627-exp150-formation-physical-imputer-revisit/` を作成。
 - `experiments/exp150_formation_physical_imputer_revisit/` を exp138 から作成。
 - `formation_physical_imputer_revisit.py` を追加。
 - `config.yaml`、`README.md`、`result.md`、`metrics.json` を exp150 用に更新。

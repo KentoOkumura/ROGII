@@ -54,7 +54,7 @@ make new-steering EXP=exp246_negative_space_gr_barrier_audit
 make new-exp EXP=exp246_negative_space_gr_barrier_audit
 ```
 
-- `KAGGLE_DIRECTION.md`へ未着手backlogを追加後、`.steering/20260714-exp246-negative-space-gr-barrier-audit/`へ切り出した。
+- `KAGGLE_DIRECTION.md`へ未着手backlogを追加後、`docs/legacy/steering/20260714-exp246-negative-space-gr-barrier-audit/`へ切り出した。
 - 新規templateを作成し、route / lineage / leakage / barrier / guards / reproducibilityをconfigへ固定した。
 
 ### 2026-07-14 実装・静的検証

@@ -10,7 +10,7 @@
 
 ## 実装内容
 
-- `.steering/20260616-exp074-compact-tracker-surface-lgbm-candidate-audit/` を作成。
+- `docs/legacy/steering/20260616-exp074-compact-tracker-surface-lgbm-candidate-audit/` を作成。
 - exp070 を source として exp074 を作成。
 - notebook 名を exp074 に正規化。
 - `exp063_reproducibility_guard.py` を `compact_tracker_surface_audit.py` にリネーム。

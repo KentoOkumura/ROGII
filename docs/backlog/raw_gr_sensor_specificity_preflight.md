@@ -18,7 +18,7 @@
 
 | 優先度 | アイデア | 先行条件 / 依存 | 検証方法 | 注意点 |
 | --- | --- | --- | --- | --- |
-| 低・P4・CPU・raw-only・0-HMM/0-prediction・design未着手 | `raw_gr_sensor_specificity_preflight`: raw GRの局所shockがsensor artifactとして識別可能かを、予測介入前に独立raw-signal証拠だけで監査する | exp482 Stage A0ではisolated shockが17,047 rows・763/773 wellsに存在した。zero-shock対照を外したexp488でもshock集中32 wells / 183,093 rowsに固定AND triggerは0件で、raw shockの存在だけでは介入条件にならないことが確定した。exp482/488のFAILと固定triggerを再分類せず、利用可能な独立raw channelがあるかをschema監査し、なければ即closeする | TVT、fold、error、保存predictionを読まず、0-HMM / 0-PF / 0-model / 0-predictionで行う。独立raw channelが存在する場合だけ、事前固定した単一sensor-discordance指標とwithin-well nearby non-event controlで識別性を確認する。具体的指標・gate・実験番号・実行は別steeringと別承認で固定する | exp482/488のwindow/z/MAD/side-consistency/trigger定義の調整、isolated-shock rowsをそのままprediction gateへ昇格、同じraw censusでの指標grid、truth/errorによる選択は禁止。P4として現行P1/P2/P3を追い越さない |
+| 低・P4・CPU・raw-only・0-HMM/0-prediction・design未着手 | `raw_gr_sensor_specificity_preflight`: raw GRの局所shockがsensor artifactとして識別可能かを、予測介入前に独立raw-signal証拠だけで監査する | exp482 Stage A0ではisolated shockが17,047 rows・763/773 wellsに存在した。zero-shock対照を外したexp488でもshock集中32 wells / 183,093 rowsに固定AND triggerは0件で、raw shockの存在だけでは介入条件にならないことが確定した。exp482/488のFAILと固定triggerを再分類せず、利用可能な独立raw channelがあるかをschema監査し、なければ即closeする | TVT、fold、error、保存predictionを読まず、0-HMM / 0-PF / 0-model / 0-predictionで行う。独立raw channelが存在する場合だけ、事前固定した単一sensor-discordance指標とwithin-well nearby non-event controlで識別性を確認する。具体的指標・gate・実験番号・実行は別実験の`requirements.md`への契約記録と別承認で固定する | exp482/488のwindow/z/MAD/side-consistency/trigger定義の調整、isolated-shock rowsをそのままprediction gateへ昇格、同じraw censusでの指標grid、truth/errorによる選択は禁止。P4として現行P1/P2/P3を追い越さない |
 
 ## 観測事実と仮定の整理状態
 
@@ -44,7 +44,7 @@
 
 ## 最小の反証可能な検証
 
-TVT、fold、error、保存predictionを読まず、0-HMM / 0-PF / 0-model / 0-predictionで行う。独立raw channelが存在する場合だけ、事前固定した単一sensor-discordance指標とwithin-well nearby non-event controlで識別性を確認する。具体的指標・gate・実験番号・実行は別steeringと別承認で固定する
+TVT、fold、error、保存predictionを読まず、0-HMM / 0-PF / 0-model / 0-predictionで行う。独立raw channelが存在する場合だけ、事前固定した単一sensor-discordance指標とwithin-well nearby non-event controlで識別性を確認する。具体的指標・gate・実験番号・実行は別実験の`requirements.md`への契約記録と別承認で固定する
 
 ## 成功条件と停止条件
 

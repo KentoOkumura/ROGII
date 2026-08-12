@@ -3,7 +3,7 @@
 ## 2026-07-03 実装
 
 - ユーザー依頼により `typewell_late_range_pfbeam_candidate_prior` の実装を開始。
-- `.steering/20260703-exp176-typewell-late-range-pfbeam-candidate-prior/` を作成。
+- `docs/legacy/steering/20260703-exp176-typewell-late-range-pfbeam-candidate-prior/` を作成。
 - `experiments/exp176_typewell_late_range_pfbeam_candidate_prior/` を `exp157_candidate_ranker_feature_enrichment` から作成。
 - helper module を `typewell_late_range_pfbeam_candidate_prior.py` にリネーム。
 - train / inference notebook を `exp176_typewell_late_range_pfbeam_candidate_prior_{train,inference}.py` 起点で作成し、`.ipynb` に変換した。

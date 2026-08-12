@@ -151,7 +151,7 @@ uv run python .agents/skills/kaggle-platform/modules/kllm/hackathon/scripts/fetc
    - `metadata`: `owner`、`notes`
    - `runtime.kaggle`: `enable_gpu`、`enable_internet`、`time_limit_hours`
    - リポジトリ構成を変える場合だけ`paths`も更新する。
-4. `docs/01_competition.md`から`docs/04_data.md`と`docs/official/evaluation.md`を新しい公式情報へ更新する。旧コンペの`KAGGLE_DIRECTION.md`、`docs/backlog/`、`SUBMISSIONS.md`、`experiments/`、`.steering/`、`docs/surveys/`を新コンペの証拠として引き継がない。残す履歴が必要なら新コンペの現行索引から分離する。
+4. `docs/01_competition.md`から`docs/04_data.md`と`docs/official/evaluation.md`を新しい公式情報へ更新する。旧コンペの`KAGGLE_DIRECTION.md`、`docs/backlog/`、`SUBMISSIONS.md`、`experiments/`、`docs/legacy/steering/`、`docs/surveys/`を新コンペの証拠として引き継がない。`docs/legacy/steering/`は廃止済み履歴であり、新しい実験計画の保存先にしない。残す履歴が必要なら新コンペの現行索引から分離する。
 5. raw competition dataは`data.raw_dir`で設定した場所へ置く。`task dl-kaggle-comp`はcompetition archiveを取得し、path traversalとsymbolic linkを拒否して安全に展開する。既存ファイルはsizeとZIP memberのchecksumが一致する場合だけスキップし、異なる場合は上書きせず停止する。外部データは`data/external/`に分ける。
 6. `data.train_dir`、`data.test_dir`、`submission.sample_file`を`data.raw_dir`内に置き、設定した各パスが存在することを確認する。Kaggle runtimeではcompetition input rootを`data.raw_dir`に対応させ、この3つを相対解決する。
 7. intended competition slugを`--expected-competition`で明示し、strict config validationを実行する。これにより、コピー元のslugやURLが残った状態を検出する。
@@ -178,7 +178,7 @@ make validate-config VALIDATE_ARGS="--expected-competition <competition-slug>"
 
 ### ROGII repo notebook-first Kaggle flow
 
-実験化、steering、実験ディレクトリ作成、notebook実装、実験記録は
+実験化、`requirements.md`への契約移行、実験ディレクトリ作成、notebook実装、実験記録は
 `kaggle-review-exp`が担当する。この節は、実験契約で必要と判断され、静的検証を通過した
 notebook packageの生成、metadata検証、Kaggle CLIによるpushと実行だけを担当する。
 

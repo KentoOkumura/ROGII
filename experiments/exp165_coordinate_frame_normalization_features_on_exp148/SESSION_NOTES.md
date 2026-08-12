@@ -2,7 +2,7 @@
 
 ## 2026-07-02 実装
 
-- `.steering/20260702-exp165-coordinate-frame-normalization-features-on-exp148/` を作成。
+- `docs/legacy/steering/20260702-exp165-coordinate-frame-normalization-features-on-exp148/` を作成。
 - `experiments/exp165_coordinate_frame_normalization_features_on_exp148/` を exp163 の CPU split notebook 構成から作成。
 - 親実験は `exp148_learned_likelihood_fulltrain_addonly_on_exp092`。
 - exp148 の U-projection / learned likelihood confidence surface は残し、raw horizontal well の `MD/X/Y/Z` を known-prefix anchor と prefix-tail azimuth で正規化した coordinate-frame features を add-only する。

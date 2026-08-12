@@ -49,6 +49,6 @@ HMM、inference、submissionも実施しない。
 
 ## 文書
 
-- Steering: `../../.steering/20260722-exp343-acf-effective-sample-likelihood-tempering-audit/`
+- Steering: `../../docs/legacy/steering/20260722-exp343-acf-effective-sample-likelihood-tempering-audit/`
 - 詳細結果: `result.md`
 - 設定: `config.yaml`

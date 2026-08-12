@@ -107,7 +107,7 @@ H256/H512の局所形状をexp293 deployable12より良く捉えるか監査す�
 ## 2026-07-20 設計確定
 
 - 次の空き番号`exp298`を確認した。
-- `.steering/20260720-exp298-exp226-blockwise-offset-slope-quotient-local-shape-audit/`を先に作成した。
+- `docs/legacy/steering/20260720-exp298-exp226-blockwise-offset-slope-quotient-local-shape-audit/`を先に作成した。
 - templateから実験ディレクトリを作成した。自動生成Notebookは未編集・non-canonicalである。
 - primary componentを`exp226_pre_u = tvt_geop + gr_delta`へ固定した。
 - `tvt_geop`と`tvt_pred`はpaired diagnostic、`tvt_pred`はexp293 `exp226_k16`のaliasとした。

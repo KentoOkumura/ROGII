@@ -44,11 +44,11 @@ uv run python .agents/skills/kaggle-strategy/scripts/collect_strategy_context.py
 3. `KAGGLE_DIRECTION.md` の未着手表へ、上位仮説ID、`P0`から`P4`の優先度token、要約、依存、状態、詳細ファイルへの相対リンクを追加し、「検証中の仮説」の対応候補も更新する。優先度列に理由を連結せず、理由は候補詳細の別フィールドへ記録する。未着手候補が0件なら表のヘッダーだけを残し、ダミー候補を作らない。
 4. `docs/backlog/_TEMPLATE.md` から `docs/backlog/<candidate>.md` を作る。上位仮説ID、この候補が直接検証する範囲、この候補だけで上位仮説を判断できるか、判断に残る検証に加え、根拠、採らなかった案、固定事項、停止条件を同じセッションで記録する。
 5. 結果や実装方針に影響する未決事項があれば、推測で埋めず `検討メモ・設計不可` とする。未決事項が`なし`で必要項目が埋まる場合だけ `設計可能・実験化未承認` とする。
-6. 追加後に既存候補を含めて優先度を見直す。バックログ化だけの依頼では、採番、steering、実装、Kaggle実行を行わない。
+6. 追加後に既存候補を含めて優先度を見直す。バックログ化だけの依頼では、採番、実験ディレクトリ作成、実装、Kaggle実行を行わない。
 
 導入前から詳細ファイルのない候補は一括補完しない。次にその候補を更新または実験化するとき、コード作成前に詳細ファイルを作成し、重要な解釈をユーザーへ確認する。
 
-`kaggle-idea-forge`、`kaggle-review-exp`、`kaggle-oof-readout` などから候補を受け取った場合も、同じ手順で重複、閉じたbranch、上位仮説、根拠、優先度を確認してから反映する。実験化に伴う削除依頼では、上位仮説IDと候補名がsteering docsと`config.yaml`へ移行済みであることを確認し、未着手行と詳細ファイルを削除して「検証中の仮説」の対応候補を、実験ディレクトリ名をバッククォートで囲んだコード表記のラベル、同名の`experiments/<exp>/`をリンク先とする対応実験へ更新する。複数実験は`<br>`で区切る。
+`kaggle-idea-forge`、`kaggle-review-exp`、`kaggle-oof-readout` などから候補を受け取った場合も、同じ手順で重複、閉じたbranch、上位仮説、根拠、優先度を確認してから反映する。実験化に伴う削除依頼では、上位仮説IDと候補名が対象実験の`requirements.md`と`config.yaml`へ移行済みであることを確認し、未着手行と詳細ファイルを削除して「検証中の仮説」の対応候補を、実験ディレクトリ名をバッククォートで囲んだコード表記のラベル、同名の`experiments/<exp>/`をリンク先とする対応実験へ更新する。複数実験は`<br>`で区切る。
 
 上位仮説を閉じる場合は、関連実験の証拠と残っている問いを整理してユーザーに支持、棄却、保留の判断を求める。判断後、`docs/surveys/README.md`の手順で上位仮説IDを本文とfront matterの`hypotheses`へ記録した実験横断レポートを保存し、上位仮説別索引への反映を確認してから「検証中の仮説」から外す。
 
@@ -82,7 +82,7 @@ uv run python .agents/skills/kaggle-strategy/scripts/collect_strategy_context.py
 - ユーザーが特定手法またはrepresentation changeを求めた場合は、既存コードの再利用率、GPUコスト、実装容易性より手法忠実性を優先する。忠実実装のコストが大きい場合は、無断で縮小せず選択肢としてユーザーに示す。
 - 同じ親実験または機構familyの`parameter`、`add-only`、`selector-only`、`postprocess`変更が2件連続した場合、またはpositiveなoracle headroom / coverage / 誤差非相関性に対しend-to-end改善が得られない場合は、次の実験を確定する前に `kaggle-idea-forge` を使い、target、output、decode、context unitを変える案まで見直す。
 - 次実験の提案には、少なくとも1件の target / output / decode / context unit を変える高upside案を含める。採用しない場合は、safe案を選ぶ根拠を証拠とともに書く。
-- 実験ディレクトリや steering ディレクトリは作らない。バックログを追加・更新する場合の `docs/backlog/<candidate>.md` はこの制限の例外とする。ログやメモが不足している場合は、不足している証拠を明示しつつ、最小限の次アクションを示す。
+- 実験ディレクトリは作らない。バックログを追加・更新する場合の `docs/backlog/<candidate>.md` はこの制限の例外とする。ログやメモが不足している場合は、不足している証拠を明示しつつ、最小限の次アクションを示す。
 - backlog を更新する場合は、実装済みアイデアを削除し、次候補の追加と同時に全候補の優先度を再評価する。
 - 新しい未着手候補を追加する場合は、`KAGGLE_DIRECTION.md` の行と `docs/backlog/<candidate>.md` を必ず同じ変更で作る。表の短い説明だけを実装引き継ぎとして扱わない。
 - `設計可能・実験化未承認`へ変更する前に、詳細の必須項目が埋まり、placeholderがなく、「未決事項」が`なし`であることを確認する。

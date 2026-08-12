@@ -3,7 +3,7 @@
 ## 2026-06-28 実装
 
 - 当初、backlog 名 `exp098_full_rank_slot_addonly_on_exp092` をそのまま実験名として作成してしまったが、既存 `exp098_selector_rank_slot_features_on_exp073` と番号が重複するため、正式実験名を `exp153_full_rank_slot_addonly_on_exp092` に変更した。
-- `.steering/20260628-exp153-full-rank-slot-addonly-on-exp092/` を作成。
+- `docs/legacy/steering/20260628-exp153-full-rank-slot-addonly-on-exp092/` を作成。
 - `experiments/exp153_full_rank_slot_addonly_on_exp092/` を `exp139_exp092_exp098_small_rank_slot_merge` から作成し、full rank-slot add-only 用に差し替えた。
 - 親実験は `exp092_u_projection_correction_disagreement_fullrun`、rank-slot source parent は `exp098_selector_rank_slot_features_on_exp073`、cache は `exp072_exp063_full_replay_feature_cache`。
 - exp092 の `projection_correction` / `u_disagreement` は維持し、exp098 と同じ target-free `rank_slot_delta` / `rank_slot_identity_score` / `rank_slot_u_projection` / `rank_slot_u_disagreement` を add-only で追加する。

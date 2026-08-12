@@ -3,7 +3,7 @@
 ## 2026-07-06 実装
 
 - ユーザー依頼により `exact_hmm_smoother_exp072_compatible_cache_audit` backlog の実装を開始。
-- `.steering/20260706-exp205-exact-hmm-smoother-exp072-compatible-cache-audit/` を作成し、requirements / design / tasklist を記入。
+- `docs/legacy/steering/20260706-exp205-exact-hmm-smoother-exp072-compatible-cache-audit/` を作成し、requirements / design / tasklist を記入。
 - `experiments/exp205_exact_hmm_smoother_exp072_compatible_cache_audit/` を template から作成。
 - 参照元 notebook: `amerhu/rogii-wellbore-geology-exact-hmm-smoother`
 - Route: `pf_beam`

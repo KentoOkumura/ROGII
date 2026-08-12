@@ -17,7 +17,7 @@
 ## コマンドログ
 
 - 2026-06-04: `uv run python scripts/new_steering.py --experiment exp015_public_pf_beam_scale_selector_features` で steering docs を作成。
-- 2026-06-04: `.steering/20260604-exp015-public-pf-beam-scale-selector-features/{requirements.md,design.md,tasklist.md}` に仮説、設計、タスクを記入。
+- 2026-06-04: `docs/legacy/steering/20260604-exp015-public-pf-beam-scale-selector-features/{requirements.md,design.md,tasklist.md}` に仮説、設計、タスクを記入。
 - 2026-06-04: `uv run python scripts/new_experiment.py --name exp015_public_pf_beam_scale_selector_features --source experiments/exp013_model_diversity_or_postprocess` で exp013 から実験を作成。
 - 2026-06-04: train / inference notebook を exp015 名にリネームし、`settings.py` の `EXPERIMENT_NAME` を更新。
 - 2026-06-04: `config.yaml` を exp015 用に置換し、`control_lightgbm_no_gr` と `pf_beam_no_gr` の 2 variants を定義。

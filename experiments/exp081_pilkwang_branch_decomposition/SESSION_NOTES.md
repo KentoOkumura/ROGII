@@ -34,7 +34,7 @@ uv run pytest tests/test_kaggle_notebooks.py
 
 ## 変更点
 
-- `.steering/20260619-exp081-pilkwang-branch-decomposition/` を作成し、要件、設計、タスクを記入した。
+- `docs/legacy/steering/20260619-exp081-pilkwang-branch-decomposition/` を作成し、要件、設計、タスクを記入した。
 - `config.yaml` に exp079 v4 output path、Pilkwang branch roles、anchor labels、candidate policy を記入した。
 - `pilkwang_branch_decomposition.py` を追加した。
 - train / inference notebook を audit entrypoint に更新した。

@@ -22,7 +22,7 @@ make new-steering EXP=exp121_tabicl_artifact_diversity_audit
 make new-exp EXP=exp121_tabicl_artifact_diversity_audit
 ```
 
-- `.steering/20260625-exp121-tabicl-artifact-diversity-audit/` と `experiments/exp121_tabicl_artifact_diversity_audit/` を作成。
+- `docs/legacy/steering/20260625-exp121-tabicl-artifact-diversity-audit/` と `experiments/exp121_tabicl_artifact_diversity_audit/` を作成。
 - CPU-only 監査として実装する方針を確定。GPU は不要。
 
 ### Kaggle train 実行

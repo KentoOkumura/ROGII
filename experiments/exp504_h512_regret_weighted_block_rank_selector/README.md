@@ -70,4 +70,4 @@ p95 / worstは`+2.963656 / +16.799044 ft`で固定gateをFAILした。exp504はs
 inference、submissionなしで終端閉鎖する。
 
 詳細な数式とtruth-late順序は
-`.steering/20260802-exp504-h512-regret-weighted-block-rank-selector/design.md`を正とする。
+`docs/legacy/steering/20260802-exp504-h512-regret-weighted-block-rank-selector/design.md`を正とする。

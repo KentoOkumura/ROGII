@@ -11,7 +11,7 @@
 
 ## 実装内容
 
-- `.steering/20260618-exp078-compact-surface-longtail-gate/` を作成。
+- `docs/legacy/steering/20260618-exp078-compact-surface-longtail-gate/` を作成。
 - `experiments/exp078_compact_surface_longtail_gate/` を exp077 の postprocess audit 基盤から作成。
 - `config.yaml` を compact surface long-tail gate 用に更新。
 - `run_compact_surface_longtail_gate()` を追加。

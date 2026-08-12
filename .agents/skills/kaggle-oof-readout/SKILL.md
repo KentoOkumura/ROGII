@@ -13,7 +13,7 @@ Use the repository management labels in `docs/glossary.md` when classifying a fo
 
 1. Use `kaggle-review-exp` first for normal experiment lifecycle rules.
 2. Create a new exp when the readout has a new hypothesis or analysis surface. Do not reuse the source model exp id.
-3. Create `.steering/YYYYMMDD-expXXX-title/` before editing.
+3. Create `experiments/expXXX_title/` with `kaggle-review-exp` and fill its `requirements.md` before editing.
 4. Put all code/config/notebooks under `experiments/expXXX_title/`.
 5. Keep `experiment.route: ml_model` unless the readout primarily audits PF/Beam generation itself.
 6. Run the first full readout on Kaggle. Local smoke is optional only when the needed artifacts are locally complete.

@@ -18,7 +18,7 @@
 
 | 優先度 | アイデア | 先行条件 / 依存 | 検証方法 | 注意点 |
 | --- | --- | --- | --- | --- |
-| 低・P4・saved-artifact-only・0-model・block-rank tail原因分解 | `h512_block_rank_tail_failure_attribution_readout`: exp504のpooled gainとfold / hidden-like / by-well tail FAILが、どのtarget-free block regimeとhard-choice挙動に集中したかだけを保存生成物で分解する | exp504 v1はtechnical全PASS、pooled`-0.124055 ft`だがnonworse`3/5`、hidden-like`+0.285759/+0.269833 ft`、p95/worst`+2.963656/+16.799044 ft`でterminal close。pair accuracy`0.741908`に対しtop-1`0.112624`で、pair判別から安全なwinner選択への転移失敗を説明する余地だけが残る | 新規model / booster / prediction / selector 0。保存block selection、pair probability、rank、by-well、feature importance、OOF SHAを固定し、truth join前にanchor fallback、Borda margin/entropy、candidate family、suffix horizon、GR missingness、candidate disagreementの少数bucketを固定する。fold 3/4・hidden-like・well-tailで同じharm concentrationが再現するかだけをreadoutし、次の独立仮説の根拠に限定する | exp504 FAILを再分類しない。H128/H256、loss/weight/model/threshold/guard、candidate、smooth/blend/gate、worst-well ID rule、同一OOF最適化、selector再学習、current-test、inference、submissionは禁止。別steering・別承認があるまでP4とし、現行P1/P2/P3を追い越さない |
+| 低・P4・saved-artifact-only・0-model・block-rank tail原因分解 | `h512_block_rank_tail_failure_attribution_readout`: exp504のpooled gainとfold / hidden-like / by-well tail FAILが、どのtarget-free block regimeとhard-choice挙動に集中したかだけを保存生成物で分解する | exp504 v1はtechnical全PASS、pooled`-0.124055 ft`だがnonworse`3/5`、hidden-like`+0.285759/+0.269833 ft`、p95/worst`+2.963656/+16.799044 ft`でterminal close。pair accuracy`0.741908`に対しtop-1`0.112624`で、pair判別から安全なwinner選択への転移失敗を説明する余地だけが残る | 新規model / booster / prediction / selector 0。保存block selection、pair probability、rank、by-well、feature importance、OOF SHAを固定し、truth join前にanchor fallback、Borda margin/entropy、candidate family、suffix horizon、GR missingness、candidate disagreementの少数bucketを固定する。fold 3/4・hidden-like・well-tailで同じharm concentrationが再現するかだけをreadoutし、次の独立仮説の根拠に限定する | exp504 FAILを再分類しない。H128/H256、loss/weight/model/threshold/guard、candidate、smooth/blend/gate、worst-well ID rule、同一OOF最適化、selector再学習、current-test、inference、submissionは禁止。別実験の`requirements.md`への契約記録・別承認があるまでP4とし、現行P1/P2/P3を追い越さない |
 
 ## 観測事実と仮定の整理状態
 
@@ -52,7 +52,7 @@
 
 ## 実行しないこと
 
-exp504 FAILを再分類しない。H128/H256、loss/weight/model/threshold/guard、candidate、smooth/blend/gate、worst-well ID rule、同一OOF最適化、selector再学習、current-test、inference、submissionは禁止。別steering・別承認があるまでP4とし、現行P1/P2/P3を追い越さない
+exp504 FAILを再分類しない。H128/H256、loss/weight/model/threshold/guard、candidate、smooth/blend/gate、worst-well ID rule、同一OOF最適化、selector再学習、current-test、inference、submissionは禁止。別実験の`requirements.md`への契約記録・別承認があるまでP4とし、現行P1/P2/P3を追い越さない
 
 ## リスク
 

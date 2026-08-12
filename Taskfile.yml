@@ -61,11 +61,6 @@ tasks:
     cmds:
       - uv run python scripts/new_experiment.py --name {{.EXP}} --source {{.SOURCE}} {{.EXTRA_ARGS}}
 
-  new-steering:
-    desc: Create a steering document folder before implementing an experiment.
-    cmds:
-      - uv run python scripts/new_steering.py --experiment {{.EXP}} {{.EXTRA_ARGS}}
-
   new-survey-report:
     desc: Create a metadata-indexed draft investigation report in docs/surveys.
     cmds:

@@ -11,7 +11,7 @@
 ## 実装内容
 
 - exp063 から実験フォルダをコピーして exp072 を作成。
-- `.steering/20260614-exp072-exp063-full-replay-feature-cache/` を作成。
+- `docs/legacy/steering/20260614-exp072-exp063-full-replay-feature-cache/` を作成。
 - `feature_cache.py` を追加。
   - exp063 の `public_notebook_replay_audit.py` を再利用。
   - raw train files から `pixiux_likpf_public_replay` full train features を生成。

@@ -80,4 +80,4 @@ Stage 0 FAILによりStage 1へ進まず、救済gridなしでbranchを閉じた
 
 ## 設計の正
 
-`.steering/20260719-exp294-calibrated-typewell-gapfill-known-prefix-selfgr-hmm/` を正とする。
+`docs/legacy/steering/20260719-exp294-calibrated-typewell-gapfill-known-prefix-selfgr-hmm/` を正とする。

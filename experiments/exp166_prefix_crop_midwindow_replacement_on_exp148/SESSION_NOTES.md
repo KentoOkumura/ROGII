@@ -43,7 +43,7 @@
 
 ## 実装確認
 
-- 2026-07-02: `.steering/20260702-exp166-prefix-crop-midwindow-replacement-on-exp148/` を作成。
+- 2026-07-02: `docs/legacy/steering/20260702-exp166-prefix-crop-midwindow-replacement-on-exp148/` を作成。
 - 2026-07-02: `experiments/exp166_prefix_crop_midwindow_replacement_on_exp148/` を exp161 からコピーし、案2 replacement-only 用に設定を変更。
 - 2026-07-02: `.venv/bin/python -m py_compile experiments/exp166_prefix_crop_midwindow_replacement_on_exp148/*.py` は PASS。
 - 2026-07-02: `.venv/bin/ruff check experiments/exp166_prefix_crop_midwindow_replacement_on_exp148/*.py --select F821` は PASS。

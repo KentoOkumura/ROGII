@@ -23,7 +23,7 @@
 
 - 2026-06-07: `uv run python scripts/new_steering.py --experiment exp029_public_sel15_pf_oof_feature_generation` で steering docs を作成。
 - 2026-06-07: `uv run python scripts/new_experiment.py --name exp029_public_sel15_pf_oof_feature_generation` で実験フォルダを作成。
-- 2026-06-07: `.steering/20260607-exp029-public-sel15-pf-oof-feature-generation/` に要件、設計、タスクを記録。
+- 2026-06-07: `docs/legacy/steering/20260607-exp029-public-sel15-pf-oof-feature-generation/` に要件、設計、タスクを記録。
 - 2026-06-07: `public_sel15_pf_oof.py` を追加し、train well の途中以降を隠す cutoff、PF likelihood ensemble、14-config beam ensemble、public selector、feature CSV 追記保存を実装。
 - 2026-06-07: `config.yaml`、README、train/inference notebook、result、metrics を exp029 用に更新。
 - 2026-06-07: `uv run python -m py_compile experiments/exp029_public_sel15_pf_oof_feature_generation/public_sel15_pf_oof.py experiments/exp029_public_sel15_pf_oof_feature_generation/settings.py` が通過。

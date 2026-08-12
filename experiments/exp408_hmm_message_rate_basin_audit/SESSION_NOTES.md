@@ -12,7 +12,7 @@ exp209 exact HMMの長いoffsetがどのmessage段階で形成されるかを、
 - 親: `exp209_exp072_exp205_joint_exact_parity_fast_cache_generation`
 - parity参照: `exp270_exact_hmm_posterior_mode_candidate_audit`
 - steering:
-  `.steering/20260726-exp408-hmm-message-rate-basin-audit/`
+  `docs/legacy/steering/20260726-exp408-hmm-message-rate-basin-audit/`
 - CV / LB: 原因診断のため対象外
 - inference / submission: 無効
 

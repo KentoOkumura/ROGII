@@ -223,7 +223,7 @@
     make new-steering EXP=exp251_raw_test_safe_dual_objective_candidate_ranker
     make new-exp EXP=exp251_raw_test_safe_dual_objective_candidate_ranker SOURCE=experiments/exp248_candidate_perturbation_augmentation_for_likelihood_ranker
 
-- `.steering/20260715-exp251-raw-test-safe-dual-objective-candidate-ranker/`へ要件、設計、tasklistを記録した。
+- `docs/legacy/steering/20260715-exp251-raw-test-safe-dual-objective-candidate-ranker/`へ要件、設計、tasklistを記録した。
 - exp250は別backlogで使用済みのため、次の空き番号exp251を使用した。
 
 ### 2026-07-15 実装

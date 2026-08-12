@@ -3,7 +3,7 @@
 ## 2026-06-27 実装
 
 - `KAGGLE_DIRECTION.md` の `tvt_dense_addonly_confidence_features_on_exp092` を実験化した。
-- `.steering/20260627-exp151-tvt-dense-addonly-confidence-features-on-exp092/` を作成。
+- `docs/legacy/steering/20260627-exp151-tvt-dense-addonly-confidence-features-on-exp092/` を作成。
 - `experiments/exp151_tvt_dense_addonly_confidence_features_on_exp092/` を `exp149_normalized_shape_addonly_features_on_exp092` から作成し、実装を dense confidence 用に差し替えた。
 - 親実験は `exp092_u_projection_correction_disagreement_fullrun`、cache は `exp072_exp063_full_replay_feature_cache`。
 - 追加特徴は `tvt_dense` / `tvt_densew` / `tvt_dense50` の drift、slope、roughness、dense family disagreement、PF/Beam/likPF-vs-dense 差、near/longtail interaction に限定する。

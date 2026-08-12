@@ -20,7 +20,7 @@
 ## コマンドログ
 
 - 2026-06-04: `uv run python scripts/new_steering.py --experiment exp013_model_diversity_or_postprocess` で steering docs を作成。
-- 2026-06-04: `.steering/20260604-exp013-model-diversity-or-postprocess/{requirements.md,design.md,tasklist.md}` に仮説、設計、タスクを記入。
+- 2026-06-04: `docs/legacy/steering/20260604-exp013-model-diversity-or-postprocess/{requirements.md,design.md,tasklist.md}` に仮説、設計、タスクを記入。
 - 2026-06-04: `uv run python scripts/new_experiment.py --name exp013_model_diversity_or_postprocess --source experiments/exp012_single_catboost_lightgbm_residual` で exp012 から実験を作成。
 - 2026-06-04: train / inference notebook を exp013 名にリネームし、`settings.py` の `EXPERIMENT_NAME` を更新。
 - 2026-06-04: `config.yaml` を exp013 用に置換し、`control_hgb_no_gr` と `lightgbm_no_gr` の 2 variants、postprocess candidates、OOF 保存設定を定義。

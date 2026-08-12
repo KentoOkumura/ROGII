@@ -39,7 +39,7 @@ corrected exp264 Stage D v3のglobal改善 10.476169 -> 8.460811を保ちなが�
 
 ## 実装内容
 
-- `.steering/20260718-exp276-exp264-compact-tail-risk-target-free-gate-audit/`に要件、設計、tasklistを作成した。
+- `docs/legacy/steering/20260718-exp276-exp264-compact-tail-risk-target-free-gate-audit/`に要件、設計、tasklistを作成した。
 - 新規`exp276_exp264_compact_tail_risk_target_free_gate_audit`をtemplateから作成した。
 - train notebookをJupytext percent形式のself-contained sourceとして実装した。
 - Stage C manifest/schema/partition manifestとStage D OOFを期待SHAでfail-closedにした。

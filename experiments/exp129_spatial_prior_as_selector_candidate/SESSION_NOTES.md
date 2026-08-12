@@ -12,7 +12,7 @@ exp118 では spatial prior を exp092 に小さく hard correction すると RM
 
 ### 実装内容
 
-- `.steering/20260625-exp129-spatial-prior-as-selector-candidate/` を作成。
+- `docs/legacy/steering/20260625-exp129-spatial-prior-as-selector-candidate/` を作成。
 - `experiments/exp129_spatial_prior_as_selector_candidate/` を exp101 から派生作成。
 - `spatial_prior_as_selector_candidate.py` を追加。
   - exp099 v2 train feature cache を読む。

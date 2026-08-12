@@ -54,7 +54,7 @@ exp348としての次工程はない。上記の独立案を検討する場合�
 
 ## 文書
 
-- Steering: `../../.steering/20260722-exp348-prefix-gr-unary-window-path-ranking-ssm/`
+- Steering: `../../docs/legacy/steering/20260722-exp348-prefix-gr-unary-window-path-ranking-ssm/`
 - 設定: `config.yaml`
 - 詳細結果: `result.md`
 - 実行記録: `SESSION_NOTES.md`

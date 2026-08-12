@@ -37,7 +37,7 @@ H512 / whole-well add-one novelty 契約で候補パスとしての価値を再�
 
 - ユーザーの「それで進めてください」を、0-booster readout の実装と Kaggle CPU audit
   1回の承認として記録した。inference/submissionの承認には拡張しない。
-- `.steering/20260723-exp361-exp333-candidate-path-addone-novelty-audit/`
+- `docs/legacy/steering/20260723-exp361-exp333-candidate-path-addone-novelty-audit/`
   を先に作成した。
 - exp302 の検証済み fixed-bank reconstruction、block assignment、freeze/late-truth join、
   novelty readout を土台にした。

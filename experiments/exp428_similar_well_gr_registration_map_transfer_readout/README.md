@@ -9,7 +9,7 @@
 - 作成日: 2026-07-28
 - 親実験: `exp423_same_typewell_gr_dtw_truth_warp_transfer_readout`
 - steering:
-  `.steering/20260728-exp428-similar-well-gr-registration-map-transfer-readout/`
+  `docs/legacy/steering/20260728-exp428-similar-well-gr-registration-map-transfer-readout/`
 
 ## 仮説
 

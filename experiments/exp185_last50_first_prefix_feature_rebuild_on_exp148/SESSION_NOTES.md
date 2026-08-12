@@ -38,7 +38,7 @@
 
 ## 実装確認
 
-- 2026-07-04: `.steering/20260704-exp185-last50-first-prefix-feature-rebuild-on-exp148/` を作成。
+- 2026-07-04: `docs/legacy/steering/20260704-exp185-last50-first-prefix-feature-rebuild-on-exp148/` を作成。
 - 2026-07-04: `experiments/exp185_last50_first_prefix_feature_rebuild_on_exp148/` を exp172 からコピーし、exp185 名へリネーム。
 - 2026-07-04: `last50_first_prefix_feature_rebuild_on_exp148.py` に X/Y/Z trajectory、last50 source crop、full-prefix base column drop、GPU active mode を実装。
 - 2026-07-04: `.venv/bin/python -m py_compile experiments/exp185_last50_first_prefix_feature_rebuild_on_exp148/*.py` は PASS。

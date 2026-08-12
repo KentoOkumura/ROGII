@@ -14,7 +14,7 @@
 
 ## 変更点
 
-- `.steering/20260627-exp142-trajectory-aware-pf-transition-prior/` を作成し、要件・設計・タスクを記入した。
+- `docs/legacy/steering/20260627-exp142-trajectory-aware-pf-transition-prior/` を作成し、要件・設計・タスクを記入した。
 - `experiments/exp142_trajectory_aware_pf_transition_prior/` を `exp106_strict_exp072_pf_z_multiseed_scale_cache` から作成した。
 - 実装ファイルを `trajectory_aware_pf_transition_prior.py` に変更した。
 - exp106 strict PF-Z parity / multiseed candidate は比較基準として残した。

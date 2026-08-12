@@ -18,7 +18,7 @@
 
 | 優先度 | アイデア | 先行条件 / 依存 | 検証方法 | 注意点 |
 | --- | --- | --- | --- | --- |
-| 低-中・P3・target-free fixed-five design・別実験/別承認待ち | `five_surface_global_stratigraphic_potential_contract`: exp436でsource supportが十分だったANCC / ASTNU / ASTNL / EGFDU / EGFDLの5面だけを、target/truthを見る前に固定したglobal potential contractとして再設計できるか確認する | exp436 v2のcontact censusでは5面が全fold 555–618 wells、BUDAだけ4–6 wellsで、6面contractはStage 0 FAIL。exp436のFAIL、exp381 absolute contact-TVT FAIL、exp273 prefix-plane negative、exp383 resource FAILを再分類しない。BUDA除外はtarget-free source censusだけを根拠に固定し、別実験・別steering・別実行承認を必須とする | まず0 predictionのdesign auditで5面固定、全5面support、fold-safe graph、query coverage gate、Stage 1 rolling-origin、truth-late順序を一意に固定する。実行する場合も新しいStage 0で5面solveとtarget-free query coverageだけを先行し、PASS後の別承認までtruth/CVへ進まない | exp436内のformation除外、BUDA contact定義/threshold救済、4面subsetやrow-wise面切替、weight/grid、fallback/blend/selector、target formation/GR、same-OOF rescueは禁止。既存P1/P2候補を追い越さない |
+| 低-中・P3・target-free fixed-five design・別実験/別承認待ち | `five_surface_global_stratigraphic_potential_contract`: exp436でsource supportが十分だったANCC / ASTNU / ASTNL / EGFDU / EGFDLの5面だけを、target/truthを見る前に固定したglobal potential contractとして再設計できるか確認する | exp436 v2のcontact censusでは5面が全fold 555–618 wells、BUDAだけ4–6 wellsで、6面contractはStage 0 FAIL。exp436のFAIL、exp381 absolute contact-TVT FAIL、exp273 prefix-plane negative、exp383 resource FAILを再分類しない。BUDA除外はtarget-free source censusだけを根拠に固定し、別実験の`requirements.md`への契約記録・別実行承認を必須とする | まず0 predictionのdesign auditで5面固定、全5面support、fold-safe graph、query coverage gate、Stage 1 rolling-origin、truth-late順序を一意に固定する。実行する場合も新しいStage 0で5面solveとtarget-free query coverageだけを先行し、PASS後の別承認までtruth/CVへ進まない | exp436内のformation除外、BUDA contact定義/threshold救済、4面subsetやrow-wise面切替、weight/grid、fallback/blend/selector、target formation/GR、same-OOF rescueは禁止。既存P1/P2候補を追い越さない |
 
 ## 観測事実と仮定の整理状態
 
@@ -36,7 +36,7 @@
 
 ## 親実験からの差分
 
-- 先行条件 / 依存: exp436 v2のcontact censusでは5面が全fold 555–618 wells、BUDAだけ4–6 wellsで、6面contractはStage 0 FAIL。exp436のFAIL、exp381 absolute contact-TVT FAIL、exp273 prefix-plane negative、exp383 resource FAILを再分類しない。BUDA除外はtarget-free source censusだけを根拠に固定し、別実験・別steering・別実行承認を必須とする
+- 先行条件 / 依存: exp436 v2のcontact censusでは5面が全fold 555–618 wells、BUDAだけ4–6 wellsで、6面contractはStage 0 FAIL。exp436のFAIL、exp381 absolute contact-TVT FAIL、exp273 prefix-plane negative、exp383 resource FAILを再分類しない。BUDA除外はtarget-free source censusだけを根拠に固定し、別実験の`requirements.md`への契約記録・別実行承認を必須とする
 - 変更するもの: 未整理
 - 固定するもの: 未整理
 - 再利用するコード / config / 生成物: 未整理

@@ -56,7 +56,7 @@ uproj_pf_z_resid
 
 ## 実行ログ
 
-- 2026-07-05: `.steering/20260705-exp198-exact-replacement-prune-on-exp148/` を作成。
+- 2026-07-05: `docs/legacy/steering/20260705-exp198-exact-replacement-prune-on-exp148/` を作成。
 - 2026-07-05: `experiments/exp198_exact_replacement_prune_on_exp148/` を exp148 から作成。
 - 2026-07-05: config、canonical train/inference source、記録ファイルを exp198 drop-only 実験として更新。
 - 2026-07-05: 親コピー由来の古い exp148-named notebook source を削除し、canonical `exp198_exact_replacement_prune_on_exp148_train.py/ipynb` と `..._inference.py/ipynb` を正とした。

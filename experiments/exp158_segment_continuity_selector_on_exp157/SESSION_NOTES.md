@@ -10,7 +10,7 @@ exp157 は `lgb_candidate_error_ranker` OOF RMSE 10.795800 で `likpf_mean_singl
 
 ### 実装内容
 
-- `.steering/20260629-exp158-segment-continuity-selector-on-exp157/` を作成。
+- `docs/legacy/steering/20260629-exp158-segment-continuity-selector-on-exp157/` を作成。
 - `experiments/exp158_segment_continuity_selector_on_exp157/` を exp155 からコピーして作成。
 - 実装本体を `segment_continuity_selector_on_exp157.py` に差し替えた。
   - exp099 v2 train feature cache を読み込む。

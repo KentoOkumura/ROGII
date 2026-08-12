@@ -30,6 +30,6 @@ compact self-contained trainとfail-closed inferenceを正規Notebookへ採用�
 
 ## 文書
 
-- Steering: `../../.steering/20260722-exp339-missing-gap-pseudomask-uncertainty-readout/`
+- Steering: `../../docs/legacy/steering/20260722-exp339-missing-gap-pseudomask-uncertainty-readout/`
 - 設定: `config.yaml`
 - 設計時点の記録: `SESSION_NOTES.md`

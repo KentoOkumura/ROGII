@@ -71,7 +71,7 @@ make new-steering EXP=exp248_candidate_perturbation_augmentation_for_likelihood_
 make new-exp EXP=exp248_candidate_perturbation_augmentation_for_likelihood_ranker SOURCE=experiments/exp237_hmm_exp226_candidate_selector_on_exp183
 ```
 
-- `.steering/20260714-exp248-candidate-perturbation-augmentation-for-likelihood-ranker/`へ要件、設計、tasklistを記録した。
+- `docs/legacy/steering/20260714-exp248-candidate-perturbation-augmentation-for-likelihood-ranker/`へ要件、設計、tasklistを記録した。
 - exp237の固定candidate/context/Viterbi実装を参照元として継承した。
 
 ### 2026-07-14 実装

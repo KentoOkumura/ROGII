@@ -15,7 +15,7 @@ medoidをcandidate pathとして残す。
 
 ## 2026-07-13 実装
 
-- steering: `.steering/20260713-exp243-pf-seed-medoids/`
+- steering: `docs/legacy/steering/20260713-exp243-pf-seed-medoids/`
 - 親: `exp072_exp063_full_replay_feature_cache`
 - 実装参照: exp241のraw train / pseudo-tail path契約。
 - exp072の`sha256("likpf::train::<well>") % 2147483647 + 1 + seed_index`を再現するPF kernelを実装した。

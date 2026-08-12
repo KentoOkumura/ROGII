@@ -47,7 +47,7 @@ proposal sampling、importance correction、ESS resamplingを使い、exp226が�
 - mechanismだけ通過した場合は機構支持として記録するが、推論候補へ昇格させない
 
 詳細な式、allowlist、gate、再現性契約は
-`.steering/20260727-exp419-exp226-guided-defensive-mixture-pf/design.md`と
+`docs/legacy/steering/20260727-exp419-exp226-guided-defensive-mixture-pf/design.md`と
 `config.yaml`を正とする。
 
 ## 実行量

@@ -15,7 +15,7 @@ exp287のfold-safe formation roleから再計算し、exp287 421列へadd-only�
 - clean tail control: `exp264_exp263_candidate_confidence_dual_selector`
 - CV / LB: なし
 - steering:
-  `.steering/20260726-exp402-fold-safe-grwr-5-addonly-on-exp287/`
+  `docs/legacy/steering/20260726-exp402-fold-safe-grwr-5-addonly-on-exp287/`
 - 正規notebook / `settings.py`: 未編集placeholder
 - 別名Jupytext train/inference候補: 実装済み
 - 専用test: 8件PASS

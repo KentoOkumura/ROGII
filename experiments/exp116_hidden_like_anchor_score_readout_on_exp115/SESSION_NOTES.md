@@ -41,7 +41,7 @@ kaggle kernels status kentookumura/exp116-hidden-like-anchor-readout-train
 
 ## 変更点
 
-- `.steering/20260624-exp116-hidden-like-anchor-score-readout-on-exp115/` に要件、設計、タスクを記録。
+- `docs/legacy/steering/20260624-exp116-hidden-like-anchor-score-readout-on-exp115/` に要件、設計、タスクを記録。
 - `config.yaml` に exp115 split artifact と exp073 / exp098 row prediction、exp092 by-well metrics の入力候補を追加。
 - `hidden_like_anchor_score_readout_on_exp115.py` を追加。row prediction は gzip を chunk 読み込みし、exp115 valid wells だけを保持して集計する。
 - train notebook を、入力 split / source inventory / readout 実行 / metrics preview が見える構成に更新。

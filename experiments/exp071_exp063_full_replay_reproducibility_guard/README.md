@@ -16,7 +16,7 @@
 - 数値: [`metrics.json`](metrics.json)
 - 結果と実行証拠: [`result.md`](result.md)
 - 作業ログ: [`SESSION_NOTES.md`](SESSION_NOTES.md)
-- 実装前の要件と設計: [`.steering/20260614-exp071-exp063-full-replay-reproducibility-guard/`](../../.steering/20260614-exp071-exp063-full-replay-reproducibility-guard/)
+- 実装前の要件と設計: [`docs/legacy/steering/20260614-exp071-exp063-full-replay-reproducibility-guard/`](../../docs/legacy/steering/20260614-exp071-exp063-full-replay-reproducibility-guard/)
 
 ## 実行入口
 

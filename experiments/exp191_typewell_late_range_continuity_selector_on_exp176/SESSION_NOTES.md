@@ -3,7 +3,7 @@
 ## 2026-07-04 実装
 
 - ユーザー依頼により `typewell_late_range_continuity_selector_on_exp176` backlog の実装を開始。
-- `.steering/20260704-exp191-typewell-late-range-continuity-selector-on-exp176/` を作成。
+- `docs/legacy/steering/20260704-exp191-typewell-late-range-continuity-selector-on-exp176/` を作成。
 - `experiments/exp191_typewell_late_range_continuity_selector_on_exp176/` を exp158 から作成。
 - 既存 `exp190_denoised_calibrated_matching_features_on_exp148` との番号衝突を確認したため、typewell continuity 実験は exp191 とした。
 - helper を `typewell_late_range_continuity_selector_on_exp176.py` にリネーム。

@@ -2,7 +2,7 @@
 
 ## 2026-07-01 実装
 
-- `.steering/20260701-exp163-typewell-neighbor-prior-as-ml-features-on-exp148/` を作成。
+- `docs/legacy/steering/20260701-exp163-typewell-neighbor-prior-as-ml-features-on-exp148/` を作成。
 - `experiments/exp163_typewell_neighbor_prior_as_ml_features_on_exp148/` を exp162 の CPU split notebook 構成から作成。
 - 親実験は `exp148_learned_likelihood_fulltrain_addonly_on_exp092`。
 - exp148 の U-projection / learned likelihood confidence surface は残し、exp099 row context と exp065 native typewell overlap cluster から fold-safe neighbor prior を作る。

@@ -27,7 +27,7 @@ exp226 residualをfold-stableに予測できる。
 - primary guardはpooled/fold別Spearman、sign balanced accuracy、256 fold内permutationで判定する。
 - 1 variant / LightGBM 0 config / trained fold 0 / booster 0 / HMM・PF regeneration 0。
 
-詳細は`.steering/20260719-exp285-exp226-prefix-masked-offset-predictability-readout/`と
+詳細は`docs/legacy/steering/20260719-exp285-exp226-prefix-masked-offset-predictability-readout/`と
 `config.yaml`を正とする。
 
 ## 変更点

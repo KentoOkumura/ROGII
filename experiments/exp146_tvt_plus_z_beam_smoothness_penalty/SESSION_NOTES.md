@@ -14,7 +14,7 @@
 
 ## 変更点
 
-- `.steering/20260627-exp146-tvt-plus-z-beam-smoothness-penalty/` を作成した。
+- `docs/legacy/steering/20260627-exp146-tvt-plus-z-beam-smoothness-penalty/` を作成した。
 - `experiments/exp146_tvt_plus_z_beam_smoothness_penalty/` を exp140 から作成した。
 - 実装ファイルを `tvt_plus_z_beam_smoothness_penalty.py` に変更した。
 - exp140 の posthoc correction 実装を削除し、Beam search 再生成 audit に置き換えた。

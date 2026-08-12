@@ -3,7 +3,7 @@
 ## 2026-06-28 実装
 
 - ユーザー依頼により `candidate_ranker_feature_enrichment` を実装開始。
-- `.steering/20260628-exp157-candidate-ranker-feature-enrichment/` を作成。
+- `docs/legacy/steering/20260628-exp157-candidate-ranker-feature-enrichment/` を作成。
 - `experiments/exp157_candidate_ranker_feature_enrichment/` を `exp101_pf_candidate_ranker_or_nway_classifier` から作成。
 - exp099 v2 cache に `tvt_dense*` columns が無いことを確認したため、exp072 full replay feature cache を補助 source として join する設計にした。
 - 追加 candidate は `tvt_dense`、`tvt_densew`、`tvt_dense50`。`last_known_tvt + tvt_dense*_d` で絶対 TVT candidate を復元する。

@@ -3,7 +3,7 @@
 ## 2026-07-01 実装
 
 - `exp159_spatial_prior_confidence_features_on_exp092` の Colab 前提ディレクトリは採用せず、Kaggle Notebook 前提の clean 実験として `exp164_spatial_prior_confidence_features_on_exp092_kaggle` を作成した。
-- `.steering/20260701-exp164-spatial-prior-confidence-features-on-exp092-kaggle/` を作成。
+- `docs/legacy/steering/20260701-exp164-spatial-prior-confidence-features-on-exp092-kaggle/` を作成。
 - `experiments/exp164_spatial_prior_confidence_features_on_exp092_kaggle/` を exp151 scaffold から作成し、実装本体は exp159 の spatial prior feature builder を checkpoint なしの Kaggle-first 版として移植した。
 - 親実験は `exp092_u_projection_correction_disagreement_fullrun`、base cache は `exp072_exp063_full_replay_feature_cache`、spatial prior cache は `exp114_spatial_neighbor_prior_signal_audit`。
 - Colab runner / manual upload / checkpoint 再開機構はこの exp164 には含めない。実行は Kaggle Notebook train を正とする。

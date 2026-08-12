@@ -28,6 +28,7 @@ GLOBAL_RECORDS = (
 )
 CANONICAL_EXPERIMENT_RECORDS = {
     "README.md",
+    "requirements.md",
     "SESSION_NOTES.md",
     "result.md",
     "metrics.json",
@@ -53,9 +54,8 @@ def candidate_files(root: Path, exp: str) -> list[Path]:
         if path.is_file():
             files.add(path)
 
-    for base_dir in (root / "experiments", root / ".steering"):
-        if not base_dir.exists():
-            continue
+    base_dir = root / "experiments"
+    if base_dir.exists():
         for candidate_dir in base_dir.iterdir():
             if not candidate_dir.is_dir() or lowered not in candidate_dir.name.lower():
                 continue
@@ -106,8 +106,6 @@ def evidence_scope(root: Path, path: Path) -> str:
         and relative.parts[0] == "experiments"
         and relative.name in CANONICAL_EXPERIMENT_RECORDS
     ):
-        return "target evidence"
-    if relative.parts and relative.parts[0] == ".steering":
         return "target evidence"
     if relative.parts and relative.parts[0] == "experiments":
         return "supporting material"
@@ -175,15 +173,15 @@ def render(exp: str, root: Path, reviews: list[dict[str, object]]) -> str:
     lines.append("## Summary")
     has_target_evidence, missing = target_evidence_summary(reviews)
     if not has_target_evidence:
-        lines.append("- No canonical target experiment or steering records were found.")
+        lines.append("- No canonical target experiment records were found.")
     if missing:
         lines.append(
-            "- Missing evidence in target experiment/steering records: "
+            "- Missing evidence in target experiment records: "
             + ", ".join(missing)
         )
     else:
         lines.append(
-            "- Core evidence categories are present in target experiment/steering records."
+            "- Core evidence categories are present in target experiment records."
         )
     lines.append("- Context and supporting material do not satisfy target evidence checks.")
     return "\n".join(lines) + "\n"
@@ -198,7 +196,7 @@ def main() -> int:
     parser.add_argument(
         "--strict",
         action="store_true",
-        help="Fail when target experiment/steering records lack an evidence category.",
+        help="Fail when target experiment records lack an evidence category.",
     )
     args = parser.parse_args()
 

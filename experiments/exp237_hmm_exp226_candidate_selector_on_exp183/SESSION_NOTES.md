@@ -8,7 +8,7 @@
 
 ### 実装内容
 
-- steering: `.steering/20260712-exp237-hmm-exp226-candidate-selector-on-exp183/`
+- steering: `docs/legacy/steering/20260712-exp237-hmm-exp226-candidate-selector-on-exp183/`
 - 親: `exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector`
 - Route: `ensemble`。PF/Beam候補、HMM候補、geometry候補とLightGBM selectorが本質的に寄与するため。
 - exp209 / exp223 / exp226 のOOFを`id`、`well`、`row`、target、last-known TVTで照合して結合する。

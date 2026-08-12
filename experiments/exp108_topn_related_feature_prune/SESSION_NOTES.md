@@ -22,7 +22,7 @@
 
 ### 実装メモ
 
-- `.steering/20260622-exp108-topn-related-feature-prune/` を作成。
+- `docs/legacy/steering/20260622-exp108-topn-related-feature-prune/` を作成。
 - exp098 を親として実験ディレクトリを作成。
 - 実装ファイルを `topn_related_feature_prune.py` にリネームし、出力 prefix を exp108 に変更。
 - exp098 の full rank-slot feature generation を維持しつつ、base 196 features を `base_196_all`、`base_196_candidate_family`、`base_196_non_candidate_context`、`base_196_topn_core_candidate_family` に分類する処理を追加。

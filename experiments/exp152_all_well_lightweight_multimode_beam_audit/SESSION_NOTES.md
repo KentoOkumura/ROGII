@@ -14,7 +14,7 @@
 
 ## 変更点
 
-- `.steering/20260628-exp152-all-well-lightweight-multimode-beam-audit/` を作成した。
+- `docs/legacy/steering/20260628-exp152-all-well-lightweight-multimode-beam-audit/` を作成した。
 - `experiments/exp152_all_well_lightweight_multimode_beam_audit/` を `exp143_multimode_pfbeam_local_correlation_audit` から作成した。
 - 実装ファイルを `all_well_lightweight_multimode_beam_audit.py` に変更した。
 - exp143 の heavy local-correlation diagnostic を config で無効化できるようにした。

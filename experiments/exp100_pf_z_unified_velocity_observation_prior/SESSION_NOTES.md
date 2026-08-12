@@ -23,7 +23,7 @@ make new-exp EXP=exp100_pf_z_unified_velocity_observation_prior SOURCE=experimen
 
 実装内容:
 
-- `.steering/20260621-exp100-pf-z-unified-velocity-observation-prior/` を作成し、requirements / design / tasklist を記入した。
+- `docs/legacy/steering/20260621-exp100-pf-z-unified-velocity-observation-prior/` を作成し、requirements / design / tasklist を記入した。
 - `config.yaml` を `pf_beam` route の Stage 1 ablation 用に更新した。
 - `pf_z_unified_velocity_observation_prior.py` を追加した。
 - `settings.py` の experiment name を exp100 に更新した。

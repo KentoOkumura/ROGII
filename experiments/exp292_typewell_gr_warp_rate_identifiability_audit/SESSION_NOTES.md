@@ -57,7 +57,7 @@ make validate-exp EXP=exp292_typewell_gr_warp_rate_identifiability_audit
 ```
 
 - `task`は環境に存在せず起動前に失敗したため、同等の`make new-steering`へ切り替えた。
-- steering: `.steering/20260719-exp292-typewell-gr-warp-rate-identifiability-audit/`
+- steering: `docs/legacy/steering/20260719-exp292-typewell-gr-warp-rate-identifiability-audit/`
 - experiment: `experiments/exp292_typewell_gr_warp_rate_identifiability_audit/`
 - 親exp268、exp209 emission、exp288可視化、exp170/211/132 negative evidence、
   `docs/06_reproducibility.md`を確認した。

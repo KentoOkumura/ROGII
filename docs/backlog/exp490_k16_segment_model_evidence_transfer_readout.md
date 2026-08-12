@@ -18,7 +18,7 @@
 
 | 優先度 | アイデア | 先行条件 / 依存 | 検証方法 | 注意点 |
 | --- | --- | --- | --- | --- |
-| 中・P2・0-model / 0-HMM・exp490 algorithm preflight | `exp490_k16_segment_model_evidence_transfer_readout`: exp357のno-reversionとexp490のmean-reversionを二つのdynamics expertとみなし、K16区間ごとのblocked Huber GR NLL差が区間benefitへ転移するかだけをtruth-lateで測る | exp503でtruth alignmentはbenefitとSpearman`0.820838`だが既存target-free hard routerはFAIL。exp209系ではrow GR evidenceのIATが約24行で、row独立尤度は過信する。保存exp357/exp490 OOF、raw GR/typewell、K16 segment/rhoを固定入力にし、今回surveyを設計根拠にする | 24-row blockへ縮約した同一Huber emissionで`NLL_keep-NLL_revert`をtruth前にfreezeし、K16 segment benefit AUC、5 fold符号、catastrophic-well capture、coverageだけを読む。prediction選択・blendは作らない。model/booster/HMM/PF/Beam/GPU/親再学習0 | NLL temperature/threshold/block/K16/Huber/grid、winner、router、weightを同じreadoutで選ばない。evidenceが弱ければswitching/DMA/IMM branchを閉じる。別steering・別承認まで着手せず、exp509/510を追い越さない |
+| 中・P2・0-model / 0-HMM・exp490 algorithm preflight | `exp490_k16_segment_model_evidence_transfer_readout`: exp357のno-reversionとexp490のmean-reversionを二つのdynamics expertとみなし、K16区間ごとのblocked Huber GR NLL差が区間benefitへ転移するかだけをtruth-lateで測る | exp503でtruth alignmentはbenefitとSpearman`0.820838`だが既存target-free hard routerはFAIL。exp209系ではrow GR evidenceのIATが約24行で、row独立尤度は過信する。保存exp357/exp490 OOF、raw GR/typewell、K16 segment/rhoを固定入力にし、今回surveyを設計根拠にする | 24-row blockへ縮約した同一Huber emissionで`NLL_keep-NLL_revert`をtruth前にfreezeし、K16 segment benefit AUC、5 fold符号、catastrophic-well capture、coverageだけを読む。prediction選択・blendは作らない。model/booster/HMM/PF/Beam/GPU/親再学習0 | NLL temperature/threshold/block/K16/Huber/grid、winner、router、weightを同じreadoutで選ばない。evidenceが弱ければswitching/DMA/IMM branchを閉じる。別実験の`requirements.md`への契約記録・別承認まで着手せず、exp509/510を追い越さない |
 
 ## 観測事実と仮定の整理状態
 
@@ -52,7 +52,7 @@
 
 ## 実行しないこと
 
-NLL temperature/threshold/block/K16/Huber/grid、winner、router、weightを同じreadoutで選ばない。evidenceが弱ければswitching/DMA/IMM branchを閉じる。別steering・別承認まで着手せず、exp509/510を追い越さない
+NLL temperature/threshold/block/K16/Huber/grid、winner、router、weightを同じreadoutで選ばない。evidenceが弱ければswitching/DMA/IMM branchを閉じる。別実験の`requirements.md`への契約記録・別承認まで着手せず、exp509/510を追い越さない
 
 ## リスク
 

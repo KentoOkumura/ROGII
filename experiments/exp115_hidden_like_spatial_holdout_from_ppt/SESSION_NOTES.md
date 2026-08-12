@@ -35,7 +35,7 @@ kaggle kernels output kentookumura/exp115-hidden-like-spatial-holdout-from-ppt-t
 
 ## 変更点
 
-- `.steering/20260623-exp115-hidden-like-spatial-holdout-from-ppt/` を作成し、要件、設計、タスクを記録。
+- `docs/legacy/steering/20260623-exp115-hidden-like-spatial-holdout-from-ppt/` を作成し、要件、設計、タスクを記録。
 - `config.yaml` を hidden-like fixed holdout audit 用に更新。
 - `hidden_like_spatial_holdout_from_ppt.py` を追加。
   - PPTX を zip として読み、slide10 の embedded PNG を標準ライブラリだけで decode。

@@ -2,7 +2,7 @@
 
 Kaggle コンペの調査、実験、検証、提出、記録を一貫して管理するためのテンプレートです。
 
-作業単位は`experiments/expXXX_title/`にまとめ、実装前の狙いと設計は`.steering/YYYYMMDD-expXXX-title/`に残します。コンペ単位の設定は`project.yml`、現在の戦略は`KAGGLE_DIRECTION.md`、実験比較は`experiment_summary.md`、完了した調査・判断履歴の検索入口は`docs/surveys/README.md`に集約します。
+作業単位は`experiments/expXXX_title/`にまとめ、実装前の要件と実装方法は同じ実験の`requirements.md`に残します。コンペ単位の設定は`project.yml`、現在の戦略は`KAGGLE_DIRECTION.md`、実験比較は`experiment_summary.md`、完了した調査・判断履歴の検索入口は`docs/surveys/README.md`に集約します。
 
 この README は人間向けの入口です。エージェント向けの詳細ルールは `AGENTS.md`、作業別の参照入口は `docs/agent-playbooks.md`、実際の手順は各 `.agents/skills/*/SKILL.md` を参照してください。
 
@@ -80,7 +80,7 @@ make validate-exp EXP=exp001_baseline EXTRA_ARGS="--allow-todo"
 | コンペ設定 | `project.yml` に competition、data、defaults、submission、metadata、runtime.kaggle を記録。リポジトリ構成を変える場合だけ paths も更新 |
 | 検証中の上位仮説 | `KAGGLE_DIRECTION.md` で複数の未着手候補・実験と残っている問いを対応付ける |
 | 未着手候補 | `KAGGLE_DIRECTION.md` を索引、`docs/backlog/<candidate>.md` を候補詳細の正として管理 |
-| 実験計画 | `.steering/` に要件、設計、タスクリストを作成 |
+| 実験計画 | `experiments/<exp>/requirements.md` に要件、実装方法、受け入れ条件を記録 |
 | 実験コード | `experiments/<exp>/` に `config.yaml`、`settings.py`、実験に必要なtrain/inference/audit/diagnostic notebook、記録ファイルを配置 |
 | 共通コード | 複数実験で使う処理を `src/` に集約 |
 | 公開Notebook資料 | 取得した公開Notebookとmetadataを `docs/notebooks/` に保存 |
@@ -93,7 +93,7 @@ make validate-exp EXP=exp001_baseline EXTRA_ARGS="--allow-todo"
 
 - 新規実験ディレクトリをテンプレートまたは既存実験から作成できます。
 - 複数の未着手候補・実験を共通の上位仮説IDで追跡できます。
-- 実験前に steering document を作成し、仮説、設計、成功条件を明文化できます。
+- 実験の`requirements.md`に仮説、実装方法、成功条件を明文化できます。
 - `project.yml` と各実験の `config.yaml` を検証し、TODO や設定漏れを検出できます。
 - 実験契約に必要な Kaggle Notebook の実行、提出形式チェックを `task` で統一して実行できます。
 - Kaggle 実行用の notebook ディレクトリと `kernel-metadata.json` を生成できます。
@@ -110,7 +110,7 @@ make validate-exp EXP=exp001_baseline EXTRA_ARGS="--allow-todo"
 | --- | --- |
 | `kaggle-platform` | Kaggle API、認証、データ取得、`project.yml` 設定、コンペ資料の準備 |
 | `colab-notebook-runner` | Kaggle GPU quota が限られる場合の Colab notebook、Google Drive、runtime/session 対応 |
-| `kaggle-review-exp` | 承認済み実験のsteering、作成・実行・記録・レビュー。backlog経由では仮説・backlog更新をStrategyへ引き渡す |
+| `kaggle-review-exp` | 承認済み実験の作成、requirementsへの契約移行・実装・実行・記録・レビュー。backlog経由では仮説・backlog更新をStrategyへ引き渡す |
 | `kaggle-review` | 学習/推論コード、notebook、OOF、失敗実行のレビュー |
 | `kaggle-oof-readout` | OOF、feature importance、feature cache、by-well metricsを結合した誤差分析。仮説・候補の保存はStrategyへ引き渡す |
 | `kaggle-idea-forge` | 反証可能な候補の独立生成。検証中の仮説やbacklogへ直接保存しない |
@@ -133,10 +133,9 @@ task dl-kaggle-comp
 task validate-config VALIDATE_ARGS="--expected-competition <competition-slug>"
 ```
 
-`submission.sample_file`を別の方法で配置済みなら、データ取得は省略できます。初期設定の検証後、steering documentを作ってから実験ディレクトリを作成します。
+`submission.sample_file`を別の方法で配置済みなら、データ取得は省略できます。初期設定の検証後、実験ディレクトリを作成し、同梱の`requirements.md`を埋めます。
 
 ```bash
-task new-steering EXP=exp002_next_idea
 task new-exp EXP=exp002_next_idea SOURCE=experiments/exp001_baseline
 task validate-exp EXP=exp002_next_idea EXTRA_ARGS="--allow-todo"
 ```
@@ -157,7 +156,7 @@ Kaggle outputを取得する条件とNotebook-only code submissionの操作手�
 
 - `.agents/skills/`: このリポジトリ固有の Codex skills。Kaggle 系スキルはここで管理します
 - `.github/workflows/`: リポジトリテンプレートのCI設定
-- `.steering/`: 実装前の要件、設計、タスクリスト
+- `docs/legacy/steering/`: 廃止前の実験計画を保存する読み取り専用履歴。通常作業では参照しません
 - `app/`: 実験や OOF を確認する Streamlit アプリ
 - `data/`: ローカルデータキャッシュ。Git には入れません
 - `docs/`: 公式情報、候補詳細、保存資料、調査レポート。保存先の一覧は [docs/README.md](docs/README.md)
@@ -168,7 +167,7 @@ Kaggle outputを取得する条件とNotebook-only code submissionの操作手�
 - `scripts/`: テンプレート作成、検証、提出準備、記録更新用スクリプト
 - `src/`: 複数実験で再利用する共通コード
 - `studies/`: その場限りの EDA・調査コードと生の表・図。完了した結論は置かない
-- `templates/`: 新規実験、steering、survey用テンプレート
+- `templates/`: 新規実験、survey用テンプレート
 - `tests/`: 複数実験やリポジトリ全体に関わる共通テスト
 - `tools/`: Git で追跡しない外部ツールの clone やローカル配置
 

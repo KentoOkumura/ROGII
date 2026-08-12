@@ -20,7 +20,7 @@ KAGGLE_DIRECTION backlog `exp226_connortynan_k16_spline_kernel_knn_adaptive_kapp
 
 ## 実装内容
 
-- `.steering/20260709-exp226-connortynan-k16-spline-kernel-knn-adaptive-kappa-reproduction/` を作成。
+- `docs/legacy/steering/20260709-exp226-connortynan-k16-spline-kernel-knn-adaptive-kappa-reproduction/` を作成。
 - `experiments/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/` を template から作成。
 - `connortynan_k16_reproduction.py`
   - K=16 segment spline coefficient fit。

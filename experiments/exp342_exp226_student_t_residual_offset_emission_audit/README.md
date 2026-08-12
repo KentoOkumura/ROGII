@@ -63,7 +63,7 @@ exp344 Huber依存条件も不成立のままとする。
 
 ## 文書
 
-- Steering: `../../.steering/20260722-exp342-exp226-student-t-residual-offset-emission-audit/`
+- Steering: `../../docs/legacy/steering/20260722-exp342-exp226-student-t-residual-offset-emission-audit/`
 - 設定: `config.yaml`
 - 詳細結果: `result.md`
 - 機械可読結果: `metrics.json`

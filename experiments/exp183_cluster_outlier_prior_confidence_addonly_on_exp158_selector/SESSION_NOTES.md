@@ -8,7 +8,7 @@
 
 ### 実装内容
 
-- `.steering/20260703-exp183-cluster-outlier-prior-confidence-addonly-on-exp158-selector/` を作成。
+- `docs/legacy/steering/20260703-exp183-cluster-outlier-prior-confidence-addonly-on-exp158-selector/` を作成。
 - `experiments/exp183_cluster_outlier_prior_confidence_addonly_on_exp158_selector/` を exp158 からコピーして作成。
 - 実装本体を `cluster_outlier_prior_confidence_addonly_on_exp158_selector.py` として作成。
   - exp157 の train-side candidate ranker flow をベースにした。

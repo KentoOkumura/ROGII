@@ -22,7 +22,7 @@
 
 主な変更:
 
-- `.steering/20260706-exp207-heatmap-mdn-overlapping-window-path-stitch-probe/` を作成した。
+- `docs/legacy/steering/20260706-exp207-heatmap-mdn-overlapping-window-path-stitch-probe/` を作成した。
 - `experiments/exp207_heatmap_mdn_overlapping_window_path_stitch_probe/` を作成した。
 - `config.yaml` を exp202/exp099 cached artifact diagnostic 用に更新した。
 - `heatmap_mdn_overlapping_window_path_stitch_probe.py` を追加した。

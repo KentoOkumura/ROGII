@@ -13,7 +13,7 @@
 
 ## 実装内容
 
-- `.steering/20260627-exp139-exp092-exp098-small-rank-slot-merge/` を作成。
+- `docs/legacy/steering/20260627-exp139-exp092-exp098-small-rank-slot-merge/` を作成。
 - `experiments/exp139_exp092_exp098_small_rank_slot_merge/` を exp092 から作成。
 - 補助実装を `exp092_exp098_small_rank_slot_merge.py` に変更。
 - exp098 の target-free rank-slot feature generator を移植。

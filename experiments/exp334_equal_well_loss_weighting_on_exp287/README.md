@@ -34,7 +34,7 @@ exp287では、評価行が多いwellほどrow単位L2損失への寄与が大�
 - tail control: 保存済みcorrected exp264 OOF（RMSE `8.460811237612477`）
 - Leakage check: weightはouter-trainのfold、score-row identity、well別行数だけから計算し、target、prediction、error、outer-valid rowsを参照しない。
 
-全promotion gateは[steering設計](../../.steering/20260721-exp334-equal-well-loss-weighting-on-exp287/design.md)を正とする。主要条件は、pooled RMSEがexp287比`+0.02 ft`以内、4/5 folds以上が非悪化、by-well delta p95が非悪化、exp264比worst-wellが`+0.25 ft`以内、`+1/+3/+5 ft`悪化well数が`135/39/14`以下である。
+全promotion gateは[steering設計](../../docs/legacy/steering/20260721-exp334-equal-well-loss-weighting-on-exp287/design.md)を正とする。主要条件は、pooled RMSEがexp287比`+0.02 ft`以内、4/5 folds以上が非悪化、by-well delta p95が非悪化、exp264比worst-wellが`+0.25 ft`以内、`+1/+3/+5 ft`悪化well数が`135/39/14`以下である。
 
 ## 実行量と承認状態
 
@@ -72,7 +72,7 @@ pooled、5/5 folds、全scope、`+1 ft`悪化well数はPASS。by-well p95、wors
 
 ## 成果物
 
-- 設計の正: [steering設計](../../.steering/20260721-exp334-equal-well-loss-weighting-on-exp287/design.md)
+- 設計の正: [steering設計](../../docs/legacy/steering/20260721-exp334-equal-well-loss-weighting-on-exp287/design.md)
 - 設定の正: `config.yaml`
 - 実行記録: `SESSION_NOTES.md`
 - Kaggle train outputにはOOF、15 models、metrics、fold/scope/hidden/by-well metrics、manifestがある。全modelと主要成果物のSHAを監査済み。predictionとsubmissionは生成していない。

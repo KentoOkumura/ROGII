@@ -12,6 +12,9 @@ def write_record_templates(root: Path) -> None:
     template = root / "templates" / "experiment"
     template.mkdir(parents=True)
     (template / "README.md").write_text("# {{ EXPERIMENT_NAME }}\n\n## 概要\n")
+    (template / "requirements.md").write_text(
+        "# {{ EXPERIMENT_NAME }} 要件と実装方法\n\n## 実装方法\n\n- TODO\n"
+    )
     (template / "SESSION_NOTES.md").write_text(
         "# {{ EXPERIMENT_NAME }} セッションノート\n\n## 現在の作業\n\n- 次: TODO\n"
     )
@@ -68,6 +71,7 @@ def test_parent_copy_replaces_identity_and_resets_execution_records(
     source = tmp_path / "experiments" / "exp001_parent"
     source.mkdir(parents=True)
     (source / "README.md").write_text("# exp001_parent\n\nPublic LB: 1.23\n")
+    (source / "requirements.md").write_text("# exp001_parent contract\ncompleted\n")
     (source / "SESSION_NOTES.md").write_text("# exp001_parent\ncompleted\n")
     (source / "result.md").write_text("# exp001_parent result\ncompleted\n")
     (source / "metrics.json").write_text(
@@ -102,6 +106,8 @@ def test_parent_copy_replaces_identity_and_resets_execution_records(
     assert "exp002_child" in (destination / "settings.py").read_text()
     assert "Public LB" not in (destination / "README.md").read_text()
     assert "exp001_parent" not in (destination / "README.md").read_text()
+    assert "exp002_child" in (destination / "requirements.md").read_text()
+    assert "completed" not in (destination / "requirements.md").read_text()
     assert "exp001_parent" not in (destination / "result.md").read_text()
     metrics = json.loads((destination / "metrics.json").read_text())
     assert metrics == {"experiment": "exp002_child", "status": "planned"}

@@ -41,7 +41,7 @@
 
 ## 実装確認
 
-- 2026-07-03: `.steering/20260703-exp172-prefix-crop-last50-replacement-only-on-exp148/` を作成。
+- 2026-07-03: `docs/legacy/steering/20260703-exp172-prefix-crop-last50-replacement-only-on-exp148/` を作成。
 - 2026-07-03: `experiments/exp172_prefix_crop_last50_replacement_only_on_exp148/` を exp166 からコピーし、last50 multiobs replacement-only 用に設定を変更。
 - 2026-07-03: `.venv/bin/python -m py_compile experiments/exp172_prefix_crop_last50_replacement_only_on_exp148/*.py` は PASS。
 - 2026-07-03: `.venv/bin/ruff check experiments/exp172_prefix_crop_last50_replacement_only_on_exp148/*.py --select F821` は PASS。

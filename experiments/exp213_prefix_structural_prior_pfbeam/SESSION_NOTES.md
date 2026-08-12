@@ -56,7 +56,7 @@ PYTHONPATH=experiments/exp213_prefix_structural_prior_pfbeam .venv/bin/python -c
 
 結果:
 
-- steering: `.steering/20260707-exp213-prefix-structural-prior-pfbeam`
+- steering: `docs/legacy/steering/20260707-exp213-prefix-structural-prior-pfbeam`
 - experiment: `experiments/exp213_prefix_structural_prior_pfbeam`
 - `py_compile`: PASS
 - `ruff --select F821`: PASS

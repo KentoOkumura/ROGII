@@ -51,7 +51,7 @@ target-free PF/cluster scoreで識別できるか監査する。
     make new-steering EXP=exp252_pf_seed_medoid_selectability_audit
     make new-exp EXP=exp252_pf_seed_medoid_selectability_audit
 
-- steering: `.steering/20260715-exp252-pf-seed-medoid-selectability-audit/`
+- steering: `docs/legacy/steering/20260715-exp252-pf-seed-medoid-selectability-audit/`
 - 親: `exp243_pf_seed_medoids`
 - route: `pf_beam`
 - exp243 canonical v3 kernel: `kentookumura/exp243-pf-seed-medoids-train` version 1。

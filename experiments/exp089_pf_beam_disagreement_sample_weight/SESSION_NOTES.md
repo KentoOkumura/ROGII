@@ -10,7 +10,7 @@
 
 ## 実装内容
 
-- `.steering/20260620-exp089-pf-beam-disagreement-sample-weight/` を作成し、requirements / design / tasklist を記入。
+- `docs/legacy/steering/20260620-exp089-pf-beam-disagreement-sample-weight/` を作成し、requirements / design / tasklist を記入。
 - `experiments/exp089_pf_beam_disagreement_sample_weight/` を exp085 から作成。
 - `settings.py` の experiment name を exp089 に更新。
 - `config.yaml` を PF/Beam disagreement confidence feature / sample weight ablation 用に更新。

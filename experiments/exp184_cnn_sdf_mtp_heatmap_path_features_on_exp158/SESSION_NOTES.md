@@ -6,7 +6,7 @@
 
 ### 作成
 
-- `.steering/20260703-exp184-cnn-sdf-mtp-heatmap-path-features-on-exp158/` を作成。
+- `docs/legacy/steering/20260703-exp184-cnn-sdf-mtp-heatmap-path-features-on-exp158/` を作成。
 - `experiments/exp184_cnn_sdf_mtp_heatmap_path_features_on_exp158/` を exp183 pattern からコピーして作成。
 - 実装本体を `cnn_sdf_mtp_heatmap_path_features_on_exp158.py` として作成。
 - `exp184_cnn_sdf_mtp_heatmap_path_features_on_exp158_train.py` / `_inference.py` を Jupytext percent source として更新し、`.ipynb` に変換。

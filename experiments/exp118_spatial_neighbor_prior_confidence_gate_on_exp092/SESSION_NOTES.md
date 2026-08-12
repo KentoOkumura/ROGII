@@ -20,7 +20,7 @@ make new-steering EXP=exp118_spatial_neighbor_prior_confidence_gate_on_exp092
 make new-exp EXP=exp118_spatial_neighbor_prior_confidence_gate_on_exp092 SOURCE=experiments/exp114_spatial_neighbor_prior_signal_audit
 ```
 
-- `.steering/20260624-exp118-spatial-neighbor-prior-confidence-gate-on-exp092/` を作成。
+- `docs/legacy/steering/20260624-exp118-spatial-neighbor-prior-confidence-gate-on-exp092/` を作成。
 - exp114 から実験を派生し、実装を posthoc confidence gate audit に差し替えた。
 - 入力は exp114 OOF prior と exp092 OOF predictions。
 - inference notebook は no-submission guard。

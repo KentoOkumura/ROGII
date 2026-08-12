@@ -10,7 +10,7 @@
 - Public / Private LB: 対象外
 - kernel id: `127888550`
 - 親実験: `exp268_multi_scale_initial_rate_candidates`
-- 設計の正: `.steering/20260719-exp292-typewell-gr-warp-rate-identifiability-audit/`
+- 設計の正: `docs/legacy/steering/20260719-exp292-typewell-gr-warp-rate-identifiability-audit/`
 
 ## 仮説
 

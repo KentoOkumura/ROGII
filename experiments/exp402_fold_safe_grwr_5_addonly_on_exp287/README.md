@@ -8,7 +8,7 @@
 - clean tail control: `exp264_exp263_candidate_confidence_dual_selector`
 - CV / Public LB / Private LB: 未実行
 - steering:
-  `.steering/20260726-exp402-fold-safe-grwr-5-addonly-on-exp287/`
+  `docs/legacy/steering/20260726-exp402-fold-safe-grwr-5-addonly-on-exp287/`
 - 正規train notebook: Stage 1 compact self-contained候補を採用
 - 正規inference notebook / `settings.py`: 未編集placeholder
 - 別名compact self-contained train/inference候補: 実装済み

@@ -352,7 +352,7 @@ kaggle kernels output kentookumura/exp083-pfbeam-true-tvt-eda-train -p experimen
 
 - `exp083_pf_beam_true_tvt_2d_well_eda_v12_ml_oof_known_tvt_probe.py`
 - `exp083_pf_beam_true_tvt_2d_well_eda_v12_ml_oof_known_tvt_probe.ipynb`
-- steering: `.steering/20260705-exp083-v12-ml-oof-known-tvt-probe/`
+- steering: `docs/legacy/steering/20260705-exp083-v12-ml-oof-known-tvt-probe/`
 
 内容:
 

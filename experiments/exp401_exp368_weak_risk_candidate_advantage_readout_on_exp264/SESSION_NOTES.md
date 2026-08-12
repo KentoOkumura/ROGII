@@ -12,7 +12,7 @@ exp368の連続weak riskが、exp264 selectorにとってactionableな候補回�
 - 状態: Stage 0完了・scientific gate FAIL・branch閉鎖
 - CV / LB: なし
 - steering:
-  `.steering/20260726-exp401-exp368-weak-risk-candidate-advantage-readout-on-exp264/`
+  `docs/legacy/steering/20260726-exp401-exp368-weak-risk-candidate-advantage-readout-on-exp264/`
 - canonical train Notebook: compact self-contained候補を採用
 - inference / `settings.py`: 未編集placeholder
 - compact self-contained Jupytext / Notebook候補: train / fail-closed inference実装済み

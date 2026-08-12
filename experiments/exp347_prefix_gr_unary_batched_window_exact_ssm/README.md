@@ -66,5 +66,5 @@ exp347はterminal closeとして維持する。独立仮説のexp348は先行条
 
 ## 文書
 
-- Steering: `../../.steering/20260722-exp347-prefix-gr-unary-batched-window-exact-ssm/`
+- Steering: `../../docs/legacy/steering/20260722-exp347-prefix-gr-unary-batched-window-exact-ssm/`
 - 設定: `config.yaml`

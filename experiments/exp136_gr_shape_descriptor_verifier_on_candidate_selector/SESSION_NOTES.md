@@ -10,7 +10,7 @@ exp131 の `combo_descriptor_real` は candidate-long AUC 0.659206 で GR signal
 
 ### 実装内容
 
-- `.steering/20260626-exp136-gr-shape-descriptor-verifier-on-candidate-selector/` を作成。
+- `docs/legacy/steering/20260626-exp136-gr-shape-descriptor-verifier-on-candidate-selector/` を作成。
 - `experiments/exp136_gr_shape_descriptor_verifier_on_candidate_selector/` を exp102 から派生作成。
 - `gr_shape_descriptor_verifier_on_candidate_selector.py` を追加。
   - exp099 v2 train feature cache を読み込む。

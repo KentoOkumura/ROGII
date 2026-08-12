@@ -37,7 +37,7 @@
 
 ## 実装メモ
 
-- `.steering/20260705-exp191-typewell-continuity-selector-confidence-replacement-only-on-exp148/` を作成。
+- `docs/legacy/steering/20260705-exp191-typewell-continuity-selector-confidence-replacement-only-on-exp148/` を作成。
 - `experiments/exp191_typewell_continuity_selector_confidence_replacement_only_on_exp148/` を exp194 replacement-only pattern から作成。
 - helper を `typewell_continuity_selector_confidence_replacement_only_on_exp148.py` に変更。
 - exp191 score reconstruction 用に `typewell_late_range_continuity_selector_on_exp176.py` を同梱。

@@ -23,7 +23,7 @@ make new-exp EXP=exp140_z_slope_posthoc_correction_on_pfbeam_candidates SOURCE=e
 
 実装内容:
 
-- `.steering/20260627-exp140-z-slope-posthoc-correction-on-pfbeam-candidates/` を作成し、requirements / design / tasklist を記入した。
+- `docs/legacy/steering/20260627-exp140-z-slope-posthoc-correction-on-pfbeam-candidates/` を作成し、requirements / design / tasklist を記入した。
 - `config.yaml` を PF/Beam route の Z-slope posthoc audit 用に更新した。
 - `settings.py` の experiment name を exp140 に更新した。
 - `z_slope_posthoc_correction_on_pfbeam_candidates.py` を追加した。

@@ -29,7 +29,7 @@ make prepare-kaggle-notebooks EXP=exp175_cluster_outlier_typewell_prior_gate EXT
 make prepare-kaggle-notebooks EXP=exp175_cluster_outlier_typewell_prior_gate EXTRA_ARGS="--notebook inference --kernel-id kentookumura/exp175-cluster-outlier-typewell-prior-gate-infer --title 'exp175 cluster outlier typewell prior gate infer' --run-on-push --strict"
 ```
 
-- `.steering/20260703-exp175-cluster-outlier-typewell-prior-gate/` を作成。
+- `docs/legacy/steering/20260703-exp175-cluster-outlier-typewell-prior-gate/` を作成。
 - exp118 から実験ディレクトリを派生し、cluster-outlier gated prior audit に差し替えた。
 - 入力は exp065 cluster assignment、exp109 OOF typewell prior、exp114 OOF spatial prior / geometry、exp148 / exp092 OOF prediction。
 - inference notebook は no-submission guard。

@@ -10,7 +10,7 @@ exp214 の public-like raw PF diagnostics では `pf_raw_scale_12` が scoped tr
 
 ### 実装内容
 
-- `.steering/20260707-exp217-grcal-public-raw-pf-confidence-features-on-exp158/` を作成。
+- `docs/legacy/steering/20260707-exp217-grcal-public-raw-pf-confidence-features-on-exp158/` を作成。
 - `experiments/exp217_grcal_public_raw_pf_confidence_features_on_exp158/` を exp184 から作成し、exp217 用にリネーム。
 - exp214 の `public_raw_gr_residual_scale_control.py` を補助 helper として同梱。
 - `grcal_public_raw_pf_confidence_features_on_exp158.py` に `add_public_raw_pf_features()` を追加。

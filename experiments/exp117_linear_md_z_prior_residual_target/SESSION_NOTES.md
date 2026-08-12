@@ -2,7 +2,7 @@
 
 ## 2026-06-24 実装
 
-- `.steering/20260624-exp117-linear-md-z-prior-residual-target/` を作成。
+- `docs/legacy/steering/20260624-exp117-linear-md-z-prior-residual-target/` を作成。
 - `experiments/exp117_linear_md_z_prior_residual_target/` を `exp095_prefix_u_line_residual_target` からコピーして作成。
 - 実装元を `linear_md_z_prior_residual_target.py` に整理。
 - `dTVT` control と弱い `linear_prior_*` residual targets を同一 folds / 同一 features / `lgb0` で比較する config に更新。

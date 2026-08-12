@@ -8,7 +8,7 @@
 - 親: `exp293_physics_only_candidate_bank_headroom_contract`
 - promotion control: `exp263_last_anchor_better_candidate_confidence_pair_cache`
 - 設計の正:
-  `.steering/20260726-exp405-geometry-reinjected-interval-semimarkov-fusion/`
+  `docs/legacy/steering/20260726-exp405-geometry-reinjected-interval-semimarkov-fusion/`
 
 ## 仮説
 

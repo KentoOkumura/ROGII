@@ -10,7 +10,7 @@
 
 ## 実装内容
 
-- `.steering/20260620-exp091-self-gr-likelihood-pf-beam-probe/` を作成。
+- `docs/legacy/steering/20260620-exp091-self-gr-likelihood-pf-beam-probe/` を作成。
 - `experiments/exp091_self_gr_likelihood_pf_beam_probe/` を exp090 から作成。
 - `settings.py` の experiment name を exp091 に更新。
 - `config.yaml` を `all_horizontal_self_similarity_candidate_rank_audit` 用に更新。

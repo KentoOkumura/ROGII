@@ -3,7 +3,7 @@
 ## 2026-06-29 実装
 
 - `KAGGLE_DIRECTION.md` の `spatial_prior_confidence_features_on_exp092` を実験化した。
-- `.steering/20260629-exp159-spatial-prior-confidence-features-on-exp092/` を作成。
+- `docs/legacy/steering/20260629-exp159-spatial-prior-confidence-features-on-exp092/` を作成。
 - `experiments/exp159_spatial_prior_confidence_features_on_exp092/` を `exp151_tvt_dense_addonly_confidence_features_on_exp092` から作成し、spatial prior confidence 用に差し替えた。
 - 親実験は `exp092_u_projection_correction_disagreement_fullrun`、base cache は `exp072_exp063_full_replay_feature_cache`、spatial prior cache は `exp114_spatial_neighbor_prior_signal_audit`。
 - 追加特徴は exp114 の `xy_only_k8` / `xy_plus_trajectory_shape_k8` prior value、prior std/count/neighbor quality、PF/Beam/likPF disagreement、exp118 best gate proxy、near/longtail interaction に限定する。

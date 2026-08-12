@@ -44,7 +44,7 @@ exp293 deployable12より強い可能性がある。H256/H512 blockごとにtrue
 
 ## 設計の正
 
-- exp298本体: `.steering/20260720-exp298-exp226-blockwise-offset-slope-quotient-local-shape-audit/`
+- exp298本体: `docs/legacy/steering/20260720-exp298-exp226-blockwise-offset-slope-quotient-local-shape-audit/`
 - 後続案2・3・4: `downstream_branch_contract.md`
 
 後続契約は、2のfixed `S512` hybrid bank、3のlatent-registration semi-Markov、4のnested block rankerを

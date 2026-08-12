@@ -9,7 +9,7 @@
 - Submit ID: 対象外
 - 作成日: 2026-07-19
 - 親実験: `exp263_last_anchor_better_candidate_confidence_pair_cache`
-- 設計の正: `.steering/20260719-exp293-physics-only-candidate-bank-headroom-contract/`
+- 設計の正: `docs/legacy/steering/20260719-exp293-physics-only-candidate-bank-headroom-contract/`
 - 後続分岐の正: `downstream_branch_contract.md`
 
 ## 仮説

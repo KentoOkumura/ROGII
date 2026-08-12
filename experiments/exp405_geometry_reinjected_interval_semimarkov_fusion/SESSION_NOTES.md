@@ -18,7 +18,7 @@ docking-independent geometry再注入がexp399のwrong-mode lock-inを
 - Kaggle run: version 2 COMPLETE・technical PASS / oracle PASS / scientific FAIL
 - current-test / inference / submission: 無効
 - steering:
-  `.steering/20260726-exp405-geometry-reinjected-interval-semimarkov-fusion/`
+  `docs/legacy/steering/20260726-exp405-geometry-reinjected-interval-semimarkov-fusion/`
 - 正規train Notebook: compact self-contained版へ採用
 - 正規inference Notebook / `settings.py`: template placeholder
 

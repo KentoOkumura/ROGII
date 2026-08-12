@@ -18,7 +18,7 @@
 
 | 優先度 | アイデア | 先行条件 / 依存 | 検証方法 | 注意点 |
 | --- | --- | --- | --- | --- |
-| 低・P4・CPU・0-PF・0-prediction・原因分解のみ | `reliability_prefix_suffix_activation_shift_audit`: exp368でknown-prefix NLL gainが`0.037356%`、weak massが`0.009689`でFAILした一方、saved suffix bad10 AUCは`0.636675`だった乖離をtruth-freeに分解する | exp368はtechnical PASS / scientific FAILでterminal close済み。同じq・sigma倍率を救済せず、known-prefix実TVT residualとsaved exp072 suffix path residualで、sigma、raw-missing、|z|、連続run長、weak posterior massの分布差がどこから生じるかだけを確認する必要がある場合に限る | suffix truth/errorを読む前にwell/block単位の残差分布、missingness、sigma bucket、weak activationをfreezeし、prefix/suffixのsupport overlapと単一の事前固定shift指標だけを5 foldsとhidden-like roleでreadoutする。prediction、PF、NLL最適化、bad10ラベル、modelは0。具体的指標とgateは実装前に別steeringと別承認で固定する | exp368/363のFAILを再分類しない。transition、sigma multiplier、initial probability、block、threshold、gate grid、truth/errorによるbucket選択、PF/HMM、blend、inference、submissionは禁止。現行P1/P2を追い越さない |
+| 低・P4・CPU・0-PF・0-prediction・原因分解のみ | `reliability_prefix_suffix_activation_shift_audit`: exp368でknown-prefix NLL gainが`0.037356%`、weak massが`0.009689`でFAILした一方、saved suffix bad10 AUCは`0.636675`だった乖離をtruth-freeに分解する | exp368はtechnical PASS / scientific FAILでterminal close済み。同じq・sigma倍率を救済せず、known-prefix実TVT residualとsaved exp072 suffix path residualで、sigma、raw-missing、|z|、連続run長、weak posterior massの分布差がどこから生じるかだけを確認する必要がある場合に限る | suffix truth/errorを読む前にwell/block単位の残差分布、missingness、sigma bucket、weak activationをfreezeし、prefix/suffixのsupport overlapと単一の事前固定shift指標だけを5 foldsとhidden-like roleでreadoutする。prediction、PF、NLL最適化、bad10ラベル、modelは0。具体的指標とgateは実装前に別実験の`requirements.md`への契約記録と別承認で固定する | exp368/363のFAILを再分類しない。transition、sigma multiplier、initial probability、block、threshold、gate grid、truth/errorによるbucket選択、PF/HMM、blend、inference、submissionは禁止。現行P1/P2を追い越さない |
 
 ## 観測事実と仮定の整理状態
 
@@ -44,7 +44,7 @@
 
 ## 最小の反証可能な検証
 
-suffix truth/errorを読む前にwell/block単位の残差分布、missingness、sigma bucket、weak activationをfreezeし、prefix/suffixのsupport overlapと単一の事前固定shift指標だけを5 foldsとhidden-like roleでreadoutする。prediction、PF、NLL最適化、bad10ラベル、modelは0。具体的指標とgateは実装前に別steeringと別承認で固定する
+suffix truth/errorを読む前にwell/block単位の残差分布、missingness、sigma bucket、weak activationをfreezeし、prefix/suffixのsupport overlapと単一の事前固定shift指標だけを5 foldsとhidden-like roleでreadoutする。prediction、PF、NLL最適化、bad10ラベル、modelは0。具体的指標とgateは実装前に別実験の`requirements.md`への契約記録と別承認で固定する
 
 ## 成功条件と停止条件
 

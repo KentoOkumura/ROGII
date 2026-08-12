@@ -29,7 +29,7 @@ PYTHONDONTWRITEBYTECODE ?= 1
 export UV_CACHE_DIR
 export PYTHONDONTWRITEBYTECODE
 
-.PHONY: validate-template validate-config check-strategy-docs new-exp new-steering new-survey-report update-survey-index validate-surveys validate-exp check-exp check-skills check-skill-modules test-exp test-common train-local infer-local dl-kaggle-comp fetch-kaggle-notebooks archive-kaggle-discussions submit-check submit-code pipeline-local prepare-kaggle-notebooks push-kaggle-notebook push-kaggle-train push-kaggle-infer execute-notebook-local kaggle-status kaggle-logs kaggle-output record-submission record-exp compare-exp metric-weighted-tail-error-map pf-beam-disagreement-error-map update-summary app oof-app viewer viewer-smoke fmt test
+.PHONY: validate-template validate-config check-strategy-docs new-exp new-survey-report update-survey-index validate-surveys validate-exp check-exp check-skills check-skill-modules test-exp test-common train-local infer-local dl-kaggle-comp fetch-kaggle-notebooks archive-kaggle-discussions submit-check submit-code pipeline-local prepare-kaggle-notebooks push-kaggle-notebook push-kaggle-train push-kaggle-infer execute-notebook-local kaggle-status kaggle-logs kaggle-output record-submission record-exp compare-exp metric-weighted-tail-error-map pf-beam-disagreement-error-map update-summary app oof-app viewer viewer-smoke fmt test
 
 validate-template:
 	.venv/bin/python scripts/validate_project.py
@@ -50,9 +50,6 @@ check-strategy-docs:
 
 new-exp:
 	.venv/bin/python scripts/new_experiment.py --name $(EXP) --source $(SOURCE) $(EXTRA_ARGS)
-
-new-steering:
-	.venv/bin/python scripts/new_steering.py --experiment $(EXP) $(EXTRA_ARGS)
 
 new-survey-report:
 	.venv/bin/python scripts/new_survey_report.py --title "$(SURVEY_TITLE)" --slug "$(SURVEY_SLUG)" $(EXTRA_ARGS)

@@ -44,7 +44,7 @@
 
 ## 実装確認
 
-- 2026-06-29: `.steering/20260629-exp160-sp45-bimodal-selector-confidence-features-on-exp148/` を作成。
+- 2026-06-29: `docs/legacy/steering/20260629-exp160-sp45-bimodal-selector-confidence-features-on-exp148/` を作成。
 - 2026-06-29: exp148 から `experiments/exp160_sp45_bimodal_selector_confidence_features_on_exp148/` を作成。
 - 2026-06-29: `sp45_bimodal_selector_confidence_features_on_exp148.py` に feature builder と train / inference wiring を実装。
 - 2026-06-29: train / inference notebook を exp160 用に更新。

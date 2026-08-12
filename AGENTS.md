@@ -48,11 +48,12 @@
   - 公式から取得した生のコンペデータは `data/raw/`、外部データは `data/external/`、再利用する加工済みデータは `data/processed/`。
   - 実験固有のテストは `experiments/<exp>/tests/`、複数実験やリポジトリ全体に関わるテストはルートの `tests/`。
   - 実験で参照する小規模な固定データは`experiments/<exp>/assets/`へ置き、トップレベルの`assets/`は作りません。
-  - 新規実験、steering、調査レポートを作成するための雛形は`templates/`。
+  - 新規実験と調査レポートを作成するための雛形は`templates/`。
+  - `docs/legacy/steering/` は廃止前の実験計画の読み取り専用履歴です。通常作業では読まず、対象実験の現行記録だけでは判断できず、過去の契約確認が必要な場合に限って参照します。
   - リポジトリが管理する自動化と外部ツールの起動ラッパーは`scripts/`、Gitで追跡しない外部ツールのcloneやローカル配置は`tools/`に置きます。
 - トップレベルの`artifacts/`は使いません。実験生成物は`experiments/<exp>/artifacts/`へ集約し、必要な分類はその下のサブディレクトリで表します。旧実験の`features/`と`variants/`は履歴として残せますが、新規作成せず、次にその生成物を更新するとき`artifacts/`配下へ移します。その場限りの調査表・図は`studies/`、確認済みの調査結論は`docs/surveys/`へ保存します。
 - 提出監視中のpollingログは一時生成物とし、Gitへ保存しません。CV/LBなど機械処理する数値とkernel version・Kaggle Notebook実行時間・生成物SHAなどの構造化された実行証拠は対応する実験の`metrics.json`、submission ref・提出日時・submission scoring status・監視開始からscore確定までの所要時間を含む詳細な時系列は`SESSION_NOTES.md`、証拠への参照と結果の解釈は`result.md`を正とします。リポジトリ直下の`SUBMISSIONS.md`はsubmission refを専用列に持つ横断履歴であり、`metrics.json`から取得したCV/LBと、必要な場合だけ採点状態・Notebook実行時間・採点所要時間の最終スナップショットを保持します。`SUBMISSIONS.md`のスナップショットは正本の代わりにせず、状態遷移、観測時刻、実行コマンドを重複記録しません。スコア確定時は先に`record-exp`で`metrics.json`を更新し、その値を`record-submission`が読み取って提出履歴へ記録します。同じsubmission refを再記録した場合は新しい行を作らず、既存行のCV/LBと明示されたメモを更新します。code competitionの出力をローカル取得していない場合は、Kaggle側で対象ファイルを確認したうえで`record-submission`に`--allow-missing-file`を渡し、ローカル行数・列・SHAを未取得として記録します。Notebook実行時間は`notebook_runtime_seconds`、submission scoring所要時間は`scoring_elapsed_minutes`とし、どちらも`runtime`と呼びません。
-- 実験記録は、`metrics.json` を機械処理する数値、実験の唯一のstatusフィールド、構造化された実行証拠、`config.yaml`をroute・設定・系譜と再現性方針、`result.md` を証拠への参照・解釈・ユーザーの採否判断、`SESSION_NOTES.md` を実行中の時系列ログの正とします。実験の `README.md` は目的、差分、リスク、次アクションとこれらへのリンクに留め、設定、系譜、実験status、CV/LB、SHAを複数ファイルへ手作業で重複記録しません。submission scoring statusは時系列イベントであり、`metrics.json`の実験statusとは別物です。
+- 実験記録は、`requirements.md`を実装前の契約・実装方法・受け入れ条件、`metrics.json`を機械処理する数値・実験の唯一のstatusフィールド・構造化された実行証拠、`config.yaml`をroute・設定・系譜と再現性方針、`result.md`を証拠への参照・解釈・ユーザーの採否判断、`SESSION_NOTES.md`を実行中の時系列ログの正とします。実装の進捗は`SESSION_NOTES.md`へ記録し、`requirements.md`へ重複させません。実験の `README.md` は目的、差分、リスク、次アクションとこれらへのリンクに留め、設定、系譜、実験status、CV/LB、SHAを複数ファイルへ手作業で重複記録しません。submission scoring statusは時系列イベントであり、`metrics.json`の実験statusとは別物です。
 - 旧形式の実験READMEにroute、status、CV/LBや詳細結果が残っていても一括削除しません。その実験を次に更新するとき、routeが`config.yaml`、status・数値・構造化された実行証拠が`metrics.json`、証拠への参照と解釈が`result.md`、時系列の作業履歴が`SESSION_NOTES.md`に揃っていることを確認してから、READMEを概要と正の記録へのリンクへ簡素化します。
 - `docs/surveys/` を完了した調査・分析・統合説明の正とします。実験前の文献・公開Notebook調査と、実験後の分析・実験横断の結論のどちらも対象です。`studies/` や `experiments/` を完了した調査レポートの検索入口にしません。
 - 生のコンペデータ、モデル重み、大きな生成物を Git に保存しません。
@@ -77,19 +78,19 @@
   - `docs/backlog/_TEMPLATE.md` を使って `docs/backlog/<candidate>.md` を作り、壁打ち時の根拠と実験境界を保存する。
 - `docs/backlog/<candidate>.md` を未着手候補の詳細の正とします。`KAGGLE_DIRECTION.md` に同じ長文を複製しません。1候補につき1ファイルとし、ファイル名は未着手表の候補名と一致させます。
 - 未着手候補が0件の状態は正常です。`KAGGLE_DIRECTION.md` の未着手表はヘッダーだけを残し、検証を通すためのダミー候補や空の詳細ファイルを作りません。
-- バックログ化だけを依頼された時点では、exp番号の採番、`.steering/`、実験フォルダ作成、コード実装、Kaggle実行を行いません。同時に実験化や実装も依頼された場合は、その依頼範囲に従います。
+- バックログ化だけを依頼された時点では、exp番号の採番、実験フォルダ作成、コード実装、Kaggle実行を行いません。同時に実験化や実装も依頼された場合は、その依頼範囲に従います。
 - 候補の状態は、このリポジトリ内の管理用語として次のいずれかを使います。これは実験結果の採用・不採用・完了を表しません。
   - `検討メモ・設計不可`: 結果や実装方針に影響する未決事項が残っている。次セッションは推測で補完せず、設計や実装の前にユーザーへ確認する。
   - `設計可能・実験化未承認`: 仮説、根拠、親実験、変更するもの、固定するもの、最小検証、成功条件、停止条件、禁止する代替実装、未決事項が記録され、未決事項が`なし`である。ただし実験化はまだ承認されていない。
 - 詳細ファイルには、観測事実と仮定を分け、関連する `result.md`、metrics、保存済み生成物、一次資料へのパス、壁打ちで採らなかった案と理由も記録します。情報不足を推測で埋めず、未決事項として残します。
-- 別セッションで候補を設計・実装するときは、バックログ表だけから内容を再構成しません。最初に対応する `docs/backlog/<candidate>.md` と根拠ファイルを読み、固定するもの、変更するもの、最小検証、成功条件、停止条件、実行しないこと、未決事項を短く提示します。詳細記録と異なる解釈または重要な未決事項があれば、コード作成前にユーザーへ確認します。
-- ユーザーが候補の実験化を承認したら、exp番号を採番して `.steering/YYYYMMDD-expXXX-title/` を作ります。候補詳細の上位仮説ID、契約、根拠、判断履歴は`requirements.md`、その契約に対する実装方法と承認済みの差分は`design.md`、作業順序と確認項目は`tasklist.md`へ分担して欠落なく移し、同じ契約本文を複製しません。実験の `config.yaml` では `lineage.hypothesis_id` と `lineage.backlog_candidate` に引き継ぎます。移行を確認後、`kaggle-strategy` が `docs/backlog/<candidate>.md` と未着手バックログの行を削除し、「検証中の仮説」の対応候補を、実験ディレクトリ名をバッククォートで囲んだコード表記のラベル、同名の`experiments/<exp>/`をリンク先とする対応実験へ更新します。複数実験は`<br>`で区切ります。以後は `.steering/` と `experiments/<exp>/` を正とします。
+- 別セッションで候補を設計・実装するときは、バックログ表だけから内容を再構成しません。最初に対応する`docs/backlog/<candidate>.md`を読み、そこから直接参照される根拠、親実験の`requirements.md`と`config.yaml`、変更対象コードだけを必要に応じて読みます。対象候補が明示され、`設計可能・実験化未承認`で未決事項が`なし`なら、`実装してください`を実験化承認として扱い、全体戦略、他候補、無関係な実験を先に横断探索しません。詳細記録と異なる解釈または重要な未決事項があれば、コード作成前にユーザーへ確認します。
+- ユーザーが候補の実験化を承認したら、exp番号を採番して`experiments/<exp>/`を作り、候補詳細の上位仮説ID、契約、根拠、判断履歴、実装方法、受け入れ条件を同実験の`requirements.md`へ欠落なく移します。作業順序と進捗は`SESSION_NOTES.md`へ記録し、`design.md`や`tasklist.md`は作りません。`config.yaml`の`lineage.hypothesis_id`と`lineage.backlog_candidate`にも同じIDと候補名を設定します。移行を確認後、`kaggle-strategy`が`docs/backlog/<candidate>.md`と未着手バックログの行を削除し、「検証中の仮説」の対応候補を、実験ディレクトリ名をバッククォートで囲んだコード表記のラベル、同名の`experiments/<exp>/`をリンク先とする対応実験へ更新します。複数実験は`<br>`で区切ります。以後は`experiments/<exp>/`だけを正とします。
 - 1件の実験が終了しても、残る検証があれば上位仮説を終了扱いにしません。関連実験の証拠をまとめ、ユーザーが上位仮説を支持、棄却、保留のいずれにするか判断した後、上位仮説IDを本文とfront matterの`hypotheses`に持つ実験横断の結論を `docs/surveys/` に保存し、上位仮説別索引への反映を確認してから「検証中の仮説」から外します。
 - この規則の導入前から存在する候補や実験には、上位仮説IDを推測で一括付与しません。既存候補は索引上で `未整理` とし、次に更新または実験化するとき、根拠を確認して既存または新規の上位仮説へ紐づけます。導入前から詳細ファイルなしで存在する候補も、コード作成前に詳細ファイルを作ってユーザー確認を得ます。
 
 ## Skill 入口
 
-- ユーザーが実験化を承認した場合のsteering作成、実験作成、コピー、実験契約に必要な Kaggle Notebook の実装・実行、実験記録、再現性確認、実験レビューは、backlog経由か直接承認かを問わず `kaggle-review-exp` を使います。backlog経由では検証中の仮説とバックログ側の対応変更や削除に `kaggle-strategy` を併用します。
+- ユーザーが実験化を承認した場合の実験作成、`requirements.md`への契約移行、コピー、実験契約に必要な Kaggle Notebook の実装・実行、実験記録、再現性確認、実験レビューは、backlog経由か直接承認かを問わず `kaggle-review-exp` を使います。backlog経由では検証中の仮説とバックログ側の対応変更や削除に `kaggle-strategy` を併用します。
 - Kaggle API、Kaggle CLI、kernel push/pull/logs/output、slug/title 問題、network escalation、data sync は `kaggle-platform` を使います。
 - Kaggle GPU quota が限られる場合の Colab notebook 作成、Google Drive 入出力、Colab runtime / session 対応は `colab-notebook-runner` を使います。
 - 提出前の `submission.csv`、Kaggle Notebook output、`kernel-metadata.json`、sample submission 互換性の検証は `kaggle-submit-check` を使います。

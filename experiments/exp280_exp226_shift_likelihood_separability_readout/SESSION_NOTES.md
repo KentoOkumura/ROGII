@@ -83,7 +83,7 @@ make prepare-kaggle-notebooks EXP=exp280_exp226_shift_likelihood_separability_re
 
 ## 変更点
 
-- `.steering/20260719-exp280-exp226-shift-likelihood-separability-readout/`を作成。
+- `docs/legacy/steering/20260719-exp280-exp226-shift-likelihood-separability-readout/`を作成。
 - compact self-contained Jupytext train source（9章、1,165行）とfail-closed inferenceを実装。
 - 親参照exp279 train source（10章、1,401行）からHMM kernelを除き、代わりにshift scoring、
   score freeze、truth-only label、real-vs-shuffled metricsを展開した。

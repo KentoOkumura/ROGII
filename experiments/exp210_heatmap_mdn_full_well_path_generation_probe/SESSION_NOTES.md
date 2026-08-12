@@ -33,7 +33,7 @@
 
 ### 実装ファイル
 
-- `.steering/20260707-exp210-heatmap-mdn-full-well-path-generation-probe/`
+- `docs/legacy/steering/20260707-exp210-heatmap-mdn-full-well-path-generation-probe/`
 - `experiments/exp210_heatmap_mdn_full_well_path_generation_probe/config.yaml`
 - `experiments/exp210_heatmap_mdn_full_well_path_generation_probe/heatmap_mdn_full_well_path_generation_probe.py`
 - `experiments/exp210_heatmap_mdn_full_well_path_generation_probe/exp210_heatmap_mdn_full_well_path_generation_probe_train.py`

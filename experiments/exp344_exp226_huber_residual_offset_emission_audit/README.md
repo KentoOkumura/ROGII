@@ -32,5 +32,5 @@ Stage 1、inference、submissionは行わず閉じる。
 
 ## 文書
 
-- Steering: `../../.steering/20260722-exp344-exp226-huber-residual-offset-emission-audit/`
+- Steering: `../../docs/legacy/steering/20260722-exp344-exp226-huber-residual-offset-emission-audit/`
 - 設定: `config.yaml`

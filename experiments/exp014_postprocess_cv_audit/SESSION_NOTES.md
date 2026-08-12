@@ -19,7 +19,7 @@
 
 - 2026-06-04: `uv run python scripts/new_steering.py --experiment exp014_postprocess_cv_audit` で steering docs を作成。
 - 2026-06-04: `uv run python scripts/new_experiment.py --name exp014_postprocess_cv_audit` で実験を作成。
-- 2026-06-04: `.steering/20260604-exp014-postprocess-cv-audit/{requirements.md,design.md,tasklist.md}` を記入。
+- 2026-06-04: `docs/legacy/steering/20260604-exp014-postprocess-cv-audit/{requirements.md,design.md,tasklist.md}` を記入。
 - 2026-06-04: `config.yaml` を OOF artifact audit 用に更新。
 - 2026-06-04: `audit_postprocess_cv.py` を追加。
 - 2026-06-04: `uv run python experiments/exp014_postprocess_cv_audit/audit_postprocess_cv.py` を実行し、artifacts と `metrics.json` を生成。

@@ -59,7 +59,7 @@ notebookだけで追える。
     make new-steering EXP=exp268_multi_scale_initial_rate_candidates
     make new-exp EXP=exp268_multi_scale_initial_rate_candidates
 
-- steering: `.steering/20260717-exp268-multi-scale-initial-rate-candidates/`
+- steering: `docs/legacy/steering/20260717-exp268-multi-scale-initial-rate-candidates/`
 - experiment: `experiments/exp268_multi_scale_initial_rate_candidates/`
 
 ### 静的検証

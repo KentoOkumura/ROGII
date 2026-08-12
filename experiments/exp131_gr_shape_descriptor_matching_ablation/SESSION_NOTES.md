@@ -26,7 +26,7 @@ mv experiments/exp131_gr_shape_descriptor_matching_ablation/pf_multi_observation
 
 実装内容:
 
-- `.steering/20260626-exp131-gr-shape-descriptor-matching-ablation/` を作成した。
+- `docs/legacy/steering/20260626-exp131-gr-shape-descriptor-matching-ablation/` を作成した。
 - `config.yaml` を shape descriptor matching ablation 用に更新した。
 - `gr_shape_descriptor_matching_ablation.py` を実装し、既存候補 `pf_ancc` / `beam_mean` / `likpf_mean` / `sc_ens` / `hyb` に対する descriptor score を生成するようにした。
 - score variants は `raw_point_real`、`ncc_window_real`、`banded_shift_real`、`shape_descriptor_real`、`combo_descriptor_real`、`combo_descriptor_shuffled`、`no_gr_constant`。

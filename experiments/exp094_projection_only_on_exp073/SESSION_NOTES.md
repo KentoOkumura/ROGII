@@ -27,7 +27,7 @@ make prepare-kaggle-notebooks EXP=exp094_projection_only_on_exp073 EXTRA_ARGS="-
 
 実装した内容:
 
-- `.steering/20260620-exp094-projection-only-on-exp073/` を作成し、requirements/design/tasklist を記入。
+- `docs/legacy/steering/20260620-exp094-projection-only-on-exp073/` を作成し、requirements/design/tasklist を記入。
 - `config.yaml` に exp073 OOF prediction、projection grid、selection guard、Kaggle source を記入。
 - `projection_only_on_exp073.py` を追加。
 - train/inference notebook を projection audit 用に更新。

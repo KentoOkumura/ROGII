@@ -23,7 +23,7 @@ GR mode slip後の持続offsetに弱い復元力が効くかを1 fixed variant�
 
 ## 変更点
 
-- `.steering/20260718-exp279-exp226-geop-centered-exact-hmm-redecode/`を作成。
+- `docs/legacy/steering/20260718-exp279-exp226-geop-centered-exact-hmm-redecode/`を作成。
 - `KAGGLE_DIRECTION.md`の「実装済み・Kaggle train待ち」にbacklogを追加。
 - exp270 exact `_hmm2_fb`とAST一致するkernelをself-contained train sourceへ展開。
 - exp209固定grammarへexp226 `tvt_geop` Gaussian unary `sigma=20 / lambda=0.50 / clip=600`を追加。

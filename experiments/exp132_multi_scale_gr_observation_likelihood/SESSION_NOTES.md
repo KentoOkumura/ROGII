@@ -25,7 +25,7 @@ make new-exp EXP=exp132_multi_scale_gr_observation_likelihood SOURCE=experiments
 
 実装内容:
 
-- `.steering/20260626-exp132-multi-scale-gr-observation-likelihood/` を作成し、requirements / design / tasklist を更新。
+- `docs/legacy/steering/20260626-exp132-multi-scale-gr-observation-likelihood/` を作成し、requirements / design / tasklist を更新。
 - `config.yaml` を train-side multi-scale GR observation likelihood audit 用に更新。
 - `multi_scale_gr_observation_likelihood.py` を追加。
 - train notebook を exp132 用に更新し、設定確認、入力前提、監査実行、出力 preview、metrics 保存のセル構成にした。

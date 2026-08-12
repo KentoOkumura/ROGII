@@ -13,7 +13,7 @@
 
 ## 実装内容
 
-- `.steering/20260627-exp147-exp092-exp098-rank-slot-replacement-only/` を作成。
+- `docs/legacy/steering/20260627-exp147-exp092-exp098-rank-slot-replacement-only/` を作成。
 - `experiments/exp147_exp092_exp098_rank_slot_replacement_only/` を exp139 から作成。
 - 補助実装を `exp092_exp098_rank_slot_replacement_only.py` に変更。
 - `feature_columns_for_variant()` に `drop_columns` 対応を追加。

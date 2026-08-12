@@ -46,7 +46,7 @@ make new-exp EXP=exp179_cnn_sdf_mtp_heatmap_probe
 ## 変更点
 
 - `config.yaml` を GPU train-side diagnostic 用に更新。
-- `.steering/20260703-exp179-cnn-sdf-mtp-heatmap-probe/` に要件、設計、tasklist を記入。
+- `docs/legacy/steering/20260703-exp179-cnn-sdf-mtp-heatmap-probe/` に要件、設計、tasklist を記入。
 - train notebook source は Jupytext percent 形式で実装する。
 
 ### 2026-07-03 JST validation / package

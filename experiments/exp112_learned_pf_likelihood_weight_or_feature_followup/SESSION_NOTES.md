@@ -10,7 +10,7 @@ exp111 は learned within10 probability の candidate-level AUC が 0.913327 で
 
 ### 実装内容
 
-- `.steering/20260622-exp112-learned-pf-likelihood-weight-or-feature-followup/` を作成。
+- `docs/legacy/steering/20260622-exp112-learned-pf-likelihood-weight-or-feature-followup/` を作成。
 - `experiments/exp112_learned_pf_likelihood_weight_or_feature_followup/` を exp111 から派生作成。
 - `learned_pf_likelihood_weight_or_feature_followup.py` を追加。
   - exp111 OOF likelihood long cache を読み込む。

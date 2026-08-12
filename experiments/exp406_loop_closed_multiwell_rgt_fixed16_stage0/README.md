@@ -8,7 +8,7 @@
 - Stage: fixed16 Stage 0のみ
 - CV / LB: なし
 - 設計の正:
-  `.steering/20260726-exp406-loop-closed-multiwell-rgt-fixed16-stage0/`
+  `docs/legacy/steering/20260726-exp406-loop-closed-multiwell-rgt-fixed16-stage0/`
 
 ## 仮説
 

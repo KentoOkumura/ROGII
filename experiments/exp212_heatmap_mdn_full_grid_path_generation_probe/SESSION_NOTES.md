@@ -35,7 +35,7 @@
 
 ### 実装ファイル
 
-- `.steering/20260707-exp212-heatmap-mdn-full-grid-path-generation-probe/`
+- `docs/legacy/steering/20260707-exp212-heatmap-mdn-full-grid-path-generation-probe/`
 - `experiments/exp212_heatmap_mdn_full_grid_path_generation_probe/config.yaml`
 - `experiments/exp212_heatmap_mdn_full_grid_path_generation_probe/heatmap_mdn_full_grid_path_generation_probe.py`
 - `experiments/exp212_heatmap_mdn_full_grid_path_generation_probe/exp212_heatmap_mdn_full_grid_path_generation_probe_train.py`

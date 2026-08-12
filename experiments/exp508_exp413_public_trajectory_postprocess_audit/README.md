@@ -76,7 +76,7 @@ SG61/p3は`7.884802794 → 7.878669067`、5/5 folds、固定5 scope、well-tail�
 - `output_contract.md`: 将来保存する生成物
 - `SESSION_NOTES.md`: 設計・実装・Kaggle実行・終端判断の記録
 - `result.md`: Stage A実測値とpromotion gate
-- steering: `../../.steering/20260804-exp508-exp413-public-trajectory-postprocess-audit/`
+- steering: `../../docs/legacy/steering/20260804-exp508-exp413-public-trajectory-postprocess-audit/`
 
 ## 次
 

@@ -22,7 +22,7 @@ exp427 の affine posterior + fold-safe AR(1) block likelihood が target-free s
 - seed evidence は proper block log-density の総和。mean log-density は監査用のみ。
 - centered softmax、temperature 5.0。
 
-詳細は [steering design](../../.steering/20260728-exp431-affine-ar1-seed-evidence-reaggregation/design.md) を正とする。
+詳細は [steering design](../../docs/legacy/steering/20260728-exp431-affine-ar1-seed-evidence-reaggregation/design.md) を正とする。
 
 ## 先行条件の結果
 

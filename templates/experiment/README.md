@@ -11,9 +11,9 @@
 
 - 数値、実験status、構造化された実行証拠: [`metrics.json`](metrics.json)
 - route、設定、系譜: [`config.yaml`](config.yaml)
+- 実装前の要件、実装方法、受け入れ条件: [`requirements.md`](requirements.md)
 - 証拠への参照、結果の解釈、ユーザー判断: [`result.md`](result.md)
 - 実行中の作業ログ: [`SESSION_NOTES.md`](SESSION_NOTES.md)
-- 実装前の要件と設計: 対応する `.steering/` 文書
 
 ## 実行入口
 

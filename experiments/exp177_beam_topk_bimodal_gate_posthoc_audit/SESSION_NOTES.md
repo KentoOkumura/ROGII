@@ -39,7 +39,7 @@ make validate-exp EXP=exp177_beam_topk_bimodal_gate_posthoc_audit
 make prepare-kaggle-notebooks EXP=exp177_beam_topk_bimodal_gate_posthoc_audit EXTRA_ARGS="--notebook train --kernel-id kentookumura/exp177-beam-topk-bimodal-gate-posthoc-audit-train --title 'exp177 beam topk bimodal gate posthoc audit train' --run-on-push --strict"
 ```
 
-- `.steering/20260703-exp177-beam-topk-bimodal-gate-posthoc-audit/` を作成。
+- `docs/legacy/steering/20260703-exp177-beam-topk-bimodal-gate-posthoc-audit/` を作成。
 - `experiments/exp177_beam_topk_bimodal_gate_posthoc_audit/` を作成。
 - `beam_topk_bimodal_gate_posthoc_audit.py` を追加。
 - `config.yaml` を PF/Beam route / exp173 output posthoc audit に更新。

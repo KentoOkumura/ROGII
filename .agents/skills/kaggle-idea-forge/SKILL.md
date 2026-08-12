@@ -182,7 +182,7 @@ uv run python .agents/skills/kaggle-idea-forge/scripts/validate_portfolio.py ide
 
 validatorの構造PASSはideaの科学的妥当性を証明しない。source-hidden評価では、agentに期待解や採点rubricを渡さず、別のjudgeが後からmechanism recallと安全性を採点する。
 
-idea portfolioの作成だけでは、候補を採用、実験化、またはバックログへ追加しない。このskillでは `KAGGLE_DIRECTION.md` の「検証中の仮説」「アイデアバックログ」節と `docs/backlog/` を作成・更新・削除しない。ユーザーが選んだ候補の「バックログ化」「バックログへ追加」を明示的に依頼した場合は、同じターンで `kaggle-strategy` を使い、選択したidea card、根拠、reject理由、未解決入力を引き渡す。portfolioに不足項目があれば推測せず、未決事項として引き渡す。採番、steering、実装、Kaggle実行は別のユーザー承認を必要とする。
+idea portfolioの作成だけでは、候補を採用、実験化、またはバックログへ追加しない。このskillでは `KAGGLE_DIRECTION.md` の「検証中の仮説」「アイデアバックログ」節と `docs/backlog/` を作成・更新・削除しない。ユーザーが選んだ候補の「バックログ化」「バックログへ追加」を明示的に依頼した場合は、同じターンで `kaggle-strategy` を使い、選択したidea card、根拠、reject理由、未解決入力を引き渡す。portfolioに不足項目があれば推測せず、未決事項として引き渡す。採番、実験ディレクトリと`requirements.md`の作成、実装、Kaggle実行は別のユーザー承認を必要とする。
 
 ## 停止条件
 

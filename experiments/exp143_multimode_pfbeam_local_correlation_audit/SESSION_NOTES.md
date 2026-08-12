@@ -14,7 +14,7 @@
 
 ## 変更点
 
-- `.steering/20260627-exp143-multimode-pfbeam-local-correlation-audit/` を作成した。
+- `docs/legacy/steering/20260627-exp143-multimode-pfbeam-local-correlation-audit/` を作成した。
 - `experiments/exp143_multimode_pfbeam_local_correlation_audit/` を `exp142_trajectory_aware_pf_transition_prior` から作成した。
 - 実装ファイルを `multimode_pfbeam_local_correlation_audit.py` に変更した。
 - exp072 strict PF-Z parity / multiseed PF-Z / exp142-style multimode PF variants は候補比較基準として残した。

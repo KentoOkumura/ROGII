@@ -72,6 +72,6 @@ parameter rescue、decoder接続、current-test生成、inference、submission�
 
 ## 参照
 
-- steering: `.steering/20260719-exp284-prefix-masked-wrong-mode-branch-recovery-backtest/`
+- steering: `docs/legacy/steering/20260719-exp284-prefix-masked-wrong-mode-branch-recovery-backtest/`
 - 設定: `config.yaml`
 - 実行記録: `SESSION_NOTES.md`

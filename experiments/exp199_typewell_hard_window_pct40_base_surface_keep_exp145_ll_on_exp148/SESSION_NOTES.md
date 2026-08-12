@@ -25,7 +25,7 @@
 
 ## 作業ログ
 
-- 2026-07-05: `.steering/20260705-exp199-typewell-hard-window-pct40-base-surface-keep-exp145-ll-on-exp148/` を作成。
+- 2026-07-05: `docs/legacy/steering/20260705-exp199-typewell-hard-window-pct40-base-surface-keep-exp145-ll-on-exp148/` を作成。
 - 2026-07-05: `experiments/exp199_typewell_hard_window_pct40_base_surface_keep_exp145_ll_on_exp148/` を exp148 から作成。
 - 2026-07-05: `typewell_hard_window_pct40_base_surface_keep_exp145_ll_on_exp148.py` を作成し、base cache default を exp196 pct40 hard-window artifact に変更。
 - 2026-07-05: `config.yaml` を exp196 base surface + exp145 `ll_*` keep の mixed provenance 診断として更新。

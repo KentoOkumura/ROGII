@@ -17,7 +17,7 @@ exp100 の best `pf_z_xy_slope` は単発 PF 候補で、exp072 `likpf_mean` は
 ## 実装内容
 
 - `exp104_pf_z_seedbag_scale_cache` を `exp103_pf_z_xy_likpf_ensemble_parity` から作成した。
-- `.steering/20260622-exp104-pf-z-seedbag-scale-cache/` に requirements / design / tasklist を記入した。
+- `docs/legacy/steering/20260622-exp104-pf-z-seedbag-scale-cache/` に requirements / design / tasklist を記入した。
 - `pf_z_seedbag_scale_cache.py` を実装対象にし、出力 prefix を `exp104_pf_z_seedbag_scale_cache` に変更した。
 - `model.pf_z_seedbag` から粒子数、seed 数、scale を読む。
 - 生成候補名を `pf_z_seedbag_mean` / `pf_z_seedbag_scale_3/5/8/12` に統一した。

@@ -34,7 +34,7 @@ gzip -dc experiments/exp105_compact_rank_slot_features_on_exp098/kaggle/output/t
 
 実装内容:
 
-- `.steering/20260622-exp105-compact-rank-slot-features-on-exp098/` を作成した。
+- `docs/legacy/steering/20260622-exp105-compact-rank-slot-features-on-exp098/` を作成した。
 - exp098 から実験フォルダをコピーし、notebook / settings / config / 実装名を exp105 に更新した。
 - `compact_rank_slot_features_on_exp098.py` に `rank_slot_compact` feature group を追加した。
 - active variant を `compact_rank_slot_features` のみにした。

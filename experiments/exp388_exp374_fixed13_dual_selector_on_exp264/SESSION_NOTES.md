@@ -60,7 +60,7 @@ scope、gate診断はloaderで開かない。
 ## 実装
 
 - steering:
-  `.steering/20260724-exp388-exp374-fixed13-dual-selector-on-exp264/`
+  `docs/legacy/steering/20260724-exp388-exp374-fixed13-dual-selector-on-exp264/`
 - experiment:
   `experiments/exp388_exp374_fixed13_dual_selector_on_exp264/`
 - reusable loader/cache:

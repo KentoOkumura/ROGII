@@ -14,7 +14,7 @@
 
 ## 実装内容
 
-- `.steering/20260620-exp092-u-projection-correction-disagreement-fullrun/` を作成。
+- `docs/legacy/steering/20260620-exp092-u-projection-correction-disagreement-fullrun/` を作成。
 - `experiments/exp092_u_projection_correction_disagreement_fullrun/` を exp085 から作成。
 - `settings.py` の experiment name を exp092 に更新。
 - 補助実装を `u_projection_correction_disagreement_fullrun.py` にリネームし、出力 prefix / summary experiment 名を exp092 に更新。
@@ -210,7 +210,7 @@ uv run ruff format --check experiments/exp092_u_projection_correction_disagreeme
 uv run python experiments/exp092_u_projection_correction_disagreement_fullrun/worst_well_rawtest_guard.py --self-test
 ```
 
-- steering: `.steering/20260622-exp092-worst-well-rawtest-guard/`
+- steering: `docs/legacy/steering/20260622-exp092-worst-well-rawtest-guard/`
 - script: `worst_well_rawtest_guard.py`
 - output dir: `artifacts/worst_well_rawtest_guard/`
 - mode: `target_free_raw_test_regression_guard`
@@ -276,7 +276,7 @@ Interpretation at the time: exp092 normal-notebook inference showed no schema dr
 User requested that the correction be incorporated into this experiment and that the experiment purpose match Code Competition reality: hidden test cannot be inspected by normal kernel output, so the only useful hidden-side probe is opt-in assertions inside the submission-rerun inference notebook.
 
 Implemented:
-- Added `.steering/20260622-exp092-hidden-assert-probe/`.
+- Added `docs/legacy/steering/20260622-exp092-hidden-assert-probe/`.
 - Added `hidden_assert_probe` support to `run_saved_model_inference()`.
 - Updated `exp092_u_projection_correction_disagreement_fullrun_inference.ipynb` to pass `inference.hidden_assert_probe`.
 - Added disabled-by-default config under `inference.hidden_assert_probe`.

@@ -12,7 +12,7 @@ exp093 で PF/Beam 候補集合の oracle headroom は確認済みだが、targe
 
 ### 実装内容
 
-- `.steering/20260621-exp101-pf-candidate-ranker-or-nway-classifier/` を作成。
+- `docs/legacy/steering/20260621-exp101-pf-candidate-ranker-or-nway-classifier/` を作成。
 - `experiments/exp101_pf_candidate_ranker_or_nway_classifier/` を exp099 から派生作成。
 - `pf_candidate_ranker_or_nway_classifier.py` を追加。
   - exp099 v2 train feature cache を読み込む。

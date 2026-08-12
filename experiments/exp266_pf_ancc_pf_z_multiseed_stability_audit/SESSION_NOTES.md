@@ -75,7 +75,7 @@
     make new-steering EXP=exp266_pf_ancc_pf_z_multiseed_stability_audit
     make new-exp EXP=exp266_pf_ancc_pf_z_multiseed_stability_audit
 
-- steering: `.steering/20260717-exp266-pf-ancc-pf-z-multiseed-stability-audit/`
+- steering: `docs/legacy/steering/20260717-exp266-pf-ancc-pf-z-multiseed-stability-audit/`
 - `KAGGLE_DIRECTION.md`未着手バックログへ高優先・実装中として追加した。
 
 ## 次のアクション

@@ -16,7 +16,7 @@
 
 ```bash
 uv run python scripts/new_steering.py --experiment exp086_prefix_backtest_tvt_confidence
-mv .steering/20260620-exp086-prefix-backtest-tvt-confidence .steering/20260620-exp087-prefix-backtest-tvt-confidence
+mv docs/legacy/steering/20260620-exp086-prefix-backtest-tvt-confidence docs/legacy/steering/20260620-exp087-prefix-backtest-tvt-confidence
 uv run python scripts/new_experiment.py --name exp087_prefix_backtest_tvt_confidence --source experiments/exp083_pf_beam_true_tvt_2d_well_eda
 ```
 

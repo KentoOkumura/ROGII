@@ -33,7 +33,7 @@ predictive・filtered・smoothed message、hidden rate mass、position transport
 
 truthとepisode境界はwellごとのprediction/message SHA freeze後だけ診断maskへ使います。
 HMM decoderはtruth引数を持ちません。詳細は
-`.steering/20260726-exp408-hmm-message-rate-basin-audit/`を参照してください。
+`docs/legacy/steering/20260726-exp408-hmm-message-rate-basin-audit/`を参照してください。
 
 ## 所見
 

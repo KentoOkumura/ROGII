@@ -24,7 +24,7 @@ robust RTS、stationary wavelet、L1 trendのいずれかがMRR/top3を安定し
   shuffled control、decoy gapの固定gateを全て通った方式だけを後続候補にする。
 - Late専用scopeは作らない。rolling median / Savitzky-Golayはexp189のnegative resultを採用し再試行しない。
 
-詳細は[steering design](../../.steering/20260720-exp304-gr-denoiser-emission-separability-readout/design.md)を正とする。
+詳細は[steering design](../../docs/legacy/steering/20260720-exp304-gr-denoiser-emission-separability-readout/design.md)を正とする。
 案2〜4の開始条件と禁止事項は[reserved follow-up contract](reserved_followup_contract.md)を正とする。
 
 ## 実装

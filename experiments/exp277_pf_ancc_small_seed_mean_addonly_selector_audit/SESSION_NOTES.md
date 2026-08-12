@@ -68,7 +68,7 @@ boosters。ただし一括pushせずvariant単位で実行し、各Kaggle push�
 
 ## 実装
 
-- `.steering/20260718-exp277-pf-ancc-small-seed-mean-addonly-selector-audit/`へ要件・設計・tasklistを作成。
+- `docs/legacy/steering/20260718-exp277-pf-ancc-small-seed-mean-addonly-selector-audit/`へ要件・設計・tasklistを作成。
 - `src.candidate_selector_pipeline.run_stage_a/run_stage_c`へoptional cache factoryを追加し、exp264既存挙動を維持したまま外部candidate cacheを注入可能にした。Stage Cには既定trueのhard readout opt-outを追加し、exp277ではfalse固定でhard top1を計算・出力しない。
 - `src/pf_ancc_selector_audit.py`へ次を実装。
   - exp271 gzip raw/decompressed/schema/coverage guard。

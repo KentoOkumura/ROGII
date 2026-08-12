@@ -48,7 +48,7 @@ scaleを `1.3` 倍してevidenceを弱めれば、良好wellを変えずにexact
 - 正規train notebookへcompact self-contained Stage 0を採用済み。
 - Kaggle private CPU version 1は完了。Stage 1、inference、submissionは未実装・未実行。
 - 詳細設計:
-  `.steering/20260725-exp397-prefix-gr-agreement-adaptive-sigma-exact-hmm/`
+  `docs/legacy/steering/20260725-exp397-prefix-gr-agreement-adaptive-sigma-exact-hmm/`
 
 ## 結果
 

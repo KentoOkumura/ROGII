@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import shutil
 from datetime import date
 from pathlib import Path
@@ -13,8 +12,13 @@ ROOT = Path(__file__).resolve().parents[1]
 GENERATED_DIRS = ("artifacts",)
 LEGACY_GENERATED_DIRS = ("features", "variants")
 IGNORED_DIRS = (*GENERATED_DIRS, *LEGACY_GENERATED_DIRS, "kaggle")
-STEERING_DIR = ROOT / ".steering"
-RESET_RECORD_FILES = ("README.md", "SESSION_NOTES.md", "result.md", "metrics.json")
+RESET_RECORD_FILES = (
+    "README.md",
+    "requirements.md",
+    "SESSION_NOTES.md",
+    "result.md",
+    "metrics.json",
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -34,11 +38,6 @@ def parse_args() -> argparse.Namespace:
         "--dry-run",
         action="store_true",
         help="Validate inputs and print the destination without writing files",
-    )
-    parser.add_argument(
-        "--skip-steering-check",
-        action="store_true",
-        help="Allow creating an experiment without a matching .steering plan",
     )
     parser.add_argument(
         "--copy-tests",
@@ -162,42 +161,6 @@ def reset_parent_records(
         raise RuntimeError("reset metrics.json did not produce a planned child experiment")
 
 
-def normalize_name(value: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
-
-
-def experiment_id(experiment_name: str) -> str:
-    match = re.search(r"exp\d+", experiment_name.lower())
-    return match.group(0) if match else experiment_name
-
-
-def matching_steering_dirs(experiment_name: str) -> list[Path]:
-    if not STEERING_DIR.exists():
-        return []
-
-    normalized_experiment = normalize_name(experiment_name)
-    exp_id = experiment_id(experiment_name)
-    matches: list[Path] = []
-    for path in STEERING_DIR.iterdir():
-        if not path.is_dir():
-            continue
-        normalized_path = normalize_name(path.name)
-        if normalized_experiment in normalized_path or exp_id in normalized_path:
-            matches.append(path)
-    return matches
-
-
-def require_steering_plan(experiment_name: str) -> None:
-    if matching_steering_dirs(experiment_name):
-        return
-
-    suggested = f".steering/{date.today().strftime('%Y%m%d')}-{normalize_name(experiment_name)}/"
-    raise SystemExit(
-        "missing matching .steering plan. "
-        f"Create one first, for example: {suggested} "
-        "or pass --skip-steering-check for exceptional scaffolding."
-    )
-
 
 def main() -> None:
     args = parse_args()
@@ -206,9 +169,6 @@ def main() -> None:
 
     if not source.exists():
         raise FileNotFoundError(f"Template/source does not exist: {source}")
-
-    if not args.skip_steering_check:
-        require_steering_plan(args.name)
 
     if args.dry_run:
         print(f"Source: {source.relative_to(ROOT)}")
@@ -234,7 +194,7 @@ def main() -> None:
             "Review copied input paths and contracts before implementation."
         )
     print(
-        "Next: fill the matching .steering plan, then implement and validate the experiment. "
+        "Next: fill requirements.md, then implement and validate the experiment. "
         "Shared competition defaults are inherited from project.yml."
     )
 

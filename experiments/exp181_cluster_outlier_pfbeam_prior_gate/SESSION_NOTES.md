@@ -28,7 +28,7 @@
 
 ### 実装メモ
 
-- `.steering/20260703-exp181-cluster-outlier-pfbeam-prior-gate/` を作成。
+- `docs/legacy/steering/20260703-exp181-cluster-outlier-pfbeam-prior-gate/` を作成。
 - `experiments/exp181_cluster_outlier_pfbeam_prior_gate/` を exp175 からコピーして作成。
 - `cluster_outlier_pfbeam_prior_gate.py` を実装し、exp109 OOF 内の `likpf_mean` / `pf_ancc` / `beam_mean` を base candidate として評価するよう変更。
 - `config.yaml`、train/inference percent notebook source、README、result、metrics を exp181 用に更新。

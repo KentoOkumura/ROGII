@@ -24,7 +24,7 @@ uv run python scripts/new_steering.py --experiment exp138_ancc_surface_predictab
 uv run python scripts/new_experiment.py --name exp138_ancc_surface_predictability_audit
 ```
 
-- `.steering/20260626-exp138-ancc-surface-predictability-audit/` を作成。
+- `docs/legacy/steering/20260626-exp138-ancc-surface-predictability-audit/` を作成。
 - `experiments/exp138_ancc_surface_predictability_audit/` を作成。
 - `ancc_surface_predictability_audit.py` を追加。
 - train notebook を fold-safe ANCC surface audit 用に更新。

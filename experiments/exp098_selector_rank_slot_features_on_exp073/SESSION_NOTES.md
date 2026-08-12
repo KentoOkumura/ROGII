@@ -43,7 +43,7 @@ kaggle competitions submissions rogii-wellbore-geology-prediction
 
 実装内容:
 
-- `.steering/20260621-exp098-selector-rank-slot-features-on-exp073/` を作成し、requirements / design / tasklist を記入した。
+- `docs/legacy/steering/20260621-exp098-selector-rank-slot-features-on-exp073/` を作成し、requirements / design / tasklist を記入した。
 - `config.yaml` を exp073 派生の rank-slot feature ablation 用に更新した。
 - `selector_rank_slot_features_on_exp073.py` を追加し、exp072 cache 読み込み、rank slot feature generation、LightGBM GroupKFold ablation、metrics / feature importance / model manifest 保存を実装した。
 - train notebook を Kaggle train 用の読みやすいセル構成に更新した。

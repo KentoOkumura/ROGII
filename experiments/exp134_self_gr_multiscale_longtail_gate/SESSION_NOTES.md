@@ -11,7 +11,7 @@
 
 ## 実装内容
 
-- `.steering/20260626-exp134-self-gr-multiscale-longtail-gate/` を作成し、requirements / design / tasklist を記入。
+- `docs/legacy/steering/20260626-exp134-self-gr-multiscale-longtail-gate/` を作成し、requirements / design / tasklist を記入。
 - `experiments/exp134_self_gr_multiscale_longtail_gate/` を exp125 から作成。
 - `config.yaml` を self-GR multiscale longtail gate posthoc audit 用に更新。
 - `self_gr_multiscale_longtail_gate.py` を追加。

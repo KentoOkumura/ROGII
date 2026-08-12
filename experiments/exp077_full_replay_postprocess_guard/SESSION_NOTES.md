@@ -14,7 +14,7 @@
 
 ## 実装内容
 
-- `.steering/20260618-exp077-full-replay-postprocess-guard/` を作成。
+- `docs/legacy/steering/20260618-exp077-full-replay-postprocess-guard/` を作成。
 - `experiments/exp077_full_replay_postprocess_guard/` を exp073 から作成。
 - `config.yaml` を exp077 の後処理監査用に更新。
 - train notebook を postprocess audit 中心に更新。

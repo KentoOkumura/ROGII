@@ -29,7 +29,7 @@
 
 主な変更:
 
-- `.steering/20260707-exp208-heatmap-mdn-dense-stride-window-path-regeneration-probe/` を作成した。
+- `docs/legacy/steering/20260707-exp208-heatmap-mdn-dense-stride-window-path-regeneration-probe/` を作成した。
 - `experiments/exp208_heatmap_mdn_dense_stride_window_path_regeneration_probe/` を exp207 から作成した。
 - `config.yaml` を exp202 saved model dense stride regeneration 用に更新した。
 - `heatmap_mdn_dense_stride_window_path_regeneration_probe.py` を実装した。

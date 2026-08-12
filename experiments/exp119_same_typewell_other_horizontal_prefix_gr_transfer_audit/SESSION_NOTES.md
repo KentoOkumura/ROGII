@@ -40,7 +40,7 @@ kaggle kernels output kentookumura/exp118-same-typewell-prefix-gr-transfer-train
 
 ## 変更点
 
-- `.steering/20260624-exp118-same-typewell-other-horizontal-prefix-gr-transfer-audit/` を作成。その後、既存 `exp118_spatial_neighbor_prior_confidence_gate_on_exp092` との番号衝突を確認し、`.steering/20260624-exp119-same-typewell-other-horizontal-prefix-gr-transfer-audit/` に改番した。
+- `docs/legacy/steering/20260624-exp118-same-typewell-other-horizontal-prefix-gr-transfer-audit/` を作成。その後、既存 `exp118_spatial_neighbor_prior_confidence_gate_on_exp092` との番号衝突を確認し、`docs/legacy/steering/20260624-exp119-same-typewell-other-horizontal-prefix-gr-transfer-audit/` に改番した。
 - `experiments/exp119_same_typewell_other_horizontal_prefix_gr_transfer_audit/` を exp109 から作成。
 - `config.yaml` を same-typewell prefix GR transfer audit に更新。
 - `same_typewell_other_horizontal_prefix_gr_transfer_audit.py` を追加。

@@ -288,7 +288,7 @@ exp333 branchは閉じる。低優先の次候補として、保存済みexp333 
 ### 実装
 
 - steering:
-  `.steering/20260723-exp333-exp226-k16-segment-residual-offset-target-current-test-candidate-inference/`
+  `docs/legacy/steering/20260723-exp333-exp226-k16-segment-residual-offset-target-current-test-candidate-inference/`
 - Jupytext source:
   `exp333_exp226_k16_segment_residual_offset_target_current_test_compact_selfcontained_inference.py`
 - raw current testからexp072と同じ196列を再生成し、exp228のtarget-free

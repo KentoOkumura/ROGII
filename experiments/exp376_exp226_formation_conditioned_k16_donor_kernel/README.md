@@ -39,7 +39,7 @@ U-projectionは親のまま固定する。
   0 trained fold / 0 booster / parent control再実行0。
 
 詳細と事前gateは
-`.steering/20260724-exp376-exp226-formation-conditioned-k16-donor-kernel/design.md`
+`docs/legacy/steering/20260724-exp376-exp226-formation-conditioned-k16-donor-kernel/design.md`
 を正とする。
 
 ## 実装状態

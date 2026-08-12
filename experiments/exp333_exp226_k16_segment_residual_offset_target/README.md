@@ -123,7 +123,7 @@ candidate artifact生成までは完了した。fixed bankへの組み込みは�
 
 ## 参照
 
-- steering: `.steering/20260721-exp333-exp226-k16-segment-residual-offset-target/`
+- steering: `docs/legacy/steering/20260721-exp333-exp226-k16-segment-residual-offset-target/`
 - exp226: CV `9.427109597` / Public LB `9.837`
 - exp228: CV `8.944085501` / 未提出
 - exp263: CV `8.238331715` / Public LB `7.800`

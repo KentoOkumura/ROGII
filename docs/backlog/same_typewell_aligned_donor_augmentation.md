@@ -18,7 +18,7 @@
 
 | 優先度 | アイデア | 先行条件 / 依存 | 検証方法 | 注意点 |
 | --- | --- | --- | --- | --- |
-| 低・P4・高リスク・truth-warp branch閉鎖・独立根拠待ち | `same_typewell_aligned_donor_augmentation`: **データ拡張**。native-overlapで整合した同一typewell group内の他wellから、truth-warpとは独立なreference/noise styleを小さく移植できるかを将来検討する | exp423はsupport`286/773 wells`、primary`+2.960446 ft`悪化、top-5 oracleも`+1.141720 ft`悪化してtruth-warp transferabilityを否定した。exp119 direct cross-horizontal GR transferもnegative。したがってtruth-warp / geometry / tail移植をaugmentationとして再実装せず、reference/noise style swapに独立したtarget-free根拠が新たに得られるまで着手しない | 再開時はexp423保存truth-warpを使わず、augmentation固有のoriginal比、coverage、splice continuity、GR/typewell consistency、candidate AUC、official-start OOF、typewell-purged hidden-like、worst-wellを別steeringで事前登録する。query/donor双方がouter-trainにある場合だけ生成する | exp423 FAILをaugmentationで救済しない。donor true TVT、truth-warp、raw CSV単純連結、same-typewell direct TVT correction、different-typewell positive化は禁止。synthetic比率は小さく固定し、独立根拠なしに現行P1/P2/P3候補を追い越さない |
+| 低・P4・高リスク・truth-warp branch閉鎖・独立根拠待ち | `same_typewell_aligned_donor_augmentation`: **データ拡張**。native-overlapで整合した同一typewell group内の他wellから、truth-warpとは独立なreference/noise styleを小さく移植できるかを将来検討する | exp423はsupport`286/773 wells`、primary`+2.960446 ft`悪化、top-5 oracleも`+1.141720 ft`悪化してtruth-warp transferabilityを否定した。exp119 direct cross-horizontal GR transferもnegative。したがってtruth-warp / geometry / tail移植をaugmentationとして再実装せず、reference/noise style swapに独立したtarget-free根拠が新たに得られるまで着手しない | 再開時はexp423保存truth-warpを使わず、augmentation固有のoriginal比、coverage、splice continuity、GR/typewell consistency、candidate AUC、official-start OOF、typewell-purged hidden-like、worst-wellを別実験の`requirements.md`へ事前登録する。query/donor双方がouter-trainにある場合だけ生成する | exp423 FAILをaugmentationで救済しない。donor true TVT、truth-warp、raw CSV単純連結、same-typewell direct TVT correction、different-typewell positive化は禁止。synthetic比率は小さく固定し、独立根拠なしに現行P1/P2/P3候補を追い越さない |
 
 ## 観測事実と仮定の整理状態
 
@@ -44,7 +44,7 @@
 
 ## 最小の反証可能な検証
 
-再開時はexp423保存truth-warpを使わず、augmentation固有のoriginal比、coverage、splice continuity、GR/typewell consistency、candidate AUC、official-start OOF、typewell-purged hidden-like、worst-wellを別steeringで事前登録する。query/donor双方がouter-trainにある場合だけ生成する
+再開時はexp423保存truth-warpを使わず、augmentation固有のoriginal比、coverage、splice continuity、GR/typewell consistency、candidate AUC、official-start OOF、typewell-purged hidden-like、worst-wellを別実験の`requirements.md`へ事前登録する。query/donor双方がouter-trainにある場合だけ生成する
 
 ## 成功条件と停止条件
 

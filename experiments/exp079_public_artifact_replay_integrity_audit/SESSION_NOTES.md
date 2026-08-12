@@ -57,7 +57,7 @@ kaggle kernels output kentookumura/exp079-public-artifact-audit-train -p /tmp/ka
 
 ## 変更点
 
-- `.steering/20260618-exp079-public-artifact-replay-integrity-audit/` を作成し、要件、設計、タスクを記入した。
+- `docs/legacy/steering/20260618-exp079-public-artifact-replay-integrity-audit/` を作成し、要件、設計、タスクを記入した。
 - `config.yaml` に Pilkwang / ridge-sp / fle3n-SP45-Koolbox placeholder と required input slug、branch file、anchor submission path を記入した。
 - `public_artifact_integrity_audit.py` を追加し、次を保存できるようにした。
   - required input slug の存在
