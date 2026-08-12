@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 from dataclasses import dataclass
 from pathlib import Path
@@ -126,37 +127,15 @@ def collect_records() -> list[ExperimentRecord]:
     return records
 
 
-def render_mermaid(records: list[ExperimentRecord]) -> str:
-    lines = ["```mermaid", "graph TD"]
-    known_names = {record.name for record in records}
-
-    for record in records:
-        label = record.name.replace("-", "_")
-        lines.append(f"    {label}[{record.name}]")
-
-    for record in records:
-        if record.parent in {"-", "None", "null"}:
-            continue
-        parent = record.parent.replace("-", "_")
-        child = record.name.replace("-", "_")
-        if record.parent not in known_names:
-            lines.append(f"    {parent}[{record.parent}]")
-        lines.append(f"    {parent} --> {child}")
-
-    lines.append("```")
-    return "\n".join(lines)
-
-
 def render_table(records: list[ExperimentRecord]) -> str:
     lines = [
-        "| 実験 | ルート | 親 | 状態 | CV | Public LB | Private LB | 要約 | 更新日 |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| 実験 | ルート | 親 | 状態 | CV | Public LB | Private LB | 更新日 |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for record in records:
         lines.append(
             f"| {record.name} | {record.route} | {record.parent} | {record.status} | {record.cv} | "
-            f"{record.public_lb} | {record.private_lb} | {record.summary} | "
-            f"{record.updated} |"
+            f"{record.public_lb} | {record.private_lb} | {record.updated} |"
         )
     return "\n".join(lines)
 
@@ -165,9 +144,7 @@ def render_auto_block(records: list[ExperimentRecord]) -> str:
     return "\n\n".join(
         [
             BEGIN_MARKER,
-            "## 実験のつながり",
-            render_mermaid(records),
-            "## スコア表",
+            "## 実験比較",
             render_table(records),
             END_MARKER,
         ]
@@ -175,27 +152,38 @@ def render_auto_block(records: list[ExperimentRecord]) -> str:
 
 
 def update_summary(existing: str, auto_block: str) -> str:
-    if BEGIN_MARKER in existing and END_MARKER in existing:
-        before, rest = existing.split(BEGIN_MARKER, 1)
-        _, after = rest.split(END_MARKER, 1)
-        return before.rstrip() + "\n\n" + auto_block + after
+    del existing
+    return (
+        "# 実験サマリー\n\n"
+        "このファイルは`task update-summary`で生成します。数値、status、構造化された実行証拠は各実験の`metrics.json`、"
+        "証拠への参照、解釈、採否判断は`result.md`、時系列の作業履歴は`SESSION_NOTES.md`を正とします。"
+        "手作業の戦略メモや変更履歴はここへ追記しません。\n\n"
+        f"{auto_block}\n"
+    )
 
-    manual_sections = "## 主な発見\n\n- TODO\n\n## 変更履歴\n\n- TODO\n"
-    if "## 主な発見" in existing:
-        manual_sections = existing.split("## 主な発見", 1)[1]
-        manual_sections = "## 主な発見" + manual_sections
-    elif "## Key Findings" in existing:
-        manual_sections = existing.split("## Key Findings", 1)[1]
-        manual_sections = "## 主な発見" + manual_sections
 
-    return "# 実験サマリー\n\n" + auto_block + "\n\n" + manual_sections
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Regenerate experiment_summary.md.")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Fail without writing when experiment_summary.md is stale.",
+    )
+    return parser.parse_args()
 
 
 def main() -> None:
+    args = parse_args()
     records = collect_records()
     auto_block = render_auto_block(records)
     existing = SUMMARY_PATH.read_text() if SUMMARY_PATH.exists() else ""
-    SUMMARY_PATH.write_text(update_summary(existing, auto_block))
+    expected = update_summary(existing, auto_block)
+    if args.check:
+        if existing != expected:
+            raise SystemExit("experiment_summary.md is stale; run `task update-summary`")
+        print(f"experiment_summary.md is up to date ({len(records)} experiments)")
+        return
+    SUMMARY_PATH.write_text(expected)
     print(f"Updated {SUMMARY_PATH.relative_to(ROOT)} with {len(records)} experiment(s)")
 
 

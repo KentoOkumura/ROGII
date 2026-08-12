@@ -28,7 +28,6 @@ def make_notebook(
     cache_source: str,
     local_cache_dir: str,
 ) -> dict[str, Any]:
-    exp_dir = f"{drive_root}/experiments/{experiment}"
     cache_name = Path(cache_source).name
     local_cache = f"{local_cache_dir.rstrip('/')}/{cache_name}"
     return {
@@ -38,7 +37,9 @@ def make_notebook(
 
 Colab-first runner for `{experiment}`.
 
-This notebook mounts Google Drive, validates the ROGII layout, copies large cache artifacts to `/content`, runs a LightGBM GPU smoke test, and starts the full train in the background with Drive-backed logs.
+This notebook mounts Google Drive, validates the ROGII layout, copies large cache
+artifacts to `/content`, runs a LightGBM GPU smoke test, and starts the full train
+in the background with Drive-backed logs.
 """
             ),
             markdown("## 1. Mount Drive and Check Runtime\n"),
@@ -65,7 +66,8 @@ print("drive_root:", DRIVE_ROOT, DRIVE_ROOT.exists())
 print("experiment_dir:", EXP_DIR, EXP_DIR.exists())
 print("RAM GB:", psutil.virtual_memory().total / 1024**3)
 if torch is not None:
-    print("CUDA:", torch.cuda.is_available(), torch.cuda.get_device_name(0) if torch.cuda.is_available() else None)
+    device_name = torch.cuda.get_device_name(0) if torch.cuda.is_available() else None
+    print("CUDA:", torch.cuda.is_available(), device_name)
 """
             ),
             markdown("## 2. Install Dependencies\n"),
@@ -169,7 +171,9 @@ os.chdir(ROOT)
 sys.path.insert(0, str(EXP))
 
 from settings import ExperimentPaths, load_config, get_nested
-from u_projection_correction_disagreement_fullrun import run_u_projection_correction_disagreement_fullrun
+from u_projection_correction_disagreement_fullrun import (
+    run_u_projection_correction_disagreement_fullrun,
+)
 
 def cfg_get(config, dotted_key, default=None):
     value = get_nested(config, dotted_key)
@@ -181,9 +185,16 @@ try:
     config = load_config()
     print("START exp092 highmem local_cache", flush=True)
     print("cwd=", Path.cwd(), flush=True)
-    print("local_cache_exists=", LOCAL_CACHE.exists(), "size=", LOCAL_CACHE.stat().st_size if LOCAL_CACHE.exists() else None, flush=True)
+    print(
+        "local_cache_exists=",
+        LOCAL_CACHE.exists(),
+        "size=",
+        LOCAL_CACHE.stat().st_size if LOCAL_CACHE.exists() else None,
+        flush=True,
+    )
     print("active_modes=", cfg_get(config, "model.training.active_modes"), flush=True)
-    print("active_variants=", [v["name"] for v in cfg_get(config, "model.feature_ablation.active_variants", [])], flush=True)
+    active_variants = cfg_get(config, "model.feature_ablation.active_variants", [])
+    print("active_variants=", [v["name"] for v in active_variants], flush=True)
 
     t0 = time.time()
     summary = run_u_projection_correction_disagreement_fullrun(
@@ -242,7 +253,12 @@ latest = json.loads((RUN_DIR / "latest_run.json").read_text())
 print(json.dumps(latest, indent=2))
 
 pid = str(latest["pid"])
-print(subprocess.run(["ps", "-p", pid, "-o", "pid,ppid,stat,etime,time,%cpu,%mem,rss,cmd"], capture_output=True, text=True).stdout)
+process = subprocess.run(
+    ["ps", "-p", pid, "-o", "pid,ppid,stat,etime,time,%cpu,%mem,rss,cmd"],
+    capture_output=True,
+    text=True,
+)
+print(process.stdout)
 
 log = Path(latest["log_path"])
 print("log:", log, log.exists(), log.stat().st_size if log.exists() else None)
@@ -268,7 +284,11 @@ print("done:", done.exists(), done.stat().st_size if done.exists() else None)
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Create a Colab-first Kaggle train notebook.")
     parser.add_argument("--repo-root", default=".", help="Repository root used to resolve output.")
-    parser.add_argument("--experiment", required=True, help="Experiment directory name under experiments/.")
+    parser.add_argument(
+        "--experiment",
+        required=True,
+        help="Experiment directory name under experiments/.",
+    )
     parser.add_argument("--output", required=True, help="Output .ipynb path.")
     parser.add_argument("--drive-root", default="/content/drive/MyDrive/Kaggle/ROGII")
     parser.add_argument("--cache-source", required=True, help="Cache path relative to drive root.")

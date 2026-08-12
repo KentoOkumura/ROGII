@@ -66,7 +66,7 @@ scope、gate診断はloaderで開かない。
 - reusable loader/cache:
   `src/exp374_fixed13_candidate_cache.py`
 - dedicated tests:
-  `tests/test_exp388_exp374_student_t_fixed13_dual_selector.py`
+  `experiments/exp388_exp374_fixed13_dual_selector_on_exp264/tests/test_exp388_exp374_student_t_fixed13_dual_selector.py`
 - Jupytext source:
   `exp388_exp374_fixed13_dual_selector_on_exp264_compact_selfcontained_train.py`
 
@@ -88,7 +88,7 @@ kaggle kernels output \
   experiments/exp388_exp374_fixed13_dual_selector_on_exp264/exp388_exp374_fixed13_dual_selector_on_exp264_compact_selfcontained_train.py
 
 .venv/bin/pytest -q \
-  tests/test_exp388_exp374_student_t_fixed13_dual_selector.py
+  experiments/exp388_exp374_fixed13_dual_selector_on_exp264/tests/test_exp388_exp374_student_t_fixed13_dual_selector.py
 ```
 
 - dedicated tests: `10 passed`

@@ -67,7 +67,7 @@ public/private挙動を示す。ただしhonest OOFがないため、実装完�
 
 - 候補source: `exp512_hjyact_v2_final_10pct_hedge_on_exp413_compact_selfcontained_inference.py`
 - 候補Notebook: `exp512_hjyact_v2_final_10pct_hedge_on_exp413_compact_selfcontained_inference.ipynb`
-- generator: `../../scripts/prepare_exp512_hjyact_v2_candidate.py`
+- generator: `prepare_exp512_hjyact_v2_candidate.py`
 - 正規inference Notebook: placeholder、未採用
 
 Kaggle package/push/runは承認済みで、exact v6 sourceのversion 8を全well対象で完走しlatest versionとした。正規Notebook採用と

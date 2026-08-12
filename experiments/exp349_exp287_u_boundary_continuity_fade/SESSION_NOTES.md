@@ -88,7 +88,7 @@ make new-exp EXP=exp349_exp287_u_boundary_continuity_fade
   - pooled、5 folds、distance、gap、hidden-like、by-well metricsと固定technical/scientific AND gate。
   - `PASS_FOR_INFERENCE_REVIEW`または`FAIL_CLOSE_NO_RESCUE`の固定decisionと18生成物/reproducibility manifest契約。
 - `exp349_exp287_u_boundary_continuity_fade_compact_selfcontained_inference.py/.ipynb`は、Stage 0 PASSと別承認前のraw-test prediction/submissionを拒否するfail-closed候補として実装した。
-- `tests/test_exp349_u_boundary_continuity_fade.py`へsynthetic tests 10件を追加した。
+- `experiments/exp349_exp287_u_boundary_continuity_fade/tests/test_exp349_u_boundary_continuity_fade.py`へsynthetic tests 10件を追加した。
   - 1 postprocess / 0-training契約、inference fail-close、SHA同一copy resolver。
   - prefix/suffix、固定式、cap/fade、bucket、noncontiguous suffix・非単調MD拒否。
   - pretruth禁止列、raw/OOF ID mismatch、全scientific gate、far regression、freeze改ざん検知。
@@ -100,9 +100,9 @@ make new-exp EXP=exp349_exp287_u_boundary_continuity_fade
 ### 実装確認
 
 ```bash
-.venv/bin/python -m py_compile experiments/exp349_exp287_u_boundary_continuity_fade/*compact_selfcontained*.py tests/test_exp349_u_boundary_continuity_fade.py
-.venv/bin/ruff check experiments/exp349_exp287_u_boundary_continuity_fade/*compact_selfcontained*.py tests/test_exp349_u_boundary_continuity_fade.py
-.venv/bin/pytest -q tests/test_exp349_u_boundary_continuity_fade.py
+.venv/bin/python -m py_compile experiments/exp349_exp287_u_boundary_continuity_fade/*compact_selfcontained*.py experiments/exp349_exp287_u_boundary_continuity_fade/tests/test_exp349_u_boundary_continuity_fade.py
+.venv/bin/ruff check experiments/exp349_exp287_u_boundary_continuity_fade/*compact_selfcontained*.py experiments/exp349_exp287_u_boundary_continuity_fade/tests/test_exp349_u_boundary_continuity_fade.py
+.venv/bin/pytest -q experiments/exp349_exp287_u_boundary_continuity_fade/tests/test_exp349_u_boundary_continuity_fade.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp349_exp287_u_boundary_continuity_fade/exp349_exp287_u_boundary_continuity_fade_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp349_exp287_u_boundary_continuity_fade/exp349_exp287_u_boundary_continuity_fade_compact_selfcontained_inference.py
 make validate-exp EXP=exp349_exp287_u_boundary_continuity_fade
@@ -115,7 +115,7 @@ make validate-exp EXP=exp349_exp287_u_boundary_continuity_fade
   - compact train py / ipynb: `ef002148...319c6` / `2ab9b02f...21a5`
   - compact inference py / ipynb: `70e483fc...4df` / `54753d65...3e0`
   - dedicated tests: `2a1b1623...019a`
-- repo全体`make test`: 650件中`643 passed / 5 skipped / 2 failed`。2件はいずれも既存`tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py`が、完了済みexp296 configの`completed_train_side_guard_failed_closed`と`run_variant=false`ではなく旧running状態を期待する不一致で、exp349専用testは全件PASSした。範囲外のexp296 code/config/testは変更していない。
+- repo全体`make test`: 650件中`643 passed / 5 skipped / 2 failed`。2件はいずれも既存`experiments/exp296_exp223_self_gr_known_tvt_support_gate/tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py`が、完了済みexp296 configの`completed_train_side_guard_failed_closed`と`run_variant=false`ではなく旧running状態を期待する不一致で、exp349専用testは全件PASSした。範囲外のexp296 code/config/testは変更していない。
 - Kaggle package/push/run、output取得、raw-test inference、submissionは実行していない。
 
 ## 実装完了時点の次のアクション（実施済み）

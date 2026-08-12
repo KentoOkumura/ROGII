@@ -37,7 +37,7 @@ tri-diagonal近似による。親の`momentum=0.998`と`sig_r=0.002`から定ま
 
 - `*_compact_selfcontained_train.py` / `.ipynb`
 - `*_compact_selfcontained_inference.py` / `.ipynb`
-- `tests/test_exp441_full_support_ou_rate_transition_hmm.py`
+- `experiments/exp441_full_support_ou_rate_transition_hmm/tests/test_exp441_full_support_ou_rate_transition_hmm.py`
 
 正規`*_train.ipynb`はcompact候補から採用し、Kaggle private CPU Stage 0
 version 1を実行済みである。正規inference Notebookは変更していない。

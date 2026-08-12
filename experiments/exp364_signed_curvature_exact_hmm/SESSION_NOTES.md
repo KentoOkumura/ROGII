@@ -143,7 +143,7 @@ make new-exp EXP=exp364_signed_curvature_exact_hmm
 
 - `py_compile`: train / inferenceともpass。
 - `ruff --select F821`: train / inferenceともpass。
-- `pytest -q tests/test_exp364_signed_curvature_exact_hmm.py`: 9 passed。
+- `pytest -q experiments/exp364_signed_curvature_exact_hmm/tests/test_exp364_signed_curvature_exact_hmm.py`: 9 passed。
 - `jupytext --to ipynb --test`: train / inferenceともpass。
 - `make validate-exp EXP=exp364_signed_curvature_exact_hmm`: strict pass。
 - `make validate-template`: pass。

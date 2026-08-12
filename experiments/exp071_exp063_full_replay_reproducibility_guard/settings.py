@@ -7,7 +7,7 @@ from typing import Any
 
 import yaml
 
-EXPERIMENT_NAME = "exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit"
+EXPERIMENT_NAME = "exp071_exp063_full_replay_reproducibility_guard"
 PACKAGE_DIR = Path(__file__).resolve().parent
 TODO_VALUES = {"", "TODO", "TBD", "FIXME", None}
 KAGGLE_INPUT_ROOT = Path("/kaggle/input")

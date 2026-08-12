@@ -1,47 +1,42 @@
 #!/usr/bin/env bash
-# Poll a Kaggle kernel for completion and download output.
+# Follow Kaggle kernel live logs and download output.
+#
+# The filename is retained for compatibility. This script no longer polls
+# `kaggle kernels status`, because that endpoint can return transient 500s.
 #
 # Usage:
-#   bash scripts/poll_kernel.sh <kernel-slug> [output-dir] [poll-interval]
+#   bash .agents/skills/kaggle-platform/modules/kllm/scripts/poll_kernel.sh <kernel-slug> [output-dir]
 #
 # Arguments:
 #   kernel-slug    — e.g., "username/kernel-name"
-#   output-dir     — directory to save output (default: ./kernel-output)
-#   poll-interval  — seconds between status checks (default: 30)
-#
-# Example:
-#   bash scripts/poll_kernel.sh myuser/my-notebook ./output 15
+#   output-dir     — directory to save output (default: /tmp/kaggle-output/<kernel-slug>)
 
 set -euo pipefail
 
-KERNEL_SLUG="${1:?Usage: poll_kernel.sh <kernel-slug> [output-dir] [poll-interval]}"
-OUTPUT_DIR="${2:-./kernel-output}"
-POLL_INTERVAL="${3:-30}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../../../.." && pwd)"
+KAGGLE=(uv run --project "${REPO_ROOT}" kaggle)
 
-echo "Polling kernel: ${KERNEL_SLUG}"
+KERNEL_SLUG="${1:?Usage: poll_kernel.sh <kernel-slug> [output-dir]}"
+if [[ ! "${KERNEL_SLUG}" =~ ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$ ]]; then
+    echo "[FAIL] kernel slug '${KERNEL_SLUG}' is not in the expected owner/name form" >&2
+    exit 2
+fi
+KERNEL_PATH_SLUG="${KERNEL_SLUG//\//-}"
+OUTPUT_DIR="${2:-/tmp/kaggle-output/${KERNEL_PATH_SLUG}}"
+if [[ $# -gt 2 ]]; then
+    echo "poll-interval is no longer supported; live logs do not use polling intervals" >&2
+    exit 2
+fi
+
+echo "Following kernel logs: ${KERNEL_SLUG}"
 echo "Output dir:     ${OUTPUT_DIR}"
-echo "Poll interval:  ${POLL_INTERVAL}s"
 echo ""
 
-while true; do
-    STATUS=$(kaggle kernels status "${KERNEL_SLUG}" 2>&1)
-    TIMESTAMP=$(date '+%H:%M:%S')
-    echo "[${TIMESTAMP}] ${STATUS}"
-
-    if echo "${STATUS}" | grep -qi "complete"; then
-        echo ""
-        echo "Kernel completed successfully!"
-        echo "Downloading output..."
-        mkdir -p "${OUTPUT_DIR}"
-        kaggle kernels output "${KERNEL_SLUG}" --path "${OUTPUT_DIR}"
-        echo "Output saved to ${OUTPUT_DIR}/"
-        ls -la "${OUTPUT_DIR}/"
-        exit 0
-    elif echo "${STATUS}" | grep -qi "error\|cancel"; then
-        echo ""
-        echo "Kernel execution failed or was cancelled."
-        exit 1
-    fi
-
-    sleep "${POLL_INTERVAL}"
-done
+"${KAGGLE[@]}" kernels logs -f "${KERNEL_SLUG}"
+echo "Live log stream closed. Inspect the final log or Kaggle UI if completion is unclear."
+echo "Downloading output..."
+mkdir -p "${OUTPUT_DIR}"
+"${KAGGLE[@]}" kernels output "${KERNEL_SLUG}" --path "${OUTPUT_DIR}"
+echo "Output saved to ${OUTPUT_DIR}/"
+ls -la "${OUTPUT_DIR}/"

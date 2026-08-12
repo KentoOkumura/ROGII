@@ -118,7 +118,7 @@ M2/E、正規Notebook採用、Kaggle package/run、inference、submissionへは�
 - well-shape selectorをouter-train入力だけでfitし、valid側では`n_eval/z_span`だけを読む形にした。
 - exp413/public-coreのmeta5 constant convex weightを他4 foldsだけでfitする実装を追加。
 - stable SHA256 per immutable key seedを実装し、global RNGを導入していない。
-- `tests/test_exp497_strict_public_core_fold_safe_ensemble.py` に14 contract testsを追加。
+- `experiments/exp497_strict_public_core_fold_safe_ensemble_on_exp413/tests/test_exp497_strict_public_core_fold_safe_ensemble.py` に14 contract testsを追加。
 
 参照source監査:
 
@@ -146,7 +146,7 @@ JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact
 PYTHONPYCACHEPREFIX=/tmp/exp497-pyc .venv/bin/python -m py_compile <compact.py> <test.py>
 .venv/bin/ruff check <compact.py> <test.py>
 .venv/bin/ruff check <compact.py> --select F821
-.venv/bin/pytest -q tests/test_exp497_strict_public_core_fold_safe_ensemble.py
+.venv/bin/pytest -q experiments/exp497_strict_public_core_fold_safe_ensemble_on_exp413/tests/test_exp497_strict_public_core_fold_safe_ensemble.py
 make validate-exp EXP=exp497_strict_public_core_fold_safe_ensemble_on_exp413
 ```
 

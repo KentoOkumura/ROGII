@@ -188,7 +188,7 @@ make new-exp EXP=exp291_prefix_masked_typewell_gr_multimode_safe_beam
 実装・静的検証で実行した主なコマンド:
 
 ```bash
-.venv/bin/pytest -q tests/test_exp291_prefix_masked_typewell_gr_multimode_safe_beam.py
+.venv/bin/pytest -q experiments/exp291_prefix_masked_typewell_gr_multimode_safe_beam/tests/test_exp291_prefix_masked_typewell_gr_multimode_safe_beam.py
 .venv/bin/ruff check <exp291 train/inference/test>
 .venv/bin/python -m py_compile <exp291 train/inference>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <exp291 compact source>

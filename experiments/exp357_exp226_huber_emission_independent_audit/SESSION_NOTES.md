@@ -51,12 +51,12 @@
 ```bash
 .venv/bin/python -m py_compile \
   experiments/exp357_exp226_huber_emission_independent_audit/*compact_selfcontained*.py \
-  tests/test_exp357_exp226_huber_emission_independent_audit.py
+  experiments/exp357_exp226_huber_emission_independent_audit/tests/test_exp357_exp226_huber_emission_independent_audit.py
 .venv/bin/ruff check \
   experiments/exp357_exp226_huber_emission_independent_audit/*compact_selfcontained*.py \
-  tests/test_exp357_exp226_huber_emission_independent_audit.py \
+  experiments/exp357_exp226_huber_emission_independent_audit/tests/test_exp357_exp226_huber_emission_independent_audit.py \
   --select F821,F401,F841,E722,E501
-.venv/bin/pytest -q tests/test_exp357_exp226_huber_emission_independent_audit.py
+.venv/bin/pytest -q experiments/exp357_exp226_huber_emission_independent_audit/tests/test_exp357_exp226_huber_emission_independent_audit.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --set-kernel python3 \
   experiments/exp357_exp226_huber_emission_independent_audit/*compact_selfcontained*.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \
@@ -97,12 +97,12 @@ make test
 
 - 実装時点: `827 passed, 6 skipped, 3 failed`
 - exp357専用7件は全体実行でもPASS。
-- 失敗2件は既存`tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py`。
+- 失敗2件は既存`experiments/exp296_exp223_self_gr_known_tvt_support_gate/tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py`。
   完了後config status `completed_train_side_guard_failed_closed`に対してtestが
   `kaggle_cpu_*` prefixを要求し、`execution.run_variant=false`に対して旧approval
   guard順を要求する既知不一致。
 - 残る1件は既存
-  `tests/test_exp375_exp362_prefix_rate_fixed13_dual_selector.py`。
+  `experiments/exp375_exp362_prefix_rate_fixed13_dual_selector_on_exp264/tests/test_exp375_exp362_prefix_rate_fixed13_dual_selector.py`。
   実行済みconfigの`execution.approval_consumed=true`に対してtestが旧値`false`を
   要求する不一致。
 - 上記3件の対象config/testは今回変更しておらず、exp357実装のためには修正しない。

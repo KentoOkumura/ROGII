@@ -68,7 +68,7 @@
 
 ## 検証
 
-- `.venv/bin/pytest -q tests/test_exp311_typewell_group_prefix_suffix_gr_calibration_readout.py`: 7 passed。
+- `.venv/bin/pytest -q experiments/exp311_typewell_group_prefix_suffix_gr_calibration_readout/tests/test_exp311_typewell_group_prefix_suffix_gr_calibration_readout.py`: 7 passed。
 - Jupytext変換と`--test`: train/inferenceともPASS。
 - `py_compile`、ruff/F821、`make validate-exp`、`make validate-template`: PASS（最終検証時点）。
 - `task` executableは環境になかったため、同等のMakefile targetへ切り替えた。

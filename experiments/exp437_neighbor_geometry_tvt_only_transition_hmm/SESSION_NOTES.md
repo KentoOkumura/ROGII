@@ -125,12 +125,12 @@ Kaggle package/push/runも実行していない。
 .venv/bin/python -m py_compile \
   experiments/exp437_neighbor_geometry_tvt_only_transition_hmm/exp437_neighbor_geometry_tvt_only_transition_hmm_compact_selfcontained_train.py \
   experiments/exp437_neighbor_geometry_tvt_only_transition_hmm/exp437_neighbor_geometry_tvt_only_transition_hmm_compact_selfcontained_inference.py \
-  tests/test_exp437_neighbor_geometry_tvt_only_transition_hmm.py
+  experiments/exp437_neighbor_geometry_tvt_only_transition_hmm/tests/test_exp437_neighbor_geometry_tvt_only_transition_hmm.py
 .venv/bin/ruff check \
   experiments/exp437_neighbor_geometry_tvt_only_transition_hmm/exp437_neighbor_geometry_tvt_only_transition_hmm_compact_selfcontained_train.py \
   experiments/exp437_neighbor_geometry_tvt_only_transition_hmm/exp437_neighbor_geometry_tvt_only_transition_hmm_compact_selfcontained_inference.py \
-  tests/test_exp437_neighbor_geometry_tvt_only_transition_hmm.py --select F821,E9
-.venv/bin/pytest -q tests/test_exp437_neighbor_geometry_tvt_only_transition_hmm.py
+  experiments/exp437_neighbor_geometry_tvt_only_transition_hmm/tests/test_exp437_neighbor_geometry_tvt_only_transition_hmm.py --select F821,E9
+.venv/bin/pytest -q experiments/exp437_neighbor_geometry_tvt_only_transition_hmm/tests/test_exp437_neighbor_geometry_tvt_only_transition_hmm.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \
   experiments/exp437_neighbor_geometry_tvt_only_transition_hmm/exp437_neighbor_geometry_tvt_only_transition_hmm_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \

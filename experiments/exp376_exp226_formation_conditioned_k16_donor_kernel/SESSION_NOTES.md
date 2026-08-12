@@ -206,7 +206,7 @@ exp376_exp226_formation_conditioned_k16_donor_kernel_compact_selfcontained_train
 exp376_exp226_formation_conditioned_k16_donor_kernel_compact_selfcontained_train.py \
   --select F821
 .venv/bin/pytest -q \
-  tests/test_exp376_formation_conditioned_k16_donor_kernel.py
+  experiments/exp376_exp226_formation_conditioned_k16_donor_kernel/tests/test_exp376_formation_conditioned_k16_donor_kernel.py
 make validate-exp EXP=exp376_exp226_formation_conditioned_k16_donor_kernel
 make prepare-kaggle-notebooks \
   EXP=exp376_exp226_formation_conditioned_k16_donor_kernel \

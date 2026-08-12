@@ -17,7 +17,7 @@ SOURCE = HERE / "exp517_stage22_pf1_tw_fixedlag192_late_submit_compact_selfconta
 PUBLIC_CONFIG = HERE / "pf_banks_config_v96_public.json"
 CONFIG = HERE / "config.yaml"
 METRICS = HERE / "metrics.json"
-GENERATOR = ROOT / "scripts" / "prepare_exp517_stage22_pf1_tw_fixedlag.py"
+GENERATOR = HERE / "prepare_exp517_stage22_pf1_tw_fixedlag.py"
 
 PUBLIC_CONFIG_SHA256 = "80e973d5f5e0e39be758a03f399cdd3d81d9e79320da8db6fbddbc25c2a202f3"
 

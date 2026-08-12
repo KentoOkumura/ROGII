@@ -126,8 +126,8 @@ make prepare-kaggle-notebooks EXP=exp289_fault_aware_transductive_geological_pot
 
 ```bash
 .venv/bin/python -m py_compile experiments/exp289_fault_aware_transductive_geological_potential/*compact_selfcontained*.py
-.venv/bin/ruff check experiments/exp289_fault_aware_transductive_geological_potential/*compact_selfcontained*.py tests/test_exp289_fault_aware_transductive_geological_potential.py
-.venv/bin/pytest -q tests/test_exp289_fault_aware_transductive_geological_potential.py
+.venv/bin/ruff check experiments/exp289_fault_aware_transductive_geological_potential/*compact_selfcontained*.py experiments/exp289_fault_aware_transductive_geological_potential/tests/test_exp289_fault_aware_transductive_geological_potential.py
+.venv/bin/pytest -q experiments/exp289_fault_aware_transductive_geological_potential/tests/test_exp289_fault_aware_transductive_geological_potential.py
 # 8 passed
 .venv/bin/pytest -q
 # 240 passed

@@ -198,13 +198,13 @@ target ANCC、GR correction、U-projection、official OOF、full-well prediction
 ```bash
 .venv/bin/python -m py_compile \
   experiments/exp406_loop_closed_multiwell_rgt_fixed16_stage0/*compact_selfcontained*.py \
-  tests/test_exp406_loop_closed_multiwell_rgt_fixed16_stage0.py
+  experiments/exp406_loop_closed_multiwell_rgt_fixed16_stage0/tests/test_exp406_loop_closed_multiwell_rgt_fixed16_stage0.py
 .venv/bin/ruff check \
   experiments/exp406_loop_closed_multiwell_rgt_fixed16_stage0/*compact_selfcontained*.py \
-  tests/test_exp406_loop_closed_multiwell_rgt_fixed16_stage0.py \
+  experiments/exp406_loop_closed_multiwell_rgt_fixed16_stage0/tests/test_exp406_loop_closed_multiwell_rgt_fixed16_stage0.py \
   --select F821,F811
 .venv/bin/pytest -q \
-  tests/test_exp406_loop_closed_multiwell_rgt_fixed16_stage0.py
+  experiments/exp406_loop_closed_multiwell_rgt_fixed16_stage0/tests/test_exp406_loop_closed_multiwell_rgt_fixed16_stage0.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp406_loop_closed_multiwell_rgt_fixed16_stage0/exp406_loop_closed_multiwell_rgt_fixed16_stage0_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \

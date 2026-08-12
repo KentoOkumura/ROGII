@@ -102,7 +102,7 @@ JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <train.p
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <inference.py>
 .venv/bin/python -m py_compile <train.py> <inference.py>
 .venv/bin/ruff check <train.py> <inference.py> tests/test_exp306_*.py
-.venv/bin/pytest -q tests/test_exp306_robust_rts_l1_convergence_calibration_audit.py
+.venv/bin/pytest -q experiments/exp306_robust_rts_l1_convergence_calibration_audit/tests/test_exp306_robust_rts_l1_convergence_calibration_audit.py
 make validate-exp EXP=exp306_robust_rts_l1_convergence_calibration_audit
 make validate-template
 make test

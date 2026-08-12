@@ -32,7 +32,7 @@
 - 2026-06-06: `submission.csv`、inference artifacts、kernel log を `experiments/exp024_pseudo_tail_inference_postprocess/artifacts/` に保存。
 - 2026-06-06: ユーザーが Kaggle submit を完了。`kaggle competitions submissions rogii-wellbore-geology-prediction` で ref `53408921`、Public LB 12.166、status COMPLETE を確認。
 - 2026-06-06: `uv run python scripts/record_experiment.py --experiment exp024_pseudo_tail_inference_postprocess --status completed --cv 12.942938 --public-lb 12.166 ...` で metrics / summary を更新。
-- 2026-06-06: `uv run python scripts/record_submission.py --experiment exp024_pseudo_tail_inference_postprocess --file experiments/exp024_pseudo_tail_inference_postprocess/artifacts/submission.csv --cv 12.942938 --public-lb 12.166 ...` で `submissions/SUBMISSIONS.md` に v010 を記録。
+- 2026-06-06: `uv run python scripts/record_submission.py --experiment exp024_pseudo_tail_inference_postprocess --file experiments/exp024_pseudo_tail_inference_postprocess/artifacts/submission.csv --cv 12.942938 --public-lb 12.166 ...` で `SUBMISSIONS.md` に v010 を記録。
 
 ## 変更点
 

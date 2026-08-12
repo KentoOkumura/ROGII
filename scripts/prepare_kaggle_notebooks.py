@@ -6,13 +6,18 @@ import hashlib
 import io
 import json
 import os
+import re
 import shutil
 import zipfile
 from pathlib import Path
 from typing import Any
 
 import yaml
-from config_utils import ROOT, get_nested, is_todo, load_project_config
+
+try:
+    from .config_utils import ROOT, get_nested, is_todo, load_project_config
+except ImportError:  # Direct execution: `uv run python scripts/prepare_kaggle_notebooks.py`
+    from config_utils import ROOT, get_nested, is_todo, load_project_config
 
 IGNORE_PATTERNS = shutil.ignore_patterns("__pycache__", ".pytest_cache", ".ruff_cache")
 NOTEBOOK_KINDS = ("train", "inference")
@@ -75,6 +80,7 @@ DEFAULT_LANGUAGE_INFO = {
     "name": "python",
     "pygments_lexer": "ipython3",
 }
+MAX_KERNEL_SLUG_LENGTH = 50
 
 
 def parse_args() -> argparse.Namespace:
@@ -109,7 +115,11 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Explicit Kaggle title. Only valid when --notebook is train or inference.",
     )
-    parser.add_argument("--title-prefix", default=None, help="Override Kaggle title prefix.")
+    parser.add_argument(
+        "--title-prefix",
+        default=None,
+        help="Prefix the default title and derive a matching default kernel slug.",
+    )
     parser.add_argument("--competition-slug", default=None, help="Override competition slug.")
     parser.add_argument(
         "--run-on-push",
@@ -122,7 +132,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--strict",
         action="store_true",
-        help="Fail if generated Kaggle metadata still contains TODO values.",
+        help="Fail unless generated Kaggle metadata is ready for kernel push.",
     )
     return parser.parse_args()
 
@@ -153,12 +163,19 @@ def read_yaml(path: Path) -> dict[str, Any]:
     return value
 
 
-def default_kernel_id(experiment: str, kind: str, owner: str | None = None) -> str | None:
+def default_kernel_id(
+    experiment: str,
+    kind: str,
+    owner: str | None = None,
+    kernel_slug: str | None = None,
+) -> str | None:
     username = os.environ.get("KAGGLE_USERNAME") or owner
     if not username:
         return None
-    kernel_slug = f"{experiment.lower().replace('_', '-')}-{kind.replace('_', '-')}"
-    return f"{username}/{kernel_slug}"
+    resolved_slug = kernel_slug or (
+        f"{experiment.lower().replace('_', '-')}-{kind.replace('_', '-')}"
+    )
+    return f"{username}/{resolved_slug}"
 
 
 def suffixed_kernel_id(kernel_id_prefix: str | None, kind: str) -> str | None:
@@ -170,20 +187,60 @@ def suffixed_kernel_id(kernel_id_prefix: str | None, kind: str) -> str | None:
     return f"{username}/{slug}-{kind}"
 
 
-def metadata_todo_fields(metadata: dict[str, Any]) -> list[str]:
-    todo_fields: list[str] = []
+def kaggle_slug(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
+
+
+def metadata_validation_errors(
+    metadata: dict[str, Any],
+    *,
+    expected_enable_internet: bool | None = None,
+) -> list[str]:
+    errors: list[str] = []
+    if metadata.get("enable_tpu") not in (None, False):
+        errors.append(
+            "enable_tpu is unsupported by this repository; use CPU or GPU metadata"
+        )
+    if (
+        expected_enable_internet is not None
+        and metadata.get("enable_internet") is not expected_enable_internet
+    ):
+        errors.append(
+            "enable_internet does not match project.yml: "
+            f"expected {expected_enable_internet}, got "
+            f"{metadata.get('enable_internet')!r}"
+        )
     for key in ("id", "title"):
         value = metadata.get(key)
         if is_todo(value) or str(value).startswith("TODO") or str(value).startswith("INSERT_"):
-            todo_fields.append(key)
+            errors.append(f"{key} contains a TODO value")
 
     competition_sources = metadata.get("competition_sources")
     if not isinstance(competition_sources, list) or not competition_sources:
-        todo_fields.append("competition_sources")
+        errors.append("competition_sources is empty")
     elif any(is_todo(value) or str(value).startswith("TODO") for value in competition_sources):
-        todo_fields.append("competition_sources")
+        errors.append("competition_sources contains a TODO value")
 
-    return todo_fields
+    kernel_id = str(metadata.get("id") or "")
+    owner, separator, kernel_slug = kernel_id.partition("/")
+    if separator != "/" or not owner or not kernel_slug or "/" in kernel_slug:
+        errors.append("id must use owner/kernel-slug format")
+    elif len(kernel_slug) > MAX_KERNEL_SLUG_LENGTH:
+        errors.append(
+            f"kernel slug exceeds {MAX_KERNEL_SLUG_LENGTH} characters: {kernel_slug}"
+        )
+
+    title = str(metadata.get("title") or "")
+    title_slug = kaggle_slug(title)
+    if not title_slug:
+        errors.append("title does not produce a non-empty Kaggle slug")
+    elif kernel_slug and title_slug != kernel_slug:
+        errors.append(
+            "id/title slug mismatch: "
+            f"id uses {kernel_slug!r}, title resolves to {title_slug!r}"
+        )
+
+    return errors
 
 
 def copy_src(destination_dir: Path) -> None:
@@ -197,11 +254,19 @@ def copy_src(destination_dir: Path) -> None:
     shutil.copytree(source, destination, ignore=IGNORE_PATTERNS)
 
 
+def is_experiment_support_file(path: Path) -> bool:
+    return (
+        path.suffix == ".py"
+        or path.suffix in {".yaml", ".yml"}
+        or path.name == "metrics.json"
+    )
+
+
 def copy_experiment_sources(experiment_dir: Path, destination_dir: Path) -> None:
     for path in sorted(experiment_dir.iterdir()):
         if not path.is_file():
             continue
-        if path.suffix == ".py" or path.suffix in {".yaml", ".yml"}:
+        if is_experiment_support_file(path):
             shutil.copy2(path, destination_dir / path.name)
 
 
@@ -217,7 +282,7 @@ def collect_support_files(
         for path in sorted(experiment_dir.iterdir()):
             if not path.is_file():
                 continue
-            if path.suffix == ".py" or path.suffix in {".yaml", ".yml"}:
+            if is_experiment_support_file(path):
                 support_files[path.name] = path.read_bytes()
 
     support_files["project.yml"] = (ROOT / "project.yml").read_bytes()
@@ -364,15 +429,31 @@ def build_metadata(
     dataset_sources: list[str] | None = None,
     model_sources: list[str] | None = None,
 ) -> dict[str, Any]:
-    title_base = title_prefix or competition_name or "Kaggle"
+    del competition_name
+    default_title = (
+        f"{title_prefix} {experiment} {kind}" if title_prefix else f"{experiment} {kind}"
+    )
+    title_for_default_id = title or default_title
     resolved_kernel_id = (
         kernel_id
-        or default_kernel_id(experiment, kind, owner)
+        or default_kernel_id(
+            experiment,
+            kind,
+            owner,
+            kernel_slug=kaggle_slug(title_for_default_id),
+        )
         or "TODO_KAGGLE_USERNAME/TODO_KERNEL_SLUG"
     )
+    _, separator, resolved_kernel_slug = resolved_kernel_id.partition("/")
+    if title is not None:
+        resolved_title = title
+    elif kernel_id is not None and separator and resolved_kernel_slug:
+        resolved_title = resolved_kernel_slug.replace("-", " ")
+    else:
+        resolved_title = default_title
     metadata: dict[str, Any] = {
         "id": resolved_kernel_id,
-        "title": title or f"{title_base} {experiment} {kind}",
+        "title": resolved_title,
         "code_file": notebook_name,
         "language": "python",
         "kernel_type": "notebook",
@@ -459,7 +540,7 @@ def prepare_one(
         model_sources=model_sources,
     )
     write_json(destination_dir / "kernel-metadata.json", metadata)
-    return destination_dir, metadata_todo_fields(metadata)
+    return destination_dir, metadata_validation_errors(metadata)
 
 
 def main() -> None:
@@ -711,14 +792,16 @@ def main() -> None:
             )
         )
 
-    todo_fields: dict[str, list[str]] = {path.name: fields for path, fields in prepared if fields}
-    if args.strict and todo_fields:
-        raise SystemExit(f"kernel metadata still has TODO values: {todo_fields}")
+    metadata_errors: dict[str, list[str]] = {
+        path.name: errors for path, errors in prepared if errors
+    }
+    if args.strict and metadata_errors:
+        raise SystemExit(f"kernel metadata validation failed: {metadata_errors}")
 
-    for path, fields in prepared:
+    for path, errors in prepared:
         print(f"Prepared Kaggle notebook directory: {path.relative_to(ROOT)}")
-        if fields:
-            print(f"TODO metadata fields remain in {path.name}: {', '.join(fields)}")
+        if errors:
+            print(f"Metadata issues remain in {path.name}: {'; '.join(errors)}")
 
 
 if __name__ == "__main__":

@@ -9,48 +9,17 @@ from __future__ import annotations
 
 import json
 import os
-import subprocess
+import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Any
 
 MCP_ENDPOINT = "https://www.kaggle.com/mcp"
 
 
-def load_dotenv(*search_paths: Path) -> None:
-    """Populate os.environ from .env files. Repo-root .env wins over $HOME/.env."""
-    paths = list(search_paths) or [Path.cwd() / ".env", Path.home() / ".env"]
-    for env_path in paths:
-        if not env_path.exists():
-            continue
-        for line in env_path.read_text().splitlines():
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            k, v = line.split("=", 1)
-            os.environ.setdefault(k.strip(), v.strip())
-
-
-def get_kgat_token() -> str:
-    """Return KGAT-prefixed token from env, or empty string if absent."""
-    token = os.getenv("KAGGLE_MCP_TOKEN") or os.getenv("KAGGLE_API_TOKEN", "")
-    return token if token.startswith("KGAT_") else ""
-
-
-def get_legacy_key() -> str:
-    """Return legacy 32-char hex key from env or ~/.kaggle/kaggle.json."""
-    key = os.getenv("KAGGLE_KEY", "")
-    if key and not key.startswith("KGAT_"):
-        return key
-    kaggle_json = Path.home() / ".kaggle" / "kaggle.json"
-    if kaggle_json.exists():
-        try:
-            data = json.loads(kaggle_json.read_text())
-            k = data.get("key", "")
-            if k and not k.startswith("KGAT_"):
-                return k
-        except (json.JSONDecodeError, KeyError):
-            pass
-    return ""
+def get_api_token() -> str:
+    """Return the explicitly configured API token without inferring its type."""
+    return os.getenv("KAGGLE_API_TOKEN", "")
 
 
 def get_username() -> str:
@@ -76,14 +45,54 @@ def get_access_token() -> str:
 
 
 def resolve_token() -> str:
-    """Pick the best available token: explicit MCP override → KGAT env → access_token file → legacy key."""
-    return (
-        os.getenv("KAGGLE_MCP_TOKEN")
-        or get_kgat_token()
-        or get_access_token()
-        or get_legacy_key()
-        or ""
+    """Return an API token supported by the Kaggle MCP server."""
+    return get_api_token() or get_access_token() or ""
+
+
+def _parse_mcp_response(raw: str) -> dict[str, Any]:
+    """Parse either an SSE-framed or a raw JSON-RPC response."""
+    for line in raw.splitlines():
+        if line.startswith("data:"):
+            try:
+                return json.loads(line[5:].strip())
+            except json.JSONDecodeError:
+                pass
+    try:
+        return json.loads(raw.strip())
+    except json.JSONDecodeError:
+        return {"raw": raw[:300]}
+
+
+def _post_json_rpc(
+    payload: dict[str, Any],
+    token: str,
+    timeout: int,
+    endpoint: str,
+) -> dict[str, Any]:
+    """Post JSON-RPC without exposing the bearer token in process arguments."""
+    request = urllib.request.Request(
+        endpoint,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
     )
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            raw = response.read().decode("utf-8", errors="replace")
+    except urllib.error.HTTPError as exc:
+        raw = exc.read().decode("utf-8", errors="replace")
+        parsed = _parse_mcp_response(raw)
+        if "raw" not in parsed:
+            return parsed
+        return {"error": {"message": f"HTTP {exc.code}: {raw[:200]}"}}
+    except TimeoutError:
+        return {"error": {"message": "timeout"}}
+    except urllib.error.URLError as exc:
+        return {"error": {"message": f"connection failed: {exc.reason}"}}
+    return _parse_mcp_response(raw)
 
 
 def mcp_call(
@@ -98,67 +107,19 @@ def mcp_call(
     Handles both SSE-framed and raw JSON responses. On timeout/parse failure
     returns a structured error rather than raising.
     """
-    payload = json.dumps({
+    payload = {
         "jsonrpc": "2.0",
         "method": "tools/call",
         "params": {"name": tool, "arguments": arguments},
         "id": 1,
-    })
-    try:
-        result = subprocess.run(
-            [
-                "curl", "-s", "-m", str(timeout),
-                "-X", "POST", endpoint,
-                "-H", "Content-Type: application/json",
-                "-H", f"Authorization: Bearer {token}",
-                "-d", payload,
-            ],
-            capture_output=True, text=True, timeout=timeout + 5,
-        )
-    except subprocess.TimeoutExpired:
-        return {"error": {"message": "timeout"}}
-
-    raw = result.stdout
-    for line in raw.split("\n"):
-        if line.startswith("data:"):
-            try:
-                return json.loads(line[5:].strip())
-            except json.JSONDecodeError:
-                pass
-    try:
-        return json.loads(raw.strip())
-    except json.JSONDecodeError:
-        return {"raw": raw[:300]}
+    }
+    return _post_json_rpc(payload, token, timeout, endpoint)
 
 
 def mcp_list_tools(token: str, timeout: int = 30, endpoint: str = MCP_ENDPOINT) -> dict[str, Any]:
     """Call tools/list and return the parsed response."""
-    payload = json.dumps({"jsonrpc": "2.0", "method": "tools/list", "id": 1})
-    try:
-        result = subprocess.run(
-            [
-                "curl", "-s", "-m", str(timeout),
-                "-X", "POST", endpoint,
-                "-H", "Content-Type: application/json",
-                "-H", f"Authorization: Bearer {token}",
-                "-d", payload,
-            ],
-            capture_output=True, text=True, timeout=timeout + 5,
-        )
-    except subprocess.TimeoutExpired:
-        return {"error": {"message": "timeout"}}
-
-    raw = result.stdout
-    for line in raw.split("\n"):
-        if line.startswith("data:"):
-            try:
-                return json.loads(line[5:].strip())
-            except json.JSONDecodeError:
-                pass
-    try:
-        return json.loads(raw.strip())
-    except json.JSONDecodeError:
-        return {"raw": raw[:300]}
+    payload = {"jsonrpc": "2.0", "method": "tools/list", "id": 1}
+    return _post_json_rpc(payload, token, timeout, endpoint)
 
 
 def classify_result(resp: dict[str, Any]) -> str:

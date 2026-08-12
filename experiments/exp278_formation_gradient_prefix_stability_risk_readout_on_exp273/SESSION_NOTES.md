@@ -66,7 +66,7 @@ outcomeに対する0-booster target-free prefix stability readoutとして実装
 ```bash
 make new-steering EXP=exp278_formation_gradient_prefix_stability_risk_readout_on_exp273
 make new-exp EXP=exp278_formation_gradient_prefix_stability_risk_readout_on_exp273
-.venv/bin/pytest -q tests/test_exp278_formation_gradient_prefix_stability_risk_readout.py
+.venv/bin/pytest -q experiments/exp278_formation_gradient_prefix_stability_risk_readout_on_exp273/tests/test_exp278_formation_gradient_prefix_stability_risk_readout.py
 # 7 passed
 .venv/bin/python -m py_compile <exp278 train.py> <exp278 inference.py> <exp278 test.py>
 .venv/bin/ruff check <exp278 sources and test>

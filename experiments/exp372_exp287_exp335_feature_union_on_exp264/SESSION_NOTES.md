@@ -108,7 +108,7 @@ Kaggle package/push/run、ローカルNotebook実行、推論、提出は行っ�
   - added family間のduplicate/correlation report。pruneやgridは行わない。
 - `*_compact_selfcontained_train.py`と変換先`.ipynb`を別名で作成した。
   正規`*_train.ipynb`は既存placeholderを維持した。
-- `tests/test_exp372_feature_union_on_exp264.py`を追加し、cost、444列順序、
+- `experiments/exp372_exp287_exp335_feature_union_on_exp264/tests/test_exp372_feature_union_on_exp264.py`を追加し、cost、444列順序、
   alignment、matrix組み立て、duplicate report、独立gate、承認flag、入力SHAを検証した。
 - 親compactとの比較:
   - exp335 Stage S compact: 398行、markdown section 9相当。
@@ -125,11 +125,11 @@ exp372_exp287_exp335_feature_union_on_exp264_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <same-source>
 .venv/bin/python -m py_compile src/feature_union_pipeline.py <train-source> <test-source>
 .venv/bin/ruff check src/feature_union_pipeline.py <train-source> <test-source>
-.venv/bin/pytest -q tests/test_exp372_feature_union_on_exp264.py
-.venv/bin/pytest -q tests/test_exp264_candidate_selector_pipeline.py \
+.venv/bin/pytest -q experiments/exp372_exp287_exp335_feature_union_on_exp264/tests/test_exp372_feature_union_on_exp264.py
+.venv/bin/pytest -q experiments/exp264_exp263_candidate_confidence_dual_selector/tests/test_exp264_candidate_selector_pipeline.py \
   tests/test_fold_safe_formation_pipeline.py \
-  tests/test_exp335_signed_residual_meta_on_exp264.py \
-  tests/test_exp372_feature_union_on_exp264.py
+  experiments/exp335_signed_residual_meta_on_exp264/tests/test_exp335_signed_residual_meta_on_exp264.py \
+  experiments/exp372_exp287_exp335_feature_union_on_exp264/tests/test_exp372_feature_union_on_exp264.py
 make validate-exp EXP=exp372_exp287_exp335_feature_union_on_exp264
 make validate-template
 make test
@@ -146,7 +146,7 @@ make update-summary
 - doc reviewer: core evidence categories present
 - 全体suite: `817 passed / 6 skipped / 2 failed`。失敗2件はいずれも既存exp296の
   完了後configに対して旧`kaggle_cpu_*` statusと`run_variant=true`を期待する
-  `tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py`であり、exp372差分外。
+  `experiments/exp296_exp223_self_gr_known_tvt_support_gate/tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py`であり、exp372差分外。
 
 ローカルNotebook本体の実行とモデル学習は行っていない。
 
@@ -464,8 +464,6 @@ make update-summary
   status `COMPLETE`、Public LB `7.587`、Private LB未確定。
 - inference version 4のterminal観測時刻`2026-07-25 12:15:24 UTC`より後の提出で、
   ユーザー確認済みのexp372 Code submissionとして記録した。
-- monitor logは
-  `logs/submission_exp372_exp287_exp335_feature_union_on_exp264.log`。
 - Public LBはexp335 `7.517`比`+0.070`、exp287 `7.530`比`+0.057`、
   exp264 `7.562`比`+0.025`で、ML Public-LB anchorを更新しない。
 - 別routeのexp082 `7.601`は`-0.014`上回るが、routeをまたいだanchor変更は行わない。

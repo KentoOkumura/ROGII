@@ -76,7 +76,7 @@ competition submissionは引き続き未承認とする。通常9 versionを完�
 - OOF順位、LB順位、rank差、`Public LB - OOF RMSE`、候補kind別の要約を
   diagnosticとして記録する。
 - 実行後は`physical_model_summary.md`、`result.md`、`metrics.json`、
-  `experiment_summary.md`、`submissions/SUBMISSIONS.md`を同期する。
+  `experiment_summary.md`、`SUBMISSIONS.md`を同期する。
 - Public LBだけを根拠にweight、blend、selector、candidateを追加せず、
   train-side採用や最終提出候補への昇格は別判断とする。
 - deterministic anchorはkernel version、input/source SHA、prediction SHA、

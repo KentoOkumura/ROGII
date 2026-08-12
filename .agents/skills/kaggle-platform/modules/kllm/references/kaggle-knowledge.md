@@ -2,8 +2,16 @@
 
 > Official documentation: https://www.kaggle.com/docs
 >
+> Content review date: 2026-08-12.
+>
 > This reference summarizes all major Kaggle docs subpages so that any LLM
 > using the KLLM skill has expert-level Kaggle knowledge in context.
+> Platform capabilities, UI labels, competition rules, submission limits,
+> storage limits, progression requirements, identity verification, package
+> versions, hardware, quota, session limits, and accelerator types can change.
+> Treat this file as dated background navigation, not as the operational source
+> for those values. Check the live CLI, notebook metadata, runtime, competition
+> rules, and official documentation immediately before acting.
 
 ## Documentation Map
 
@@ -19,7 +27,7 @@
 | MCP Server | https://www.kaggle.com/docs/mcp | MCP endpoint for AI agents |
 | Organizations | https://www.kaggle.com/docs/organizations | Organization profiles and member management |
 | Packages | https://www.kaggle.com/docs/packages | Pre-installed packages and custom installs |
-| TPU | https://www.kaggle.com/docs/tpu | TPU v3-8 usage with TF/PyTorch/JAX |
+| TPU | https://www.kaggle.com/docs/tpu | Kaggle TPU documentation; this repository's notebook generation does not support TPU |
 | Efficient GPU | https://www.kaggle.com/docs/efficient-gpu-usage | GPU tips, mixed precision, gradient checkpointing |
 
 ---
@@ -28,14 +36,8 @@
 
 ### Competition Types
 
-| Type | Description | Prizes |
-|------|-------------|--------|
-| **Featured** | High-profile, company-sponsored. Prize pools up to $1M+. | Cash |
-| **Research** | Experimental, novel scientific problems. | Usually none |
-| **Playground** | Low-stakes learning environment. | Swag / small |
-| **Getting Started** | Semi-permanent tutorials (e.g., Titanic, Housing Prices). | None |
-| **Community** | User-created competitions. Anyone can host. | Varies |
-| **Recruitment** | Corporate challenges; prize is a job interview. | Interview |
+Kaggleのcompetition categories、公開状態、参加条件、賞品は変更され得る。
+現在の分類と対象competitionの条件はcompetition一覧とrulesで確認する。
 
 ### Competition Formats
 
@@ -46,8 +48,7 @@
 ### Submissions
 
 - Evaluated by the competition's scoring metric (RMSE, AUC, F1, LogLoss, etc.).
-- **Daily limit:** Typically 5/day (varies per competition). Team size does NOT increase this.
-- Failed submissions (processing errors) do NOT count against the limit.
+- Daily submission limitと失敗提出の扱いは対象competitionのrulesとUIで確認する。
 - Must accept competition rules before downloading data or submitting.
 
 ### Leaderboard System (Dual)
@@ -64,15 +65,8 @@
 
 ### Medals & Progression
 
-| Tier | Requirement |
-|------|-------------|
-| Novice | Register on Kaggle |
-| Contributor | Complete profile, verify phone (SMS), engage |
-| Expert | 2 Bronze medals |
-| Master | 1 Gold + 2 Silver |
-| Grandmaster | 5 Gold (at least 1 solo gold) |
-
-Medal thresholds scale with competition size: Gold ≈ top 10 + 0.2%, Silver ≈ top 5%, Bronze ≈ top 10%.
+Medal thresholdsとprogression requirementsは固定値として保存しない。
+[Kaggle progression](https://www.kaggle.com/progression)で現在値を確認する。
 
 ---
 
@@ -116,55 +110,37 @@ Follows Data Package spec. Required fields: `title`, `id` (`username/slug`), `li
 
 ### Size Limits
 
-| Limit | Value |
-|-------|-------|
-| Public dataset | 100 GB |
-| Private storage quota | ~107 GB per account |
-| API per-file upload | ~2 GB (fixed in CLI v1.3.7) |
+dataset size、private storage、per-file uploadの上限は固定値として保存しない。
+upload直前にdataset docs、UI、利用中のCLIで現在値を確認する。
 
 ### Available Licenses
 
-CC0-1.0, CC-BY-SA-3.0, CC-BY-SA-4.0, CC-BY-NC-SA-4.0, GPL-2.0, ODbL-1.0, DbCL-1.0, CC-BY-4.0, CC-BY-NC-4.0, Apache-2.0, GPL-3.0, and others.
+選択可能なlicenseはdataset作成時のUIと公式docsで確認する。licenseの意味や
+適用可否はKaggleの選択肢だけから判断しない。
 
 ### Progression
 
-Expert: 3 Bronze. Master: 1 Gold + 4 Silver. Grandmaster: 5 Gold + 5 Silver.
+現在の要件は[Kaggle progression](https://www.kaggle.com/progression)で確認する。
 
 ---
 
 ## 4. Notebooks (https://www.kaggle.com/docs/notebooks)
 
-### Hardware
+### Runtime resources and limits
 
-| Resource | CPU | GPU |
-|----------|-----|-----|
-| CPU Cores | 4 | 4 |
-| RAM | ~16 GB | ~29 GB |
-| Disk (`/kaggle/working`) | 20 GB | 20 GB |
+Available CPU, memory, disk, accelerator types, session limits, access
+requirements, and weekly quota are mutable platform settings. Before execution:
 
-### Accelerators
+1. Inspect the generated `kernel-metadata.json` to identify the requested resource
+   and verify that `enable_tpu` is `false`. Stop if TPU is requested because this
+   repository's notebook generation and metadata validation do not support it.
+2. For GPU, run `uv run kaggle quota --format json` and compare the live remaining
+   time and refresh time with the expected notebook runtime.
+3. Inspect the actual runtime for device and memory details, and check the
+   official notebook documentation or UI for limits not exposed by the CLI.
 
-| Accelerator | Best For |
-|-------------|----------|
-| None (CPU) | Data preprocessing, simple tasks |
-| GPU P100 (16 GB VRAM) | Smaller models, PyTorch, experimentation |
-| GPU T4 x2 (16 GB each) | Multi-GPU, fine-tuning BERT/ResNet |
-| TPU VM v3-8 | Large Transformers, vision/NLP at scale |
-
-Enable via Settings → Accelerator dropdown.
-
-### Quotas
-
-| Resource | Limit |
-|----------|-------|
-| GPU weekly | 30 hours/week |
-| TPU weekly | 20 hours/week |
-| CPU session | 12 hours max |
-| GPU session | 12 hours max |
-| TPU session | 9 hours max |
-| Disk | 20 GB (`/kaggle/working`) |
-
-Phone (SMS) verification required for GPU/TPU access.
+Do not copy a fixed quota or hardware value from this reference into an
+operational decision or experiment record.
 
 ### Languages & Docker
 
@@ -191,7 +167,7 @@ Phone (SMS) verification required for GPU/TPU access.
 
 ### Progression
 
-Expert: 5 Bronze. Master: 10 Silver. Grandmaster: 15 Gold.
+現在の要件は[Kaggle progression](https://www.kaggle.com/progression)で確認する。
 
 ---
 
@@ -239,19 +215,12 @@ tensorFlow1, tensorFlow2, tfLite, tfJs, pyTorch, jax, coral, Keras.
 ### Installation
 
 ```bash
-pip install kaggle    # Requires Python 3.11+
+uv sync --locked    # Repository-pinned Kaggle CLI; requires Python 3.11+
 ```
 
 ### Authentication
 
-1. **OAuth CLI login:** `kaggle auth login` (interactive; stored at `~/.kaggle/credentials.json`).
-2. **Env var:** `export KAGGLE_API_TOKEN=xxx` (recommended for agents/CI/headless) or `KAGGLE_USERNAME`/`KAGGLE_KEY` (legacy).
-3. **Token file:** `~/.kaggle/access_token` (recommended file-based method for agents/CI/headless).
-4. **Legacy JSON:** `~/.kaggle/kaggle.json` with `{"username":"...","key":"..."}`. Must be `chmod 600`.
-
-Generate tokens at [kaggle.com/settings](https://www.kaggle.com/settings):
-- **"Generate New Token"** under "API Tokens (Recommended)" → creates named Access tokens.
-- **"Create Legacy API Key"** under "Legacy API Credentials" → downloads `kaggle.json` (deprecated).
+認証方式、保存先、client別の対応、credential優先順位は[registrationの認証設定](../../registration/references/kaggle-setup.md)を正とする。ここには複製しない。
 
 ### Rate Limits
 
@@ -268,8 +237,6 @@ Kaggle implements OAuth 2.0 Authorization Code flow with PKCE for third-party ap
 - Authorization: `GET https://www.kaggle.com/api/v1/oauth2/authorize`
 - Token: `POST https://www.kaggle.com/api/v1/oauth2/token`
 - Introspection: `POST https://www.kaggle.com/api/v1/oauth2/introspect`
-
-**Token formats:** Access tokens use `kagat_` prefix (3-hour expiry). Refresh tokens use `kagrt_` prefix.
 
 **Scopes:** `datasets.get:*`, `datasets.create:*`, `datasets.update:*`, `models.get:*`, `models.download:*`, `kernels.list:*`, `kernels.pull:*`, `kernels.push:*`, `competitions.list:*`, `competitions.submit:*`.
 
@@ -325,25 +292,12 @@ Protocol: Streamable HTTP (MCP standard). Auth: API token via `Authorization: Be
 
 ### Client Configuration
 
-**Claude Code (CLI):**
-```bash
-claude mcp add kaggle --transport http https://www.kaggle.com/mcp \
-  --header "Authorization: Bearer <your_api_key>"
-```
-
-**Generic MCP client (gemini-cli, Claude Desktop, Cursor, etc.):**
-```json
-{
-  "mcpServers": {
-    "kaggle": {
-      "url": "https://www.kaggle.com/mcp",
-      "headers": {
-        "Authorization": "Bearer <your_api_key>"
-      }
-    }
-  }
-}
-```
+Use the MCP client's local secret store or protected environment-variable
+reference for the Bearer token. Do not paste the token into a shell command,
+command argument, committed configuration, or agent conversation. Repository
+scripts read locally configured credentials and send the Authorization header
+in-process through `shared/mcp_client.py`; follow
+`references/mcp-reference.md` for the canonical helper setup.
 
 ### Available Tool Categories
 
@@ -363,13 +317,12 @@ Use `tools/list` for discovery of exact tool names.
 ### Installation
 
 ```bash
-pip install kagglehub                           # Base
-pip install kagglehub[pandas-datasets]          # + Pandas adapter
-pip install kagglehub[polars-datasets]          # + Polars adapter
-pip install kagglehub[hf-datasets]              # + Hugging Face adapter
+uv sync --locked --extra kaggle-platform
 ```
 
-Current version: 1.0.0 (Feb 2026). Requires Python ≥ 3.10.
+追加 adapter が必要なら、対象 extra を `pyproject.toml` に記録して lock file を更新してから同期する。
+
+利用versionとPython要件は`uv.lock`と`pyproject.toml`を実行時に読み、ここへ固定値を転記しない。
 
 ### Authentication
 
@@ -431,53 +384,21 @@ Current version: 1.0.0 (Feb 2026). Requires Python ≥ 3.10.
 
 ## 11. TPU (https://www.kaggle.com/docs/tpu)
 
-### Hardware
-
-TPU VM v3-8: 4 chips × 2 TensorCore cores = 8 logical TPU devices. Preinstalled: Python 3.10, PyTorch/XLA 2.1.
-
-### Quota
-
-20 hours/week, 9-hour max session.
-
-### TensorFlow
-
-```python
-tpu = tf.distribute.cluster_resolver.TPUClusterResolver(tpu="local")
-tf.config.experimental_connect_to_cluster(tpu)
-tf.tpu.experimental.initialize_tpu_system(tpu)
-strategy = tf.distribute.TPUStrategy(tpu)
-with strategy.scope():
-    model = create_model()
-```
-
-### PyTorch (via PyTorch/XLA)
-
-```python
-import torch_xla.core.xla_model as xm
-device = xm.xla_device()
-model = model.to(device)
-```
-
-Distributed: use `xmp.spawn()`. Broadcast params from replica 0: `xm.broadcast_master_param(model)`.
-
-### JAX
-
-Native TPU support. Use `bfloat16` (larger range than float16, no loss scaling needed).
+Kaggle platformのTPU仕様は公式資料で確認する。このリポジトリの
+`prepare-kaggle-notebooks`とmetadata検証はTPUに対応せず、
+`enable_tpu: true`を拒否する。TPU用コードやpackageをこのテンプレートから
+生成できると解釈せず、必要な場合は未対応として停止する。
 
 ---
 
 ## 12. Efficient GPU Usage (https://www.kaggle.com/docs/efficient-gpu-usage)
 
-### Hardware
+### Runtime contract
 
-| GPU | VRAM | Best For |
-|-----|------|----------|
-| NVIDIA Tesla P100 | 16 GB | Training complex models |
-| NVIDIA T4 x2 | 16 GB each | Multi-GPU, inference |
-
-### Quota
-
-30 hours/week GPU.
+Available GPU models, device count, VRAM, session limits, and weekly quota are
+mutable. Inspect `kernel-metadata.json`, query `uv run kaggle quota --format json`,
+and use `nvidia-smi` or the framework device API in the actual runtime. Do not
+select an implementation from a fixed hardware list in this reference.
 
 ### Tips
 
@@ -493,25 +414,13 @@ Native TPU support. Use `bfloat16` (larger range than float16, no loss scaling n
 
 ## 13. Progression System (https://www.kaggle.com/progression)
 
-Five tiers across four categories:
-
-| Tier | Competitions | Datasets | Notebooks | Discussions |
-|------|-------------|----------|-----------|-------------|
-| Novice | Register | Register | Register | Register |
-| Contributor | Profile + SMS + engage | Same | Same | Same |
-| Expert | 2 Bronze | 3 Bronze | 5 Bronze | 50 Bronze |
-| Master | 1 Gold + 2 Silver | 1 Gold + 4 Silver | 10 Silver | 200 total (50 Silver) |
-| Grandmaster | 5 Gold (1 solo) | 5 Gold + 5 Silver | 15 Gold | 500 total (50 Gold) |
+tiers、categories、medal thresholds、progression requirementsは変更され得る。
+固定値をこのreferenceから使わず、上記公式ページで現在値を確認する。
 
 ---
 
 ## 14. Persona Identity Verification
 
-Required for prize-eligible competitions. Uses third-party service **Persona**.
-
-1. Navigate to prize competition → verification prompt.
-2. Provide government-issued ID (passport/driver's license).
-3. Complete selfie verification.
-4. Wait for automated processing.
-
-Only available via web UI. No programmatic method exists.
+identity verificationの要否、provider、必要書類、実行手順は変更され得る。
+対象competitionのrulesとKaggle UIに表示される現在の案内に従い、本人確認情報を
+エージェントへ渡さない。

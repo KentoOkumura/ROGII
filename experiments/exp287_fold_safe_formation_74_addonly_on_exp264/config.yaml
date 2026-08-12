@@ -70,9 +70,9 @@ data:
     - experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv
   clean_273_allowlist_sha256: d01a73cc28485345dd86ed56ad6276f1727dca6b270d87685e1cf578afb677bf
   formation_availability_audit_patterns:
-    - inputs/exp218_feature_availability.csv
-    - experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_feature_availability.csv
-  formation_availability_audit_sha256: 6f93a502c9b58301e49da6effbf47b36d4635d4045157681749a762f08c89c67
+    - inputs/formation_74_contract.csv
+    - experiments/exp264_exp263_candidate_confidence_dual_selector/assets/formation_74_contract.csv
+  formation_availability_audit_sha256: 2ed254aac8e81fc3329fe25f3b34c7d8e5ab81bdac2d3f2c3901621ac3203eb4
   saved_exp264_stage_d_oof_patterns:
     - /kaggle/input/notebooks/kentookumura/exp264-exp263-confidence-dual-selector-tvt-train/artifacts/stage_d_oof_predictions.parquet
     - /tmp/kaggle-output/exp264_exp263_candidate_confidence_dual_selector/stage_d_v3_corrected/artifacts/stage_d_oof_predictions.parquet
@@ -286,6 +286,8 @@ runtime:
         destination: inputs/exp218_clean_273_allowlist.csv
       - source: experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/exp218_feature_availability.csv
         destination: inputs/exp218_feature_availability.csv
+      - source: experiments/exp264_exp263_candidate_confidence_dual_selector/assets/formation_74_contract.csv
+        destination: inputs/formation_74_contract.csv
       - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/gr_wavelet_rotation_confidence_features_on_exp148.py
         destination: inputs/exp218_source/gr_wavelet_rotation_confidence_features_on_exp148.py
       - source: experiments/exp218_gr_wavelet_rotation_confidence_features_on_exp148/config.yaml

@@ -91,12 +91,12 @@ placeholder Notebook置換の承認として記録した。Kaggle実行、Stage 
 .venv/bin/python -m py_compile \
   experiments/exp368_marginalized_reliability_pf/exp368_marginalized_reliability_pf_compact_selfcontained_train.py \
   experiments/exp368_marginalized_reliability_pf/exp368_marginalized_reliability_pf_compact_selfcontained_inference.py \
-  tests/test_exp368_marginalized_reliability_pf.py
+  experiments/exp368_marginalized_reliability_pf/tests/test_exp368_marginalized_reliability_pf.py
 .venv/bin/ruff check \
   experiments/exp368_marginalized_reliability_pf/exp368_marginalized_reliability_pf_compact_selfcontained_train.py \
   experiments/exp368_marginalized_reliability_pf/exp368_marginalized_reliability_pf_compact_selfcontained_inference.py \
-  tests/test_exp368_marginalized_reliability_pf.py
-.venv/bin/pytest -q tests/test_exp368_marginalized_reliability_pf.py
+  experiments/exp368_marginalized_reliability_pf/tests/test_exp368_marginalized_reliability_pf.py
+.venv/bin/pytest -q experiments/exp368_marginalized_reliability_pf/tests/test_exp368_marginalized_reliability_pf.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp368_marginalized_reliability_pf/exp368_marginalized_reliability_pf_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \

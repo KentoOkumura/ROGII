@@ -493,7 +493,7 @@ Kaggle outputを`/tmp/exp287-infer-v1-output.2ThBRv`へ取得し、常設のsubm
 
 Kaggle提出履歴の最新`ref=54842141`（submitted `2026-07-20 01:09:32.693000 UTC`）は
 `SubmissionStatus.COMPLETE`、Public LB `7.530`。ユーザー完了連絡と時系列からexp287 version 1へ
-紐づけ、`submissions/SUBMISSIONS.md`の`v071`へ記録した。agent/notebookはsubmit APIを呼んでいない。
+紐づけ、`SUBMISSIONS.md`の`v071`へ記録した。agent/notebookはsubmit APIを呼んでいない。
 
 exp264 ML anchor `7.562`から`-0.032`改善したため、ML routeのPublic-LB anchorをexp287へ更新する。
 別routeのexp082 ensemble 7.601も-0.071で上回るが、ensemble anchorはexp082に維持する。

@@ -40,19 +40,7 @@ try:
 except ModuleNotFoundError:
     plt = None
 
-from src.candidate_selector_pipeline import (
-    audit_raw_context_availability,
-    candidate_ids,
-    compact_feature_names,
-    read_yaml,
-    resolve_existing_path,
-    resolve_exp263_cache_root,
-    run_stage_a,
-    run_stage_c,
-    sha256_file,
-    write_json,
-)
-from src.exp490_fixed13_candidate_cache import (
+from exp490_fixed13_candidate_cache import (
     ADDED_CANDIDATE_ID,
     BASE_CANDIDATE_IDS,
     EXP490_NATIVE_FIELDS,
@@ -66,6 +54,19 @@ from src.exp490_fixed13_candidate_cache import (
     resolve_file_by_sha,
     validate_fixed13_contract,
     write_exp501_input_contract,
+)
+
+from src.candidate_selector_pipeline import (
+    audit_raw_context_availability,
+    candidate_ids,
+    compact_feature_names,
+    read_yaml,
+    resolve_existing_path,
+    resolve_exp263_cache_root,
+    run_stage_a,
+    run_stage_c,
+    sha256_file,
+    write_json,
 )
 
 EXPERIMENT_NAME = "exp501_exp490_mean_reverting_hmm_fixed13_selector_on_exp264"

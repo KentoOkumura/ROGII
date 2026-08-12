@@ -4,6 +4,7 @@ import argparse
 import csv
 import re
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -28,6 +29,8 @@ def list_topics(competition: str, sort_by: str, max_pages: int) -> list[dict[str
     for page in range(1, max_pages + 1):
         rows = run_csv(
             [
+                sys.executable,
+                "-m",
                 "kaggle",
                 "competitions",
                 "topics",
@@ -67,6 +70,8 @@ def archive_topic(
 
     proc = subprocess.run(
         [
+            sys.executable,
+            "-m",
             "kaggle",
             "competitions",
             "topics",
@@ -87,7 +92,7 @@ def archive_topic(
     try:
         subprocess.run(
             [
-                "python3",
+                sys.executable,
                 str(converter),
                 str(tmp_path),
                 "--title",
@@ -108,7 +113,16 @@ def archive_topic(
 
 def write_listing(topics: list[dict[str, str]], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    fieldnames = ["id", "title", "authorName", "commentCount", "votes", "postDate", "source_page", "sort_by"]
+    fieldnames = [
+        "id",
+        "title",
+        "authorName",
+        "commentCount",
+        "votes",
+        "postDate",
+        "source_page",
+        "sort_by",
+    ]
     with path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames, extrasaction="ignore")
         writer.writeheader()
@@ -122,7 +136,11 @@ def main() -> int:
     parser.add_argument("--max-pages", type=int, default=10)
     parser.add_argument("--output-dir", type=Path, default=Path("docs/discussions"))
     parser.add_argument("--listing", type=Path, default=None)
-    parser.add_argument("--converter", type=Path, default=Path(".agents/skills/kaggle-discussion-archive/scripts/html_to_discussion_md.py"))
+    parser.add_argument(
+        "--converter",
+        type=Path,
+        default=Path(".agents/skills/kaggle-discussion-archive/scripts/html_to_discussion_md.py"),
+    )
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
 

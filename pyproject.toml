@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Kaggle experiment template workspace"
 requires-python = ">=3.11"
 dependencies = [
-    "kaggle",
+    "kaggle==2.2.3",
     "numpy",
     "pandas",
     "pyarrow",
@@ -18,6 +18,9 @@ dependencies = [
 dev = [
     "pytest",
     "ruff",
+]
+kaggle-platform = [
+    "kagglehub>=0.4.1",
 ]
 notebook = [
     "ipykernel",
@@ -37,6 +40,7 @@ viewer = [
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+cache-dir = "/tmp/ruff-cache"
 extend-exclude = [
     ".agents",
     "docs/notebooks",
@@ -47,4 +51,6 @@ extend-exclude = [
 select = ["E", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+addopts = "-p no:cacheprovider"
+testpaths = ["tests", "experiments/*/tests"]
+pythonpath = ["."]

@@ -173,7 +173,7 @@ make record-submission EXP=exp226_connortynan_k16_spline_kernel_knn_adaptive_kap
 - status: COMPLETE
 - Public LB: 9.837
 - Private LB: -
-- `submissions/SUBMISSIONS.md`: v060
+- `SUBMISSIONS.md`: v060
 - judgment: exp206 よりは大幅改善したが、exp218 ML anchor 7.843 / exp148 CPU runtime 7.921 / exp082 ensemble 7.601 に届かないため不採用。
 
 ## 2026-07-27 offset root-cause audit

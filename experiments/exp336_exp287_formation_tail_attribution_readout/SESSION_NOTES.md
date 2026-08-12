@@ -82,7 +82,7 @@ make new-exp EXP=exp336_exp287_formation_tail_attribution_readout
   - global/fold/hidden-like/coverageの固定AND gateとreport-only指標。
   - 設計固定した11生成物とreproducibility manifest。
 - `exp336_exp287_formation_tail_attribution_readout_compact_selfcontained_inference.py/.ipynb`は、model/prediction/submissionを拒否して意図的に停止するfail-closed候補とした。
-- `tests/test_exp336_formation_tail_attribution.py`へsynthetic tests 10件を追加した。
+- `experiments/exp336_exp287_formation_tail_attribution_readout/tests/test_exp336_formation_tail_attribution.py`へsynthetic tests 10件を追加した。
 - 既存canonical train/inference Notebookは、明示採用前に上書きしないルールに従いscaffoldのまま保持した。
 - configは`implementation_approved=true`、`active_stage=implementation_complete_no_run`へ更新した。Kaggle push、Stage A/B run、inference、submission flagはすべてfalseのまま。
 - model / LightGBM config / trained fold / booster / control再学習は`0 / 0 / 0 / 0 / 0`。親control再学習なし。
@@ -90,9 +90,9 @@ make new-exp EXP=exp336_exp287_formation_tail_attribution_readout
 ### 実装確認
 
 ```bash
-.venv/bin/python -m py_compile experiments/exp336_exp287_formation_tail_attribution_readout/*compact_selfcontained*.py tests/test_exp336_formation_tail_attribution.py
-.venv/bin/ruff check experiments/exp336_exp287_formation_tail_attribution_readout/*compact_selfcontained*.py tests/test_exp336_formation_tail_attribution.py
-.venv/bin/pytest -q tests/test_exp336_formation_tail_attribution.py
+.venv/bin/python -m py_compile experiments/exp336_exp287_formation_tail_attribution_readout/*compact_selfcontained*.py experiments/exp336_exp287_formation_tail_attribution_readout/tests/test_exp336_formation_tail_attribution.py
+.venv/bin/ruff check experiments/exp336_exp287_formation_tail_attribution_readout/*compact_selfcontained*.py experiments/exp336_exp287_formation_tail_attribution_readout/tests/test_exp336_formation_tail_attribution.py
+.venv/bin/pytest -q experiments/exp336_exp287_formation_tail_attribution_readout/tests/test_exp336_formation_tail_attribution.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp336_exp287_formation_tail_attribution_readout/exp336_exp287_formation_tail_attribution_readout_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp336_exp287_formation_tail_attribution_readout/exp336_exp287_formation_tail_attribution_readout_compact_selfcontained_inference.py
 make validate-exp EXP=exp336_exp287_formation_tail_attribution_readout

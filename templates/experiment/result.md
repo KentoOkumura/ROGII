@@ -4,37 +4,20 @@
 
 TODO
 
-## 設定
-
-- 親: TODO
-- 検証: TODO
-- メトリック: TODO
-- シード: 42
-
 ## 記録の参照先
 
-- CV/LBなど機械処理する数値: [`metrics.json`](metrics.json)
+- 設定、系譜、再現性方針: [`config.yaml`](config.yaml)
+- CV/LB、実験status、kernel情報、Kaggle Notebook実行時間、生成物SHA: [`metrics.json`](metrics.json)
 - 実行コマンドと途中経過: [`SESSION_NOTES.md`](SESSION_NOTES.md)
 
-数値をこのファイルへ転記せず、以下には比較対象、数値の出典、解釈を記録する。
+設定とSHAをこのファイルへ独立した記録として転記しない。CV・Public LB・Private LBは`metrics.json`を数値の正本とし、比較や乖離の説明に必要な場合は、参照キーを添えて同じ値を本文で使用してよい。
 
 ## 実行証拠
 
-- Kaggle kernel / version: TODO
 - 比較対象: TODO
-- 数値の出典: TODO
-- 生成物 / SHA: TODO
-
-## 再現性
-
-- deterministic anchor: TODO
-- seed policy: TODO
-- kernel version: TODO
-- feature content SHA: TODO
-- model SHA / manifest SHA: TODO
-- prediction SHA: TODO
-- submission SHA: TODO
-- rerun result: TODO
+- `metrics.json` の参照キー: TODO
+- `SESSION_NOTES.md` の実行記録: TODO
+- 参照する生成物パス: TODO
 
 ## 解釈
 

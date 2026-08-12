@@ -72,7 +72,7 @@ task new-steering EXP=exp276_exp264_compact_tail_risk_target_free_gate_audit
 # task未導入のためcommand not found
 make new-steering EXP=exp276_exp264_compact_tail_risk_target_free_gate_audit
 make new-exp EXP=exp276_exp264_compact_tail_risk_target_free_gate_audit
-.venv/bin/pytest -q tests/test_exp276_target_free_tail_risk_gate.py
+.venv/bin/pytest -q experiments/exp276_exp264_compact_tail_risk_target_free_gate_audit/tests/test_exp276_target_free_tail_risk_gate.py
 # 6 passed
 .venv/bin/python -m py_compile <exp276 train.py> <exp276 inference.py> <targeted test.py>
 .venv/bin/ruff check <exp276 sources and test> --select F821,E9

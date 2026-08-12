@@ -61,12 +61,12 @@ make new-exp EXP=exp370_triggered_reset_rejuvenation_pf
 .venv/bin/python -m py_compile \
   experiments/exp370_triggered_reset_rejuvenation_pf/exp370_triggered_reset_rejuvenation_pf_compact_selfcontained_train.py \
   experiments/exp370_triggered_reset_rejuvenation_pf/exp370_triggered_reset_rejuvenation_pf_compact_selfcontained_inference.py \
-  tests/test_exp370_triggered_reset_rejuvenation_pf.py
+  experiments/exp370_triggered_reset_rejuvenation_pf/tests/test_exp370_triggered_reset_rejuvenation_pf.py
 .venv/bin/ruff check \
   experiments/exp370_triggered_reset_rejuvenation_pf/exp370_triggered_reset_rejuvenation_pf_compact_selfcontained_train.py \
   experiments/exp370_triggered_reset_rejuvenation_pf/exp370_triggered_reset_rejuvenation_pf_compact_selfcontained_inference.py \
-  tests/test_exp370_triggered_reset_rejuvenation_pf.py
-.venv/bin/pytest -q tests/test_exp370_triggered_reset_rejuvenation_pf.py
+  experiments/exp370_triggered_reset_rejuvenation_pf/tests/test_exp370_triggered_reset_rejuvenation_pf.py
+.venv/bin/pytest -q experiments/exp370_triggered_reset_rejuvenation_pf/tests/test_exp370_triggered_reset_rejuvenation_pf.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp370_triggered_reset_rejuvenation_pf/exp370_triggered_reset_rejuvenation_pf_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \

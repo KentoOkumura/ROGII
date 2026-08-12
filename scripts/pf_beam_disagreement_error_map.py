@@ -22,7 +22,7 @@ DEFAULT_PLOT_MANIFEST = (
     "experiments/exp083_pf_beam_true_tvt_2d_well_eda/artifacts/"
     "pf_beam_true_tvt_2d_well_eda_clean_all_plot_manifest.csv"
 )
-DEFAULT_OUTPUT_DIR = "artifacts/pf_beam_disagreement_error_map"
+DEFAULT_OUTPUT_DIR = "studies/pf_beam_disagreement_error_map"
 
 TAIL_LENGTH_BINS = [-np.inf, 1000, 2500, 5000, np.inf]
 TAIL_LENGTH_LABELS = ["0000-1000", "1000-2500", "2500-5000", "5000+"]

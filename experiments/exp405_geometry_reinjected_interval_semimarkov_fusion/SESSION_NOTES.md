@@ -375,13 +375,13 @@ exp405 technical ERROR
 ```bash
 .venv/bin/python -m py_compile \
   experiments/exp405_geometry_reinjected_interval_semimarkov_fusion/*compact_selfcontained*_train.py \
-  tests/test_exp405_geometry_reinjected_interval_semimarkov_fusion.py
+  experiments/exp405_geometry_reinjected_interval_semimarkov_fusion/tests/test_exp405_geometry_reinjected_interval_semimarkov_fusion.py
 .venv/bin/ruff check \
   experiments/exp405_geometry_reinjected_interval_semimarkov_fusion/*compact_selfcontained*_train.py \
-  tests/test_exp405_geometry_reinjected_interval_semimarkov_fusion.py \
+  experiments/exp405_geometry_reinjected_interval_semimarkov_fusion/tests/test_exp405_geometry_reinjected_interval_semimarkov_fusion.py \
   --select F821,F811
 .venv/bin/pytest -q \
-  tests/test_exp405_geometry_reinjected_interval_semimarkov_fusion.py
+  experiments/exp405_geometry_reinjected_interval_semimarkov_fusion/tests/test_exp405_geometry_reinjected_interval_semimarkov_fusion.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp405_geometry_reinjected_interval_semimarkov_fusion/exp405_geometry_reinjected_interval_semimarkov_fusion_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \

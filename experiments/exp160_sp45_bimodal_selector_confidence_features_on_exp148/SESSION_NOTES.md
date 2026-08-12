@@ -84,7 +84,7 @@
 - 2026-06-30: `make submit-check EXP=exp160_sp45_bimodal_selector_confidence_features_on_exp148 SUBMISSION=/tmp/kaggle-output/exp160_sp45_bimodal_selector_confidence_features_on_exp148/inference_v1/submission.csv` は PASS。
 - 2026-06-30: `.agents/skills/kaggle-submit-check/scripts/check_submission.py ... --sample data/raw/sample_submission.csv` は PASS。重複 ID なし、empty/NaN/Inf-like なし、rows 14,151 / columns 2、header と row count は `sample_submission.csv` と一致。
 - 2026-06-30: `kaggle competitions submissions rogii-wellbore-geology-prediction -v -q` で scoring 完了を確認。最新 2 件はどちらも description 空で、Kaggle CLI は kernel id を返さない。
-- 2026-06-30: ref `54183128` は submitted `2026-06-29 23:36:23.280000`、status COMPLETE、Public LB 8.061。`monitor_submission.py --once` の最新 complete として `logs/submission_exp160_sp45_bimodal_selector_confidence_features_on_exp148.log` に記録。
+- 2026-06-30: ref `54183128` は submitted `2026-06-29 23:36:23.280000`、status COMPLETE、Public LB 8.061。`monitor_submission.py --once` でも最新 complete を確認した。
 - 2026-06-30: ユーザー確認により exp160 の Public LB は 8.061 と確定。以前 exp160 近傍として仮記録した ref `54183122` / 7.921 は exp160 から除外した。
 - 2026-06-30: exp148 baseline Public LB 7.960 に対し、exp160 Public LB 8.061 は +0.101 悪化。train-side CV は positive だが LB は negative のため採用しない。
 

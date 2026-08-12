@@ -25,7 +25,7 @@ make new-exp EXP=exp297_prefix_calibrated_latent_registration_gr_evidence
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <compact train source>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <compact inference source>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact train/inference source>
-.venv/bin/pytest -q tests/test_exp297_prefix_calibrated_latent_registration_gr_evidence.py
+.venv/bin/pytest -q experiments/exp297_prefix_calibrated_latent_registration_gr_evidence/tests/test_exp297_prefix_calibrated_latent_registration_gr_evidence.py
 ```
 
 結果は`10 passed`。構文チェックと`ruff --select F821,E9`もPASSした。

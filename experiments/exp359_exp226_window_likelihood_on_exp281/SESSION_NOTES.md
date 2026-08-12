@@ -57,13 +57,13 @@ exp281直結の0-HMM Stage 0として固定する。
 ```bash
 .venv/bin/python -m py_compile \
   experiments/exp359_exp226_window_likelihood_on_exp281/*compact_selfcontained*.py \
-  tests/test_exp359_exp226_window_likelihood_on_exp281.py
+  experiments/exp359_exp226_window_likelihood_on_exp281/tests/test_exp359_exp226_window_likelihood_on_exp281.py
 .venv/bin/ruff check \
   experiments/exp359_exp226_window_likelihood_on_exp281/*compact_selfcontained*.py \
-  tests/test_exp359_exp226_window_likelihood_on_exp281.py \
+  experiments/exp359_exp226_window_likelihood_on_exp281/tests/test_exp359_exp226_window_likelihood_on_exp281.py \
   --select F821,F401,F841,E722,E501
 .venv/bin/pytest -q \
-  tests/test_exp359_exp226_window_likelihood_on_exp281.py
+  experiments/exp359_exp226_window_likelihood_on_exp281/tests/test_exp359_exp226_window_likelihood_on_exp281.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --set-kernel python3 \
   experiments/exp359_exp226_window_likelihood_on_exp281/*compact_selfcontained*.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \

@@ -73,7 +73,7 @@ formation-relative K16勾配がouter-validへ外挿可能かを、HMM/PF/MLを�
 - inference候補:
   `exp377_formation_relative_k16_slope_identifiability_readout_compact_selfcontained_inference.py/.ipynb`
 - 専用test:
-  `tests/test_exp377_formation_relative_k16_slope_identifiability_readout.py`
+  `experiments/exp377_formation_relative_k16_slope_identifiability_readout/tests/test_exp377_formation_relative_k16_slope_identifiability_readout.py`
 - train候補は同一exp helper importなしのself-contained構成で、2,484行・9章・20セル。
 - inference候補はdiagnostic-only契約を確認後、必ず`RuntimeError`で停止し、生成物を作らない。
 - 正規train Notebookはユーザーの実行指示に基づきcompact self-contained候補から採用した。
@@ -281,7 +281,7 @@ exp377_formation_relative_k16_slope_identifiability_readout_compact_selfcontaine
 exp377_formation_relative_k16_slope_identifiability_readout_compact_selfcontained_inference.py \
   --select F821
 .venv/bin/pytest -q \
-  tests/test_exp377_formation_relative_k16_slope_identifiability_readout.py
+  experiments/exp377_formation_relative_k16_slope_identifiability_readout/tests/test_exp377_formation_relative_k16_slope_identifiability_readout.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp377_formation_relative_k16_slope_identifiability_readout/\
 exp377_formation_relative_k16_slope_identifiability_readout_compact_selfcontained_train.py

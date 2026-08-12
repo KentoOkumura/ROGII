@@ -55,7 +55,7 @@ exp486を実装してください
 - `exp486_exp226_geometry_residual_likelihood_pf_compact_selfcontained_train.ipynb`
 - `exp486_exp226_geometry_residual_likelihood_pf_compact_selfcontained_inference.py`
 - `exp486_exp226_geometry_residual_likelihood_pf_compact_selfcontained_inference.ipynb`
-- `tests/test_exp486_exp226_geometry_residual_likelihood_pf.py`
+- `experiments/exp486_exp226_geometry_residual_likelihood_pf/tests/test_exp486_exp226_geometry_residual_likelihood_pf.py`
 
 実装内容:
 
@@ -107,7 +107,7 @@ exp486を実装してください
 PYTHONPYCACHEPREFIX=/tmp/exp486-pycache \
 NUMBA_CACHE_DIR=/tmp/exp486-numba-cache \
 .venv/bin/pytest -q \
-  tests/test_exp486_exp226_geometry_residual_likelihood_pf.py
+  experiments/exp486_exp226_geometry_residual_likelihood_pf/tests/test_exp486_exp226_geometry_residual_likelihood_pf.py
 
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \
   experiments/exp486_exp226_geometry_residual_likelihood_pf/\

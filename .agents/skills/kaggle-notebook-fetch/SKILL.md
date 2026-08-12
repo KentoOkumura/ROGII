@@ -9,12 +9,14 @@ description: "Kaggle CLI を使って、コンペの上位公開ノートブッ�
 
 ## 手順
 
-1. コンペの slug を特定する。
+1. `project.yml`の`competition.slug`が対象コンペであることを確認する。
 2. ノートブックを取得する。
 
 ```bash
-python .agents/skills/kaggle-notebook-fetch/scripts/fetch_top_notebooks.py --competition COMPETITION --limit 20
+task fetch-kaggle-notebooks EXTRA_ARGS="--limit 20"
 ```
+
+`task` がない環境では、同名の `make fetch-kaggle-notebooks EXTRA_ARGS="--limit 20"` を使う。`project.yml`とは別のコンペを取得する場合だけ`COMPETITION=other-competition`で上書きする。
 
 3. 既定の保存先は `docs/notebooks/<competition>/`。
 4. 再実行しても安全。既存のノートブックフォルダは、`--force` を付けない限りスキップされる。
@@ -25,7 +27,7 @@ python .agents/skills/kaggle-notebook-fetch/scripts/fetch_top_notebooks.py --com
 - スクリプトは `kaggle kernels list --competition ... --sort-by SORT -v` を使う。既定は `voteCount`。
 - ダウンロードは `kaggle kernels pull OWNER/SLUG -m` で行い、`kernel-metadata.json` を保持する。
 - API が一時失敗する場合は `--retries` を増やす。取得できない kernel があってもスクリプトは失敗を記録して次の kernel に進む。
-- 認証は Kaggle CLI v2.2.0+ なら `kaggle auth login`、または `KAGGLE_API_TOKEN` / `~/.kaggle/access_token` を使う。
+- 認証は Kaggle CLI v2.2.0+ なら `uv run kaggle auth login`、`KAGGLE_API_TOKEN` / `~/.kaggle/access_token`、またはlegacy `KAGGLE_USERNAME` / `KAGGLE_KEY`・`~/.kaggle/kaggle.json`を使う。
 - 大量に取得する前に `--dry-run` を使う。
 - Kaggle CLI の出力形式が変わった場合は、推測で進めず、生成された CSV や一覧出力を確認してスクリプトを修正する。
 

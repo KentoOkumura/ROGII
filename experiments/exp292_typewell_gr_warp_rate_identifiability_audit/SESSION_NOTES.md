@@ -86,7 +86,7 @@ exp268 aggregateが773 wells / 3,783,989 rows、5候補coverage/diversity、shar
 - raw horizontal/typewell、aggregate/shard/control/hidden-like assignmentのinput SHAをmanifestへ記録する。
 - compact inference sourceは常に`RuntimeError`で停止し、raw test、selected prediction、submissionを扱わない。
 - 初回実装時は既存canonical `.ipynb`を上書きせずalternate compact候補として生成した。
-- `tests/test_exp292_typewell_gr_warp_rate_identifiability_audit.py`に11 contract testを追加した。
+- `experiments/exp292_typewell_gr_warp_rate_identifiability_audit/tests/test_exp292_typewell_gr_warp_rate_identifiability_audit.py`に11 contract testを追加した。
 - Jupytext `--test`、py_compile、Ruff、strict experiment validation、template validationはPASSした。
 - repository全体の`pytest -q`は276件PASSした。
 - local実データ実行、Kaggle prepare/push、output取得、submissionは行っていない。

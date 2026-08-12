@@ -41,7 +41,7 @@
 - 2026-06-01: visible duplicate well sanity を `artifacts/visible_submission_well_comparison.csv` に保存。aggregate visible RMSE は exp002 7.916353、exp004 7.948310、exp005 7.916353。
 - 2026-06-01: `kaggle competitions submit rogii-wellbore-geology-prediction -k kentookumura/exp005-gr-gate-recalibration-inference -v 1 -f submission.csv -m "exp005_gr_gate_recalibration gate_low_gr_strict_hard CV 13.936732"` を承認済み escalated 実行で成功。
 - 2026-06-01: submission ref `53249562` は `SubmissionStatus.COMPLETE`、public LB 12.579。
-- 2026-06-01: `.venv/bin/python scripts/record_submission.py --experiment exp005_gr_gate_recalibration --file /tmp/kaggle-output/exp005_gr_gate_recalibration/inference/submission.csv --cv 13.936732 --public-lb 12.579 ...` で `submissions/SUBMISSIONS.md` に v005 を記録。
+- 2026-06-01: `.venv/bin/python scripts/record_submission.py --experiment exp005_gr_gate_recalibration --file /tmp/kaggle-output/exp005_gr_gate_recalibration/inference/submission.csv --cv 13.936732 --public-lb 12.579 ...` で `SUBMISSIONS.md` に v005 を記録。
 - 2026-06-01: `.venv/bin/python scripts/record_experiment.py --experiment exp005_gr_gate_recalibration --status completed --cv 13.936732 --public-lb 12.579 ...` で `metrics.json` と `experiment_summary.md` を更新。
 
 ## 変更点

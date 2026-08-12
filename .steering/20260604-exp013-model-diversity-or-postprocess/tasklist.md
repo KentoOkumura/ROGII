@@ -27,4 +27,4 @@
 - `distance_bucket_shrink` 固定の inference notebook を prepare / push
 - Kaggle output を取得し、submit-check を実行
 - Kaggle submit を実行し、Public LB 12.271 を確認
-- `submissions/SUBMISSIONS.md`、metrics、result、summary、direction を提出結果で更新
+- `SUBMISSIONS.md`、metrics、result、summary、direction を提出結果で更新

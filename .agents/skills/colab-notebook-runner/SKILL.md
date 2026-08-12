@@ -92,17 +92,16 @@ Suggested flexible Colab cell structure:
 After editing a Jupytext Colab source, convert and test the pairing:
 
 ```bash
-JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb experiments/<exp>/<exp>_colab_train.py
-JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/<exp>/<exp>_colab_train.py
-.venv/bin/python -m py_compile experiments/<exp>/<exp>_colab_train.py
-.venv/bin/ruff check experiments/<exp>/<exp>_colab_train.py --select F821
+UV_CACHE_DIR=/tmp/uv-cache JUPYTER_DATA_DIR=/tmp/jupyter-data uv run --extra notebook jupytext --to ipynb experiments/<exp>/<exp>_colab_train.py
+UV_CACHE_DIR=/tmp/uv-cache JUPYTER_DATA_DIR=/tmp/jupyter-data uv run --extra notebook jupytext --to ipynb --test experiments/<exp>/<exp>_colab_train.py
+UV_CACHE_DIR=/tmp/uv-cache uv run --extra dev ruff check experiments/<exp>/<exp>_colab_train.py --select F821
 rg -n "__file__|Path\\(__file__\\)" experiments/<exp>/<exp>_colab_train.py
 ```
 
 Use `scripts/create_colab_train_notebook.py` to create a Colab runner notebook:
 
 ```bash
-python3 .agents/skills/colab-notebook-runner/scripts/create_colab_train_notebook.py \
+uv run python .agents/skills/colab-notebook-runner/scripts/create_colab_train_notebook.py \
   --repo-root . \
   --experiment exp092_u_projection_correction_disagreement_fullrun \
   --output experiments/exp092_u_projection_correction_disagreement_fullrun/exp092_u_projection_correction_disagreement_fullrun_colab_train.ipynb \
@@ -236,8 +235,7 @@ print("cache", cache.exists(), cache.stat().st_size if cache.exists() else None)
    - Store Colab output under a Kaggle-like local folder, for example
      `experiments/<exp>/kaggle/output/colab_run_<run_id>/`, and add a
      `minimal_output_manifest.json`.
-   - Validate downloaded JSON locally and update `SESSION_NOTES.md`, `result.md`,
-     `metrics.json`, `experiment_summary.md`, and `KAGGLE_DIRECTION.md`.
+   - Validate downloaded JSON locally and hand the evidence to `kaggle-review-exp` for recording under the source-of-truth split in `AGENTS.md`. Update `KAGGLE_DIRECTION.md` only when the experiment lifecycle requires it; route idea-backlog changes through `kaggle-strategy`.
 
 ## Validation Before Full Run
 

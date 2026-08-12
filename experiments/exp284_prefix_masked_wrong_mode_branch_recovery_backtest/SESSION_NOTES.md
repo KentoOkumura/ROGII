@@ -38,7 +38,7 @@ self-containedに実装し、exp283 PASSはKaggle実行・scientific promotion�
 
 - `exp284_*_compact_selfcontained_train.py` / `.ipynb`: 2,407行、10章。
 - `exp284_*_compact_selfcontained_inference.py` / `.ipynb`: 127行、4章、fail-closed。
-- `tests/test_exp284_prefix_masked_wrong_mode_branch_recovery_backtest.py`: 7 tests。
+- `experiments/exp284_prefix_masked_wrong_mode_branch_recovery_backtest/tests/test_exp284_prefix_masked_wrong_mode_branch_recovery_backtest.py`: 7 tests。
 
 実装境界:
 
@@ -55,10 +55,10 @@ self-containedに実装し、exp283 PASSはKaggle実行・scientific promotion�
 検証コマンド:
 
 ```bash
-.venv/bin/ruff format experiments/exp284_prefix_masked_wrong_mode_branch_recovery_backtest/*compact_selfcontained*.py tests/test_exp284_prefix_masked_wrong_mode_branch_recovery_backtest.py
-.venv/bin/python -m py_compile experiments/exp284_prefix_masked_wrong_mode_branch_recovery_backtest/*compact_selfcontained*.py tests/test_exp284_prefix_masked_wrong_mode_branch_recovery_backtest.py
-.venv/bin/ruff check experiments/exp284_prefix_masked_wrong_mode_branch_recovery_backtest/*compact_selfcontained*.py tests/test_exp284_prefix_masked_wrong_mode_branch_recovery_backtest.py --select F821
-.venv/bin/pytest -q tests/test_exp284_prefix_masked_wrong_mode_branch_recovery_backtest.py
+.venv/bin/ruff format experiments/exp284_prefix_masked_wrong_mode_branch_recovery_backtest/*compact_selfcontained*.py experiments/exp284_prefix_masked_wrong_mode_branch_recovery_backtest/tests/test_exp284_prefix_masked_wrong_mode_branch_recovery_backtest.py
+.venv/bin/python -m py_compile experiments/exp284_prefix_masked_wrong_mode_branch_recovery_backtest/*compact_selfcontained*.py experiments/exp284_prefix_masked_wrong_mode_branch_recovery_backtest/tests/test_exp284_prefix_masked_wrong_mode_branch_recovery_backtest.py
+.venv/bin/ruff check experiments/exp284_prefix_masked_wrong_mode_branch_recovery_backtest/*compact_selfcontained*.py experiments/exp284_prefix_masked_wrong_mode_branch_recovery_backtest/tests/test_exp284_prefix_masked_wrong_mode_branch_recovery_backtest.py --select F821
+.venv/bin/pytest -q experiments/exp284_prefix_masked_wrong_mode_branch_recovery_backtest/tests/test_exp284_prefix_masked_wrong_mode_branch_recovery_backtest.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb experiments/exp284_prefix_masked_wrong_mode_branch_recovery_backtest/exp284_prefix_masked_wrong_mode_branch_recovery_backtest_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp284_prefix_masked_wrong_mode_branch_recovery_backtest/exp284_prefix_masked_wrong_mode_branch_recovery_backtest_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb experiments/exp284_prefix_masked_wrong_mode_branch_recovery_backtest/exp284_prefix_masked_wrong_mode_branch_recovery_backtest_compact_selfcontained_inference.py

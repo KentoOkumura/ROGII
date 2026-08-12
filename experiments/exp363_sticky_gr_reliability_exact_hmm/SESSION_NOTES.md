@@ -153,7 +153,7 @@ make new-exp EXP=exp363_sticky_gr_reliability_exact_hmm
 ```bash
 .venv/bin/python -m py_compile <exp363 compact train/inference.py> <exp363 test.py>
 .venv/bin/ruff check <exp363 sources and test> --select F821,F401,F841,E722,E501
-.venv/bin/pytest -q tests/test_exp363_sticky_gr_reliability_exact_hmm.py
+.venv/bin/pytest -q experiments/exp363_sticky_gr_reliability_exact_hmm/tests/test_exp363_sticky_gr_reliability_exact_hmm.py
 # 8 passed
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <compact source.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact source.py>

@@ -60,7 +60,7 @@ exp226 OOF residualをK16 segment単位の平均offset targetへ集約し、row-
 ```text
 .venv/bin/python -m py_compile <stage1_train.py> <inference.py> <dedicated_test.py>
 .venv/bin/ruff check <stage1_train.py> <inference.py> <dedicated_test.py> --select E,F,I,UP,B
-.venv/bin/pytest -q tests/test_exp333_exp226_k16_segment_residual_offset_target.py
+.venv/bin/pytest -q experiments/exp333_exp226_k16_segment_residual_offset_target/tests/test_exp333_exp226_k16_segment_residual_offset_target.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <stage1_train.py> --output <stage1_train.ipynb>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <stage1_train.py>
 ```
@@ -89,7 +89,7 @@ JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <stage1_
 ```text
 .venv/bin/python -m py_compile <compact_train.py> <compact_inference.py> <dedicated_test.py>
 .venv/bin/ruff check <compact_train.py> <compact_inference.py> <dedicated_test.py> --select E,F,I,UP,B
-.venv/bin/pytest -q tests/test_exp333_exp226_k16_segment_residual_offset_target.py
+.venv/bin/pytest -q experiments/exp333_exp226_k16_segment_residual_offset_target/tests/test_exp333_exp226_k16_segment_residual_offset_target.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <compact_train.py> <compact_inference.py>
 ```
 

@@ -52,7 +52,7 @@ negative evidenceとして残す。
 - `candidate_contract.yaml` / `feature_contract.yaml` / `output_contract.md`
 - 9章構成のcompact self-contained train（`.py` / `.ipynb`）
 - fail-closed compact inference guard（`.py` / `.ipynb`）
-- `src/exp490_fixed13_candidate_cache.py`
+- `experiments/exp501_exp490_mean_reverting_hmm_fixed13_selector_on_exp264/exp490_fixed13_candidate_cache.py`
 - strict exp490 allowlist / SHA / global key / suffix-offset / truth-late validation
 - Stage A schema freeze、Stage C 40-model orchestration、7-scope/tail AND gate
 - H512 / whole-well oracle、incumbent reranking、feature importance、reproducibility summary

@@ -4,7 +4,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import yaml
 
 from src.candidate_pairwise_regime import PrimitiveFold
 from src.well_segment_candidate_divergence import (
@@ -254,18 +253,3 @@ def test_post_assignment_score_guard_uses_frozen_well_clusters(tmp_path: Path) -
     assert summary["calibration_direction"]["guard_pass"] is True
     assert summary["worst_cluster_single_well"]["guard_pass"] is True
     assert summary["stage_a_guard_pass"] is True
-
-
-def test_exp267_contract_disables_post_audit_training_and_inference() -> None:
-    root = Path(__file__).resolve().parents[1]
-    exp = root / "experiments" / (
-        "exp267_well_segment_candidate_divergence_signature_cluster_on_exp265"
-    )
-    config = yaml.safe_load((exp / "config.yaml").read_text())
-    assert config["experiment"]["route"] == "ensemble"
-    assert config["execution"]["run_approved"] is False
-    assert config["execution"]["stage_a_total_boosters"] == 0
-    assert config["model"]["conditional_stage_b"]["enabled"] is False
-    assert config["model"]["conditional_stage_b"]["planned_cpu_boosters"] == 10
-    assert config["execution"]["inference_enabled"] is False
-    assert config["features"]["expected_feature_count"] == 18

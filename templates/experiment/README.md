@@ -1,11 +1,7 @@
 # {{ EXPERIMENT_NAME }}
 
-## 状態概要
+## 概要
 
-- ルート: ml_model
-- 状態: planned
-- 作成日: {{ TODAY }}
-- 親実験: -
 - 仮説要約: TODO
 - 変更点要約: TODO
 - リスク: TODO
@@ -13,8 +9,9 @@
 
 ## 正の記録
 
-- 数値: [`metrics.json`](metrics.json)
-- 結果、実行証拠、ユーザー判断: [`result.md`](result.md)
+- 数値、実験status、構造化された実行証拠: [`metrics.json`](metrics.json)
+- route、設定、系譜: [`config.yaml`](config.yaml)
+- 証拠への参照、結果の解釈、ユーザー判断: [`result.md`](result.md)
 - 実行中の作業ログ: [`SESSION_NOTES.md`](SESSION_NOTES.md)
 - 実装前の要件と設計: 対応する `.steering/` 文書
 
@@ -22,9 +19,9 @@
 
 - 学習 notebook: `{{ EXPERIMENT_NAME }}_train.ipynb`
 - 推論 notebook: `{{ EXPERIMENT_NAME }}_inference.ipynb`
-- Kaggle 準備: `task prepare-kaggle-notebooks EXP={{ EXPERIMENT_NAME }}`
+- Kaggle 準備と実行: [`SESSION_NOTES.md`](SESSION_NOTES.md)の予定を埋め、`kaggle-review-exp`と`kaggle-platform`の手順に従う
 - notebook 実行: Kaggle kernel run を正とする。ローカル実行は `--allow-local` を付けた smoke debug のみに限定する。
 
 ## 表記
 
-用語は `KAGGLE_DIRECTION.md` の表記方針と `docs/glossary.md` に合わせ、実験名や設定名を除いて日本語優先で記録する。
+用語は`AGENTS.md`の規則を正とし、公式資料、参加者の説明、論文、既存コードで実際に使われている専門用語を優先する。コンペ固有の略語とリポジトリ内の管理用語は`docs/glossary.md`で定義する。

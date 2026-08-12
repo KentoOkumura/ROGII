@@ -53,10 +53,10 @@
 ## 静的検証
 
     .venv/bin/python -m py_compile experiments/exp266_pf_ancc_pf_z_multiseed_stability_audit/exp266_pf_ancc_pf_z_multiseed_stability_audit_train.py experiments/exp266_pf_ancc_pf_z_multiseed_stability_audit/exp266_pf_ancc_pf_z_multiseed_stability_audit_inference.py
-    .venv/bin/ruff check experiments/exp266_pf_ancc_pf_z_multiseed_stability_audit tests/test_exp266_multiseed_stability_contract.py
+    .venv/bin/ruff check experiments/exp266_pf_ancc_pf_z_multiseed_stability_audit experiments/exp266_pf_ancc_pf_z_multiseed_stability_audit/tests/test_exp266_multiseed_stability_contract.py
     JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp266_pf_ancc_pf_z_multiseed_stability_audit/exp266_pf_ancc_pf_z_multiseed_stability_audit_train.py
     JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp266_pf_ancc_pf_z_multiseed_stability_audit/exp266_pf_ancc_pf_z_multiseed_stability_audit_inference.py
-    .venv/bin/pytest -q tests/test_exp266_multiseed_stability_contract.py
+    .venv/bin/pytest -q experiments/exp266_pf_ancc_pf_z_multiseed_stability_audit/tests/test_exp266_multiseed_stability_contract.py
     make validate-exp EXP=exp266_pf_ancc_pf_z_multiseed_stability_audit
     make validate-template
 

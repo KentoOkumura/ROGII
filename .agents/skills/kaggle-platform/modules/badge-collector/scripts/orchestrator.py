@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """Badge Collector orchestrator — main entry point.
 
-Usage:
-    python orchestrator.py --phase 1          # Run phase 1 only
-    python orchestrator.py --phase all        # Run all phases (1-5)
-    python orchestrator.py --status           # Show progress table
-    python orchestrator.py --resume           # Resume from where you left off
-    python orchestrator.py --dry-run          # Show planned actions without executing
-    python orchestrator.py --dry-run --phase 2  # Dry-run for a specific phase
+Usage (run from the repository root):
+    uv run python \
+        .agents/skills/kaggle-platform/modules/badge-collector/scripts/orchestrator.py \
+        --phase 1
+    uv run python \
+        .agents/skills/kaggle-platform/modules/badge-collector/scripts/orchestrator.py \
+        --status
+    uv run python \
+        .agents/skills/kaggle-platform/modules/badge-collector/scripts/orchestrator.py \
+        --dry-run --phase 2
 """
 
 import argparse
@@ -18,14 +21,14 @@ from pathlib import Path
 # Add scripts dir to path so imports work
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from badge_registry import get_badges_by_phase, get_automatable_badges
-from badge_tracker import print_status_table, load_progress, should_attempt
+from badge_registry import get_badge_by_id, get_badges_by_phase
+from badge_tracker import load_progress, print_status_table, set_status, should_attempt
 from utils import check_credentials, get_username
 
 
 def dry_run(phases: list[int]) -> None:
     """Show what would be done without executing."""
-    print("\n[DRY RUN] Planned actions:\n")
+    print("\n[DRY RUN] Badge workflows that still need attention:\n")
     total = 0
     for phase in phases:
         badges = get_badges_by_phase(phase)
@@ -36,20 +39,20 @@ def dry_run(phases: list[int]) -> None:
         for badge in actionable:
             print(f"    - {badge.name}: {badge.description}")
             total += 1
-    print(f"\n  Total: {total} badge(s) would be attempted\n")
+    print(f"\n  Total: {total} badge workflow(s) pending\n")
 
 
 def run_phase(phase: int, username: str) -> tuple[int, int]:
-    """Run a single phase. Returns (attempted, succeeded)."""
+    """Run a single phase and return automatic action attempt/success counts."""
     badges = get_badges_by_phase(phase)
     actionable = [b for b in badges if should_attempt(b.id)]
 
     if not actionable:
-        print(f"\n  Phase {phase}: No badges to attempt (all earned/skipped)")
+        print(f"\n  Phase {phase}: No prerequisite actions need to be repeated")
         return 0, 0
 
     print(f"\n{'='*60}")
-    print(f"  Phase {phase}: Attempting {len(actionable)} badge(s)")
+    print(f"  Phase {phase}: Processing {len(actionable)} badge workflow(s)")
     print(f"{'='*60}\n")
 
     # Import the phase module (explicit imports for security auditability)
@@ -60,7 +63,7 @@ def run_phase(phase: int, username: str) -> tuple[int, int]:
     elif phase == 3:
         from phase_3_pipeline import run as phase_run
     elif phase == 4:
-        from phase_4_browser import run as phase_run
+        from phase_4_manual import run as phase_run
     elif phase == 5:
         from phase_5_streaks import run as phase_run
     else:
@@ -68,26 +71,62 @@ def run_phase(phase: int, username: str) -> tuple[int, int]:
         return 0, 0
 
     attempted, succeeded = phase_run(username)
-    print(f"\n  Phase {phase} complete: {succeeded}/{attempted} badges earned\n")
+    print(f"\n  Phase {phase}: {succeeded}/{attempted} automatic actions completed\n")
     return attempted, succeeded
+
+
+def update_confirmed_status(badge_id: str, status: str, details: str | None) -> None:
+    """Record a user/agent confirmation without claiming an unverified badge."""
+    badge = get_badge_by_id(badge_id)
+    if badge is None:
+        raise ValueError(f"Unknown badge id: {badge_id}")
+    set_status(badge_id, status, details)
+    print(f"{badge.name}: {status}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Kaggle Badge Collector")
     parser.add_argument("--phase", type=str, default=None,
                         help="Phase to run: 1-5, or 'all'")
-    parser.add_argument("--status", action="store_true",
-                        help="Show badge progress table")
-    parser.add_argument("--resume", action="store_true",
-                        help="Resume from last state (skip earned badges)")
-    parser.add_argument("--dry-run", action="store_true",
-                        help="Show planned actions without executing")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--status", action="store_true",
+                      help="Show badge progress table")
+    mode.add_argument("--dry-run", action="store_true",
+                      help="Show planned actions without executing")
+    mode.add_argument(
+        "--mark-action-completed",
+        metavar="BADGE_ID",
+        help="Record that its prerequisite action completed; this does not verify the badge",
+    )
+    mode.add_argument(
+        "--mark-verified",
+        metavar="BADGE_ID",
+        help="Record a badge only after it is visibly confirmed on the Kaggle profile",
+    )
+    parser.add_argument("--details", help="Evidence note for a manual status update")
 
     args = parser.parse_args()
+    manual_update = bool(args.mark_action_completed or args.mark_verified)
+
+    if args.phase is not None and (args.status or manual_update):
+        parser.error(
+            "--phase cannot be combined with --status or a manual status update"
+        )
+    if args.details is not None and not manual_update:
+        parser.error(
+            "--details requires --mark-action-completed or --mark-verified"
+        )
 
     # --status: just show progress
     if args.status:
         print_status_table()
+        return
+
+    if args.mark_action_completed:
+        update_confirmed_status(args.mark_action_completed, "action_completed", args.details)
+        return
+    if args.mark_verified:
+        update_confirmed_status(args.mark_verified, "verified", args.details)
         return
 
     # Determine which phases to run. A bare --dry-run should preview the full plan.
@@ -100,10 +139,12 @@ def main() -> None:
         phases = [1, 2, 3, 4, 5]
     else:
         try:
-            phases = [int(args.phase)]
+            phase = int(args.phase)
         except (ValueError, TypeError):
-            print(f"Invalid phase: {args.phase}. Use 1-5 or 'all'.")
-            sys.exit(1)
+            parser.error(f"invalid phase {args.phase!r}; use 1-5 or 'all'")
+        if phase not in range(1, 6):
+            parser.error(f"invalid phase {phase}; use 1-5 or 'all'")
+        phases = [phase]
 
     # --dry-run: show what would be done
     if args.dry_run:
@@ -111,20 +152,21 @@ def main() -> None:
         return
 
     # Check credentials
-    print("Checking Kaggle credentials...")
-    if not check_credentials():
+    print("Checking credentials required by the selected phases...")
+    if not check_credentials(phases):
         print("\n[ERROR] Kaggle credentials not configured.")
-        print("Set KAGGLE_USERNAME + KAGGLE_KEY, or create ~/.kaggle/kaggle.json")
+        print("Follow modules/registration/references/kaggle-setup.md")
         sys.exit(1)
 
     username = get_username()
-    if not username:
+    if set(phases) & {1, 2, 3} and not username:
         print("\n[ERROR] Could not determine Kaggle username.")
+        print("Set KAGGLE_USERNAME for badge resource ownership; do not infer it from a token.")
         sys.exit(1)
 
-    print(f"  Username: {username}")
+    if username:
+        print(f"  Username: {username}")
     print(f"  Phases: {phases}")
-    print(f"  Resume mode: {args.resume}")
 
     # Initialize progress file
     load_progress()
@@ -145,7 +187,7 @@ def main() -> None:
 
     # Final summary
     print(f"\n{'='*60}")
-    print(f"  COMPLETE: {total_succeeded}/{total_attempted} badges earned")
+    print(f"  AUTOMATIC ACTIONS: {total_succeeded}/{total_attempted} completed")
     print(f"{'='*60}")
     print_status_table()
 

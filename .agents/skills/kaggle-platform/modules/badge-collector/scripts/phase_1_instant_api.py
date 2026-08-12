@@ -1,6 +1,6 @@
-"""Phase 1: Instant API badges (~20 badges).
+"""Phase 1: Instant API badges (~16 badges).
 
-Earns badges via kagglehub and kaggle-cli in a single session:
+Performs badge prerequisite actions via kagglehub and kaggle-cli:
   - Python Coder, R Coder, API Notebook Creator, Utility Scripter
   - Code Uploader, Code Forker, Code Tagger
   - Dataset Creator, API Dataset Creator, Dataset Tagger, Dataset Documenter
@@ -10,14 +10,11 @@ Earns badges via kagglehub and kaggle-cli in a single session:
 import json
 import shutil
 import time
-from pathlib import Path
 
 from badge_tracker import set_status, should_attempt
 from utils import (
     API_DELAY,
-    RESOURCE_PREFIX,
     TEMPLATES_DIR,
-    get_kaggle_cli,
     make_temp_dir,
     resource_name,
     run_kaggle_cli,
@@ -25,7 +22,7 @@ from utils import (
 
 
 def _create_python_notebook(username: str) -> bool:
-    """Push a Python notebook to earn Python Coder + API Notebook Creator + Code Uploader."""
+    """Push a Python notebook for three notebook badge criteria."""
     badge_ids = ["python_coder", "api_notebook_creator", "code_uploader"]
     actionable = [b for b in badge_ids if should_attempt(b)]
     if not actionable:
@@ -67,7 +64,7 @@ def _create_python_notebook(username: str) -> bool:
         print(f"  [OK] Python notebook pushed: {nb_slug}")
 
         for bid in actionable:
-            set_status(bid, "earned", f"notebook={nb_slug}")
+            set_status(bid, "action_completed", f"notebook={nb_slug}")
         return True
 
     except Exception as e:
@@ -78,7 +75,7 @@ def _create_python_notebook(username: str) -> bool:
 
 
 def _create_r_notebook(username: str) -> bool:
-    """Push an R notebook to earn R Coder."""
+    """Push an R notebook for the R Coder criterion."""
     if not should_attempt("r_coder"):
         return True
 
@@ -112,7 +109,7 @@ def _create_r_notebook(username: str) -> bool:
 
         run_kaggle_cli(["kernels", "push", "-p", str(tmp)])
         print(f"  [OK] R notebook pushed: {nb_slug}")
-        set_status("r_coder", "earned", f"notebook={nb_slug}")
+        set_status("r_coder", "action_completed", f"notebook={nb_slug}")
         return True
 
     except Exception as e:
@@ -122,7 +119,7 @@ def _create_r_notebook(username: str) -> bool:
 
 
 def _create_utility_script(username: str) -> bool:
-    """Push a utility script to earn Utility Scripter."""
+    """Push a utility script for the Utility Scripter criterion."""
     if not should_attempt("utility_scripter"):
         return True
 
@@ -156,7 +153,7 @@ def _create_utility_script(username: str) -> bool:
 
         run_kaggle_cli(["kernels", "push", "-p", str(tmp)])
         print(f"  [OK] Utility script pushed: {script_slug}")
-        set_status("utility_scripter", "earned", f"script={script_slug}")
+        set_status("utility_scripter", "action_completed", f"script={script_slug}")
         return True
 
     except Exception as e:
@@ -166,7 +163,7 @@ def _create_utility_script(username: str) -> bool:
 
 
 def _fork_notebook(username: str) -> bool:
-    """Fork a public notebook to earn Code Forker."""
+    """Fork a public notebook for the Code Forker criterion."""
     if not should_attempt("code_forker"):
         return True
 
@@ -193,13 +190,13 @@ def _fork_notebook(username: str) -> bool:
 
         if result.returncode != 0:
             print("  [SKIP] Could not pull a public notebook to fork")
-            set_status("code_forker", "skipped", "no public notebook available")
+            set_status("code_forker", "failed", "no public notebook available")
             return False
 
         # Find the pulled file
         pulled_files = list(tmp.glob("*.py")) + list(tmp.glob("*.ipynb"))
         if not pulled_files:
-            set_status("code_forker", "skipped", "no files pulled")
+            set_status("code_forker", "failed", "no files pulled")
             return False
 
         code_file = pulled_files[0]
@@ -224,7 +221,7 @@ def _fork_notebook(username: str) -> bool:
 
         run_kaggle_cli(["kernels", "push", "-p", str(tmp)])
         print(f"  [OK] Notebook forked: {fork_slug}")
-        set_status("code_forker", "earned", f"forked={fork_slug}")
+        set_status("code_forker", "action_completed", f"forked={fork_slug}")
         return True
 
     except Exception as e:
@@ -234,11 +231,11 @@ def _fork_notebook(username: str) -> bool:
 
 
 def _tag_notebook(username: str) -> bool:
-    """Add tags to a notebook to earn Code Tagger.
+    """Add tags to a notebook for the Code Tagger criterion.
 
     Note: Tagging is done via the keywords field in kernel-metadata.json
     when pushing. If we already pushed a notebook with keywords, this badge
-    should already be earned. We create a dedicated tagged notebook to be safe.
+    may already be satisfied. Create a dedicated tagged notebook as action evidence.
     """
     if not should_attempt("code_tagger"):
         return True
@@ -278,7 +275,7 @@ def _tag_notebook(username: str) -> bool:
 
         run_kaggle_cli(["kernels", "push", "-p", str(tmp)])
         print(f"  [OK] Tagged notebook pushed: {nb_slug}")
-        set_status("code_tagger", "earned", f"notebook={nb_slug}")
+        set_status("code_tagger", "action_completed", f"notebook={nb_slug}")
         return True
 
     except Exception as e:
@@ -288,7 +285,7 @@ def _tag_notebook(username: str) -> bool:
 
 
 def _create_dataset(username: str) -> bool:
-    """Create a dataset to earn Dataset Creator + API Dataset Creator."""
+    """Create a dataset for two dataset-creation badge criteria."""
     badge_ids = ["dataset_creator", "api_dataset_creator"]
     actionable = [b for b in badge_ids if should_attempt(b)]
     if not actionable:
@@ -328,7 +325,10 @@ def _create_dataset(username: str) -> bool:
                     },
                 }
             ],
-            "description": "Auto-generated dataset for badge collection. Contains sample tabular data.",
+            "description": (
+                "Auto-generated dataset for badge collection. "
+                "Contains sample tabular data."
+            ),
         }
         (tmp / "dataset-metadata.json").write_text(json.dumps(metadata, indent=2))
 
@@ -336,7 +336,7 @@ def _create_dataset(username: str) -> bool:
         print(f"  [OK] Dataset created: {ds_slug}")
 
         for bid in actionable:
-            set_status(bid, "earned", f"dataset={ds_slug}")
+            set_status(bid, "action_completed", f"dataset={ds_slug}")
         return True
 
     except Exception as e:
@@ -347,7 +347,7 @@ def _create_dataset(username: str) -> bool:
 
 
 def _tag_dataset(username: str) -> bool:
-    """Tag a dataset to earn Dataset Tagger.
+    """Tag a dataset for the Dataset Tagger criterion.
 
     Note: Tags are set via keywords in dataset-metadata.json during creation.
     We create a second dataset with explicit tags.
@@ -380,7 +380,7 @@ def _tag_dataset(username: str) -> bool:
 
         run_kaggle_cli(["datasets", "create", "-p", str(tmp)])
         print(f"  [OK] Tagged dataset created: {ds_slug}")
-        set_status("dataset_tagger", "earned", f"dataset={ds_slug}")
+        set_status("dataset_tagger", "action_completed", f"dataset={ds_slug}")
         return True
 
     except Exception as e:
@@ -390,7 +390,7 @@ def _tag_dataset(username: str) -> bool:
 
 
 def _document_dataset(username: str) -> bool:
-    """Create a well-documented dataset to earn Dataset Documenter (usability 10/10).
+    """Create a well-documented dataset for the Dataset Documenter criterion.
 
     For max usability score:
       - title, description in metadata
@@ -412,7 +412,10 @@ def _document_dataset(username: str) -> bool:
         # Create substantial data
         lines = ["id,name,score,grade,date\n"]
         for i in range(1, 21):
-            lines.append(f"{i},student_{i},{50+i},{'A' if i>15 else 'B' if i>10 else 'C'},2024-01-{i:02d}\n")
+            grade = "A" if i > 15 else "B" if i > 10 else "C"
+            lines.append(
+                f"{i},student_{i},{50 + i},{grade},2024-01-{i:02d}\n"
+            )
         (tmp / "data.csv").write_text("".join(lines))
 
         # Detailed README
@@ -470,7 +473,11 @@ Auto-generated sample data for testing and demonstration.
                         "fields": [
                             {"name": "id", "type": "integer", "description": "Unique student ID"},
                             {"name": "name", "type": "string", "description": "Student name"},
-                            {"name": "score", "type": "integer", "description": "Test score (0-100)"},
+                            {
+                                "name": "score",
+                                "type": "integer",
+                                "description": "Test score (0-100)",
+                            },
                             {"name": "grade", "type": "string", "description": "Letter grade"},
                             {"name": "date", "type": "date", "description": "Record date"},
                         ]
@@ -482,7 +489,7 @@ Auto-generated sample data for testing and demonstration.
 
         run_kaggle_cli(["datasets", "create", "-p", str(tmp)])
         print(f"  [OK] Documented dataset created: {ds_slug}")
-        set_status("dataset_documenter", "earned", f"dataset={ds_slug}")
+        set_status("dataset_documenter", "action_completed", f"dataset={ds_slug}")
         return True
 
     except Exception as e:
@@ -492,7 +499,7 @@ Auto-generated sample data for testing and demonstration.
 
 
 def _create_model(username: str) -> bool:
-    """Create a model to earn Model Creator + API Model Creator."""
+    """Create a model for two model-creation badge criteria."""
     badge_ids = ["model_creator", "api_model_creator"]
     actionable = [b for b in badge_ids if should_attempt(b)]
     if not actionable:
@@ -526,7 +533,7 @@ def _create_model(username: str) -> bool:
         print(f"  [OK] Model container created: {model_slug}")
 
         for bid in actionable:
-            set_status(bid, "earned", f"model={model_slug}")
+            set_status(bid, "action_completed", f"model={model_slug}")
         return True
 
     except Exception as e:
@@ -537,7 +544,7 @@ def _create_model(username: str) -> bool:
 
 
 def _create_model_variation(username: str) -> bool:
-    """Create a model variation/instance to earn Model Variation Creator."""
+    """Create a model variation for the Model Variation Creator criterion."""
     if not should_attempt("model_variation_creator"):
         return True
 
@@ -581,7 +588,7 @@ def _create_model_variation(username: str) -> bool:
             handle, "-p", str(tmp), "-n", "Initial version",
         ])
         print(f"  [OK] Model variation created: {handle}")
-        set_status("model_variation_creator", "earned", f"variation={handle}")
+        set_status("model_variation_creator", "action_completed", f"variation={handle}")
         return True
 
     except Exception as e:
@@ -591,7 +598,7 @@ def _create_model_variation(username: str) -> bool:
 
 
 def _tag_model(username: str) -> bool:
-    """Create a tagged model to earn Model Tagger.
+    """Create a tagged model for the Model Tagger criterion.
 
     Note: Model tagging is done via keywords when creating via kagglehub
     or through the Kaggle API. The CLI model create doesn't directly support
@@ -618,7 +625,7 @@ def _tag_model(username: str) -> bool:
             license_name="Apache 2.0",
         )
         print(f"  [OK] Tagged model created: {model_slug}")
-        set_status("model_tagger", "earned", f"model={model_slug}")
+        set_status("model_tagger", "action_completed", f"model={model_slug}")
         return True
 
     except Exception as e:
@@ -629,7 +636,7 @@ def _tag_model(username: str) -> bool:
 
 
 def _document_model(username: str) -> bool:
-    """Create a well-documented model to earn Model Documenter (usability 10/10)."""
+    """Create a well-documented model for the Model Documenter criterion."""
     if not should_attempt("model_documenter"):
         return True
 
@@ -691,7 +698,7 @@ def _document_model(username: str) -> bool:
         ])
 
         print(f"  [OK] Documented model created: {model_slug}")
-        set_status("model_documenter", "earned", f"model={model_slug}")
+        set_status("model_documenter", "action_completed", f"model={model_slug}")
         return True
 
     except Exception as e:
@@ -701,26 +708,32 @@ def _document_model(username: str) -> bool:
 
 
 def run(username: str) -> tuple[int, int]:
-    """Run all Phase 1 badge actions. Returns (attempted, succeeded)."""
+    """Run Phase 1 prerequisite actions. Return action attempt/success counts."""
     actions = [
-        ("Python notebook", _create_python_notebook),
-        ("R notebook", _create_r_notebook),
-        ("Utility script", _create_utility_script),
-        ("Fork notebook", _fork_notebook),
-        ("Tag notebook", _tag_notebook),
-        ("Create dataset", _create_dataset),
-        ("Tag dataset", _tag_dataset),
-        ("Document dataset", _document_dataset),
-        ("Create model", _create_model),
-        ("Model variation", _create_model_variation),
-        ("Tag model", _tag_model),
-        ("Document model", _document_model),
+        (
+            "Python notebook",
+            ("python_coder", "api_notebook_creator", "code_uploader"),
+            _create_python_notebook,
+        ),
+        ("R notebook", ("r_coder",), _create_r_notebook),
+        ("Utility script", ("utility_scripter",), _create_utility_script),
+        ("Fork notebook", ("code_forker",), _fork_notebook),
+        ("Tag notebook", ("code_tagger",), _tag_notebook),
+        ("Create dataset", ("dataset_creator", "api_dataset_creator"), _create_dataset),
+        ("Tag dataset", ("dataset_tagger",), _tag_dataset),
+        ("Document dataset", ("dataset_documenter",), _document_dataset),
+        ("Create model", ("model_creator", "api_model_creator"), _create_model),
+        ("Model variation", ("model_variation_creator",), _create_model_variation),
+        ("Tag model", ("model_tagger",), _tag_model),
+        ("Document model", ("model_documenter",), _document_model),
     ]
 
     attempted = 0
     succeeded = 0
 
-    for name, fn in actions:
+    for name, badge_ids, fn in actions:
+        if not any(should_attempt(badge_id) for badge_id in badge_ids):
+            continue
         print(f"\n  --- {name} ---")
         attempted += 1
         if fn(username):

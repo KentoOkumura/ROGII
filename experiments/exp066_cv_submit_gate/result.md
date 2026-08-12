@@ -38,4 +38,4 @@ kaggle competitions submit rogii-wellbore-geology-prediction -k kentookumura/exp
 
 ## 次
 
-提出回数を使う場合は上記の code submit を実行し、Public LB を `submissions/SUBMISSIONS.md` と関連実験に記録する。
+提出回数を使う場合は上記の code submit を実行し、Public LB を `SUBMISSIONS.md` と関連実験に記録する。

@@ -2,19 +2,19 @@
 
 > Official source: https://github.com/Kaggle/kagglehub
 > PyPI: https://pypi.org/project/kagglehub/
-> Current version: 1.0.0 (Feb 2026). Requires Python >= 3.10.
+> Repository-locked version and Python requirements: read `uv.lock` and `pyproject.toml` at execution time; do not transcribe fixed values here.
 
 ## Installation
 
 ```bash
-uv pip install kagglehub                    # Base
-uv pip install kagglehub[pandas-datasets]   # + Pandas adapter
-uv pip install kagglehub[polars-datasets]   # + Polars adapter
-uv pip install kagglehub[hf-datasets]       # + Hugging Face adapter
-uv pip install kagglehub[signing]           # + Sigstore model signing
+uv sync --locked --extra kaggle-platform
 ```
 
+`pandas-datasets`、`polars-datasets`、`hf-datasets`、`signing` の adapter が必要な場合は、必要な extra を `pyproject.toml` の `kaggle-platform` 依存へ追加して `uv lock` を更新し、その後 `uv sync --locked --extra kaggle-platform` を実行する。セッション内だけの install は行わない。
+
 ## Authentication
+
+credentialの生成、保存、優先順位は[registrationの認証設定](../../registration/references/kaggle-setup.md)を正とする。以下はkagglehub固有のAPIだけを示す。
 
 ```python
 import kagglehub
@@ -30,14 +30,6 @@ set_kaggle_api_token(api_token="...")
 # Check who is logged in
 kagglehub.whoami()  # Returns: {'username': '...'}
 ```
-
-**Auth methods (checked in order):**
-1. `KAGGLE_API_TOKEN` env var (new style)
-2. `~/.kaggle/access_token` file
-3. Google Colab secret `KAGGLE_API_TOKEN`
-4. `KAGGLE_USERNAME` + `KAGGLE_KEY` env vars (legacy)
-5. `~/.kaggle/kaggle.json` file (legacy)
-6. Google Colab secrets `KAGGLE_USERNAME` + `KAGGLE_KEY` (legacy)
 
 Inside Kaggle notebooks, authentication is automatic.
 
@@ -150,7 +142,7 @@ kagglehub.whoami(verbose: bool = True) -> dict  # {'username': '...'}
 
 | Variable | Purpose | Default |
 |----------|---------|---------|
-| `KAGGLE_API_TOKEN` | API token (new style) | — |
+| `KAGGLE_API_TOKEN` | API token | — |
 | `KAGGLE_USERNAME` | Legacy username | — |
 | `KAGGLE_KEY` | Legacy API key | — |
 | `KAGGLEHUB_CACHE` | Cache folder | `~/.cache/kagglehub/` |

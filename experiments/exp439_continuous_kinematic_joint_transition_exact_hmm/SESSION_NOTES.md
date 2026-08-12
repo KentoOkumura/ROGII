@@ -51,7 +51,7 @@ Kaggle push前に同じ数を再確認する。control再学習は含まれな�
 ### 検証コマンド
 
 ```text
-.venv/bin/pytest -q tests/test_exp439_continuous_kinematic_joint_transition_exact_hmm.py
+.venv/bin/pytest -q experiments/exp439_continuous_kinematic_joint_transition_exact_hmm/tests/test_exp439_continuous_kinematic_joint_transition_exact_hmm.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <compact source>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact source>
 .venv/bin/python -m py_compile <train> <inference> <test>

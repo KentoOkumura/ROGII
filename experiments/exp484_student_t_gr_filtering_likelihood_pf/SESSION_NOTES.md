@@ -67,7 +67,7 @@ control PFを再実行しない。
     - `.venv/bin/python -m py_compile ...`
     - `.venv/bin/ruff check ... --select F821,F401,E9`
     - `JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test ...`
-    - `.venv/bin/pytest -q tests/test_exp484_student_t_gr_filtering_likelihood_pf.py`
+    - `.venv/bin/pytest -q experiments/exp484_student_t_gr_filtering_likelihood_pf/tests/test_exp484_student_t_gr_filtering_likelihood_pf.py`
   - 専用testは`10 passed`。Kaggle package、Stage 0/1実行、prediction、
     inference、submissionは0。
   - 保存exp404 control実ファイル3,783,989行についてraw SHA

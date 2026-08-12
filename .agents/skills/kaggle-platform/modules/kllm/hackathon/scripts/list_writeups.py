@@ -5,8 +5,9 @@ Calls `list_hackathon_write_ups` paginated, then `list_hackathon_tracks` once
 to resolve numeric track ids to titles. Outputs one JSON object per writeup
 row to stdout (or a single JSON array with --array).
 
-Does NOT call `get_hackathon_write_up` — it's known-broken (see
-references/hackathon-endpoints.md). Use fetch_writeup.py for full-body fetches.
+Does not call a full-body endpoint. Use fetch_writeup.py after enumeration;
+it starts with `get_writeup`, whose argument shape is simpler than
+`get_hackathon_write_up` (see references/hackathon-endpoints.md).
 """
 
 from __future__ import annotations
@@ -16,13 +17,12 @@ import json
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[6]
-sys.path.insert(0, str(REPO_ROOT / "skills" / "kaggle"))
+SKILL_ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(SKILL_ROOT))
 
 from shared.mcp_client import (  # noqa: E402
     classify_result,
     extract_json,
-    load_dotenv,
     mcp_call,
     resolve_token,
 )
@@ -94,10 +94,13 @@ def main() -> int:
                         help="Emit a single JSON array instead of one object per line")
     args = parser.parse_args()
 
-    load_dotenv(REPO_ROOT / ".env", Path.home() / ".env")
     token = resolve_token()
     if not token:
-        print("error: no Kaggle token found", file=sys.stderr)
+        print(
+            "error: no Kaggle API token found "
+            "(KAGGLE_API_TOKEN or ~/.kaggle/access_token)",
+            file=sys.stderr,
+        )
         return 2
 
     track_titles = fetch_tracks(args.competition, token)

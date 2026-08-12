@@ -84,7 +84,7 @@ PF/HMM/Beam再生成、Stage C、inference、submissionも0。
 実行済み:
 
 ```bash
-.venv/bin/pytest -q tests/test_exp414_candidate_rmse_offset_selector.py
+.venv/bin/pytest -q experiments/exp414_fold_safe_candidate_rmse_offset_selector_on_exp264/tests/test_exp414_candidate_rmse_offset_selector.py
 .venv/bin/python -m py_compile \
   src/candidate_rmse_offset_selector.py \
   src/candidate_rmse_root_cause_readout.py \

@@ -167,8 +167,8 @@ make update-summary
 .venv/bin/python scripts/validate_project.py --strict
 .venv/bin/python .agents/skills/kaggle-review-exp/scripts/review_exp_docs.py exp374 --root .
 .venv/bin/python -m py_compile experiments/exp374_exp209_student_t_exact_hmm_emission/*compact_selfcontained*.py
-.venv/bin/ruff check experiments/exp374_exp209_student_t_exact_hmm_emission/*compact_selfcontained*.py tests/test_exp374_exp209_student_t_exact_hmm_emission.py --select F821,F401,F841
-.venv/bin/pytest -q tests/test_exp374_exp209_student_t_exact_hmm_emission.py
+.venv/bin/ruff check experiments/exp374_exp209_student_t_exact_hmm_emission/*compact_selfcontained*.py experiments/exp374_exp209_student_t_exact_hmm_emission/tests/test_exp374_exp209_student_t_exact_hmm_emission.py --select F821,F401,F841
+.venv/bin/pytest -q experiments/exp374_exp209_student_t_exact_hmm_emission/tests/test_exp374_exp209_student_t_exact_hmm_emission.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb experiments/exp374_exp209_student_t_exact_hmm_emission/*compact_selfcontained*.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp374_exp209_student_t_exact_hmm_emission/*compact_selfcontained*.py
 make prepare-kaggle-notebooks EXP=exp374_exp209_student_t_exact_hmm_emission EXTRA_ARGS="--notebook train --kernel-id kentookumura/exp374-exp209-student-t-exact-hmm-emission-train --title 'exp374 exp209 student t exact hmm emission train' --run-on-push --strict"

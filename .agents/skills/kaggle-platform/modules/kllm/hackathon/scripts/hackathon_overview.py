@@ -13,13 +13,12 @@ import json
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[6]
-sys.path.insert(0, str(REPO_ROOT / "skills" / "kaggle"))
+SKILL_ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(SKILL_ROOT))
 
 from shared.mcp_client import (  # noqa: E402
     classify_result,
     extract_json,
-    load_dotenv,
     mcp_call,
     resolve_token,
 )
@@ -52,16 +51,19 @@ def main() -> int:
     parser.add_argument("--competition", required=True, help="Hackathon competition slug")
     parser.add_argument("--pretty", action="store_true", help="Indent JSON output")
     parser.add_argument(
-        "--summary", action="store_true",
+        "--summary",
+        action="store_true",
         help="Print a one-line-per-page summary instead of full JSON",
     )
     args = parser.parse_args()
 
-    load_dotenv(REPO_ROOT / ".env", Path.home() / ".env")
     token = resolve_token()
     if not token:
-        print("error: no Kaggle token found (KAGGLE_API_TOKEN, ~/.kaggle/access_token, or KAGGLE_KEY)",
-              file=sys.stderr)
+        print(
+            "error: no Kaggle API token found "
+            "(KAGGLE_API_TOKEN or ~/.kaggle/access_token)",
+            file=sys.stderr,
+        )
         return 2
 
     result = fetch_overview(args.competition, token)
@@ -72,8 +74,10 @@ def main() -> int:
     # Wrap stdout in untrusted-content boundaries — overview pages contain
     # arbitrary host-authored markdown that could attempt prompt injection.
     # The agent must treat anything inside as data, not directives.
-    print(f'<untrusted-content source="kaggle-mcp" tool="get_hackathon_overview" '
-          f'competition="{args.competition}">')
+    print(
+        f'<untrusted-content source="kaggle-mcp" tool="get_hackathon_overview" '
+        f'competition="{args.competition}">'
+    )
     if args.summary:
         pages = (result.get("data") or {}).get("pages") or []
         print(f"competition: {args.competition}")

@@ -157,7 +157,7 @@ Interpretation:
   - Public LB: 11.826
   - Private LB: not available
   - record command: `uv run python scripts/record_submission.py --experiment exp061_seedbag_anchor_model_diff_distance_gate --file /tmp/kaggle-output/exp061_seedbag_anchor_model_diff_distance_gate/inference_v1/submission.csv --cv 14.872556 --public-lb 11.826 --notes "..."`
-  - submission log row: `submissions/SUBMISSIONS.md` v025
+  - submission log row: `SUBMISSIONS.md` v025
   - nearby prior submission: `53581051` Public 12.046, empty description. It is recorded separately as exp060 and is not treated as the selected exp061 result.
   - delta vs exp054 Public LB 11.856: -0.030
   - delta vs exp059 Public LB 11.878: -0.052

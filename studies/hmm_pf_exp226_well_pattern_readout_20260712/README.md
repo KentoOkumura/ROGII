@@ -47,6 +47,6 @@
 
 ## Source Docs
 
-- `docs/analysis/hmm_pf_exp226_well_pattern_readout_20260712.md` に人間向けの解釈を記録。
+- `docs/surveys/hmm_pf_exp226_well_pattern_readout_20260712.md` に人間向けの解釈を記録。
 
 Rows in `joined_well_summary.csv`: 773

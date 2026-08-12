@@ -11,16 +11,7 @@
 - Fold 数: 5
 - メトリック: RMSE。小さいほど良い。
 - 評価対象行: validation well のうち `TVT_input` が NaN の行だけ。
-- 主な検証コマンド:
-  ```bash
-  task validate-exp EXP=exp001_baseline
-  task prepare-kaggle-notebooks EXP=exp001_baseline EXTRA_ARGS="--strict"
-  task push-kaggle-train EXP=exp001_baseline
-  task kaggle-status KERNEL=<username>/<train-kernel-slug>
-  task kaggle-logs KERNEL=<username>/<train-kernel-slug>
-  ```
-
-  `task kaggle-logs` は Kaggle CLI 2.2.3 の `kaggle kernels logs -f owner/slug` を実行し、Kaggle UI と同系統の live SSE から stdout/stderr を逐次取得する。`--interval` は使わない。
+- 検証、Kaggle 実行、ログ確認の手順は `kaggle-review-exp` と `kaggle-platform` を参照する。
 
 ## リークチェックリスト
 
@@ -32,17 +23,15 @@
 - [ ] target encoding が fold 外データを参照していないか。
 - [ ] augmentation や前処理が validation に不適切に影響していないか。
 - [ ] 学習時と推論時の前処理が一致しているか。
-- [ ] CV と LB の乖離を `result.md` と `experiment_summary.md` に記録しているか。
+- [ ] CV・LB の数値を `metrics.json` に記録し、その比較と乖離の解釈を `result.md` に記録したうえで `experiment_summary.md` を再生成しているか。
 
 ## CV/LB 乖離ログ
 
-| 実験 | CV | Public LB | 乖離 | メモ |
-| --- | --- | --- | --- | --- |
-| exp001_baseline | - | - | - | planned。well holdout RMSE を実装予定。 |
+記録ファイルの役割は`AGENTS.md`を正とします。`result.md`では構造化されたCV・LBを参照して比較や乖離を説明できますが、別の数値正本として手入力しません。この方針文書にも変動するスコアを記録しません。
 
 ## 検証判断
 
 - 採用候補: 5-fold の平均 RMSE と fold 間ばらつきを必ず記録する。1 fold だけの改善は provisional とする。
 - Public LB は最終判断の参考にするが、CV で説明できない改善は過学習/分布合わせの疑いとして扱う。
-- CV を切り直す場合は、過去実験との比較が崩れるため `experiment_summary.md` に理由を残す。
-- 提出前には Kaggle output を取得した場合だけ `task submit-check EXP=<exp> SUBMISSION=<downloaded-submission.csv>` で sample submission と行数、列、`id` 順、NaN を確認する。
+- CV を切り直す場合は、過去実験との比較が崩れるため `result.md` に理由と比較可能な範囲を残し、`metrics.json` の更新後に `experiment_summary.md` を再生成する。
+- 提出前には Kaggle output を取得した場合だけ `task submit-check EXP=<exp> SUBMISSION=<downloaded-submission.csv>` で sample submission と行数、列順、`id`の内容・順序・重複、欠損、target列の非数値・infinite valueを確認する。`EXP`指定時は結果とsubmission SHAを対象実験の`metrics.json`へ自動保存する。

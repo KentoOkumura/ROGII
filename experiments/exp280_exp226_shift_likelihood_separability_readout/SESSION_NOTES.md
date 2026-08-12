@@ -35,7 +35,7 @@ make new-steering EXP=exp280_exp226_shift_likelihood_separability_readout
 make new-exp EXP=exp280_exp226_shift_likelihood_separability_readout
 .venv/bin/python -m py_compile <exp280 train.py> <exp280 inference.py> <exp280 test.py>
 .venv/bin/ruff check <exp280 sources and test> --select F821,F401,F841,E722,E501
-.venv/bin/pytest -q tests/test_exp280_exp226_shift_likelihood_separability_readout.py
+.venv/bin/pytest -q experiments/exp280_exp226_shift_likelihood_separability_readout/tests/test_exp280_exp226_shift_likelihood_separability_readout.py
 # 6 passed
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --set-kernel python3 <source.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <source.py>
@@ -68,7 +68,7 @@ make prepare-kaggle-notebooks EXP=exp280_exp226_shift_likelihood_separability_re
 # PASS, no push
 ```
 
-- full testの唯一のFAILは`tests/test_exp264_candidate_selector_pipeline.py`が
+- full testの唯一のFAILは`experiments/exp264_exp263_candidate_confidence_dual_selector/tests/test_exp264_candidate_selector_pipeline.py`が
   `inference.status=user_authorized_2026_07_19`を期待する一方、既存exp264 configが外部進行により
   `corrected_inference_v4_running`へ更新済みなことによる。exp280とは無関係なので変更しない。
 - canonical metadataはid/title slug一致、private、CPU、GPU/TPU/internet off、run-on-push true、

@@ -49,7 +49,7 @@ full-prefix / last-512安定性だけを0-HMMで監査する。
   `1.0 / 1.3`を1回掛ける。`60 × 1.3 = 78`を再clipしないことをtestで固定した。
 - helper `.py` は作らず、candidate notebookをself-containedにした。
 - 専用test
-  `tests/test_exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm.py` を11件追加した。
+  `experiments/exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm/tests/test_exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm.py` を11件追加した。
 
 検証コマンド:
 
@@ -60,7 +60,7 @@ full-prefix / last-512安定性だけを0-HMMで監査する。
   candidate notebook生成
 - `JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact_train.py>`:
   PASS
-- `.venv/bin/pytest -q tests/test_exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm.py`:
+- `.venv/bin/pytest -q experiments/exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm/tests/test_exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm.py`:
   `11 passed`
 - `task validate-exp ...`: `task` commandが環境に存在せず未実行
 - `make validate-exp EXP=exp397_prefix_gr_agreement_adaptive_sigma_exact_hmm`:

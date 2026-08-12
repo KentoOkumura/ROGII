@@ -51,7 +51,7 @@
 ```bash
 .venv/bin/python -m py_compile <exp343 compact train/inference.py> <exp343 test.py>
 .venv/bin/ruff check <exp343 sources and test> --select F821,F401,F841,E722,E501
-.venv/bin/pytest -q tests/test_exp343_acf_effective_sample_likelihood_tempering_audit.py
+.venv/bin/pytest -q experiments/exp343_acf_effective_sample_likelihood_tempering_audit/tests/test_exp343_acf_effective_sample_likelihood_tempering_audit.py
 # 7 passed
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact source.py>
 make validate-exp EXP=exp343_acf_effective_sample_likelihood_tempering_audit

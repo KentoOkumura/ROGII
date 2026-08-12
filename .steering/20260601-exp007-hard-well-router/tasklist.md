@@ -25,4 +25,4 @@
 - Kaggle inference notebook を push して `submission.csv` を生成した。
 - `submission.csv` の submit-check と `validate_submission.py` を通した。
 - submission ref `53254030` を提出し、Public LB 12.675 を取得した。
-- LB 結果を `SESSION_NOTES.md`、`result.md`、`README.md`、`experiment_summary.md`、`KAGGLE_DIRECTION.md`、`submissions/SUBMISSIONS.md` に反映した。
+- LB 結果を `SESSION_NOTES.md`、`result.md`、`README.md`、`experiment_summary.md`、`KAGGLE_DIRECTION.md`、`SUBMISSIONS.md` に反映した。

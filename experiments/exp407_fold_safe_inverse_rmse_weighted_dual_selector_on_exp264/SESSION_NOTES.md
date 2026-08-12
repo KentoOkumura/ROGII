@@ -51,7 +51,7 @@ Kaggle実行、正規Notebook採用、Stage C/D、inference、submissionは承�
 - fold別weight table、sampling manifest、truth-read ledger、fit row ID /
   candidate error / feature content / model / OOF SHAを保存する。
 - 保存済みparent v5とのfold、near、1000+、hidden-like 2面、by-well比較と
-  technical/scientific全AND gateを`src/exp407_inverse_rmse_selector.py`へ実装した。
+  technical/scientific全AND gateを`experiments/exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264/exp407_inverse_rmse_selector.py`へ実装した。
 - `execution.run_approved=false`、Stage B enabled false、run-on-push falseを維持した。
 
 ## 参考値（fitには使用禁止）
@@ -159,17 +159,17 @@ control再学習0、notebook 6-cell placeholderの静的assertもPASSした。
 ```bash
 .venv/bin/python -m py_compile \
   src/candidate_task_weighting.py \
-  src/exp407_inverse_rmse_selector.py \
+  experiments/exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264/exp407_inverse_rmse_selector.py \
   src/candidate_selector_pipeline.py \
   experiments/exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264/exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264_compact_selfcontained_train.py
 .venv/bin/ruff check \
   src/candidate_task_weighting.py \
-  src/exp407_inverse_rmse_selector.py \
+  experiments/exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264/exp407_inverse_rmse_selector.py \
   src/candidate_selector_pipeline.py \
   experiments/exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264/exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264_compact_selfcontained_train.py \
-  tests/test_exp407_inverse_rmse_weighted_dual_selector.py \
+  experiments/exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264/tests/test_exp407_inverse_rmse_weighted_dual_selector.py \
   --select F821,F811,F401,E501
-.venv/bin/pytest -q tests/test_exp407_inverse_rmse_weighted_dual_selector.py
+.venv/bin/pytest -q experiments/exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264/tests/test_exp407_inverse_rmse_weighted_dual_selector.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264/exp407_fold_safe_inverse_rmse_weighted_dual_selector_on_exp264_compact_selfcontained_train.py
 ```

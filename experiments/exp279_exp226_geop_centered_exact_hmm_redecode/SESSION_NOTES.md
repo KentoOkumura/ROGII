@@ -54,7 +54,7 @@ make new-steering EXP=exp279_exp226_geop_centered_exact_hmm_redecode
 make new-exp EXP=exp279_exp226_geop_centered_exact_hmm_redecode
 .venv/bin/python -m py_compile <exp279 train.py> <exp279 inference.py> <exp279 test.py>
 .venv/bin/ruff check <exp279 sources and test> --select F821,F401,F841,E722
-.venv/bin/pytest -q tests/test_exp279_exp226_geop_centered_exact_hmm_redecode.py
+.venv/bin/pytest -q experiments/exp279_exp226_geop_centered_exact_hmm_redecode/tests/test_exp279_exp226_geop_centered_exact_hmm_redecode.py
 # 4 passed
 make validate-exp EXP=exp279_exp226_geop_centered_exact_hmm_redecode
 # strict validation passed

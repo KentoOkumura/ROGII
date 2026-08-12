@@ -27,6 +27,8 @@
 
 ## 運用ルール
 
+- リポジトリ内の自動化コマンドは、対応するターゲットと`task`コマンドの両方が利用できる場合は`task <target>`を使います。`task`コマンドがない場合は同名の`make <target>`を使います。対応ターゲットがないrepo-local Python scriptだけ、リポジトリルートから`uv run python <script> ...`で実行します。PATH上の裸の`python` / `python3`を試してからfallbackしません。TaskfileとMakefileは`UV_CACHE_DIR=/tmp/uv-cache`と`PYTHONDONTWRITEBYTECODE=1`を既定で設定します。Ruff cacheは`/tmp/ruff-cache`へ置き、pytest cache providerは無効化します。managed sandboxでTask/Makeを経由せず`uv`を直接実行するときは、repo-local script、Kaggle CLI、`uv sync`などの用途を問わず、既定のuv cacheが書き込み可能だと確認できない場合は最初から`PYTHONDONTWRITEBYTECODE=1 UV_CACHE_DIR=/tmp/uv-cache uv ...`を使います。Makefile内部の`.venv/bin/...`は許可された実装です。`uv`も対応ターゲットも利用できず`.venv/`が準備済みの場合は、repo-local scriptを`PYTHONDONTWRITEBYTECODE=1 .venv/bin/python`で直接実行できます。Kaggle Notebook、Colab、外部containerなど、リポジトリ外の実行環境内で指定されたinterpreterはこの規則の対象外です。
+- リポジトリ内でKaggle CLIを直接実行する場合は、lockfileで固定した版を使うため`uv run kaggle ...`を使います。Taskfileは`uv run kaggle`、Makefileは`.venv/bin/kaggle`を使います。CLI構文を説明するだけの記載は裸の`kaggle`表記でも構いません。
 - 設計、実装方針、実験分岐、提出判断などで複数の妥当な選択肢があり、結果や作業方針に影響する場合は、独断で決めずユーザーに確認します。既存ルールやコードから明確に判断できる低リスクな細部は、作業を止めずに進めます。
 - 実験を完了とするか、採用または不採用とするかは、エージェントだけで確定せずユーザーに判断を仰ぎます。判断を求める際は、比較対象、CV・LB、実行証拠、未解決事項を整理し、推奨する判断とその理由を伝えます。ユーザーが判断するまでは、`result.md`、`experiment_summary.md`、`KAGGLE_DIRECTION.md` などに完了・採用・不採用が確定したものとして記録しません。
 - ユーザーが実験の完了を判断した時点で、その実験に関係する変更だけを確認して `git commit` し、現在の作業ブランチを `git push` します。作業ツリーにある無関係な変更は commit に含めません。commit または push に失敗した場合は、失敗理由と未完了の操作をユーザーに報告します。
@@ -36,16 +38,23 @@
   - 公式資料の要約は `docs/official/`、ディスカッションの保存は `docs/discussions/`、論文単位のメモは `docs/papers/`。
   - 取得した公開 Notebook と metadata は `docs/notebooks/`。
   - 完了した調査レポートは `docs/surveys/`、検索入口は `docs/surveys/README.md`。
+  - docsから参照する説明用の図は`docs/images/`。調査で生成した未整理の図は`studies/`、実験生成物は`experiments/<exp>/artifacts/`へ置きます。
   - `docs/analysis/` は旧形式の保存場所です。新しい完了レポートは追加せず、既存文書は次に更新または再利用するときに内容を確認して `docs/surveys/` へ移します。一括移行や推測による補完は行いません。
   - 再利用するコードは `src/`、その場限りの調査コードと生の表・図は `studies/`。
-  - 生のコンペデータは `data/raw/`。
-- 実験記録は、`metrics.json` を機械処理する数値、`result.md` を解釈・実行証拠・ユーザーの採否判断、`SESSION_NOTES.md` を実行中の作業ログの正とします。実験の `README.md` は状態概要とこれらへのリンクに留め、CV/LB を複数ファイルへ手作業で重複記録しません。
+  - 公式から取得した生のコンペデータは `data/raw/`、外部データは `data/external/`、再利用する加工済みデータは `data/processed/`。
+  - 実験固有のテストは `experiments/<exp>/tests/`、複数実験やリポジトリ全体に関わるテストはルートの `tests/`。
+  - 実験で参照する小規模な固定データは`experiments/<exp>/assets/`へ置き、トップレベルの`assets/`は作りません。
+  - リポジトリが管理する自動化と外部ツールの起動ラッパーは`scripts/`、Gitで追跡しない外部ツールのcloneやローカル配置は`tools/`に置きます。
+- トップレベルの`artifacts/`は使いません。実験生成物は`experiments/<exp>/artifacts/`へ集約し、必要な分類はその下のサブディレクトリで表します。旧実験の`features/`と`variants/`は履歴として残せますが、新規作成せず、次にその生成物を更新するとき`artifacts/`配下へ移します。その場限りの調査表・図は`studies/`、確認済みの調査結論は`docs/surveys/`へ保存します。
+- 提出監視中のpollingログは一時生成物とし、Gitへ保存しません。CV/LBなど機械処理する数値とkernel version・Kaggle Notebook実行時間・生成物SHAなどの構造化された実行証拠は対応する実験の`metrics.json`、submission ref・提出日時・submission scoring status・監視開始からscore確定までの所要時間を含む時系列ログは`SESSION_NOTES.md`、submission refを専用列に持つ提出履歴はリポジトリ直下の`SUBMISSIONS.md`、証拠への参照と結果の解釈は`result.md`へ分担して記録します。スコア確定時は先に`record-exp`で`metrics.json`を更新し、その値を`record-submission`が読み取って提出履歴へ記録します。同じsubmission refを再記録した場合は新しい行を作らず、既存行のCV/LBと明示されたメモを更新します。code competitionの出力をローカル取得していない場合は、Kaggle側で対象ファイルを確認したうえで`record-submission`に`--allow-missing-file`を渡し、ローカル行数・列・SHAを未取得として記録します。Notebook実行時間とsubmission scoring所要時間をどちらも`runtime`と呼びません。
+- 実験記録は、`metrics.json` を機械処理する数値、実験の唯一のstatusフィールド、構造化された実行証拠、`config.yaml`をroute・設定・系譜と再現性方針、`result.md` を証拠への参照・解釈・ユーザーの採否判断、`SESSION_NOTES.md` を実行中の時系列ログの正とします。実験の `README.md` は目的、差分、リスク、次アクションとこれらへのリンクに留め、設定、系譜、実験status、CV/LB、SHAを複数ファイルへ手作業で重複記録しません。submission scoring statusは時系列イベントであり、`metrics.json`の実験statusとは別物です。
+- 旧形式の実験READMEにroute、status、CV/LBや詳細結果が残っていても一括削除しません。その実験を次に更新するとき、routeが`config.yaml`、status・数値・構造化された実行証拠が`metrics.json`、証拠への参照と解釈が`result.md`、時系列の作業履歴が`SESSION_NOTES.md`に揃っていることを確認してから、READMEを概要と正の記録へのリンクへ簡素化します。
 - `docs/surveys/` を実験完了後の調査・分析・統合説明の正とします。`studies/` や `experiments/` を完了した調査レポートの検索入口にしません。
 - 生のコンペデータ、モデル重み、大きな生成物を Git に保存しません。
 
 ## 実験の状態
 
-- 実験の状態は当面 `metrics.json` の単一の `status` で管理します。
+- 実験の状態は当面 `metrics.json` の単一の `status` で管理します。このフィールドは実験statusだけを表し、Kaggle submissionのscoring statusには使いません。
 - `planned`、`running`、`debug_completed`、`scaffold_completed`、`failed` は実行状態です。
 - `usable`、`completed`、`deprecated`、`discarded` はユーザーの判断を表します。エージェントはユーザーの明示判断前にこれらへ変更しません。
 - `leak-risk` は検証リークの注意表示で、採用・不採用・完了の判断ではありません。
@@ -64,7 +73,7 @@
   - `設計可能・実験化未承認`: 仮説、根拠、親実験、変更するもの、固定するもの、最小検証、成功条件、停止条件、禁止する代替実装、未決事項が記録され、未決事項が`なし`である。ただし実験化はまだ承認されていない。
 - 詳細ファイルには、観測事実と仮定を分け、関連する `result.md`、metrics、保存済み生成物、一次資料へのパス、壁打ちで採らなかった案と理由も記録します。情報不足を推測で埋めず、未決事項として残します。
 - 別セッションで候補を設計・実装するときは、バックログ表だけから内容を再構成しません。最初に対応する `docs/backlog/<candidate>.md` と根拠ファイルを読み、固定するもの、変更するもの、最小検証、成功条件、停止条件、実行しないこと、未決事項を短く提示します。詳細記録と異なる解釈または重要な未決事項があれば、コード作成前にユーザーへ確認します。
-- ユーザーが候補の実験化を承認したら、exp番号を採番して `.steering/YYYYMMDD-expXXX-title/` を作り、詳細ファイルの内容を `requirements.md`、`design.md`、`tasklist.md` へ欠落なく移します。移行を確認後、`kaggle-strategy` が `docs/backlog/<candidate>.md` と未着手バックログの行を削除し、以後は `.steering/` と `experiments/<exp>/` を正とします。
+- ユーザーが候補の実験化を承認したら、exp番号を採番して `.steering/YYYYMMDD-expXXX-title/` を作ります。候補詳細の契約、根拠、判断履歴は`requirements.md`、その契約に対する実装方法と承認済みの差分は`design.md`、作業順序と確認項目は`tasklist.md`へ分担して欠落なく移し、同じ契約本文を複製しません。移行を確認後、`kaggle-strategy` が `docs/backlog/<candidate>.md` と未着手バックログの行を削除し、以後は `.steering/` と `experiments/<exp>/` を正とします。
 - この規則の導入前から詳細ファイルなしで存在する候補は、一括して推測補完しません。次に更新、設計、実装するとき、コード作成前に詳細ファイルを作ってユーザー確認を得ます。
 
 ## Skill 入口

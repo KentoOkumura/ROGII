@@ -50,7 +50,7 @@
 
 - `py_compile`: train / inferenceともpass。
 - `ruff --select F821`: train / inference /専用testともpass。
-- `pytest -q tests/test_exp355_exp226_dip_rate_prior_on_exp209.py`: 8 passed。
+- `pytest -q experiments/exp355_exp226_dip_rate_prior_on_exp209/tests/test_exp355_exp226_dip_rate_prior_on_exp209.py`: 8 passed。
 - `jupytext --to ipynb --test`: train / inferenceともpass。
 - `make validate-exp EXP=exp355_exp226_dip_rate_prior_on_exp209`: strict pass。
 - `make validate-template`: pass。`task`と`jq`は環境に存在しなかったため、

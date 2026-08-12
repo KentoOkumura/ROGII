@@ -70,11 +70,11 @@ make prepare-kaggle-notebooks EXP=exp321_z_only_residual_gr_correction_ladder EX
 実装直後の実行量契約はactive variant 1、diagnostic contract 1、fold strata 5、model config / trained fold / booster / HMM / window decoder `0 / 0 / 0 / 0 / 0`、parent/control再実行0。後続の明示承認で同契約のKaggle CPU Run AB version 1を実行した。
 
 ```bash
-.venv/bin/pytest -q tests/test_exp321_z_only_residual_gr_correction_ladder.py
+.venv/bin/pytest -q experiments/exp321_z_only_residual_gr_correction_ladder/tests/test_exp321_z_only_residual_gr_correction_ladder.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp321_z_only_residual_gr_correction_ladder/exp321_z_only_residual_gr_correction_ladder_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp321_z_only_residual_gr_correction_ladder/exp321_z_only_residual_gr_correction_ladder_compact_selfcontained_inference.py
 .venv/bin/python -m py_compile experiments/exp321_z_only_residual_gr_correction_ladder/exp321_z_only_residual_gr_correction_ladder_compact_selfcontained_train.py experiments/exp321_z_only_residual_gr_correction_ladder/exp321_z_only_residual_gr_correction_ladder_compact_selfcontained_inference.py
-.venv/bin/ruff check experiments/exp321_z_only_residual_gr_correction_ladder/exp321_z_only_residual_gr_correction_ladder_compact_selfcontained_train.py experiments/exp321_z_only_residual_gr_correction_ladder/exp321_z_only_residual_gr_correction_ladder_compact_selfcontained_inference.py tests/test_exp321_z_only_residual_gr_correction_ladder.py --select F821
+.venv/bin/ruff check experiments/exp321_z_only_residual_gr_correction_ladder/exp321_z_only_residual_gr_correction_ladder_compact_selfcontained_train.py experiments/exp321_z_only_residual_gr_correction_ladder/exp321_z_only_residual_gr_correction_ladder_compact_selfcontained_inference.py experiments/exp321_z_only_residual_gr_correction_ladder/tests/test_exp321_z_only_residual_gr_correction_ladder.py --select F821
 make validate-exp EXP=exp321_z_only_residual_gr_correction_ladder
 ```
 

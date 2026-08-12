@@ -117,7 +117,7 @@ CatBoost / XGBoostと固定物理候補をbounded stackingし、
   - passed
 - `ruff --select F821`
   - passed
-- `pytest -q tests/test_exp494_exp413_cat_xgb_physics_bounded_stack.py`
+- `pytest -q experiments/exp494_exp413_cat_xgb_physics_bounded_stack/tests/test_exp494_exp413_cat_xgb_physics_bounded_stack.py`
   - 10 passed
 - `make test`
   - exp494のtest実行前のcollectionで、既存のexp297 / exp301 / exp333 /
@@ -555,7 +555,6 @@ CatBoost / XGBoostと固定物理候補をbounded stackingし、
   - final status / Public LB: `COMPLETE / 7.228`
   - monitor runtime: `268 min`
   - exp413 Public LB `7.201`比: `+0.027`悪化
-  - monitor log: `logs/submission_exp494_exp413_cat_xgb_physics_bounded_stack.log`
   - scientific selectionは`exp413_lgb`、train tail guardは`FAIL`のまま維持する。
   - exp494は不採用。overall / ML submitted anchorはexp413を維持する。
   - route別の数値参照では、従来exp082 `7.601`を上回るためexp494を

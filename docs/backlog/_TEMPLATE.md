@@ -25,6 +25,8 @@
 
 ## 入力・予測対象・出力・推論方法
 
+実装区分は`docs/glossary.md`に定義したこのリポジトリ内の管理用ラベルを使う。処理内容と省略点を先に具体的に記録する。
+
 - input: TODO
 - target / objective: TODO
 - output: TODO

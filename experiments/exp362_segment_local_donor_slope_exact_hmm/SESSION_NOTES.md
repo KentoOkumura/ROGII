@@ -40,7 +40,7 @@ Kaggle CPU train実行が承認された。
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   --output experiments/exp362_segment_local_donor_slope_exact_hmm/exp362_segment_local_donor_slope_exact_hmm_train.ipynb \
   experiments/exp362_segment_local_donor_slope_exact_hmm/exp362_segment_local_donor_slope_exact_hmm_compact_selfcontained_train.py
-.venv/bin/pytest -q tests/test_exp362_segment_local_donor_slope_exact_hmm.py
+.venv/bin/pytest -q experiments/exp362_segment_local_donor_slope_exact_hmm/tests/test_exp362_segment_local_donor_slope_exact_hmm.py
 make validate-exp EXP=exp362_segment_local_donor_slope_exact_hmm
 make prepare-kaggle-notebooks EXP=exp362_segment_local_donor_slope_exact_hmm \
   EXTRA_ARGS="--notebook train --kernel-id kentookumura/exp362-segment-local-donor-slope-exact-hmm-train \
@@ -162,7 +162,7 @@ prefix-rate-only residual exact HMMの参考値として扱う。notebook scient
 make validate-exp EXP=exp362_segment_local_donor_slope_exact_hmm
 make validate-exp EXP=exp356_exp226_donor_covariance_sig_r_on_exp209
 .venv/bin/pytest -q \
-  tests/test_exp362_segment_local_donor_slope_exact_hmm.py \
+  experiments/exp362_segment_local_donor_slope_exact_hmm/tests/test_exp362_segment_local_donor_slope_exact_hmm.py \
   tests/test_kaggle_notebooks.py
 make update-summary
 make validate-template
@@ -185,7 +185,7 @@ make new-exp EXP=exp362_segment_local_donor_slope_exact_hmm
   experiments/exp362_segment_local_donor_slope_exact_hmm/exp362_segment_local_donor_slope_exact_hmm_compact_selfcontained_train.py \
   experiments/exp362_segment_local_donor_slope_exact_hmm/exp362_segment_local_donor_slope_exact_hmm_compact_selfcontained_inference.py \
   --select F821
-.venv/bin/pytest -q tests/test_exp362_segment_local_donor_slope_exact_hmm.py
+.venv/bin/pytest -q experiments/exp362_segment_local_donor_slope_exact_hmm/tests/test_exp362_segment_local_donor_slope_exact_hmm.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp362_segment_local_donor_slope_exact_hmm/exp362_segment_local_donor_slope_exact_hmm_compact_selfcontained_train.py \
   experiments/exp362_segment_local_donor_slope_exact_hmm/exp362_segment_local_donor_slope_exact_hmm_compact_selfcontained_inference.py
@@ -215,7 +215,7 @@ make test
 - `make validate-template`: PASS
 - `make test`: `737 passed, 5 skipped, 2 failed`。全体実行時点のexp362専用9件と
   `tests/test_kaggle_notebooks.py` はPASS。2 FAILは既存
-  `tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py` のみで、
+  `experiments/exp296_exp223_self_gr_known_tvt_support_gate/tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py` のみで、
   exp296 config statusが`completed_train_side_guard_failed_closed`なのにtestが
   `kaggle_cpu_*`を要求する不一致と、同configの`execution.run_variant=false`により
   push approval検査より先に停止する期待順序不一致。exp362と無関係のため変更しない。

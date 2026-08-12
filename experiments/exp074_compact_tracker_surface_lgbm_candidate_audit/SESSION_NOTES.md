@@ -94,5 +94,5 @@ kaggle kernels output kentookumura/exp074-compact-tracker-lgbm-audit-infer -p /t
 
 ## 次のアクション
 
-1. 必要なら inference v1 から Kaggle code submission を行い、Public LB ref を `submissions/SUBMISSIONS.md` に記録する。
+1. 必要なら inference v1 から Kaggle code submission を行い、Public LB ref を `SUBMISSIONS.md` に記録する。
 2. Public LB を取らない場合は、exp074 を compact surface candidate evidence として保持し、次の戦略候補へ進む。

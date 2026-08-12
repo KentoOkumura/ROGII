@@ -475,8 +475,25 @@ def main() -> None:
 
     report_text = "".join(report)
     (args.out_dir / "README.md").write_text(report_text, encoding="utf-8")
-    docs_path = Path("docs/analysis/prefix_extrapolation_reasonableness_20260705.md")
-    docs_path.write_text(report_text, encoding="utf-8")
+    docs_path = Path("docs/surveys/prefix_extrapolation_reasonableness_20260705.md")
+    survey_front_matter = """---
+title: Prefix Extrapolation Reasonableness Audit
+date: 2026-07-05
+types:
+  - oof_analysis
+  - comparison
+experiments:
+  - exp001
+topics:
+  - prefix_extrapolation
+  - tail
+  - candidate_path
+status: final
+summary: "known prefixからの直接外挿はlong tailで不安定であり、小さいblendまたは信頼度特徴として限定利用する判断を記録した。"
+---
+
+"""
+    docs_path.write_text(survey_front_matter + report_text, encoding="utf-8")
 
     summary = {
         "wells": int(len(well_df)),

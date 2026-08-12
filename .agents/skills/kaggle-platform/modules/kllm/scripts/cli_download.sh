@@ -2,18 +2,20 @@
 # Download datasets and models from Kaggle using the kaggle-cli.
 #
 # Usage:
-#   bash cli_download.sh                          # runs examples with defaults
-#   bash cli_download.sh <dataset> [output-dir]   # download a specific dataset
+#   bash .agents/skills/kaggle-platform/modules/kllm/scripts/cli_download.sh <dataset> [output-dir]
 #
 # Examples:
-#   bash cli_download.sh kaggle/meta-kaggle ./downloads/meta-kaggle
-#   bash cli_download.sh heptapod/titanic ./downloads/titanic
+#   bash .agents/skills/kaggle-platform/modules/kllm/scripts/cli_download.sh kaggle/meta-kaggle data/external/meta-kaggle
 #
 # Prerequisites:
-#   pip install --upgrade kaggle
-#   Credentials configured via `kaggle auth login`, ~/.kaggle/access_token, KAGGLE_API_TOKEN, or legacy ~/.kaggle/kaggle.json
+#   `uv sync --locked` completed in the repository
+#   Credentials configured via `uv run kaggle auth login`, ~/.kaggle/access_token, KAGGLE_API_TOKEN, or legacy ~/.kaggle/kaggle.json
 
 set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../../../.." && pwd)"
+KAGGLE=(uv run --project "${REPO_ROOT}" kaggle)
 
 DATASET="${1:-kaggle/meta-kaggle}"
 
@@ -26,7 +28,8 @@ if ! printf '%s' "$DATASET" | grep -qE '^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$'; then
     exit 2
 fi
 
-OUTPUT_DIR="${2:-./downloads/$(echo "$DATASET" | tr '/' '-')}"
+DATASET_PATH_SLUG="${DATASET//\//-}"
+OUTPUT_DIR="${2:-${REPO_ROOT}/data/external/${DATASET_PATH_SLUG}}"
 
 echo "============================================================"
 echo "kaggle-cli: Download Dataset"
@@ -34,12 +37,12 @@ echo "============================================================"
 
 # List files in the dataset
 echo "--- Listing dataset files for ${DATASET} ---"
-kaggle datasets files "${DATASET}"
+"${KAGGLE[@]}" datasets files "${DATASET}"
 
 # Download the dataset
 echo "--- Downloading dataset to ${OUTPUT_DIR} ---"
 mkdir -p "${OUTPUT_DIR}"
-kaggle datasets download "${DATASET}" \
+"${KAGGLE[@]}" datasets download "${DATASET}" \
     --path "${OUTPUT_DIR}" \
     --unzip
 

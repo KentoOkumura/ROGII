@@ -12,7 +12,7 @@ lineage:
   metric_context:
     - docs/discussions/rogii-wellbore-geology-prediction-698860-rmse-vs-ssr-error.md
     - docs/discussions/rogii-wellbore-geology-prediction-700340-oof-vs-lb-should-we-track-worst-well-improvements-instead-of-only-global-rmse.md
-    - artifacts/metric_weighted_tail_error_map_anchor_exp073/README.md
+    - docs/surveys/metric_weighted_tail_error_map_20260616.md
   implementation_source: exp063_full_replay_reproducibility_guard.py
   public_replay_source: public_notebook_replay_audit.py
   diff_summary: Reuses exp073 deterministic full replay predictions as the base and exp075 compact PF/Beam surface predictions as an optional branch. The audit never globally replaces the base; it evaluates small conditional weights on long-tail rows and records RMSE, SSE/SSR deltas, tail-bucket deltas, and worst-well regressions.

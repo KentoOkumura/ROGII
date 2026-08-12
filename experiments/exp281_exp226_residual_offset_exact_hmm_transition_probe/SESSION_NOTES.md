@@ -36,7 +36,7 @@ make new-steering EXP=exp281_exp226_residual_offset_exact_hmm_transition_probe
 make new-exp EXP=exp281_exp226_residual_offset_exact_hmm_transition_probe
 .venv/bin/python -m py_compile <exp281 train.py> <exp281 inference.py> <exp281 test.py>
 .venv/bin/ruff check <exp281 sources and test> --select F821,F401,F841,E722,E501
-.venv/bin/pytest -q tests/test_exp281_exp226_residual_offset_exact_hmm_transition_probe.py
+.venv/bin/pytest -q experiments/exp281_exp226_residual_offset_exact_hmm_transition_probe/tests/test_exp281_exp226_residual_offset_exact_hmm_transition_probe.py
 # 6 passed
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --set-kernel python3 <source.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <source.py>

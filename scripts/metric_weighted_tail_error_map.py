@@ -58,7 +58,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--train-dir", default="", help="Override train horizontal well directory.")
     parser.add_argument(
         "--output-dir",
-        default="artifacts/metric_weighted_tail_error_map",
+        default="studies/metric_weighted_tail_error_map",
         help="Directory where metric CSV files will be written.",
     )
     parser.add_argument(

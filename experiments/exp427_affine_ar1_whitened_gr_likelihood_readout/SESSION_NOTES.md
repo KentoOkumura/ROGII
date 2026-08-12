@@ -119,7 +119,7 @@ compact self-contained候補として実装した。既存の正規Notebookは
   - pooled / 5 folds / 1000+ / hidden-like / top1-regret p90の固定AND gate
 - `exp427_*_compact_selfcontained_inference.py` / `.ipynb`
   - prediction / submissionを拒否するfail-closed contract
-- `tests/test_exp427_affine_ar1_whitened_gr_likelihood_readout.py`
+- `experiments/exp427_affine_ar1_whitened_gr_likelihood_readout/tests/test_exp427_affine_ar1_whitened_gr_likelihood_readout.py`
   - affine posterior、missing run、outer-fold exclusion、dense/Woodbury parity、
     factorial score、truth rejection、stable permutation、truth-late、AND gate、
     inference refusal、Notebook境界を専用test化
@@ -151,7 +151,7 @@ compact self-contained候補として実装した。既存の正規Notebookは
 - `JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test ...`
 - `.venv/bin/python -m py_compile ...`
 - `.venv/bin/ruff check ...`
-- `.venv/bin/pytest -q tests/test_exp427_affine_ar1_whitened_gr_likelihood_readout.py`
+- `.venv/bin/pytest -q experiments/exp427_affine_ar1_whitened_gr_likelihood_readout/tests/test_exp427_affine_ar1_whitened_gr_likelihood_readout.py`
 - `.venv/bin/pytest -q tests/test_kaggle_notebooks.py tests/test_scaffold.py`
 - `make validate-exp EXP=exp427_affine_ar1_whitened_gr_likelihood_readout`
 - `make validate-template`

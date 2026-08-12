@@ -68,7 +68,7 @@ under-response shareも`0.004650`悪化した。persistent改善foldも`2/5`だ�
   `exp450_dzdmd_conditioned_tvt_rate_likelihood_pf_compact_selfcontained_inference.py`
   / `.ipynb`
 - 専用test:
-  `tests/test_exp450_dzdmd_conditioned_tvt_rate_likelihood_pf.py`
+  `experiments/exp450_dzdmd_conditioned_tvt_rate_likelihood_pf/tests/test_exp450_dzdmd_conditioned_tvt_rate_likelihood_pf.py`
 - prefix OLS、tail20 backtest、exact-coordinate paired PF、学習型
   residual-AR PF、candidate/control freeze、truth-late mechanism readout、
   Stage 0A/0B全AND gate、SHA出力を実装した。

@@ -54,8 +54,8 @@ make new-exp EXP=exp263_last_anchor_better_candidate_confidence_pair_cache
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/exp263_last_anchor_better_candidate_confidence_pair_cache_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/exp263_last_anchor_better_candidate_confidence_pair_cache_inference.py
 .venv/bin/python -m py_compile experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/*.py
-.venv/bin/ruff check experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/*.py tests/test_exp263_candidate_cache_contract.py
-.venv/bin/pytest -q tests/test_exp263_candidate_cache_contract.py
+.venv/bin/ruff check experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/*.py experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/tests/test_exp263_candidate_cache_contract.py
+.venv/bin/pytest -q experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/tests/test_exp263_candidate_cache_contract.py
 ```
 
 - `task` executableは環境になかったため、repo規約のfallbackで`make`を使用した。

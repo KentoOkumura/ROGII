@@ -116,8 +116,8 @@ package / push / run、Stage 1、inference、submissionの承認には拡張し�
 .venv/bin/ruff check \
   experiments/exp438_u_state_fixed_lattice_exact_hmm/*compact_selfcontained*.py \
   experiments/exp438_u_state_fixed_lattice_exact_hmm/settings.py \
-  tests/test_exp438_u_state_fixed_lattice_exact_hmm.py --select F821
-.venv/bin/pytest -q tests/test_exp438_u_state_fixed_lattice_exact_hmm.py
+  experiments/exp438_u_state_fixed_lattice_exact_hmm/tests/test_exp438_u_state_fixed_lattice_exact_hmm.py --select F821
+.venv/bin/pytest -q experiments/exp438_u_state_fixed_lattice_exact_hmm/tests/test_exp438_u_state_fixed_lattice_exact_hmm.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \
   experiments/exp438_u_state_fixed_lattice_exact_hmm/\
 exp438_u_state_fixed_lattice_exact_hmm_compact_selfcontained_train.py \

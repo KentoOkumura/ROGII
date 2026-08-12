@@ -153,7 +153,7 @@ make new-exp EXP=exp441_full_support_ou_rate_transition_hmm
 - `exp441_full_support_ou_rate_transition_hmm_compact_selfcontained_train.ipynb`
 - `exp441_full_support_ou_rate_transition_hmm_compact_selfcontained_inference.py`
 - `exp441_full_support_ou_rate_transition_hmm_compact_selfcontained_inference.ipynb`
-- `tests/test_exp441_full_support_ou_rate_transition_hmm.py`
+- `experiments/exp441_full_support_ou_rate_transition_hmm/tests/test_exp441_full_support_ou_rate_transition_hmm.py`
 
 検証:
 
@@ -170,12 +170,12 @@ exp441_full_support_ou_rate_transition_hmm_compact_selfcontained_inference.py
   experiments/exp441_full_support_ou_rate_transition_hmm/*compact_selfcontained*.py
 .venv/bin/ruff check \
   experiments/exp441_full_support_ou_rate_transition_hmm/*compact_selfcontained*.py \
-  tests/test_exp441_full_support_ou_rate_transition_hmm.py
-.venv/bin/pytest -q tests/test_exp441_full_support_ou_rate_transition_hmm.py
+  experiments/exp441_full_support_ou_rate_transition_hmm/tests/test_exp441_full_support_ou_rate_transition_hmm.py
+.venv/bin/pytest -q experiments/exp441_full_support_ou_rate_transition_hmm/tests/test_exp441_full_support_ou_rate_transition_hmm.py
 .venv/bin/pytest -q \
-  tests/test_exp408_hmm_message_rate_basin_audit.py \
-  tests/test_exp411_predictive_filtered_rate_innovation_destick.py \
-  tests/test_exp441_full_support_ou_rate_transition_hmm.py
+  experiments/exp408_hmm_message_rate_basin_audit/tests/test_exp408_hmm_message_rate_basin_audit.py \
+  experiments/exp411_predictive_filtered_rate_innovation_destick/tests/test_exp411_predictive_filtered_rate_innovation_destick.py \
+  experiments/exp441_full_support_ou_rate_transition_hmm/tests/test_exp441_full_support_ou_rate_transition_hmm.py
 make validate-exp EXP=exp441_full_support_ou_rate_transition_hmm
 make validate-template
 ```

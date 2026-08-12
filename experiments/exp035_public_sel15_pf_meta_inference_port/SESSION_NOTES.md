@@ -94,7 +94,7 @@ kaggle competitions submissions rogii-wellbore-geology-prediction
 - exp031 Public LB 8.956 より +4.782 悪化。
 - exp033 Public LB 14.961 よりは -1.223 改善したが、public sel15 anchor には大きく届かない。
 - exp034 train well の途中以降を隠した疑似 test meta stack は 見えない test well 評価の LB に転移しなかったため、見えない test well 用 meta 処理 は採用しない。
-- `submissions/SUBMISSIONS.md` に v016 として記録。
+- `SUBMISSIONS.md` に v016 として記録。
 
 ## 次のアクション
 

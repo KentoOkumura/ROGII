@@ -253,7 +253,7 @@ fixed16とのparityと実測runtime gateを評価する。full OOFは実行し�
 - run_full_oof / train_run_on_pushをfalseへ戻し、branchを閉じた
 - result回収・最終検証コマンド:
   - `kaggle kernels output kentookumura/exp399-soft-sticky-fused-exact-runtime-audit-train -p /tmp/kaggle-output/exp399_soft_sticky_fused_exact_runtime_audit/train_v6`
-  - `.venv/bin/pytest -q tests/test_exp399_soft_sticky_fused_exact_runtime_audit.py`
+  - `.venv/bin/pytest -q experiments/exp399_soft_sticky_fused_exact_runtime_audit/tests/test_exp399_soft_sticky_fused_exact_runtime_audit.py`
   - `JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp399_soft_sticky_fused_exact_runtime_audit/exp399_soft_sticky_fused_exact_runtime_audit_compact_selfcontained_train.py`
   - `make validate-exp EXP=exp399_soft_sticky_fused_exact_runtime_audit`
   - `make update-summary`

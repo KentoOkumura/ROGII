@@ -94,7 +94,6 @@ uv run python scripts/record_submission.py --experiment exp050_xgboost_pseudo_ta
   - ref: `53521999`
   - submitted: `2026-06-10 03:15:03.410000`
   - Public LB: 12.083
-  - submission log: `logs/submission_exp050_xgboost_pseudo_tail_inference_submit.log`
 
 ## 次のアクション
 

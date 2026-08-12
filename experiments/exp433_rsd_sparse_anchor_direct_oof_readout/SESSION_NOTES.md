@@ -143,7 +143,7 @@ push / run、inference、submissionは実施していない。
 - 未実行Notebook候補:
   `exp433_rsd_sparse_anchor_direct_oof_readout_compact_selfcontained_train.ipynb`
 - contract tests:
-  `tests/test_exp433_rsd_sparse_anchor_direct_oof_readout.py`
+  `experiments/exp433_rsd_sparse_anchor_direct_oof_readout/tests/test_exp433_rsd_sparse_anchor_direct_oof_readout.py`
 - config:
   `implementation_ready_not_run`へ更新。implementationだけtrueとし、
   canonical replacement / package / push / runはfalseを維持した。
@@ -182,13 +182,13 @@ union外の行だけをnew SSEへ加えるrow-level定義に固定した。
 .venv/bin/python -m py_compile \
   experiments/exp433_rsd_sparse_anchor_direct_oof_readout/\
 exp433_rsd_sparse_anchor_direct_oof_readout_compact_selfcontained_train.py \
-  tests/test_exp433_rsd_sparse_anchor_direct_oof_readout.py
+  experiments/exp433_rsd_sparse_anchor_direct_oof_readout/tests/test_exp433_rsd_sparse_anchor_direct_oof_readout.py
 .venv/bin/ruff check \
   experiments/exp433_rsd_sparse_anchor_direct_oof_readout/\
 exp433_rsd_sparse_anchor_direct_oof_readout_compact_selfcontained_train.py \
-  tests/test_exp433_rsd_sparse_anchor_direct_oof_readout.py
+  experiments/exp433_rsd_sparse_anchor_direct_oof_readout/tests/test_exp433_rsd_sparse_anchor_direct_oof_readout.py
 .venv/bin/pytest -q \
-  tests/test_exp433_rsd_sparse_anchor_direct_oof_readout.py
+  experiments/exp433_rsd_sparse_anchor_direct_oof_readout/tests/test_exp433_rsd_sparse_anchor_direct_oof_readout.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \
   experiments/exp433_rsd_sparse_anchor_direct_oof_readout/\
 exp433_rsd_sparse_anchor_direct_oof_readout_compact_selfcontained_train.py

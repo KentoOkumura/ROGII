@@ -72,7 +72,7 @@ base path、process noise、schedule/covariance、predictionをSHA freezeし、
 - `jupytext --to ipynb --test` train/inference: PASS。
 - `python -m py_compile` train/inference: PASS。
 - `ruff check` train/inference/test: PASS。
-- `pytest -q tests/test_exp487_time_varying_gr_affine_likelihood_pf.py`:
+- `pytest -q experiments/exp487_time_varying_gr_affine_likelihood_pf/tests/test_exp487_time_varying_gr_affine_likelihood_pf.py`:
   15 tests PASS。exp350 forward EKF / RTSとのexact frame parityとexp404
   identity-affine PF bitwise parityを含む。
 - dedicated + `test_kaggle_notebooks.py` + `test_scaffold.py`: 26 tests PASS。

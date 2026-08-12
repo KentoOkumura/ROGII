@@ -79,7 +79,7 @@ submit-checkとLBは未評価である。
 
 ## 実行入口
 
-- generator: `../../scripts/prepare_exp513_hjyact_v2_standalone_candidate.py`
+- generator: `prepare_exp513_hjyact_v2_standalone_candidate.py`
 - candidate source: `exp513_hjyact_v2_final_standalone_public_lb_audit_compact_selfcontained_inference.py`
 - candidate Notebook: `exp513_hjyact_v2_final_standalone_public_lb_audit_compact_selfcontained_inference.ipynb`
 - 正規inference Notebook: template placeholder、未採用

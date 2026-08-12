@@ -117,7 +117,7 @@ selector compact77へ差し替えたときのdownstream TVT OOF価値を測る�
   base join、well、last-known anchor、train/valid overlap、全row coverage、saved exp413 foldを照合する。
 - final373 train/valid matrix content SHA、clean273 content/schema、15 model SHA、OOF SHAを
   Kaggle実行時に保存する。GPU bitwise一致は主張しない。
-- `tests/test_exp502_exp501_fixed13_selector_replacement_on_exp413.py`に8契約testを追加した。
+- `experiments/exp502_exp501_fixed13_selector_replacement_on_exp413/tests/test_exp502_exp501_fixed13_selector_replacement_on_exp413.py`に8契約testを追加した。
   replacement provenance、final373値配置、fold key/anchor、authorization、親SHA、tail
   report-only、canonical train採用状態を検証する。
 

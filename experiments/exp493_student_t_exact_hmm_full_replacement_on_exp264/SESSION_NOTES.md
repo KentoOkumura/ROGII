@@ -129,7 +129,7 @@ exp492 compact候補は631行、exp493は633行。両方ともContentsと9章を
 - 2026-07-30: `make new-steering`と`make new-exp`でscaffoldを作成した。
 - 2026-07-31: ユーザーの`exp493を実装してください`を実装承認として記録した。
 - 2026-07-31:
-  `.venv/bin/pytest -q tests/test_exp492_huber_exact_hmm_full_replacement.py tests/test_exp493_student_t_exact_hmm_full_replacement.py`
+  `.venv/bin/pytest -q experiments/exp492_huber_exact_hmm_full_replacement_on_exp264/tests/test_exp492_huber_exact_hmm_full_replacement.py experiments/exp493_student_t_exact_hmm_full_replacement_on_exp264/tests/test_exp493_student_t_exact_hmm_full_replacement.py`
   は`17 passed`。
 - 2026-07-31: exp374 upstream testも含む最終回帰確認は`26 passed`。
 - 2026-07-31: `py_compile`、Jupytext `--to ipynb --test`、

@@ -112,7 +112,7 @@ Stage 1、raw-test inference、submissionも行っていない。
 - `exp450_dzdmd_conditioned_tvt_rate_likelihood_pf_compact_selfcontained_train.ipynb`
 - `exp450_dzdmd_conditioned_tvt_rate_likelihood_pf_compact_selfcontained_inference.py`
 - `exp450_dzdmd_conditioned_tvt_rate_likelihood_pf_compact_selfcontained_inference.ipynb`
-- `tests/test_exp450_dzdmd_conditioned_tvt_rate_likelihood_pf.py`
+- `experiments/exp450_dzdmd_conditioned_tvt_rate_likelihood_pf/tests/test_exp450_dzdmd_conditioned_tvt_rate_likelihood_pf.py`
 
 実装内容:
 
@@ -170,7 +170,7 @@ Stage 1、raw-test inference、submissionも行っていない。
 PYTHONPYCACHEPREFIX=/tmp/exp450-pycache \
 NUMBA_CACHE_DIR=/tmp/exp450-numba-cache \
 .venv/bin/pytest -q \
-  tests/test_exp450_dzdmd_conditioned_tvt_rate_likelihood_pf.py
+  experiments/exp450_dzdmd_conditioned_tvt_rate_likelihood_pf/tests/test_exp450_dzdmd_conditioned_tvt_rate_likelihood_pf.py
 
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp450_dzdmd_conditioned_tvt_rate_likelihood_pf/\

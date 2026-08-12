@@ -86,8 +86,8 @@ boosters。ただし一括pushせずvariant単位で実行し、各Kaggle push�
 make new-steering EXP=exp276_pf_ancc_small_seed_mean_addonly_selector_audit
 make new-exp EXP=exp276_pf_ancc_small_seed_mean_addonly_selector_audit SOURCE=experiments/exp264_exp263_candidate_confidence_dual_selector
 .venv/bin/python -m py_compile src/candidate_selector_pipeline.py src/pf_ancc_selector_audit.py experiments/exp277_pf_ancc_small_seed_mean_addonly_selector_audit/*.py
-.venv/bin/ruff check src/candidate_selector_pipeline.py src/pf_ancc_selector_audit.py experiments/exp277_pf_ancc_small_seed_mean_addonly_selector_audit/*.py tests/test_exp277_pf_ancc_small_seed_mean_addonly_selector_audit.py --select F821,E9,F401,F841
-.venv/bin/pytest -q tests/test_exp277_pf_ancc_small_seed_mean_addonly_selector_audit.py tests/test_exp264_candidate_selector_pipeline.py
+.venv/bin/ruff check src/candidate_selector_pipeline.py src/pf_ancc_selector_audit.py experiments/exp277_pf_ancc_small_seed_mean_addonly_selector_audit/*.py experiments/exp277_pf_ancc_small_seed_mean_addonly_selector_audit/tests/test_exp277_pf_ancc_small_seed_mean_addonly_selector_audit.py --select F821,E9,F401,F841
+.venv/bin/pytest -q experiments/exp277_pf_ancc_small_seed_mean_addonly_selector_audit/tests/test_exp277_pf_ancc_small_seed_mean_addonly_selector_audit.py experiments/exp264_exp263_candidate_confidence_dual_selector/tests/test_exp264_candidate_selector_pipeline.py
 ```
 
 - py_compile: PASS。

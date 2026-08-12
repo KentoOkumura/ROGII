@@ -40,6 +40,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Fail if metadata is invalid or README.md is not up to date.",
     )
+    parser.add_argument(
+        "--allow-draft",
+        action="store_true",
+        help="Allow structurally valid draft reports while checking index freshness.",
+    )
     return parser.parse_args()
 
 
@@ -215,9 +220,10 @@ def update_index(
     surveys_dir: Path = SURVEYS_DIR,
     readme_path: Path = README_PATH,
     check: bool = False,
+    allow_draft: bool = False,
 ) -> bool:
     reports = load_reports(surveys_dir)
-    if check:
+    if check and not allow_draft:
         drafts = [report.path.name for report in reports if report.status == "draft"]
         if drafts:
             raise SystemExit("draft survey reports are not complete: " + ", ".join(drafts))
@@ -239,7 +245,7 @@ def update_index(
 
 def main() -> None:
     args = parse_args()
-    update_index(check=args.check)
+    update_index(check=args.check, allow_draft=args.allow_draft)
 
 
 if __name__ == "__main__":

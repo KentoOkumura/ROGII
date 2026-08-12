@@ -28,7 +28,7 @@
 
 ## 静的検証
 
-- `tests/test_exp339_missing_gap_pseudomask_uncertainty_readout.py`: 8 tests PASS。
+- `experiments/exp339_missing_gap_pseudomask_uncertainty_readout/tests/test_exp339_missing_gap_pseudomask_uncertainty_readout.py`: 8 tests PASS。
 - `py_compile`: train/inference PASS。
 - `ruff`: train/inference/test PASS。
 - Jupytext変換と`--test`: train/inference PASS。

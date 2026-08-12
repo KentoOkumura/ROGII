@@ -5,7 +5,8 @@
 # - experiment notebooks and their lightweight records (README, result, metrics,
 #   SESSION_NOTES, and steering documents)
 # - documentation, survey notes, and the submission history Markdown
-# - top-level artifacts/, studies/, and logs/ as experiment evidence
+# - one-off analysis code and raw lightweight outputs under studies/, and
+#   completed analysis reports under docs/surveys/
 #
 # Keep out of Git:
 # - credentials and machine-local settings
@@ -32,6 +33,7 @@ dist/
 
 # Local agent/editor state
 /.codex/
+/.cache/
 .idea/
 .vscode/
 *.swp
@@ -40,7 +42,8 @@ dist/
 # Environment files and credentials
 .env
 .env.*
-!.env.example
+/.kaggle/
+/.badge-collector/
 kaggle.json
 credentials.json
 token.json
@@ -52,14 +55,27 @@ token.json
 /data/raw/
 /data/processed/
 /data/external/
-/tools/rogii-viewer/
+/tools/*
+!/tools/README.md
 
-# Per-experiment generated or copied directories
-/experiments/*/artifacts/
-/experiments/*/features/
+# Per-experiment generated or copied directories. Keep directory sentinels so a
+# freshly cloned current-format experiment still passes structural validation.
+/experiments/*/artifacts/*
+!/experiments/*/artifacts/.gitkeep
 /experiments/*/submission/
 /experiments/*/kaggle/
+
+# Legacy generated-output locations. New outputs belong under artifacts/.
+/experiments/*/features/
 /experiments/*/variants/
+
+# Submission polling logs are transient. Durable submission facts belong in
+# experiments/<exp>/{metrics.json,SESSION_NOTES.md,result.md} and
+# SUBMISSIONS.md.
+/logs/
+
+# One-off analysis tables and figures belong under studies/.
+/artifacts/
 
 # Generated model and array/table formats
 *.ckpt

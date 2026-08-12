@@ -67,7 +67,7 @@ Code submission completed.
 - status: `SubmissionStatus.COMPLETE`
 - Public LB: 11.826
 - Private LB: not available
-- submission record: `submissions/SUBMISSIONS.md` v025
+- submission record: `SUBMISSIONS.md` v025
 
 This improves exp054 Public LB 11.856 by -0.030 and exp059 Public LB 11.878 by
 -0.052. It still does not beat the ML route Public LB anchor exp039 at 11.740.

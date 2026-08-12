@@ -7,7 +7,7 @@
 - stage 2-2後のStudent-t likelihood、tempering、ps-combo、GR-free anchor、learned emission、self/nbr、whole smoothingは明示的に無効化する。
 - targetは`TVT-last_known_tvt`。3 LightGBM + 2 CatBoost × 5 GroupKFold = 25 base models、positive Ridge 5 folds、control再学習0。
 - decodeは公開Notebookどおり`0.91 model + 0.09 pf_1`、tau 85 fade、testでSG(17,3)。
-- `scripts/prepare_exp517_stage22_fivepf_tabular.py`からv2 compact self-contained train/inference候補を生成した。v1 source SHA `f01b0114...b29`はcontract testで固定し、未変更を確認する。
+- `experiments/exp517_stage22_pf1_tw_fixedlag192_late_submit/prepare_exp517_stage22_fivepf_tabular.py`からv2 compact self-contained train/inference候補を生成した。v1 source SHA `f01b0114...b29`はcontract testで固定し、未変更を確認する。
 - generator `--check`、py_compile、Ruff F821、v2 contract test 6件、Jupytext変換/pairingはPASS。
 - v2実装検証時点ではKaggle train未実行。published CV `7.50`との同条件gateを通るまでinference/LATE SUBMITへ進まない。
 

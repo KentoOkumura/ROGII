@@ -310,11 +310,11 @@ blendを同じOOFで救済しない。PASSでもinference/submissionへ自動移
 ```bash
 .venv/bin/python -m py_compile \
   experiments/exp404_scale5_sigma_gr_likelihood_pf_ablation/*compact_selfcontained*.py \
-  tests/test_exp404_scale5_sigma_gr_likelihood_pf_ablation.py
+  experiments/exp404_scale5_sigma_gr_likelihood_pf_ablation/tests/test_exp404_scale5_sigma_gr_likelihood_pf_ablation.py
 .venv/bin/ruff check \
   experiments/exp404_scale5_sigma_gr_likelihood_pf_ablation/*compact_selfcontained*.py \
-  tests/test_exp404_scale5_sigma_gr_likelihood_pf_ablation.py --select F821
-.venv/bin/pytest -q tests/test_exp404_scale5_sigma_gr_likelihood_pf_ablation.py
+  experiments/exp404_scale5_sigma_gr_likelihood_pf_ablation/tests/test_exp404_scale5_sigma_gr_likelihood_pf_ablation.py --select F821
+.venv/bin/pytest -q experiments/exp404_scale5_sigma_gr_likelihood_pf_ablation/tests/test_exp404_scale5_sigma_gr_likelihood_pf_ablation.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp404_scale5_sigma_gr_likelihood_pf_ablation/exp404_scale5_sigma_gr_likelihood_pf_ablation_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \

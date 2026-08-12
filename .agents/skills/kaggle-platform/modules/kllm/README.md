@@ -1,37 +1,37 @@
 # KLLM — Kaggle Interaction Module
 
 Interact with kaggle.com using kagglehub, Kaggle CLI v2.2.3, Kaggle MCP
-Server, or Kaggle UI. Credentials are in `.env`, `~/.kaggle/access_token`,
-`~/.kaggle/credentials.json`, or `~/.kaggle/kaggle.json` — **never log or
-display them**.
+Server, or Kaggle UI. Credential storage and priority follow the canonical
+[registration guide](../registration/references/kaggle-setup.md). Do not create
+a project `.env` solely for Kaggle credentials. **Never put credential values
+in command arguments, logs, displayed output, or committed files**.
 
 ## Credentials
 
-**Before any Kaggle operation, run `python3 modules/kllm/scripts/check_credentials.py`** to
-verify and auto-configure credentials.
+Before an authenticated operation, verify the credential required by the
+selected client without exposing its value:
 
-**Auth methods (checked in order by kagglehub):**
-1. `KAGGLE_API_TOKEN` env var (new style, preferred)
-2. `~/.kaggle/access_token` file
-3. `KAGGLE_USERNAME` + `KAGGLE_KEY` env vars (legacy)
-4. `~/.kaggle/kaggle.json` with `{"username":"...","key":"..."}` (legacy, chmod 600)
+```bash
+# Local Kaggle CLI operations
+uv run python .agents/skills/kaggle-platform/shared/check_all_credentials.py --require cli
 
-For kaggle-cli: use the same token/env methods, legacy `kaggle.json`, or
-interactive OAuth via `kaggle auth login` (stored in `~/.kaggle/credentials.json`).
-For MCP Server: pass API key as `Authorization: Bearer <token>` header.
+# Kaggle Python API and kagglehub operations
+uv run python .agents/skills/kaggle-platform/shared/check_all_credentials.py --require python-api
 
-**Important:** API tokens generated at kaggle.com/settings (under "API Tokens
-(Recommended)" → "Generate New Token") are the recommended auth method. Legacy
-`KGAT_`-prefixed tokens still work but the new token format is preferred.
+# Kaggle MCP Server operations
+uv run python .agents/skills/kaggle-platform/shared/check_all_credentials.py --require api-token
+```
+
+認証方式、保存先、優先順位は[registrationの認証設定](../registration/references/kaggle-setup.md)を正とする。CLIはOAuth、API token、legacy username/key、kagglehubはAPI tokenまたはlegacy username/key、MCPはAPI tokenを使う。tokenの種類をprefixから推測しない。
 
 ## Four Methods of Interaction
 
 | Method | Type | Best For |
 |--------|------|----------|
-| **kagglehub** | Python library (`pip install kagglehub`) | Quick dataset/model download in Python |
-| **kaggle-cli** | CLI (`pip install --upgrade kaggle`) | Full workflow scripting (competitions, notebooks, datasets, models, forums/topics, benchmarks) |
+| **kagglehub** | Python library（`uv sync --locked --extra kaggle-platform`） | Quick dataset/model download in Python |
+| **kaggle-cli** | CLI（`uv sync --locked`） | Full workflow scripting (competitions, notebooks, datasets, models, forums/topics, benchmarks) |
 | **Kaggle MCP Server** | Remote endpoint `https://www.kaggle.com/mcp` | AI agent integration (Claude Code, gemini-cli, Cursor, etc.) |
-| **Kaggle UI** | Browser via Open Claw Chrome extension | Account setup, verification, visual exploration |
+| **Kaggle UI** | ユーザーが操作するbrowser | Account setup, verification, visual exploration |
 
 ## Capability Matrix
 
@@ -43,8 +43,8 @@ For MCP Server: pass API key as `Authorization: Bearer <token>` header.
 | Read competition discussion topics | — | `kaggle competitions topics list/show` | `list_forum_topics` / `get_forum_topic` | Yes |
 | List competition data files | — | `kaggle competitions files` | `list_competition_data_files` / `list_competition_data_tree_files` / `get_competition_data_files_summary` | Yes |
 | Download competition data | `competition_download()` | `kaggle competitions download` | `download_competition_data_file` / `download_competition_data_files` | Yes |
-| Submit to competition | — | `kaggle competitions submit` | `start_competition_submission_upload` → `submit_to_competition` | Yes |
-| Submit kernel to code competition | — | — | `create_code_competition_submission` 🔒 | Yes |
+| Submit a file to a standard competition (not this repository) | — | `kaggle competitions submit` | `start_competition_submission_upload` → `submit_to_competition` | Yes |
+| Submit a notebook to this code competition | — | repository task `task submit-code` | `create_code_competition_submission` 🔒 | Yes |
 | List/search submissions | — | `kaggle competitions submissions` | `search_competition_submissions` / `get_competition_submission` | Yes |
 | Read leaderboard | — | `kaggle competitions leaderboard` | `get_competition_leaderboard` / `download_competition_leaderboard` | Yes |
 | Search datasets | — | `kaggle datasets list` | `search_datasets` | Yes |
@@ -75,38 +75,42 @@ For MCP Server: pass API key as `Authorization: Bearer <token>` header.
 | Persona verification | — | — | — | UI only |
 
 🔒 = role-gated. See [mcp-reference.md](references/mcp-reference.md) for the
-full 66-tool inventory with status flags. The `kagglehub` and `kaggle-cli`
+dated inventory observed on 2026-04-22 and retested on 2026-05-04. Confirm the
+current tools with `tools/list` at runtime. The `kagglehub` and `kaggle-cli`
 columns are deliberately sparse — most workflows are now better served via
 the bundled MCP server.
 
 ## Known Issues
 
 - **`dataset_load()` in kagglehub**: was broken in v0.4.3 (404 on
-  `DownloadDataset`). The pinned baseline is now 1.0.0; status on 1.0.0 is
-  unverified by this skill — if you hit issues, fall back to
+  `DownloadDataset`). Read the current repository version from `uv.lock`; the
+  historical v0.4.3 result does not establish that version's runtime status.
+  Test the target dataset first and, if it fails, fall back to
   `dataset_download()` + `pd.read_csv()` on the cached files.
 - **`competitions download` does not support `--unzip`** in kaggle CLI >= 1.8.
   Only `datasets download` supports `--unzip`. Unzip competition data manually
-  after download (or use the bundled `_safe_extract` helper if you'd like
-  zip-slip protection — see `.agents/skills/kaggle-platform/modules/badge-collector/scripts/phase_2_competition.py`).
+  after a direct CLI download. In this repository, prefer `task dl-kaggle-comp`;
+  it downloads the archive, rejects path traversal and symbolic links, safely
+  extracts into `data.raw_dir`, skips only size-and-checksum-identical files, and
+  stops instead of overwriting a differing existing file.
 - **Competition-linked datasets** (e.g., `titanic/titanic`) return 403 even
   with valid credentials. Use standalone dataset copies or download via
   `competitions download`.
 - **`competitions topic-messages` is deprecated** in CLI v2.2.0+. Use
   `kaggle competitions topics show COMPETITION TOPIC_ID` for discussion content.
 - **`competition_download()` 401 in kagglehub** (older versions): same
-  caveat as `dataset_load()` — status on 1.0.0 unverified.
+  caveat as `dataset_load()` — verify the version in the current `uv.lock` at runtime.
   For "rules not accepted" errors, navigate to
   `https://www.kaggle.com/competitions/<slug>/rules` in the browser and click accept.
-- **MCP Server auth**: Use API tokens from "Generate New Token" at
-  kaggle.com/settings. Legacy 32-char hex keys still work for many endpoints,
-  but the new KGAT-prefixed token is required for the auth-gated endpoints
-  (see `KGAT_ONLY_ENDPOINTS` in `tests/test_mcp.py`).
+- **MCP Server auth**: Use the API token from "Generate New Token" at
+  kaggle.com/settings. Token形式やendpoint別の可否をprefixから推測せず、
+  task-relevant authenticationをlive endpointで確認する。
 - **Rate limiting**: Kaggle uses dynamic rate limiting. If you get HTTP 429,
   wait a few minutes and retry. Check code for unintended loops or redundant
   API calls.
 - **`get_hackathon_write_up`**: was returning generic invocation errors in
-  the kmcp-tools 2026-04-22 audit; verified PASS as of the 2026-05-04 retest.
+  the kmcp-tools 2026-04-22 audit; the 2026-05-04 retest returned PASS.
+  Treat this as dated evidence and recheck the live endpoint when using it.
   The hackathon submodule's `fetch_writeup.py` uses `get_writeup` first
   anyway because it has a simpler arg shape.
 
@@ -118,8 +122,10 @@ import kagglehub
 path = kagglehub.dataset_download("owner/dataset-name")
 ```
 ```bash
-kaggle datasets download owner/dataset-name --path ./data --unzip
+bash .agents/skills/kaggle-platform/modules/kllm/scripts/cli_download.sh owner/dataset-name
 ```
+
+外部 Dataset をリポジトリ内へ保存する場合は `data/external/<owner-dataset>/` を使う。上の同梱 script もそこを既定値とする。公式コンペデータは同じ場所へ混在させず、このリポジトリでは`task dl-kaggle-comp`を使って`project.yml`の`data.raw_dir`へ同期する。
 
 ### Download Model
 ```python
@@ -128,60 +134,63 @@ path = kagglehub.model_download("owner/model/framework/variation")
 
 ### Execute Notebook on KKB
 ```bash
-kaggle kernels push -p ./notebook-dir
-kaggle kernels status username/kernel-slug
-kaggle kernels logs -f username/kernel-slug
-kaggle kernels output username/kernel-slug --path ./output
+uv run kaggle kernels push -p ./notebook-dir
+uv run kaggle kernels logs -f username/kernel-slug
+uv run kaggle kernels output username/kernel-slug --path /tmp/kaggle-output/kernel-slug
 ```
 
-Kaggle CLI 2.2.3 では notebook のログ取得を `kaggle kernels logs -f owner/slug` に統一する。`-f` は Kaggle UI と同系統の live SSE から stdout/stderr を逐次取得する。`--interval` は使わない。
+Kaggle CLI 2.2.3 では notebook のログ取得を `kaggle kernels logs -f owner/slug` に統一する。`-f` は Kaggle UI と同系統の live SSE から stdout/stderr を逐次取得する。`--interval` は使わない。`kaggle kernels status`は診断用の補助情報に限り、完了判定のpollingには使わない。
 
-See `modules/kllm/scripts/cli_execute.sh` for a complete push-poll-download workflow.
+See `.agents/skills/kaggle-platform/modules/kllm/scripts/cli_execute.sh` for a complete push-follow-download workflow.
 
-### Competition Submit
-```bash
-kaggle competitions submit -c competition-name -f submission.csv -m "description"
-```
+### Competition data and submission
 
-See `modules/kllm/scripts/cli_competition.sh` for a complete competition workflow.
+This repository is configured for a Notebook-only code competition. Use
+`cli_competition.sh <competition> [download-dir]` only as a generic inspection
+helper. Its default `data/raw/<competition>` destination does not update the
+repository's configured `data.raw_dir`; use `task dl-kaggle-comp` for repository
+data sync. The helper does not submit.
+After validating the selected notebook output, submit exactly once with the
+repository's `task submit-code` workflow. Do not use direct file upload here.
 
 ### Read Competition Discussions
 ```bash
-kaggle competitions topics list competition-name --sort-by recent --page-size 50 -v
-kaggle competitions topics show competition-name TOPIC_ID
+uv run kaggle competitions topics list competition-name --sort-by recent --page-size 50 -v
+uv run kaggle competitions topics show competition-name TOPIC_ID
 ```
 
 For saved local notes, use `kaggle-discussion-archive`.
 
 ### Read Kaggle Forums
 ```bash
-kaggle forums list -v
-kaggle forums topics list product-announcements --sort-by recent --page-size 50 -v
-kaggle forums topics show product-announcements/TOPIC_ID
+uv run kaggle forums list -v
+uv run kaggle forums topics list product-announcements --sort-by recent --page-size 50 -v
+uv run kaggle forums topics show product-announcements/TOPIC_ID
 ```
 
 ### Benchmarks CLI
 ```bash
-kaggle benchmarks init -y
-kaggle benchmarks tasks list
+uv run kaggle benchmarks init -y
+uv run kaggle benchmarks tasks list
 ```
 
 ### Read Competition Overview Pages
 
 Before joining or analyzing a competition, pull its overview pages (rules,
 evaluation, data description, FAQ, prizes, timeline) via the
-`list_competition_pages` MCP endpoint:
+`list_competition_pages` MCP endpoint. This requires an API token; legacy
+username/key credentials alone cannot authenticate the MCP call:
 
 ```bash
 # Print every page as JSON
-python3 modules/kllm/scripts/list_competition_pages.py --competition titanic
+uv run python .agents/skills/kaggle-platform/modules/kllm/scripts/list_competition_pages.py --competition titanic
 
 # One-line-per-page summary with key-page detection
-python3 modules/kllm/scripts/list_competition_pages.py --competition titanic --summary
+uv run python .agents/skills/kaggle-platform/modules/kllm/scripts/list_competition_pages.py --competition titanic --summary
 
 # Just the rules / evaluation page content
-python3 modules/kllm/scripts/list_competition_pages.py --competition titanic --page rules
-python3 modules/kllm/scripts/list_competition_pages.py --competition titanic --page evaluation
+uv run python .agents/skills/kaggle-platform/modules/kllm/scripts/list_competition_pages.py --competition titanic --page rules
+uv run python .agents/skills/kaggle-platform/modules/kllm/scripts/list_competition_pages.py --competition titanic --page evaluation
 ```
 
 Works for regular competitions, playground series, AND hackathons. For
@@ -195,13 +204,15 @@ analysis patterns.
 
 ## Scripts
 
-- `scripts/setup_env.sh` — Auto-configure Kaggle credentials from env vars (creates kaggle.json)
-- `scripts/check_credentials.py` — Verify Kaggle credentials are configured (with auto-mapping)
+The paths below are relative to this `modules/kllm/` directory. Repository-root commands use the full `.agents/skills/kaggle-platform/modules/kllm/...` path.
+
+- `../../shared/check_all_credentials.py` — Verify Kaggle credentials without printing their values
+- `../registration/scripts/configure_token.py` — Store an API token entered locally with hidden input
 - `scripts/network_check.sh` — Check network reachability to Kaggle API endpoints
-- `scripts/poll_kernel.sh <kernel-slug> [output-dir] [poll-interval]` — Poll a KKB kernel for completion
+- `scripts/poll_kernel.sh <kernel-slug> [output-dir]` — Legacy filename; follow live logs and then download output without status polling
 - `scripts/cli_download.sh` — Download datasets and models via kaggle-cli
 - `scripts/cli_execute.sh <notebook-dir> <kernel-slug> [output-dir]` — Execute a notebook on KKB
-- `scripts/cli_competition.sh <competition> <submission-file> [download-dir]` — Competition workflow
+- `scripts/cli_competition.sh <competition> [download-dir]` — Inspect a competition and download raw competition data; never submit
 - `scripts/cli_publish.sh <dataset|notebook|model> <dir> [model-handle]` — Publish resources
 - `scripts/kagglehub_download.py` — Download datasets and models via kagglehub
 - `scripts/kagglehub_publish.py <dataset|model> <handle> <local-dir> [version-notes]` — Publish via kagglehub

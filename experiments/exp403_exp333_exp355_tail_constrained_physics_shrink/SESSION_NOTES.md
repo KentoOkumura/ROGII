@@ -173,7 +173,7 @@ make validate-exp EXP=exp403_exp333_exp355_tail_constrained_physics_shrink
   experiments/exp403_exp333_exp355_tail_constrained_physics_shrink/*compact_selfcontained*.py \
   --select F821,F811
 .venv/bin/pytest -q \
-  tests/test_exp403_exp333_exp355_tail_constrained_physics_shrink.py
+  experiments/exp403_exp333_exp355_tail_constrained_physics_shrink/tests/test_exp403_exp333_exp355_tail_constrained_physics_shrink.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp403_exp333_exp355_tail_constrained_physics_shrink/*compact_selfcontained*.py
 ```

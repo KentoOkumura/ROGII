@@ -36,11 +36,11 @@ JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout/*compact_selfcontained*.py
 .venv/bin/ruff check \
   experiments/exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout/*compact_selfcontained*.py \
-  tests/test_exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout.py
+  experiments/exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout/tests/test_exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout.py
 .venv/bin/pytest -q \
-  tests/test_exp280_exp226_shift_likelihood_separability_readout.py \
-  tests/test_exp282_longtail_prediction_zone_self_gr_loop_closure_readout.py \
-  tests/test_exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout.py
+  experiments/exp280_exp226_shift_likelihood_separability_readout/tests/test_exp280_exp226_shift_likelihood_separability_readout.py \
+  experiments/exp282_longtail_prediction_zone_self_gr_loop_closure_readout/tests/test_exp282_longtail_prediction_zone_self_gr_loop_closure_readout.py \
+  experiments/exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout/tests/test_exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout.py
 make validate-exp EXP=exp283_self_gr_topk_alternative_mode_branch_future_evidence_readout
 ```
 

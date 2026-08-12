@@ -6,10 +6,12 @@ import pandas as pd
 import streamlit as st
 import yaml
 
-ROOT = Path(__file__).resolve().parents[1]
-EXPERIMENTS_DIR = ROOT / "experiments"
+from scripts.config_utils import ROOT, load_project_config, project_path
+
+PROJECT_CONFIG = load_project_config()
+EXPERIMENTS_DIR = project_path(PROJECT_CONFIG, "paths.experiments_dir")
 SUMMARY_PATH = ROOT / "experiment_summary.md"
-SUBMISSIONS_PATH = ROOT / "submissions" / "SUBMISSIONS.md"
+SUBMISSIONS_PATH = project_path(PROJECT_CONFIG, "paths.submissions_file")
 
 
 def list_experiments() -> list[Path]:

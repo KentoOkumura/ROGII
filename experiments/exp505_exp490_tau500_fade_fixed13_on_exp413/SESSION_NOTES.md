@@ -94,8 +94,8 @@ raw exp490をstandalone採用せず、tau=500 fade候補としてfixed13 selecto
 - `.venv/bin/python -m py_compile ...compact_selfcontained_train.py`: PASS。
 - `.venv/bin/ruff check ...compact_selfcontained_train.py test_exp505_contract.py`: PASS。
 - `.venv/bin/python -m pytest -q .../test_exp505_contract.py`: `5 passed`。
-- `.venv/bin/python -m pytest -q tests/test_exp263_candidate_cache_contract.py
-  tests/test_exp264_candidate_selector_pipeline.py`: `31 passed`。
+- `.venv/bin/python -m pytest -q experiments/exp263_last_anchor_better_candidate_confidence_pair_cache/tests/test_exp263_candidate_cache_contract.py
+  experiments/exp264_exp263_candidate_confidence_dual_selector/tests/test_exp264_candidate_selector_pipeline.py`: `31 passed`。
 - `JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test ...`: PASS。
 - `make validate-exp EXP=exp505_exp490_tau500_fade_fixed13_on_exp413`: strict PASS。
 - `task` commandは環境に存在しなかったため、skill記載のfallbackとして`make`を使用した。

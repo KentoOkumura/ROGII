@@ -9,18 +9,17 @@ description: "`docs/backlog/` の候補を実験へ移行し、`experiments/expX
 
 ## 手法忠実性ガード
 
+実装範囲と変更classを分類するときは、先に`docs/glossary.md`の実装区分と変更classを読む。これらとidea候補から引き継ぐschema fieldは、このリポジトリ内で実装範囲と検証範囲を管理するための用語であり、一般的な手法名ではない。ユーザーへの説明では、実装する処理、省略する処理、その実験で検証できる主張を先に具体的に示し、必要な場合だけ管理用語を添える。
+
 ユーザーが特定手法、論文、公開notebook、discussionの実装を求めた場合は、実験作成やコード編集の前に次を行う。
 
-1. 一次資料または参照実装を確認し、`input -> target/objective -> output -> loss -> decode -> context unit`を手法契約として `.steering/.../requirements.md` と `design.md` に記録する。
-2. 実装範囲を次のいずれかに分類する。
-   - `faithful`: 手法契約の本質的な要素をすべて実装する。
-   - `staged-faithful`: target、output表現、loss、decode、context unitを保ったまま、データ量、fold数、epoch数、解像度などだけを縮小する。
-   - `proxy`: target、output表現、loss、decode、whole-group / local contextのいずれかを変更または省略する。
+1. 一次資料または参照実装を確認し、`input -> target/objective -> output -> loss -> decode -> context unit`を手法契約として`.steering/.../requirements.md`だけに記録する。`design.md`には契約本文を複製せず、各項目の実装箇所、処理方法、承認済み差分を記録する。
+2. 実装範囲を`docs/glossary.md`の定義に従って`faithful`、`staged-faithful`、`proxy`のいずれかに分類する。
 3. `proxy` の場合は、省略する機構、proxyで検証できない主張、完全実装との追加コストをユーザーに示す。明示承認を得るまで、実験フォルダ作成、コード実装、Kaggle pushを行わない。
 4. 実験名と記録には実装した機構だけを書く。入力だけに使った表現をoutput headやtraining objectiveの実装と呼ばない。
-5. negative resultは `(signal, representation, role, fusion, validation regime, compute regime)` のどこを閉じるかを `result.md` に記録する。`proxy` や単一実装の失敗で method family 全体を閉じない。
+5. negative resultは、どの情報源、データ表現、使用方法、融合方法、検証条件、計算条件を否定できるかを `result.md` に具体的に記録する。`proxy` や単一実装の失敗で method family 全体を閉じない。
 
-同じ親実験または機構familyの `parameter tuning`、`add-only feature`、`selector-only`、後処理が2件連続する場合、またはpositiveなoracle headroom / coverage / 誤差非相関性に対しend-to-end改善が得られない場合は、3件目の小改善の前に `kaggle-idea-forge` でrepresentation auditを行う。少なくとも1件の target / output / decode / context unit を変える案と小改善の継続案をユーザーに提示し、選択を得てから実験化する。
+同じ親実験または機構familyの`parameter`、`add-only`、`selector-only`、`postprocess`変更が2件連続する場合、またはpositiveなoracle headroom / coverage / 誤差非相関性に対しend-to-end改善が得られない場合は、3件目の小改善の前に `kaggle-idea-forge` を使い、target / output / decode / context unit を変える案まで見直す。少なくとも1件のこれらを変える案と小改善の継続案をユーザーに提示し、選択を得てから実験化する。
 
 ## GPU 学習コストガード
 
@@ -41,7 +40,7 @@ Kaggle GPU を使う train push の前に、必ず次を確認する。
    - `KAGGLE_DIRECTION.md`、`experiment_summary.md`、`docs/surveys/README.md`から対象実験・トピックの完了調査を読む。
    - 最近の `experiments/*/SESSION_NOTES.md` を確認する。
    - 特定手法の実装依頼では、参照sourceと手法契約を特定する。
-   - 同じ親実験または機構familyの直近の子実験を `parameter / add-only / selector-only / postprocess / mechanism / representation` に分類し、representation auditの発動条件を確認する。
+   - 同じ親実験または機構familyの直近の子実験で変更した処理を確認し、target、output、decode、context unitを変える案まで見直す必要があるか判断する。
    - `KAGGLE_DIRECTION.md` の未着手候補から実験化する場合は、対応する `docs/backlog/<candidate>.md` とそこから参照される根拠を読む。未着手表だけから設計を再構成しない。
    - 導入前の候補で詳細ファイルがない場合は、コード作成前に `kaggle-strategy` を使って詳細ファイルを作り、推測できない事項を未決としてユーザーへ確認する。このskillから `docs/backlog/` を直接更新しない。
 2. backlog候補から実験化する場合は、採番やコード作成の前に、固定するもの、変更するもの、最小検証、成功条件、停止条件、実行しないこと、未決事項を短く提示する。重要な解釈差または未決事項があればユーザー確認まで停止する。`設計可能・実験化未承認` は実験作成の承認を意味しない。
@@ -57,12 +56,20 @@ Task が使えない場合は Makefile の同等コマンドを使う。
 make new-steering EXP=expXXX_title
 ```
 
-4. リポジトリに `templates/steering/` があれば、それを元に `.steering/YYYYMMDD-expXXX-title/{requirements.md,design.md,tasklist.md}` を埋める。backlogから移行する場合は、詳細ファイルの根拠、仮説、親との差分、固定事項、最小検証、成功条件、停止条件、実行しないこと、未決事項、判断履歴を欠落なく移す。移行確認後、`kaggle-strategy` を使って元の `docs/backlog/<candidate>.md` と未着手バックログ行を削除する。このskillからバックログを直接変更しない。
+4. リポジトリに`templates/steering/`があれば、それを元に`.steering/YYYYMMDD-expXXX-title/{requirements.md,design.md,tasklist.md}`を埋める。backlogから移行する場合は、詳細ファイルの根拠、仮説、親との差分、固定事項、最小検証、成功条件、停止条件、実行しないこと、未決事項、判断履歴を`requirements.md`へ欠落なく移す。`design.md`は実装対応と承認済み差分、`tasklist.md`は作業順序と確認項目だけを持つ。移行確認後、`kaggle-strategy`を使って元の`docs/backlog/<candidate>.md`と未着手バックログ行を削除する。このskillからバックログを直接変更しない。
 5. 実験を作成、またはコピーする。
 
 ```bash
 task new-exp EXP=expXXX_title
 task new-exp EXP=expXXX_title SOURCE=experiments/expYYY_parent
+```
+
+親実験のテストも新実験へ引き継ぐ必要がある場合だけ、明示的に`--copy-tests`を指定する。既定では、親実験名や旧契約を参照するテストの誤コピーを防ぐためコピーしない。
+
+親実験からコピーした場合、`new-exp`はファイル名とテキスト内の親実験IDを新実験IDへ置換し、`README.md`、`SESSION_NOTES.md`、`result.md`、`metrics.json`を未実行状態へ戻す。`config.yaml`は親の設定を引き継ぐが、`experiment.name`、作成日、説明、`lineage.parent`、`lineage.diff_summary`を新実験用に初期化する。コピー後は入力元として保持すべき親パスまで置換されていないか確認し、仮説、差分、構造化された実行証拠を親から引き継いだまま実装済みと扱わない。
+
+```bash
+task new-exp EXP=expXXX_title SOURCE=experiments/expYYY_parent EXTRA_ARGS="--copy-tests"
 ```
 
 Makefile の同等コマンド:
@@ -72,15 +79,16 @@ make new-exp EXP=expXXX_title
 make new-exp EXP=expXXX_title SOURCE=experiments/expYYY_parent
 ```
 
-   - 学習、推論、提出は原則として同じ `experiments/expXXX_title/` で管理する。train-side CV が良かった候補を inference port / submit するだけなら新しい exp を作らず、同じ実験の `<exp>_inference.ipynb`、`SESSION_NOTES.md`、`result.md`、`metrics.json`、`submissions/SUBMISSIONS.md` を更新する。
+   - 学習、推論、提出は原則として同じ `experiments/expXXX_title/` で管理する。train-side CV が良かった候補を inference port / submit するだけなら新しい exp を作らず、同じ実験の `<exp>_inference.ipynb`、`SESSION_NOTES.md`、`result.md`、`metrics.json`と、リポジトリ直下の`SUBMISSIONS.md`を更新する。
    - 新しい exp を作るのは、仮説、特徴量面、モデル構造、評価条件、route の主目的が変わる場合に限定する。過去に学習・推論を分けて作成済みの exp は履歴として維持する。
 
 6. 明らかに再利用できるコードでない限り、実装は実験フォルダ内に置く。
    - 実験固有のロジックは `experiments/expXXX_title/` に置く。
+   - 実験固有のテストは`experiments/expXXX_title/tests/`に置く。複数実験やリポジトリ全体の契約を検証するテストだけをルートの`tests/`に置く。
    - 共通 utility は `src/` に置く。
    - その場限りの調査コードと生の表・図は `studies/` に置く。完了した調査結論は、対象が単一実験でも `docs/surveys/` にメタデータ付きレポートとして記録する。
    - hyperparameter、route、系譜は `config.yaml` に置く。
-   - `experiment.route` は `ml_model`、`pf_beam`、`ensemble` のいずれかにする。route をまたぐ場合は主目的の route を選ぶ。ML と PF/Beam の両方が予測生成に本質的に寄与する blend / public notebook replay / meta feature 化は `ensemble` を使い、詳細を `lineage.diff_summary` と `SESSION_NOTES.md` に記録する。
+   - `experiment.route` は`docs/glossary.md`の定義に従い、最終予測の生成方法で`ml_model`、`pf_beam`、`ensemble`のいずれかにする。PF / Beam / HMM由来の値を特徴量として使っても、後段の学習済みモデルが最終予測を生成するなら`ml_model`とする。公開Notebook再現は一律に`ensemble`とせず、再現した処理で分類する。詳細は`lineage.diff_summary`と`SESSION_NOTES.md`に記録する。
    - `<exp>_train.ipynb` / `<exp>_inference.ipynb` は実験コードの正の編集対象なので、人間が読める notebook 構成にする。薄い `from module import main; main()` だけの notebook は避け、setup、入力確認、学習/監査/推論、評価、metrics/生成物保存を Markdown 見出し付きのセルで追えるようにする。
    - 新規 notebook 実装、または既存 notebook の大きな作り替えでは、まず Jupytext percent 形式の `.py` を作成し、`# %%` / `# %% [markdown]` でセルを構造化してから `.ipynb` に変換する。
    - Jupytext 起点の notebook は compact self-contained を基本形にする。依存 `.py` を丸ごと貼り付けず、実験遂行に必要な関数・定数だけを AST 追跡または手動確認で抽出して notebook 内に持ち込む。親実験に `*_compact_selfcontained_train.py` / `*_compact_selfcontained_inference.py` が存在する場合は、通常版 `*_train.py` / `*_inference.py` ではなく compact self-contained 版を最優先の構成参照元にする。
@@ -163,13 +171,12 @@ PF/Beam 生成の目次例:
 ```
 
 ```bash
-JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb experiments/expXXX_title/expXXX_title_compact_selfcontained_train.py
-JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/expXXX_title/expXXX_title_compact_selfcontained_train.py
-.venv/bin/python -m py_compile experiments/expXXX_title/expXXX_title_compact_selfcontained_train.py
-.venv/bin/ruff check experiments/expXXX_title/expXXX_title_compact_selfcontained_train.py --select F821
+UV_CACHE_DIR=/tmp/uv-cache JUPYTER_DATA_DIR=/tmp/jupyter-data uv run --extra notebook jupytext --to ipynb experiments/expXXX_title/expXXX_title_compact_selfcontained_train.py
+UV_CACHE_DIR=/tmp/uv-cache JUPYTER_DATA_DIR=/tmp/jupyter-data uv run --extra notebook jupytext --to ipynb --test experiments/expXXX_title/expXXX_title_compact_selfcontained_train.py
+UV_CACHE_DIR=/tmp/uv-cache uv run --extra dev ruff check experiments/expXXX_title/expXXX_title_compact_selfcontained_train.py --select F821
 ```
 
-train / inference の両方に同じ検証を行う。`py_compile` で生成された確認用 `.pyc` は不要なら削除してよい。
+train / inference の両方に同じ検証を行う。
 
 Kaggle train push 前の追加チェック:
 - `config.yaml` の `model.feature_ablation.active_variants` と `model.training.active_modes` を読み、学習対象数を数える。
@@ -177,23 +184,22 @@ Kaggle train push 前の追加チェック:
 - 親実験 control の再学習が含まれるなら、ユーザーの明示承認がない限り config から外すか `enabled: false` にする。
 
 Kaggle train / inference push 前の必須runtime resource / quota確認:
-- `task push-kaggle-train`、`task push-kaggle-infer`、または`kaggle kernels push`の直前に、`kaggle-platform`の「Push 前の runtime resource / quota 確認」を実行する。
-- GPU / TPUでは`kaggle quota --format json`の残時間とrefresh時刻を確認し、想定runtimeと照合する。残時間不足リスクを承知で実行するユーザーの明示承認がある場合は、その承認とリスクを`SESSION_NOTES.md`へ記録してpushできる。
-- Kaggle CLI 2.2.3ではアカウント全体のActive Sessions数を取得できないため、Active Sessions確認をpush前gateにしない。
+- `task push-kaggle-train`、`task push-kaggle-infer`、または`uv run kaggle kernels push`の直前に、`kaggle-platform`の「Push 前の runtime resource / quota 確認」を実行する。quota、Active Sessions、失敗時の停止判断の詳細はこのskillへ複製しない。
 
 ```bash
-task validate-template
 task validate-exp EXP=expXXX_title
-task fmt
-task test
-task prepare-kaggle-notebooks EXP=expXXX_title EXTRA_ARGS="--notebook train --kernel-id username/expXXX-title-train --title 'expXXX title train' --run-on-push --strict"
+task check-exp EXP=expXXX_title
+task test-exp EXP=expXXX_title
+task prepare-kaggle-notebooks EXP=expXXX_title EXTRA_ARGS="--notebook train --run-on-push"
 task push-kaggle-train EXP=expXXX_title
 ```
+
+共通の`src/`、`scripts/`、テンプレート、ルート設定を変更した場合は、影響するルート`tests/test_*.py`を明示して実行し、テンプレート変更では`task validate-template`も実行する。全実験を含む`task test`は、共通基盤へ広い影響がある変更またはユーザーが全件確認を明示した場合だけ実行する。通常の実験push前には`task fmt`を使わず、`task check-exp`の非破壊チェックを使う。
 
 prepare 時は `kaggle-platform` の slug/title 手順に従い、canonical slug が 50 文字以内で `id` と `title` 由来 slug が一致していることを確認する。実験ディレクトリ名全体では上限を超える場合、意味を保った短縮名を明示的に決める。push 後の存在確認、CLI 2.2.3 live SSE logs、必要時の output 取得、`status` 500、API lag、slug/title 問題も `kaggle-platform` に従う。train-side CV の完了判定と評価は、原則として live SSE logs / cell 出力、metrics 保存表示、Kaggle UI 上の実行結果を根拠にし、Kaggle output archive は既定では取得しない。
 
 Kaggle output archive 取得の判断:
-- CV 評価だけなら、`kaggle kernels logs -f owner/slug`、notebook cell 出力、Kaggle UI に表示された metrics で確認し、`SESSION_NOTES.md` / `result.md` / `metrics.json` に記録する。output archive を丸ごとダウンロードしない。
+- CV評価だけなら、`uv run kaggle kernels logs -f owner/slug`、notebook cell出力、Kaggle UIに表示されたmetricsで確認する。確認結果は`AGENTS.md`の役割分担に従って一度ずつ記録し、output archiveを丸ごとダウンロードしない。
 - output を取得するのは、`submission.csv`、OOF、`metrics.json`、feature importance、model manifest、SHA、後続実験の入力、提出形式検証など、ローカルで実ファイルを読む必要がある場合だけにする。
 - 学習完了時は、推論に必要なモデル、前処理状態、特徴量名と順序、variant / mode / fold、ファイル形式、相対パス、SHA が保存され、model manifest から同じ実験の inference notebook が再学習なしで解決・読み込みできることを確認する。
 - logs や notebook 表示に CV、fold 別 score、variant/config、保存先パスが不足している場合は、まず notebook 側の表示を改善する。すでに実行済みで不足分を補う必要がある場合だけ output 取得を検討する。
@@ -210,7 +216,7 @@ train CV が良かった候補を推論化または提出する場合も、同�
 - 公開例の小さなtestではなく、hidden testの可変なwell数・行数を前提にメモリと実行時間を設計する。必要に応じてwell単位の逐次処理、chunking、上限付き並列度を使う。
 
 ```bash
-task prepare-kaggle-notebooks EXP=expXXX_title EXTRA_ARGS="--notebook inference --kernel-id username/expXXX-title-inference --title 'expXXX title inference' --run-on-push --strict"
+task prepare-kaggle-notebooks EXP=expXXX_title EXTRA_ARGS="--notebook inference --run-on-push"
 task push-kaggle-infer EXP=expXXX_title
 ```
 
@@ -223,17 +229,11 @@ task train-local EXP=expXXX_title EXTRA_ARGS="--allow-local --debug"
 task infer-local EXP=expXXX_title EXTRA_ARGS="--allow-local --debug"
 ```
 
-8. 信頼できる結果は毎回記録する。
-   - `SESSION_NOTES.md`: コマンド、現在の状態、出力、失敗、次アクション。
-   - `result.md`: 解釈、実行証拠、ユーザーの採否判断の正。日本語で記載する。
-   - `metrics.json`: CV/LBなど機械処理する数値の正。
-   - 実験の`README.md`: 状態概要と正の記録へのリンク。CV/LBを手作業で重複記録しない。
-   - `experiment_summary.md`: 実験横断の要約。
-   - `submissions/SUBMISSIONS.md`: 提出した場合の提出履歴。
-   - `KAGGLE_DIRECTION.md`: 実験結果と現行判断を記録する。アイデアバックログ節の削除・追加・更新が必要な場合は、候補、根拠、非使用条件、移行状態を `kaggle-strategy` へ引き渡し、同じターンで反映する。このskillからアイデアバックログ節や `docs/backlog/` を直接変更しない。
-   - train CV、inference output、submit-check、code submit、Public LB は同じ実験記録に追記し、推論化だけを別実験として `experiment_summary.md` に分けない。
-   - 通常の実験結果を記録するだけなら`result.md`で完結させる。実験構成・モデル説明、OOF／結果EDA、特徴量・failure mode、複数実験比較として再利用できる完了調査になった場合は、`docs/surveys/README.md`で既存レポートを探し、既存レポートの更新または新規surveyレポート作成を行う。
-   - statusは`metrics.json`の単一フィールドを維持する。`planned`、`running`、`debug_completed`、`scaffold_completed`、`failed`は実行状態とする。`usable`、`completed`、`deprecated`、`discarded`はユーザーが判断した後だけ設定する。`leak-risk`は注意表示で、採否や完了を意味しない。既存実験の`config.yaml`に残るstatusは互換読み取り専用とし、次の状態更新は`metrics.json`へ記録する。
+8. `AGENTS.md`の役割分担に従い、信頼できる結果と実行証拠を同じ実験の正本へ記録する。
+   - train CV、inference output、submit-check、code submit、Public LBは同じ実験に追記し、推論化だけを別実験として分けない。
+   - アイデアバックログ節の変更が必要な場合は、候補、根拠、非使用条件、移行状態を`kaggle-strategy`へ引き渡す。このskillから直接変更しない。
+   - 通常の実験結果だけなら実験記録で完結させる。再利用できる完了調査になった場合だけ`docs/surveys/README.md`の手順を使う。
+   - 旧形式READMEとstatusの移行時対応も`AGENTS.md`に従い、一括変換しない。
 
 ```bash
 task update-summary
@@ -241,15 +241,7 @@ task update-summary
 
 ユーザーが実験の完了を判断した場合は、回答を終了する前に `AGENTS.md` の完了時のGit手順を再確認して従う。手順の詳細はこのskillへ複製しない。
 
-完了調査レポートを新規作成する場合:
-
-```bash
-task new-survey-report SURVEY_TITLE="..." SURVEY_SLUG="..." EXTRA_ARGS="--type experiment_review --experiment expXXX --topic ..."
-task update-survey-index
-task validate-surveys
-```
-
-surveyレポート本文には、結論、証拠範囲、実験構成・モデル説明、分析結果、解釈、関連する`result.md` / `metrics.json` / `studies/`、次のアクションを記載する。調査の正は`docs/surveys/`、実験の公式結果の正は`experiments/<exp>/result.md`として混同しない。
+完了調査レポートを新規作成する場合は、`docs/surveys/README.md`の作成・完了手順に従う。本文には、結論、証拠範囲、実験構成・モデル説明、分析結果、解釈、関連する`result.md` / `metrics.json` / `studies/`、次のアクションを記載する。調査レポートと実験の公式結果を混同しない。
 
 品質基準:
 - ユーザーが依頼した手法契約と実装の `input / target / output / loss / decode / context unit` が一致し、`faithful` / `staged-faithful` / `proxy` の分類に根拠があること。
@@ -268,17 +260,7 @@ surveyレポート本文には、結論、証拠範囲、実験構成・モデ�
 
 ## 実験レイアウト
 
-各実験には次を含める。
-
-- `config.yaml`: パラメータ、route、派生元、実行メタデータ。
-- `settings.py`: Kaggle Notebook 実行を正とするパス解決と設定読み込み。
-- `<exp>_train.ipynb`: 学習 notebook。実験コードの正の編集対象。
-- `<exp>_inference.ipynb`: 推論 notebook。実験コードの正の編集対象。
-- `SESSION_NOTES.md`: 現在の状態、実行したコマンド、結果、次のアクション。
-- `result.md`: 解釈、実行証拠、ユーザーの採否判断の正。日本語で記載する。
-- 実験配下の`README.md`: 状態概要と正の記録へのリンク。日本語で記載する。
-- `metrics.json`: ツールから読めるCV/LBなど数値の正。
-- `artifacts/`、`features/`、`variants/`: 実験で生成した出力。提出 CSV はローカル実験ディレクトリには常設せず、Kaggle Notebook output として扱う。本文では artifact ではなく「生成物」と書く。
+保存場所と記録ファイルの役割は`AGENTS.md`、生成内容は`templates/experiment/`を正とする。実験固有の`assets/`、`tests/`、`artifacts/`も`AGENTS.md`の配置規則に従い、テスト内のパスは配置先の実験ディレクトリを基準に解決する。
 
 ## Notebook 実装ルール
 
@@ -303,7 +285,7 @@ Kaggle Notebook が実行の正なので、`<exp>_train.ipynb` / `<exp>_inferenc
 - stochastic feature generation、PF/Beam、GPU 学習、Kaggle bootstrap、保存済み model inference、code-submit hidden test 再生成を含む場合は、設計時点で `docs/06_reproducibility.md` を読む。
 - 再現性ガードを満たせない場合は、理由を `SESSION_NOTES.md` に記録する。
 - スコアを記録する場合は seed を固定し、検証方法を明記する。
-- deterministic anchor として扱う場合は、seed だけでなく feature content SHA、model SHA、prediction SHA、submission SHA、Kaggle kernel version を記録する。
+- deterministic anchor として扱う場合は、seed だけでなく feature content SHA、model SHA、対象に応じた`oof_prediction_sha`または`test_prediction_content_sha`、`submission_sha`、Kaggle kernel version を記録する。
 - gzip 生成物は raw `.csv.gz` SHA ではなく、decompressed content SHA を主証拠にする。
 - CV と LB が合わない場合は、追加チューニングに進む前に原因を確認する。
 - 実行コマンド、設定、CV、生成物、次のアクションを書くまで、結果は記録済みと見なさない。
@@ -316,8 +298,10 @@ Kaggle Notebook が実行の正なので、`<exp>_train.ipynb` / `<exp>_inferenc
 3. 同梱 reviewer を実行する。
 
 ```bash
-python .agents/skills/kaggle-review-exp/scripts/review_exp_docs.py EXP_ID --root .
+uv run python .agents/skills/kaggle-review-exp/scripts/review_exp_docs.py EXP_ID --root .
 ```
+
+reviewer の `target evidence` は対象実験直下の `README.md`、`SESSION_NOTES.md`、`result.md`、`metrics.json`、`config.yaml` と対応する steering 文書だけを指す。実験内の補助資料は `supporting material`、`KAGGLE_DIRECTION.md`、全体summary、提出履歴、surveyは `context` として表示され、対象実験の不足を補った扱いにはしない。記録の不足を終了コードでも検出する場合は `--strict` を付ける。
 
 4. スクリプトが関連ありと判断したファイルを読む。
 5. 次をレビューする。

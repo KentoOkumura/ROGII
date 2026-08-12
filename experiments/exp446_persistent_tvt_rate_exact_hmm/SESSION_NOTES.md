@@ -107,7 +107,7 @@ inference、submissionも行っていない。
 - `exp446_persistent_tvt_rate_exact_hmm_compact_selfcontained_train.ipynb`
 - `exp446_persistent_tvt_rate_exact_hmm_compact_selfcontained_inference.py`
 - `exp446_persistent_tvt_rate_exact_hmm_compact_selfcontained_inference.ipynb`
-- `tests/test_exp446_persistent_tvt_rate_exact_hmm.py`
+- `experiments/exp446_persistent_tvt_rate_exact_hmm/tests/test_exp446_persistent_tvt_rate_exact_hmm.py`
 
 実装内容:
 
@@ -147,7 +147,7 @@ inference、submissionも行っていない。
 検証:
 
 ```bash
-.venv/bin/pytest -q tests/test_exp446_persistent_tvt_rate_exact_hmm.py
+.venv/bin/pytest -q experiments/exp446_persistent_tvt_rate_exact_hmm/tests/test_exp446_persistent_tvt_rate_exact_hmm.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp446_persistent_tvt_rate_exact_hmm/exp446_persistent_tvt_rate_exact_hmm_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \
@@ -162,7 +162,7 @@ JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \
 .venv/bin/ruff check \
   experiments/exp446_persistent_tvt_rate_exact_hmm/exp446_persistent_tvt_rate_exact_hmm_compact_selfcontained_train.py \
   experiments/exp446_persistent_tvt_rate_exact_hmm/exp446_persistent_tvt_rate_exact_hmm_compact_selfcontained_inference.py \
-  tests/test_exp446_persistent_tvt_rate_exact_hmm.py --select F821
+  experiments/exp446_persistent_tvt_rate_exact_hmm/tests/test_exp446_persistent_tvt_rate_exact_hmm.py --select F821
 make validate-template
 make validate-config
 make validate-exp EXP=exp446_persistent_tvt_rate_exact_hmm

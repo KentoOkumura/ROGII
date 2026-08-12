@@ -95,7 +95,6 @@ uv run python scripts/record_submission.py --experiment exp052_lgbm_capacity_pse
   - ref: `53524340`
   - submitted: `2026-06-10 05:09:36.977000`
   - Public LB: 12.076
-  - submission log: `logs/submission_exp052_lgbm_capacity_pseudotail_inference_submit.log`
 
 ## 次のアクション
 

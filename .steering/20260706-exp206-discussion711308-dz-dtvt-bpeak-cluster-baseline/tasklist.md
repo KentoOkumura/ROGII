@@ -23,4 +23,4 @@
 - Kaggle train v1 / inference v1 / submission ref `54395246` を完了し、Public LB 41.214 を記録する。
 - v1 要件未達を受け、step-fit / feature-nearest / prefix-holdout selector の v2 を実装する。
 - Kaggle train v2 / inference v2 / submission ref `54396544` を完了し、Public LB 34.908 を記録する。
-- `metrics.json`、`result.md`、`README.md`、`experiment_summary.md`、`submissions/SUBMISSIONS.md`、`KAGGLE_DIRECTION.md` を v2 要件未達の結論で更新する。
+- `metrics.json`、`result.md`、`README.md`、`experiment_summary.md`、`SUBMISSIONS.md`、`KAGGLE_DIRECTION.md` を v2 要件未達の結論で更新する。

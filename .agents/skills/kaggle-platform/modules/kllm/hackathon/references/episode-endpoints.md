@@ -27,10 +27,11 @@ issue rather than confirmed tool failure). The tool is documented and likely
 works; verify behavior before depending on it. Capture both success and error
 shapes when you call it.
 
-```python
-from skills.kaggle.shared.mcp_client import mcp_call, resolve_token
+Initialize `mcp_call` and `token` with the canonical repository setup in
+[mcp-reference.md](../../references/mcp-reference.md#repository-helper) before
+using the examples below.
 
-token = resolve_token()
+```python
 resp = mcp_call("get_episode_agent_logs", {
     "episodeId": 12345678,
     "agentIndex": 0,

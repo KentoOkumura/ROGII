@@ -1,99 +1,25 @@
 experiment:
-  name: "exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit"
-  description: Strict raw-data replay audit of public Ravaghi LightGBM features versus Pixiux dual-pipeline likelihood-PF LightGBM features.
+  name: exp071_exp063_full_replay_reproducibility_guard
+  description: exp063 full replayの再現性設定を検証するために作成したが、実装前にexp072へ移行したscaffold。
   route: ml_model
-  status: completed
-  created_at: "2026-06-12"
-  updated_at: "2026-06-13"
+  created_at: "2026-06-14"
 
 lineage:
-  parent: public_notebooks
-  ravaghi_reference_notebook: docs/notebooks/rogii-wellbore-geology-prediction/vote_top_20260611/ravaghi__wellbore-geology-prediction-lightgbm/wellbore-geology-prediction-lightgbm.ipynb
-  pixiux_reference_notebook: docs/notebooks/rogii-wellbore-geology-prediction/score_ascending_20260611/pixiux__rogii-dual-pipeline-blend/rogii-dual-pipeline-blend.ipynb
-  implementation_source: public_notebook_replay_audit.py
-  diff_summary: Replaces the previous exp056 artifact-based audit. Feature generation now replays public notebook code from raw competition files. Ravaghi uses the public Ravaghi-style base feature builder. Pixiux uses the same public base builder plus the public dual-pipeline likelihood-PF replay features from build_likpf/add_likpf_features. The audit trains only public LightGBM configurations, not CatBoost, Ridge stack, final submission blend, projection, pretrained boosters, or static visible overrides.
+  parent: exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit
+  diff_summary: 再現性設定だけを変更する計画だったが、CPU-only feature cacheを作るexp072へ移行したため実装・実行していない。
 
-validation:
-  leakage_policy:
-    - Features are generated from competition raw train files inside the Kaggle notebook.
-    - Only rows where TVT_input is missing are scored, matching public build_well behavior.
-    - target is TVT minus last_known_tvt and is used only as the supervised label.
-    - GroupKFold is grouped by public well id; a well never appears in train and validation in the same fold.
-    - Test files, public submissions, pretrained boosters, final blends, projection postprocess, and train-visible override logic are not used in the train-side audit.
-
-data:
-  raw_dir: data/raw
-  train_dir: data/raw/train
-  test_dir: data/raw/test
-  sample_submission: data/raw/sample_submission.csv
+validation: {}
+data: {}
 
 model:
-  name: public_notebook_lgbm_feature_replay_audit
-  target: target
-  base_prediction: last_known_tvt
-  estimator: public_lightgbm_configs
-  variants:
-    - name: ravaghi_public_lgbm_replay
-      source: ravaghi_public_lightgbm_base_features
-      feature_policy: all_public_base_features_except_well_id_target
-    - name: pixiux_likpf_public_replay
-      source: pixiux_dual_pipeline_public_features
-      feature_policy: public_base_features_plus_likpf_delta_features
-  training:
-    seed: 42
-    n_splits: 5
-    use_public_lgbm_configs: true
-    early_stopping_rounds: 250
+  name: exp063_full_replay_reproducibility_guard_not_implemented
+  params: {}
 
 runtime:
   use_amp: false
-  num_workers: 8
-  kaggle:
-    enable_gpu: true
-    enable_internet: false
-    kernel_sources: []
-    inference_kernel_sources:
-      - kentookumura/exp063-ravaghi-pixiux-strict-replay-train
-
-audit:
-  mode: strict_public_notebook_raw_replay
-  max_wells: null
-  fast: false
-  use_gpu: auto
-  pf_seeds: 128
-  pf_particles: 500
-  feature_importance:
-    top_n: 45
-  output_prefix: ravaghi_vs_pixiux_public_replay
-  expected_artifacts:
-    - ravaghi_vs_pixiux_public_replay_metrics.csv
-    - ravaghi_vs_pixiux_public_replay_feature_importance.csv
-    - ravaghi_vs_pixiux_public_replay_feature_importance_mean.csv
-    - ravaghi_vs_pixiux_public_replay_feature_importance_mean_top.png
-    - ravaghi_vs_pixiux_public_replay_oof_predictions.csv.gz
-    - ravaghi_vs_pixiux_public_replay_feature_schema.csv
-    - ravaghi_vs_pixiux_public_replay_summary.json
-    - ravaghi_vs_pixiux_public_replay_lgb_models/manifest.json
-    - ravaghi_vs_pixiux_public_replay_tracker_features_train.csv.gz
-
-inference:
-  mode: strict_public_replay_saved_model_inference_no_override
-  variant: pixiux_likpf_public_replay
-  model: lgb_mean
-  model_artifact_dir: null
-  notes:
-    - Loads the selected public Pixiux LightGBM replay fold boosters saved by the train notebook, generates only test-side replay features, averages saved booster predictions, and writes submission.csv.
-    - Does not regenerate train features or train LightGBM during inference.
-    - Does not include a hidden-specific branch, guarded overlap override, static visible override, CatBoost, Ridge stack, final public notebook blend, or projection postprocess.
-  expected_artifacts:
-    - ravaghi_vs_pixiux_public_replay_inference_metrics.csv
-    - ravaghi_vs_pixiux_public_replay_inference_test_predictions.csv.gz
-    - ravaghi_vs_pixiux_public_replay_inference_feature_schema.csv
-    - ravaghi_vs_pixiux_public_replay_inference_summary.json
-    - ravaghi_vs_pixiux_public_replay_tracker_features_test.csv.gz
+  num_workers: 2
+  batch_size: 32
 
 notes:
-  - This version intentionally overwrites the earlier exp056 artifact-based audit because that notebook was not a strict public implementation replay.
-  - Feature importance is plotted with matplotlib after averaging LightGBM feature_importances_ over all public LGBM configs and all GroupKFold folds.
-  - The inference notebook now loads saved Pixiux LightGBM fold boosters, generates only test-side features, and intentionally omits hidden-specific or visible-override branches.
-  - Compact reusable PF/Beam/likelihood-PF tracker feature frames are saved as csv.gz for later experiments to join by id.
+  - 実装、検証、Kaggle実行は行っていない。
+  - 後続はexp072_exp063_full_replay_feature_cacheを参照する。

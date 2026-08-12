@@ -173,7 +173,7 @@ make new-exp EXP=exp365_bounded_gr_registration_offset_hmm
 
 - `py_compile`: train / inferenceともpass。
 - `ruff --select F821`: train / inference / testともpass。
-- `pytest -q tests/test_exp365_bounded_gr_registration_offset_hmm.py`:
+- `pytest -q experiments/exp365_bounded_gr_registration_offset_hmm/tests/test_exp365_bounded_gr_registration_offset_hmm.py`:
   version 2修正後`10 passed`。
 - `jupytext --to ipynb --test`: train / inferenceともpass。
 - `make validate-exp EXP=exp365_bounded_gr_registration_offset_hmm`:

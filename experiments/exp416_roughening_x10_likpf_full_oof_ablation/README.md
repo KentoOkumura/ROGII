@@ -46,7 +46,7 @@ global roughening増加としては一般化せずprediction候補にしない�
 
 - `exp416_roughening_x10_likpf_full_oof_ablation_compact_selfcontained_train.py`
 - `exp416_roughening_x10_likpf_full_oof_ablation_compact_selfcontained_train.ipynb`
-- `tests/test_exp416_roughening_x10_likpf_full_oof_ablation.py`
+- `experiments/exp416_roughening_x10_likpf_full_oof_ablation/tests/test_exp416_roughening_x10_likpf_full_oof_ablation.py`
 - `config.yaml`、`metrics.json`、`SESSION_NOTES.md`
 
 4 shard prediction / audit、merged prediction、fold/scope/by-well/episode metrics、

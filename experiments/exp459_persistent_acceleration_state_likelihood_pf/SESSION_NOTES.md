@@ -81,7 +81,7 @@ likelihood-PFの状態を`(TVT, U-rate)`から
     - `.venv/bin/python -m py_compile ...`
     - `.venv/bin/ruff check ... --select F821,F401,E9`
     - `JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test ...`
-    - `.venv/bin/pytest -q tests/test_exp459_persistent_acceleration_state_likelihood_pf.py`
+    - `.venv/bin/pytest -q experiments/exp459_persistent_acceleration_state_likelihood_pf/tests/test_exp459_persistent_acceleration_state_likelihood_pf.py`
   - 結果: `10 passed`。Jupytext roundtrip、py_compile、ruffもPASS。
   - Kaggle package、Stage 0/1実行、予測生成物、inference、submissionは0。
   - 追加依頼`実行してください`をcanonical Kaggle train package / pushと

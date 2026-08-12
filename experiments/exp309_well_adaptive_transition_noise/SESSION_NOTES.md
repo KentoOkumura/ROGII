@@ -54,7 +54,7 @@ make new-exp EXP=exp309_well_adaptive_transition_noise
 ```bash
 .venv/bin/python -m py_compile experiments/exp309_well_adaptive_transition_noise/exp309_well_adaptive_transition_noise_compact_selfcontained_train.py experiments/exp309_well_adaptive_transition_noise/exp309_well_adaptive_transition_noise_compact_selfcontained_inference.py
 .venv/bin/ruff check experiments/exp309_well_adaptive_transition_noise/exp309_well_adaptive_transition_noise_compact_selfcontained_train.py experiments/exp309_well_adaptive_transition_noise/exp309_well_adaptive_transition_noise_compact_selfcontained_inference.py --select F821,F811,F601
-.venv/bin/pytest -q tests/test_exp309_well_adaptive_transition_noise.py
+.venv/bin/pytest -q experiments/exp309_well_adaptive_transition_noise/tests/test_exp309_well_adaptive_transition_noise.py
 ```
 
 - exp309 contract tests: `9 passed`

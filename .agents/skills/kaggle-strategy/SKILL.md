@@ -7,31 +7,31 @@ description: "ローカルの実験メモ、`experiment_summary.md`、`KAGGLE_DI
 
 単発の結果ではなく、複数実験から見える「流れ」を整理する。まずローカルの証拠を使う。新しい外部調査が必要な場合は、戦略を確定する前に `kaggle-survey-papers` を使うべきだと明示する。
 
+実装区分と変更classには`docs/glossary.md`で定義したこのリポジトリ内の管理用語を使う。skill内で別の定義や表記を作らず、ユーザーへの説明では実際に変更する処理を先に具体的に示す。
+
 ## 手順
 
 1. ローカル文脈を集める。
 
 ```bash
-python .agents/skills/kaggle-strategy/scripts/collect_strategy_context.py --root .
+uv run python .agents/skills/kaggle-strategy/scripts/collect_strategy_context.py --root .
 ```
 
 2. 収集結果から、情報量の多いファイルを読む。
    - `docs/surveys/README.md`の実験番号・種類・トピック別索引と、そこから選んだ関連レポート
    - コンペ概要、または存在する場合は `KAGGLE_DIRECTION.md`
    - `experiment_summary.md`
-   - `daily_reports/*`
-   - `submissions/SUBMISSIONS.md`
+   - `SUBMISSIONS.md`
    - `**/SESSION_NOTES.md`
    - `docs/backlog/*.md`
    - legacyの`docs/experiment/*.md`、`docs/experiments/*.md`、または類似の実験ドキュメントが残る場合は、`docs/surveys/`に正がないか先に確認する
    - `**/metrics.json`
 
-次の実験を提案するときは、少なくとも `experiment_summary.md`、`KAGGLE_DIRECTION.md`、`submissions/SUBMISSIONS.md`、最近の `experiments/*/SESSION_NOTES.md` を読む。
+次の実験を提案するときは、少なくとも `experiment_summary.md`、`KAGGLE_DIRECTION.md`、`SUBMISSIONS.md`、最近の `experiments/*/SESSION_NOTES.md` を読む。
 
-3. 作業を提案する前にフェーズを判定する。
-   - Early: 安定したベースラインがなく、CV やデータ理解がまだ固まっていない。
-   - Mid: ベースラインがあり、CV も信頼でき、特徴量やモデル探索が進んでいる。
-   - Late: 締切が近い、または実験が頭打ち。アンサンブル、頑健性、提出管理を重視する。
+同梱collectorは正本を先に収集し、残りの枠を実験番号が新しい順の`SESSION_NOTES.md`、`metrics.json`、`result.md`で埋める。`.pytest_cache`、Kaggle package、生成物、旧`daily_reports`や`claudeSummary.md`は戦略文脈に含めない。
+
+3. 作業を提案する前に、安定したベースラインと信頼できるCVの有無、探索の進み具合、停滞の証拠、締切までの時間を具体的に整理する。固定した段階名へ当てはめず、これらの状態から次の作業を説明する。
 
 ### 壁打ち結果をバックログ化する場合
 
@@ -74,10 +74,10 @@ python .agents/skills/kaggle-strategy/scripts/collect_strategy_context.py --root
 
 - すべての提案は、ローカルファイルのパス、Kaggle 公開情報、論文、または明示した仮定に結び付ける。
 - 仮定は `Assumption:` としてラベルを付ける。
-- 手法の中核機構を保った最小の反証可能実験を優先する。target、output表現、loss、decode、whole-group / local contextを変更して安くする場合は `proxy` であり、忠実実装より優先しない。
+- 手法の中核機構を保った最小の反証可能実験を優先する。実装区分は`docs/glossary.md`に従い、`proxy`を忠実実装より優先しない。
 - ユーザーが特定手法またはrepresentation changeを求めた場合は、既存コードの再利用率、GPUコスト、実装容易性より手法忠実性を優先する。忠実実装のコストが大きい場合は、無断で縮小せず選択肢としてユーザーに示す。
-- 同じ親実験または機構familyの `parameter tuning`、`add-only feature`、`selector-only`、後処理が2件連続した場合、またはpositiveなoracle headroom / coverage / 誤差非相関性に対しend-to-end改善が得られない場合は、次の実験を確定する前に `kaggle-idea-forge` でrepresentation auditを行う。
+- 同じ親実験または機構familyの`parameter`、`add-only`、`selector-only`、`postprocess`変更が2件連続した場合、またはpositiveなoracle headroom / coverage / 誤差非相関性に対しend-to-end改善が得られない場合は、次の実験を確定する前に `kaggle-idea-forge` を使い、target、output、decode、context unitを変える案まで見直す。
 - 次実験の提案には、少なくとも1件の target / output / decode / context unit を変える高upside案を含める。採用しない場合は、safe案を選ぶ根拠を証拠とともに書く。
-- フォルダ構成は作らない。ログやメモが不足している場合は、不足している証拠を明示しつつ、最小限の次アクションを示す。
+- 実験ディレクトリや steering ディレクトリは作らない。バックログを追加・更新する場合の `docs/backlog/<candidate>.md` はこの制限の例外とする。ログやメモが不足している場合は、不足している証拠を明示しつつ、最小限の次アクションを示す。
 - backlog を更新する場合は、実装済みアイデアを削除し、次候補の追加と同時に全候補の優先度を再評価する。
 - 新しい未着手候補を追加する場合は、`KAGGLE_DIRECTION.md` の行と `docs/backlog/<candidate>.md` を必ず同じ変更で作る。表の短い説明だけを実装引き継ぎとして扱わない。

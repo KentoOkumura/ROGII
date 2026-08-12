@@ -1,18 +1,15 @@
 ---
 name: kaggle-platform
 description: "Kaggle API、アカウント、データ、コンペリポジトリ操作全般を扱う。Kaggle CLI v2.2.3 の OAuth、live SSE notebook logs、forums/topics、benchmarks、API token 確認、コンペ一覧/詳細レポート、dataset/model の download/upload、Kaggle CLI や kagglehub による notebook/kernel 実行、Kaggle リポジトリテンプレートの設定/検証、`project.yml` の記入、コンペ input file の同期、公式コンペ資料の準備、hackathon writeup 取得、badge 収集、Kaggle API 全般の質問に使う。コードレビュー、提出前検証、提出監視、ノートブック保存、ディスカッション保存、戦略整理、論文調査、実験ワークフロー/レビューには専用スキルを優先する。"
-license: MIT
-metadata: {"author": "shepsci", "version": "2.4.1", "primaryEnv": "KAGGLE_API_TOKEN", "openclaw": {"requires": {"bins": ["python3", "pip3"], "env": ["KAGGLE_API_TOKEN"]}}}
-allowed-tools: Bash Read WebFetch Grep Glob
 ---
 
 # Kaggle Platform
 
 出典: https://github.com/shepsci/kaggle-skill
 
-互換性: Python 3.11+、Kaggle CLI v2.2.3、pip パッケージの kagglehub、kaggle、requests、python-dotenv。任意で Playwright を使う。comp-report モジュールの SPA scraping 手順は、host agent 側で Playwright MCP tools が提供されている前提。スキル自体には Playwright は同梱しない。
+互換性: Python 3.11+、Kaggle CLI v2.2.3、requests。CLI と認証確認は基本依存で実行できる。kagglehub を使う操作では、先に `uv sync --locked --extra kaggle-platform` で lock 済みの追加依存を導入する。comp-reportの任意のSPA scrapingだけはhost agent側のPlaywright MCP toolsを使う。badge-collectorを含むリポジトリ内scriptはPlaywrightをinstall・importしない。
 
-LLM やエージェント型コーディング環境（Claude Code、gemini-cli、Cursor など）向けの Kaggle 統合。アカウント設定、コンペレポート、dataset/model の download、notebook 実行、コンペ提出、hackathon writeup 取得、badge 収集、Kaggle 全般の質問に対応する。5 つのモジュールが連携して動く。
+LLM やエージェント型コーディング環境（Claude Code、gemini-cli、Cursor など）向けの Kaggle 統合。アカウント設定、コンペレポート、dataset/model の download、notebook 実行、コンペ提出、hackathon writeup 取得、badge 収集、Kaggle 全般の質問に対応する。4 つの同梱モジュールと、このファイル内のRepository Template Setup手順を使い分ける。
 
 **ネットワーク要件:** `api.kaggle.com`、`www.kaggle.com`、`storage.googleapis.com` への outbound HTTPS が必要。
 
@@ -23,71 +20,58 @@ LLM やエージェント型コーディング環境（Claude Code、gemini-cli�
 | **registration** | アカウント作成、API key 生成、credential 保存 |
 | **comp-report** | コンペ状況レポートの作成（Python API + host agent 経由の任意 Playwright） |
 | **kllm** | Kaggle 操作の中核（kagglehub、CLI、MCP）。writeup 取得と overview/rubric 抽出用の `hackathon/` submodule を含む |
-| **repo-setup** | Kaggle リポジトリテンプレート設定、`project.yml`、data sync、公式 docs |
 | **badge-collector** | 5 phase に分けた badge 獲得 |
+
+Kaggleリポジトリテンプレートの設定、`project.yml`、data sync、公式資料の準備には、後述する「Repository Template Setup」を使う。これは独立したmodule directoryではない。
 
 ## Credential Setup
 
-**最初に必ず credential checker を実行する。**
+使用するclientに合わせてcredential checkerを実行する。
 
 ```bash
-python3 shared/check_all_credentials.py
+# ローカルのKaggle CLI操作
+uv run python .agents/skills/kaggle-platform/shared/check_all_credentials.py --require cli
+
+# Kaggle Python APIまたはkagglehub
+uv run python .agents/skills/kaggle-platform/shared/check_all_credentials.py --require python-api
+
+# Kaggle MCP Server
+uv run python .agents/skills/kaggle-platform/shared/check_all_credentials.py --require api-token
 ```
 
-**Primary credential（headless/agent/CI 推奨）:**
+認証方式と設定手順の正本は`modules/registration/references/kaggle-setup.md`とする。CLIはOAuth、API token、legacy username/keyを利用でき、Kaggle Python APIとkagglehubはAPI tokenまたはlegacy username/keyを利用できる。MCPはKaggle Settingsの「Generate New Token」で生成したAPI tokenをBearer tokenとして使う。owner名を必要とするscriptでは`KAGGLE_USERNAME`を明示し、tokenから推測しない。
 
-| Variable | 入手方法 | 用途 |
-|----------|----------|------|
-| `KAGGLE_API_TOKEN` | kaggle.com/settings の "Generate New Token" | CLI（>= 1.8.0）、kagglehub（>= 0.4.1）、MCP で使う |
-
-**Interactive CLI OAuth（ローカル作業向け）:**
-
-```bash
-kaggle auth login
-```
-
-成功すると Kaggle CLI は `~/.kaggle/credentials.json` を使って認証する。ブラウザを開けない環境や automation では、引き続き `KAGGLE_API_TOKEN` または `~/.kaggle/access_token` を使う。`kaggle auth print-access-token` は token 実値を表示するため、ログに残さない。
-
-**Legacy credentials（任意。古い tool 向け）:**
-
-| Variable | 入手方法 | 用途 |
-|----------|----------|------|
-| `KAGGLE_USERNAME` | アカウント作成 | identity。token から自動検出される |
-| `KAGGLE_KEY` | kaggle.com/settings の "Create Legacy API Key" | 古い CLI/kagglehub 向けの legacy key |
-
-API token は `~/.kaggle/access_token`（推奨）または環境変数に保存する。不足しているものがあれば registration の手順に従う。詳しくは `modules/registration/README.md` を読む。
-
-**セキュリティ:** credential の実値を echo、log、commit しない。
+**セキュリティ:** credentialの実値をユーザーへ要求しない。chat、コマンド引数、shell history、terminal output、log、commitへ残さない。
 
 ## Module: Registration
 
-Kaggle アカウントの作成と API credential の生成を案内する。ローカル CLI だけなら `kaggle auth login`、agent/headless workflow では API token を primary、legacy key を optional として扱う。`~/.kaggle/access_token` に保存し、必要に応じて `.env` と `~/.kaggle/kaggle.json` にも保存する。
+Kaggleアカウントの作成とcredentialの生成を案内する。clientごとの対応方式は認証設定の正本に従い、legacy username/keyも対応clientでは有効な方式として扱う。エージェントはcredentialを受け取らず、ユーザー自身がローカルで設定する。
 
 主なコマンド:
 
 ```bash
-python3 modules/registration/scripts/check_registration.py
-bash modules/registration/scripts/setup_env.sh
+uv run python .agents/skills/kaggle-platform/shared/check_all_credentials.py
+uv run python .agents/skills/kaggle-platform/modules/registration/scripts/configure_token.py
 ```
 
-完全な walkthrough は `modules/registration/README.md` を読む。
+完全なwalkthroughは`modules/registration/references/kaggle-setup.md`を読む。
 
 ## Module: Competition Reports
 
-最近の Kaggle コンペ活動を包括的な landscape report として生成する。metadata は Python API を使う。problem statement、rendered evaluation details、winner writeup links など SPA でしか見えない content には host agent 側の Playwright MCP tools が必要。大半の overview content では、Playwright 不要の kllm module `list_competition_pages` を優先する。
+最近の Kaggle コンペ活動を包括的な landscape report として生成する。metadata は Python API を使う。problem statement、rendered evaluation details、winner writeup links など SPA でしか見えない content には host agent 側の Playwright MCP tools が必要。API tokenが利用できる場合は、大半のoverview contentについてPlaywright不要のkllm module `list_competition_pages`を優先する。
 
 6 ステップの手順:
 
-1. credential を確認する。
+1. `--require python-api`でcredentialを確認する。API tokenまたはlegacy username/keyを利用できるが、OAuth-only credentialは使用しない。
 2. 全カテゴリからコンペ一覧を集める。
 3. コンペごとに構造化された detail（files、leaderboard、kernels）を取得する。
-4. Playwright で problem statement、evaluation metric、writeup を scrape する。
+4. API tokenが利用できる場合だけ、`--require api-token`で追加確認してから`list_competition_pages`でoverview contentを補完する。legacy username/keyだけの場合はMCP補完を省略する。それでも必要なSPA-only contentがあり、host agentがPlaywright MCP toolsを提供している場合だけ、problem statement、evaluation metric、writeupをscrapeする。利用できない項目は未取得とし、推測で補完しない。
 5. Methods & Insights analysis を含む Markdown report を組み立てる。
-6. インラインで提示する。
+6. ユーザーへインラインで提示する。再利用する完了レポートとしてリポジトリへ残す場合は、`docs/surveys/README.md`の作成・完了手順に従う。一時的な照会結果は保存しない。
 
 ```bash
-python3 modules/comp-report/scripts/list_competitions.py --lookback-days 30 --output json
-python3 modules/comp-report/scripts/competition_details.py --slug SLUG
+uv run python .agents/skills/kaggle-platform/modules/comp-report/scripts/list_competitions.py --lookback-days 30 --output json
+uv run python .agents/skills/kaggle-platform/modules/comp-report/scripts/competition_details.py --slug SLUG
 ```
 
 hackathon の扱いを含む詳細は `modules/comp-report/README.md` を読む。
@@ -118,8 +102,8 @@ kaggle.com とやり取りする 4 つの方法:
 | Benchmarks | なし | `benchmarks auth/init/tasks` | Yes | Yes |
 
 **既知の問題:**
-- kagglehub v0.4.3 の `dataset_load()` は壊れている。`dataset_download()` + `pd.read_csv()` を使う。
-- CLI >= 1.8 の `competitions download` には `--unzip` がない。
+- kagglehub の利用versionは実行時の`uv.lock`を正とする。v0.4.3では`dataset_load()`が失敗した履歴があるが、現在lockされているversionの状態をその履歴から推定しない。利用前に対象datasetで確認し、失敗時は`dataset_download()` + `pd.read_csv()`へ切り替える。
+- CLI >= 1.8 の `competitions download` には `--unzip` がない。直接CLIを使う場合は取得後に安全に展開する。このリポジトリでは`task dl-kaggle-comp`が取得と安全な展開を行う。
 - Competition-linked datasets は 403 を返す。standalone copies を使う。
 - CLI v2.2.0+ では competition discussion は `kaggle competitions topics show` を使う。`topic-messages` は deprecated なので、新規手順では使わない。
 
@@ -137,21 +121,21 @@ Kaggle MCP の hackathon endpoints から hackathon writeups、rules、judging r
 6. `get_resolved_writeup_links`: host/judge gated な link enrichment
 
 ```bash
-python3 modules/kllm/hackathon/scripts/hackathon_overview.py --competition kaggle-measuring-agi
-python3 modules/kllm/hackathon/scripts/list_writeups.py --competition kaggle-measuring-agi
-python3 modules/kllm/hackathon/scripts/fetch_writeup.py --writeup-id 123456
+uv run python .agents/skills/kaggle-platform/modules/kllm/hackathon/scripts/hackathon_overview.py --competition kaggle-measuring-agi
+uv run python .agents/skills/kaggle-platform/modules/kllm/hackathon/scripts/list_writeups.py --competition kaggle-measuring-agi
+uv run python .agents/skills/kaggle-platform/modules/kllm/hackathon/scripts/fetch_writeup.py --writeup-id 123456
 ```
 
-**Live server 状態**（2026-05-04 確認）:
-- `get_hackathon_write_up`: 2026-04-22 audit では壊れていたが、**現在は動く**。
-- `get_benchmark_leaderboard`: 2026-04-22 では permission-blocked だったが、通常の KGAT token で **PASS**。
-- classic competitions 向けの `get_competition`: **現在は PASS**（upstream で復旧）。
+**Live server の確認履歴**（2026-05-04時点。実行時に再確認する）:
+- `get_hackathon_write_up`: 2026-04-22 auditでは失敗し、2026-05-04の再確認ではPASS。
+- `get_benchmark_leaderboard`: 2026-04-22ではpermission-blocked、2026-05-04にその監査で使用したAPI tokenでは応答した。現在の可否はtoken文字列のprefixで判断せず、対象endpointを実行時に確認する。
+- classic competitions向けの`get_competition`: 2026-05-04の再確認ではPASS。
 - `download_hackathon_write_ups` は host context によって CSV header のみを返すことがある。
 - `get_resolved_writeup_links` は role-gated。participant には明示的な denial が返る。
 
 取得手順、host/judge と participant の role 別 guidance、agent に返る bundle shape は `modules/kllm/hackathon/README.md` を読む。
 
-## Module: Repository Template Setup
+## Repository Template Setup
 
 `AGENTS.md`、`project.yml`、`KAGGLE_DIRECTION.md`、`Taskfile.yml`、`Makefile`、`data/raw/`、`docs/official/evaluation.md` のようなファイルを持つ Kaggle 実験リポジトリで作業するときに使う。
 
@@ -168,23 +152,24 @@ python3 modules/kllm/hackathon/scripts/fetch_writeup.py --writeup-id 123456
    - `submission.target_columns`
    - `submission.sample_file`
 4. 公式 metric と submission-format のメモを `docs/official/evaluation.md` に置く。
-5. raw competition data は `data/raw/` 配下に置く。外部データは `data/external/` に分ける。
-6. setup を信頼する前に template validation command を実行する。sample submission が存在するようになったら、より厳しい config validation も実行する。
+5. template validationを実行する。
+6. raw competition dataは`data.raw_dir`で設定した場所へ置く。`task dl-kaggle-comp`はcompetition archiveを取得し、path traversalとsymbolic linkを拒否して安全に展開する。既存ファイルはsizeとZIP memberのchecksumが一致する場合だけスキップし、異なる場合は上書きせず停止する。外部データは`data/external/`に分ける。
+7. `submission.sample_file`が存在することを確認してから、strict config validationを実行する。
 
 `Taskfile.yml` がある場合は `task` commands を優先する。
 
 ```bash
 task validate-template
-task validate-config
 task dl-kaggle-comp
+task validate-config
 ```
 
 Task が使えない場合は、同等の Makefile コマンドを使う。
 
 ```bash
 make validate-template
-make validate-config
 make dl-kaggle-comp
+make validate-config
 ```
 
 ガードレール:
@@ -197,7 +182,7 @@ make dl-kaggle-comp
 
 - `experiments/<exp>/<exp>_train.ipynb`
 - `experiments/<exp>/<exp>_inference.ipynb`
-- notebook のフル実行と公式評価は Kaggle で行う。local smoke に必要な入力、依存関係、生成物がローカルに揃っている場合だけ、`scripts/execute_experiment_notebook.py --allow-local` による local smoke を行う
+- notebook のフル実行と公式評価は Kaggle で行う。local smoke に必要な入力、依存関係、生成物がローカルに揃っている場合だけ、`task train-local` / `task infer-local` / `task execute-notebook-local`へ`--allow-local`を渡してlocal smokeを行う
 
 新規実験から Kaggle 実行までの標準手順:
 
@@ -213,42 +198,44 @@ task validate-exp EXP=expXXX_title EXTRA_ARGS="--allow-todo"
 task validate-exp EXP=expXXX_title
 ```
 
-Kaggle train notebook を作成して push と同時に実行:
+Kaggle train notebook を作成し、pushして実行:
 
 ```bash
-task prepare-kaggle-notebooks EXP=expXXX_title EXTRA_ARGS="--notebook train --kernel-id username/expXXX-title-train --title 'expXXX title train' --run-on-push --strict"
+task prepare-kaggle-notebooks EXP=expXXX_title EXTRA_ARGS="--notebook train --run-on-push"
 task push-kaggle-train EXP=expXXX_title
 ```
 
-Kaggle inference notebook を作成・更新:
+Kaggle inference notebook を作成し、pushして実行:
 
 ```bash
-task prepare-kaggle-notebooks EXP=expXXX_title EXTRA_ARGS="--notebook inference --kernel-id username/expXXX-title-inference --title 'expXXX title inference' --strict"
+task prepare-kaggle-notebooks EXP=expXXX_title EXTRA_ARGS="--notebook inference --run-on-push"
 task push-kaggle-infer EXP=expXXX_title
 ```
 
 #### Push 前の runtime resource / quota 確認
 
-`kaggle kernels push`、`task push-kaggle-train`、`task push-kaggle-infer` の直前に次を行う。prepareだけでpushしない場合は対象外。
+`uv run kaggle kernels push`、`task push-kaggle-train`、`task push-kaggle-infer` の直前に次を行う。prepareだけでpushしない場合は対象外。
 
-1. 生成済み`kernel-metadata.json`の`enable_gpu`、`enable_tpu`、`machine_shape`を読み、今回のnotebookがCPU / GPU / TPUのどのresourceを使うか特定する。
-2. GPU / TPUを使う場合は`kaggle quota --format json`で週次残時間とrefresh時刻を確認し、想定runtimeに足りるか判断する。CPU pushではquota commandは不要。
-3. 確認時刻、push対象resource、GPU / TPU残時間、判断を対象実験の`SESSION_NOTES.md`に記録する。
+1. 生成済み`kernel-metadata.json`の`enable_gpu`、`enable_tpu`、`machine_shape`を読み、`enable_tpu`が`false`で、今回のnotebookがCPU / GPUのどちらを使うか特定する。
+2. GPUを使う場合は`uv run kaggle quota --format json`で週次残時間とrefresh時刻を確認し、想定runtimeに足りるか判断する。CPU pushではquota commandは不要。
+3. 確認時刻、push対象resource、GPU残時間、判断を対象実験の`SESSION_NOTES.md`に記録する。
+
+このリポジトリの`prepare-kaggle-notebooks`はTPUに対応しない。生成metadataは`enable_tpu: false`固定で、metadata検証も`true`を拒否する。TPUが必要な実験では生成packageを手編集せず、未対応として停止する。
 
 Kaggle CLI 2.2.3はアカウント全体のActive Sessions数を取得できないため、push前にActive Sessions数を確認する手順は設けない。ユーザー指定の同時session上限はCPU `5`、GPU `2`だが、active数をUIで確認したりユーザーへ転記を依頼したりせず、push前gateには使わない。pushが同時session上限エラーを返した場合だけ待機または停止対象をユーザーに確認し、明示承認なしに既存sessionをcancel / stopしない。
 
 注意:
-- 初回 prepare から canonical kernel id / title を明示する。Kaggle は title を slug 化した値を kernel path に使うため、`kernel-metadata.json` の `id` の末尾 slug と `title` 由来 slug を一致させ、slug を 50 文字以内にする。実験ディレクトリ名全体と `train` / `inference` の種別が 50 文字以内ならその名前を使い、超える場合は実験番号、識別に必要な意味のある短縮名、種別を残した衝突しない canonical slug を決める。機械的な末尾切り捨てや実験番号だけの短縮は行わず、実験名と slug の対応を `SESSION_NOTES.md` に記録する。上限超過、id/title 不一致、既存 notebook との衝突を解消できない場合は push しない。
-- `--kernel-id` と `--title` が一致していない状態で push が成功すると、Kaggle 側では title 由来の別 slug で notebook が作られることがある。warning だけでも、必要なら同じ実験フォルダのまま id/title を slug 一致させて再 prepare/push し、古い slug は履歴として記録する。
-- `--kernel-id-prefix username/expXXX-title` を使う場合も title prefix は同じ slug になるようにする。既定の `title_base experiment kind` は competition name を含み、id/title の slug 不一致を起こしやすいので、初回 push では避ける。
+- 通常は`--kernel-id`と`--title`を省略し、`prepare-kaggle-notebooks`が`project.yml`のowner、実験名、notebook種別から互いに一致するcanonical kernel id / titleを生成する。生成された`kernel-metadata.json`の`id`末尾slugと`title`由来slugが一致し、50文字以内で、既存notebookと衝突しないことを確認する。
+- `prepare-kaggle-notebooks`はowner、competition source、50文字上限、id/title由来slugの一致を検証し、不正なら失敗する。`push-kaggle-train` / `push-kaggle-infer`も生成済みpackageを再検証してからKaggle CLIを呼ぶため、warningを無視してpushしない。
+- 自動生成slugが50文字を超える場合、既存notebookと衝突する場合、または意味のある短縮が必要な場合だけ、実験番号、識別に必要な短縮名、notebook種別を残した`--kernel-id`と`--title`を明示する。機械的な末尾切り捨てや実験番号だけの短縮は行わず、実験名との対応を`SESSION_NOTES.md`に記録する。片方だけ指定した場合は、`--kernel-id` / `--kernel-id-prefix`からtitle、または`--title`からidを生成する。上限超過、不一致、衝突を解消できない場合はpushしない。
 - Kaggle runtime は CPU がデフォルト。GPU が必要な実験だけ `project.yml` または生成済み metadata で明示的に有効化する。
-- P100 ではなく T4 を使う必要がある notebook は、生成済み `kernel-metadata.json` に `"enable_gpu": true` と `"machine_shape": "NvidiaTeslaT4"` を入れたうえで、push 時にも `--accelerator NvidiaTeslaT4` を付ける。例: `kaggle kernels push -p experiments/expXXX_title/kaggle/train --accelerator NvidiaTeslaT4`。
-- Kaggle 側に反映された accelerator は、push 後に `kaggle kernels pull <kernel> -p /tmp/kaggle-pull/<slug> -m` で metadata を取得し、`machine_shape` が `NvidiaTeslaT4` になっていることを確認する。UI 表示も併せて見るとよい。
+- P100ではなくT4を使う必要があるnotebookは、生成済み`kernel-metadata.json`に`"enable_gpu": true`と`"machine_shape": "NvidiaTeslaT4"`を入れる。直接CLIへ`--accelerator NvidiaTeslaT4`を渡す場合も、先に`uv run python scripts/validate_kaggle_metadata.py --package-dir experiments/expXXX_title/kaggle/train`を実行してから`uv run kaggle kernels push -p experiments/expXXX_title/kaggle/train --accelerator NvidiaTeslaT4`を実行する。
+- Kaggle 側に反映された accelerator は、push 後に `uv run kaggle kernels pull <kernel> -p /tmp/kaggle-pull/<slug> -m` で metadata を取得し、`machine_shape` が `NvidiaTeslaT4` になっていることを確認する。UI 表示も併せて見るとよい。
 - Kaggle CLI の metadata key は snake_case の `machine_shape` を優先する。古いメモや外部投稿に `machineShape` と書かれていても、このリポジトリの notebook 生成では `machine_shape` を正とする。
 - `prepare-kaggle-notebooks` は `competition_sources` を metadata に入れるため、通常は Kaggle UI の Input 追加は不要。
-- Kaggle CLI の `kernels push` は `code_file` の notebook 本体だけを API に送る。生成 notebook には、`settings.py`、`config.yaml`、実験補助 `.py`、`project.yml`、`src/` を復元する base64 zip bootstrap セルが入る。
+- Kaggle CLI の `kernels push` は `code_file` の notebook 本体だけを API に送る。生成 notebook には、`settings.py`、`config.yaml`、`metrics.json`、実験補助 `.py`、`project.yml`、`src/` を復元する base64 zip bootstrap セルが入る。`metrics.json`を含めることで、Notebook側の部分更新でも既存のstatus、CV/LB、実行証拠を保持する。
 - 編集対象は常に `experiments/<exp>/<exp>_*.ipynb`。`experiments/<exp>/kaggle/` は push 用の生成物。
-- train-side CV の評価だけなら、Kaggle output archive は取得しない。`kaggle kernels logs -f owner/slug`、notebook cell 出力、Kaggle UI 上の metrics を根拠に記録する。`submission.csv`、OOF、`metrics.json`、feature importance、model manifest、SHA、後続実験の入力、提出形式検証など実ファイル確認が必要な場合だけ `task kaggle-output` / `kaggle kernels output` を使う。
+- train-side CV の評価だけなら、Kaggle output archive は取得しない。`uv run kaggle kernels logs -f owner/slug`、notebook cell 出力、Kaggle UI 上の metrics を根拠に記録する。`submission.csv`、OOF、`metrics.json`、feature importance、model manifest、SHA、後続実験の入力、提出形式検証など実ファイル確認が必要な場合だけ `task kaggle-output` / `uv run kaggle kernels output` を使う。
 
 Kaggle CLI の notebook 監視での注意:
 - Codex の managed sandbox では `api.kaggle.com` への DNS/network access が制限されることがある。`kaggle kernels push/pull/logs -f/output/status`、`kaggle competitions submit/submissions` など Kaggle API にアクセスする CLI は、最初から host 側のネットワーク許可付きで実行する。sandbox で一度失敗させてから「DNS 解決で落ちたので再実行」と説明する運用はしない。
@@ -257,46 +244,46 @@ Kaggle CLI の notebook 監視での注意:
 - `--interval` は deprecated で CLI 2.2.3 では無視されるため使わない。一定時間だけ監視する必要がある場合も、ログ取得コマンド自体は `kaggle kernels logs -f owner/slug` のままにする。
 - `kaggle kernels status <kernel>` は `GetKernelSessionStatus` 500 を返すことがあるため、完了判定の主経路にしない。
 - `kaggle kernels push` が `Your kernel title does not resolve to the specified id` または詳細なしの `SaveKernel` 400 を返す場合は、`kernel-metadata.json` の `id` と `title` から生成される slug が一致し、50 文字以内か確認する。まず同じ `EXP=expXXX_title` のまま package を再生成し、上記ルールで決めた canonical id/title へそろえる。実験番号を切り直さない。
-- 上記 400 の復旧では、`task prepare-kaggle-notebooks EXP=expXXX_title EXTRA_ARGS="--notebook train --kernel-id username/expXXX-title-train --title 'expXXX title train' --run-on-push --strict"` のように `--kernel-id` と `--title` を同時指定してから同じ push コマンドを再実行する。inference も同じ形で `expXXX-title-inference` / `expXXX title inference` にする。
+- 上記 400 の復旧では、`task prepare-kaggle-notebooks EXP=expXXX_title EXTRA_ARGS="--notebook train --kernel-id username/expXXX-title-train --title 'expXXX title train' --run-on-push"` のように`--kernel-id`と`--title`を同時指定してから同じpushコマンドを再実行する。prepare target自体がpush可能なmetadataを必須とする。inferenceも同じ形で`expXXX-title-inference` / `expXXX title inference`にする。
 
 #### Code competition submit guard
 
 Notebook-only code competitionをCLIから提出するときは、kernelとversionだけでなく、kernel output内の提出ファイル名を`-f`で必ず指定する。`-f submission.csv`はローカルCSVのupload指定ではなく、指定kernel versionが生成したoutput file名である。
 
 ```bash
-kaggle competitions submit COMPETITION \
+uv run kaggle competitions submit COMPETITION \
   -k OWNER/KERNEL_SLUG \
   -v KERNEL_VERSION \
   -f submission.csv \
   -m "MESSAGE"
 ```
 
-提出直前に`kaggle kernels files OWNER/KERNEL_SLUG --page-size 200`で`submission.csv`が存在することを確認する。`-k` / `-v`だけの`CreateCodeSubmission`が400になった場合は、`kaggle competitions submissions`で新しいrefが作成されていないことを確認し、同じkernel slug・version・messageのまま`-f submission.csv`だけを補って再実行する。別slug、別version、再push、予測変更で回避しない。
+提出直前に`uv run kaggle kernels files OWNER/KERNEL_SLUG --page-size 200`で`submission.csv`が存在することを確認する。`-k` / `-v`だけの`CreateCodeSubmission`が400になった場合は、`uv run kaggle competitions submissions`で新しいrefが作成されていないことを確認し、同じkernel slug・version・messageのまま`-f submission.csv`だけを補って再実行する。別slug、別version、再push、予測変更で回避しない。
 - 400 後に長い title だけを変える、別の実験名へ移す、別 slug を試す、という順で増殖させない。canonical id/title に寄せ直した理由、元の失敗 message、再 push した kernel id を `SESSION_NOTES.md` に記録する。
-- push 後は、同じ kernel id で再 push する前に必ず `kaggle kernels pull <kernel> -p /tmp/kaggle-pull/<slug> -m` で notebook の存在を確認する。
-- `kaggle kernels pull <kernel> -m` が成功して `id_no` が返る場合は、private kernel が CLI list/search に見えなくても Kaggle 側に存在すると扱う。
+- push 後は、同じ kernel id で再 push する前に必ず `uv run kaggle kernels pull <kernel> -p /tmp/kaggle-pull/<slug> -m` で notebook の存在を確認する。
+- `uv run kaggle kernels pull <kernel> -m` が成功して `id_no` が返る場合は、private kernel が CLI list/search に見えなくても Kaggle 側に存在すると扱う。
 - queue / provisioning 中、または notebook がまだ stdout/stderr を出していない間は live SSE の表示が空でも正常と扱う。`print(..., flush=True)` は stdout の反映を早めるが、rich display、HTML、widget など stdout/stderr 以外の出力は notebook cell / Kaggle UI で確認する。
-- live SSE が一時的に空、または接続が終了しても、認証ミス、slug ミス、実行失敗と即断しない。同じ canonical kernel id のまま `pull` と Kaggle UI を確認し、必要なら同じ `kaggle kernels logs -f owner/slug` を再実行する。
-- output は必要時に `kaggle kernels output <kernel> -p <out>` で確認する。実行直後に空でも、status 500、live SSE にまだ stdout/stderr がない、`kernels list` 非表示だけを理由に別 slug で再 push しない。
+- live SSE が一時的に空、または接続が終了しても、認証ミス、slug ミス、実行失敗と即断しない。同じ canonical kernel id のまま `pull` と Kaggle UI を確認し、必要なら同じ `uv run kaggle kernels logs -f owner/slug` を再実行する。
+- output は必要時に `uv run kaggle kernels output <kernel> -p <out>` で確認する。実行直後に空でも、status 500、live SSE にまだ stdout/stderr がない、`kernels list` 非表示だけを理由に別 slug で再 push しない。
 - slug / title を変えて再 push すると Kaggle 上に別 notebook が作られることがある。再実行は原則として同じ canonical kernel id に version 追加で行い、slug を変える場合は既存 kernel の存在確認と重複リスクを `SESSION_NOTES.md` に記録する。
 - logs/output 取得の失敗理由、UI 側の状態、完了後に再取得できたかを実験の `SESSION_NOTES.md` に残す。
 
 ## Module: Badge Collector
 
-5 phase で自動化可能な Kaggle badge 約 38 個を体系的に獲得する。
+Kaggle badge 55件のうち38件について、獲得条件となる操作または手動手順を5 phaseで扱う。操作成功をbadge獲得とみなさず、Kaggleプロフィール上で確認した場合だけ`verified`として記録する。
 
-| Phase | Name | Badges | Time |
-|-------|------|--------|------|
-| 1 | Instant API | 約 16 | 5-10 min |
-| 2 | Competition | 約 7 | 10-15 min |
-| 3 | Pipeline | 約 3 | 15-30 min |
-| 4 | Browser | 約 8 | 5-10 min |
-| 5 | Streaks | 約 4 | Setup only |
+| Phase | Name | Badge workflows | Method |
+|-------|------|-----------------|--------|
+| 1 | Instant API | 16 | Python API / CLIによる自動操作 |
+| 2 | Competition | 7 | CLIによる自動操作 |
+| 3 | Pipeline | 3 | CLIによる自動操作 |
+| 4 | Browser-guided | 8 | ユーザーまたは明示的に許可されたhost agent |
+| 5 | Streaks | 4 | 日次helper。7日・30日後に確認 |
 
 ```bash
-python3 modules/badge-collector/scripts/orchestrator.py --dry-run
-python3 modules/badge-collector/scripts/orchestrator.py --phase 1
-python3 modules/badge-collector/scripts/orchestrator.py --status
+uv run python .agents/skills/kaggle-platform/modules/badge-collector/scripts/orchestrator.py --dry-run
+uv run python .agents/skills/kaggle-platform/modules/badge-collector/scripts/orchestrator.py --phase 1
+uv run python .agents/skills/kaggle-platform/modules/badge-collector/scripts/orchestrator.py --status
 ```
 
 詳細は `modules/badge-collector/README.md` を読む。
@@ -308,14 +295,14 @@ python3 modules/badge-collector/scripts/orchestrator.py --status
 ### Step 1: Credential 確認
 
 ```bash
-python3 shared/check_all_credentials.py
+uv run python .agents/skills/kaggle-platform/shared/check_all_credentials.py --require python-api
 ```
 
-credential が不足している場合は registration モジュールを案内する。**credential の実値を echo したり log に残したりしない。**
+この後に実行するcomp-reportはOAuth-only credentialを使用できず、API tokenまたはlegacy username/keyを使う。MCPによるoverview補完を行う場合だけ、呼び出し前に`--require api-token`で追加確認する。credentialの実値を要求せず、ユーザー自身がローカルで設定する。
 
 ### Step 2: Competition Landscape Report 生成
 
-comp-report workflow を実行する。コンペ一覧、詳細取得、Playwright scraping、report 作成を行い、結果をインラインで出す。
+comp-report workflow を実行する。コンペ一覧と詳細を取得する。API tokenが利用できる場合は`list_competition_pages`によるoverview補完を優先する。legacy credentialだけの場合はMCP補完を省略し、必要な SPA-only content が残り、host agent が Playwright MCP tools を提供している場合だけ scraping を追加する。取得できない項目は省略または未取得とする。report はインラインで提示し、再利用する完了レポートとして残す場合だけCompetition Reportsの手順に従って`docs/surveys/`へ保存する。
 
 ### Step 3: Kaggle とのやり取り方法を要約
 
@@ -325,12 +312,12 @@ Kaggle とやり取りする 4 つの方法（kagglehub、kaggle-cli、MCP Serve
 
 次に何をしたいかユーザーに尋ねる。
 
-- **Kaggle badge を獲得する:** badge collector を実行する（5 phases、約 38 個の自動化可能 badge）。
+- **Kaggle badge の獲得条件を進める:** badge collectorを実行する（5 phases、38件をworkflowで支援。badge表示は別途確認）。
 - **最近のコンペを調べる:** report に出た具体的なコンペを深掘りする。
 - **Kaggle コンペに参加する:** 登録、data download、submission 作成、submit を行う。
 - **Kaggle dataset を download する:** 任意の public dataset を検索して download する。
 - **Kaggle model を download する:** pre-trained models（LLM、CV など）を download する。
-- **Kaggle で notebook を実行する:** KKB の free GPU/TPU で notebook を push して実行する。
+- **Kaggle で notebook を実行する:** KKB の CPU/GPU で notebook を push して実行する。このリポジトリではTPUを扱わない。
 - **Kaggle に公開する:** dataset、model、notebook を upload する。
 - **Kaggle の進め方を知る:** tier、medal、rank up の方法を説明する。
 - **その他:** Kaggle に関する自由な相談。
@@ -342,10 +329,10 @@ Kaggle とやり取りする 4 つの方法（kagglehub、kaggle-cli、MCP Serve
 ## セキュリティ
 
 **認証情報:**
-- `.env`、`kaggle.json`、credential file を commit しない。
-- terminal output に credential の実値を echo したり log に残したりしない。
+- `kaggle.json`、credential file を commit しない。
+- credentialの実値をユーザーへ要求しない。chat、コマンド引数、shell history、terminal output、logに残さない。
 - `.gitignore` は `.env`、`kaggle.json`、関連ファイルを除外する。
-- file permission を設定する: `chmod 600 .env ~/.kaggle/access_token ~/.kaggle/credentials.json ~/.kaggle/kaggle.json`
+- file permission を設定する: `chmod 600 ~/.kaggle/access_token ~/.kaggle/credentials.json ~/.kaggle/kaggle.json`
 - credential が誤って露出した場合は、[https://www.kaggle.com/settings](https://www.kaggle.com/settings) で直ちに rotate する。
 
 **自動的な常駐設定はしない:** このスキルは cron job、launchd plist、その他の persistent scheduled task を install しない。badge-collector の streak モジュール（phase 5）は helper script を生成し、manual scheduling instructions を表示するだけ。schedule するかどうか、どう schedule するかはユーザーが決める。
@@ -375,12 +362,11 @@ Kaggle とやり取りする 4 つの方法（kagglehub、kaggle-cli、MCP Serve
 ## スクリプト索引
 
 **Shared:**
-- `shared/check_all_credentials.py`: 統合 credential checker（API token + legacy）
+- `shared/check_all_credentials.py`: client別の統合credential checker（API token、OAuth、legacy）
 - `shared/mcp_client.py`: MCP JSON-RPC client（tests と hackathon module で使用）
 
 **Registration:**
-- `modules/registration/scripts/check_registration.py`: credential configuration の確認
-- `modules/registration/scripts/setup_env.sh`: env/dotenv から credential を自動設定
+- `modules/registration/scripts/configure_token.py`: ユーザーのローカル非表示入力でAPI token fileを作成
 
 **Competition Reports:**
 - `modules/comp-report/scripts/utils.py`: credential check、API init、rate limiting
@@ -388,14 +374,12 @@ Kaggle とやり取りする 4 つの方法（kagglehub、kaggle-cli、MCP Serve
 - `modules/comp-report/scripts/competition_details.py`: competition ごとの files、leaderboard、kernels
 
 **Kaggle Interaction (kllm):**
-- `modules/kllm/scripts/setup_env.sh`: credential の自動設定（.env loading あり）
-- `modules/kllm/scripts/check_credentials.py`: credential の確認と自動 mapping
 - `modules/kllm/scripts/network_check.sh`: Kaggle API 到達性確認
 - `modules/kllm/scripts/cli_download.sh`: CLI 経由で dataset/model download
 - `modules/kllm/scripts/cli_execute.sh`: KKB で notebook 実行
-- `modules/kllm/scripts/cli_competition.sh`: competition workflow（list/download/submit）
+- `modules/kllm/scripts/cli_competition.sh`: competitionの確認、data download、既存submissionとleaderboardの表示。submitは行わない
 - `modules/kllm/scripts/cli_publish.sh`: dataset/notebook/model を publish
-- `modules/kllm/scripts/poll_kernel.sh`: kernel status を poll して output を download
+- `modules/kllm/scripts/poll_kernel.sh`: 互換用の旧ファイル名。live logsを追跡してからoutputをdownloadし、status pollingは行わない
 - `modules/kllm/scripts/kagglehub_download.py`: kagglehub 経由で download
 - `modules/kllm/scripts/kagglehub_publish.py`: kagglehub 経由で publish
 - `modules/kllm/scripts/list_competition_pages.py`: MCP 経由で competition overview pages（rules / evaluation / data-description / FAQ / prizes / timeline）を取得
@@ -413,7 +397,7 @@ Kaggle とやり取りする 4 つの方法（kagglehub、kaggle-cli、MCP Serve
 - `modules/badge-collector/scripts/phase_1_instant_api.py`: Instant API badges
 - `modules/badge-collector/scripts/phase_2_competition.py`: Competition badges
 - `modules/badge-collector/scripts/phase_3_pipeline.py`: Pipeline badges
-- `modules/badge-collector/scripts/phase_4_browser.py`: Browser badges
+- `modules/badge-collector/scripts/phase_4_manual.py`: Browserで行う手動操作の案内
 - `modules/badge-collector/scripts/phase_5_streaks.py`: Streak automation
 
 ## 参照索引
@@ -423,7 +407,7 @@ Kaggle とやり取りする 4 つの方法（kagglehub、kaggle-cli、MCP Serve
 - `modules/kllm/references/kaggle-knowledge.md`: Kaggle platform knowledge 全般
 - `modules/kllm/references/kagglehub-reference.md`: kagglehub Python API reference
 - `modules/kllm/references/cli-reference.md`: kaggle-cli command reference
-- `modules/kllm/references/mcp-reference.md`: Kaggle MCP server reference（66 tools）
+- `modules/kllm/references/mcp-reference.md`: Kaggle MCP server reference（観測日付きtool一覧。実行時は`tools/list`で再確認）
 - `modules/kllm/references/competition-overview.md`: `list_competition_pages` endpoint、page-name conventions、briefing patterns
 - `modules/kllm/hackathon/references/hackathon-endpoints.md`: hackathon writeup retrieval
 - `modules/kllm/hackathon/references/benchmark-endpoints.md`: benchmark task creation と leaderboard

@@ -74,7 +74,7 @@ exp407の問題はRMSEという統計量ではなく、その使い場所だっ�
 - reusable helper:
   `src/candidate_rmse_bounded_nudge.py`
 - test:
-  `tests/test_exp415_candidate_rmse_bounded_nudge.py`
+  `experiments/exp415_fold_safe_rmse_prior_bounded_nudge_on_exp264/tests/test_exp415_candidate_rmse_bounded_nudge.py`
 - 監査済み小容量output:
   `kaggle/output/train_v1_small/`
 

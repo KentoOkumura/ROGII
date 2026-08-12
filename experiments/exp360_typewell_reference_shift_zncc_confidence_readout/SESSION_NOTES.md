@@ -164,12 +164,12 @@ make new-steering EXP=exp360_typewell_reference_shift_zncc_confidence_readout
 make new-exp EXP=exp360_typewell_reference_shift_zncc_confidence_readout
 
 .venv/bin/pytest -q \
-  tests/test_exp360_typewell_reference_shift_zncc_confidence_readout.py
+  experiments/exp360_typewell_reference_shift_zncc_confidence_readout/tests/test_exp360_typewell_reference_shift_zncc_confidence_readout.py
 # 10 passed
 
 .venv/bin/ruff check \
   experiments/exp360_typewell_reference_shift_zncc_confidence_readout/*compact_selfcontained*.py \
-  tests/test_exp360_typewell_reference_shift_zncc_confidence_readout.py \
+  experiments/exp360_typewell_reference_shift_zncc_confidence_readout/tests/test_exp360_typewell_reference_shift_zncc_confidence_readout.py \
   --select F821,E9
 # All checks passed
 
@@ -193,7 +193,7 @@ kaggle kernels output \
 
 make test
 # 728 passed, 5 skipped, 2 failed
-# failures: tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py の既存config/status契約2件
+# failures: experiments/exp296_exp223_self_gr_known_tvt_support_gate/tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py の既存config/status契約2件
 # exp360専用10件とnotebook共通4件は全PASS
 ```
 

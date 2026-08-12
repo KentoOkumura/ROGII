@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -12,6 +13,20 @@ PACKAGE_DIR = Path(__file__).resolve().parent
 TODO_VALUES = {"", "TODO", "TBD", "FIXME", None}
 KAGGLE_INPUT_ROOT = Path("/kaggle/input")
 KAGGLE_WORKING_ROOT = Path("/kaggle/working")
+AUTOMATED_EXECUTION_STATUSES = {
+    "planned",
+    "running",
+    "debug_completed",
+    "scaffold_completed",
+    "failed",
+}
+PRESERVED_REVIEW_STATUSES = {
+    "usable",
+    "completed",
+    "deprecated",
+    "discarded",
+    "leak-risk",
+}
 
 
 def find_project_root(start: Path = PACKAGE_DIR) -> Path:
@@ -55,6 +70,41 @@ def deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]
         else:
             merged[key] = value
     return merged
+
+
+def read_json_object(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    try:
+        value = json.loads(path.read_text())
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"{path} must contain valid JSON: {exc}") from exc
+    if not isinstance(value, dict):
+        raise ValueError(f"{path} must contain a JSON object")
+    return value
+
+
+def update_metrics(path: Path, updates: dict[str, Any]) -> dict[str, Any]:
+    """Merge run-owned values into metrics.json without erasing other evidence."""
+    current = read_json_object(path)
+    safe_updates = dict(updates)
+    if (
+        current.get("status") in PRESERVED_REVIEW_STATUSES
+        and safe_updates.get("status") in AUTOMATED_EXECUTION_STATUSES
+    ):
+        safe_updates.pop("status")
+    metrics = deep_merge(current, safe_updates)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path = path.with_name(f".{path.name}.tmp")
+    try:
+        temporary_path.write_text(
+            json.dumps(metrics, indent=2, ensure_ascii=False) + "\n"
+        )
+        temporary_path.replace(path)
+    finally:
+        if temporary_path.exists():
+            temporary_path.unlink()
+    return metrics
 
 
 def first_submission_target(project_config: dict[str, Any]) -> Any:
@@ -221,7 +271,7 @@ class ExperimentPaths:
 
     @property
     def features_dir(self) -> Path:
-        return self.experiment_dir / "features"
+        return self.artifacts_dir / "features"
 
     @property
     def metrics_path(self) -> Path:

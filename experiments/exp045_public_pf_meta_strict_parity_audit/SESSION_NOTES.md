@@ -93,7 +93,7 @@ uv run python scripts/record_submission.py --experiment exp045_public_pf_meta_st
 - exp035 Public LB 13.738 より +5.439 悪化。
 - exp027 Public LB 8.781 より +10.396 悪化。
 - strict PF parity でも見えない test well 用 meta 処理は転移せず、exp034/035-style の meta stack 追加チューニングは止める。
-- `submissions/SUBMISSIONS.md` に v018 として記録。
+- `SUBMISSIONS.md` に v018 として記録。
 - `git status` は不可。この環境では `.git` が空の管理ディレクトリとして見えている。
 
 ## 次のアクション

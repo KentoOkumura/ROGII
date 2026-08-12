@@ -16,7 +16,7 @@ ROOT = HERE.parents[1]
 SOURCE = HERE / "exp516_sixth_place_pfa_tw_late_submit_compact_selfcontained_inference.py"
 PUBLIC_CONFIG = HERE / "pf_banks_config_v96_public.json"
 CONFIG = HERE / "config.yaml"
-GENERATOR = ROOT / "scripts" / "prepare_exp516_sixth_pfa_tw.py"
+GENERATOR = HERE / "prepare_exp516_sixth_pfa_tw.py"
 
 PUBLIC_CONFIG_SHA256 = "80e973d5f5e0e39be758a03f399cdd3d81d9e79320da8db6fbddbc25c2a202f3"
 CHECKPOINT_SHA256 = {

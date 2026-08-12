@@ -36,7 +36,7 @@ compact Stage A/C候補と契約テストを実装する。
   strict validation PASSを確認した。experiment-doc reviewerでも中核証拠カテゴリを確認した。
 - 2026-08-01: ユーザーの`exp501を実装してください`を実装承認として受け、
   `candidate_contract.yaml`、`feature_contract.yaml`、`output_contract.md`、
-  `src/exp490_fixed13_candidate_cache.py`、compact train / fail-closed inference候補を実装した。
+  `experiments/exp501_exp490_mean_reverting_hmm_fixed13_selector_on_exp264/exp490_fixed13_candidate_cache.py`、compact train / fail-closed inference候補を実装した。
 - 2026-08-01: exp490 loaderを`well,row_idx,suffix_offset,prediction,2 confidence`の
   allowlistに限定し、gzip raw/decompressed SHA、global key、suffix sequence、finite、source-fold
   非読込を実装した。`id`はallowlist keyから機械生成し、selector cacheでもexp263 global keyと

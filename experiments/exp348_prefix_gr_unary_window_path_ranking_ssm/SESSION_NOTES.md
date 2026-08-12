@@ -60,7 +60,7 @@ make new-exp EXP=exp348_prefix_gr_unary_window_path_ranking_ssm
 ```text
 .venv/bin/python -m py_compile <exp348 compact train/inference> <exp348 test>
 .venv/bin/ruff check <exp348 compact train/inference> <exp348 test>
-.venv/bin/pytest -q tests/test_exp348_prefix_gr_unary_window_path_ranking_ssm.py
+.venv/bin/pytest -q experiments/exp348_prefix_gr_unary_window_path_ranking_ssm/tests/test_exp348_prefix_gr_unary_window_path_ranking_ssm.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <exp348 compact train/inference.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <exp348 compact train/inference.py>
 make validate-exp EXP=exp348_prefix_gr_unary_window_path_ranking_ssm

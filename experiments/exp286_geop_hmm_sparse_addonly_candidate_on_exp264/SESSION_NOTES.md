@@ -96,7 +96,7 @@ hard/fold pathとshared-12 candidate/fold scoreは直接比較する。all-13 po
 ```text
 .venv/bin/python -m py_compile ...
 .venv/bin/ruff check --select F821,F401,F841,E722 ...
-.venv/bin/pytest -q tests/test_exp286... tests/test_exp264_candidate_selector_pipeline.py
+.venv/bin/pytest -q tests/test_exp286... experiments/exp264_exp263_candidate_confidence_dual_selector/tests/test_exp264_candidate_selector_pipeline.py
 # 29 passed
 
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --set-kernel python3 <train.py>

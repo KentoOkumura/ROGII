@@ -12,17 +12,18 @@ Create a new benchmark task on Kaggle from a prompt + assertion.
 
 **Returns:** an object with `kernel_url` pointing at the created benchmark task.
 
-```python
-from skills.kaggle.shared.mcp_client import mcp_call, resolve_token
+Initialize `mcp_call` and `token` with the canonical repository setup in
+[mcp-reference.md](../../references/mcp-reference.md#repository-helper) before
+using the examples below.
 
-token = resolve_token()
+```python
 resp = mcp_call("create_benchmark_task_from_prompt", {
     "taskDescription": "Compute the Fibonacci sequence up to n=20",
     "assertionDescription": "Output must be a comma-separated list matching the canonical sequence",
 }, token=token)
 ```
 
-## `get_benchmark_leaderboard` — ✅ PASS (was 🔒 BLOCKED)
+## `get_benchmark_leaderboard` — 2026-05-04 retest: PASS (was BLOCKED)
 
 Read the leaderboard for an existing benchmark.
 
@@ -30,8 +31,9 @@ Read the leaderboard for an existing benchmark.
 - `benchmarkSlug` (string)
 - `ownerSlug` (string)
 
-**Auth:** Was permission-gated in the 2026-04-22 audit. Verified **PASS** in
-the 2026-05-04 retest with an ordinary KGAT token — no elevated access needed.
+**Auth:** Was permission-gated in the 2026-04-22 audit. The 2026-05-04 retest
+returned PASS with the API token used in that audit. Recheck at runtime before assuming
+the same access behavior.
 A non-existent benchmark/owner pair returns a not-found error rather than a
 permission denial; treat both as data-not-available and surface the response.
 
@@ -48,6 +50,6 @@ resp = mcp_call("get_benchmark_leaderboard", {
   Returns a `kernel_url` — keep it; that's how downstream submissions reference
   the task.
 - **Reading leaderboard data for a hackathon writeup that links to a benchmark**
-  → `get_benchmark_leaderboard`. Works with an ordinary KGAT token as of
-  2026-05-04. If the response is empty / not-found, surface that as evidence
+  → `get_benchmark_leaderboard`. It worked with the API token used in the
+  2026-05-04 retest. If the response is empty / not-found, surface that as evidence
   rather than silently falling back to scraping.

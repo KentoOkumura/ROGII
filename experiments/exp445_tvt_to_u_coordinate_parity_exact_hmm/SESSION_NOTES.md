@@ -84,7 +84,7 @@ fixed32に限ってparentをpaired rerunする。現在は実行していない�
 - `exp445_tvt_to_u_coordinate_parity_exact_hmm_compact_selfcontained_train.ipynb`
 - `exp445_tvt_to_u_coordinate_parity_exact_hmm_compact_selfcontained_inference.py`
 - `exp445_tvt_to_u_coordinate_parity_exact_hmm_compact_selfcontained_inference.ipynb`
-- `tests/test_exp445_tvt_to_u_coordinate_parity_exact_hmm.py`
+- `experiments/exp445_tvt_to_u_coordinate_parity_exact_hmm/tests/test_exp445_tvt_to_u_coordinate_parity_exact_hmm.py`
 
 実装内容:
 
@@ -139,11 +139,11 @@ exp445_tvt_to_u_coordinate_parity_exact_hmm_compact_selfcontained_inference.py
   experiments/exp445_tvt_to_u_coordinate_parity_exact_hmm/*compact_selfcontained*.py
 .venv/bin/ruff check \
   experiments/exp445_tvt_to_u_coordinate_parity_exact_hmm/*compact_selfcontained*.py \
-  tests/test_exp445_tvt_to_u_coordinate_parity_exact_hmm.py --select F821
-.venv/bin/pytest -q tests/test_exp445_tvt_to_u_coordinate_parity_exact_hmm.py
+  experiments/exp445_tvt_to_u_coordinate_parity_exact_hmm/tests/test_exp445_tvt_to_u_coordinate_parity_exact_hmm.py --select F821
+.venv/bin/pytest -q experiments/exp445_tvt_to_u_coordinate_parity_exact_hmm/tests/test_exp445_tvt_to_u_coordinate_parity_exact_hmm.py
 .venv/bin/pytest -q \
-  tests/test_exp438_u_state_fixed_lattice_exact_hmm.py \
-  tests/test_exp445_tvt_to_u_coordinate_parity_exact_hmm.py
+  experiments/exp438_u_state_fixed_lattice_exact_hmm/tests/test_exp438_u_state_fixed_lattice_exact_hmm.py \
+  experiments/exp445_tvt_to_u_coordinate_parity_exact_hmm/tests/test_exp445_tvt_to_u_coordinate_parity_exact_hmm.py
 make validate-exp EXP=exp445_tvt_to_u_coordinate_parity_exact_hmm
 ```
 

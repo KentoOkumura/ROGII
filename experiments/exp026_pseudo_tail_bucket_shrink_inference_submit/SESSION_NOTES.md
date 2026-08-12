@@ -28,7 +28,7 @@
 - 2026-06-06: `kaggle kernels status kentookumura/exp026-pseudo-tail-bucket-shrink-inference` は Kaggle API 500 を返したが、`kaggle kernels output kentookumura/exp026-pseudo-tail-bucket-shrink-inference -p /tmp/kaggle-output/exp026_pseudo_tail_bucket_shrink_inference_submit/inference` で output を取得。
 - 2026-06-06: `python3 .agents/skills/kaggle-submit-check/scripts/check_submission.py /tmp/kaggle-output/exp026_pseudo_tail_bucket_shrink_inference_submit/inference/submission.csv --sample data/raw/sample_submission.csv` は PASS。
 - 2026-06-06: ユーザーが Kaggle submit を完了。`kaggle competitions submissions rogii-wellbore-geology-prediction` で ref `53411137`、Public LB 12.102、status COMPLETE を確認。
-- 2026-06-06: `uv run python scripts/record_submission.py --experiment exp026_pseudo_tail_bucket_shrink_inference_submit ... --public-lb 12.102 ...` で `submissions/SUBMISSIONS.md` に v011 を記録。
+- 2026-06-06: `uv run python scripts/record_submission.py --experiment exp026_pseudo_tail_bucket_shrink_inference_submit ... --public-lb 12.102 ...` で `SUBMISSIONS.md` に v011 を記録。
 - 2026-06-06: `uv run python scripts/record_experiment.py --experiment exp026_pseudo_tail_bucket_shrink_inference_submit --status completed --cv 12.87078 --public-lb 12.102 ...` で metrics / summary を更新。
 
 ## 変更点

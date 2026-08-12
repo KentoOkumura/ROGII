@@ -72,7 +72,7 @@ policy発見に使ったreadoutとKaggle確認値は一致した。これは再�
 ### 実行済み
 
 ```bash
-.venv/bin/pytest -q tests/test_exp415_candidate_rmse_bounded_nudge.py
+.venv/bin/pytest -q experiments/exp415_fold_safe_rmse_prior_bounded_nudge_on_exp264/tests/test_exp415_candidate_rmse_bounded_nudge.py
 .venv/bin/python -m py_compile \
   src/candidate_rmse_bounded_nudge.py \
   experiments/exp415_fold_safe_rmse_prior_bounded_nudge_on_exp264/\

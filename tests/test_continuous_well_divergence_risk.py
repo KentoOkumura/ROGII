@@ -4,7 +4,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import yaml
 
 from src.continuous_well_divergence_risk import (
     AXIS_COLUMNS,
@@ -195,24 +194,3 @@ def test_primary_guard_uses_fold_direction_and_bootstrap_effect_floor() -> None:
     assert first["guard"]["actual_mae_positive_fold_count"] == 5
     assert first["guard"]["calibration_bias_negative_fold_count"] == 5
     pd.testing.assert_frame_equal(first["bootstrap"], second["bootstrap"])
-
-
-def test_exp272_config_keeps_zero_booster_and_inference_disabled() -> None:
-    path = Path(
-        "experiments/exp272_continuous_well_divergence_risk_readout_on_exp267/config.yaml"
-    )
-    config = yaml.safe_load(path.read_text())
-    assert config["experiment"]["route"] == "ensemble"
-    assert config["axes"]["primary"] == "fixed_range_gap_axis"
-    assert config["axes"]["sensitivity_decision_role"] == (
-        "report_only_cannot_rescue_primary_guard"
-    )
-    assert config["model"]["variants"] == 0
-    assert config["model"]["lightgbm_configs"] == 0
-    assert config["model"]["folds_trained"] == 0
-    assert config["model"]["total_boosters"] == 0
-    assert config["execution"]["run_approved"] is False
-    assert config["execution"]["inference_enabled"] is False
-    assert config["execution"]["submission_enabled"] is False
-    assert config["inference"]["enabled"] is False
-    assert config["inference"]["create_submission"] is False

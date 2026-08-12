@@ -79,7 +79,7 @@ make new-exp EXP=exp293_physics_only_candidate_bank_headroom_contract
 
 - `exp293_physics_only_candidate_bank_headroom_contract_compact_selfcontained_train.py/.ipynb`
 - `exp293_physics_only_candidate_bank_headroom_contract_compact_selfcontained_inference.py/.ipynb`
-- `tests/test_exp293_physics_only_candidate_bank_headroom_contract.py`
+- `experiments/exp293_physics_only_candidate_bank_headroom_contract/tests/test_exp293_physics_only_candidate_bank_headroom_contract.py`
 
 train候補はexp263 candidate partitionをfile/schema/logical content SHA付きで読み、6 primitive、5 fixed pair、
 `exp226_w500_50_50`をfixed float32順で構築する。candidate contentとH128/H256/H512/whole-well assignmentを

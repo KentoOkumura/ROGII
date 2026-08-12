@@ -48,7 +48,7 @@
   `12.061 / 15.563 / 9.807`を確認した。
 - version 4–7のPublic LB `8.812 / 8.642 / 9.318 / 9.063`とrefを
   `SESSION_NOTES.md`、`result.md`、`metrics.json`、`kaggle_run_ledger.json`、
-  `experiment_summary.md`、`submissions/SUBMISSIONS.md`へ記録した。
+  `experiment_summary.md`、`SUBMISSIONS.md`へ記録した。
 - 既存2候補を含む採点済み9候補のOOF/LB Spearman `0.750`と順位逆転を
   `physical_model_summary.md`、`KAGGLE_DIRECTION.md`へ記録した。
 - 全12候補のPublic LB表、LB - OOF、OOF/LB rankを最終集計し、Spearman

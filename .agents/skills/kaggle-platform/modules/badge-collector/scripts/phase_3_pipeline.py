@@ -1,56 +1,48 @@
 """Phase 3: Pipeline badges (~3 badges).
 
-Earns badges that require KKB notebook execution and output:
+Performs prerequisite actions that require KKB notebook execution and output:
   - Dataset Pipeline Creator (create dataset from notebook output)
   - Model Pipeline Creator (create model from notebook output)
   - R Markdown Coder (push and execute R Markdown on KKB)
 
 These badges require notebooks to execute on Kaggle Kernel Backend (KKB),
-so there is a polling/waiting step.
+so the workflow follows live logs until the execution stream closes.
 """
 
 import json
 import subprocess
-import time
-from pathlib import Path
 
 from badge_tracker import set_status, should_attempt
 from utils import (
-    API_DELAY,
-    KLLM_SCRIPTS,
-    TEMPLATES_DIR,
     make_temp_dir,
     resource_name,
     run_kaggle_cli,
 )
 
 
-def _poll_kernel(username: str, kernel_slug: str, timeout: int = 600, interval: int = 30) -> bool:
-    """Poll a kernel until it completes or times out."""
+def _follow_kernel_logs(username: str, kernel_slug: str, timeout: int = 600) -> bool:
+    """Follow live logs until the execution stream closes or times out."""
     full_slug = f"{username}/{kernel_slug}"
-    elapsed = 0
-
-    while elapsed < timeout:
-        result = run_kaggle_cli(["kernels", "status", full_slug], check=False)
-        status_text = result.stdout.strip().lower()
-        print(f"    [{elapsed}s] Status: {result.stdout.strip()}")
-
-        if "complete" in status_text:
-            return True
-        if "error" in status_text or "cancel" in status_text:
-            return False
-
-        time.sleep(interval)
-        elapsed += interval
-
-    print(f"    [TIMEOUT] Kernel did not complete within {timeout}s")
-    return False
+    try:
+        result = run_kaggle_cli(
+            ["kernels", "logs", "-f", full_slug],
+            check=False,
+            timeout=timeout,
+            stream_output=True,
+        )
+    except subprocess.TimeoutExpired:
+        print(f"    [TIMEOUT] Live logs did not close within {timeout}s")
+        return False
+    if result.returncode != 0:
+        print("    [FAIL] Live log stream ended with an error")
+        return False
+    return True
 
 
 def _dataset_pipeline(username: str) -> bool:
     """Create a notebook that outputs a dataset, then create a dataset from that output.
 
-    Earns: Dataset Pipeline Creator.
+    Targets: Dataset Pipeline Creator.
     """
     if not should_attempt("dataset_pipeline_creator"):
         return True
@@ -117,18 +109,23 @@ def _dataset_pipeline(username: str) -> bool:
         print(f"  [OK] Pipeline notebook pushed: {nb_slug}")
         print("  Waiting for KKB execution to complete...")
 
-        # Poll for completion
-        if not _poll_kernel(username, nb_slug):
+        # Follow the primary live SSE path until the execution stream closes.
+        if not _follow_kernel_logs(username, nb_slug):
             print("  [FAIL] Notebook execution failed or timed out")
             set_status("dataset_pipeline_creator", "failed", "KKB execution failed")
             return False
 
         # Download notebook output
         output_dir = make_temp_dir("-ds-pipeline-output")
-        run_kaggle_cli([
-            "kernels", "output", f"{username}/{nb_slug}",
-            "--path", str(output_dir),
-        ])
+        run_kaggle_cli(
+            [
+                "kernels",
+                "output",
+                f"{username}/{nb_slug}",
+                "--path",
+                str(output_dir),
+            ]
+        )
 
         # Create a dataset from the output
         ds_slug = resource_name("pipeline-dataset")
@@ -144,7 +141,11 @@ def _dataset_pipeline(username: str) -> bool:
 
         run_kaggle_cli(["datasets", "create", "-p", str(output_dir)])
         print(f"  [OK] Pipeline dataset created: {ds_slug}")
-        set_status("dataset_pipeline_creator", "earned", f"dataset={ds_slug} from notebook={nb_slug}")
+        set_status(
+            "dataset_pipeline_creator",
+            "action_completed",
+            f"dataset={ds_slug} from notebook={nb_slug}",
+        )
         return True
 
     except Exception as e:
@@ -156,7 +157,7 @@ def _dataset_pipeline(username: str) -> bool:
 def _model_pipeline(username: str) -> bool:
     """Create a notebook that outputs a model, then create a model from that output.
 
-    Earns: Model Pipeline Creator.
+    Targets: Model Pipeline Creator.
     """
     if not should_attempt("model_pipeline_creator"):
         return True
@@ -225,17 +226,22 @@ def _model_pipeline(username: str) -> bool:
         print(f"  [OK] Model pipeline notebook pushed: {nb_slug}")
         print("  Waiting for KKB execution to complete...")
 
-        if not _poll_kernel(username, nb_slug):
+        if not _follow_kernel_logs(username, nb_slug):
             print("  [FAIL] Notebook execution failed or timed out")
             set_status("model_pipeline_creator", "failed", "KKB execution failed")
             return False
 
         # Download output
         output_dir = make_temp_dir("-model-pipeline-output")
-        run_kaggle_cli([
-            "kernels", "output", f"{username}/{nb_slug}",
-            "--path", str(output_dir),
-        ])
+        run_kaggle_cli(
+            [
+                "kernels",
+                "output",
+                f"{username}/{nb_slug}",
+                "--path",
+                str(output_dir),
+            ]
+        )
 
         # Create model from output
         model_slug = resource_name("pipeline-model")
@@ -253,7 +259,11 @@ def _model_pipeline(username: str) -> bool:
 
         run_kaggle_cli(["models", "create", "-p", str(output_dir)])
         print(f"  [OK] Pipeline model created: {model_slug}")
-        set_status("model_pipeline_creator", "earned", f"model={model_slug} from notebook={nb_slug}")
+        set_status(
+            "model_pipeline_creator",
+            "action_completed",
+            f"model={model_slug} from notebook={nb_slug}",
+        )
         return True
 
     except Exception as e:
@@ -263,7 +273,7 @@ def _model_pipeline(username: str) -> bool:
 
 
 def _r_markdown(username: str) -> bool:
-    """Push an R notebook/script to earn R Markdown Coder.
+    """Push an R notebook/script for the R Markdown Coder criterion.
 
     Note: kaggle CLI v1.8 doesn't support .Rmd files or 'rmarkdown' language
     (returns JSON parse error). We push an R script (language=r, kernel_type=script)
@@ -317,7 +327,7 @@ cat("\\nR script completed successfully\\n")
 
         run_kaggle_cli(["kernels", "push", "-p", str(tmp)])
         print(f"  [OK] R script pushed: {nb_slug}")
-        set_status("r_markdown_coder", "earned", f"notebook={nb_slug}")
+        set_status("r_markdown_coder", "action_completed", f"notebook={nb_slug}")
         return True
 
     except Exception as e:
@@ -327,17 +337,19 @@ cat("\\nR script completed successfully\\n")
 
 
 def run(username: str) -> tuple[int, int]:
-    """Run all Phase 3 badge actions. Returns (attempted, succeeded)."""
+    """Run Phase 3 prerequisite actions. Return action attempt/success counts."""
     actions = [
-        ("Dataset pipeline", _dataset_pipeline),
-        ("Model pipeline", _model_pipeline),
-        ("R Markdown", _r_markdown),
+        ("Dataset pipeline", "dataset_pipeline_creator", _dataset_pipeline),
+        ("Model pipeline", "model_pipeline_creator", _model_pipeline),
+        ("R Markdown", "r_markdown_coder", _r_markdown),
     ]
 
     attempted = 0
     succeeded = 0
 
-    for name, fn in actions:
+    for name, badge_id, fn in actions:
+        if not should_attempt(badge_id):
+            continue
         print(f"\n  --- {name} ---")
         attempted += 1
         if fn(username):

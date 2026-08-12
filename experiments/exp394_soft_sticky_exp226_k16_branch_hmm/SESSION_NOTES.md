@@ -99,7 +99,7 @@ soft-sticky 2-branch modelへ統合する設計を確定する。
 
 ## 検証
 
-- `pytest -q tests/test_exp394_soft_sticky_exp226_k16_branch_hmm.py`: `10 passed`
+- `pytest -q experiments/exp394_soft_sticky_exp226_k16_branch_hmm/tests/test_exp394_soft_sticky_exp226_k16_branch_hmm.py`: `10 passed`
 - exp355 Stage 1 / exp281 recoveryの隣接回帰を含む実行: `21 passed`
 - small synthetic trellisでoptimized switching kernelとdense joint trellisを比較し、
   branch posterior、H position posterior、joint meanが`2e-6`以内で一致した。

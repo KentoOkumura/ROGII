@@ -122,7 +122,7 @@ make new-exp EXP=exp304_gr_denoiser_emission_separability_readout
 ```bash
 .venv/bin/python -m py_compile <exp304 compact train.py> <exp304 compact inference.py>
 .venv/bin/ruff check <exp304 sources and test> --select F821,F401,F841,E722,E501
-.venv/bin/pytest -q tests/test_exp304_gr_denoiser_emission_separability_readout.py
+.venv/bin/pytest -q experiments/exp304_gr_denoiser_emission_separability_readout/tests/test_exp304_gr_denoiser_emission_separability_readout.py
 # 7 passed
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --set-kernel python3 <source.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <source.py>

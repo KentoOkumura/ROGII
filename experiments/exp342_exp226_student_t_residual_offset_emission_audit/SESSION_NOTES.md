@@ -51,7 +51,7 @@
 ```bash
 .venv/bin/python -m py_compile <exp342 compact train/inference.py> <exp342 test.py>
 .venv/bin/ruff check <exp342 sources and test> --select F821,F401,F841,E722,E501
-.venv/bin/pytest -q tests/test_exp342_exp226_student_t_residual_offset_emission_audit.py
+.venv/bin/pytest -q experiments/exp342_exp226_student_t_residual_offset_emission_audit/tests/test_exp342_exp226_student_t_residual_offset_emission_audit.py
 # 7 passed
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --set-kernel python3 <compact source.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact source.py>

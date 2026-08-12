@@ -1,11 +1,13 @@
 ---
 name: kaggle-idea-forge
-description: Kaggleの停滞時や次実験の発想時に、利用可能なデータ・既存実験・失敗証拠・計算制約から、parameter tuningに偏らない複数の問題表現、情報源、候補生成、融合、data generation、validation案を独立生成し、反証可能な実験portfolioへまとめる。上位解法級の非連続なアイデア探索、失敗したsignalの別role再評価、候補多様性の設計、source-hiddenな過去snapshotでの着想評価に使う。通常の実験優先順位整理だけならkaggle-strategyを使う。
+description: Kaggleの停滞時や次実験の発想時に、利用可能なデータ・既存実験・失敗証拠・計算制約から、parameter tuningに偏らない複数の問題表現、情報源、候補生成、融合、data generation、validation案を独立生成し、互いに異なる反証可能な実験案の組へまとめる。上位解法級の非連続なアイデア探索、失敗した情報の別用途での再評価、候補多様性の設計、参照元を隠した過去時点の記録による着想評価に使う。通常の実験優先順位整理だけならkaggle-strategyを使う。
 ---
 
 # Kaggle Idea Forge
 
 既存backlogの微修正ではなく、taskの表現と情報の使い方を組み替えた実験案を作る。実装や採用判断は行わず、反証可能なidea portfolioを`kaggle-strategy`へ渡す。
+
+backtickで示すfield名や分類値は、このskillのJSON schemaと作業順を管理するためのリポジトリ内の管理用語であり、一般的な手法名ではない。ユーザー向けの回答では、入力、予測対象、モデル出力、損失、推論方法、処理単位、検証条件、計算条件を先に平易に説明し、必要な場合だけ管理用語を括弧内に添える。
 
 ## 入力契約
 
@@ -175,7 +177,7 @@ top 5の少なくとも1件は`task_first`、少なくとも1件は`representati
 保存後は次を実行する。
 
 ```bash
-python .agents/skills/kaggle-idea-forge/scripts/validate_portfolio.py idea_portfolio.json
+uv run python .agents/skills/kaggle-idea-forge/scripts/validate_portfolio.py idea_portfolio.json
 ```
 
 validatorの構造PASSはideaの科学的妥当性を証明しない。source-hidden評価では、agentに期待解や採点rubricを渡さず、別のjudgeが後からmechanism recallと安全性を採点する。

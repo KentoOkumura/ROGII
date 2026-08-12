@@ -1,6 +1,6 @@
 # Kaggle Badge Catalog (55 badges)
 
-Complete reference of all Kaggle badges with earning criteria and automation status.
+Complete reference of all Kaggle badges with earning criteria and workflow support.
 
 ## Phase 1: Instant API (~16 badges, 5-10 min)
 
@@ -43,14 +43,14 @@ Complete reference of all Kaggle badges with earning criteria and automation sta
 | Model Pipeline Creator | Models | Create model from notebook output | Push notebook → wait → create model from output |
 | R Markdown Coder | Notebooks | Push R Markdown notebook | `kaggle kernels push` (language=rmarkdown) |
 
-## Phase 4: Browser (~8 badges, 5-10 min)
+## Phase 4: Browser-guided (~8 badges)
 
 | Badge | Category | How to Earn | Method |
 |-------|----------|-------------|--------|
-| Stylish | Account | Fill out profile (bio, location) | Playwright or manual |
-| Vampire | Account | Switch to dark theme | Playwright or manual |
-| Bookmarker | Community | Bookmark content | Playwright or manual |
-| Collector | Community | Add item to collection | Playwright or manual |
+| Stylish | Account | Fill out profile (bio, location) | User or explicitly authorized host agent |
+| Vampire | Account | Switch to dark theme | User or explicitly authorized host agent |
+| Bookmarker | Community | Bookmark content | User or explicitly authorized host agent |
+| Collector | Community | Add item to collection | User or explicitly authorized host agent |
 | GitHub Coder | Notebooks | Link GitHub repo to notebook | Manual (notebook settings) |
 | Colab Coder | Notebooks | Open notebook in Colab | Manual (notebook menu) |
 | Linked Dataset Creator | Datasets | Create URL-linked dataset | Manual (dataset creation UI) |
@@ -65,10 +65,10 @@ Complete reference of all Kaggle badges with earning criteria and automation sta
 | Submission Streak | Competitions | Submit 7 consecutive days | 7 days |
 | Super Submission Streak | Competitions | Submit 30 consecutive days | 30 days |
 
-## Not Automatable (~17 badges)
+## Not supported by the collector workflow (~17 badges)
 
-| Badge | Category | Why Not Automatable |
-|-------|----------|---------------------|
+| Badge | Category | Why unsupported |
+|-------|----------|-----------------|
 | Contributor | Community | Requires progression tier (needs community engagement) |
 | Expert | Community | Requires progression tier |
 | Master | Community | Requires progression tier |
@@ -89,12 +89,15 @@ Complete reference of all Kaggle badges with earning criteria and automation sta
 
 ## Summary
 
-| Phase | Badges | Automatable | Time |
-|-------|--------|-------------|------|
-| 1 — Instant API | 16 | Yes | 5-10 min |
-| 2 — Competition | 7 | Yes | 10-15 min |
-| 3 — Pipeline | 3 | Yes | 15-30 min |
-| 4 — Browser | 8 | Partial | 5-10 min |
-| 5 — Streaks | 4 | Yes (daily) | 7-30 days |
-| Not automatable | 17 | No | — |
-| **Total** | **59** | **42** | — |
+| Phase | Badges | Workflow support | Method |
+|-------|--------|------------------|--------|
+| 1 — Instant API | 16 | Yes | Automatic prerequisite actions |
+| 2 — Competition | 7 | Yes | Automatic prerequisite actions |
+| 3 — Pipeline | 3 | Yes | Automatic prerequisite actions |
+| 4 — Browser-guided | 8 | Yes | Manual or explicitly authorized host agent |
+| 5 — Streaks | 4 | Yes | Daily action helper; multi-day verification required |
+| Not supported | 17 | No | — |
+| **Total** | **55** | **38** | — |
+
+An action reported as successful is not proof that a badge was awarded. Record
+`verified` only after the badge is visible on the user's Kaggle profile.

@@ -7,6 +7,8 @@ description: "Create repeatable Kaggle OOF error readouts for experiments by joi
 
 Use this skill to turn existing OOF predictions and feature artifacts into a repeatable diagnostic experiment. It is for analysis and candidate evidence, not for anchor updates, direct submissions, or backlog persistence.
 
+Use the repository management labels in `docs/glossary.md` when classifying a follow-up change. Do not create alternate labels or redefine them in this skill; describe the concrete processing change first.
+
 ## Standard Workflow
 
 1. Use `kaggle-review-exp` first for normal experiment lifecycle rules.
@@ -15,7 +17,7 @@ Use this skill to turn existing OOF predictions and feature artifacts into a rep
 4. Put all code/config/notebooks under `experiments/expXXX_title/`.
 5. Keep `experiment.route: ml_model` unless the readout primarily audits PF/Beam generation itself.
 6. Run the first full readout on Kaggle. Local smoke is optional only when the needed artifacts are locally complete.
-7. Record run evidence in `SESSION_NOTES.md`, `result.md`, `metrics.json`, and `experiment_summary.md`. When the corresponding backlog item must be added, updated, or removed, pass the candidate, evidence, and non-use constraints to `kaggle-strategy` in the same turn. Do not edit the backlog directly from this skill.
+7. Record each kind of run evidence once according to the file roles in `AGENTS.md`, then regenerate the experiment summary. When the corresponding backlog item must be added, updated, or removed, pass the candidate, evidence, and non-use constraints to `kaggle-strategy` in the same turn. Do not edit the backlog directly from this skill.
 8. When the completed readout provides a reusable OOF interpretation, model explanation, feature/failure analysis, or cross-experiment comparison, update an existing metadata-indexed report in `docs/surveys/` or create one. `docs/surveys/README.md` is the discovery entry point.
 
 ## Inputs To Prefer
@@ -44,7 +46,7 @@ Use OOF readouts to answer:
 - Which high-importance feature value buckets have elevated MAE/RMSE?
 - Which feature values correlate with absolute or squared error?
 - Did a postprocess/guard help globally while hurting specific wells or buckets?
-- Which next action is justified: `diagnostic only`, `confidence feature`, `sample weight`, `postprocess`, or `add-only feature`?
+- Which next action is justified: further diagnosis, a confidence input, sample weighting, a `postprocess` change, or an `add-only` change?
 
 Do not use feature importance alone to approve routers, direct PF/Beam replacement, or submissions. Convert findings into a small fold-safe follow-up experiment.
 
@@ -79,7 +81,7 @@ In `docs/surveys/`:
 - Keep the human-readable completed analysis: question, evidence boundary, experiment/model structure needed to interpret it, OOF EDA, findings, non-use constraints, and links to the experiment result and study outputs.
 - Search `docs/surveys/README.md` first and update the same thematic report instead of creating one file per rerun or plot version.
 - Use `oof_analysis` plus any relevant `experiment_review`, `model_explanation`, `feature_analysis`, or `comparison` metadata types.
-- Run `task update-survey-index` and `task validate-surveys` before considering the readout documentation complete.
+- Follow the draft-to-final workflow in `docs/surveys/README.md` before considering the readout documentation complete.
 
 For backlog handoff:
 
@@ -92,16 +94,17 @@ For backlog handoff:
 Before Kaggle push:
 
 ```bash
-uv run python -m py_compile experiments/EXP/*.py
-uv run python -m json.tool experiments/EXP/EXP_train.ipynb
-uv run ruff check experiments/EXP/*.py
-uv run python scripts/validate_experiment.py --experiment EXP
-uv run python scripts/prepare_kaggle_notebooks.py --experiment EXP --notebook train --run-on-push --strict
+task validate-exp EXP=EXP
+task check-exp EXP=EXP
+task test-exp EXP=EXP
+task prepare-kaggle-notebooks EXP=EXP EXTRA_ARGS="--notebook train --run-on-push"
 ```
+
+`task` がない環境では、上の Task target と同名の Make target を同じ引数で使う。
 
 After Kaggle output:
 
 - Confirm `KernelWorkerStatus.COMPLETE` or equivalent output presence.
-- Download output with `kaggle kernels output`.
+- Download output with `task kaggle-output KERNEL=OWNER/KERNEL OUT=/tmp/kaggle-output/EXP/train`; use the same-named Make target when Task is unavailable.
 - Record output path, rows/wells, elapsed time, source SHAs, and artifact SHAs.
 - If logs are initially empty, keep the same kernel id and avoid duplicate pushes.

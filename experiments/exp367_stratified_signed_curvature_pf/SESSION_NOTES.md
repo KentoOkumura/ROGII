@@ -29,11 +29,11 @@ make new-exp EXP=exp367_stratified_signed_curvature_pf
 ```bash
 .venv/bin/python -m py_compile \
   experiments/exp367_stratified_signed_curvature_pf/exp367_stratified_signed_curvature_pf_compact_selfcontained_train.py \
-  tests/test_exp367_stratified_signed_curvature_pf.py
+  experiments/exp367_stratified_signed_curvature_pf/tests/test_exp367_stratified_signed_curvature_pf.py
 .venv/bin/ruff check \
   experiments/exp367_stratified_signed_curvature_pf/exp367_stratified_signed_curvature_pf_compact_selfcontained_train.py \
-  tests/test_exp367_stratified_signed_curvature_pf.py
-.venv/bin/pytest -q tests/test_exp367_stratified_signed_curvature_pf.py
+  experiments/exp367_stratified_signed_curvature_pf/tests/test_exp367_stratified_signed_curvature_pf.py
+.venv/bin/pytest -q experiments/exp367_stratified_signed_curvature_pf/tests/test_exp367_stratified_signed_curvature_pf.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp367_stratified_signed_curvature_pf/exp367_stratified_signed_curvature_pf_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \

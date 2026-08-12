@@ -24,7 +24,7 @@
 - train には 773 well があり、各 well に horizontal CSV、typewell CSV、可視化 PNG がある。
 - 公開 `test/` は train 由来の 3 well 例のみ。実提出時は約 200 well の隠しテストに差し替えられる。
 - train の `ANCC`、`ASTNU`、`ASTNL`、`EGFDU`、`EGFDL`、`BUDA` は公式説明で Training only とされている。推論時に存在しない前提で扱う。
-- 2026-05-27 取得時点の Public LB best は 7.973。CV と LB の対応はまだ未確認。
+- 2026-05-27 取得時点の Public LB best は 7.973。この値は取得時点の公式情報の記録であり、現在の実験スコアや CV/LB の評価には使わない。現在値は`AGENTS.md`で定めた実験記録と全体戦略を参照する。
 
 ## 制約
 
@@ -51,4 +51,4 @@
 - Public/private split の well 数、地質分布、地域差は非公開。
 - train-only 地層面列を代替する推論可能特徴をどう作るか。
 - typewell の `Geology` ラベルをどこまで使うと隠しテストに安定するか。
-- well holdout CV と Public LB の相関。
+- hidden test の分割と分布は非公開であり、CV/LB の対応は今後も`AGENTS.md`で定めた実験記録と全体戦略から継続評価する。

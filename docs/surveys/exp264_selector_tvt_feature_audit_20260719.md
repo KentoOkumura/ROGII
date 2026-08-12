@@ -668,7 +668,8 @@ canonical audit出力はcandidate-long Parquetで、TVTの最終予測ではな�
 - [`result.md`](../../experiments/exp264_exp263_candidate_confidence_dual_selector/result.md)
 - [`selector_feature_readout_corrected_stage_b_v5.md`](../../experiments/exp264_exp263_candidate_confidence_dual_selector/selector_feature_readout_corrected_stage_b_v5.md)
 - [`stage_d_feature_importance_readout_corrected_stage_d_v3.md`](../../experiments/exp264_exp263_candidate_confidence_dual_selector/stage_d_feature_importance_readout_corrected_stage_d_v3.md)
-- [`feature availability audit`](../../experiments/exp264_exp263_candidate_confidence_dual_selector/artifacts/feature_availability_audit/README.md)
+- [`formation 74 contract`](../../experiments/exp264_exp263_candidate_confidence_dual_selector/assets/formation_74_contract.csv)
+- 380列全体の監査生成手順: [`studies/exp264_feature_availability_audit.py`](../../studies/exp264_feature_availability_audit.py)
 - `kaggle/output/stage_b_v5/artifacts/{candidate_score_oof.parquet,selector_metrics.json,selector_selection_rate.csv,feature_catalog.csv,feature_duplicate_correlation_audit.csv}`
 - `kaggle/output/stage_c_v6/artifacts/{nested_selector_metrics.json,feature_schema.json,compact_meta_schema.json,nested_feature_importance_by_objective_outer_inner.csv}`
 - `kaggle/output/stage_d_v3_corrected/artifacts/{stage_d_metrics.json,stage_d_feature_importance.csv,stage_d_by_well.csv}`

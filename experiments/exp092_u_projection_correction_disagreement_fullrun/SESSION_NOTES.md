@@ -377,4 +377,4 @@ Implementation cleanup:
 - Removed hidden assert probe helpers and redaction branch from `u_projection_correction_disagreement_fullrun.py`.
 - Removed `hidden_assert_probe` config from `config.yaml`.
 - Removed hidden assert print / argument from `exp092_u_projection_correction_disagreement_fullrun_inference.ipynb`.
-- Kept the probe results only as historical diagnostics in `SESSION_NOTES.md`, `result.md`, and `submissions/SUBMISSIONS.md`.
+- Kept the probe results only as historical diagnostics in `SESSION_NOTES.md`, `result.md`, and `SUBMISSIONS.md`.

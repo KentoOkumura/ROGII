@@ -158,7 +158,7 @@ make new-exp EXP=exp444_acceleration_state_exact_hmm
 - `exp444_acceleration_state_exact_hmm_compact_selfcontained_train.ipynb`
 - `exp444_acceleration_state_exact_hmm_compact_selfcontained_inference.py`
 - `exp444_acceleration_state_exact_hmm_compact_selfcontained_inference.ipynb`
-- `tests/test_exp444_acceleration_state_exact_hmm.py`
+- `experiments/exp444_acceleration_state_exact_hmm/tests/test_exp444_acceleration_state_exact_hmm.py`
 
 実装内容:
 
@@ -208,11 +208,11 @@ make new-exp EXP=exp444_acceleration_state_exact_hmm
 ```bash
 .venv/bin/python -m py_compile \
   experiments/exp444_acceleration_state_exact_hmm/*compact_selfcontained*.py \
-  tests/test_exp444_acceleration_state_exact_hmm.py
+  experiments/exp444_acceleration_state_exact_hmm/tests/test_exp444_acceleration_state_exact_hmm.py
 .venv/bin/ruff check \
   experiments/exp444_acceleration_state_exact_hmm/*compact_selfcontained*.py \
-  tests/test_exp444_acceleration_state_exact_hmm.py
-.venv/bin/pytest -q tests/test_exp444_acceleration_state_exact_hmm.py
+  experiments/exp444_acceleration_state_exact_hmm/tests/test_exp444_acceleration_state_exact_hmm.py
+.venv/bin/pytest -q experiments/exp444_acceleration_state_exact_hmm/tests/test_exp444_acceleration_state_exact_hmm.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \
   experiments/exp444_acceleration_state_exact_hmm/\
 exp444_acceleration_state_exact_hmm_compact_selfcontained_train.py

@@ -205,7 +205,6 @@ trainのincremental utility / tail promotion / promotion FAILは維持する。�
 - status: `COMPLETE`
 - Public LB: `7.587`
 - Private LB: 未確定
-- monitor log: `logs/submission_exp372_exp287_exp335_feature_union_on_exp264.log`
 
 Public LBはexp335 `7.517`より`+0.070`、exp287 `7.530`より`+0.057`、
 exp264 `7.562`より`+0.025`悪い。別routeのexp082 `7.601`は`0.014`上回るが、

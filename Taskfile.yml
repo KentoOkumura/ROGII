@@ -1,15 +1,14 @@
 version: "3"
 
-dotenv: [".env"]
-
 vars:
-  EXP: '{{.EXP | default "exp001_baseline"}}'
+  EXP: '{{.EXP | default ""}}'
   SOURCE: '{{.SOURCE | default "templates/experiment"}}'
   SURVEY_TITLE: '{{.SURVEY_TITLE | default ""}}'
   SURVEY_SLUG: '{{.SURVEY_SLUG | default ""}}'
   EXTRA_ARGS: '{{.EXTRA_ARGS | default ""}}'
   VALIDATE_ARGS: '{{.VALIDATE_ARGS | default ""}}'
   SUBMISSION: '{{.SUBMISSION | default "submission.csv"}}'
+  SUBMISSION_REF: '{{.SUBMISSION_REF | default ""}}'
   STATUS: '{{.STATUS | default ""}}'
   CV: '{{.CV | default ""}}'
   PUBLIC_LB: '{{.PUBLIC_LB | default ""}}'
@@ -20,25 +19,34 @@ vars:
   NOTEBOOK: '{{.NOTEBOOK | default "inference"}}'
   KERNEL: '{{.KERNEL | default ""}}'
   KERNEL_VERSION: '{{.KERNEL_VERSION | default "1"}}'
-  COMPETITION: '{{.COMPETITION | default "rogii-wellbore-geology-prediction"}}'
+  COMPETITION:
+    sh: uv run python scripts/project_value.py competition.slug
   MESSAGE: '{{.MESSAGE | default .EXP}}'
   OUTPUT_FILE: '{{.OUTPUT_FILE | default "submission.csv"}}'
   OUT: '{{.OUT | default (printf "/tmp/kaggle-output/%s/%s" .EXP .NOTEBOOK)}}'
   VIEWER_DATA: '{{.VIEWER_DATA | default "data/raw"}}'
   UV_CACHE_DIR: '{{.UV_CACHE_DIR | default "/tmp/uv-cache"}}'
 
+env:
+  UV_CACHE_DIR: "{{.UV_CACHE_DIR}}"
+  PYTHONDONTWRITEBYTECODE: "1"
+
 tasks:
   validate-template:
-    desc: Validate repository template files without requiring competition-specific TODOs to be filled.
+    desc: Validate repository template files while allowing indexed survey drafts.
     cmds:
       - uv run python scripts/validate_project.py
-      - uv run python scripts/update_survey_index.py --check
+      - uv run python scripts/update_survey_index.py --check --allow-draft
+      - uv run python scripts/update_experiment_summary.py --check
+      - uv run python scripts/check_markdown_links.py
 
   validate-config:
-    desc: Validate project.yml and fail if competition-specific TODOs remain.
+    desc: Validate project.yml strictly while allowing indexed survey drafts.
     cmds:
       - uv run python scripts/validate_project.py --strict
-      - uv run python scripts/update_survey_index.py --check
+      - uv run python scripts/update_survey_index.py --check --allow-draft
+      - uv run python scripts/update_experiment_summary.py --check
+      - uv run python scripts/check_markdown_links.py
 
   new-exp:
     desc: Create a new self-contained experiment folder.
@@ -51,7 +59,7 @@ tasks:
       - uv run python scripts/new_steering.py --experiment {{.EXP}} {{.EXTRA_ARGS}}
 
   new-survey-report:
-    desc: Create a metadata-indexed completed-investigation report in docs/surveys.
+    desc: Create a metadata-indexed draft investigation report in docs/surveys.
     cmds:
       - uv run python scripts/new_survey_report.py --title "{{.SURVEY_TITLE}}" --slug "{{.SURVEY_SLUG}}" {{.EXTRA_ARGS}}
 
@@ -61,7 +69,7 @@ tasks:
       - uv run python scripts/update_survey_index.py
 
   validate-surveys:
-    desc: Validate survey metadata and fail if the generated index is stale.
+    desc: Validate completed surveys and fail on drafts or a stale generated index.
     cmds:
       - uv run python scripts/update_survey_index.py --check
 
@@ -69,6 +77,37 @@ tasks:
     desc: Validate one experiment folder and fail on TODO config values.
     cmds:
       - uv run python scripts/validate_experiment.py --experiment {{.EXP}} {{.EXTRA_ARGS}}
+
+  check-exp:
+    desc: Run non-mutating lint and format checks for one experiment.
+    cmds:
+      - uv run --extra dev ruff check experiments/{{.EXP}}
+      - uv run --extra dev ruff format --check experiments/{{.EXP}}
+
+  check-skills:
+    desc: Validate bundled skill structure and lint their Python code.
+    cmds:
+      - uv run python scripts/validate_skills.py
+      - uv run --extra dev ruff check .agents/skills
+
+  check-skill-modules:
+    desc: Compatibility alias for check-skills.
+    deps: [check-skills]
+
+  test-exp:
+    desc: Run only one experiment's tests; skip when it has no tests directory.
+    cmds:
+      - |
+        if [ -d experiments/{{.EXP}}/tests ]; then
+          uv run --extra dev --extra notebook pytest -q experiments/{{.EXP}}/tests
+        else
+          echo "No experiment-specific tests: experiments/{{.EXP}}/tests"
+        fi
+
+  test-common:
+    desc: Run repository-level common tests without collecting experiment tests.
+    cmds:
+      - uv run --extra dev --extra notebook pytest -q tests
 
   train-local:
     desc: Debug-only local train notebook execution; pass --allow-local explicitly.
@@ -81,19 +120,29 @@ tasks:
       - uv run python scripts/execute_experiment_notebook.py --experiment {{.EXP}} --notebook inference {{.EXTRA_ARGS}}
 
   dl-kaggle-comp:
-    desc: Download Kaggle competition files into data/raw using competition.slug from project.yml.
+    desc: Download and safely extract Kaggle competition files into data.raw_dir.
     cmds:
       - uv run python scripts/kaggle_download.py
 
-  submit-check:
-    desc: Validate a submission file against the configured sample submission.
+  fetch-kaggle-notebooks:
+    desc: Fetch public Kaggle notebooks with metadata.
     cmds:
-      - uv run python scripts/validate_submission.py --submission {{.SUBMISSION}}
+      - uv run python .agents/skills/kaggle-notebook-fetch/scripts/fetch_top_notebooks.py --competition {{.COMPETITION}} {{.EXTRA_ARGS}}
+
+  archive-kaggle-discussions:
+    desc: Archive multiple Kaggle competition discussions as Markdown.
+    cmds:
+      - uv run python scripts/archive_kaggle_discussions.py --competition {{.COMPETITION}} {{.EXTRA_ARGS}}
+
+  submit-check:
+    desc: Validate a submission file and record evidence when EXP is set.
+    cmds:
+      - uv run python scripts/validate_submission.py --submission "{{.SUBMISSION}}" --experiment "{{.EXP}}"
 
   submit-code:
     desc: Submit a completed Kaggle kernel version to this Notebook-only code competition.
     cmds:
-      - kaggle competitions submit {{.COMPETITION}} -k {{.KERNEL}} -v {{.KERNEL_VERSION}} -f {{.OUTPUT_FILE}} -m "{{.MESSAGE}}"
+      - uv run kaggle competitions submit {{.COMPETITION}} -k {{.KERNEL}} -v {{.KERNEL_VERSION}} -f {{.OUTPUT_FILE}} -m "{{.MESSAGE}}"
 
   pipeline-local:
     desc: Debug-only local pipeline; Kaggle notebook execution is authoritative.
@@ -114,22 +163,23 @@ tasks:
         vars:
           EXP: "{{.EXP}}"
           SUBMISSION: "{{.SUBMISSION}}"
-      - task: update-summary
 
   prepare-kaggle-notebooks:
-    desc: Prepare train/inference notebooks for Kaggle kernel push.
+    desc: Prepare train/inference notebooks and require push-ready Kaggle metadata.
     cmds:
-      - uv run python scripts/prepare_kaggle_notebooks.py --experiment {{.EXP}} {{.EXTRA_ARGS}}
+      - uv run python scripts/prepare_kaggle_notebooks.py --experiment {{.EXP}} --strict {{.EXTRA_ARGS}}
 
   push-kaggle-train:
     desc: Push the prepared train notebook to Kaggle.
     cmds:
-      - kaggle kernels push -p experiments/{{.EXP}}/kaggle/train
+      - uv run python scripts/validate_kaggle_metadata.py --package-dir experiments/{{.EXP}}/kaggle/train
+      - uv run kaggle kernels push -p experiments/{{.EXP}}/kaggle/train
 
   push-kaggle-infer:
     desc: Push the prepared inference notebook to Kaggle.
     cmds:
-      - kaggle kernels push -p experiments/{{.EXP}}/kaggle/inference
+      - uv run python scripts/validate_kaggle_metadata.py --package-dir experiments/{{.EXP}}/kaggle/inference
+      - uv run kaggle kernels push -p experiments/{{.EXP}}/kaggle/inference
 
   execute-notebook-local:
     desc: Debug-only local notebook execution; pass --allow-local explicitly.
@@ -137,25 +187,25 @@ tasks:
       - uv run python scripts/execute_experiment_notebook.py --experiment {{.EXP}} --notebook {{.NOTEBOOK}} {{.EXTRA_ARGS}}
 
   kaggle-status:
-    desc: Show Kaggle kernel execution status.
+    desc: Show diagnostic Kaggle kernel status; do not use it for completion polling.
     cmds:
-      - kaggle kernels status {{.KERNEL}}
+      - uv run kaggle kernels status {{.KERNEL}}
 
   kaggle-logs:
     desc: Stream Kaggle kernel stdout/stderr via the CLI 2.2.3 live SSE endpoint.
     cmds:
-      - kaggle kernels logs -f {{.KERNEL}}
+      - uv run kaggle kernels logs -f {{.KERNEL}}
 
   kaggle-output:
     desc: Download Kaggle kernel output files.
     cmds:
       - mkdir -p {{.OUT}}
-      - kaggle kernels output {{.KERNEL}} -p {{.OUT}}
+      - uv run kaggle kernels output {{.KERNEL}} -p {{.OUT}}
 
   record-submission:
-    desc: Append a submission row to submissions/SUBMISSIONS.md.
+    desc: Create or update a submission-ref-keyed row using scores already recorded in metrics.json.
     cmds:
-      - uv run python scripts/record_submission.py --experiment {{.EXP}} --file {{.SUBMISSION}} {{.EXTRA_ARGS}}
+      - uv run python scripts/record_submission.py --experiment {{.EXP}} --file {{.SUBMISSION}} --submission-ref "{{.SUBMISSION_REF}}" {{.EXTRA_ARGS}}
 
   record-exp:
     desc: Update one experiment metrics.json and regenerate experiment_summary.md.
@@ -211,4 +261,4 @@ tasks:
   test:
     desc: Run tests.
     cmds:
-      - uv run pytest
+      - uv run --extra dev --extra notebook pytest

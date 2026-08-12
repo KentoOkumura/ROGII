@@ -420,7 +420,6 @@ Kaggle output archiveは取得していない。
   hidden可変サイズと非互換なため、これを構造的な失敗原因と診断した。
 - Stage 1のtail FAILは保持する。hidden-dynamic version 2の実装・push・再提出は
   今回の1件提出承認に含めず、実行していない。
-- 監視ログ: `logs/submission_exp490_geometry_centered_mean_reverting_offset_hmm.log`
 
 ## 2026-08-02 hidden-dynamic inference version 2実装
 

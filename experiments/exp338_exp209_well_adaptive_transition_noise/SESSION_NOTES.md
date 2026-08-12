@@ -64,7 +64,7 @@ make new-exp EXP=exp338_exp209_well_adaptive_transition_noise
 ```bash
 .venv/bin/python -m py_compile experiments/exp338_exp209_well_adaptive_transition_noise/exp338_exp209_well_adaptive_transition_noise_compact_selfcontained_train.py
 .venv/bin/ruff check experiments/exp338_exp209_well_adaptive_transition_noise/exp338_exp209_well_adaptive_transition_noise_compact_selfcontained_train.py --select F821
-.venv/bin/pytest -q tests/test_exp338_exp209_well_adaptive_transition_noise.py
+.venv/bin/pytest -q experiments/exp338_exp209_well_adaptive_transition_noise/tests/test_exp338_exp209_well_adaptive_transition_noise.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp338_exp209_well_adaptive_transition_noise/exp338_exp209_well_adaptive_transition_noise_compact_selfcontained_train.py
 ```
 

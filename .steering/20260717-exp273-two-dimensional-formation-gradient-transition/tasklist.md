@@ -38,4 +38,4 @@
 
 - `experiments/exp273_two_dimensional_formation_gradient_transition/` 配下の4 notebook source / ipynb。
 - `config.yaml`、`README.md`、`SESSION_NOTES.md`、`result.md`、`metrics.json`。
-- `tests/test_exp273_two_dimensional_formation_gradient_transition_contract.py`。
+- `experiments/exp273_two_dimensional_formation_gradient_transition/tests/test_exp273_two_dimensional_formation_gradient_transition_contract.py`。

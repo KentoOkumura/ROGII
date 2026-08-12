@@ -58,7 +58,7 @@ JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   exp483_huber_gr_filtering_likelihood_pf_compact_selfcontained_train.py
 .venv/bin/python -m py_compile <compact train.py> <dedicated test.py>
 .venv/bin/ruff check <compact train.py> <dedicated test.py> --select F821
-.venv/bin/pytest -q tests/test_exp483_huber_gr_filtering_likelihood_pf.py
+.venv/bin/pytest -q experiments/exp483_huber_gr_filtering_likelihood_pf/tests/test_exp483_huber_gr_filtering_likelihood_pf.py
 ```
 
 - 専用test: `12 passed`。

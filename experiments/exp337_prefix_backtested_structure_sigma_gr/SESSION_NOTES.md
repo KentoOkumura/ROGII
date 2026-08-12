@@ -82,9 +82,9 @@ make validate-template
 ```text
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <compact_train.py> <compact_inference.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact_train.py> <compact_inference.py>
-.venv/bin/python -m py_compile <compact_train.py> <compact_inference.py> tests/test_exp337_prefix_backtested_structure_sigma_gr.py
-.venv/bin/ruff check <compact_train.py> <compact_inference.py> tests/test_exp337_prefix_backtested_structure_sigma_gr.py --select E,F,I,UP,B
-.venv/bin/pytest -q tests/test_exp337_prefix_backtested_structure_sigma_gr.py
+.venv/bin/python -m py_compile <compact_train.py> <compact_inference.py> experiments/exp337_prefix_backtested_structure_sigma_gr/tests/test_exp337_prefix_backtested_structure_sigma_gr.py
+.venv/bin/ruff check <compact_train.py> <compact_inference.py> experiments/exp337_prefix_backtested_structure_sigma_gr/tests/test_exp337_prefix_backtested_structure_sigma_gr.py --select E,F,I,UP,B
+.venv/bin/pytest -q experiments/exp337_prefix_backtested_structure_sigma_gr/tests/test_exp337_prefix_backtested_structure_sigma_gr.py
 make validate-exp EXP=exp337_prefix_backtested_structure_sigma_gr
 make validate-template
 ```

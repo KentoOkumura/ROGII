@@ -5,13 +5,17 @@
 # Uses curl for portability (works on macOS which lacks `timeout`).
 #
 # Usage:
-#   bash skills/kllm/scripts/network_check.sh
+#   bash .agents/skills/kaggle-platform/modules/kllm/scripts/network_check.sh
 #
 # Exits:
 #   0 if both hosts are reachable
 #   1 if either is unreachable
 
 set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../../../.." && pwd)"
+PYTHON=(uv run --project "${REPO_ROOT}" python)
 
 HOSTS=("api.kaggle.com" "www.kaggle.com")
 TIMEOUT=10
@@ -21,7 +25,7 @@ for host in "${HOSTS[@]}"; do
     echo "[INFO] Checking HTTPS reachability: ${host}:443"
 
     # DNS check first
-    if ! python3 -c "import socket; socket.getaddrinfo('${host}', 443)" >/dev/null 2>&1; then
+    if ! "${PYTHON[@]}" -c "import socket; socket.getaddrinfo('${host}', 443)" >/dev/null 2>&1; then
         echo "[ERROR] DNS resolution failed for ${host}"
         failures=$((failures + 1))
         continue

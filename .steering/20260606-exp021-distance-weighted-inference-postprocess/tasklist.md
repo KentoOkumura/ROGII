@@ -2,7 +2,7 @@
 
 ## TODO
 
-- 提出する場合は `submissions/SUBMISSIONS.md` に記録する。
+- 提出する場合は `SUBMISSIONS.md` に記録する。
 - Public LB が出た場合は `result.md`、`experiment_summary.md`、`KAGGLE_DIRECTION.md` に反映する。
 
 ## 進行中

@@ -425,7 +425,7 @@ kaggle competitions submissions rogii-wellbore-geology-prediction
 ## 完了状態
 
 - `metrics.json`、`result.md`、`README.md`、`experiment_summary.md` を submitted / Public LB 41.214 / 要件未達として更新済み。
-- `submissions/SUBMISSIONS.md` に ref `54395246` を追加済み。
+- `SUBMISSIONS.md` に ref `54395246` を追加済み。
 - `KAGGLE_DIRECTION.md` の `discussion711308_dz_dtvt_bpeak_cluster_baseline` backlog を、要件未達の失敗結果として判断メモへ移動済み。
 - helper の train metrics status を `train_audit_completed` へ更新し、Kaggle package train/inference を短い slug で再 prepare 済み。再 push はしていない。
 - `scripts/validate_experiment.py --experiment exp206_discussion711308_dz_dtvt_bpeak_cluster_baseline` は PASS。

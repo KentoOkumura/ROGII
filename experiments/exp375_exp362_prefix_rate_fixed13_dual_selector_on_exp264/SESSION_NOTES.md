@@ -40,7 +40,7 @@ fixed12へ13本目として追加し、別novelty監査を挟まずdual selector
   Kaggle pushは未実行。ここでいう未実行のvalidationは、将来の実装コードに対する
   test / py_compile / Ruff / Jupytext / contract validationを指す。
 - 2026-07-24、ユーザー指示により実装を開始。
-- `src/exp362_fixed13_candidate_cache.py`へtarget-free allowlist loader、
+- `experiments/exp375_exp362_prefix_rate_fixed13_dual_selector_on_exp264/exp362_fixed13_candidate_cache.py`へtarget-free allowlist loader、
   decompressed SHA guard、global key join、selector-fold repartition、
   native confidence、fixed13 paired readoutを実装。
 - selector score freeze後だけ動くH512 / whole-well add-one oracle診断を実装。
@@ -57,7 +57,7 @@ fixed12へ13本目として追加し、別novelty監査を挟まずdual selector
   `ModuleNotFoundError: src`。同じimport-only確認をrepo rootから
   `python -m experiments.exp375_...compact_selfcontained_train`で実行し、
   candidate順序13、compact 77、40 CPU booster契約、`run_approved=false`をPASS。
-- `.venv/bin/python -m pytest tests/test_exp375_exp362_prefix_rate_fixed13_dual_selector.py -q`:
+- `.venv/bin/python -m pytest experiments/exp375_exp362_prefix_rate_fixed13_dual_selector_on_exp264/tests/test_exp375_exp362_prefix_rate_fixed13_dual_selector.py -q`:
   `10 passed`。
 - exp375 / exp373 / exp371 / exp264の関連回帰:
   `47 passed, 1 deselected`。

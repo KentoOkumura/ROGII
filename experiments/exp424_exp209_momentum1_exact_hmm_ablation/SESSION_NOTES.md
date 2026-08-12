@@ -114,7 +114,7 @@ Kaggle実行を伴わないStage 0コードと契約テストを追加した。
     matched control、rate-edge mass、runtime / RSSをAND gate化。
 - compact / 正規train NotebookをJupytextから生成・採用。
 - inferenceはfail-closed placeholderだけを実装し、正規Notebookへ採用。
-- `tests/test_exp424_exp209_momentum1_exact_hmm_ablation.py`を追加。
+- `experiments/exp424_exp209_momentum1_exact_hmm_ablation/tests/test_exp424_exp209_momentum1_exact_hmm_ablation.py`を追加。
 
 ### コスト再確認
 

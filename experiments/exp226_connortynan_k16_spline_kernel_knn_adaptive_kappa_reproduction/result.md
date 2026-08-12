@@ -48,7 +48,7 @@ Connor Tynan 公開 notebook の deterministic v6 fallback を source-port し�
 - Status: COMPLETE
 - Public LB: 9.837
 - Private LB: -
-- `submissions/SUBMISSIONS.md`: v060
+- `SUBMISSIONS.md`: v060
 
 ## 現時点の判断
 

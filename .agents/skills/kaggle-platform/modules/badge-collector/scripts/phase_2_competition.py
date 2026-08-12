@@ -1,24 +1,21 @@
-from typing import Optional
 """Phase 2: Competition badges (~7 badges).
 
-Earns badges by submitting to various competition types:
+Performs prerequisite submissions for competition badge criteria:
   - Competitor, Getting Started Competitor, Playground Competitor
   - Community Competitor, Code Submitter
   - Notebook Modeler, Competition Modeler
 
-Uses pre-built submission_titanic.csv and finds active competitions via CLI.
+Downloads the official Titanic example submission at runtime and finds active
+competitions via CLI.
 """
 
 import json
 import os
-import shutil
 import zipfile
 from pathlib import Path
 
 from badge_tracker import set_status, should_attempt
 from utils import (
-    API_DELAY,
-    TEMPLATES_DIR,
     make_temp_dir,
     resource_name,
     run_kaggle_cli,
@@ -43,7 +40,7 @@ def _safe_extract(zf_path: Path, dest: Path) -> None:
         z.extractall(dest)
 
 
-def _find_competition_by_category(category: str) -> Optional[str]:
+def _find_competition_by_category(category: str) -> str | None:
     """Find an active competition by category.
 
     kaggle CLI v1.8+ outputs full URLs in the ref column:
@@ -79,7 +76,7 @@ def _find_competition_by_category(category: str) -> Optional[str]:
 def _submit_titanic(username: str) -> bool:
     """Submit to Titanic (Getting Started) competition.
 
-    Earns: Competitor, Getting Started Competitor.
+    Targets: Competitor, Getting Started Competitor.
     """
     badge_ids = ["competitor", "getting_started_competitor"]
     actionable = [b for b in badge_ids if should_attempt(b)]
@@ -90,11 +87,21 @@ def _submit_titanic(username: str) -> bool:
         set_status(bid, "attempting")
 
     try:
-        submission_file = TEMPLATES_DIR / "submission_titanic.csv"
-        if not submission_file.exists():
-            print("  [ERROR] submission_titanic.csv not found in templates")
+        tmp = make_temp_dir("-titanic")
+        submission_file = tmp / "gender_submission.csv"
+        result = run_kaggle_cli(
+            [
+                "competitions", "download", "titanic",
+                "--file", submission_file.name,
+                "--path", str(tmp),
+                "--force",
+            ],
+            check=False,
+        )
+        if result.returncode != 0 or not submission_file.is_file():
+            print("  [ERROR] Could not download Titanic gender_submission.csv")
             for bid in actionable:
-                set_status(bid, "failed", "template missing")
+                set_status(bid, "failed", "official example submission download failed")
             return False
 
         run_kaggle_cli([
@@ -106,7 +113,7 @@ def _submit_titanic(username: str) -> bool:
         print("  [OK] Submitted to Titanic competition")
 
         for bid in actionable:
-            set_status(bid, "earned", "competition=titanic")
+            set_status(bid, "action_completed", "competition=titanic")
         return True
 
     except Exception as e:
@@ -117,7 +124,7 @@ def _submit_titanic(username: str) -> bool:
 
 
 def _submit_playground(username: str) -> bool:
-    """Submit to a Playground competition to earn Playground Competitor.
+    """Submit to a Playground competition for its badge criterion.
 
     Downloads the competition's sample_submission.csv and submits it.
     """
@@ -129,14 +136,14 @@ def _submit_playground(username: str) -> bool:
         comp = _find_competition_by_category("playground")
         if not comp:
             print("  [SKIP] No active Playground competition found")
-            set_status("playground_competitor", "skipped", "no active playground competition")
+            set_status("playground_competitor", "failed", "no active playground competition")
             return False
 
         print(f"  Found playground competition: {comp}")
 
         # Download competition data to get sample_submission.csv
         tmp = make_temp_dir("-playground")
-        dl_result = run_kaggle_cli([
+        run_kaggle_cli([
             "competitions", "download", comp,
             "--path", str(tmp),
         ], check=False)
@@ -156,7 +163,7 @@ def _submit_playground(username: str) -> bool:
         if not submission_file:
             # Fall back: create a minimal submission from whatever CSVs are available
             print(f"  [SKIP] No sample_submission found for {comp}")
-            set_status("playground_competitor", "skipped", f"no sample_submission for {comp}")
+            set_status("playground_competitor", "failed", f"no sample_submission for {comp}")
             return False
 
         result = run_kaggle_cli([
@@ -168,7 +175,7 @@ def _submit_playground(username: str) -> bool:
 
         if result.returncode == 0:
             print(f"  [OK] Submitted to Playground: {comp}")
-            set_status("playground_competitor", "earned", f"competition={comp}")
+            set_status("playground_competitor", "action_completed", f"competition={comp}")
             return True
         else:
             print(f"  [FAIL] Playground submission failed for {comp}: {result.stderr[:200]}")
@@ -182,7 +189,7 @@ def _submit_playground(username: str) -> bool:
 
 
 def _submit_community(username: str) -> bool:
-    """Submit to a Community competition to earn Community Competitor.
+    """Submit to a Community competition for its badge criterion.
 
     Note: kaggle CLI does not have a 'community' category filter.
     Valid categories: featured, research, recruitment, gettingStarted, masters, playground.
@@ -199,7 +206,7 @@ def _submit_community(username: str) -> bool:
         comp = _find_competition_by_category("research")
         if not comp:
             print("  [SKIP] No active research/community competition found")
-            set_status("community_competitor", "skipped",
+            set_status("community_competitor", "failed",
                        "no active research competition (CLI has no 'community' category)")
             return False
 
@@ -220,7 +227,7 @@ def _submit_community(username: str) -> bool:
                 break
 
         if not submission_file:
-            set_status("community_competitor", "skipped", f"no sample_submission for {comp}")
+            set_status("community_competitor", "failed", f"no sample_submission for {comp}")
             return False
 
         result = run_kaggle_cli([
@@ -232,7 +239,7 @@ def _submit_community(username: str) -> bool:
 
         if result.returncode == 0:
             print(f"  [OK] Submitted to research competition: {comp}")
-            set_status("community_competitor", "earned", f"competition={comp}")
+            set_status("community_competitor", "action_completed", f"competition={comp}")
             return True
         else:
             print(f"  [FAIL] Submission failed: {result.stderr[:200]}")
@@ -246,7 +253,7 @@ def _submit_community(username: str) -> bool:
 
 
 def _code_submission(username: str) -> bool:
-    """Make a code-based submission to earn Code Submitter + Notebook Modeler.
+    """Make a code-based submission for two badge criteria.
 
     Creates a notebook that generates a submission file and submits via KKB.
     """
@@ -323,11 +330,11 @@ def _code_submission(username: str) -> bool:
 
         run_kaggle_cli(["kernels", "push", "-p", str(tmp)])
         print(f"  [OK] Code submission notebook pushed: {nb_slug}")
-        print("  NOTE: Notebook will execute on KKB. Check status with:")
-        print(f"    kaggle kernels status {username}/{nb_slug}")
+        print("  NOTE: Notebook will execute on KKB. Follow logs with:")
+        print(f"    uv run kaggle kernels logs -f {username}/{nb_slug}")
 
         for bid in actionable:
-            set_status(bid, "earned", f"notebook={nb_slug}")
+            set_status(bid, "action_completed", f"notebook={nb_slug}")
         return True
 
     except Exception as e:
@@ -338,7 +345,7 @@ def _code_submission(username: str) -> bool:
 
 
 def _competition_modeler(username: str) -> bool:
-    """Create a notebook using a model for a competition to earn Competition Modeler."""
+    """Create a competition notebook using a model for its badge criterion."""
     if not should_attempt("competition_modeler"):
         return True
 
@@ -406,7 +413,7 @@ def _competition_modeler(username: str) -> bool:
         run_kaggle_cli(["kernels", "push", "-p", str(tmp)])
         print(f"  [OK] Competition modeler notebook pushed: {nb_slug}")
 
-        set_status("competition_modeler", "earned", f"notebook={nb_slug}")
+        set_status("competition_modeler", "action_completed", f"notebook={nb_slug}")
         return True
 
     except Exception as e:
@@ -416,19 +423,25 @@ def _competition_modeler(username: str) -> bool:
 
 
 def run(username: str) -> tuple[int, int]:
-    """Run all Phase 2 badge actions. Returns (attempted, succeeded)."""
+    """Run Phase 2 prerequisite actions. Return action attempt/success counts."""
     actions = [
-        ("Titanic submission", _submit_titanic),
-        ("Playground submission", _submit_playground),
-        ("Community submission", _submit_community),
-        ("Code submission", _code_submission),
-        ("Competition modeler", _competition_modeler),
+        (
+            "Titanic submission",
+            ("competitor", "getting_started_competitor"),
+            _submit_titanic,
+        ),
+        ("Playground submission", ("playground_competitor",), _submit_playground),
+        ("Community submission", ("community_competitor",), _submit_community),
+        ("Code submission", ("code_submitter", "notebook_modeler"), _code_submission),
+        ("Competition modeler", ("competition_modeler",), _competition_modeler),
     ]
 
     attempted = 0
     succeeded = 0
 
-    for name, fn in actions:
+    for name, badge_ids, fn in actions:
+        if not any(should_attempt(badge_id) for badge_id in badge_ids):
+            continue
         print(f"\n  --- {name} ---")
         attempted += 1
         if fn(username):

@@ -47,8 +47,8 @@ make new-exp EXP=exp322_gr_likelihood_weak_exp226_soft_shrink_readout
 canonical train/inference Notebookは明示採用前のため上書きしていない。親exp280にcompact版はないため、self-contained正規train sourceと比較した。exp280は9章/1,165行、exp322候補は10章/約1,580行で、exp263 input guard、outer-train gate、bounded shrink、late decisionを追加した分だけ厚く、薄いhelper entrypointではない。
 
 ```bash
-.venv/bin/pytest -q tests/test_exp322_gr_likelihood_weak_exp226_soft_shrink_readout.py
-.venv/bin/ruff check experiments/exp322_gr_likelihood_weak_exp226_soft_shrink_readout/exp322_gr_likelihood_weak_exp226_soft_shrink_readout_compact_selfcontained_train.py tests/test_exp322_gr_likelihood_weak_exp226_soft_shrink_readout.py
+.venv/bin/pytest -q experiments/exp322_gr_likelihood_weak_exp226_soft_shrink_readout/tests/test_exp322_gr_likelihood_weak_exp226_soft_shrink_readout.py
+.venv/bin/ruff check experiments/exp322_gr_likelihood_weak_exp226_soft_shrink_readout/exp322_gr_likelihood_weak_exp226_soft_shrink_readout_compact_selfcontained_train.py experiments/exp322_gr_likelihood_weak_exp226_soft_shrink_readout/tests/test_exp322_gr_likelihood_weak_exp226_soft_shrink_readout.py
 .venv/bin/python -m py_compile experiments/exp322_gr_likelihood_weak_exp226_soft_shrink_readout/exp322_gr_likelihood_weak_exp226_soft_shrink_readout_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb experiments/exp322_gr_likelihood_weak_exp226_soft_shrink_readout/exp322_gr_likelihood_weak_exp226_soft_shrink_readout_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp322_gr_likelihood_weak_exp226_soft_shrink_readout/exp322_gr_likelihood_weak_exp226_soft_shrink_readout_compact_selfcontained_train.py
@@ -61,7 +61,7 @@ make test
 - Jupytext conversion / round-trip: PASS
 - strict experiment validation: PASS
 - exp322 + exp280 + exp263 cache + Kaggle Notebook関連テスト: `35 passed`
-- repository full test: `442 passed / 1 skipped / 2 failed`。失敗2件はいずれも既存`tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py`で、完了済みexp296 config（`completed_train_side_guard_failed_closed` / `execution.run_variant: false`）に対し、旧テストが`kaggle_cpu_*` / run承認済み状態を期待している不整合。exp322変更箇所とは独立しているため修正していない。
+- repository full test: `442 passed / 1 skipped / 2 failed`。失敗2件はいずれも既存`experiments/exp296_exp223_self_gr_known_tvt_support_gate/tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py`で、完了済みexp296 config（`completed_train_side_guard_failed_closed` / `execution.run_variant: false`）に対し、旧テストが`kaggle_cpu_*` / run承認済み状態を期待している不整合。exp322変更箇所とは独立しているため修正していない。
 - `task validate-exp`は環境に`task`実行ファイルがないため使わず、同等の`make validate-exp`で確認した。
 - ローカルNotebook/full data実行、Kaggle package/push/runは行っていない。
 

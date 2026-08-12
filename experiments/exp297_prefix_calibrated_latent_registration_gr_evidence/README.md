@@ -41,7 +41,7 @@ exp293で固定したdeployable12 candidateを増減せず、known prefixから�
 
 - 実装候補: `exp297_prefix_calibrated_latent_registration_gr_evidence_compact_selfcontained_train.ipynb`
 - 停止契約: `exp297_prefix_calibrated_latent_registration_gr_evidence_compact_selfcontained_inference.ipynb`
-- tests: `tests/test_exp297_prefix_calibrated_latent_registration_gr_evidence.py`
+- tests: `experiments/exp297_prefix_calibrated_latent_registration_gr_evidence/tests/test_exp297_prefix_calibrated_latent_registration_gr_evidence.py`
 - canonical train notebookへcompact版をbyte-identicalで採用済み。inferenceは未採用。
 - Kaggle train実行は承認済み。inference/submissionはfail closedのまま。
 

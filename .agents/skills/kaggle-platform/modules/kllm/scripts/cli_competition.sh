@@ -1,41 +1,46 @@
 #!/usr/bin/env bash
-# Register for a competition and make a submission using kaggle-cli.
+# Inspect a competition and download its data using kaggle-cli.
 #
 # kaggle-cli supports:
 #   kaggle competitions list       — list active competitions
 #   kaggle competitions files      — list files in a competition
 #   kaggle competitions download   — download competition data
-#   kaggle competitions submit     — submit predictions
 #   kaggle competitions submissions — list your submissions
 #   kaggle competitions leaderboard — view the leaderboard
 #
 # NOTE: There is no dedicated CLI command to "join" or "register for" a competition.
 #       You must accept the competition rules via the Kaggle website first.
-#       After that, all submission operations work via CLI.
+#       After that, repository-approved submission operations work via CLI.
 #
 # Prerequisites:
-#   pip install --upgrade kaggle
-#   Credentials configured via `kaggle auth login`, ~/.kaggle/access_token, KAGGLE_API_TOKEN, or legacy ~/.kaggle/kaggle.json
+#   `uv sync --locked` completed in the repository
+#   Credentials configured via `uv run kaggle auth login`, ~/.kaggle/access_token, KAGGLE_API_TOKEN, or legacy ~/.kaggle/kaggle.json
 #
 # Usage:
-#   bash scripts/cli_competition.sh <competition> <submission-file> [download-dir]
+#   bash .agents/skills/kaggle-platform/modules/kllm/scripts/cli_competition.sh <competition> [download-dir]
 #
 # Arguments:
 #   competition      — competition slug, e.g., "titanic"
-#   submission-file  — path to CSV submission file
-#   download-dir     — directory to save competition data (default: ./downloads/competition-data)
+#   download-dir     — directory to save competition data (default: data/raw/<competition>)
 
 set -euo pipefail
 
-COMPETITION="${1:?Usage: cli_competition.sh <competition> <submission-file> [download-dir]}"
-SUBMISSION_FILE="${2:?Usage: cli_competition.sh <competition> <submission-file> [download-dir]}"
-DOWNLOAD_DIR="${3:-./downloads/competition-data}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../../../.." && pwd)"
+KAGGLE=(uv run --project "${REPO_ROOT}" kaggle)
+
+COMPETITION="${1:?Usage: cli_competition.sh <competition> [download-dir]}"
+if [[ ! "${COMPETITION}" =~ ^[A-Za-z0-9._-]+$ ]]; then
+    echo "[FAIL] competition slug '${COMPETITION}' contains unsupported characters" >&2
+    exit 2
+fi
+DOWNLOAD_DIR="${2:-${REPO_ROOT}/data/raw/${COMPETITION}}"
 
 echo "============================================================"
 echo "Step 1: List available competitions"
 echo "============================================================"
 
-kaggle competitions list --sort-by latestDeadline
+"${KAGGLE[@]}" competitions list --sort-by latestDeadline
 
 echo ""
 echo "============================================================"
@@ -56,12 +61,12 @@ echo "============================================================"
 
 # List competition files
 echo "--- Competition files ---"
-kaggle competitions files "${COMPETITION}"
+"${KAGGLE[@]}" competitions files "${COMPETITION}"
 
 # Download all competition data
 echo "--- Downloading competition data ---"
 mkdir -p "${DOWNLOAD_DIR}"
-kaggle competitions download "${COMPETITION}" \
+"${KAGGLE[@]}" competitions download "${COMPETITION}" \
     --path "${DOWNLOAD_DIR}"
 
 echo "Competition data downloaded to ${DOWNLOAD_DIR}/"
@@ -69,24 +74,18 @@ ls -la "${DOWNLOAD_DIR}/"
 
 echo ""
 echo "============================================================"
-echo "Step 4: Make a submission"
+echo "Step 4: Submission handoff"
 echo "============================================================"
-
-# Submit predictions
-kaggle competitions submit \
-    -c "${COMPETITION}" \
-    -f "${SUBMISSION_FILE}" \
-    -m "KLLM-tools CLI submission"
-
-echo "Submission uploaded successfully!"
+echo "This helper does not submit. This repository is configured for Notebook-only"
+echo "code submissions; validate the notebook output and use task submit-code."
 
 echo ""
 echo "============================================================"
-echo "Step 5: Check submission status"
+echo "Step 5: Check existing submissions"
 echo "============================================================"
 
 # List your submissions
-kaggle competitions submissions "${COMPETITION}"
+"${KAGGLE[@]}" competitions submissions "${COMPETITION}"
 
 echo ""
 echo "============================================================"
@@ -94,4 +93,4 @@ echo "Step 6: View the leaderboard"
 echo "============================================================"
 
 # View the leaderboard (top entries)
-kaggle competitions leaderboard "${COMPETITION}" --show
+"${KAGGLE[@]}" competitions leaderboard "${COMPETITION}" --show

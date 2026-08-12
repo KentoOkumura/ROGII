@@ -134,7 +134,7 @@ Stage Dは承認scopeどおり30本だけを実行する。追加variant/config/
 ```bash
 make new-steering EXP=exp264_exp263_candidate_confidence_dual_selector
 make new-exp EXP=exp264_exp263_candidate_confidence_dual_selector
-.venv/bin/pytest -q tests/test_exp264_candidate_selector_pipeline.py
+.venv/bin/pytest -q experiments/exp264_exp263_candidate_confidence_dual_selector/tests/test_exp264_candidate_selector_pipeline.py
 .venv/bin/python -m py_compile src/candidate_selector_pipeline.py
 .venv/bin/ruff check src/candidate_selector_pipeline.py experiments/exp264_exp263_candidate_confidence_dual_selector/exp264_exp263_candidate_confidence_dual_selector_train.py experiments/exp264_exp263_candidate_confidence_dual_selector/exp264_exp263_candidate_confidence_dual_selector_inference.py --select F821
 make prepare-kaggle-notebooks EXP=exp264_exp263_candidate_confidence_dual_selector EXTRA_ARGS="--notebook train --kernel-id kentookumura/exp264-exp263-candidate-confidence-dual-selector-train --title 'exp264 exp263 candidate confidence dual selector train' --run-on-push --strict"
@@ -327,7 +327,7 @@ task push-kaggle-train EXP=exp264_exp263_candidate_confidence_dual_selector  # �
 - `make update-summary`で262実験の`experiment_summary.md`を再生成し、exp264 statusを
   `stage_b_score_guard_passed_hard_readout_failed`へ反映した。
 - JSON/YAML parse、`make validate-exp EXP=exp264_exp263_candidate_confidence_dual_selector`のstrict validation、
-  `tests/test_exp264_candidate_selector_pipeline.py`の5 testsをすべてPASSした。
+  `experiments/exp264_exp263_candidate_confidence_dual_selector/tests/test_exp264_candidate_selector_pipeline.py`の5 testsをすべてPASSした。
 - Stage C 40 CPU boosters、Stage D 30 GPU boosters、inference、submissionは引き続き未承認・無効。
 
 ## 2026-07-17 Stage C実行承認・実装

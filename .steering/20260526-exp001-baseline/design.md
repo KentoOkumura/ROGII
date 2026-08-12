@@ -18,7 +18,7 @@
 - 作業中のメモ: `experiments/*/SESSION_NOTES.md`
 - 最終解釈: `experiments/*/result.md`
 - 実験全体の一覧: `experiment_summary.md`
-- 提出履歴: `submissions/SUBMISSIONS.md`
+- 提出履歴: `SUBMISSIONS.md`
 
 ## 今後の拡張
 

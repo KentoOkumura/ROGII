@@ -57,7 +57,7 @@ exp226 geometry replayは合計11,595 well-windowである。ML学習・booster�
 - `exp290_piecewise_datum_physical_smoother_compact_selfcontained_train.py`をJupytext percent形式で実装した。
 - exp226 geometry replay、outer-train hyperprior calibration、Type Well Huber affine、stable spatial k=16、305 expanded-state exact forward-backward、truth-after-freeze metricsをself-contained sourceへ実装した。
 - `exp290_piecewise_datum_physical_smoother_compact_selfcontained_inference.py`をfail-closedで実装した。
-- `tests/test_exp290_piecewise_datum_physical_smoother.py`に専用test 11件を追加した。
+- `experiments/exp290_piecewise_datum_physical_smoother/tests/test_exp290_piecewise_datum_physical_smoother.py`に専用test 11件を追加した。
 - Jupytextでcompact train/inference notebookを新規生成した。既存の正規名template notebookは上書きしていない。
 - `py_compile`、`ruff check`、専用`pytest`、Jupytext `--test`、`make validate-exp EXP=exp290_piecewise_datum_physical_smoother`を実行した。
 - `make validate-template`をPASSし、`make update-summary`で`experiment_summary.md`を更新した。

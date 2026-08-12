@@ -52,7 +52,7 @@ JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <train.p
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <inference.py>
 .venv/bin/python -m py_compile <train.py> <inference.py>
 .venv/bin/ruff check <train.py> <inference.py> --select F821
-.venv/bin/pytest -q tests/test_exp393_exp347_practical_numerical_equivalence_audit.py
+.venv/bin/pytest -q experiments/exp393_exp347_practical_numerical_equivalence_audit/tests/test_exp393_exp347_practical_numerical_equivalence_audit.py
 結果: 6 passed, 1 skipped
 ```
 

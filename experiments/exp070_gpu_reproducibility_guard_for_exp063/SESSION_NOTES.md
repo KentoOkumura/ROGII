@@ -216,5 +216,5 @@ timeout 90 kaggle kernels logs -f --interval 10 kentookumura/exp070-gpu-repro-gu
 
 1. CPU inference v1 の完了後、output を取得して raw-test regeneration summary と submission diagnostics を記録する。
 2. Public LB 用に GPU/CPU どちらの `submission.csv` を提出するか決めて提出する。
-3. Public LB が出たら `metrics.json`、`result.md`、`experiment_summary.md`、`submissions/SUBMISSIONS.md` に反映する。
+3. Public LB が出たら `metrics.json`、`result.md`、`experiment_summary.md`、`SUBMISSIONS.md` に反映する。
 4. CPU/GPU runtime 差の解釈を次の実験方針に反映する。

@@ -2,7 +2,7 @@
 
 ## 現在の状態
 
-- status: `abandoned_before_implementation`
+- status: `discarded`（旧`abandoned_before_implementation`を現行statusへ正規化）
 
 ## メモ
 

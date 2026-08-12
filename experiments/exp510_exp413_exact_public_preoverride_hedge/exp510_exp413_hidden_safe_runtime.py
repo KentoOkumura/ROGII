@@ -6,7 +6,7 @@ Source: experiments/exp413_scale5_likpf_full_replacement_on_exp335/exp413_scale5
 Source SHA256: 0f6fc81e56556aa6db828584ab2a2e58dde9db9cc4b54d6c12fa60e1c68f1388
 
 Do not edit this generated file directly. Regenerate it with
-``python scripts/prepare_exp510_hidden_safe_runtime.py``.
+``uv run python experiments/exp510_exp413_exact_public_preoverride_hedge/prepare_exp510_hidden_safe_runtime.py``.
 """
 
 PARENT_SOURCE_SHA256 = "0f6fc81e56556aa6db828584ab2a2e58dde9db9cc4b54d6c12fa60e1c68f1388"

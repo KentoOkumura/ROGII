@@ -19,4 +19,4 @@
 - Kaggle inference output に `submission.csv` が生成される。
 - `submit-check` が PASS する。
 - submission の行数、欠損、重複、予測範囲、exp026/exp050 との差分を記録する。
-- 提出した場合は ref と Public LB を `SESSION_NOTES.md`、`result.md`、`metrics.json`、`experiment_summary.md`、`submissions/SUBMISSIONS.md` に記録する。
+- 提出した場合は ref と Public LB を `SESSION_NOTES.md`、`result.md`、`metrics.json`、`experiment_summary.md`、`SUBMISSIONS.md` に記録する。

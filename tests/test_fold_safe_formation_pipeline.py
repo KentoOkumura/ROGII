@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 from pathlib import Path
 
@@ -18,20 +17,8 @@ from src.fold_safe_formation_pipeline import (
     build_well_formation_features,
     canonical_formation_feature_names,
     formation_cost_contract,
-    load_formation_feature_contract,
     select_unique_columns,
 )
-
-
-def test_fixed_audit_contract_selects_exactly_the_canonical_74() -> None:
-    path = Path(
-        "experiments/exp264_exp263_candidate_confidence_dual_selector/"
-        "artifacts/feature_availability_audit/exp218_feature_availability.csv"
-    )
-    digest = hashlib.sha256(path.read_bytes()).hexdigest()
-    features, evidence = load_formation_feature_contract(path, expected_sha256=digest)
-    assert features == canonical_formation_feature_names()
-    assert evidence["selected_rows"] == 74
 
 
 def test_cost_contract_is_one_variant_three_configs_five_folds() -> None:

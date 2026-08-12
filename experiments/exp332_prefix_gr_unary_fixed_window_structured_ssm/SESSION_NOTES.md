@@ -40,15 +40,15 @@ exp295のsoft structured objectiveを固定長windowでcompute-feasibleにする
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <compact_train.py> <compact_inference.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact_train.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact_inference.py>
-.venv/bin/python -m py_compile <compact_train.py> <compact_inference.py> tests/test_exp332_prefix_gr_unary_fixed_window_structured_ssm.py
-.venv/bin/ruff check <compact_train.py> <compact_inference.py> tests/test_exp332_prefix_gr_unary_fixed_window_structured_ssm.py --select E,F,I,UP,B
-.venv/bin/pytest -q tests/test_exp332_prefix_gr_unary_fixed_window_structured_ssm.py
+.venv/bin/python -m py_compile <compact_train.py> <compact_inference.py> experiments/exp332_prefix_gr_unary_fixed_window_structured_ssm/tests/test_exp332_prefix_gr_unary_fixed_window_structured_ssm.py
+.venv/bin/ruff check <compact_train.py> <compact_inference.py> experiments/exp332_prefix_gr_unary_fixed_window_structured_ssm/tests/test_exp332_prefix_gr_unary_fixed_window_structured_ssm.py --select E,F,I,UP,B
+.venv/bin/pytest -q experiments/exp332_prefix_gr_unary_fixed_window_structured_ssm/tests/test_exp332_prefix_gr_unary_fixed_window_structured_ssm.py
 ```
 
 - Jupytext `--test`、py_compile、Ruff: PASS。
 - strict experiment validation、template validation: PASS。
 - 専用pytest: `14 passed, 1 skipped`。skipはローカル環境にPyTorchがない場合のexact structured gradient test。
-- 全体pytest: `548 passed, 3 skipped, 2 failed`。失敗は既存`tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py`の2件で、完了済みexp296の現status/run flagに対して旧実行前状態を期待している。今回のexp332変更由来ではない。
+- 全体pytest: `548 passed, 3 skipped, 2 failed`。失敗は既存`experiments/exp296_exp223_self_gr_known_tvt_support_gate/tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py`の2件で、完了済みexp296の現status/run flagに対して旧実行前状態を期待している。今回のexp332変更由来ではない。
 - `__file__`参照0、canonical Notebook上書き0、Kaggle package/push/run 0。
 
 ## 2026-07-22 Stage 0実行承認

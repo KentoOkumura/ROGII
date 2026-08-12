@@ -5,39 +5,62 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
 from pathlib import Path
 
-
-TEXT_EXTS = {".md", ".txt", ".yaml", ".yml", ".json"}
-IGNORE_PARTS = {".git", ".venv", "__pycache__", "input", "data", ".cache"}
-SCORE_RE = re.compile(r"\b(?:cv|lb|public|private|score|auc|rmse|mae|f1|accuracy)\b[^\\n]{0,80}", re.IGNORECASE)
+CANONICAL_FILES = (
+    "KAGGLE_DIRECTION.md",
+    "experiment_summary.md",
+    "SUBMISSIONS.md",
+    "docs/surveys/README.md",
+)
+EXPERIMENT_RECORDS = ("SESSION_NOTES.md", "metrics.json", "result.md")
+SCORE_RE = re.compile(
+    r"\b(?:cv|lb|public|private|score|auc|rmse|mae|f1|accuracy)\b[^\n]{0,80}",
+    re.IGNORECASE,
+)
 HEADING_RE = re.compile(r"^#{1,4}\s+(.+)$", re.MULTILINE)
+EXPERIMENT_NUMBER_RE = re.compile(r"^exp(\d+)")
 
 
-def interesting(path: Path) -> bool:
-    parts = set(path.parts)
-    if parts & IGNORE_PARTS:
-        return False
-    name = path.name.lower()
-    text = str(path).lower()
-    return (
-        name in {"kaggle_direction.md", "claudesummary.md", "submissions.md", "session_notes.md", "readme.md"}
-        or "docs/backlog/" in text and name != "_template.md"
-        or "daily_report" in text
-        or "daily_reports" in text
-        or "experiment" in text
-        or path.suffix.lower() == ".json" and name == "metrics.json"
-    )
+def experiment_sort_key(path: Path) -> tuple[int, int, str]:
+    match = EXPERIMENT_NUMBER_RE.match(path.name.lower())
+    number = int(match.group(1)) if match else -1
+    return (number, path.stat().st_mtime_ns, path.name)
 
 
-def iter_files(root: Path):
-    for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [name for name in dirnames if name not in IGNORE_PARTS]
-        base = Path(dirpath)
-        for filename in filenames:
-            yield base / filename
+def candidate_files(root: Path, max_files: int) -> list[Path]:
+    selected: list[Path] = []
+    seen: set[Path] = set()
+
+    def add(path: Path) -> None:
+        if path.is_file() and path not in seen and len(selected) < max_files:
+            selected.append(path)
+            seen.add(path)
+
+    for relative in CANONICAL_FILES:
+        add(root / relative)
+
+    backlog_dir = root / "docs" / "backlog"
+    if backlog_dir.exists():
+        for path in sorted(backlog_dir.glob("*.md")):
+            if path.name != "_TEMPLATE.md":
+                add(path)
+
+    experiments_dir = root / "experiments"
+    experiment_dirs = []
+    if experiments_dir.exists():
+        experiment_dirs = sorted(
+            (path for path in experiments_dir.iterdir() if path.is_dir()),
+            key=experiment_sort_key,
+            reverse=True,
+        )
+    for experiment_dir in experiment_dirs:
+        for filename in EXPERIMENT_RECORDS:
+            add(experiment_dir / filename)
+        if len(selected) >= max_files:
+            break
+    return selected
 
 
 def summarize_file(path: Path, root: Path, max_bytes: int) -> dict[str, object]:
@@ -66,13 +89,7 @@ def main() -> int:
     args = parser.parse_args()
 
     root = Path(args.root).resolve()
-    files = []
-    for path in iter_files(root):
-        if not path.is_file() or path.suffix.lower() not in TEXT_EXTS:
-            continue
-        if interesting(path):
-            files.append(path)
-    files = sorted(files, key=lambda p: str(p.relative_to(root)))[: args.max_files]
+    files = candidate_files(root, args.max_files)
     summaries = [summarize_file(path, root, args.max_bytes) for path in files]
 
     if args.json:

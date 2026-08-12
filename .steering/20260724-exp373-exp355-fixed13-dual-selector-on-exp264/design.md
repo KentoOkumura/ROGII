@@ -63,5 +63,5 @@ Stage Cのnested selectorだけを40 CPU boosters学習する。
 - 重いcandidate-long feature assemblyとnested LightGBM本体は既存共通
   `src/candidate_selector_pipeline.py`を使う。
 - exp355固有のallowlist loader、SHA、global key join、repartition、paired readoutは
-  `src/exp355_fixed13_candidate_cache.py`へ分離する。
+  `experiments/exp373_exp355_fixed13_dual_selector_on_exp264/exp355_fixed13_candidate_cache.py`へ分離する。
 - inferenceはStage C PASSだけでは開かず、downstream TVTの別承認・学習までfail-closedとする。

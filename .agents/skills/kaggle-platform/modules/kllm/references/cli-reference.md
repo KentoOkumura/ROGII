@@ -7,13 +7,15 @@
 ## Installation
 
 ```bash
-pip install --upgrade kaggle
+uv sync --locked
 ```
 
 ## Authentication
 
-**Option 1:** `kaggle auth login` (interactive OAuth; stored in `~/.kaggle/credentials.json`)
-**Option 2:** `export KAGGLE_API_TOKEN=xxx` (headless/agent/CI)
+Operational commands in this repository use `uv run kaggle`. The command listings below omit `uv run` only to show Kaggle CLI syntax.
+
+**Option 1:** `uv run kaggle auth login` (interactive OAuth; stored in `~/.kaggle/credentials.json`)
+**Option 2:** environment-provided `KAGGLE_API_TOKEN` from a CI/Colab/managed secret store
 **Option 3:** `~/.kaggle/access_token` file
 **Option 4:** `~/.kaggle/kaggle.json` with `{"username":"...","key":"..."}` + `chmod 600`
 **Option 5:** `KAGGLE_USERNAME` + `KAGGLE_KEY` env vars (legacy)
@@ -23,7 +25,7 @@ kaggle auth login [--no-launch-browser] [--force]
 kaggle auth revoke
 ```
 
-Avoid `kaggle auth print-access-token` in logs because it prints a live token.
+Do not run `kaggle auth print-access-token` during an agent session because it prints a live token. Configure a local token file with `uv run python .agents/skills/kaggle-platform/modules/registration/scripts/configure_token.py`.
 
 ## Competitions
 
@@ -142,6 +144,8 @@ Kaggle CLI 2.2.3 では notebook のログ取得を `kaggle kernels logs -f OWNE
 
 ### kernel-metadata.json
 
+以下は Kaggle CLI の汎用的な field 構成例である。このリポジトリの運用では metadata を手作業で流用せず、`prepare-kaggle-notebooks` で生成し、`enable_internet: false` と `enable_tpu: false` を維持する。TPU は未対応のため選択しない。
+
 ```json
 {
   "id": "username/kernel-slug",
@@ -151,7 +155,8 @@ Kaggle CLI 2.2.3 では notebook のログ取得を `kaggle kernels logs -f OWNE
   "kernel_type": "notebook",
   "is_private": true,
   "enable_gpu": false,
-  "enable_internet": true,
+  "enable_tpu": false,
+  "enable_internet": false,
   "dataset_sources": ["owner/dataset"],
   "competition_sources": ["competition-slug"],
   "kernel_sources": ["owner/kernel"],
@@ -162,6 +167,8 @@ Kaggle CLI 2.2.3 では notebook のログ取得を `kaggle kernels logs -f OWNE
 ### Available Accelerators
 
 NvidiaTeslaP100, NvidiaTeslaT4, NvidiaTeslaT4Highmem, NvidiaTeslaA100, NvidiaL4, NvidiaL4X1, NvidiaH100, NvidiaRtxPro6000, TpuV38, Tpu1VmV38, TpuV5E8, TpuV6E8.
+
+上記は Kaggle CLI が列挙する platform 全体の値であり、このリポジトリで利用可能な構成の一覧ではない。TPU accelerator は選択しない。
 
 ## Models
 

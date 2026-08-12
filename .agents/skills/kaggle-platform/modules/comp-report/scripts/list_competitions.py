@@ -1,16 +1,17 @@
 """Fetch recent Kaggle competitions across all categories.
 
-Usage:
-    python list_competitions.py [--lookback-days 30] [--output json]
+Usage (run from the repository root):
+    uv run python \
+        .agents/skills/kaggle-platform/modules/comp-report/scripts/list_competitions.py \
+        [--lookback-days 30] [--output json]
 """
 
 import argparse
 import json
 import sys
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 
 from utils import get_api, rate_limit, unwrap_response
-
 
 # Categories to query from the Kaggle API
 CATEGORIES = ["featured", "research", "playground", "gettingStarted", "recruitment", "masters"]
@@ -94,8 +95,8 @@ def classify_status(comp_dict: dict) -> str:
     try:
         deadline = datetime.fromisoformat(deadline_str.replace("Z", "+00:00"))
         if deadline.tzinfo is None:
-            deadline = deadline.replace(tzinfo=timezone.utc)
-        now = datetime.now(timezone.utc)
+            deadline = deadline.replace(tzinfo=UTC)
+        now = datetime.now(UTC)
         return "completed" if deadline < now else "active"
     except Exception:
         return "active"
@@ -103,7 +104,7 @@ def classify_status(comp_dict: dict) -> str:
 
 def within_lookback(comp_dict: dict, lookback_days: int) -> bool:
     """Check if competition is within the lookback window."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     cutoff = now - timedelta(days=lookback_days)
 
     for field in ["deadline", "date_created"]:
@@ -113,7 +114,7 @@ def within_lookback(comp_dict: dict, lookback_days: int) -> bool:
         try:
             dt = datetime.fromisoformat(val.replace("Z", "+00:00"))
             if dt.tzinfo is None:
-                dt = dt.replace(tzinfo=timezone.utc)
+                dt = dt.replace(tzinfo=UTC)
             if dt >= cutoff:
                 return True
         except Exception:
@@ -152,7 +153,10 @@ def fetch_competitions(lookback_days: int = 30) -> list[dict]:
                     all_comps.append(d)
                 rate_limit()
             except Exception as e:
-                print(f"  Warning: Failed to fetch category='{cat}' page={page}: {e}", file=sys.stderr)
+                print(
+                    f"  Warning: Failed to fetch category='{cat}' page={page}: {e}",
+                    file=sys.stderr,
+                )
                 break
 
     # Filter by lookback window and classify status
@@ -170,7 +174,12 @@ def fetch_competitions(lookback_days: int = 30) -> list[dict]:
 
 def main():
     parser = argparse.ArgumentParser(description="List recent Kaggle competitions")
-    parser.add_argument("--lookback-days", type=int, default=30, help="Days to look back (default: 30)")
+    parser.add_argument(
+        "--lookback-days",
+        type=int,
+        default=30,
+        help="Days to look back (default: 30)",
+    )
     parser.add_argument("--output", choices=["json", "text"], default="json", help="Output format")
     args = parser.parse_args()
 
@@ -186,7 +195,10 @@ def main():
         for comp in comps:
             status_icon = "ACTIVE" if comp["status"] == "active" else "DONE"
             print(f"  [{status_icon}] {comp['title']}")
-            print(f"         slug: {comp['slug']}, category: {comp['category']}, deadline: {comp['deadline']}")
+            print(
+                f"         slug: {comp['slug']}, category: {comp['category']}, "
+                f"deadline: {comp['deadline']}"
+            )
             if comp.get("reward"):
                 print(f"         reward: {comp['reward']}, teams: {comp['team_count']}")
             print()

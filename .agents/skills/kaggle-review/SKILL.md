@@ -56,8 +56,8 @@ description: "Kaggle コンペのコードやノートブックをレビュー�
 
 - まず schema、行数、欠損、重複、target 分布を確認する。
 - 生の行を大量に出すより、要約表やプロットを優先する。
-- `make oof-app` のようなプロジェクト内の確認アプリがあり、依存関係も入っている場合は活用する。
-- 再利用できる発見は `docs/surveys/` または対象実験の `SESSION_NOTES.md` に保存する。
+- `task oof-app` のようなプロジェクト内の確認アプリがあり、依存関係も入っている場合は活用する。`task` がない環境では同名の Make target を使う。
+- 調査中の時系列記録は対象実験の`SESSION_NOTES.md`、実験固有の結論と証拠の解釈は`result.md`、再利用する横断的な完了分析は`docs/surveys/`に保存する。
 - 広い優先順位付けや次実験の統合判断には `kaggle-strategy` を使う。
 
 ## ROGII 固有の観点

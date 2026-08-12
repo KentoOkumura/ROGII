@@ -1,12 +1,17 @@
 """Download datasets and models from Kaggle using kagglehub.
 
-Usage:
-    python kagglehub_download.py                           # default example dataset
-    python kagglehub_download.py --dataset heptapod/titanic
-    python kagglehub_download.py --model google/gemma/transformers/2b
+Usage (run from the repository root):
+    uv run python .agents/skills/kaggle-platform/modules/kllm/scripts/kagglehub_download.py
+    uv run python \
+        .agents/skills/kaggle-platform/modules/kllm/scripts/kagglehub_download.py \
+        --dataset heptapod/titanic
+    uv run python \
+        .agents/skills/kaggle-platform/modules/kllm/scripts/kagglehub_download.py \
+        --model google/gemma/transformers/2b
 """
 
 import argparse
+
 import kagglehub
 
 
@@ -27,7 +32,11 @@ def download_model(handle: str) -> str:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Download from Kaggle via kagglehub")
     parser.add_argument("--dataset", default=None, help="Dataset handle (owner/name)")
-    parser.add_argument("--model", default=None, help="Model handle (owner/name/framework/variation)")
+    parser.add_argument(
+        "--model",
+        default=None,
+        help="Model handle (owner/name/framework/variation)",
+    )
     args = parser.parse_args()
 
     if args.dataset:

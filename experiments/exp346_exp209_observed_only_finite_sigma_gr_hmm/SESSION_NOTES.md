@@ -68,7 +68,7 @@ JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <train.p
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <inference.py>
 .venv/bin/python -m py_compile <train.py> <inference.py>
 .venv/bin/ruff check <train.py> <inference.py> tests/test_exp346_*.py
-.venv/bin/pytest -q tests/test_exp346_exp209_observed_only_finite_sigma_gr_hmm.py
+.venv/bin/pytest -q experiments/exp346_exp209_observed_only_finite_sigma_gr_hmm/tests/test_exp346_exp209_observed_only_finite_sigma_gr_hmm.py
 make validate-exp EXP=exp346_exp209_observed_only_finite_sigma_gr_hmm
 make validate-template
 make test

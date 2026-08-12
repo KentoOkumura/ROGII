@@ -59,7 +59,7 @@ prefix条件付き補正量が外側foldでも有効かを監査する。
 ```bash
 make new-steering EXP=exp503_exp490_strength_weakness_prefix_policy_readout
 make new-exp EXP=exp503_exp490_strength_weakness_prefix_policy_readout
-.venv/bin/pytest -q experiments/exp503_exp490_strength_weakness_prefix_policy_readout/test_exp503_contract.py
+.venv/bin/pytest -q experiments/exp503_exp490_strength_weakness_prefix_policy_readout/tests/test_exp503_contract.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp503_exp490_strength_weakness_prefix_policy_readout/exp503_exp490_strength_weakness_prefix_policy_readout_compact_selfcontained_train.py
 ```

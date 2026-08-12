@@ -52,8 +52,8 @@ make new-exp EXP=exp366_fault_reset_duration_semimarkov_hmm
 .venv/bin/ruff check \
   experiments/exp366_fault_reset_duration_semimarkov_hmm/exp366_fault_reset_duration_semimarkov_hmm_compact_selfcontained_train.py \
   experiments/exp366_fault_reset_duration_semimarkov_hmm/exp366_fault_reset_duration_semimarkov_hmm_compact_selfcontained_inference.py \
-  tests/test_exp366_fault_reset_duration_semimarkov_hmm.py
-.venv/bin/pytest -q tests/test_exp366_fault_reset_duration_semimarkov_hmm.py
+  experiments/exp366_fault_reset_duration_semimarkov_hmm/tests/test_exp366_fault_reset_duration_semimarkov_hmm.py
+.venv/bin/pytest -q experiments/exp366_fault_reset_duration_semimarkov_hmm/tests/test_exp366_fault_reset_duration_semimarkov_hmm.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp366_fault_reset_duration_semimarkov_hmm/exp366_fault_reset_duration_semimarkov_hmm_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \

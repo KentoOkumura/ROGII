@@ -68,7 +68,7 @@ exp389 Huber exact HMMをexp264の元の`exact_hmm`と全面置換し、
 - `src/exact_hmm_full_replacement.py`
 - `exp492_huber_exact_hmm_full_replacement_on_exp264_compact_selfcontained_train.py`
 - 対応する別名compact ipynb候補
-- `tests/test_exp492_huber_exact_hmm_full_replacement.py`
+- `experiments/exp492_huber_exact_hmm_full_replacement_on_exp264/tests/test_exp492_huber_exact_hmm_full_replacement.py`
 
 実装時検証:
 

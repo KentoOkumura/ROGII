@@ -1,16 +1,16 @@
 """Get structured details for a specific Kaggle competition.
 
-Usage:
-    python competition_details.py --slug SLUG [--top-n 5]
+Usage (run from the repository root):
+    uv run python \
+        .agents/skills/kaggle-platform/modules/comp-report/scripts/competition_details.py \
+        --slug SLUG [--top-n 5]
 """
 
 import argparse
 import json
 import re
-import sys
 
 from utils import get_api, rate_limit, unwrap_response
-
 
 # Patterns to identify solution writeup kernels
 WRITEUP_PATTERNS = [
@@ -122,7 +122,12 @@ def get_details(slug: str, top_n: int = 5) -> dict:
 def main():
     parser = argparse.ArgumentParser(description="Get details for a Kaggle competition")
     parser.add_argument("--slug", required=True, help="Competition slug")
-    parser.add_argument("--top-n", type=int, default=5, help="Top N leaderboard entries (default: 5)")
+    parser.add_argument(
+        "--top-n",
+        type=int,
+        default=5,
+        help="Top N leaderboard entries (default: 5)",
+    )
     args = parser.parse_args()
 
     details = get_details(args.slug, args.top_n)

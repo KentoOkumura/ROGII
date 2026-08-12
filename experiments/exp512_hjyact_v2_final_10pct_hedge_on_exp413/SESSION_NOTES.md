@@ -232,11 +232,11 @@
 実行済み:
 
 ```bash
-.venv/bin/python scripts/prepare_exp512_hjyact_v2_candidate.py /tmp/exp512-hjyact-v2-source/ultimate-pf-config-strategy-a-reproducible-score.ipynb
+uv run python experiments/exp512_hjyact_v2_final_10pct_hedge_on_exp413/prepare_exp512_hjyact_v2_candidate.py /tmp/exp512-hjyact-v2-source/ultimate-pf-config-strategy-a-reproducible-score.ipynb
 .venv/bin/python -m py_compile experiments/exp512_hjyact_v2_final_10pct_hedge_on_exp413/exp512_hjyact_v2_final_10pct_hedge_on_exp413_compact_selfcontained_inference.py
 .venv/bin/ruff check --select F821 experiments/exp512_hjyact_v2_final_10pct_hedge_on_exp413/exp512_hjyact_v2_final_10pct_hedge_on_exp413_compact_selfcontained_inference.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp512_hjyact_v2_final_10pct_hedge_on_exp413/exp512_hjyact_v2_final_10pct_hedge_on_exp413_compact_selfcontained_inference.py
-.venv/bin/pytest -q experiments/exp512_hjyact_v2_final_10pct_hedge_on_exp413/test_exp512_contract.py
+.venv/bin/pytest -q experiments/exp512_hjyact_v2_final_10pct_hedge_on_exp413/tests/test_exp512_contract.py
 make validate-exp EXP=exp512_hjyact_v2_final_10pct_hedge_on_exp413
 ```
 

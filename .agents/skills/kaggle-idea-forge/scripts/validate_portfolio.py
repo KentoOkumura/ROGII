@@ -7,7 +7,6 @@ import argparse
 import json
 from pathlib import Path
 
-
 FAMILIES = {
     "representation",
     "information",
@@ -117,7 +116,11 @@ def validate(payload: object) -> list[str]:
                 errors.append(f"{prefix}.{field} must be a non-empty string")
         for field in list_fields:
             value = card.get(field)
-            if not isinstance(value, list) or not value or not all(nonempty_string(x) for x in value):
+            if (
+                not isinstance(value, list)
+                or not value
+                or not all(nonempty_string(x) for x in value)
+            ):
                 errors.append(f"{prefix}.{field} must be a non-empty string list")
         idea_id = card.get("id")
         if isinstance(idea_id, str):
@@ -196,7 +199,9 @@ def validate(payload: object) -> list[str]:
             errors.append("portfolio needs validation or compute_enabler")
         if not any(card.get("origin_pass") == "task_first" for card in portfolio_cards):
             errors.append("portfolio needs at least one task_first idea")
-        if not any(card.get("novelty_level") == "representation_change" for card in portfolio_cards):
+        if not any(
+            card.get("novelty_level") == "representation_change" for card in portfolio_cards
+        ):
             errors.append("portfolio needs at least one representation_change idea")
 
     return errors

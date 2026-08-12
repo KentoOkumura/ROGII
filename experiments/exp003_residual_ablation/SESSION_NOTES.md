@@ -48,7 +48,7 @@
 - 2026-05-31: submission ref `53213975` は `SubmissionStatus.PENDING`。
 - 2026-05-31: `kaggle competitions submissions rogii-wellbore-geology-prediction` で ref `53213975` が `SubmissionStatus.COMPLETE`、public LB 12.852 と確認。
 - 2026-05-31: `uv run python scripts/record_experiment.py --experiment exp003_residual_ablation --status completed --cv 13.882944 --public-lb 12.852 --metric rmse ... --no-summary` で metrics を更新。
-- 2026-05-31: `uv run python scripts/record_submission.py --experiment exp003_residual_ablation --file /tmp/kaggle-output/exp003_residual_ablation/inference/submission.csv --cv 13.882944 --public-lb 12.852 ...` で `submissions/SUBMISSIONS.md` に v003 を記録。
+- 2026-05-31: `uv run python scripts/record_submission.py --experiment exp003_residual_ablation --file /tmp/kaggle-output/exp003_residual_ablation/inference/submission.csv --cv 13.882944 --public-lb 12.852 ...` で `SUBMISSIONS.md` に v003 を記録。
 
 ## 変更点
 

@@ -96,3 +96,21 @@ def test_update_index_check_rejects_draft_report(tmp_path: Path) -> None:
 
     with pytest.raises(SystemExit, match="draft survey reports"):
         update_index(surveys_dir=surveys_dir, readme_path=readme_path, check=True)
+
+
+def test_update_index_check_can_allow_draft_report(tmp_path: Path) -> None:
+    surveys_dir = tmp_path / "surveys"
+    surveys_dir.mkdir()
+    write_report(surveys_dir / "selector.md", status="draft", summary="TODO")
+    readme_path = surveys_dir / "README.md"
+    readme_path.write_text(
+        "# 調査レポート\n\n<!-- BEGIN AUTO SURVEY INDEX -->\n<!-- END AUTO SURVEY INDEX -->\n"
+    )
+
+    assert update_index(surveys_dir=surveys_dir, readme_path=readme_path)
+    assert not update_index(
+        surveys_dir=surveys_dir,
+        readme_path=readme_path,
+        check=True,
+        allow_draft=True,
+    )

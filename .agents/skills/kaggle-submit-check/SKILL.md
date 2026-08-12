@@ -13,13 +13,19 @@ description: "Kaggle 提出前に、提出物と notebook metadata を検証し�
    - CSV ファイル、zip ファイル、notebook フォルダ、またはプロジェクトルート。
    - 指定がなければ、`submission.csv`、`*.zip`、`kernel-metadata.json`、`sample_submission.csv` などの候補を探す。
 
-2. 同梱 checker を実行する。
+2. リポジトリでは正のCSV validatorを実行する。`EXP`を指定した場合は、PASS/FAIL、行数、重複ID数、欠損数、infinite value数、target統計、submission SHAが同じ実験の`metrics.json`へ自動保存される。対象実験を特定できない場合は`EXP`を省略し、別実験へ推測で保存しない。
 
 ```bash
-python .agents/skills/kaggle-submit-check/scripts/check_submission.py PATH --sample sample_submission.csv
+task submit-check EXP=expXXX_title SUBMISSION=/tmp/kaggle-output/expXXX_title/inference/submission.csv
 ```
 
-`--sample` は sample file が存在する場合だけ使う。
+`task`が利用できない場合は、同じ引数で`make submit-check`を使う。CSV以外のzip、notebook folder、`kernel-metadata.json`もまとめて調べる必要がある場合だけ、補助checkerを追加実行する。補助checkerもCSV部分は正のvalidatorへ委譲する。
+
+```bash
+uv run python .agents/skills/kaggle-submit-check/scripts/check_submission.py PATH --sample sample_submission.csv
+```
+
+`--sample`はsample fileが存在する場合だけ使う。リポジトリ外へcheckerだけをコピーして使わず、正のvalidatorと`project.yml`を含むリポジトリルートから実行する。
 
 3. スクリプトだけでは証明できない warning を手で確認する。
    - CV は test で想定される grouping/time split と一致しているか。
@@ -42,29 +48,26 @@ Kaggle 実験リポジトリ内で作業する場合:
 1. `project.yml` に提出設定があることを確認する。sample file、id column、target columns を含む。
 2. inference notebook の生成、push、Kaggle 実行は `kaggle-review-exp` と `kaggle-platform` に委譲する。このスキルでは、生成済み notebook と `kernel-metadata.json` を検証する。slug は 50 文字以内、`id` と `title` 由来 slug は一致、accelerator / internet / competition source は意図どおりであることを確認する。
 
-3. `kaggle-platform` の手順で取得された Kaggle output がある場合、Kaggle 上で生成された `submission.csv` を sample submission に対して検証する。
+3. `kaggle-platform` の手順で取得された Kaggle output がある場合、Kaggle 上で生成された `submission.csv` を手順2のコマンドでsample submissionに対して検証する。ローカル実験ディレクトリに提出CSVを常設しない。
 
-```bash
-task submit-check EXP=expXXX_title SUBMISSION=/tmp/kaggle-output/expXXX_title/inference/submission.csv
-```
-
-ローカル実験ディレクトリに提出 CSV を常設しない。Kaggle output を取得した場合だけ、その取得物に対して `task submit-check` を実行する。
-
-4. PASS / WARN / FAIL を報告する。code competitionでは、Kaggle outputに存在する提出ファイル名（通常`submission.csv`）も引き渡し情報として明記する。実際の submit はユーザーが明示的に依頼した場合だけ `kaggle-platform` の手順で行い、`-k OWNER/SLUG -v VERSION -f submission.csv`の4点を省略しない。submit 後の監視は `kaggle-submit-monitor` に委譲する。
+4. PASS / WARN / FAIL と`metrics.json`へ保存した証拠を報告する。code competitionでは、Kaggle outputに存在する提出ファイル名（通常`submission.csv`）も引き渡し情報として明記する。実際の submit はユーザーが明示的に依頼した場合だけ `kaggle-platform` の手順で行い、`-k OWNER/SLUG -v VERSION -f submission.csv`の4点を省略しない。submit 後の監視は `kaggle-submit-monitor` に委譲する。
 
 5. submit が行われてスコアが分かったら、リポジトリに記録する。
 
 ```bash
-task record-submission EXP=expXXX EXTRA_ARGS="--cv 0.1234 --public-lb 0.1200 --notes baseline"
-task update-summary
+task record-exp EXP=expXXX CV=0.1234 PUBLIC_LB=0.1200
+task record-submission EXP=expXXX SUBMISSION=/path/to/submission.csv SUBMISSION_REF=12345678 EXTRA_ARGS="--notes baseline"
 ```
 
-記録先:
-- `SESSION_NOTES.md`: submit-check、提出コマンド、状態、次アクション。
-- `result.md`: 提出結果の解釈、実行証拠、ユーザーの採否判断。日本語で記載する。
-- `metrics.json`: CV/LBなど機械処理する数値の正。
-- `experiment_summary.md`: 実験横断の要約。
-- `submissions/SUBMISSIONS.md`: 提出履歴。
+`record-exp`を先に実行して`metrics.json`と`experiment_summary.md`を更新する。`record-submission`はCV/LBの引数を受け取らず、`metrics.json`の現在値を読み、指定された単一のsubmission refとともに`SUBMISSIONS.md`へ記録する。同じrefを再指定すると既存行を更新するため、Private LB判明後も新しい行を追加しない。同じスコアを複数のコマンドへ手入力しない。
+
+code competitionでKaggle outputをローカル取得していない場合は、`kaggle kernels files`またはUIで対象kernel versionの`submission.csv`を確認したうえで、ローカルファイル証拠を未取得として記録する。
+
+```bash
+task record-submission EXP=expXXX SUBMISSION=submission.csv SUBMISSION_REF=12345678 EXTRA_ARGS="--allow-missing-file --notes 'Kaggle output not downloaded'"
+```
+
+記録先の役割は`AGENTS.md`を正とする。`EXP`付きの`submit-check`は検証結果とsubmission SHAを対象実験の構造化された証拠へ保存する。提出コマンド、scoring経過、結果の解釈は同じ実験の正本へ分担して追記し、ここでは別の分担規則を定義しない。
 
 確認項目:
 - 行数が `sample_submission.csv` と一致している。

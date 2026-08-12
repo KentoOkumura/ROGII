@@ -9,9 +9,13 @@ NOT supported:
   - Notebook publishing (use kaggle-cli `kernels push` instead)
   - Benchmark publishing (use Kaggle UI instead)
 
-Usage:
-    python scripts/kagglehub_publish.py dataset <handle> <local-dir> [version-notes]
-    python scripts/kagglehub_publish.py model <handle> <local-dir> [version-notes] [license-name]
+Usage (run from the repository root):
+    uv run python \
+        .agents/skills/kaggle-platform/modules/kllm/scripts/kagglehub_publish.py \
+        dataset <handle> <local-dir> [version-notes]
+    uv run python \
+        .agents/skills/kaggle-platform/modules/kllm/scripts/kagglehub_publish.py \
+        model <handle> <local-dir> [version-notes] [license-name]
 """
 
 import sys
@@ -50,8 +54,12 @@ def publish_model(
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         print("Usage:")
-        print("  python kagglehub_publish.py dataset <handle> <local-dir> [version-notes]")
-        print("  python kagglehub_publish.py model <handle> <local-dir> [version-notes] [license-name]")
+        command = (
+            "uv run python .agents/skills/kaggle-platform/modules/kllm/scripts/"
+            "kagglehub_publish.py"
+        )
+        print(f"  {command} dataset <handle> <local-dir> [version-notes]")
+        print(f"  {command} model <handle> <local-dir> [version-notes] [license-name]")
         sys.exit(1)
 
     action = sys.argv[1]

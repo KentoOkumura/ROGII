@@ -317,8 +317,7 @@ bitwise parityは本調査では主張しない。
 | 2 | `exp226_k16__exact_hmm` | 2 | `55083266` | PENDING |
 | 3 | `exp226_k16__likpf_mean` | 3 | `55083270` | PENDING |
 
-最新v3は`kaggle-submit-monitor`でPENDINGを確認し、
-`logs/submission_exp434_batch1_v3.log`へ記録した。先行提出もPENDINGのため、
+最新v3は`kaggle-submit-monitor`でPENDINGを確認した。先行提出もPENDINGのため、
 Public LB確定後に3件まとめてmetrics/result/submission履歴を更新する。
 残り未提出は凍結順序4–10の7候補である。
 
@@ -367,16 +366,14 @@ Kaggle CLIでref、description、status、Public LBを照合し、3件すべて
 | 6 | `selfgr_hmm_a070` | 6 | `55105261` | PENDING |
 | 7 | `exact_hmm` | 7 | `55105266` | PENDING |
 
-最新v7は`kaggle-submit-monitor`でPENDINGを確認し、
-`logs/submission_exp434_batch2_v7.log`へ記録した。採点完了後に4件のPublic LBを
+最新v7は`kaggle-submit-monitor`でPENDINGを確認した。採点完了後に4件のPublic LBを
 metrics/result/physical model summary/提出履歴へ反映する。残り未提出は
 version 8 `pf_ancc`、version 9 `beam_mean`、version 10 `likpf_mean`の3候補である。
 
 ## 2026-07-30 competition submission batch 2 採点完了
 
 Kaggle CLIでref、description、status、Public LBを照合し、4件すべて
-`COMPLETE`を確認した。最新v7は`kaggle-submit-monitor`でも完了を
-`logs/submission_exp434_batch2_v7.log`へ追記した。
+`COMPLETE`を確認した。最新v7は`kaggle-submit-monitor`でも完了を確認した。
 
 | candidate | OOF RMSE | Public LB | LB - OOF | ref |
 | --- | ---: | ---: | ---: | ---: |
@@ -421,8 +418,7 @@ Kaggle CLIでref、description、status、Public LBを照合し、4件すべて
 | 9 | `beam_mean` | 9 | `55133072` | PENDING |
 | 10 | `likpf_mean` | 10 | `55133074` | PENDING |
 
-最新v10は`kaggle-submit-monitor --once`でPENDINGを確認し、
-`logs/submission_exp434_batch3_v10.log`へ記録した。未提出候補は0件である。
+最新v10は`kaggle-submit-monitor --once`でPENDINGを確認した。未提出候補は0件である。
 3件の採点完了後にPublic LB、最終12候補順位、gap、Spearman順位相関を更新する。
 
 ## 2026-07-31 competition submission batch 3 採点完了

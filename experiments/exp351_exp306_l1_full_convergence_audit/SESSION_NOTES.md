@@ -77,14 +77,14 @@ make new-exp EXP=exp351_exp306_l1_full_convergence_audit
 実行した検証:
 
 ```bash
-.venv/bin/pytest -q tests/test_exp351_exp306_l1_full_convergence_audit.py
+.venv/bin/pytest -q experiments/exp351_exp306_l1_full_convergence_audit/tests/test_exp351_exp306_l1_full_convergence_audit.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <compact train/inference.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact train/inference.py>
 .venv/bin/python -m py_compile <compact train/inference.py>
 .venv/bin/ruff check <compact train/inference.py> --select F821
 make validate-exp EXP=exp351_exp306_l1_full_convergence_audit
 make validate-template
-.venv/bin/pytest -q tests/test_exp351_exp306_l1_full_convergence_audit.py tests/test_kaggle_notebooks.py tests/test_scaffold.py
+.venv/bin/pytest -q experiments/exp351_exp306_l1_full_convergence_audit/tests/test_exp351_exp306_l1_full_convergence_audit.py tests/test_kaggle_notebooks.py tests/test_scaffold.py
 ```
 
 検証結果:

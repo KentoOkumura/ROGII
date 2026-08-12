@@ -14,9 +14,10 @@ writeups).
 > skip Step 4 — the structured-metadata workflow (Steps 1–3, 5–6) still
 > produces a useful report, just without the SPA-only content.
 >
-> Modern alternative: for many competitions, `list_competition_pages` (in the
-> kllm module) returns the same overview pages without needing Playwright at
-> all. Prefer that when it covers what you need.
+> Modern alternative: when a Kaggle API token is available,
+> `list_competition_pages` (in the kllm module) returns the same overview pages
+> without needing Playwright. It is an MCP operation and does not accept
+> legacy username/key credentials by themselves.
 
 ## Workflow
 
@@ -27,18 +28,21 @@ When this module is invoked, the agent follows these 6 steps:
 Run a quick credential check to ensure Kaggle API access works:
 
 ```bash
-python3 modules/comp-report/scripts/utils.py
+uv run python .agents/skills/kaggle-platform/modules/comp-report/scripts/utils.py
 ```
 
-This verifies kaggle.json exists and the API authenticates successfully. If it
-fails, prompt the user to configure credentials.
+This checks the credential sources supported by this Python API workflow:
+`KAGGLE_API_TOKEN`, `~/.kaggle/access_token`, `KAGGLE_USERNAME` plus
+`KAGGLE_KEY`, or legacy `~/.kaggle/kaggle.json`. It then authenticates and
+runs a small API request. Interactive CLI OAuth by itself is not accepted by
+this module. If the check fails, follow the canonical registration guide.
 
 ### Step 2: Gather Competition List
 
 Run the competition listing script to query across all categories:
 
 ```bash
-python3 modules/comp-report/scripts/list_competitions.py --lookback-days 30 --output json
+uv run python .agents/skills/kaggle-platform/modules/comp-report/scripts/list_competitions.py --lookback-days 30 --output json
 ```
 
 This queries the Kaggle Python API across categories (featured, research,
@@ -60,7 +64,7 @@ Parse the JSON output to get the competition list.
 For each competition from Step 2, run:
 
 ```bash
-python3 modules/comp-report/scripts/competition_details.py --slug SLUG
+uv run python .agents/skills/kaggle-platform/modules/comp-report/scripts/competition_details.py --slug SLUG
 ```
 
 This retrieves file listings, top leaderboard entries (for completed), and top
@@ -71,9 +75,10 @@ pattern-matching titles.
 
 **Skip this step entirely** if your agent does not have Playwright MCP tools.
 The structured-metadata report from Steps 1–3 is still useful on its own, and
-`list_competition_pages` (kllm module) covers most overview content without
-Playwright. Use Step 4 only when you need rendered SPA content that the API
-does not expose.
+when an API token is available, `list_competition_pages` (kllm module) covers
+most overview content without Playwright. With legacy username/key credentials
+only, skip that MCP enrichment. Use Step 4 only when you need rendered SPA
+content that the API does not expose.
 
 Assuming the host agent provides Playwright MCP tools, for each competition:
 
@@ -138,9 +143,16 @@ Assemble a markdown report organized as follows:
   metric, winner + top 5 leaderboard, winning approach summary from writeups,
   links to top solution notebooks, and a "Methods & Insights" blockquote
 
+If Step 4 was skipped, omit fields that are available only from rendered SPA
+content or mark them as unavailable. Do not infer missing problem statements,
+evaluation details, or writeup content from unrelated metadata.
+
 ### Step 6: Present
 
-Output the report inline.
+Output the report inline. If it is a completed report worth reusing in this
+repository, search `docs/surveys/README.md` first and update the existing report
+for the same question. For a new question, follow the complete draft-to-final
+workflow in `docs/surveys/README.md`. Do not persist a transient lookup.
 
 ## Scripts
 
@@ -168,6 +180,9 @@ indirect prompt injection:
 
 ## Prerequisites
 
-- Kaggle credentials configured (`kaggle auth login`, `KAGGLE_API_TOKEN`, `~/.kaggle/access_token`, or legacy `~/.kaggle/kaggle.json`)
-- `pip install kaggle requests`
-- Playwright MCP tools available in your agent (Claude Code, Cursor, etc.)
+- Kaggle Python API credentials configured (`KAGGLE_API_TOKEN`, `~/.kaggle/access_token`, or legacy username/key credentials). OAuth from `uv run kaggle auth login` alone is not sufficient for this module. See [`../registration/references/kaggle-setup.md`](../registration/references/kaggle-setup.md).
+- `uv sync --locked`（Kaggle CLI と、このリポジトリで固定した依存を導入）
+- Playwright MCP tools are not a prerequisite. Use them only for the optional
+  Step 4 when rendered SPA-only content is necessary and the host agent already
+  provides the tools; otherwise use `list_competition_pages` when an API token
+  is available, or skip those report fields.

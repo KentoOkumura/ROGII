@@ -18,13 +18,12 @@ import json
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[5]
-sys.path.insert(0, str(REPO_ROOT / "skills" / "kaggle"))
+SKILL_ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(SKILL_ROOT))
 
 from shared.mcp_client import (  # noqa: E402
     classify_result,
     extract_json,
-    load_dotenv,
     mcp_call,
     resolve_token,
 )
@@ -65,10 +64,13 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    load_dotenv(REPO_ROOT / ".env", Path.home() / ".env")
     token = resolve_token()
     if not token:
-        print("error: no Kaggle token found", file=sys.stderr)
+        print(
+            "error: no Kaggle API token found "
+            "(KAGGLE_API_TOKEN or ~/.kaggle/access_token)",
+            file=sys.stderr,
+        )
         return 2
 
     result = fetch_pages(args.competition, token)

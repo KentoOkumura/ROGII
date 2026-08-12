@@ -165,10 +165,10 @@ JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \
   experiments/exp409_saved_selector_candidate_switch_tail_attribution_on_exp407/exp409_saved_selector_candidate_switch_tail_attribution_on_exp407_compact_selfcontained_train.py
 .venv/bin/ruff check \
   experiments/exp409_saved_selector_candidate_switch_tail_attribution_on_exp407/exp409_saved_selector_candidate_switch_tail_attribution_on_exp407_compact_selfcontained_train.py \
-  tests/test_exp409_saved_selector_candidate_switch_tail_attribution.py \
+  experiments/exp409_saved_selector_candidate_switch_tail_attribution_on_exp407/tests/test_exp409_saved_selector_candidate_switch_tail_attribution.py \
   --select F821,F811,F401,E501
 .venv/bin/pytest -q \
-  tests/test_exp409_saved_selector_candidate_switch_tail_attribution.py
+  experiments/exp409_saved_selector_candidate_switch_tail_attribution_on_exp407/tests/test_exp409_saved_selector_candidate_switch_tail_attribution.py
 make validate-exp \
   EXP=exp409_saved_selector_candidate_switch_tail_attribution_on_exp407
 ```

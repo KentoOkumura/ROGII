@@ -19,4 +19,4 @@ seed 変更による LB 影響を早めに確認するため、`exp053_pseudo_ta
 - Kaggle inference output に `submission.csv` が生成される。
 - `submit-check` が PASS する。
 - exp052 submission との差分、予測範囲、行数、欠損、重複を記録する。
-- code submit の ref と Public LB を `SESSION_NOTES.md`、`result.md`、`metrics.json`、`experiment_summary.md`、`submissions/SUBMISSIONS.md` に記録する。
+- code submit の ref と Public LB を `SESSION_NOTES.md`、`result.md`、`metrics.json`、`experiment_summary.md`、`SUBMISSIONS.md` に記録する。

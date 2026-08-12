@@ -31,7 +31,7 @@ make new-exp EXP=exp429_self_gr_weak_boost_likelihood_pf_ablation
 .venv/bin/ruff check experiments/exp429_self_gr_weak_boost_likelihood_pf_ablation/exp429_self_gr_weak_boost_likelihood_pf_ablation_compact_selfcontained_train.py --select F821
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp429_self_gr_weak_boost_likelihood_pf_ablation/exp429_self_gr_weak_boost_likelihood_pf_ablation_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp429_self_gr_weak_boost_likelihood_pf_ablation/exp429_self_gr_weak_boost_likelihood_pf_ablation_compact_selfcontained_inference.py
-EXP429_IMPORT_ONLY=1 .venv/bin/pytest -q tests/test_exp429_self_gr_weak_boost_likelihood_pf_ablation.py
+EXP429_IMPORT_ONLY=1 .venv/bin/pytest -q experiments/exp429_self_gr_weak_boost_likelihood_pf_ablation/tests/test_exp429_self_gr_weak_boost_likelihood_pf_ablation.py
 make validate-exp EXP=exp429_self_gr_weak_boost_likelihood_pf_ablation
 ```
 

@@ -36,6 +36,14 @@ def get_nested(config: dict[str, Any], dotted_key: str) -> Any:
     return current
 
 
+def project_path(config: dict[str, Any], dotted_key: str) -> Path:
+    value = get_nested(config, dotted_key)
+    if is_todo(value):
+        raise ValueError(f"project path is not configured: {dotted_key}")
+    path = Path(str(value))
+    return path if path.is_absolute() else ROOT / path
+
+
 def deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
     merged: dict[str, Any] = dict(base)
     for key, value in override.items():

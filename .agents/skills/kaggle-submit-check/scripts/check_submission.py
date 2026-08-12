@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-"""Local preflight checks for Kaggle submission files and folders."""
+"""Check submission bundles while delegating CSV validation to the repository validator."""
 
 from __future__ import annotations
 
 import argparse
-import csv
-import io
 import json
-import math
+import shutil
+import subprocess
+import sys
+import tempfile
 import zipfile
 from pathlib import Path
 
-
-BAD_VALUE_STRINGS = {"", "nan", "none", "null", "inf", "-inf", "infinity", "-infinity"}
+REPO_ROOT = Path(__file__).resolve().parents[4]
+CANONICAL_CSV_VALIDATOR = REPO_ROOT / "scripts" / "validate_submission.py"
 
 
 class Reporter:
@@ -32,7 +33,11 @@ class Reporter:
 
     def print(self) -> None:
         print("# Kaggle Submission Check\n")
-        for title, items in (("FAIL", self.failures), ("WARN", self.warnings), ("PASS", self.passes)):
+        for title, items in (
+            ("FAIL", self.failures),
+            ("WARN", self.warnings),
+            ("PASS", self.passes),
+        ):
             print(f"## {title}")
             if not items:
                 print("- None")
@@ -41,111 +46,70 @@ class Reporter:
             print()
 
 
-def read_csv_summary(handle: io.TextIOBase, reporter: Reporter, label: str, sample: Path | None = None) -> tuple[list[str], int]:
-    reader = csv.reader(handle)
-    try:
-        header = next(reader)
-    except StopIteration:
-        reporter.fail(f"{label}: CSV is empty")
-        return [], 0
-    if not header:
-        reporter.fail(f"{label}: CSV header is empty")
-    if len(set(header)) != len(header):
-        reporter.fail(f"{label}: duplicate column names in header")
-
-    id_values: set[str] = set()
-    duplicate_ids = 0
-    bad_values = 0
-    row_count = 0
-    first_col = 0
-    for row in reader:
-        row_count += 1
-        if len(row) != len(header):
-            reporter.fail(f"{label}: row {row_count + 1} has {len(row)} columns, expected {len(header)}")
-            if row_count > 20:
-                break
-        if row:
-            key = row[first_col]
-            if key in id_values:
-                duplicate_ids += 1
-            id_values.add(key)
-        for value in row:
-            normalized = value.strip().lower()
-            if normalized in BAD_VALUE_STRINGS:
-                bad_values += 1
-            else:
-                try:
-                    numeric = float(normalized)
-                except ValueError:
-                    continue
-                if not math.isfinite(numeric):
-                    bad_values += 1
-
-    if duplicate_ids:
-        reporter.fail(f"{label}: duplicate IDs in first column ({duplicate_ids})")
-    else:
-        reporter.ok(f"{label}: no duplicate IDs detected in first column")
-    if bad_values:
-        reporter.warn(f"{label}: found {bad_values} empty/NaN/Inf-like values")
-    else:
-        reporter.ok(f"{label}: no empty/NaN/Inf-like values detected")
-    reporter.ok(f"{label}: rows={row_count}, columns={len(header)}")
-
-    if sample:
-        compare_sample(header, row_count, sample, reporter, label)
-    return header, row_count
-
-
-def compare_sample(header: list[str], row_count: int, sample: Path, reporter: Reporter, label: str) -> None:
-    if not sample.exists():
-        reporter.warn(f"sample not found: {sample}")
-        return
-    with sample.open(newline="", encoding="utf-8") as handle:
-        sample_reader = csv.reader(handle)
-        try:
-            sample_header = next(sample_reader)
-        except StopIteration:
-            reporter.fail(f"sample is empty: {sample}")
-            return
-        sample_rows = sum(1 for _ in sample_reader)
-    if header != sample_header:
-        reporter.fail(f"{label}: header differs from sample_submission.csv: {header} != {sample_header}")
-    else:
-        reporter.ok(f"{label}: header matches sample_submission.csv")
-    if row_count != sample_rows:
-        reporter.fail(f"{label}: row count differs from sample_submission.csv: {row_count} != {sample_rows}")
-    else:
-        reporter.ok(f"{label}: row count matches sample_submission.csv")
-
-
 def check_csv(path: Path, reporter: Reporter, sample: Path | None = None) -> None:
-    with path.open(newline="", encoding="utf-8") as handle:
-        read_csv_summary(handle, reporter, str(path), sample)
+    command = [
+        sys.executable,
+        str(CANONICAL_CSV_VALIDATOR),
+        "--submission",
+        str(path.resolve()),
+        "--format",
+        "json",
+    ]
+    if sample is not None:
+        command.extend(["--sample", str(sample.resolve())])
+    process = subprocess.run(command, text=True, capture_output=True)
+    try:
+        result = json.loads(process.stdout)
+    except json.JSONDecodeError:
+        detail = process.stderr.strip() or process.stdout.strip() or "no output"
+        reporter.fail(f"{path}: canonical CSV validator failed: {detail}")
+        return
+
+    if result.get("passed") and process.returncode == 0:
+        reporter.ok(
+            f"{path}: CSV validation passed "
+            f"(rows={result.get('row_count')}, duplicate IDs=0, missing=0, infinite=0)"
+        )
+        return
+    errors = result.get("errors") or [f"validator exited with {process.returncode}"]
+    for error in errors:
+        reporter.fail(f"{path}: {error}")
 
 
 def check_zip(path: Path, reporter: Reporter, sample: Path | None = None) -> None:
-    with zipfile.ZipFile(path) as archive:
+    try:
+        archive = zipfile.ZipFile(path)
+    except (OSError, zipfile.BadZipFile) as exc:
+        reporter.fail(f"{path}: invalid zip archive: {exc}")
+        return
+    with archive:
         names = archive.namelist()
         if not names:
             reporter.fail(f"{path}: zip archive is empty")
             return
-        hidden = [name for name in names if name.startswith("__MACOSX/") or Path(name).name.startswith(".")]
+        hidden = [
+            name
+            for name in names
+            if name.startswith("__MACOSX/") or Path(name).name.startswith(".")
+        ]
         if hidden:
             reporter.warn(f"{path}: hidden/system files in zip: {hidden[:5]}")
         csv_names = [name for name in names if name.lower().endswith(".csv")]
         if len(csv_names) != 1:
-            reporter.warn(f"{path}: expected exactly one CSV in zip, found {len(csv_names)}")
+            reporter.fail(f"{path}: expected exactly one CSV in zip, found {len(csv_names)}")
         else:
-            with archive.open(csv_names[0]) as raw:
-                text = io.TextIOWrapper(raw, encoding="utf-8", newline="")
-                read_csv_summary(text, reporter, f"{path}:{csv_names[0]}", sample)
+            with tempfile.TemporaryDirectory(prefix="kaggle-submit-check-") as temp_dir:
+                extracted = Path(temp_dir) / Path(csv_names[0]).name
+                with archive.open(csv_names[0]) as source, extracted.open("wb") as destination:
+                    shutil.copyfileobj(source, destination)
+                check_csv(extracted, reporter, sample)
         reporter.ok(f"{path}: zip members={len(names)}")
 
 
 def check_metadata(path: Path, reporter: Reporter) -> None:
     try:
         meta = json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
+    except (OSError, json.JSONDecodeError) as exc:
         reporter.fail(f"{path}: invalid JSON: {exc}")
         return
     for key in ("id", "title"):
@@ -161,23 +125,28 @@ def check_metadata(path: Path, reporter: Reporter) -> None:
 def check_dir(path: Path, reporter: Reporter, sample: Path | None = None) -> None:
     files = [item for item in path.iterdir() if item.is_file()]
     names = {item.name for item in files}
+    csvs = sorted(path.glob("*.csv"))
+    zips = sorted(path.glob("*.zip"))
+    metadata = path / "kernel-metadata.json"
     if "submission.csv" in names:
         check_csv(path / "submission.csv", reporter, sample)
-    else:
-        csvs = sorted(path.glob("*.csv"))
-        if csvs:
-            reporter.warn(f"{path}: no submission.csv; checking {csvs[0].name}")
-            check_csv(csvs[0], reporter, sample)
-    zips = sorted(path.glob("*.zip"))
+    elif csvs:
+        reporter.warn(f"{path}: no submission.csv; checking {csvs[0].name}")
+        check_csv(csvs[0], reporter, sample)
     for zip_path in zips[:3]:
         check_zip(zip_path, reporter, sample)
-    metadata = path / "kernel-metadata.json"
     if metadata.exists():
         check_metadata(metadata, reporter)
-    if {"notebook.py", "kernel-metadata.json"} <= names or {"code.ipynb", "kernel-metadata.json"} <= names:
+    if {"notebook.py", "kernel-metadata.json"} <= names or {
+        "code.ipynb",
+        "kernel-metadata.json",
+    } <= names:
         reporter.ok(f"{path}: looks like a Kaggle code/notebook submission folder")
     if "Dockerfile" in names:
-        reporter.warn(f"{path}: Docker submission detected; run the platform-specific local test script if available")
+        reporter.warn(
+            f"{path}: Docker submission detected; run the platform-specific "
+            "local test script if available"
+        )
     if not csvs and not zips and not metadata.exists():
         reporter.warn(f"{path}: no CSV, zip, or kernel-metadata.json found")
 

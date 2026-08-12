@@ -1,4 +1,3 @@
-from typing import Optional
 """Registry of all 55 Kaggle badges with metadata.
 
 Each badge has:
@@ -6,9 +5,9 @@ Each badge has:
   - name: display name
   - tier: bronze/silver/gold/platinum or None
   - category: notebooks/datasets/models/competitions/community/account
-  - phase: which automation phase can earn it (1-5, or None if not automatable)
+  - phase: which collector workflow covers it (1-5, or None if unsupported)
   - description: how to earn it
-  - automatable: whether the badge collector can earn it
+  - automatable: whether the collector can perform the prerequisite action
 """
 
 from dataclasses import dataclass
@@ -19,10 +18,10 @@ class Badge:
     id: str
     name: str
     category: str
-    phase: Optional[int]
+    phase: int | None
     description: str
     automatable: bool
-    tier: Optional[str] = None
+    tier: str | None = None
 
 
 # fmt: off
@@ -96,21 +95,21 @@ ALL_BADGES: list[Badge] = [
     # ── Phase 4: Browser badges (~8) ──────────────────────────────────────
 
     Badge("stylish", "Stylish", "account", 4,
-          "Fill out your Kaggle profile (bio, location, etc.)", True),
+          "Fill out your Kaggle profile (bio, location, etc.)", False),
     Badge("vampire", "Vampire", "account", 4,
-          "Switch to dark theme", True),
+          "Switch to dark theme", False),
     Badge("bookmarker", "Bookmarker", "community", 4,
-          "Bookmark a notebook, dataset, or competition", True),
+          "Bookmark a notebook, dataset, or competition", False),
     Badge("collector", "Collector", "community", 4,
-          "Add an item to a collection", True),
+          "Add an item to a collection", False),
     Badge("github_coder", "GitHub Coder", "notebooks", 4,
-          "Link a GitHub repo to a notebook", True),
+          "Link a GitHub repo to a notebook", False),
     Badge("colab_coder", "Colab Coder", "notebooks", 4,
-          "Open a Kaggle notebook in Google Colab", True),
+          "Open a Kaggle notebook in Google Colab", False),
     Badge("linked_dataset_creator", "Linked Dataset Creator", "datasets", 4,
-          "Create a dataset linked to a URL source", True),
+          "Create a dataset linked to a URL source", False),
     Badge("linked_model_creator", "Linked Model Creator", "models", 4,
-          "Create a model linked to an external source", True),
+          "Create a model linked to an external source", False),
 
     # ── Phase 5: Streak badges (~4) ───────────────────────────────────────
 
@@ -123,7 +122,7 @@ ALL_BADGES: list[Badge] = [
     Badge("super_submission_streak", "Super Submission Streak", "competitions", 5,
           "Submit to competitions for 30 consecutive days", True),
 
-    # ── Not automatable badges (~17) ──────────────────────────────────────
+    # Badges not supported by the collector workflow (~17)
 
     Badge("contributor", "Contributor", "community", None,
           "Reach Contributor progression tier", False),
@@ -173,7 +172,12 @@ def get_automatable_badges() -> list[Badge]:
     return [b for b in ALL_BADGES if b.automatable]
 
 
-def get_badge_by_id(badge_id: str) -> Optional['Badge']:
+def get_workflow_badges() -> list[Badge]:
+    """Get badges covered by an automatic or guided collector phase."""
+    return [b for b in ALL_BADGES if b.phase is not None]
+
+
+def get_badge_by_id(badge_id: str) -> Badge | None:
     """Look up a badge by ID."""
     for b in ALL_BADGES:
         if b.id == badge_id:

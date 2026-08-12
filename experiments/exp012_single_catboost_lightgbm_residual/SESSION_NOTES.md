@@ -45,7 +45,7 @@
 - 2026-06-03: `kaggle competitions submit rogii-wellbore-geology-prediction -k kentookumura/exp012-lightgbm-no-gr-inference -v 1 -f submission.csv -m "exp012_lightgbm_no_gr CV 13.549257"` を実行。
 - 2026-06-03: submission ref `53330920` が `SubmissionStatus.COMPLETE`、Public LB 12.320 と確認。
 - 2026-06-03: `uv run python scripts/record_experiment.py --experiment exp012_single_catboost_lightgbm_residual --status completed --cv 13.549257 --public-lb 12.320 ...` で metrics と summary を更新。
-- 2026-06-03: `uv run python scripts/record_submission.py --experiment exp012_single_catboost_lightgbm_residual --file /tmp/kaggle-output/exp012_single_catboost_lightgbm_residual/inference/submission.csv --cv 13.549257 --public-lb 12.320 ...` で `submissions/SUBMISSIONS.md` に v007 を記録。
+- 2026-06-03: `uv run python scripts/record_submission.py --experiment exp012_single_catboost_lightgbm_residual --file /tmp/kaggle-output/exp012_single_catboost_lightgbm_residual/inference/submission.csv --cv 13.549257 --public-lb 12.320 ...` で `SUBMISSIONS.md` に v007 を記録。
 
 ## 変更点
 

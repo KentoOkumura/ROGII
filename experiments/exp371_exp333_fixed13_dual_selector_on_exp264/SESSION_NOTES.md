@@ -88,7 +88,7 @@ candidate-long dual selectorをfixed13として再学習する。
 
 - `candidate_contract.yaml`: fixed12 + exp333の13候補、primary 12 / fixed 7を固定。
 - `feature_contract.yaml`: 74 -> 77 compact差分とraw-test-safe契約。
-- `src/exp333_fixed13_candidate_cache.py`:
+- `experiments/exp371_exp333_fixed13_dual_selector_on_exp264/exp333_fixed13_candidate_cache.py`:
   - exp333 target-free allowlist loader
   - file/decompressed SHAとpost-read prediction content SHA
   - global key join後のexp263 selector-fold-safe add-one
@@ -113,7 +113,7 @@ candidate-long dual selectorをfixed13として再学習する。
 - `make new-exp EXP=exp371_exp333_fixed13_dual_selector_on_exp264`
 - `py_compile`: helper / train / inference source PASS
 - `ruff --select F821,F401,E9`: PASS
-- `pytest -q tests/test_exp371_exp333_fixed13_dual_selector.py`: 初版`6 passed`
+- `pytest -q experiments/exp371_exp333_fixed13_dual_selector_on_exp264/tests/test_exp371_exp333_fixed13_dual_selector.py`: 初版`6 passed`
 - Jupytext compact train / inference notebook生成: 完了
 - 2026-07-24: compact train / inferenceを正規notebookへ採用。
 - 正規採用後: Jupytext test / py_compile / Ruff PASS。

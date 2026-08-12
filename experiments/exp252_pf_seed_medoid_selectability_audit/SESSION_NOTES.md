@@ -73,7 +73,7 @@ target-free PF/cluster scoreで識別できるか監査する。
 ### 2026-07-15 静的検証・package
 
     .venv/bin/python -m py_compile experiments/exp252_pf_seed_medoid_selectability_audit/exp252_pf_seed_medoid_selectability_audit_train.py experiments/exp252_pf_seed_medoid_selectability_audit/exp252_pf_seed_medoid_selectability_audit_inference.py
-    .venv/bin/ruff check experiments/exp252_pf_seed_medoid_selectability_audit/exp252_pf_seed_medoid_selectability_audit_train.py experiments/exp252_pf_seed_medoid_selectability_audit/exp252_pf_seed_medoid_selectability_audit_inference.py tests/test_exp252_pf_seed_medoid_selectability_contract.py
+    .venv/bin/ruff check experiments/exp252_pf_seed_medoid_selectability_audit/exp252_pf_seed_medoid_selectability_audit_train.py experiments/exp252_pf_seed_medoid_selectability_audit/exp252_pf_seed_medoid_selectability_audit_inference.py experiments/exp252_pf_seed_medoid_selectability_audit/tests/test_exp252_pf_seed_medoid_selectability_contract.py
     JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp252_pf_seed_medoid_selectability_audit/exp252_pf_seed_medoid_selectability_audit_train.py
     JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp252_pf_seed_medoid_selectability_audit/exp252_pf_seed_medoid_selectability_audit_inference.py
     make validate-exp EXP=exp252_pf_seed_medoid_selectability_audit

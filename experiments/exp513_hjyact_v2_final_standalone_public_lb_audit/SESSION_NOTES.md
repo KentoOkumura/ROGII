@@ -19,7 +19,7 @@ Public LBを確認する。今回はexp512のKaggle失敗を反映して実装�
 
 - `kaggle-review-exp`に従い、steeringを実験ディレクトリより先に作成した。
 - `kaggle-strategy`に従い、exp512、`KAGGLE_DIRECTION.md`、`experiment_summary.md`、
-  `submissions/SUBMISSIONS.md`、再現性ガードを確認した。
+  `SUBMISSIONS.md`、再現性ガードを確認した。
 - 最終境界はexp512の
   `after_complete_hjyact_v2_final_stack_and_pf_seed_branch_hedge`に固定した。
 - exp413、等率blend、cross-consumer candidate reuseを除外し、公開成分内の
@@ -140,7 +140,7 @@ Public LBを確認する。今回はexp512のKaggle失敗を反映して実装�
 
 ## 生成物とSHA
 
-- generator: `scripts/prepare_exp513_hjyact_v2_standalone_candidate.py`
+- generator: `experiments/exp513_hjyact_v2_final_standalone_public_lb_audit/prepare_exp513_hjyact_v2_standalone_candidate.py`
   - SHA: `d90b8b18...ef9625f`
 - candidate source:
   `exp513_hjyact_v2_final_standalone_public_lb_audit_compact_selfcontained_inference.py`
@@ -170,7 +170,7 @@ Public LBを確認する。今回はexp512のKaggle失敗を反映して実装�
 ## 実行コマンド
 
 ```bash
-.venv/bin/python scripts/prepare_exp513_hjyact_v2_standalone_candidate.py \
+uv run python experiments/exp513_hjyact_v2_final_standalone_public_lb_audit/prepare_exp513_hjyact_v2_standalone_candidate.py \
   /tmp/exp512-hjyact-v2-source/ultimate-pf-config-strategy-a-reproducible-score.ipynb
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp513_hjyact_v2_final_standalone_public_lb_audit/exp513_hjyact_v2_final_standalone_public_lb_audit_compact_selfcontained_inference.py
@@ -178,14 +178,14 @@ JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp513_hjyact_v2_final_standalone_public_lb_audit/exp513_hjyact_v2_final_standalone_public_lb_audit_compact_selfcontained_inference.py
 .venv/bin/ruff check \
   experiments/exp513_hjyact_v2_final_standalone_public_lb_audit/exp513_hjyact_v2_final_standalone_public_lb_audit_compact_selfcontained_inference.py \
-  scripts/prepare_exp513_hjyact_v2_standalone_candidate.py \
-  experiments/exp513_hjyact_v2_final_standalone_public_lb_audit/test_exp513_contract.py \
+  experiments/exp513_hjyact_v2_final_standalone_public_lb_audit/prepare_exp513_hjyact_v2_standalone_candidate.py \
+  experiments/exp513_hjyact_v2_final_standalone_public_lb_audit/tests/test_exp513_contract.py \
   --select F821
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \
   experiments/exp513_hjyact_v2_final_standalone_public_lb_audit/exp513_hjyact_v2_final_standalone_public_lb_audit_compact_selfcontained_inference.py
 .venv/bin/pytest -q \
-  experiments/exp512_hjyact_v2_final_10pct_hedge_on_exp413/test_exp512_contract.py \
-  experiments/exp513_hjyact_v2_final_standalone_public_lb_audit/test_exp513_contract.py
+  experiments/exp512_hjyact_v2_final_10pct_hedge_on_exp413/tests/test_exp512_contract.py \
+  experiments/exp513_hjyact_v2_final_standalone_public_lb_audit/tests/test_exp513_contract.py
 make validate-exp EXP=exp513_hjyact_v2_final_standalone_public_lb_audit
 make validate-template
 ```

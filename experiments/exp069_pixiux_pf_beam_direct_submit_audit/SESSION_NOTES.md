@@ -68,7 +68,7 @@ uv run python scripts/update_experiment_summary.py
 - 2026-06-13: user completed code submission.
   - Latest complete submission from `kaggle competitions submissions rogii-wellbore-geology-prediction -v`: `ref=53637978`, Public LB `9.877`.
   - A preceding pending row `ref=53637695` was visible in the submissions list, but the complete scored row is `53637978`.
-  - Recorded `submissions/SUBMISSIONS.md` v029.
+  - Recorded `SUBMISSIONS.md` v029.
   - Result: worse than exp063 `8.811` by `+1.066` and worse than exp027 `8.781` by `+1.096`; do not adopt `likpf_mean` direct PF/Beam submission.
 - 2026-06-15: reproducibility patch implemented.
   - Added `audit.deterministic: true` and set `runtime.num_workers: 1`.

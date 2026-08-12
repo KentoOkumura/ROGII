@@ -98,8 +98,8 @@ JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <compact_train.
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact_train.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact_inference.py>
 .venv/bin/python -m py_compile <compact_train.py> <compact_inference.py>
-.venv/bin/ruff check <compact_train.py> <compact_inference.py> tests/test_exp334_equal_well_loss_weighting_on_exp287.py --select E,F,I,UP,B
-.venv/bin/pytest -q tests/test_exp334_equal_well_loss_weighting_on_exp287.py
+.venv/bin/ruff check <compact_train.py> <compact_inference.py> experiments/exp334_equal_well_loss_weighting_on_exp287/tests/test_exp334_equal_well_loss_weighting_on_exp287.py --select E,F,I,UP,B
+.venv/bin/pytest -q experiments/exp334_equal_well_loss_weighting_on_exp287/tests/test_exp334_equal_well_loss_weighting_on_exp287.py
 make validate-exp EXP=exp334_equal_well_loss_weighting_on_exp287
 ```
 

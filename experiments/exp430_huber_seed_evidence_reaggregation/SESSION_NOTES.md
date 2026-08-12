@@ -283,9 +283,9 @@ Huber `delta=1.345` の seed evidence 集約をcommon-trajectory条件で比較�
 .venv/bin/ruff check \
   experiments/exp430_huber_seed_evidence_reaggregation/exp430_huber_seed_evidence_reaggregation_compact_selfcontained_train.py \
   experiments/exp430_huber_seed_evidence_reaggregation/exp430_huber_seed_evidence_reaggregation_compact_selfcontained_inference.py \
-  tests/test_exp430_huber_seed_evidence_reaggregation.py \
+  experiments/exp430_huber_seed_evidence_reaggregation/tests/test_exp430_huber_seed_evidence_reaggregation.py \
   --select F821,F401,F841
-.venv/bin/pytest -q tests/test_exp430_huber_seed_evidence_reaggregation.py
+.venv/bin/pytest -q experiments/exp430_huber_seed_evidence_reaggregation/tests/test_exp430_huber_seed_evidence_reaggregation.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \
   experiments/exp430_huber_seed_evidence_reaggregation/exp430_huber_seed_evidence_reaggregation_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \

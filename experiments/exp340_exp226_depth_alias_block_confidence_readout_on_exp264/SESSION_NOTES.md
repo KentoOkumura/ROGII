@@ -40,7 +40,7 @@
 ### 検証
 
 ```bash
-.venv/bin/pytest -q tests/test_exp340_exp226_depth_alias_block_confidence_readout_on_exp264.py
+.venv/bin/pytest -q experiments/exp340_exp226_depth_alias_block_confidence_readout_on_exp264/tests/test_exp340_exp226_depth_alias_block_confidence_readout_on_exp264.py
 # 10 passed
 
 .venv/bin/python -m py_compile \
@@ -48,7 +48,7 @@
 
 .venv/bin/ruff check \
   experiments/exp340_exp226_depth_alias_block_confidence_readout_on_exp264/*compact_selfcontained*.py \
-  tests/test_exp340_exp226_depth_alias_block_confidence_readout_on_exp264.py --select F821,E9
+  experiments/exp340_exp226_depth_alias_block_confidence_readout_on_exp264/tests/test_exp340_exp226_depth_alias_block_confidence_readout_on_exp264.py --select F821,E9
 # All checks passed
 
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \

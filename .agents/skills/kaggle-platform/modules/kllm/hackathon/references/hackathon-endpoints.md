@@ -1,7 +1,8 @@
 # Hackathon Endpoints — Retrieval Workflow
 
 Source: live audit of `https://www.kaggle.com/mcp` from
-[shepsci/kmcp-tools](https://github.com/shepsci/kmcp-tools), 2026-04-22 retest.
+[shepsci/kmcp-tools](https://github.com/shepsci/kmcp-tools), audited on
+2026-04-22 and retested on 2026-05-04.
 Direct-quote findings are kept verbatim where they describe known live-server
 behavior.
 
@@ -14,8 +15,8 @@ behavior.
 5. `get_writeup_by_topic` or `get_writeup_by_slug`
 6. `get_resolved_writeup_links`
 
-`get_hackathon_write_up` was broken in the 2026-04-22 audit and is verified
-**recovered** as of 2026-05-04. The module still calls `get_writeup` first
+`get_hackathon_write_up` was broken in the 2026-04-22 audit and returned PASS
+in the 2026-05-04 retest. This is dated evidence, so the module still calls `get_writeup` first
 because it has a simpler arg shape (just `writeUpId`, no `competitionName`).
 
 ## Live findings (2026-04-22, retested 2026-05-04)
@@ -26,7 +27,7 @@ because it has a simpler arg shape (just `writeUpId`, no `competitionName`).
 - `get_writeup` is the most reliable full-body fetch. `get_writeup_by_topic`
   and `get_writeup_by_slug` are solid alternates.
 - `get_hackathon_write_up` was failing in both host/judge and participant
-  contexts (2026-04-22) and verified **PASS** in the 2026-05-04 retest.
+  contexts (2026-04-22) and returned PASS in the 2026-05-04 retest.
 - `download_hackathon_write_ups` worked in host context but the live payload
   contained only the CSV header row and no submission rows in the sampled run.
   Treat it as a convenience artifact, not the canonical source.

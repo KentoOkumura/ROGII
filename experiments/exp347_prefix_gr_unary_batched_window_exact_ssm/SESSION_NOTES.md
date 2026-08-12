@@ -44,15 +44,15 @@ exp332の固定window exact structured objectiveを維持し、4-window batched 
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <compact_train.py> <compact_inference.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact_train.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact_inference.py>
-.venv/bin/python -m py_compile <compact_train.py> <compact_inference.py> tests/test_exp347_prefix_gr_unary_batched_window_exact_ssm.py
-.venv/bin/ruff check <compact_train.py> <compact_inference.py> tests/test_exp347_prefix_gr_unary_batched_window_exact_ssm.py --select E,F,I,UP,B
-.venv/bin/pytest -q tests/test_exp347_prefix_gr_unary_batched_window_exact_ssm.py
+.venv/bin/python -m py_compile <compact_train.py> <compact_inference.py> experiments/exp347_prefix_gr_unary_batched_window_exact_ssm/tests/test_exp347_prefix_gr_unary_batched_window_exact_ssm.py
+.venv/bin/ruff check <compact_train.py> <compact_inference.py> experiments/exp347_prefix_gr_unary_batched_window_exact_ssm/tests/test_exp347_prefix_gr_unary_batched_window_exact_ssm.py --select E,F,I,UP,B
+.venv/bin/pytest -q experiments/exp347_prefix_gr_unary_batched_window_exact_ssm/tests/test_exp347_prefix_gr_unary_batched_window_exact_ssm.py
 make validate-exp EXP=exp347_prefix_gr_unary_batched_window_exact_ssm
 ```
 
 - Jupytext変換/`--test`、py_compile、Ruff、strict experiment validation: PASS。
 - 専用pytest: `16 passed, 2 skipped`。skip 2件はローカル環境にPyTorchがなく、scalar exact gradientとscalar/batched numerical parityを実行できないため。Kaggle T4 Stage 0で同じ数値契約を必須gateとして実行する。
-- 全体pytest: `643 passed, 5 skipped, 2 failed`。2件はいずれも既存`tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py`が、完了済みexp296の現status/run flagに対して旧Kaggle実行前状態を期待する既知不整合で、exp347専用testは全件PASSした。
+- 全体pytest: `643 passed, 5 skipped, 2 failed`。2件はいずれも既存`experiments/exp296_exp223_self_gr_known_tvt_support_gate/tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py`が、完了済みexp296の現status/run flagに対して旧Kaggle実行前状態を期待する既知不整合で、exp347専用testは全件PASSした。
 - `__file__`参照0、canonical Notebook上書き0、Kaggle package/push/run 0。
 
 ## 実行量ガード

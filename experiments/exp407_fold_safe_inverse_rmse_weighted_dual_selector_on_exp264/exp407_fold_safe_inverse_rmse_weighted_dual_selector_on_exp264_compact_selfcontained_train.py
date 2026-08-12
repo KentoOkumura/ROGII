@@ -48,6 +48,12 @@ import time
 from pathlib import Path
 
 import pandas as pd
+from exp407_inverse_rmse_selector import (
+    EXPERIMENT_NAME,
+    evaluate_exp407_stage_b,
+    resolve_pinned_input,
+    validate_exp407_static_contract,
+)
 
 from src.candidate_selector_pipeline import (
     audit_raw_context_availability,
@@ -56,12 +62,6 @@ from src.candidate_selector_pipeline import (
     run_stage_a,
     run_stage_b,
     sha256_file,
-)
-from src.exp407_inverse_rmse_selector import (
-    EXPERIMENT_NAME,
-    evaluate_exp407_stage_b,
-    resolve_pinned_input,
-    validate_exp407_static_contract,
 )
 
 KAGGLE_INPUT_ROOT = Path("/kaggle/input")

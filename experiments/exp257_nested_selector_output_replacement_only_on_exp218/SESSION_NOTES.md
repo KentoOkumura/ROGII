@@ -157,4 +157,4 @@ hidden-like、380 schemaを監査して採用判断後に、exp238 copcf parity 
 - 対象は`kentookumura/exp257-selector-output-replacement-inference` v2のcode submissionとして記録する。submission descriptionは空だが、ユーザーの直前exp257提出コンテキストと最新時刻によりattributionした。
 - exp238 hidden-safe ref `54662073` / 7.775から`-0.057`、exp238 COPCF parity ref `54725625` / 7.842から`-0.124`改善。ensemble route anchor exp082 / 7.601よりは`+0.117`悪い。
 - exp257 OOF 8.101331は同一fold exp238 7.936690より`+0.164641`悪化しており、CVとPublic LBの方向が反転した。したがってPublic-LB上のML route submitted anchorはexp257へ更新するが、train-side guard falseと不採用判断は維持し、CV/LB divergenceの証拠として扱う。
-- submission monitor log: `logs/submission_exp257_nested_selector_output_replacement_only_on_exp218.log`。submission SHAはvisible outputの`02e2a0311a99df52b25ae98f6a888f1c872d815b2c1015a8b4656578bac78c69`、submit-check PASS。
+- submission SHAはvisible outputの`02e2a0311a99df52b25ae98f6a888f1c872d815b2c1015a8b4656578bac78c69`、submit-check PASS。

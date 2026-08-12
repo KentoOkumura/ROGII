@@ -182,7 +182,7 @@ exp413 final370へadd-onlyで渡す実験の設計を確定する。
 
 - ユーザーの依頼をbacklog、steering、実験scaffold、設計契約の作成承認として記録した。
 - `kaggle-review-exp`と`kaggle-strategy`を使用し、`KAGGLE_DIRECTION.md`、
-  `experiment_summary.md`、`submissions/SUBMISSIONS.md`、exp413/exp504/exp502、
+  `experiment_summary.md`、`SUBMISSIONS.md`、exp413/exp504/exp502、
   `docs/06_reproducibility.md`を確認した。
 - strategy context collectorはsystem `python`が無く1回失敗し、`.venv/bin/python`で再実行した。
 - 現行最大exp506を確認し、新規番号をexp507とした。

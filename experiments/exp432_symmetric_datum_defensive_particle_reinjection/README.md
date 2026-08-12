@@ -43,7 +43,7 @@ fixed32 Stage 0でproposal density、`p0/q`、RNG分離、no-event parityを先�
 - compact Notebook（正規trainへ採用済み）:
   `exp432_symmetric_datum_defensive_particle_reinjection_compact_selfcontained_train.ipynb`
 - 専用contract test:
-  `tests/test_exp432_symmetric_datum_defensive_particle_reinjection.py`
+  `experiments/exp432_symmetric_datum_defensive_particle_reinjection/tests/test_exp432_symmetric_datum_defensive_particle_reinjection.py`
 - exp209 first-pass HMM、exp412 event、exp404 baseline/treatment PF、truth-late
   readout、technical/mechanism AND gateをnotebook内に実装した。
 - `p0/q`は通常の比へ実体化せず、finiteな`log p0 - log q`をlog-weightへ加える。

@@ -131,7 +131,7 @@ Stage B / C、inference、submissionは承認範囲外として実施してい�
 - 対応するnotebook候補:
   `exp426_rsd_binned_pattern_absolute_reanchor_compact_selfcontained_train.ipynb`
 - contract tests:
-  `tests/test_exp426_rsd_binned_pattern_absolute_reanchor.py`
+  `experiments/exp426_rsd_binned_pattern_absolute_reanchor/tests/test_exp426_rsd_binned_pattern_absolute_reanchor.py`
 - config:
   `stage_a_implementation_ready`へ更新。Stage A実装だけを有効化し、
   package / push / run flagはすべてfalseを維持した。
@@ -169,12 +169,12 @@ fallbackとして扱う。
 .venv/bin/python -m py_compile \
   experiments/exp426_rsd_binned_pattern_absolute_reanchor/\
 exp426_rsd_binned_pattern_absolute_reanchor_compact_selfcontained_train.py \
-  tests/test_exp426_rsd_binned_pattern_absolute_reanchor.py
+  experiments/exp426_rsd_binned_pattern_absolute_reanchor/tests/test_exp426_rsd_binned_pattern_absolute_reanchor.py
 .venv/bin/ruff check \
   experiments/exp426_rsd_binned_pattern_absolute_reanchor/\
 exp426_rsd_binned_pattern_absolute_reanchor_compact_selfcontained_train.py \
-  tests/test_exp426_rsd_binned_pattern_absolute_reanchor.py
-.venv/bin/pytest -q tests/test_exp426_rsd_binned_pattern_absolute_reanchor.py
+  experiments/exp426_rsd_binned_pattern_absolute_reanchor/tests/test_exp426_rsd_binned_pattern_absolute_reanchor.py
+.venv/bin/pytest -q experiments/exp426_rsd_binned_pattern_absolute_reanchor/tests/test_exp426_rsd_binned_pattern_absolute_reanchor.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp426_rsd_binned_pattern_absolute_reanchor/\
 exp426_rsd_binned_pattern_absolute_reanchor_compact_selfcontained_train.py

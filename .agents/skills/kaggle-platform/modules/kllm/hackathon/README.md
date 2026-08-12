@@ -18,8 +18,9 @@ Reach for this module when:
 
 ## Prerequisites
 
-- `KAGGLE_API_TOKEN` in environment, or a token at `~/.kaggle/access_token`.
-  KGAT-prefixed tokens are required for many hackathon endpoints.
+- `KAGGLE_API_TOKEN` in environment, or an API token generated with
+  **Generate New Token** at `~/.kaggle/access_token`. Do not infer endpoint
+  support from the token prefix; probe the task-relevant endpoint at runtime.
 - The competition slug (e.g., `kaggle-measuring-agi`).
 - Host or judge access if you need `download_hackathon_write_ups` or
   `get_resolved_writeup_links`. Both endpoints are role-gated.
@@ -27,7 +28,7 @@ Reach for this module when:
 Run the credential checker first if anything is unset:
 
 ```bash
-python3 ../../shared/check_all_credentials.py
+uv run python .agents/skills/kaggle-platform/shared/check_all_credentials.py --require api-token
 ```
 
 ## Endpoint order
@@ -54,19 +55,21 @@ if you have both args.
 
 ```bash
 # Step 1 — pull rules, rubric, eligibility
-python3 scripts/hackathon_overview.py --competition kaggle-measuring-agi
+uv run python .agents/skills/kaggle-platform/modules/kllm/hackathon/scripts/hackathon_overview.py --competition kaggle-measuring-agi
 
 # Step 2 — enumerate submissions
-python3 scripts/list_writeups.py --competition kaggle-measuring-agi
+uv run python .agents/skills/kaggle-platform/modules/kllm/hackathon/scripts/list_writeups.py --competition kaggle-measuring-agi
 
 # Step 3 — fetch full body for one submission (id from step 2)
-python3 scripts/fetch_writeup.py --writeup-id 123456
-python3 scripts/fetch_writeup.py --topic-id 789012      # fallback
-python3 scripts/fetch_writeup.py --competition kaggle-measuring-agi --slug my-team-writeup
+uv run python .agents/skills/kaggle-platform/modules/kllm/hackathon/scripts/fetch_writeup.py --writeup-id 123456
+uv run python .agents/skills/kaggle-platform/modules/kllm/hackathon/scripts/fetch_writeup.py --topic-id 789012      # fallback
+uv run python .agents/skills/kaggle-platform/modules/kllm/hackathon/scripts/fetch_writeup.py --competition kaggle-measuring-agi --slug my-team-writeup
 ```
 
-All three scripts share the same auth resolution (env → `~/.kaggle/access_token`
-→ `~/.kaggle/kaggle.json`) via `.agents/skills/kaggle-platform/shared/mcp_client.py`.
+All three scripts use `KAGGLE_API_TOKEN` first, then
+`~/.kaggle/access_token`, via
+`.agents/skills/kaggle-platform/shared/mcp_client.py`. Legacy credentials are
+not used for MCP authentication.
 
 ## Role-aware behavior
 

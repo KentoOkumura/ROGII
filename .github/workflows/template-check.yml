@@ -1,0 +1,25 @@
+name: Template check
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-template:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - name: Install validation dependencies
+        run: uv sync --extra dev --extra notebook --locked
+      - name: Validate repository template
+        run: make validate-template
+      - name: Check bundled skills
+        run: make check-skills
+      - name: Run repository-level common tests
+        run: make test-common

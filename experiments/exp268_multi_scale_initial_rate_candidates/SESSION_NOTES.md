@@ -64,9 +64,9 @@ notebookだけで追える。
 
 ### 静的検証
 
-    .venv/bin/python -m py_compile experiments/exp268_multi_scale_initial_rate_candidates/*.py tests/test_exp268_multi_scale_initial_rate_candidates_contract.py
-    .venv/bin/ruff check experiments/exp268_multi_scale_initial_rate_candidates tests/test_exp268_multi_scale_initial_rate_candidates_contract.py --select F821
-    .venv/bin/pytest -q tests/test_exp268_multi_scale_initial_rate_candidates_contract.py
+    .venv/bin/python -m py_compile experiments/exp268_multi_scale_initial_rate_candidates/*.py experiments/exp268_multi_scale_initial_rate_candidates/tests/test_exp268_multi_scale_initial_rate_candidates_contract.py
+    .venv/bin/ruff check experiments/exp268_multi_scale_initial_rate_candidates experiments/exp268_multi_scale_initial_rate_candidates/tests/test_exp268_multi_scale_initial_rate_candidates_contract.py --select F821
+    .venv/bin/pytest -q experiments/exp268_multi_scale_initial_rate_candidates/tests/test_exp268_multi_scale_initial_rate_candidates_contract.py
     JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp268_multi_scale_initial_rate_candidates/exp268_multi_scale_initial_rate_candidates_train.py
     JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp268_multi_scale_initial_rate_candidates/exp268_multi_scale_initial_rate_candidates_train_variant0.py
     JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp268_multi_scale_initial_rate_candidates/exp268_multi_scale_initial_rate_candidates_train_variant1.py

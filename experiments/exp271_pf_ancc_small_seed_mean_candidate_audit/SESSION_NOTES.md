@@ -130,8 +130,8 @@ exp266の固定先頭4/8 seed PF ANCC meanを全train pseudo-tailへ保存し、
 make new-steering EXP=exp271_pf_ancc_small_seed_mean_candidate_audit
 make new-exp EXP=exp271_pf_ancc_small_seed_mean_candidate_audit
 .venv/bin/python -m py_compile <train.py> <inference.py>
-.venv/bin/ruff check <train.py> <inference.py> tests/test_exp271_pf_ancc_small_seed_mean_candidate_audit.py
-.venv/bin/pytest -q tests/test_exp271_pf_ancc_small_seed_mean_candidate_audit.py
+.venv/bin/ruff check <train.py> <inference.py> experiments/exp271_pf_ancc_small_seed_mean_candidate_audit/tests/test_exp271_pf_ancc_small_seed_mean_candidate_audit.py
+.venv/bin/pytest -q experiments/exp271_pf_ancc_small_seed_mean_candidate_audit/tests/test_exp271_pf_ancc_small_seed_mean_candidate_audit.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <train.py/inference.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <train.py/inference.py>
 make validate-exp EXP=exp271_pf_ancc_small_seed_mean_candidate_audit

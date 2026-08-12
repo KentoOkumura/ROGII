@@ -95,7 +95,7 @@ worst-well vs exp264`<=+0.25 ft`、exp264比+1/+3/+5 ft悪化well数
 - 同名の別名候補`.ipynb`
 - `exp402_fold_safe_grwr_5_addonly_on_exp287_compact_selfcontained_inference.py`
 - 同名のfail-closed候補`.ipynb`
-- `tests/test_exp402_fold_safe_grwr_5_addonly_on_exp287.py`
+- `experiments/exp402_fold_safe_grwr_5_addonly_on_exp287/tests/test_exp402_fold_safe_grwr_5_addonly_on_exp287.py`
 
 train候補は11 numbered chaptersで、親exp287の保存artifact/SHA、exp264 OOF、
 availability allowlist、exp072 candidate contextをfail-closed検証する。
@@ -190,7 +190,7 @@ JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <candidate.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <candidate.py>
 .venv/bin/python -m py_compile <train.py> <inference.py> <test.py>
 .venv/bin/ruff check <train.py> <inference.py> <test.py> --select F821,F401,E9
-.venv/bin/pytest -q tests/test_exp402_fold_safe_grwr_5_addonly_on_exp287.py
+.venv/bin/pytest -q experiments/exp402_fold_safe_grwr_5_addonly_on_exp287/tests/test_exp402_fold_safe_grwr_5_addonly_on_exp287.py
 make validate-exp EXP=exp402_fold_safe_grwr_5_addonly_on_exp287
 ```
 

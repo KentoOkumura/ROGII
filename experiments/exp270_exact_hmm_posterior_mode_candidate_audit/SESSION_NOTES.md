@@ -55,8 +55,8 @@ posterior mean は mode readout に必要な forward-backward の同じ CPU pass
 make new-steering EXP=exp270_exact_hmm_posterior_mode_candidate_audit
 make new-exp EXP=exp270_exact_hmm_posterior_mode_candidate_audit
 .venv/bin/python -m py_compile experiments/exp270_exact_hmm_posterior_mode_candidate_audit/exp270_exact_hmm_posterior_mode_candidate_audit_train.py
-.venv/bin/ruff check experiments/exp270_exact_hmm_posterior_mode_candidate_audit/exp270_exact_hmm_posterior_mode_candidate_audit_train.py tests/test_exp270_exact_hmm_posterior_mode_candidate_audit.py
-.venv/bin/pytest -q tests/test_exp270_exact_hmm_posterior_mode_candidate_audit.py
+.venv/bin/ruff check experiments/exp270_exact_hmm_posterior_mode_candidate_audit/exp270_exact_hmm_posterior_mode_candidate_audit_train.py experiments/exp270_exact_hmm_posterior_mode_candidate_audit/tests/test_exp270_exact_hmm_posterior_mode_candidate_audit.py
+.venv/bin/pytest -q experiments/exp270_exact_hmm_posterior_mode_candidate_audit/tests/test_exp270_exact_hmm_posterior_mode_candidate_audit.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp270_exact_hmm_posterior_mode_candidate_audit/exp270_exact_hmm_posterior_mode_candidate_audit_train.py
 make validate-exp EXP=exp270_exact_hmm_posterior_mode_candidate_audit
 make prepare-kaggle-notebooks EXP=exp270_exact_hmm_posterior_mode_candidate_audit EXTRA_ARGS="--strict"
@@ -239,7 +239,7 @@ version 3の高速化自体はversion 2より有効だったが、単一notebook
 ### Kaggle CPU shard version 3 implementation / package preflight
 
 - canonical / shard0 / shard1の3 self-contained Jupytext sourceへmemory-bounded実装を反映した。
-  shard sourceは`scripts/prepare_exp270_shard_sources.py`でcanonical sourceをmodeだけ置換して生成し、
+  shard sourceは`experiments/exp270_exact_hmm_posterior_mode_candidate_audit/prepare_exp270_shard_sources.py`でcanonical sourceをmodeだけ置換して生成し、
   mode以外がbyte-levelで一致することを確認した。
 - shard generationはper-well candidate frameをsingle deterministic gzip streamへ直ちに書き、
   float32 candidate matrix / int64 row indexだけを一時binaryへ書く。全well frame concatはない。

@@ -66,7 +66,7 @@ exp418のtechnical FAILを変更せず、truth-freeな`1e-10 ft` numerical contr
   既存の入力freeze、basis、feature、LightGBM、metrics/SHA orchestrationを保持し、
   parent eligibilityとtruth-free numerical auditを追加した。
 - `__file__`参照は0件。
-- `.venv/bin/pytest -q tests/test_exp421_signed_segment_rate_numerical_contract_stage1.py`
+- `.venv/bin/pytest -q experiments/exp421_signed_segment_rate_numerical_contract_stage1/tests/test_exp421_signed_segment_rate_numerical_contract_stage1.py`
   → `15 passed`
 - exp418 + exp421専用test: `29 passed`
 - Jupytext round-trip、`py_compile`、Ruff full: PASS

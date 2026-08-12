@@ -54,7 +54,7 @@ message一致を同時に満たす場合だけ、current observationをrow-local
 - fail-closed inference候補:
   `exp482_isolated_gr_shock_prior_hold_compact_selfcontained_inference.py`
 - 専用test:
-  `tests/test_exp482_isolated_gr_shock_prior_hold.py`
+  `experiments/exp482_isolated_gr_shock_prior_hold/tests/test_exp482_isolated_gr_shock_prior_hold.py`
 - `alpha_t - emission_t + beta_t`を正規化してcurrent observationだけを除いた
   row-local LOO posteriorを計算する。親forward stateとbeta計算は変更しない。
 - raw-only censusは773 wellsをwell ID順に走査し、isolated row座標とwell summaryを
@@ -115,12 +115,12 @@ make new-exp EXP=exp450_isolated_gr_shock_prior_hold
 .venv/bin/ruff check \
   experiments/exp482_isolated_gr_shock_prior_hold/exp482_isolated_gr_shock_prior_hold_compact_selfcontained_train.py \
   experiments/exp482_isolated_gr_shock_prior_hold/exp482_isolated_gr_shock_prior_hold_compact_selfcontained_inference.py \
-  tests/test_exp482_isolated_gr_shock_prior_hold.py --select F821,E9
-.venv/bin/pytest -q tests/test_exp482_isolated_gr_shock_prior_hold.py
+  experiments/exp482_isolated_gr_shock_prior_hold/tests/test_exp482_isolated_gr_shock_prior_hold.py --select F821,E9
+.venv/bin/pytest -q experiments/exp482_isolated_gr_shock_prior_hold/tests/test_exp482_isolated_gr_shock_prior_hold.py
 .venv/bin/pytest -q \
-  tests/test_exp408_hmm_message_rate_basin_audit.py \
-  tests/test_exp440_ambiguity_gated_predictive_prior_hmm.py \
-  tests/test_exp482_isolated_gr_shock_prior_hold.py
+  experiments/exp408_hmm_message_rate_basin_audit/tests/test_exp408_hmm_message_rate_basin_audit.py \
+  experiments/exp440_ambiguity_gated_predictive_prior_hmm/tests/test_exp440_ambiguity_gated_predictive_prior_hmm.py \
+  experiments/exp482_isolated_gr_shock_prior_hold/tests/test_exp482_isolated_gr_shock_prior_hold.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \
   experiments/exp482_isolated_gr_shock_prior_hold/exp482_isolated_gr_shock_prior_hold_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \

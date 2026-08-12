@@ -43,7 +43,7 @@
 - 2026-05-31: visible duplicate well sanity を `artifacts/visible_submission_well_comparison.csv` に保存。aggregate visible RMSE は exp002 7.916353、exp003 8.472623、exp004 7.948310。
 - 2026-06-01: `kaggle competitions submit rogii-wellbore-geology-prediction -k kentookumura/exp004-gr-gating-inference -v 1 -f submission.csv -m "exp004_gr_gating gate_low_gr_coverage_hard CV 13.932968"` は sandbox 内 DNS 制限で失敗後、承認済み escalated 実行で成功。
 - 2026-06-01: submission ref `53247991` は `SubmissionStatus.COMPLETE`、public LB 12.730。
-- 2026-06-01: `uv run python scripts/record_submission.py --experiment exp004_gr_gating --file /tmp/kaggle-output/exp004_gr_gating/inference/submission.csv --cv 13.932968 --public-lb 12.730 ...` で `submissions/SUBMISSIONS.md` に v004 を記録。
+- 2026-06-01: `uv run python scripts/record_submission.py --experiment exp004_gr_gating --file /tmp/kaggle-output/exp004_gr_gating/inference/submission.csv --cv 13.932968 --public-lb 12.730 ...` で `SUBMISSIONS.md` に v004 を記録。
 
 ## 変更点
 

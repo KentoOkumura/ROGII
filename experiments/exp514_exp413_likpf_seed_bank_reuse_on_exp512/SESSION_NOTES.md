@@ -454,7 +454,7 @@ make prepare-kaggle-notebooks \
   - exp512 config: `951a665b...e8d15`
   - exp073 replay source: `4af212a8...a647e`
   - exp413 config: `d12e6d74...74036a7`
-- `scripts/prepare_exp514_shared_likpf_candidate.py`を追加した。親exp512 source SHAが一致しない場合は生成を停止する。
+- `experiments/exp514_exp413_likpf_seed_bank_reuse_on_exp512/prepare_exp514_shared_likpf_candidate.py`を追加した。親exp512 source SHAが一致しない場合は生成を停止する。
 - exp073 replay sourceとAST一致する`stable_seed`、`_interp1`、`_pf_lik_allseeds`を別名でself-contained化した。
   x1.0 GR sigma、500 particles、128 seeds、scale 3/5/8/12、temperature-5 branch summaryを固定した。
 - producerはraw test wellをSP45より先にwell別threadで処理し、raw `preds[128,n_eval]` / `liks[128]`を
@@ -484,18 +484,18 @@ make prepare-kaggle-notebooks \
 実行済み:
 
 ```bash
-.venv/bin/python scripts/prepare_exp514_shared_likpf_candidate.py
-.venv/bin/python -m py_compile scripts/prepare_exp514_shared_likpf_candidate.py \
+uv run python experiments/exp514_exp413_likpf_seed_bank_reuse_on_exp512/prepare_exp514_shared_likpf_candidate.py
+uv run python -m py_compile experiments/exp514_exp413_likpf_seed_bank_reuse_on_exp512/prepare_exp514_shared_likpf_candidate.py \
   experiments/exp514_exp413_likpf_seed_bank_reuse_on_exp512/exp514_exp413_likpf_seed_bank_reuse_on_exp512_compact_selfcontained_inference.py \
   experiments/exp514_exp413_likpf_seed_bank_reuse_on_exp512/exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_a_fixed32.py
-.venv/bin/ruff check --select F821 scripts/prepare_exp514_shared_likpf_candidate.py \
+.venv/bin/ruff check --select F821 experiments/exp514_exp413_likpf_seed_bank_reuse_on_exp512/prepare_exp514_shared_likpf_candidate.py \
   experiments/exp514_exp413_likpf_seed_bank_reuse_on_exp512/exp514_exp413_likpf_seed_bank_reuse_on_exp512_compact_selfcontained_inference.py \
   experiments/exp514_exp413_likpf_seed_bank_reuse_on_exp512/exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_a_fixed32.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \
   experiments/exp514_exp413_likpf_seed_bank_reuse_on_exp512/exp514_exp413_likpf_seed_bank_reuse_on_exp512_compact_selfcontained_inference.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \
   experiments/exp514_exp413_likpf_seed_bank_reuse_on_exp512/exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_a_fixed32.py
-.venv/bin/pytest -q experiments/exp514_exp413_likpf_seed_bank_reuse_on_exp512/test_exp514_contract.py
+.venv/bin/pytest -q experiments/exp514_exp413_likpf_seed_bank_reuse_on_exp512/tests/test_exp514_contract.py
 make validate-template
 make validate-exp EXP=exp514_exp413_likpf_seed_bank_reuse_on_exp512
 .venv/bin/pytest

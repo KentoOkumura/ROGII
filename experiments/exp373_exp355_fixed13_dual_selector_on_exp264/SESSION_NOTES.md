@@ -34,7 +34,7 @@ fixed12へ13本目として追加するdual selector実験を実装する。
   decompressed `3c49f25e138f94c9e09fb551f199fa4f92b0d776899485e67e61e2fcdb83ede3`、
   upstream logical prediction
   `634303f022bced6685367094304da6182fee42815302344469b5919a36cd5e21`。
-- `src/exp355_fixed13_candidate_cache.py`へtarget-free loader、SHA resolver、
+- `experiments/exp373_exp355_fixed13_dual_selector_on_exp264/exp355_fixed13_candidate_cache.py`へtarget-free loader、SHA resolver、
   global key join、selector-fold repartition、fixed13 readoutを実装。
 - candidate/feature contract、config、compact self-contained train、
   fail-closed inference、専用testを実装。
@@ -44,7 +44,7 @@ fixed12へ13本目として追加するdual selector実験を実装する。
   をtrain/inferenceともPASS。
 - `.venv/bin/python -m py_compile ...`をPASS。
 - `.venv/bin/ruff check ...`をPASS。
-- `.venv/bin/pytest -q tests/test_exp373_exp355_fixed13_dual_selector.py`:
+- `.venv/bin/pytest -q experiments/exp373_exp355_fixed13_dual_selector_on_exp264/tests/test_exp373_exp355_fixed13_dual_selector.py`:
   `9 passed`。
 - exp371 / exp373 / exp264 / exp355の関連回帰:
   `51 passed`。

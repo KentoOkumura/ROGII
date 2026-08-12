@@ -33,13 +33,7 @@ description: "Kaggle コンペに関係する論文、過去の Kaggle 解法、
 .agents/skills/kaggle-survey-papers/references/survey-template.md
 ```
 
-このリポジトリでは、完了した外部調査レポートの正を`docs/surveys/`に置く。まず`docs/surveys/README.md`をトピック別に検索し、同じ問いなら既存レポートを更新する。新しい問いなら次のコマンドでYAML front matter付きレポートを作成する。
-
-```bash
-task new-survey-report SURVEY_TITLE="..." SURVEY_SLUG="..." EXTRA_ARGS="--type survey --type literature_review --topic ..."
-```
-
-論文単位の読書メモは`docs/papers/`、Kaggle discussionのアーカイブは`docs/discussions/`に残し、統合した結論をsurveyレポートから参照する。完了時は`status: final`と一行`summary`を設定し、`task update-survey-index`と`task validate-surveys`を実行する。
+このリポジトリでは、完了した外部調査レポートを`docs/surveys/`に置く。検索、draft作成、本文完成、`status: final`、索引更新、検証の順序は`docs/surveys/README.md`の作成・完了手順に従う。論文単位の読書メモは`docs/papers/`、Kaggle discussionのアーカイブは`docs/discussions/`に残し、統合した結論をsurveyレポートから参照する。
 
 ## 出力
 

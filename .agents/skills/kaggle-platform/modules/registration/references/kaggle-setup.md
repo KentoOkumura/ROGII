@@ -1,6 +1,6 @@
 # Kaggle Account & API Setup Guide
 
-Step-by-step instructions for creating a Kaggle account, generating API credentials, and configuring them for use with any OpenClaw-compatible agent (Claude Code, gemini-cli, Cursor, etc.).
+Kaggleアカウントを作成し、Kaggle CLI、kagglehub、MCP、headless agentで使うcredentialを安全に設定するための正本。この内容を他のmoduleへ複製せず、client固有の差分だけを各moduleに記載する。
 
 ## 1. Create a Kaggle Account
 
@@ -13,37 +13,36 @@ Step-by-step instructions for creating a Kaggle account, generating API credenti
 4. Click **Create Account**
 5. Verify your email by clicking the link Kaggle sends you
 
-### Persona Verification (Required for Some Features)
+### Account Verification
 
-Kaggle requires phone verification to:
-- Submit to competitions
-- Use GPU/TPU accelerators
-- Download some restricted datasets
-
-To verify:
-1. Go to [https://www.kaggle.com/settings](https://www.kaggle.com/settings)
-2. Under **Phone Verification**, click **Verify**
-3. Enter your phone number and the SMS code
+verificationの要否、方式、対象機能、UIラベルは変更され得る。対象competitionの
+rulesと[account settings](https://www.kaggle.com/settings)の現在の案内を確認する。
+本人確認情報をエージェントへ渡さず、ユーザー自身がKaggle UIで完了する。
 
 ## 2. Generate Your API Credentials
+
+| Client | 利用できる方式 |
+|--------|----------------|
+| Kaggle CLI | OAuth、API token、legacy username/key |
+| Kaggle Python API / kagglehub | API token、legacy username/key |
+| Kaggle MCP Server | API token |
 
 ### Interactive CLI: OAuth Login
 
 For local CLI use with a browser:
 
 ```bash
-kaggle auth login
+uv run kaggle auth login
 ```
 
-Use `kaggle auth login --no-launch-browser` if the CLI cannot open a browser automatically. This creates `~/.kaggle/credentials.json`.
+Use `uv run kaggle auth login --no-launch-browser` if the CLI cannot open a browser automatically. This creates `~/.kaggle/credentials.json`.
 
 Do not log or share output from `kaggle auth print-access-token`.
 
-### Primary for Agents/CI: API Token
+### API Token
 
 | Credential | Variable | How to Get |
 |-----------|----------|------------|
-| OAuth login | `~/.kaggle/credentials.json` | `kaggle auth login` |
 | API Token | `KAGGLE_API_TOKEN` | "Generate New Token" button under "API Tokens (Recommended)" |
 
 1. Go to [https://www.kaggle.com/settings](https://www.kaggle.com/settings)
@@ -54,13 +53,13 @@ Do not log or share output from `kaggle auth print-access-token`.
 
 **Note:** Creating a new token does not expire existing tokens or legacy keys. You can create multiple named tokens for different tools/projects.
 
-### Optional: Legacy API Key
+### Legacy API Key
 
 | Credential | Variables | How to Get |
 |-----------|-----------|------------|
 | Legacy Key | `KAGGLE_USERNAME` + `KAGGLE_KEY` | "Create Legacy API Key" under "Legacy API Credentials" |
 
-Only needed for older tool versions (kaggle CLI < 1.8.0, kagglehub < 0.4.1):
+Kaggle CLI、Kaggle Python API、kagglehubでは、API tokenの代わりにlegacy username/keyも使用できる。MCPのBearer認証には使用できない。
 
 1. Go to [https://www.kaggle.com/settings](https://www.kaggle.com/settings)
 2. Under **Legacy API Credentials**, click **Create Legacy API Key**
@@ -73,47 +72,23 @@ Only needed for older tool versions (kaggle CLI < 1.8.0, kagglehub < 0.4.1):
 ### Method 1: OAuth Login (Local CLI)
 
 ```bash
-kaggle auth login
+uv run kaggle auth login
 chmod 600 ~/.kaggle/credentials.json
 ```
 
 ### Method 2: Access Token File (Recommended for Agents/CI)
 
-Save your API token to the Kaggle config directory:
+Run the repository helper from a local interactive terminal. Token input is hidden and is never passed as a command argument:
 
 ```bash
-mkdir -p ~/.kaggle
-echo '<your_token>' > ~/.kaggle/access_token
-chmod 600 ~/.kaggle/access_token
+uv run python .agents/skills/kaggle-platform/modules/registration/scripts/configure_token.py
 ```
 
 ### Method 3: Environment Variable
 
-```bash
-export KAGGLE_API_TOKEN='<your_token>'
-```
+Use the secret-variable facility provided by CI, Colab, or the managed execution environment. Do not put token values in command arguments or shell profiles copied into logs.
 
-Or add to your shell profile (`~/.zshrc`, `~/.bashrc`) for persistence.
-
-### Method 4: .env File (Project-Level)
-
-Create a `.env` file in your project root:
-
-```
-KAGGLE_API_TOKEN=<your_token>
-```
-
-**Important**: Add `.env` to your `.gitignore`:
-```bash
-echo ".env" >> .gitignore
-```
-
-Secure the file:
-```bash
-chmod 600 .env
-```
-
-### Method 5: kaggle.json File (Legacy)
+### Method 4: kaggle.json File (Legacy)
 
 If you created a legacy API key, place the downloaded `kaggle.json`:
 
@@ -123,34 +98,36 @@ mv ~/Downloads/kaggle.json ~/.kaggle/kaggle.json
 chmod 600 ~/.kaggle/kaggle.json
 ```
 
-Note: `kaggle.json` only stores username + legacy key. For the API token, use Methods 2-4.
+Note: `kaggle.json` only stores username + legacy key. For the API token, use Methods 2-3.
+
+このリポジトリはproject-levelまたはhome-levelの`.env`を自動読込しない。環境変数を使う場合は実行環境のsecret storeやprocess environmentへ明示的に設定する。
 
 ## 4. Verify Your Setup
 
 ### Using the Registration Checker
 
 ```bash
-python3 modules/registration/scripts/check_registration.py
+uv run python .agents/skills/kaggle-platform/shared/check_all_credentials.py
 ```
 
 Expected output when credentials are configured:
 ```
-[OK] KAGGLE_API_TOKEN: ****abcd (from access_token file)
+[OK] API Token: *****abcd (from env)
 [OK] OAuth credentials: /home/user/.kaggle/credentials.json (from kaggle auth login)
 [OK] KAGGLE_USERNAME: your_username (from kaggle.json)
-[OK] KAGGLE_KEY: ****wxyz (from kaggle.json) [legacy]
+[OK] KAGGLE_KEY: ****wxyz (Legacy API key, from kaggle.json)
 
-All credentials found. You're ready to go!
+API token found — you're ready to go!
 ```
 
 ### Manual Verification
 
 ```bash
 # Test with kaggle CLI
-kaggle datasets list --search "titanic" --page-size 1
+uv run kaggle datasets list --search "titanic" --page-size 1
 
 # Test with kagglehub
-python3 -c "import kagglehub; print(kagglehub.whoami())"
+uv run python -c "import kagglehub; print(kagglehub.whoami())"
 ```
 
 ## 5. Credential Priority Order
@@ -160,28 +137,28 @@ When multiple credential sources exist, they are checked in this order:
 | Priority | Source | Used By |
 |----------|--------|----------|
 | 1 | `KAGGLE_API_TOKEN` env var | CLI, kagglehub, MCP |
-| 2 | `~/.kaggle/access_token` file | CLI, kagglehub |
-| 3 | `~/.kaggle/credentials.json` from `kaggle auth login` | CLI |
-| 4 | Google Colab secret `KAGGLE_API_TOKEN` | kagglehub |
-| 5 | `KAGGLE_USERNAME` + `KAGGLE_KEY` env vars | CLI, kagglehub (legacy) |
-| 6 | `~/.kaggle/kaggle.json` file | CLI, kagglehub (legacy) |
+| 2 | `~/.kaggle/access_token` file | CLI, kagglehub, MCP |
+| 3 | `~/.kaggle/credentials.json` from `uv run kaggle auth login` | CLI |
+| 4 | `KAGGLE_USERNAME` + `KAGGLE_KEY` env vars | CLI, Kaggle Python API, kagglehub (legacy) |
+| 5 | `~/.kaggle/kaggle.json` file | CLI, Kaggle Python API, kagglehub (legacy) |
 
 ## 6. Common Misconfigurations
 
 | Issue | Fix |
 |-------|-----|
 | `KAGGLE_TOKEN` set instead of `KAGGLE_API_TOKEN` | Rename to `KAGGLE_API_TOKEN` |
-| Only legacy `kaggle.json` (no API token) | Generate a new token at kaggle.com/settings |
-| Credentials in env but no file | Run `setup_env.sh` to auto-create access_token/kaggle.json |
-| Old kaggle CLI (< 1.8.0) doesn't recognize new tokens | Upgrade: `pip install --upgrade kaggle` or use legacy key |
-| `kaggle forums` or `competitions topics show` missing | Upgrade to Kaggle CLI v2.2.0+: `pip install --upgrade kaggle` |
-| Old kagglehub (< 0.4.1) doesn't recognize new tokens | Upgrade: `pip install --upgrade kagglehub` or use legacy key |
+| OAuth credentialしかなくKaggle Python APIを使う | API tokenまたはlegacy username/keyを設定する |
+| Legacy credentialしかなくMCPを使う | Kaggle SettingsでAPI tokenを生成する |
+| API token is not stored locally | Run `uv run python .agents/skills/kaggle-platform/modules/registration/scripts/configure_token.py` in a local interactive terminal |
+| Old kaggle CLI (< 1.8.0) doesn't recognize new tokens | Run `uv sync --locked` to restore the repository-pinned CLI, or use a legacy key |
+| `kaggle forums` or `competitions topics show` missing | Run `uv sync --locked` to restore the repository-pinned Kaggle CLI v2.2.0+ |
+| Old kagglehub (< 0.4.1) doesn't recognize new tokens | Run `uv sync --locked --extra kaggle-platform` to restore the repository-pinned kagglehub, or use a legacy key |
 
 ## Troubleshooting
 
 | Problem | Solution |
 |---------|----------|
-| `kaggle: command not found` | Run `pip install kaggle` or check install location with `pip show kaggle` |
+| `kaggle: command not found` | Run `uv sync --locked`, then invoke it as `uv run kaggle` |
 | `401 Unauthenticated` | Check that credentials exist and are correct |
 | `403 Forbidden` on competition | Accept competition rules at kaggle.com |
 | `403 Forbidden` on model | Accept model license at kaggle.com |

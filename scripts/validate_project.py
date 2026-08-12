@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 
 from config_utils import ROOT, get_nested, is_todo, load_project_config
+from validate_experiment import NEW_RESULT_HEADINGS, markdown_headings
 
 REQUIRED_SCHEMA_KEYS = [
     "competition.name",
@@ -14,7 +15,7 @@ REQUIRED_SCHEMA_KEYS = [
     "paths.data_dir",
     "paths.experiments_dir",
     "paths.docs_dir",
-    "paths.submissions_dir",
+    "paths.submissions_file",
     "data.raw_dir",
     "data.train_dir",
     "data.test_dir",
@@ -41,6 +42,7 @@ STRICT_KEYS = [
     "defaults.metric",
     "defaults.primary_validation",
     "submission.id_column",
+    "submission.sample_file",
 ]
 
 
@@ -59,10 +61,31 @@ def main() -> None:
         if get_nested(config, key) is None:
             errors.append(f"missing required key: {key}")
 
+    result_template_path = ROOT / "templates" / "experiment" / "result.md"
+    if not result_template_path.exists():
+        errors.append("missing experiment result template: templates/experiment/result.md")
+    else:
+        missing_result_headings = NEW_RESULT_HEADINGS - markdown_headings(
+            result_template_path.read_text()
+        )
+        if missing_result_headings:
+            errors.append(
+                "experiment result template missing current sections: "
+                + ", ".join(sorted(missing_result_headings))
+            )
+
     if args.strict:
         for key in STRICT_KEYS:
             if is_todo(get_nested(config, key)):
                 errors.append(f"strict value still TODO: {key}")
+
+        target_columns = get_nested(config, "submission.target_columns")
+        if not isinstance(target_columns, list) or not target_columns:
+            errors.append("submission.target_columns must be a non-empty list")
+        else:
+            for index, column in enumerate(target_columns):
+                if not isinstance(column, str) or is_todo(column):
+                    errors.append(f"submission.target_columns[{index}] must be a non-TODO string")
 
         sample_file = get_nested(config, "submission.sample_file")
         if sample_file and not is_todo(sample_file):

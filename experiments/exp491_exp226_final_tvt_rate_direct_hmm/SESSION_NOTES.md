@@ -90,13 +90,13 @@ make new-exp EXP=exp491_exp226_final_tvt_rate_direct_hmm
 ```bash
 .venv/bin/python -m py_compile \
   experiments/exp491_exp226_final_tvt_rate_direct_hmm/exp491_exp226_final_tvt_rate_direct_hmm_compact_selfcontained_train.py \
-  experiments/exp491_exp226_final_tvt_rate_direct_hmm/test_exp491_contract.py
+  experiments/exp491_exp226_final_tvt_rate_direct_hmm/tests/test_exp491_contract.py
 .venv/bin/ruff check \
   experiments/exp491_exp226_final_tvt_rate_direct_hmm/exp491_exp226_final_tvt_rate_direct_hmm_compact_selfcontained_train.py \
-  experiments/exp491_exp226_final_tvt_rate_direct_hmm/test_exp491_contract.py \
+  experiments/exp491_exp226_final_tvt_rate_direct_hmm/tests/test_exp491_contract.py \
   --select F821,E9
 .venv/bin/pytest -q \
-  experiments/exp491_exp226_final_tvt_rate_direct_hmm/test_exp491_contract.py
+  experiments/exp491_exp226_final_tvt_rate_direct_hmm/tests/test_exp491_contract.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp491_exp226_final_tvt_rate_direct_hmm/exp491_exp226_final_tvt_rate_direct_hmm_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \

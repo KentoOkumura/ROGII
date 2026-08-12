@@ -84,7 +84,7 @@ kaggle competitions submissions rogii-wellbore-geology-prediction
 - exp027 Public LB 8.781 より +6.180 悪化。
 - exp031 Public LB 8.956 より +6.005 悪化。
 - exp032 train well の途中以降を隠した疑似 test residual correction は 見えない test well 評価の LB に転移しなかったため、residual branch は採用しない。
-- `submissions/SUBMISSIONS.md` に v014 として記録。
+- `SUBMISSIONS.md` に v014 として記録。
 
 ## 次のアクション
 

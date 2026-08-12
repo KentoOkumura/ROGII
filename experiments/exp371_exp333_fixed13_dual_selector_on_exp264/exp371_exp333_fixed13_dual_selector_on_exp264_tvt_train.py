@@ -49,13 +49,13 @@ from typing import Any
 import matplotlib.pyplot as plt
 import pandas as pd
 import yaml
-from IPython.display import display
-
-from src.candidate_selector_pipeline import resolve_existing_path, sha256_file
-from src.exp333_fixed13_candidate_cache import (
+from exp333_fixed13_candidate_cache import (
     exp371_stage_d_cost_contract,
     run_exp371_fixed13_stage_d_addonly,
 )
+from IPython.display import display
+
+from src.candidate_selector_pipeline import resolve_existing_path, sha256_file
 
 EXPERIMENT_NAME = "exp371_exp333_fixed13_dual_selector_on_exp264"
 KAGGLE_INPUT_ROOT = Path("/kaggle/input")

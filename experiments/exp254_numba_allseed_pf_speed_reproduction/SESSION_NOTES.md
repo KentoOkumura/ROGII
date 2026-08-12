@@ -86,10 +86,10 @@ full workload、後続実験、inference、submissionは行わない。
 ## 静的検証
 
     .venv/bin/python -m py_compile experiments/exp254_numba_allseed_pf_speed_reproduction/exp254_numba_allseed_pf_speed_reproduction_train.py experiments/exp254_numba_allseed_pf_speed_reproduction/exp254_numba_allseed_pf_speed_reproduction_inference.py
-    .venv/bin/ruff check experiments/exp254_numba_allseed_pf_speed_reproduction tests/test_exp254_numba_allseed_pf_speed_contract.py
+    .venv/bin/ruff check experiments/exp254_numba_allseed_pf_speed_reproduction experiments/exp254_numba_allseed_pf_speed_reproduction/tests/test_exp254_numba_allseed_pf_speed_contract.py
     JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp254_numba_allseed_pf_speed_reproduction/exp254_numba_allseed_pf_speed_reproduction_train.py
     JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp254_numba_allseed_pf_speed_reproduction/exp254_numba_allseed_pf_speed_reproduction_inference.py
-    .venv/bin/pytest -q tests/test_exp254_numba_allseed_pf_speed_contract.py
+    .venv/bin/pytest -q experiments/exp254_numba_allseed_pf_speed_reproduction/tests/test_exp254_numba_allseed_pf_speed_contract.py
     make validate-exp EXP=exp254_numba_allseed_pf_speed_reproduction
     make validate-template
 

@@ -68,7 +68,7 @@ scope、gate診断はloaderで開かない。
 - reusable loader/cache:
   `src/exp389_fixed13_candidate_cache.py`
 - dedicated tests:
-  `tests/test_exp392_exp389_huber_fixed13_dual_selector.py`
+  `experiments/exp392_exp389_fixed13_dual_selector_on_exp264/tests/test_exp392_exp389_huber_fixed13_dual_selector.py`
 - Jupytext source:
   `exp392_exp389_fixed13_dual_selector_on_exp264_compact_selfcontained_train.py`
 

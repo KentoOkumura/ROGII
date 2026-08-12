@@ -77,10 +77,10 @@ exp072 likelihood-PFのresampling rougheningだけを10倍にし、exp410 sentin
 - PF / Notebook / Kaggle実行は0
 - ユーザーの`exp416を実装してください`を実装承認として記録
 - compact self-contained train候補と
-  `tests/test_exp416_roughening_x10_likpf_full_oof_ablation.py`を作成
+  `experiments/exp416_roughening_x10_likpf_full_oof_ablation/tests/test_exp416_roughening_x10_likpf_full_oof_ablation.py`を作成
 - `py_compile`と`ruff --select F821,E9`を通過
 - Jupytext変換と`jupytext --to ipynb --test`を通過
-- `tests/test_exp416_roughening_x10_likpf_full_oof_ablation.py`、
+- `experiments/exp416_roughening_x10_likpf_full_oof_ablation/tests/test_exp416_roughening_x10_likpf_full_oof_ablation.py`、
   `tests/test_kaggle_notebooks.py`、`tests/test_scaffold.py`の計22 testsを通過
 - `task validate-exp`はローカルに`task`コマンドがなく終了コード127だったため、
   同等の`make validate-exp EXP=exp416_roughening_x10_likpf_full_oof_ablation`を実行し

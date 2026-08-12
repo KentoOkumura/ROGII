@@ -9,7 +9,7 @@ paths:
   data_dir: data
   experiments_dir: experiments
   docs_dir: docs
-  submissions_dir: submissions
+  submissions_file: SUBMISSIONS.md
 
 data:
   raw_dir: data/raw
@@ -41,5 +41,6 @@ metadata:
 runtime:
   kaggle:
     enable_gpu: false
+    # TPU package generation is unsupported; generated metadata keeps enable_tpu=false.
     enable_internet: false
     time_limit_hours: 9

@@ -173,7 +173,7 @@ gate、生成物保存の章を維持し、datum branch marginalizationとbranch
 
 ### 実装検証
 
-- `.venv/bin/pytest -q tests/test_exp425_symmetric_datum_reanchor_exact_hmm.py`:
+- `.venv/bin/pytest -q experiments/exp425_symmetric_datum_reanchor_exact_hmm/tests/test_exp425_symmetric_datum_reanchor_exact_hmm.py`:
   `12 passed`
 - `.venv/bin/ruff check <exp425 train/inference/test>`: PASS
 - `.venv/bin/python -m py_compile <exp425 train/inference>`: PASS

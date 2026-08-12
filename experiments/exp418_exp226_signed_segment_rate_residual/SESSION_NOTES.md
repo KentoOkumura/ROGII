@@ -99,7 +99,7 @@ design-onlyで固定する。
   - 保存入力、basis、late truth、oracle、feature、training、metrics/importance/SHA、
     guarded executionの全役割を維持した。
 - 検証:
-  - `.venv/bin/pytest -q tests/test_exp418_exp226_signed_segment_rate_residual.py`
+  - `.venv/bin/pytest -q experiments/exp418_exp226_signed_segment_rate_residual/tests/test_exp418_exp226_signed_segment_rate_residual.py`
     → `14 passed`
   - `py_compile` → PASS
   - Ruff `--select F821` → PASS

@@ -653,7 +653,7 @@ def write_readme(
             "",
             "## Source Docs",
             "",
-            "- `docs/analysis/hmm_pf_exp226_well_pattern_readout_20260712.md` に人間向けの解釈を記録。",
+            "- `docs/surveys/hmm_pf_exp226_well_pattern_readout_20260712.md` に人間向けの解釈を記録。",
             "",
             f"Rows in `joined_well_summary.csv`: {len(joined)}",
         ]
@@ -680,9 +680,9 @@ def main() -> None:
             "/tmp/kaggle-output/exp223-selfgr-hmm-train-v1/artifacts/"
             "exp223_joint_typewell_self_gr_hmm_likelihood_probe_joint_typewell_self_gr_hmm_likelihood_probe_train_features.csv.gz"
         ),
-        "pf_map": root / "artifacts/pf_beam_disagreement_error_map/pf_beam_disagreement_well_map.csv",
+        "pf_map": root / "studies/pf_beam_disagreement_error_map/pf_beam_disagreement_well_map.csv",
         "position_summary": root
-        / "artifacts/typewell_position_groups/native_overlap_1_well_position_typewell_summary.csv",
+        / "studies/typewell_position_groups/native_overlap_1_well_position_typewell_summary.csv",
         "exp226_by_well": Path(
             "/tmp/kaggle-output/exp226_connortynan_k16_spline_kernel_knn_adaptive_kappa_reproduction/"
             "train_v1/artifacts/"

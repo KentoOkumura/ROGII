@@ -235,7 +235,7 @@ make new-exp EXP=exp440_ambiguity_gated_predictive_prior_hmm
 - `exp440_ambiguity_gated_predictive_prior_hmm_compact_selfcontained_train.ipynb`
 - `exp440_ambiguity_gated_predictive_prior_hmm_compact_selfcontained_inference.py`
 - `exp440_ambiguity_gated_predictive_prior_hmm_compact_selfcontained_inference.ipynb`
-- `tests/test_exp440_ambiguity_gated_predictive_prior_hmm.py`
+- `experiments/exp440_ambiguity_gated_predictive_prior_hmm/tests/test_exp440_ambiguity_gated_predictive_prior_hmm.py`
 
 検証:
 
@@ -252,12 +252,12 @@ exp440_ambiguity_gated_predictive_prior_hmm_compact_selfcontained_inference.py
   experiments/exp440_ambiguity_gated_predictive_prior_hmm/*compact_selfcontained*.py
 .venv/bin/ruff check \
   experiments/exp440_ambiguity_gated_predictive_prior_hmm/*compact_selfcontained*.py \
-  tests/test_exp440_ambiguity_gated_predictive_prior_hmm.py
-.venv/bin/pytest -q tests/test_exp440_ambiguity_gated_predictive_prior_hmm.py
+  experiments/exp440_ambiguity_gated_predictive_prior_hmm/tests/test_exp440_ambiguity_gated_predictive_prior_hmm.py
+.venv/bin/pytest -q experiments/exp440_ambiguity_gated_predictive_prior_hmm/tests/test_exp440_ambiguity_gated_predictive_prior_hmm.py
 .venv/bin/pytest -q \
-  tests/test_exp408_hmm_message_rate_basin_audit.py \
-  tests/test_exp411_predictive_filtered_rate_innovation_destick.py \
-  tests/test_exp440_ambiguity_gated_predictive_prior_hmm.py
+  experiments/exp408_hmm_message_rate_basin_audit/tests/test_exp408_hmm_message_rate_basin_audit.py \
+  experiments/exp411_predictive_filtered_rate_innovation_destick/tests/test_exp411_predictive_filtered_rate_innovation_destick.py \
+  experiments/exp440_ambiguity_gated_predictive_prior_hmm/tests/test_exp440_ambiguity_gated_predictive_prior_hmm.py
 make validate-exp EXP=exp440_ambiguity_gated_predictive_prior_hmm
 make validate-template
 ```

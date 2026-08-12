@@ -12,7 +12,7 @@
 
 ## ローカル実装
 
-- 実装先: 最初の実装時に `src/metrics.py`、各実験の補助モジュール、または train notebook に `rmse(y_true, y_pred)` を置く。
+- 実装先: 実験の train notebook または実験固有の補助モジュールに `rmse(y_true, y_pred)` を置く。複数実験で共有する必要が生じた処理だけを `src/` に移す。
 - 入力: evaluation zone の `TVT` 真値と、同じ `id` 順に並んだ予測 `tvt`。
 - 出力: scalar RMSE。単位は ft。
 - 公式例との照合: `data/raw/sample_submission.csv` は `id,tvt` の 2 列で 14,151 行。公開例では全 `tvt=0.0` なので、提出形式確認には使えるが RMSE の期待値照合には使えない。

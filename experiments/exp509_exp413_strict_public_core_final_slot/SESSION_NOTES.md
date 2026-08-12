@@ -121,7 +121,7 @@ Kaggle push前に再確認する。今回の実装では新規booster 0、保存
 - 親exp497 compact inferenceは343行/7章。exp509はcomponent inferenceとfinal blend、
   technical/reproducibility出力を分離した8章で、同一exp helperを呼ぶ薄いnotebookではない。
 - dedicated tests: `6 passed`。
-- dependency tests `tests/test_exp497_strict_public_core_fold_safe_ensemble.py`: `30 passed`。
+- dependency tests `experiments/exp497_strict_public_core_fold_safe_ensemble_on_exp413/tests/test_exp497_strict_public_core_fold_safe_ensemble.py`: `30 passed`。
 - Jupytext round-trip、`py_compile`、Ruff `F821/F401/F811/E501`: PASS。
 - `make validate-exp EXP=exp509_exp413_strict_public_core_final_slot`: strict PASS。
 - `make validate-template`: PASS。

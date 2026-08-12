@@ -48,7 +48,7 @@ RNGは使わない。fold/well/segment/donor順を固定し、input、risk featu
 
 - `.venv/bin/python -m py_compile ...compact_selfcontained_train.py tests/test_exp329_...py`: PASS。
 - `.venv/bin/ruff check ... --select F821`: PASS。
-- `.venv/bin/pytest -q tests/test_exp329_donor_support_risk_bounded_weight_shrink.py`: 10 passed。
+- `.venv/bin/pytest -q experiments/exp329_donor_support_risk_bounded_weight_shrink/tests/test_exp329_donor_support_risk_bounded_weight_shrink.py`: 10 passed。
 - `.venv/bin/pytest -q tests/test_kaggle_notebooks.py tests/test_scaffold.py`: 11 passed。
 - `.venv/bin/pytest -q`: 465 passed / 1 skipped / 2 failed。失敗2件はいずれも既存exp296の完了後config（`completed_train_side_guard_failed_closed`、`run_variant: false`）と、旧testが期待する実行前状態（`kaggle_cpu_*`、`run_variant: true`）の不一致で、exp329差分からは独立。exp329専用9件と共通Notebook/scaffold 11件は全PASS。
 - `JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test ...compact_selfcontained_train.py`: PASS。

@@ -53,7 +53,7 @@ JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experime
 .venv/bin/python -m py_compile experiments/exp275_xgboost_final_regressor_swap_on_exp238/exp275_xgboost_final_regressor_swap_on_exp238_compact_selfcontained_inference.py
 .venv/bin/ruff check experiments/exp275_xgboost_final_regressor_swap_on_exp238/exp275_xgboost_final_regressor_swap_on_exp238_compact_selfcontained_train.py experiments/exp275_xgboost_final_regressor_swap_on_exp238/exp275_xgboost_final_regressor_swap_on_exp238_compact_selfcontained_inference.py
 .venv/bin/ruff check experiments/exp275_xgboost_final_regressor_swap_on_exp238/exp275_xgboost_final_regressor_swap_on_exp238_compact_selfcontained_train.py --select F821
-.venv/bin/pytest -q tests/test_exp275_xgboost_final_regressor_swap_contract.py
+.venv/bin/pytest -q experiments/exp275_xgboost_final_regressor_swap_on_exp238/tests/test_exp275_xgboost_final_regressor_swap_contract.py
 make validate-exp EXP=exp275_xgboost_final_regressor_swap_on_exp238
 ```
 

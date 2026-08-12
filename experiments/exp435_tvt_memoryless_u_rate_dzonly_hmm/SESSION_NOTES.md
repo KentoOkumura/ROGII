@@ -87,11 +87,11 @@ make new-exp EXP=exp434_tvt_memoryless_u_rate_dzonly_hmm
 ```bash
 .venv/bin/python -m py_compile \
   experiments/exp435_tvt_memoryless_u_rate_dzonly_hmm/*compact_selfcontained*.py \
-  tests/test_exp435_tvt_memoryless_u_rate_dzonly_hmm.py
+  experiments/exp435_tvt_memoryless_u_rate_dzonly_hmm/tests/test_exp435_tvt_memoryless_u_rate_dzonly_hmm.py
 .venv/bin/ruff check \
   experiments/exp435_tvt_memoryless_u_rate_dzonly_hmm/*compact_selfcontained*.py \
-  tests/test_exp435_tvt_memoryless_u_rate_dzonly_hmm.py --select F821
-.venv/bin/pytest -q tests/test_exp435_tvt_memoryless_u_rate_dzonly_hmm.py
+  experiments/exp435_tvt_memoryless_u_rate_dzonly_hmm/tests/test_exp435_tvt_memoryless_u_rate_dzonly_hmm.py --select F821
+.venv/bin/pytest -q experiments/exp435_tvt_memoryless_u_rate_dzonly_hmm/tests/test_exp435_tvt_memoryless_u_rate_dzonly_hmm.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test \
   experiments/exp435_tvt_memoryless_u_rate_dzonly_hmm/\
 exp435_tvt_memoryless_u_rate_dzonly_hmm_compact_selfcontained_train.py

@@ -7,6 +7,7 @@ import argparse
 import csv
 import re
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -19,6 +20,8 @@ def slugify(value: str) -> str:
 
 def list_kernels(competition: str, page_size: int, sort_by: str) -> list[dict[str, str]]:
     cmd = [
+        sys.executable,
+        "-m",
         "kaggle",
         "kernels",
         "list",
@@ -60,7 +63,17 @@ def pull_kernel(ref: str, output_dir: Path, force: bool, dry_run: bool, retries:
     if dry_run:
         return f"would pull {ref} -> {target}"
     target.mkdir(parents=True, exist_ok=True)
-    cmd = ["kaggle", "kernels", "pull", ref, "-p", str(target), "-m"]
+    cmd = [
+        sys.executable,
+        "-m",
+        "kaggle",
+        "kernels",
+        "pull",
+        ref,
+        "-p",
+        str(target),
+        "-m",
+    ]
     last_error = ""
     for attempt in range(1, retries + 1):
         proc = subprocess.run(cmd, text=True, capture_output=True)

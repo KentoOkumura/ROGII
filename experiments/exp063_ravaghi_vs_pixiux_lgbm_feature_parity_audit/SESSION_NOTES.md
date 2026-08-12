@@ -172,7 +172,7 @@ kaggle kernels output kentookumura/exp063-ravaghi-pixiux-strict-replay-infer -p 
 - code submission ref: `53632725`
 - submission status: COMPLETE
 - Public LB: 8.811
-- submission history row: `submissions/SUBMISSIONS.md` v028
+- submission history row: `SUBMISSIONS.md` v028
 
 ## 2026-06-13 再現性調査
 

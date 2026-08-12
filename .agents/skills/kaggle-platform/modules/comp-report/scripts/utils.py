@@ -2,8 +2,6 @@
 
 import json
 import os
-import shutil
-import subprocess
 import sys
 import time
 from pathlib import Path
@@ -34,18 +32,6 @@ def get_username() -> str:
         creds = json.loads(kaggle_json.read_text())
         return creds.get("username", "")
     return ""
-
-
-def get_kaggle_cli() -> str:
-    """Find the kaggle CLI binary."""
-    for path in [
-        shutil.which("kaggle"),
-        "/Library/Frameworks/Python.framework/Versions/3.12/bin/kaggle",
-        str(Path.home() / ".local" / "bin" / "kaggle"),
-    ]:
-        if path and Path(path).exists():
-            return path
-    return "kaggle"
 
 
 def check_credentials() -> bool:

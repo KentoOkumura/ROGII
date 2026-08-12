@@ -27,4 +27,4 @@
 - Kaggle train v1 を実行し、5-fold group-safe CV 9.427109596 と OOF decompressed SHA を記録した。
 - Kaggle inference v1 を実行し、14,151-row `submission.csv` を生成した。
 - Kaggle output を取得し、submit-check PASS を確認した。
-- Code submit の Public LB 9.837 を確認し、`submissions/SUBMISSIONS.md` v060、`metrics.json`、`result.md`、`SESSION_NOTES.md`、`KAGGLE_DIRECTION.md` に記録した。
+- Code submit の Public LB 9.837 を確認し、`SUBMISSIONS.md` v060、`metrics.json`、`result.md`、`SESSION_NOTES.md`、`KAGGLE_DIRECTION.md` に記録した。

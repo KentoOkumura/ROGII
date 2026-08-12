@@ -52,7 +52,7 @@
 - 2026-06-04: `kaggle competitions submit rogii-wellbore-geology-prediction -k kentookumura/exp013-distance-bucket-shrink-inference -v 1 -f submission.csv -m "exp013_distance_bucket_shrink CV 13.501824"` を実行。
 - 2026-06-04: submission ref `53363702` が `SubmissionStatus.COMPLETE`、Public LB 12.271 と確認。従来 anchor `exp012` 12.320 を更新。
 - 2026-06-04: `uv run python scripts/record_experiment.py --experiment exp013_model_diversity_or_postprocess --status completed --cv 13.501824 --public-lb 12.271 ...` で metrics と summary を更新。
-- 2026-06-04: `uv run python scripts/record_submission.py --experiment exp013_model_diversity_or_postprocess --file /tmp/kaggle-output/exp013_model_diversity_or_postprocess/inference/submission.csv --cv 13.501824 --public-lb 12.271 ...` で `submissions/SUBMISSIONS.md` に v008 を記録。
+- 2026-06-04: `uv run python scripts/record_submission.py --experiment exp013_model_diversity_or_postprocess --file /tmp/kaggle-output/exp013_model_diversity_or_postprocess/inference/submission.csv --cv 13.501824 --public-lb 12.271 ...` で `SUBMISSIONS.md` に v008 を記録。
 
 ## 変更点
 

@@ -53,7 +53,7 @@ outcome前に2軸regime / row scopeをfreezeし、その後だけgainとepisode 
      outcomeを結合し、pooled / by-well parityを確認する。
   5. pooled / fold / regime / fixed position / individual diagnostic / episode表、
      fold別SHA256 seedによる4096回within-fold置換、technical/scientific AND gateを作る。
-- `tests/test_exp422_roughening_x10_failure_regime_attribution_readout.py`に9 testsを追加した。
+- `experiments/exp422_roughening_x10_failure_regime_attribution_readout/tests/test_exp422_roughening_x10_failure_regime_attribution_readout.py`に9 testsを追加した。
 - exp416 compactとの比較:
   - exp416: 12章 / 2,352行
   - exp422: 11章 / 2,376行
@@ -195,8 +195,8 @@ make new-exp EXP=exp422_roughening_x10_failure_regime_attribution_readout SOURCE
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb experiments/exp422_roughening_x10_failure_regime_attribution_readout/exp422_roughening_x10_failure_regime_attribution_readout_compact_selfcontained_train.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp422_roughening_x10_failure_regime_attribution_readout/exp422_roughening_x10_failure_regime_attribution_readout_compact_selfcontained_train.py
 .venv/bin/python -m py_compile experiments/exp422_roughening_x10_failure_regime_attribution_readout/exp422_roughening_x10_failure_regime_attribution_readout_compact_selfcontained_train.py
-.venv/bin/ruff check experiments/exp422_roughening_x10_failure_regime_attribution_readout/exp422_roughening_x10_failure_regime_attribution_readout_compact_selfcontained_train.py tests/test_exp422_roughening_x10_failure_regime_attribution_readout.py --select F821
-.venv/bin/pytest -q tests/test_exp422_roughening_x10_failure_regime_attribution_readout.py
+.venv/bin/ruff check experiments/exp422_roughening_x10_failure_regime_attribution_readout/exp422_roughening_x10_failure_regime_attribution_readout_compact_selfcontained_train.py experiments/exp422_roughening_x10_failure_regime_attribution_readout/tests/test_exp422_roughening_x10_failure_regime_attribution_readout.py --select F821
+.venv/bin/pytest -q experiments/exp422_roughening_x10_failure_regime_attribution_readout/tests/test_exp422_roughening_x10_failure_regime_attribution_readout.py
 make validate-exp EXP=exp422_roughening_x10_failure_regime_attribution_readout
 make prepare-kaggle-notebooks EXP=exp422_roughening_x10_failure_regime_attribution_readout EXTRA_ARGS="--notebook train --kernel-id kentookumura/exp422-rough-x10-regime-attribution-train --title 'exp422 rough x10 regime attribution train' --run-on-push --strict"
 kaggle kernels push -p experiments/exp422_roughening_x10_failure_regime_attribution_readout/kaggle/train

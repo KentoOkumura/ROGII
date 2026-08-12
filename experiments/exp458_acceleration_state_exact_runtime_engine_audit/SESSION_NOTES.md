@@ -121,7 +121,7 @@ exact-bit `delta_MD` cache、4-well外側並列でruntime上限へ入るかを�
 ### 2026-07-30 実装
 
 ```text
-.venv/bin/pytest -q tests/test_exp458_acceleration_state_exact_runtime_engine_audit.py
+.venv/bin/pytest -q experiments/exp458_acceleration_state_exact_runtime_engine_audit/tests/test_exp458_acceleration_state_exact_runtime_engine_audit.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <compact train/inference.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact train/inference.py>
 .venv/bin/python -m py_compile <compact train/inference.py>

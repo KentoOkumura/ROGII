@@ -286,7 +286,6 @@ PF/Beam run数はhidden testのnonempty well数で動的に決まるため、実
 - ref `55225634`、submitted at `2026-08-04 01:24:00.857000 UTC`、初期status `PENDING`。
 - monitor scriptはsystem Python 3.8で`datetime.UTC` import errorとなったため、repo `.venv`
   Python 3.11で再起動した。submission自体への影響はない。
-- monitor log: `logs/submission_exp510_exp413_exact_public_preoverride_hedge.log`。
 
 ## 2026-08-04 code submission ref 55225634 hidden rerun失敗
 
@@ -320,7 +319,7 @@ PF/Beam run数はhidden testのnonempty well数で動的に決まるため、実
 
 - exp413 version 4 source SHA
   `0f6fc81e56556aa6db828584ab2a2e58dde9db9cc4b54d6c12fa60e1c68f1388`をguardした生成script
-  `scripts/prepare_exp510_hidden_safe_runtime.py`を追加した。
+  `experiments/exp510_exp413_exact_public_preoverride_hedge/prepare_exp510_hidden_safe_runtime.py`を追加した。
 - 生成helper `exp510_exp413_hidden_safe_runtime.py`はparent sourceをimport-safeな関数へ機械変換し、
   `exp413_runtime/`の固定config/settings/input bundleと11 kernel sourcesからcurrent sample上の
   12候補・21 confidence・exp218 clean273を再生成する。
@@ -384,7 +383,7 @@ PF/Beam run数はhidden testのnonempty well数で動的に決まるため、実
 - submit commandはkernel version `4`、output `submission.csv`、message
   `exp510 hidden-safe exact public preoverride 10pct v4`。
 - ref `55231514`、submitted at `2026-08-04 06:16:40.563000 UTC`、初期status `PENDING`。
-- monitor logは`logs/submission_exp510_exp413_exact_public_preoverride_hedge.log`。hidden rerun・scoring完了後に
+- hidden rerun・scoring完了後に
   Public LBと最終状態を追記する。
 
 ## 2026-08-05 version 4 scoring完了・実装再監査

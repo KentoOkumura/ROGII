@@ -68,7 +68,7 @@ exp490を適用すべきwellと保存済みexp357へ戻すべきwellを、suffix
 ```bash
 make new-steering EXP=exp499_exp490_cross_fitted_well_application_selector
 make new-exp EXP=exp499_exp490_cross_fitted_well_application_selector
-.venv/bin/pytest -q experiments/exp499_exp490_cross_fitted_well_application_selector/test_exp499_contract.py
+.venv/bin/pytest -q experiments/exp499_exp490_cross_fitted_well_application_selector/tests/test_exp499_contract.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb \
   experiments/exp499_exp490_cross_fitted_well_application_selector/exp499_exp490_cross_fitted_well_application_selector_compact_selfcontained_train.py
 ```

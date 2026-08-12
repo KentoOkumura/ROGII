@@ -246,9 +246,9 @@ exp209 absolute-TVT exact HMMのGaussian emissionだけをfixed Huber
 
 ```text
 .venv/bin/python -m py_compile experiments/exp389_exp209_huber_exact_hmm_emission/*compact_selfcontained*.py
-.venv/bin/ruff check experiments/exp389_exp209_huber_exact_hmm_emission/*compact_selfcontained*.py tests/test_exp389_exp209_huber_exact_hmm_emission.py --select F821,F401,F841
-.venv/bin/pytest -q tests/test_exp389_exp209_huber_exact_hmm_emission.py
-.venv/bin/pytest -q tests/test_exp389_exp209_huber_exact_hmm_emission.py tests/test_kaggle_notebooks.py
+.venv/bin/ruff check experiments/exp389_exp209_huber_exact_hmm_emission/*compact_selfcontained*.py experiments/exp389_exp209_huber_exact_hmm_emission/tests/test_exp389_exp209_huber_exact_hmm_emission.py --select F821,F401,F841
+.venv/bin/pytest -q experiments/exp389_exp209_huber_exact_hmm_emission/tests/test_exp389_exp209_huber_exact_hmm_emission.py
+.venv/bin/pytest -q experiments/exp389_exp209_huber_exact_hmm_emission/tests/test_exp389_exp209_huber_exact_hmm_emission.py tests/test_kaggle_notebooks.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb experiments/exp389_exp209_huber_exact_hmm_emission/*compact_selfcontained*.py
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experiments/exp389_exp209_huber_exact_hmm_emission/*compact_selfcontained*.py
 make validate-exp EXP=exp389_exp209_huber_exact_hmm_emission

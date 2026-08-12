@@ -147,10 +147,10 @@ implementation:
   stage_d_execution_attempted: true
   stage_d_status: version_4_complete_estimated_pass_technical_only
   current_scope: stage_d_v4_visible_technical_validation_no_competition_resubmission
-  generator: ../../scripts/prepare_exp514_shared_likpf_candidate.py
-  generator_sha256: 909485a09c8224a41f9b088452b2c1a7c8f45e66273daaea8871d55b3250ba26
+  generator: prepare_exp514_shared_likpf_candidate.py
+  generator_sha256: 0313eb08bf9e31da0b914cc3633b99d4ceafc0f0417565f25b1a0a7f94549dac
   candidate_source: exp514_exp413_likpf_seed_bank_reuse_on_exp512_compact_selfcontained_inference.py
-  candidate_source_sha256: 961762731f91bf20de6d43d869aeed44bfa98f60be7f8cccc1c65b37d05dc24c
+  candidate_source_sha256: 6d27c072146f872e5e3d83065ec28870d75edc11fa1af56c098a46582c19f671
   candidate_source_lines: 8155
   candidate_notebook: exp514_exp413_likpf_seed_bank_reuse_on_exp512_compact_selfcontained_inference.ipynb
   candidate_notebook_sha256: 8f0889b9d6ad3019dc8cc6d6659c8830acfba4294ff1823dddf0061079619bdc
@@ -161,10 +161,10 @@ implementation:
   stage_a_notebook: exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_a_fixed32.ipynb
   stage_a_notebook_sha256: 9916807b69a92431e273a3341ddb648485c9fafc81d2a1dc895745f82bf81fa9
   stage_a_notebook_cells: 7
-  stage_b_generator: ../../scripts/prepare_exp514_stage_b_fixed32.py
-  stage_b_generator_sha256: adf0116569446945ebb06c5d69a5e2a6b2db3ec257878bffa8a142cd72214eb7
+  stage_b_generator: prepare_exp514_stage_b_fixed32.py
+  stage_b_generator_sha256: 6825f2928684fb3d2d126afe7f15cfca79ef9154716db43a12a32e83d03030d1
   stage_b_source: exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_b_fixed32.py
-  stage_b_source_sha256: a510d17b782fd996fbfb9ab74e66e7db39baa9030976f516c76db107558e0748
+  stage_b_source_sha256: f8d4c8badfdd19103317adfb383407560f6c1006fc0ea704dc311f307d09a948
   stage_b_source_lines: 1706
   stage_b_notebook: exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_b_fixed32.ipynb
   stage_b_notebook_sha256: 4a361ec11f667a5b59c43aa243b47f4039e2bc06cd2fe201ac1f4ba5f85ca261
@@ -184,10 +184,10 @@ implementation:
   stage_b_kaggle_kernel_id_no: 129762632
   stage_b_kaggle_pushed_at_utc: "2026-08-05 08:31:05 UTC"
   stage_b_kaggle_remote_cell_source_sha256: c27f317387b7f84c6f808f1f7957fad93b1343ad88f5c7fb3124c45d27ce86a6
-  stage_d_generator: ../../scripts/prepare_exp514_stage_d_visible.py
-  stage_d_generator_sha256: 30a0500cb6e2977db72a5f92a21cefe40aa56b09619ddaee4863dfdeb1fd047f
+  stage_d_generator: prepare_exp514_stage_d_visible.py
+  stage_d_generator_sha256: 24d41c8c83ecca6ed5fffe3372f672e4b9b70565bcccf42288e4f1aafa9bbfbb
   stage_d_source: exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_d_visible.py
-  stage_d_source_sha256: ff668d88e0e2f9a8775943f2b54793049178d82af86a7e5c763eae35bfac542d
+  stage_d_source_sha256: 902e27217958ee677636ec79f8cd738e6c78cbcfcfec70ebb3536ffd764b0842
   stage_d_source_lines: 8640
   stage_d_notebook: exp514_exp413_likpf_seed_bank_reuse_on_exp512_stage_d_visible.ipynb
   stage_d_notebook_sha256: 15d4ebebecb615caed353f62a51a99089ab33b291ff145d33858033cae191316
@@ -253,7 +253,7 @@ implementation:
   stage_d_kaggle_v4_status_checked_at_utc: "2026-08-05 11:57:21 UTC"
   stage_d_v4_output_downloaded: true
   stage_d_v4_submit_check_status: PASS
-  contract_test: test_exp514_contract.py
+  contract_test: tests/test_exp514_contract.py
   kaggle_package_created: true
   kaggle_package_kind: stage_a_fixed32
   kaggle_kernel_id: kentookumura/exp514-shared-likpf-fixed32-stage-a
@@ -661,8 +661,8 @@ stage_b_result:
   stage_b_source_modified_after_failure: true
   repair_scope: metric_bundle_duplicate_column_prevention_only
   scientific_configuration_changed: false
-  repair_generator_sha256: adf0116569446945ebb06c5d69a5e2a6b2db3ec257878bffa8a142cd72214eb7
-  repaired_source_sha256: a510d17b782fd996fbfb9ab74e66e7db39baa9030976f516c76db107558e0748
+  repair_generator_sha256: 6825f2928684fb3d2d126afe7f15cfca79ef9154716db43a12a32e83d03030d1
+  repaired_source_sha256: f8d4c8badfdd19103317adfb383407560f6c1006fc0ea704dc311f307d09a948
   version_2_final_status: KernelWorkerStatus.COMPLETE
   version_2_status_confirmed_at_utc: "2026-08-05 09:59:04 UTC"
   version_2_runtime_seconds: 4845.475189
@@ -836,7 +836,7 @@ stage_d_result:
     external_submission_performed: false
   version_4_oom_repair:
     status: COMPLETE_ESTIMATED_PASS_TECHNICAL_ONLY
-    source_sha256: ff668d88e0e2f9a8775943f2b54793049178d82af86a7e5c763eae35bfac542d
+    source_sha256: 902e27217958ee677636ec79f8cd738e6c78cbcfcfec70ebb3536ffd764b0842
     notebook_sha256: 15d4ebebecb615caed353f62a51a99089ab33b291ff145d33858033cae191316
     ridge_train_intermediates_released_before_shared_pf: true
     shared_pf_sp45_execution: four_thread_well_streaming

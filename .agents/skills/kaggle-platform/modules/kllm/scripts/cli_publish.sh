@@ -14,15 +14,19 @@
 #   Benchmark publishing — use the Kaggle UI
 #
 # Prerequisites:
-#   pip install kaggle
-#   Credentials configured via `kaggle auth login`, ~/.kaggle/access_token, KAGGLE_API_TOKEN, or legacy ~/.kaggle/kaggle.json
+#   `uv sync --locked` completed in the repository
+#   Credentials configured via `uv run kaggle auth login`, ~/.kaggle/access_token, KAGGLE_API_TOKEN, or legacy ~/.kaggle/kaggle.json
 #
 # Usage:
-#   bash scripts/cli_publish.sh dataset <data-dir>
-#   bash scripts/cli_publish.sh notebook <notebook-dir>
-#   bash scripts/cli_publish.sh model <model-dir> <model-handle>
+#   bash .agents/skills/kaggle-platform/modules/kllm/scripts/cli_publish.sh dataset <data-dir>
+#   bash .agents/skills/kaggle-platform/modules/kllm/scripts/cli_publish.sh notebook <notebook-dir>
+#   bash .agents/skills/kaggle-platform/modules/kllm/scripts/cli_publish.sh model <model-dir> <model-handle>
 
 set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../../../.." && pwd)"
+KAGGLE=(uv run --project "${REPO_ROOT}" kaggle)
 
 ACTION="${1:?Usage: cli_publish.sh <dataset|notebook|model> <dir> [model-handle]}"
 DIR="${2:?Usage: cli_publish.sh <dataset|notebook|model> <dir> [model-handle]}"
@@ -36,13 +40,13 @@ case "${ACTION}" in
         echo "--- Ensure dataset-metadata.json exists ---"
         if [ ! -f "${DIR}/dataset-metadata.json" ]; then
             echo "Initializing metadata..."
-            kaggle datasets init -p "${DIR}"
+            "${KAGGLE[@]}" datasets init -p "${DIR}"
             echo "Edit ${DIR}/dataset-metadata.json before continuing."
             exit 1
         fi
 
         echo "--- Creating dataset ---"
-        kaggle datasets create \
+        "${KAGGLE[@]}" datasets create \
             -p "${DIR}" \
             --dir-mode zip
 
@@ -57,13 +61,13 @@ case "${ACTION}" in
         echo "--- Ensure kernel-metadata.json exists ---"
         if [ ! -f "${DIR}/kernel-metadata.json" ]; then
             echo "Initializing metadata..."
-            kaggle kernels init -p "${DIR}"
+            "${KAGGLE[@]}" kernels init -p "${DIR}"
             echo "Edit ${DIR}/kernel-metadata.json before continuing."
             exit 1
         fi
 
         echo "--- Pushing notebook ---"
-        kaggle kernels push -p "${DIR}"
+        "${KAGGLE[@]}" kernels push -p "${DIR}"
 
         echo "Notebook published (private) and execution triggered on KKB."
         ;;
@@ -78,17 +82,17 @@ case "${ACTION}" in
         echo "--- Ensure model-metadata.json exists ---"
         if [ ! -f "${DIR}/model-metadata.json" ]; then
             echo "Initializing metadata..."
-            kaggle models init -p "${DIR}"
+            "${KAGGLE[@]}" models init -p "${DIR}"
             echo "Edit ${DIR}/model-metadata.json before continuing."
             exit 1
         fi
 
         echo "--- Creating model container ---"
-        kaggle models create -p "${DIR}"
+        "${KAGGLE[@]}" models create -p "${DIR}"
         echo "Model container created."
 
         echo "--- Uploading model files ---"
-        kaggle models variations versions create \
+        "${KAGGLE[@]}" models variations versions create \
             "${MODEL_HANDLE}" \
             -p "${DIR}" \
             -n "Upload via kaggle-cli"

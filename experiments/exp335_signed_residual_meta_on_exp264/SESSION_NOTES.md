@@ -48,11 +48,11 @@ exp264の既存74列selector compactを置き換えず、候補別signed residua
 - `JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb ...`: 16 cells、code 7 / markdown 9、output / execution count 0
 - `JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test ...`: PASS
 - `rg -n "__file__|Path\(__file__\)" ...`: hit 0
-- `.venv/bin/pytest -q tests/test_exp335_signed_residual_meta_on_exp264.py`: 6 passed
-- `.venv/bin/pytest -q tests/test_exp264_candidate_selector_pipeline.py tests/test_exp335_signed_residual_meta_on_exp264.py`: 23 passed
+- `.venv/bin/pytest -q experiments/exp335_signed_residual_meta_on_exp264/tests/test_exp335_signed_residual_meta_on_exp264.py`: 6 passed
+- `.venv/bin/pytest -q experiments/exp264_exp263_candidate_confidence_dual_selector/tests/test_exp264_candidate_selector_pipeline.py experiments/exp335_signed_residual_meta_on_exp264/tests/test_exp335_signed_residual_meta_on_exp264.py`: 23 passed
 - `make validate-exp EXP=exp335_signed_residual_meta_on_exp264`: strict PASS
 - `make validate-template`: PASS
-- `.venv/bin/pytest -q`: 512 passed / 2 skipped / 2 failed。失敗2件は既存`tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py`がexp296の現行完了status `completed_train_side_guard_failed_closed`と`run_variant=false`に対し、旧`kaggle_cpu_*` / run-approved状態を期待する不一致であり、exp335変更箇所とは独立する。exp296は本タスクのscope外のため変更していない。
+- `.venv/bin/pytest -q`: 512 passed / 2 skipped / 2 failed。失敗2件は既存`experiments/exp296_exp223_self_gr_known_tvt_support_gate/tests/test_exp296_exp223_self_gr_known_tvt_support_gate.py`がexp296の現行完了status `completed_train_side_guard_failed_closed`と`run_variant=false`に対し、旧`kaggle_cpu_*` / run-approved状態を期待する不一致であり、exp335変更箇所とは独立する。exp296は本タスクのscope外のため変更していない。
 
 ### 将来の予定（未承認・未実行）
 

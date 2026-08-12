@@ -41,7 +41,7 @@ exp006 の router diagnostic を実装に進め、inference-safe な well condit
 - 2026-06-01: visible route sanity は `000d7d20=guarded`、`00bbac68=all_gr`、`00e12e8b=all_gr`。
 - 2026-06-01: `kaggle competitions submit rogii-wellbore-geology-prediction -k kentookumura/exp007-hard-well-router-inference -v 1 -f submission.csv -m "exp007_hard_well_router hard_router_low_gr_guarded CV 13.921559"` で提出。
 - 2026-06-01: submission ref `53254030` は `SubmissionStatus.COMPLETE`、Public LB 12.675。
-- 2026-06-01: `uv run python scripts/record_submission.py --experiment exp007_hard_well_router --file /tmp/kaggle-output/exp007_hard_well_router/inference/submission.csv --cv 13.921559 --public-lb 12.675 ...` で `submissions/SUBMISSIONS.md` に v006 を記録。
+- 2026-06-01: `uv run python scripts/record_submission.py --experiment exp007_hard_well_router --file /tmp/kaggle-output/exp007_hard_well_router/inference/submission.csv --cv 13.921559 --public-lb 12.675 ...` で `SUBMISSIONS.md` に v006 を記録。
 - 2026-06-01: `uv run python scripts/record_experiment.py --experiment exp007_hard_well_router --status completed --cv 13.921559 --public-lb 12.675 ...` で `metrics.json` と `experiment_summary.md` を更新。
 
 ## 変更点

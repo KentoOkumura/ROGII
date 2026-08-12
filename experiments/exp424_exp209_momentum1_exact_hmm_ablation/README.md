@@ -66,7 +66,7 @@ fold横断に転移しなかった。`mom=1.0`単独branchは`stage0_fail_closed
 - inference:
   fail-closed placeholderのみ
 - contract test:
-  `tests/test_exp424_exp209_momentum1_exact_hmm_ablation.py`
+  `experiments/exp424_exp209_momentum1_exact_hmm_ablation/tests/test_exp424_exp209_momentum1_exact_hmm_ablation.py`
 
 train Notebookはexp209と同じHMM入力準備、3-state rate transition、
 position transition、forward-backward、posterior-mean readoutを自己完結で持ち、

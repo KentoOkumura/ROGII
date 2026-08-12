@@ -137,10 +137,10 @@ exp401_exp368_weak_risk_candidate_advantage_readout_on_exp264_compact_selfcontai
 .venv/bin/ruff check \
   experiments/exp401_exp368_weak_risk_candidate_advantage_readout_on_exp264/\
 *compact_selfcontained*.py \
-  tests/test_exp401_exp368_weak_risk_candidate_advantage_readout_on_exp264.py \
+  experiments/exp401_exp368_weak_risk_candidate_advantage_readout_on_exp264/tests/test_exp401_exp368_weak_risk_candidate_advantage_readout_on_exp264.py \
   --select F821,F401,F841,E9
 .venv/bin/pytest -q \
-  tests/test_exp401_exp368_weak_risk_candidate_advantage_readout_on_exp264.py
+  experiments/exp401_exp368_weak_risk_candidate_advantage_readout_on_exp264/tests/test_exp401_exp368_weak_risk_candidate_advantage_readout_on_exp264.py
 make validate-exp EXP=exp401_exp368_weak_risk_candidate_advantage_readout_on_exp264
 make validate-template
 .venv/bin/pytest -q

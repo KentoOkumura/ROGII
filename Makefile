@@ -1,10 +1,11 @@
-EXP ?= exp001_baseline
+EXP ?=
 SOURCE ?= templates/experiment
 SURVEY_TITLE ?=
 SURVEY_SLUG ?=
 EXTRA_ARGS ?=
 VALIDATE_ARGS ?=
 SUBMISSION ?= submission.csv
+SUBMISSION_REF ?=
 STATUS ?=
 CV ?=
 PUBLIC_LB ?=
@@ -15,27 +16,31 @@ NOTES ?=
 NOTEBOOK ?= inference
 KERNEL ?=
 KERNEL_VERSION ?= 1
-COMPETITION ?= rogii-wellbore-geology-prediction
+COMPETITION ?=
+PROJECT_COMPETITION = $(shell .venv/bin/python scripts/project_value.py competition.slug)
+RESOLVED_COMPETITION = $(if $(strip $(COMPETITION)),$(COMPETITION),$(PROJECT_COMPETITION))
 MESSAGE ?= $(EXP)
 OUTPUT_FILE ?= submission.csv
 OUT ?= /tmp/kaggle-output/$(EXP)/$(NOTEBOOK)
 VIEWER_DATA ?= data/raw
 UV_CACHE_DIR ?= /tmp/uv-cache
+PYTHONDONTWRITEBYTECODE ?= 1
+export UV_CACHE_DIR
+export PYTHONDONTWRITEBYTECODE
 
-ifneq (,$(wildcard .env))
-include .env
-export
-endif
-
-.PHONY: validate-template validate-config new-exp new-steering new-survey-report update-survey-index validate-surveys validate-exp train-local infer-local dl-kaggle-comp submit-check submit-code pipeline-local prepare-kaggle-notebooks push-kaggle-train push-kaggle-infer execute-notebook-local kaggle-status kaggle-logs kaggle-output record-submission record-exp compare-exp metric-weighted-tail-error-map pf-beam-disagreement-error-map update-summary app oof-app viewer viewer-smoke fmt test
+.PHONY: validate-template validate-config new-exp new-steering new-survey-report update-survey-index validate-surveys validate-exp check-exp check-skills check-skill-modules test-exp test-common train-local infer-local dl-kaggle-comp fetch-kaggle-notebooks archive-kaggle-discussions submit-check submit-code pipeline-local prepare-kaggle-notebooks push-kaggle-train push-kaggle-infer execute-notebook-local kaggle-status kaggle-logs kaggle-output record-submission record-exp compare-exp metric-weighted-tail-error-map pf-beam-disagreement-error-map update-summary app oof-app viewer viewer-smoke fmt test
 
 validate-template:
 	.venv/bin/python scripts/validate_project.py
-	.venv/bin/python scripts/update_survey_index.py --check
+	.venv/bin/python scripts/update_survey_index.py --check --allow-draft
+	.venv/bin/python scripts/update_experiment_summary.py --check
+	.venv/bin/python scripts/check_markdown_links.py
 
 validate-config:
 	.venv/bin/python scripts/validate_project.py --strict
-	.venv/bin/python scripts/update_survey_index.py --check
+	.venv/bin/python scripts/update_survey_index.py --check --allow-draft
+	.venv/bin/python scripts/update_experiment_summary.py --check
+	.venv/bin/python scripts/check_markdown_links.py
 
 new-exp:
 	.venv/bin/python scripts/new_experiment.py --name $(EXP) --source $(SOURCE) $(EXTRA_ARGS)
@@ -55,6 +60,27 @@ validate-surveys:
 validate-exp:
 	.venv/bin/python scripts/validate_experiment.py --experiment $(EXP) $(EXTRA_ARGS)
 
+check-exp:
+	.venv/bin/ruff check experiments/$(EXP)
+	.venv/bin/ruff format --check experiments/$(EXP)
+
+check-skills:
+	.venv/bin/python scripts/validate_skills.py
+	uv run --extra dev ruff check .agents/skills
+
+# Compatibility alias for the former, narrower target name.
+check-skill-modules: check-skills
+
+test-exp:
+	@if [ -d experiments/$(EXP)/tests ]; then \
+		uv run --extra dev --extra notebook pytest -q experiments/$(EXP)/tests; \
+	else \
+		echo "No experiment-specific tests: experiments/$(EXP)/tests"; \
+	fi
+
+test-common:
+	uv run --extra dev --extra notebook pytest -q tests
+
 # Debug-only. Kaggle notebook execution is authoritative; pass
 # EXTRA_ARGS="--allow-local ..." to opt in to local smoke execution.
 train-local:
@@ -68,11 +94,17 @@ infer-local:
 dl-kaggle-comp:
 	.venv/bin/python scripts/kaggle_download.py
 
+fetch-kaggle-notebooks:
+	.venv/bin/python .agents/skills/kaggle-notebook-fetch/scripts/fetch_top_notebooks.py --competition $(RESOLVED_COMPETITION) $(EXTRA_ARGS)
+
+archive-kaggle-discussions:
+	.venv/bin/python scripts/archive_kaggle_discussions.py --competition $(RESOLVED_COMPETITION) $(EXTRA_ARGS)
+
 submit-check:
-	.venv/bin/python scripts/validate_submission.py --submission $(SUBMISSION)
+	.venv/bin/python scripts/validate_submission.py --submission "$(SUBMISSION)" --experiment "$(EXP)"
 
 submit-code:
-	kaggle competitions submit $(COMPETITION) -k $(KERNEL) -v $(KERNEL_VERSION) -f $(OUTPUT_FILE) -m "$(MESSAGE)"
+	.venv/bin/kaggle competitions submit $(RESOLVED_COMPETITION) -k $(KERNEL) -v $(KERNEL_VERSION) -f $(OUTPUT_FILE) -m "$(MESSAGE)"
 
 # Debug-only local pipeline; Kaggle kernels remain the source of truth.
 pipeline-local:
@@ -80,32 +112,33 @@ pipeline-local:
 	$(MAKE) train-local EXP=$(EXP) EXTRA_ARGS="$(EXTRA_ARGS)"
 	$(MAKE) infer-local EXP=$(EXP) EXTRA_ARGS="$(EXTRA_ARGS)"
 	$(MAKE) submit-check EXP=$(EXP) SUBMISSION=$(SUBMISSION)
-	$(MAKE) update-summary
 
 prepare-kaggle-notebooks:
-	.venv/bin/python scripts/prepare_kaggle_notebooks.py --experiment $(EXP) $(EXTRA_ARGS)
+	.venv/bin/python scripts/prepare_kaggle_notebooks.py --experiment $(EXP) --strict $(EXTRA_ARGS)
 
 push-kaggle-train:
-	kaggle kernels push -p experiments/$(EXP)/kaggle/train
+	.venv/bin/python scripts/validate_kaggle_metadata.py --package-dir experiments/$(EXP)/kaggle/train
+	.venv/bin/kaggle kernels push -p experiments/$(EXP)/kaggle/train
 
 push-kaggle-infer:
-	kaggle kernels push -p experiments/$(EXP)/kaggle/inference
+	.venv/bin/python scripts/validate_kaggle_metadata.py --package-dir experiments/$(EXP)/kaggle/inference
+	.venv/bin/kaggle kernels push -p experiments/$(EXP)/kaggle/inference
 
 execute-notebook-local:
 	.venv/bin/python scripts/execute_experiment_notebook.py --experiment $(EXP) --notebook $(NOTEBOOK) $(EXTRA_ARGS)
 
 kaggle-status:
-	kaggle kernels status $(KERNEL)
+	.venv/bin/kaggle kernels status $(KERNEL)
 
 kaggle-logs:
-	kaggle kernels logs -f $(KERNEL)
+	.venv/bin/kaggle kernels logs -f $(KERNEL)
 
 kaggle-output:
 	mkdir -p $(OUT)
-	kaggle kernels output $(KERNEL) -p $(OUT)
+	.venv/bin/kaggle kernels output $(KERNEL) -p $(OUT)
 
 record-submission:
-	.venv/bin/python scripts/record_submission.py --experiment $(EXP) --file $(SUBMISSION) $(EXTRA_ARGS)
+	.venv/bin/python scripts/record_submission.py --experiment $(EXP) --file $(SUBMISSION) --submission-ref "$(SUBMISSION_REF)" $(EXTRA_ARGS)
 
 record-exp:
 	.venv/bin/python scripts/record_experiment.py --experiment $(EXP) --status "$(STATUS)" --cv "$(CV)" --public-lb "$(PUBLIC_LB)" --private-lb "$(PRIVATE_LB)" --metric "$(METRIC)" --key-idea "$(KEY_IDEA)" --notes "$(NOTES)" $(EXTRA_ARGS)
@@ -139,4 +172,4 @@ fmt:
 	.venv/bin/ruff format .
 
 test:
-	.venv/bin/pytest
+	uv run --extra dev --extra notebook pytest

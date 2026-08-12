@@ -12,7 +12,7 @@ TEMPLATE_PATH = ROOT / "templates" / "survey" / "report.md"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Create a metadata-indexed completed-investigation report in docs/surveys."
+        description="Create a metadata-indexed draft investigation report in docs/surveys."
     )
     parser.add_argument("--title", required=True, help="Human-readable report title")
     parser.add_argument("--slug", required=True, help="Filename slug without date or extension")

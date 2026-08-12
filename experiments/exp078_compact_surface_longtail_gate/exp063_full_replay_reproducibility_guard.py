@@ -1602,7 +1602,7 @@ def run_compact_surface_longtail_gate(
                 "rogii-wellbore-geology-prediction-700340-oof-vs-lb-should-we-track-"
                 "worst-well-improvements-instead-of-only-global-rmse.md"
             ),
-            "tail_error_map": "artifacts/metric_weighted_tail_error_map_anchor_exp073/README.md",
+            "tail_error_map": "docs/surveys/metric_weighted_tail_error_map_20260616.md",
         },
         "source": source_meta,
         "diff_thresholds": {

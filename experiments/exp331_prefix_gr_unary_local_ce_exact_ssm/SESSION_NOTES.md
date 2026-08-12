@@ -42,8 +42,8 @@ JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb <compact_train.
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact_train.py>
 JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test <compact_inference.py>
 .venv/bin/python -m py_compile <compact_train.py> <compact_inference.py>
-.venv/bin/ruff check <compact_train.py> <compact_inference.py> tests/test_exp331_prefix_gr_unary_local_ce_exact_ssm.py --select E,F,I,UP,B
-.venv/bin/pytest -q tests/test_exp331_prefix_gr_unary_local_ce_exact_ssm.py
+.venv/bin/ruff check <compact_train.py> <compact_inference.py> experiments/exp331_prefix_gr_unary_local_ce_exact_ssm/tests/test_exp331_prefix_gr_unary_local_ce_exact_ssm.py --select E,F,I,UP,B
+.venv/bin/pytest -q experiments/exp331_prefix_gr_unary_local_ce_exact_ssm/tests/test_exp331_prefix_gr_unary_local_ce_exact_ssm.py
 ```
 
 - Jupytext `--test`、py_compile: PASS。

@@ -19,98 +19,56 @@ Pass your Kaggle API token as a Bearer token:
 Authorization: Bearer <your_api_token>
 ```
 
-Use the API token from "Generate New Token" at [kaggle.com/settings](https://www.kaggle.com/settings). Legacy API keys from `kaggle.json` also work but are deprecated.
+Use the API token from "Generate New Token" at [kaggle.com/settings](https://www.kaggle.com/settings). Credentialの生成と保存は[registrationの認証設定](../../registration/references/kaggle-setup.md)を正とし、このreferenceへ複製しない。
 
 ## Client Configuration
 
-### Claude Code (CLI)
+Configure the endpoint in the MCP client, but keep the token in the client's
+local secret store or a protected environment-variable reference. Do not paste
+the token into a shell command, process argument, committed JSON, terminal
+output, or an agent conversation. If a client only supports literal headers,
+enter the token locally in an untracked, permission-restricted configuration.
 
-```bash
-claude mcp add kaggle --transport http https://www.kaggle.com/mcp \
-  --header "Authorization: Bearer YOUR_API_KEY"
-```
+## Repository helper
 
-### gemini-cli
-
-```bash
-# Add to your gemini-cli MCP config (see gemini-cli docs for exact syntax)
-# Endpoint: https://www.kaggle.com/mcp
-# Header: Authorization: Bearer YOUR_API_KEY
-```
-
-### Generic MCP Client (Claude Desktop, Cursor, etc.)
-
-```json
-{
-  "mcpServers": {
-    "kaggle": {
-      "url": "https://www.kaggle.com/mcp",
-      "headers": {
-        "Authorization": "Bearer YOUR_API_KEY"
-      }
-    }
-  }
-}
-```
-
-### OpenClaw (via HTTP/curl)
-
-OpenClaw can call the Kaggle MCP server directly over HTTP using the Streamable HTTP transport:
-
-```bash
-# List available tools (use KAGGLE_API_TOKEN, not KAGGLE_KEY)
-curl -s -X POST https://www.kaggle.com/mcp \
-  -H "Authorization: Bearer ${KAGGLE_API_TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | python3 -m json.tool
-
-# Call a tool (e.g., search competitions)
-curl -s -X POST https://www.kaggle.com/mcp \
-  -H "Authorization: Bearer ${KAGGLE_API_TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"search_competitions","arguments":{"search":"titanic"}}}' | python3 -m json.tool
-```
+Repository scripts use `shared/mcp_client.py`, which reads locally configured
+credentials and sends the Authorization header in-process. It does not invoke
+`curl` with the token in process arguments. Bundled scripts are the preferred
+entry points. For a one-off Python call executed from the repository root, use
+this canonical import setup:
 
 ```python
-# Python requests example
-import os, requests, json
+import sys
+from pathlib import Path
 
-KAGGLE_KEY = os.environ["KAGGLE_API_TOKEN"]  # API token from "Generate New Token"
-URL = "https://www.kaggle.com/mcp"
-HEADERS = {"Authorization": f"Bearer {KAGGLE_KEY}", "Content-Type": "application/json"}
+skill_root = Path(".agents/skills/kaggle-platform").resolve()
+sys.path.insert(0, str(skill_root))
 
-def mcp_call(method, params=None):
-    payload = {"jsonrpc": "2.0", "id": 1, "method": method}
-    if params:
-        payload["params"] = params
-    resp = requests.post(URL, headers=HEADERS, json=payload)
-    return resp.json()
+from shared.mcp_client import mcp_call, mcp_list_tools, resolve_token
 
-# List tools
-print(mcp_call("tools/list"))
-
-# Search datasets
-print(mcp_call("tools/call", {"name": "search_datasets", "arguments": {"search": "titanic"}}))
+token = resolve_token()
+tools = mcp_list_tools(token=token)
 ```
 
-## Tool Inventory (66 live tools as of 2026-04-22, verified 2026-05-04)
+## Tool Inventory (66 tools observed 2026-04-22, retested 2026-05-04)
 
 Source: `tools/list` against `https://www.kaggle.com/mcp`, cross-referenced
 against [shepsci/kmcp-tools](https://github.com/shepsci/kmcp-tools)
-`data/endpoints.md`. Use `tools/list` to confirm against the current server.
+`data/endpoints.md`. These are dated observations, not current guarantees. Use
+`tools/list` and a task-relevant probe to confirm against the server at runtime.
 
-**Status flag changes since the 2026-04-22 audit** (verified by
-`tests/integration/test_mcp_live.py` on 2026-05-04):
+**Status flag changes since the 2026-04-22 audit** (observed in the upstream
+live audit on 2026-05-04; the test itself is not included in this module):
 
-- `get_hackathon_write_up` — was KNOWN_FAIL, **now PASS**. Kaggle shipped a fix.
-- `get_benchmark_leaderboard` — was BLOCKED (permission-gated), **now PASS**
-  for ordinary KGAT tokens.
+- `get_hackathon_write_up` — was KNOWN_FAIL; returned PASS in the 2026-05-04 retest.
+- `get_benchmark_leaderboard` — was BLOCKED (permission-gated); returned PASS
+  with the API token used in the 2026-05-04 retest. This does not define a token class.
 - `get_competition` for classic competitions (titanic, playground-series-s6e2)
-  — was KNOWN_FAIL, **now PASS**.
+  — was KNOWN_FAIL; returned PASS in the 2026-05-04 retest.
 
 The hackathon module's `fetch_writeup.py` fallback chain (`get_writeup` →
 `get_writeup_by_topic` → `get_writeup_by_slug`) is retained as defensive
-plumbing but is no longer required to work around server bugs.
+plumbing because live endpoint behavior can change.
 
 Status legend:
 - ✅ verified PASS (as of 2026-05-04)
@@ -195,7 +153,7 @@ Status legend:
 
 ### Benchmark
 - ✅ `create_benchmark_task_from_prompt`
-- ✅ `get_benchmark_leaderboard` — permission gate lifted between 2026-04-22 and 2026-05-04 (now responds to ordinary KGAT tokens)
+- ✅ `get_benchmark_leaderboard` — permission gate differed between the 2026-04-22 and 2026-05-04 audits; recheck with a task-relevant probe
 
 ### Episode (simulation/agent evaluation)
 - 🔬 `get_episode_agent_logs`
@@ -234,9 +192,12 @@ list_hackathon_write_ups (roster) → get_writeup per submission →
 get_resolved_writeup_links (host/judge only)
 ```
 
-Avoid `get_hackathon_write_up` — it returns a generic invocation error even for
-valid ids. The `modules/kllm/hackathon/scripts/fetch_writeup.py` script encodes the
-correct fallback chain (`get_writeup` → `get_writeup_by_topic` → `get_writeup_by_slug`).
+`get_hackathon_write_up` failed in the 2026-04-22 audit and returned PASS in
+the 2026-05-04 retest. Treat both results as dated evidence and probe the live
+endpoint before depending on it. The
+`modules/kllm/hackathon/scripts/fetch_writeup.py` script starts with
+`get_writeup` because it has the simpler argument shape, then falls back to
+`get_writeup_by_topic` and `get_writeup_by_slug`.
 
 ## Official Documentation
 

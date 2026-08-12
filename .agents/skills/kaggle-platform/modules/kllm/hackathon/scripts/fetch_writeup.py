@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Fetch a full writeup body from Kaggle's MCP server.
 
-Fallback chain (never calls the known-broken `get_hackathon_write_up`):
+Fallback chain using the simpler writeup interfaces (the dated status of
+`get_hackathon_write_up` is documented in references/hackathon-endpoints.md):
     1. get_writeup       (--writeup-id)
     2. get_writeup_by_topic (--topic-id)
     3. get_writeup_by_slug  (--competition + --slug)
@@ -18,13 +19,12 @@ import json
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[6]
-sys.path.insert(0, str(REPO_ROOT / "skills" / "kaggle"))
+SKILL_ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(SKILL_ROOT))
 
 from shared.mcp_client import (  # noqa: E402
     classify_result,
     extract_json,
-    load_dotenv,
     mcp_call,
     resolve_token,
 )
@@ -83,10 +83,13 @@ def main() -> int:
     if not (args.writeup_id or args.topic_id or (args.competition and args.slug)):
         parser.error("supply --writeup-id, --topic-id, or --competition+--slug")
 
-    load_dotenv(REPO_ROOT / ".env", Path.home() / ".env")
     token = resolve_token()
     if not token:
-        print("error: no Kaggle token found", file=sys.stderr)
+        print(
+            "error: no Kaggle API token found "
+            "(KAGGLE_API_TOKEN or ~/.kaggle/access_token)",
+            file=sys.stderr,
+        )
         return 2
 
     attempts: list[tuple[str, dict]] = []
