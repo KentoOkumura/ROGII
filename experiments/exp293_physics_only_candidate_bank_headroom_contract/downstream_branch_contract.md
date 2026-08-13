@@ -5,7 +5,7 @@
 この文書は、物理モデル単体でPublic LB 6.5を目指すexp293系列の第2・第3・第4段階について、
 別セッションが目的、開始条件、候補集合、出力の意味を独自変更しないための正規契約である。
 
-変更する場合は、exp293の実行結果を根拠にユーザーの明示承認を得て、この文書、steering、config、
+変更する場合は、exp293の実行結果を根拠にユーザーの明示承認を得て、この文書、対象実験のrequirements.md、config、
 `KAGGLE_DIRECTION.md`を同時に更新する。実装都合だけで分岐や合格条件を変更しない。
 
 ## 共通不変条件
@@ -57,7 +57,7 @@ exp405 geometry-reinjected interval semi-Markov
   独立仮説である。
 - exp406はexp386の閾値救済ではなく、Formation-derived graphを使わない
   horizontal-GR-first topology familyである。
-- 正規仕様はexp405/406それぞれのsteeringとconfigを正とする。
+- 正規仕様はexp405/406それぞれの現行実験記録を正とし、廃止前の契約確認が必要な場合だけ`docs/legacy/steering/`を参照する。
 - current-test、inference、submissionは各gate PASSと別承認が必要である。
 
 ## Stage 2: prefix_calibrated_latent_registration_gr_evidence
@@ -177,7 +177,7 @@ PASS後も直接Stage 2へ進まず、exp293と同じheadroom contractを新bank
 ## 次の開始判断
 
 exp293実行前はStage 2/3/4をいずれも実装しない。exp293 scientific support判定を唯一の最初の分岐入力とし、
-PASSならStage 2だけ、FAILならStage 4だけを新しいsteeringと実験番号へ切り出す。
+PASSならStage 2だけ、FAILならStage 4だけを新しい実験のrequirements.mdと実験番号へ切り出す。
 
 ## 明示的な非目標
 

@@ -47,6 +47,7 @@
   - 再利用するコードは `src/`、その場限りの調査コードと生の表・図は `studies/`。
   - 公式から取得した生のコンペデータは `data/raw/`、外部データは `data/external/`、再利用する加工済みデータは `data/processed/`。
   - 実験固有のテストは `experiments/<exp>/tests/`、複数実験やリポジトリ全体に関わるテストはルートの `tests/`。
+  - clean checkoutで実行するテストは、Gitで追跡しない`experiments/<exp>/artifacts/`、`experiments/<exp>/kaggle/`、`/tmp/kaggle-output/`を暗黙の必須入力にしません。保存済み実行証拠そのもののSHA・schema・packageを検証するテストだけ、`tests.support.require_saved_files`または`require_one_saved_file`で必要パスを明示し、証拠がローカルにない場合はskipします。config、追跡対象source、純粋関数の契約検証は同じskipへ巻き込まず、別テストまたはskip前に常時検証します。Gitで追跡すべきファイルの欠損をskipで隠しません。
   - 実験で参照する小規模な固定データは`experiments/<exp>/assets/`へ置き、トップレベルの`assets/`は作りません。
   - 新規実験と調査レポートを作成するための雛形は`templates/`。
   - `docs/legacy/steering/` は廃止前の実験計画の読み取り専用履歴です。通常作業では読まず、対象実験の現行記録だけでは判断できず、過去の契約確認が必要な場合に限って参照します。

@@ -19,9 +19,9 @@ from src.candidate_selector_pipeline import (
 )
 from src.exact_hmm_full_replacement import (
     CHANGED_CANDIDATES,
-    Exp389Fixed12ReplacementCache,
     SEMANTIC_SLOT,
     UNCHANGED_CANDIDATES,
+    Exp389Fixed12ReplacementCache,
     build_candidate_bank_from_primitives,
     build_fixed12_replacement_readout,
     load_huber_replacement_predictions,
@@ -37,12 +37,16 @@ from src.exp389_fixed13_candidate_cache import (
     load_exp389_predictions,
     sha256_decompressed_gzip,
 )
+from tests.test_support import require_saved_files
 
 ROOT = Path(__file__).resolve().parents[3]
 EXP = ROOT / "experiments/exp492_huber_exact_hmm_full_replacement_on_exp264"
 PARENT = (
     ROOT / "experiments/exp264_exp263_candidate_confidence_dual_selector"
 )
+PARENT_FEATURE_SCHEMA = PARENT / "kaggle/output/stage_c_v6/artifacts/feature_schema.json"
+PARENT_FEATURE_CATALOG = PARENT / "kaggle/output/stage_c_v6/artifacts/feature_catalog.csv"
+PARENT_COMPACT_SCHEMA = PARENT / "kaggle/output/stage_c_v6/artifacts/compact_meta_schema.json"
 
 
 def load_contract() -> dict[str, Any]:
@@ -117,18 +121,9 @@ def test_fixed12_replacement_contract_preserves_ids_domains_and_schema() -> None
     assert tuple(evidence["unchanged_candidates"]) == UNCHANGED_CANDIDATES
     assert len(compact_feature_names(contract)) == 74
 
-    parent_schema = json.loads(
-        (
-            PARENT
-            / "kaggle/output/stage_c_v6/artifacts/feature_schema.json"
-        ).read_text()
-    )
-    parent_compact = json.loads(
-        (
-            PARENT
-            / "kaggle/output/stage_c_v6/artifacts/compact_meta_schema.json"
-        ).read_text()
-    )
+    require_saved_files(PARENT_FEATURE_SCHEMA, PARENT_COMPACT_SCHEMA)
+    parent_schema = json.loads(PARENT_FEATURE_SCHEMA.read_text())
+    parent_compact = json.loads(PARENT_COMPACT_SCHEMA.read_text())
     assert len(parent_schema["features"]) == 88
     assert parent_schema["feature_schema_sha256"] == (
         load_config()["data"]["parent_exp264"][
@@ -399,6 +394,7 @@ def test_replacement_cache_fails_closed_on_missing_global_key() -> None:
 def test_stage_a_rebuild_reuses_exact_parent_88_and_74_without_truth(
     tmp_path: Path,
 ) -> None:
+    require_saved_files(PARENT_FEATURE_SCHEMA, PARENT_FEATURE_CATALOG, PARENT_COMPACT_SCHEMA)
     contract = load_contract()
     config = load_config()
     config["validation"]["expected_rows"] = 15
@@ -447,18 +443,9 @@ def test_stage_a_rebuild_reuses_exact_parent_88_and_74_without_truth(
         contract=contract,
         cache=cache,
         raw_train_dir=raw_dir,
-        parent_feature_schema_path=(
-            PARENT
-            / "kaggle/output/stage_c_v6/artifacts/feature_schema.json"
-        ),
-        parent_feature_catalog_path=(
-            PARENT
-            / "kaggle/output/stage_c_v6/artifacts/feature_catalog.csv"
-        ),
-        parent_compact_schema_path=(
-            PARENT
-            / "kaggle/output/stage_c_v6/artifacts/compact_meta_schema.json"
-        ),
+        parent_feature_schema_path=PARENT_FEATURE_SCHEMA,
+        parent_feature_catalog_path=PARENT_FEATURE_CATALOG,
+        parent_compact_schema_path=PARENT_COMPACT_SCHEMA,
         output_dir=output_dir,
     )
     assert summary["passed"] is True

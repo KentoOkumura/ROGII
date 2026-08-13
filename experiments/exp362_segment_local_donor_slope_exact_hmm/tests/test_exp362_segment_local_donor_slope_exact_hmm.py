@@ -11,6 +11,10 @@ import pandas as pd
 import pytest
 import yaml
 
+from tests.test_support import ensure_numba_test_stub, require_saved_files
+
+ensure_numba_test_stub()
+
 ROOT = Path(__file__).resolve().parents[3]
 EXP_DIR = ROOT / "experiments" / "exp362_segment_local_donor_slope_exact_hmm"
 TRAIN_SOURCE = EXP_DIR / (
@@ -56,7 +60,9 @@ def config():
     return value
 
 
-def test_contract_is_one_773_well_hmm_candidate_and_completed_run_is_disabled(train, config) -> None:
+def test_contract_is_one_773_well_hmm_candidate_and_completed_run_is_disabled(
+    train, config
+) -> None:
     counts = train.validate_scientific_contract(config)
     assert counts == {
         "scientific_variants": 1,
@@ -294,6 +300,11 @@ def test_truth_free_loader_excludes_tvt_and_inference_is_fail_closed(train, tmp_
 
 
 def test_hidden_like_dependency_is_preflighted_without_parsing_roles_early(train, config) -> None:
+    require_saved_files(
+        ROOT
+        / "experiments/exp115_hidden_like_spatial_holdout_from_ppt"
+        / "artifacts/exp115_hidden_like_spatial_holdout_from_ppt_fold_assignments.csv"
+    )
     report = train.preflight_hidden_like_dependency(config)
     assert report["raw_sha256"] == config["data"]["hidden_like"]["expected_sha256"]
     assert report["roles_parsed_before_prediction_freeze"] is False

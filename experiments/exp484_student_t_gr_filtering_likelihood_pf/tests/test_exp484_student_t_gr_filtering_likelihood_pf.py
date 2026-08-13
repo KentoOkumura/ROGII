@@ -14,6 +14,8 @@ import pandas as pd
 import pytest
 import yaml
 
+from tests.test_support import require_saved_files
+
 ROOT = Path(__file__).resolve().parents[3]
 EXP = "exp484_student_t_gr_filtering_likelihood_pf"
 EXP_DIR = ROOT / "experiments" / EXP
@@ -613,10 +615,11 @@ def test_inference_guard_and_notebook_sources_are_fail_closed(
 def test_stage1_kaggle_package_is_cpu_private_and_truth_late(
     config: dict,
 ) -> None:
+    packaged_config_path = KAGGLE_TRAIN_DIR / "config.yaml"
+    packaged_source_path = KAGGLE_TRAIN_DIR / f"{EXP}_compact_selfcontained_train.py"
+    require_saved_files(KAGGLE_METADATA, packaged_config_path, packaged_source_path)
     metadata = json.loads(KAGGLE_METADATA.read_text())
-    packaged_config = yaml.safe_load(
-        (KAGGLE_TRAIN_DIR / "config.yaml").read_text()
-    )
+    packaged_config = yaml.safe_load(packaged_config_path.read_text())
     assert metadata["id"] == (
         "kentookumura/exp484-student-t-gr-filtering-likelihood-pf-train"
     )
@@ -638,9 +641,7 @@ def test_stage1_kaggle_package_is_cpu_private_and_truth_late(
     assert packaged_config["execution"]["run_stage_1"] is True
     assert packaged_config["execution"]["run_inference"] is False
     assert packaged_config["execution"]["create_submission"] is False
-    packaged_source = (
-        KAGGLE_TRAIN_DIR / f"{EXP}_compact_selfcontained_train.py"
-    ).read_bytes()
+    packaged_source = packaged_source_path.read_bytes()
     assert hashlib.sha256(packaged_source).hexdigest() == (
         "51ec23a7508932e6bc2350efa4ab87f17752ae4c5097dff635dd3f39899212c7"
     )

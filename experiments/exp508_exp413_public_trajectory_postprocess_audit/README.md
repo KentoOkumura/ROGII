@@ -42,7 +42,7 @@ exp413の最終TVT予測に、公開ノートブックと同じwell別Savitzky--
 ## well-level routing
 
 exp508には含めない。exp508 primaryが全AND gateをPASSし、raw/SGのtarget-free disagreementに
-独立な相補性が確認できた場合だけ、別exp・別steering・別承認で検討する。公開の固定
+独立な相補性が確認できた場合だけ、別実験の`requirements.md`・別承認で検討する。公開の固定
 `n_eval / z_span` threshold、variant map、well ID、public cardinalityは再利用しない。
 
 ## 実行量

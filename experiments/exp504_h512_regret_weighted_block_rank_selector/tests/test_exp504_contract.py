@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from tests.test_support import require_one_saved_file
 
 HERE = Path(__file__).resolve().parents[1]
 SOURCE = HERE / "exp504_h512_regret_weighted_block_rank_selector_compact_selfcontained_train.py"
@@ -91,6 +92,11 @@ def test_pair_schema_is_antisymmetric_without_ordinal_candidate_index() -> None:
 def test_corrected_88_feature_cube_is_fully_constructible_and_ctx_is_shared() -> None:
     module = load_module()
     config = module.load_config(HERE / "config.yaml")
+    require_one_saved_file(
+        Path(pattern)
+        for pattern in config["data"]["row_feature_schema"]["source_patterns"]
+        if not Path(pattern).is_absolute()
+    )
     features, _ = module.load_feature_schema(config)
     n_rows = 4
     n_candidates = len(module.EXPECTED_CANDIDATE_ORDER)

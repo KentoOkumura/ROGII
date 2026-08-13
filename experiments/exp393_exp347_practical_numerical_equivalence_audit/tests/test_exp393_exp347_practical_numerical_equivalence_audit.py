@@ -11,6 +11,8 @@ import numpy as np
 import pytest
 import yaml
 
+from tests.test_support import require_saved_files
+
 ROOT = Path(__file__).resolve().parents[3]
 EXP_DIR = ROOT / "experiments" / (
     "exp393_exp347_practical_numerical_equivalence_audit"
@@ -142,6 +144,15 @@ def test_parent_fixed16_and_terminal_exp347_evidence_is_sha_locked(
     module: dict[str, object],
     config: dict,
 ) -> None:
+    data = config["data"]
+    require_saved_files(
+        *(ROOT / data[name]["candidates"][0] for name in (
+            "parent_config",
+            "parent_stage0_report",
+            "parent_window_manifest",
+            "parent_boundary_manifest",
+        ))
+    )
     windows, boundaries, evidence = module["load_parent_fixed16_contract"](
         config
     )
@@ -302,12 +313,13 @@ def test_practical_gate_excludes_legacy_posterior_cell_threshold(
 
 def test_completed_stage_a_evidence_matches_the_closed_config(config: dict) -> None:
     prefix = "exp393_exp347_practical_numerical_equivalence_audit"
+    metrics_path = STAGE_A_ARTIFACTS / f"{prefix}_stage_a_metrics.json"
+    manifest_path = STAGE_A_ARTIFACTS / f"{prefix}_model_manifest.json"
+    require_saved_files(metrics_path, manifest_path)
     metrics = json.loads(
-        (STAGE_A_ARTIFACTS / f"{prefix}_stage_a_metrics.json").read_text()
+        metrics_path.read_text()
     )
-    manifest = json.loads(
-        (STAGE_A_ARTIFACTS / f"{prefix}_model_manifest.json").read_text()
-    )
+    manifest = json.loads(manifest_path.read_text())
     result = config["execution"]["stage_a_result"]
     assert metrics["guard"]["passed"] is False
     assert {

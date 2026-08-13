@@ -38,6 +38,7 @@ from src.fold_safe_formation_pipeline import (
     canonical_formation_feature_names,
     load_formation_feature_contract,
 )
+from tests.test_support import require_saved_files
 
 ROOT = Path(__file__).resolve().parents[3]
 EXP = ROOT / "experiments" / "exp264_exp263_candidate_confidence_dual_selector"
@@ -403,6 +404,7 @@ def test_inference_missingness_guard_preserves_structural_nan_semantics() -> Non
 def test_exp264_stage_a_catalog_drives_real_selector_missingness_contract() -> None:
     config = yaml.safe_load((EXP / "config.yaml").read_text())
     catalog_path = EXP / "kaggle/output/stage_a_v4/artifacts/feature_catalog.csv"
+    require_saved_files(catalog_path)
     assert sha256_file(catalog_path) == config["inference"][
         "selector_feature_catalog_sha256"
     ]
@@ -503,10 +505,12 @@ def test_stage_d_cost_contract_is_exactly_30_gpu_boosters() -> None:
 def test_stage_d_clean_273_allowlist_is_sha_locked_and_fold_safe() -> None:
     config = yaml.safe_load((EXP / "config.yaml").read_text())
     stage = config["model"]["downstream_tvt_stage"]
-    availability = pd.read_csv(
+    availability_path = (
         EXP / "artifacts/feature_availability_audit/exp218_feature_availability.csv"
     )
     allowlist_path = EXP / "artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv"
+    require_saved_files(availability_path, allowlist_path)
+    availability = pd.read_csv(availability_path)
     selected, evidence = apply_stage_d_base_feature_allowlist(
         availability["feature"].astype(str).tolist(),
         allowlist_path=allowlist_path,
@@ -522,15 +526,16 @@ def test_stage_d_clean_273_allowlist_is_sha_locked_and_fold_safe() -> None:
 
 
 def test_stage_d_clean_273_allowlist_rejects_sha_mismatch() -> None:
-    availability = pd.read_csv(
+    availability_path = (
         EXP / "artifacts/feature_availability_audit/exp218_feature_availability.csv"
     )
+    allowlist_path = EXP / "artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv"
+    require_saved_files(availability_path, allowlist_path)
+    availability = pd.read_csv(availability_path)
     with pytest.raises(ValueError, match="allowlist SHA mismatch"):
         apply_stage_d_base_feature_allowlist(
             availability["feature"].astype(str).tolist(),
-            allowlist_path=(
-                EXP / "artifacts/feature_availability_audit/exp218_clean_273_allowlist.csv"
-            ),
+            allowlist_path=allowlist_path,
             expected_source_count=380,
             expected_selected_count=273,
             expected_allowlist_sha256="0" * 64,

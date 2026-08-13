@@ -2,7 +2,7 @@
 
 ## 正規契約
 
-この文書はexp295の入力境界、数理モデル、stage分岐、成功条件を実装都合や中間結果から独自変更しないための正規契約である。変更する場合はユーザーの明示承認を得て、steering、`config.yaml`、この文書、`KAGGLE_DIRECTION.md`を同時に更新する。
+この文書はexp295の入力境界、数理モデル、stage分岐、成功条件を実装都合や中間結果から独自変更しないための正規契約である。変更する場合はユーザーの明示承認を得て、`config.yaml`、この文書、`KAGGLE_DIRECTION.md`を更新し、新しい実験へ分ける場合はその`requirements.md`へ契約を移す。
 
 2026-07-19にStage A実装が承認され、別名compact self-contained train候補、fail-closed inference候補、専用contract testsを実装した。canonical train NotebookとStage A GPU pushはその後承認済み。Stage B/C、inference、submissionは未承認である。
 

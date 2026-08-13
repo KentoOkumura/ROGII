@@ -21,6 +21,7 @@ from src.feature_union_pipeline import (
     validate_role_alignment,
 )
 from src.fold_safe_formation_pipeline import canonical_formation_feature_names
+from tests.test_support import require_saved_files
 
 EXP372 = Path("experiments/exp372_exp287_exp335_feature_union_on_exp264")
 
@@ -457,6 +458,7 @@ def test_guard_failed_inference_override_is_cpu_zero_fit_and_submit_disarmed() -
     manifest_path = (
         EXP372 / "kaggle/output/train_v2/artifacts/model_manifest.json"
     )
+    require_saved_files(manifest_path)
     assert hashlib.sha256(manifest_path.read_bytes()).hexdigest() == (
         inference["tvt_model_manifest_sha256"]
     )
@@ -534,6 +536,7 @@ def test_frozen_manifest_and_schema_hashes_match_saved_metadata() -> None:
             "kaggle/output/preflight_v2/artifacts/signed_compact_schema.json"
         ),
     }
+    require_saved_files(*paths.values())
     for field, path in paths.items():
         assert hashlib.sha256(path.read_bytes()).hexdigest() == data[field]
 

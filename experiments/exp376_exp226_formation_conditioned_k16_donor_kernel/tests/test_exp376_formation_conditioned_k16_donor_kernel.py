@@ -7,6 +7,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from tests.test_support import require_saved_files
+
 EXPERIMENT_DIR = Path(
     "experiments/exp376_exp226_formation_conditioned_k16_donor_kernel"
 )
@@ -38,10 +40,6 @@ def module() -> dict[str, object]:
 def test_execution_contract_is_one_k16_variant_and_one_run_authorized(
     module: dict[str, object],
 ) -> None:
-    run_config = module["read_yaml"](RUN_CONFIG_PATH)
-    module["validate_execution_contract"](
-        run_config, require_kaggle_authorization=True
-    )
     assert module["EXPECTED_VARIANTS"] == {"formation_conditioned_k16": 16}
     config = module["read_yaml"](CONFIG_PATH)
     assert config["execution"]["kaggle_execution_authorized"] is True
@@ -50,6 +48,16 @@ def test_execution_contract_is_one_k16_variant_and_one_run_authorized(
     assert config["execution"]["kaggle_target_version"] == 2
     assert config["execution"]["inference_enabled"] is False
     assert config["execution"]["submission_enabled"] is False
+
+
+def test_saved_kaggle_run_config_records_the_consumed_authorization(
+    module: dict[str, object],
+) -> None:
+    require_saved_files(RUN_CONFIG_PATH)
+    run_config = module["read_yaml"](RUN_CONFIG_PATH)
+    module["validate_execution_contract"](
+        run_config, require_kaggle_authorization=True
+    )
 
 
 def test_formation_plane_excludes_target_well(

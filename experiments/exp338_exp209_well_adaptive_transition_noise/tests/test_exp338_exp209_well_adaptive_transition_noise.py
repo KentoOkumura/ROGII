@@ -11,6 +11,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from tests.test_support import ensure_numba_test_stub, require_saved_files
+
+ensure_numba_test_stub()
+
 ROOT = Path(__file__).resolve().parents[3]
 EXP_DIR = ROOT / "experiments" / "exp338_exp209_well_adaptive_transition_noise"
 TRAIN_SOURCE = EXP_DIR / (
@@ -144,6 +148,7 @@ def test_hidden_like_role_contract_accepts_exp115_purged_exclusions() -> None:
         / "artifacts"
         / hidden["filename"]
     )
+    require_saved_files(assignment_path)
     assert module.sha256_path(assignment_path) == hidden["expected_sha256"]
     role_columns = list(hidden["role_columns"].values())
     assignment = pd.read_csv(assignment_path, usecols=["well_id", *role_columns])

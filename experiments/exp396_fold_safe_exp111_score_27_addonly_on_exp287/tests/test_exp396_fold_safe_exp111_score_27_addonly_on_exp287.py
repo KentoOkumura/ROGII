@@ -11,6 +11,8 @@ import pandas as pd
 import pytest
 import yaml
 
+from tests.test_support import require_saved_files
+
 ROOT = Path(__file__).resolve().parents[3]
 EXP_NAME = "exp396_fold_safe_exp111_score_27_addonly_on_exp287"
 EXP_DIR = ROOT / "experiments" / EXP_NAME
@@ -183,15 +185,22 @@ def test_fixed_schemas_and_hashes_are_locked(module, config) -> None:
         / "experiments"
         / "exp111_learned_pf_observation_likelihood_probe"
     )
+    feature_schema = (
+        reference
+        / "kaggle/output/train_v1/artifacts/"
+        "exp111_learned_pf_observation_likelihood_probe_feature_schema.csv"
+    )
+    model_manifest = (
+        reference
+        / "kaggle/output/train_v1/artifacts/"
+        "exp111_learned_pf_observation_likelihood_probe_model_manifest.json"
+    )
+    require_saved_files(feature_schema, model_manifest)
     evidence = module.verify_exp111_contract_files(
         reference / "learned_pf_observation_likelihood_probe.py",
         reference / "config.yaml",
-        reference
-        / "kaggle/output/train_v1/artifacts/"
-        "exp111_learned_pf_observation_likelihood_probe_feature_schema.csv",
-        reference
-        / "kaggle/output/train_v1/artifacts/"
-        "exp111_learned_pf_observation_likelihood_probe_model_manifest.json",
+        feature_schema,
+        model_manifest,
         config,
     )
     assert evidence["saved_model_prediction_use"] is False

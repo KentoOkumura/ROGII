@@ -11,6 +11,8 @@ import pandas as pd
 import pytest
 import yaml
 
+from tests.test_support import require_saved_files
+
 EXP_DIR = Path("experiments/exp498_geometry_mean_reversion_tail_regime_physics_readout")
 SOURCE_PATH = EXP_DIR / "exp498_geometry_mean_reversion_tail_regime_physics_readout_train.py"
 CONFIG_PATH = EXP_DIR / "config.yaml"
@@ -68,9 +70,16 @@ def test_phase_a_allowlists_exclude_outcomes_and_horizontal_truth(module, config
 def test_raw_sha_decoder_manifests_are_pinned_and_cover_773_wells(config: dict) -> None:
     combined: set[str] = set()
     scientific = config["data"]["inputs"]["scientific_contract"]["sha256"]
-    for shard in config["data"]["inputs"]["raw_sha_manifests"]["shards"]:
-        local = Path(shard["candidates"][-1]) / shard["filename"]
-        assert local.is_file()
+    local_manifests = [
+        Path(shard["candidates"][-1]) / shard["filename"]
+        for shard in config["data"]["inputs"]["raw_sha_manifests"]["shards"]
+    ]
+    require_saved_files(*local_manifests)
+    for shard, local in zip(
+        config["data"]["inputs"]["raw_sha_manifests"]["shards"],
+        local_manifests,
+        strict=True,
+    ):
         digest = __import__("hashlib").sha256(local.read_bytes()).hexdigest()
         assert digest == shard["sha256"]
         payload = json.loads(local.read_text(encoding="utf-8"))
@@ -214,7 +223,9 @@ def _synthetic_gate_frame(module) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def test_truth_late_join_uses_declared_suffixes_and_checks_fold_parity(module, config: dict) -> None:
+def test_truth_late_join_uses_declared_suffixes_and_checks_fold_parity(
+    module, config: dict
+) -> None:
     features = pd.DataFrame(
         {
             "well": [f"well_{fold}" for fold in range(5)],

@@ -81,10 +81,10 @@ def fake_forward_backward(emission, *_args):
     return posterior, float(np.sum(values))
 
 
-def test_config_fixes_one_approved_kaggle_cpu_variant() -> None:
+def test_config_records_the_completed_closed_kaggle_cpu_variant() -> None:
     config = load_config()
     EXP296.validate_scientific_contract(config)
-    assert config["experiment"]["status"].startswith("kaggle_cpu_")
+    assert config["experiment"]["status"] == "completed_train_side_guard_failed_closed"
     assert config["model"]["planned_variants"] == 1
     assert config["model"]["planned_hmm_well_runs"] == 773
     assert config["model"]["lightgbm_configs"] == 0
@@ -92,7 +92,7 @@ def test_config_fixes_one_approved_kaggle_cpu_variant() -> None:
     assert config["model"]["boosters"] == 0
     assert config["execution"]["implementation"] is True
     assert config["execution"]["run_control"] is False
-    assert config["execution"]["run_variant"] is True
+    assert config["execution"]["run_variant"] is False
     assert config["execution"]["kaggle_cpu_push_approved"] is True
     assert config["execution"]["canonical_train_notebook_adopted"] is True
     assert config["execution"]["run_inference"] is False
@@ -323,6 +323,7 @@ def test_full_runner_requires_separate_kaggle_cpu_approval(
     with pytest.raises(RuntimeError, match="execution.run_variant is false"):
         EXP296.run_full_experiment(disabled_variant)
     approved_variant = copy.deepcopy(config)
+    approved_variant["execution"]["run_variant"] = True
     approved_variant["execution"]["kaggle_cpu_push_approved"] = False
     with pytest.raises(RuntimeError, match="Kaggle CPU push is not approved"):
         EXP296.run_full_experiment(approved_variant)

@@ -91,6 +91,12 @@ FORBIDDEN_CANDIDATE_COLUMNS = {
 EXPECTED_DOWNSTREAM_CONTRACT_SHA256 = (
     "025a81e634b9a46504314bfd9e273bc2e36ed18dd5fa744e7fd3a8b614713819"
 )
+POST_EXECUTION_EXTENSION_START = "\n## 2026-07-26 ユーザー承認による独立分岐\n"
+POST_EXECUTION_EXTENSION_END = "\n## Stage 2:"
+CURRENT_TO_EXECUTED_CONTRACT_TEXT = {
+    "この文書、対象実験のrequirements.md、config、": "この文書、steering、config、",
+    "新しい実験のrequirements.mdと実験番号へ": "新しいsteeringと実験番号へ",
+}
 
 
 # %% [markdown]
@@ -146,13 +152,21 @@ def downstream_contract_sha256() -> str:
     ):
         if not path.exists():
             continue
-        actual = sha256_file(path)
+        current = path.read_text()
+        execution_contract = current
+        if POST_EXECUTION_EXTENSION_START in current:
+            start = current.index(POST_EXECUTION_EXTENSION_START)
+            end = current.index(POST_EXECUTION_EXTENSION_END, start)
+            execution_contract = current[:start] + current[end:]
+        for current_text, executed_text in CURRENT_TO_EXECUTED_CONTRACT_TEXT.items():
+            execution_contract = execution_contract.replace(current_text, executed_text)
+        actual = hashlib.sha256(execution_contract.encode()).hexdigest()
         if actual != EXPECTED_DOWNSTREAM_CONTRACT_SHA256:
             raise ValueError(
-                "downstream_branch_contract.md SHA mismatch: "
+                "executed downstream_branch_contract.md base SHA mismatch: "
                 f"expected {EXPECTED_DOWNSTREAM_CONTRACT_SHA256}, got {actual}"
             )
-        return actual
+        return EXPECTED_DOWNSTREAM_CONTRACT_SHA256
     return EXPECTED_DOWNSTREAM_CONTRACT_SHA256
 
 

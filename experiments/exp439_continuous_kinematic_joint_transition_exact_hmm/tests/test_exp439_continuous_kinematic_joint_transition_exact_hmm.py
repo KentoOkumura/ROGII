@@ -14,6 +14,8 @@ import pandas as pd
 import pytest
 import yaml
 
+from tests.test_support import require_saved_files
+
 if importlib.util.find_spec("numba") is None:
     numba_stub = types.ModuleType("numba")
     numba_stub.__spec__ = importlib.machinery.ModuleSpec("numba", loader=None)
@@ -29,6 +31,8 @@ if importlib.util.find_spec("numba") is None:
         return decorator
 
     numba_stub.njit = _njit
+    numba_stub.prange = range
+    numba_stub.get_num_threads = lambda: 1
     numba_stub.set_num_threads = lambda threads: None
     numba_stub.__version__ = "test-stub"
     sys.modules["numba"] = numba_stub
@@ -370,6 +374,7 @@ def test_truth_role_fold_and_episode_reads_are_locked_until_all_freeze(train):
 
 
 def test_fixed_inputs_are_sha_pinned(config):
+    require_saved_files(MANIFEST_PATH, EPISODE_PATH, CAUSE_PATH)
     assert hashlib.sha256(MANIFEST_PATH.read_bytes()).hexdigest() == (
         config["data"]["fixed32_manifest"]["expected_sha256"]
     )

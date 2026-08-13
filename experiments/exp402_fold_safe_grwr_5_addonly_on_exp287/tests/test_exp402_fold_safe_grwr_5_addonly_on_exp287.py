@@ -11,6 +11,7 @@ import pandas as pd
 import pytest
 import yaml
 
+from tests.test_support import require_saved_files
 
 ROOT = Path(__file__).resolve().parents[3]
 EXP_NAME = "exp402_fold_safe_grwr_5_addonly_on_exp287"
@@ -213,9 +214,12 @@ def test_implementation_and_execution_contract_is_fail_closed(module, config) ->
         / "artifacts"
         / "feature_availability_audit"
     )
+    availability_path = audit_root / "exp218_feature_availability.csv"
+    allowlist_path = audit_root / "exp218_clean_273_allowlist.csv"
+    require_saved_files(availability_path, allowlist_path)
     availability = module.verify_availability_contract(
-        audit_root / "exp218_feature_availability.csv",
-        audit_root / "exp218_clean_273_allowlist.csv",
+        availability_path,
+        allowlist_path,
         stage0_config,
     )
     assert availability["historical_grwr5_values_selected"] == 0

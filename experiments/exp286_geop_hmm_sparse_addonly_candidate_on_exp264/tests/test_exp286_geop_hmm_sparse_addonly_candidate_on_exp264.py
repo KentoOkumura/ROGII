@@ -21,7 +21,7 @@ from src.geop_hmm_selector_audit import (
     stage_d_full13_cost_contract,
     validate_full_contract,
 )
-
+from tests.test_support import require_saved_files
 
 ROOT = Path(__file__).resolve().parents[3]
 EXP = "exp286_geop_hmm_sparse_addonly_candidate_on_exp264"
@@ -428,14 +428,22 @@ def test_parent_stage_d_reference_is_sha_locked() -> None:
         / "experiments/exp264_exp263_candidate_confidence_dual_selector"
         / "kaggle/output/stage_d_v3_corrected/artifacts"
     )
+    required = [
+        root / "stage_d_metrics.json",
+        root / "stage_d_fold_metrics.csv",
+        root / "stage_d_bucket_metrics.csv",
+        root / "stage_d_hidden_like_metrics.csv",
+        root / "stage_d_by_well.csv",
+    ]
+    require_saved_files(*required)
     reference = load_parent_stage_d_reference(
         config=config,
         paths={
-            "metrics": root / "stage_d_metrics.json",
-            "fold_metrics": root / "stage_d_fold_metrics.csv",
-            "bucket_metrics": root / "stage_d_bucket_metrics.csv",
-            "hidden_like_metrics": root / "stage_d_hidden_like_metrics.csv",
-            "by_well": root / "stage_d_by_well.csv",
+            "metrics": required[0],
+            "fold_metrics": required[1],
+            "bucket_metrics": required[2],
+            "hidden_like_metrics": required[3],
+            "by_well": required[4],
         },
     )
     assert reference["metrics"]["selector_compact_addonly_lgb_mean_rmse"] == pytest.approx(

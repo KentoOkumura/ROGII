@@ -13,6 +13,8 @@ import pandas as pd
 import pytest
 import yaml
 
+from tests.test_support import require_saved_files
+
 ROOT = Path(__file__).resolve().parents[3]
 EXP = "exp450_dzdmd_conditioned_tvt_rate_likelihood_pf"
 EXP_DIR = ROOT / "experiments" / EXP
@@ -480,6 +482,7 @@ def test_truth_late_ledger_is_fail_closed(train: ModuleType) -> None:
 
 
 def test_fixed_assets_have_preregistered_identity(config: dict) -> None:
+    require_saved_files(SENTINEL_ASSET, FIXED32_ASSET, EPISODE_ASSET, CAUSE_ASSET)
     assert file_sha(SENTINEL_ASSET) == config["data"]["stage_0a_sentinel12"]["expected_sha256"]
     assert file_sha(FIXED32_ASSET) == config["data"]["stage_0b_fixed32"]["expected_sha256"]
     assert file_sha(EPISODE_ASSET) == config["data"]["persistent_episodes"]["expected_sha256"]
@@ -551,6 +554,7 @@ def test_stage0a_v1_roundoff_is_diagnostic_when_aggregate_output_is_equivalent(
     train: ModuleType,
     config: dict,
 ) -> None:
+    require_saved_files(V1_PARITY_REPORT)
     reports = pd.read_csv(V1_PARITY_REPORT, dtype={"well": str})
     predictions = pd.DataFrame(
         {

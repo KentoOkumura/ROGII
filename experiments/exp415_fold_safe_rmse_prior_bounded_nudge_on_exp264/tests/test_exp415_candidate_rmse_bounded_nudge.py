@@ -17,6 +17,7 @@ from src.candidate_rmse_bounded_nudge import (
     rmse_risk_certificate,
     validate_candidate_rmse_bounded_nudge_config,
 )
+from tests.test_support import require_saved_files
 
 ROOT = Path(__file__).resolve().parents[3]
 EXP = "exp415_fold_safe_rmse_prior_bounded_nudge_on_exp264"
@@ -266,6 +267,7 @@ def test_real_candidate_rmse_table_is_fold_safe_and_uses_no_weight_column() -> N
         / "artifacts"
         / "candidate_task_weight_by_fold.csv"
     )
+    require_saved_files(path)
     matrix, table, audit = module.load_candidate_rmse_matrix(path, config)
     assert matrix.shape == (5, 12)
     assert len(table) == 60

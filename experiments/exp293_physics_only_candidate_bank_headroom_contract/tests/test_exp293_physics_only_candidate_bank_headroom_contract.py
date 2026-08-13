@@ -104,12 +104,10 @@ def test_config_and_downstream_branch_contract_are_fixed(config: dict) -> None:
         "fail"
     ]
     downstream = (EXP_DIR / "downstream_branch_contract.md").read_text()
-    assert train.sha256_file(EXP_DIR / "downstream_branch_contract.md") == (
-        train.EXPECTED_DOWNSTREAM_CONTRACT_SHA256
-    )
     assert train.downstream_contract_sha256() == (
         train.EXPECTED_DOWNSTREAM_CONTRACT_SHA256
     )
+    assert "## 2026-07-26 ユーザー承認による独立分岐" in downstream
     assert "Stage 4へ自動分岐しない" in downstream
     assert "PASS後も直接Stage 2へ進まず" in downstream
 

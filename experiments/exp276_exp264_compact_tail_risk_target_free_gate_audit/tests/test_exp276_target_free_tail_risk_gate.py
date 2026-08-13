@@ -10,6 +10,8 @@ import pandas as pd
 import pytest
 import yaml
 
+from tests.test_support import require_saved_files
+
 ROOT = Path(__file__).resolve().parents[3]
 EXP_DIR = ROOT / "experiments" / "exp276_exp264_compact_tail_risk_target_free_gate_audit"
 SOURCE = EXP_DIR / "exp276_exp264_compact_tail_risk_target_free_gate_audit_train.py"
@@ -132,6 +134,11 @@ def test_config_pins_corrected_exp264_stage_c_v6_and_stage_d_v3():
 
 
 def test_corrected_stage_c_manifest_contract_resolves_locally():
+    require_saved_files(
+        ROOT
+        / "experiments/exp264_exp263_candidate_confidence_dual_selector"
+        / "kaggle/output/stage_c_v6/artifacts/nested_compact_manifest.json"
+    )
     root, partitions, schema = MODULE.load_stage_c_contract(CONFIG)
     assert "stage_c_v6" in str(root)
     assert len(partitions) == 25

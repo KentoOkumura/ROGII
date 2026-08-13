@@ -34,6 +34,7 @@ from src.candidate_selector_pipeline import (
     validate_candidate_contract,
 )
 from src.geop_hmm_selector_audit import load_parent_stage_d_reference
+from tests.test_support import require_saved_files
 
 ROOT = Path(__file__).resolve().parents[3]
 EXP_DIR = (
@@ -421,6 +422,22 @@ def test_stage_c_and_parent_stage_d_references_are_sha_locked() -> None:
             "stage_c_expected_compact_meta_schema_file_sha256"
         ),
     }
+    parent_root = (
+        ROOT
+        / "experiments/exp264_exp263_candidate_confidence_dual_selector"
+        / "kaggle/output/stage_d_v3_corrected/artifacts"
+    )
+    parent_files = [
+        parent_root / "stage_d_metrics.json",
+        parent_root / "stage_d_fold_metrics.csv",
+        parent_root / "stage_d_bucket_metrics.csv",
+        parent_root / "stage_d_hidden_like_metrics.csv",
+        parent_root / "stage_d_by_well.csv",
+    ]
+    require_saved_files(
+        *(stage_c_root / filename for filename in expected_files),
+        *parent_files,
+    )
     for filename, config_key in expected_files.items():
         assert sha256_file(stage_c_root / filename) == config["data"][config_key]
     compact_schema = yaml.safe_load(
@@ -431,20 +448,14 @@ def test_stage_c_and_parent_stage_d_references_are_sha_locked() -> None:
         "stage_c_expected_compact_meta_schema_logical_sha256"
     ]
 
-    parent_root = (
-        ROOT
-        / "experiments/exp264_exp263_candidate_confidence_dual_selector"
-        / "kaggle/output/stage_d_v3_corrected/artifacts"
-    )
     reference = load_parent_stage_d_reference(
         config=config,
         paths={
-            "metrics": parent_root / "stage_d_metrics.json",
-            "fold_metrics": parent_root / "stage_d_fold_metrics.csv",
-            "bucket_metrics": parent_root / "stage_d_bucket_metrics.csv",
-            "hidden_like_metrics": parent_root
-            / "stage_d_hidden_like_metrics.csv",
-            "by_well": parent_root / "stage_d_by_well.csv",
+            "metrics": parent_files[0],
+            "fold_metrics": parent_files[1],
+            "bucket_metrics": parent_files[2],
+            "hidden_like_metrics": parent_files[3],
+            "by_well": parent_files[4],
         },
     )
     assert reference["metrics"]["selector_compact_addonly_lgb_mean_rmse"] == (

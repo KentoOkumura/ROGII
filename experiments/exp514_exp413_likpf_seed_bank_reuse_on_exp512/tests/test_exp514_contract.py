@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
+from tests.test_support import require_saved_files
 
 HERE = Path(__file__).resolve().parents[1]
 ROOT = HERE.parents[1]
@@ -345,7 +346,10 @@ def test_candidate_orchestration_removes_both_duplicate_pf_calls() -> None:
     )
     assert "_gold_pf_candidates" in source
     assert "run_beam_ensemble" in source
-    assert "gs = float(np.clip(np.nanstd(kn.GR.fillna(0).values - tw_at_k), 10., 60.)) * 1.3" in source
+    assert (
+        "gs = float(np.clip(np.nanstd(kn.GR.fillna(0).values - tw_at_k), 10., 60.)) * 1.3"
+        in source
+    )
 
 
 def test_runtime_v3_reuses_deterministic_features_and_parallelizes_gold() -> None:
@@ -389,7 +393,10 @@ def test_stage_d_v4_bounds_pf_payload_and_releases_consumed_arrays() -> None:
     assert "del _shared_sp45_pipeline_results" in source
     assert "'all_well_full_payload_retained': False" in source
     assert "'max_concurrent_full_payload_wells': _sp45_effective_n_jobs" in source
-    assert "SHARED_LIKPF_BANK, SHARED_LIKPF_PARALLEL_REPORT = materialize_shared_likpf_bank(" not in source
+    assert (
+        "SHARED_LIKPF_BANK, SHARED_LIKPF_PARALLEL_REPORT = materialize_shared_likpf_bank("
+        not in source
+    )
 
     runtime = load_shared_runtime_module(STAGE_D_SOURCE)
     record = runtime._shared_likpf_one_well(
@@ -513,7 +520,8 @@ def test_stage_b_is_fixed32_truth_frozen_and_non_submission() -> None:
     assert "STAGE_B_WELLS = 32" in source
     assert "STAGE_B_PARTICLES = 500" in source
     assert "STAGE_B_SEEDS = 128" in source
-    assert f'EXPECTED_SELECTION_SHA256 = "{read_yaml("config.yaml")["stage_a_result"]["selection_sha256"]}"' in source
+    selection_sha = read_yaml("config.yaml")["stage_a_result"]["selection_sha256"]
+    assert f'EXPECTED_SELECTION_SHA256 = "{selection_sha}"' in source
     freeze_call = source.index(
         "prediction_content_sha, prediction_gzip_sha = freeze_prediction_frame("
     )
@@ -713,6 +721,7 @@ def test_stage_d_kaggle_package_is_private_offline_t4_and_pinned() -> None:
     package = HERE / "kaggle" / "stage_d_visible"
     notebook = package / implementation["stage_d_notebook"]
     metadata_path = package / "kernel-metadata.json"
+    require_saved_files(notebook, metadata_path)
     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
     packaged = json.loads(notebook.read_text(encoding="utf-8"))
 
