@@ -16,9 +16,9 @@ from src.likpf_full_replacement import (
     REPLACEMENT_VALUE_SOURCE,
     UNCHANGED_CANDIDATES,
     ReplacementCandidateCache,
-    _load_module,
     _assert_replacement_alignment,
     _formula_parity_max_abs,
+    _load_module,
     build_bank_from_primitives,
     evaluate_replacement_gate,
     patch_base_replay_primitive,
@@ -90,10 +90,7 @@ def test_config_records_stage_d_and_authorizes_kaggle_submission_output() -> Non
     assert config["implementation"]["inference_enabled"] is True
     assert config["implementation"]["submission_enabled"] is True
     inference = config["inference"]
-    assert (
-        inference["status"]
-        == "user_authorized_2026_07_29_kaggle_submission_output"
-    )
+    assert inference["status"] == "user_authorized_2026_07_29_kaggle_submission_output"
     assert inference["stage_d_primary_gate_passed"] is True
     assert inference["runtime"] == "kaggle_cpu"
     assert inference["booster_training_count"] == 0
@@ -113,12 +110,13 @@ def test_config_records_stage_d_and_authorizes_kaggle_submission_output() -> Non
     }
     assert evidence["changed_candidates"] == list(CHANGED_CANDIDATES)
     assert evidence["unchanged_candidates"] == list(UNCHANGED_CANDIDATES)
-    assert config["data"]["exp072_train_feature_cache"][
-        "expected_likpf_dependency_columns"
-    ] == ["likpf_mean_d"]
-    assert config["replacement"]["feature_graph"]["clean_base"][
-        "expected_likpf_named_feature_count"
-    ] == 22
+    assert config["data"]["exp072_train_feature_cache"]["expected_likpf_dependency_columns"] == [
+        "likpf_mean_d"
+    ]
+    assert (
+        config["replacement"]["feature_graph"]["clean_base"]["expected_likpf_named_feature_count"]
+        == 22
+    )
     assert config["replacement"]["parent_old_mean_parity_max_abs_ft"] == 0.001
     assert cost == {
         "replacement_variants": 1,
@@ -135,9 +133,7 @@ def test_config_records_stage_d_and_authorizes_kaggle_submission_output() -> Non
     assert completed["kernel_version"] == 3
     assert completed["models_trained"] == 0
     assert completed["pf_well_runs"] == 0
-    completed_stage_c = config["execution"]["completed_stages"][
-        "nested_selector_train"
-    ]
+    completed_stage_c = config["execution"]["completed_stages"]["nested_selector_train"]
     assert completed_stage_c["kernel_version"] == 3
     assert completed_stage_c["technical_pass"] is True
     assert completed_stage_c["score_guard_pass"] is True
@@ -146,9 +142,7 @@ def test_config_records_stage_d_and_authorizes_kaggle_submission_output() -> Non
     assert completed_stage_c["compact_partitions"] == 25
     assert completed_stage_c["compact_rows"] == 18_919_945
     assert completed_stage_c["outer_valid_score_long_rows"] == 45_407_868
-    completed_stage_s = config["execution"]["completed_stages"][
-        "signed_selector_train"
-    ]
+    completed_stage_s = config["execution"]["completed_stages"]["signed_selector_train"]
     assert completed_stage_s["kernel_version"] == 1
     assert completed_stage_s["technical_pass"] is True
     assert completed_stage_s["score_gate_pass"] is True
@@ -160,17 +154,13 @@ def test_config_records_stage_d_and_authorizes_kaggle_submission_output() -> Non
     assert completed_stage_s["improved_outer_folds"] == 5
     assert completed_stage_s["improved_candidates"] == 11
     assert completed_stage_s["control_models_retrained"] == 0
-    completed_stage_d = config["execution"]["completed_stages"][
-        "downstream_gpu_train"
-    ]
+    completed_stage_d = config["execution"]["completed_stages"]["downstream_gpu_train"]
     assert completed_stage_d["kernel_version"] == 2
     assert completed_stage_d["technical_pass"] is True
     assert completed_stage_d["primary_gate_pass"] is True
     assert completed_stage_d["models_trained"] == 15
     assert completed_stage_d["unique_model_sha_count"] == 15
-    assert completed_stage_d["replacement_rmse"] == pytest.approx(
-        7.884802794404715
-    )
+    assert completed_stage_d["replacement_rmse"] == pytest.approx(7.884802794404715)
     assert completed_stage_d["gain_ft"] == pytest.approx(0.26130496147630744)
     assert completed_stage_d["nonworse_folds"] == 5
     assert completed_stage_d["maximum_scope_delta_rmse_ft"] < 0.02
@@ -179,9 +169,7 @@ def test_config_records_stage_d_and_authorizes_kaggle_submission_output() -> Non
     assert completed_stage_d["pf_well_runs"] == 0
     assert completed_stage_d["inference_executed"] is True
     assert completed_stage_d["submission_generated"] is False
-    completed_inference = config["execution"]["completed_stages"][
-        "current_test_inference"
-    ]
+    completed_inference = config["execution"]["completed_stages"]["current_test_inference"]
     assert completed_inference["kernel_version"] == 4
     assert completed_inference["output_validation_status"] == "pass"
     assert completed_inference["rows"] == 14_151
@@ -225,9 +213,7 @@ def test_config_records_stage_d_and_authorizes_kaggle_submission_output() -> Non
     assert failed_stage_c_v2["completed_booster_logs"] == 0
     assert failed_stage_c["completed_booster_logs"] == 40
     assert failed_stage_c["recoverable_output_files"] == 0
-    failed_inference_v1 = config["execution"]["failed_runs"][
-        "current_test_inference"
-    ][0]
+    failed_inference_v1 = config["execution"]["failed_runs"]["current_test_inference"][0]
     assert failed_inference_v1["kernel_version"] == 1
     assert failed_inference_v1["completed_saved_model_predictions"] == 0
     assert failed_inference_v1["recoverable_prediction_files"] == 0
@@ -270,8 +256,7 @@ def test_alignment_is_exact_at_parent_float32_cache_precision() -> None:
             "id": ["row_0"],
             "well_id": ["well_a"],
             "row_idx": np.asarray([10], dtype=np.int64),
-            "last_known_tvt": parent["last_known_tvt"].astype(np.float64)
-            + np.float64(0.00046875),
+            "last_known_tvt": parent["last_known_tvt"].astype(np.float64) + np.float64(0.00046875),
             "md_since": parent["md_since"].astype(np.float64),
         }
     )
@@ -317,9 +302,7 @@ def _write_primitive_partition(
     confidence["confidence_source"] = confidence_source
     confidence["confidence_valid"] = True
     confidence["confidence_missing_fields"] = ""
-    confidence_path = (
-        root / "candidate_confidence" / name / "fold=0" / "part-000.parquet"
-    )
+    confidence_path = root / "candidate_confidence" / name / "fold=0" / "part-000.parquet"
     confidence_path.parent.mkdir(parents=True, exist_ok=True)
     confidence.to_parquet(confidence_path, index=False)
 
@@ -358,10 +341,7 @@ def test_overlay_cache_changes_exactly_five_candidates_and_never_reads_old_mean(
     expected_new = build_bank_from_primitives(new_primitives, contract)
     expected_old = build_bank_from_primitives(old_primitives, contract)
     np.testing.assert_array_equal(bundle.values, expected_new)
-    assert (
-        _formula_parity_max_abs(bundle.values, contract, CHANGED_CANDIDATES[1:])
-        == 0.0
-    )
+    assert _formula_parity_max_abs(bundle.values, contract, CHANGED_CANDIDATES[1:]) == 0.0
     broken = bundle.values.copy()
     broken[:, ids.index(CHANGED_CANDIDATES[1])] += np.float32(0.25)
     assert _formula_parity_max_abs(broken, contract, CHANGED_CANDIDATES[1:]) > 0.0
@@ -377,10 +357,9 @@ def test_overlay_cache_changes_exactly_five_candidates_and_never_reads_old_mean(
     ]
     assert changed == list(CHANGED_CANDIDATES)
     assert unchanged == list(UNCHANGED_CANDIDATES)
-    assert (
-        bundle.confidence["likpf_mean"]["confidence_source"].unique().tolist()
-        == [REPLACEMENT_VALUE_SOURCE]
-    )
+    assert bundle.confidence["likpf_mean"]["confidence_source"].unique().tolist() == [
+        REPLACEMENT_VALUE_SOURCE
+    ]
     assert not any(
         "parent_likpf_mean" in str(value)
         for value in bundle.confidence["likpf_mean"].to_numpy().reshape(-1)
@@ -472,8 +451,7 @@ def test_tail_readouts_are_mandatory_but_report_only(tmp_path: Path) -> None:
 
 def test_compact_jupytext_candidate_is_readable_and_canonical_remains_placeholder() -> None:
     source = (
-        EXP
-        / "exp413_scale5_likpf_full_replacement_on_exp335_compact_selfcontained_train.py"
+        EXP / "exp413_scale5_likpf_full_replacement_on_exp335_compact_selfcontained_train.py"
     ).read_text()
     assert "run_replacement_preflight(" in source
     assert "run_stage_c(" in source
@@ -497,78 +475,90 @@ def test_compact_jupytext_candidate_is_readable_and_canonical_remains_placeholde
 
 def test_current_test_inference_is_full_replacement_and_writes_submission() -> None:
     source = (
-        EXP
-        / "exp413_scale5_likpf_full_replacement_on_exp335_current_test_inference.py"
+        EXP / "exp413_scale5_likpf_full_replacement_on_exp335_current_test_inference.py"
     ).read_text()
-    canonical = (
-        EXP / "exp413_scale5_likpf_full_replacement_on_exp335_inference.ipynb"
-    )
+    canonical = EXP / "exp413_scale5_likpf_full_replacement_on_exp335_inference.ipynb"
     config = load_config()
     inference = config["inference"]
     assert canonical.exists()
     assert "build_replay_test_frame()" in source
     assert 'pf_frame["likpf_mean"] = scale5' in source
-    assert (
-        'pf_frame["likpf_mean_d"] = '
-        'pf_frame["likpf_scale_5_d"].to_numpy(np.float32)'
-    ) in source
-    assert "replay_stable_seed(\"likpf\", \"test\", well)" in source
-    assert (
-        'parent_config["guards"]["stage_s"]["saved_top1_value_parity_atol"]'
-        in source
-    )
+    assert ('pf_frame["likpf_mean_d"] = pf_frame["likpf_scale_5_d"].to_numpy(np.float32)') in source
+    assert 'replay_stable_seed("likpf", "test", well)' in source
+    assert 'parent_config["guards"]["stage_s"]["saved_top1_value_parity_atol"]' in source
     assert 'float(\n                config["guards"]["stage_s"]' not in source
     assert '"temperature": 5.0' in source
     assert '"booster_training_count": 0' in source
     assert '"submission_file_generated": True' in source
     assert "predictions.to_csv(prediction_path" in source
     assert "submission.to_csv(paths.submission_path, index=False)" in source
-    assert 'len(pf_frame) != len(sample)' in source
+    assert "len(pf_frame) != len(sample)" in source
     assert 'set(pf_frame["id"]) != set(sample["id"])' in source
     assert "current_test_expected_rows" not in source
     assert "current_test_expected_wells" not in source
     assert "kaggle competitions submit" not in source
     assert "__file__" not in source
-    assert inference["nested_selector_model_manifest_sha256"] == (
-        config["execution"]["completed_stages"]["nested_selector_train"][
-            "model_manifest_sha256"
-        ]
+    assert (
+        inference["nested_selector_model_manifest_sha256"]
+        == (
+            config["execution"]["completed_stages"]["nested_selector_train"][
+                "model_manifest_sha256"
+            ]
+        )
     )
-    assert inference["signed_selector_model_manifest_sha256"] == (
-        config["execution"]["completed_stages"]["signed_selector_train"][
-            "model_manifest_sha256"
-        ]
+    assert (
+        inference["signed_selector_model_manifest_sha256"]
+        == (
+            config["execution"]["completed_stages"]["signed_selector_train"][
+                "model_manifest_sha256"
+            ]
+        )
     )
-    assert inference["tvt_model_manifest_sha256"] == (
-        config["execution"]["completed_stages"]["downstream_gpu_train"][
-            "model_manifest_sha256"
-        ]
+    assert (
+        inference["tvt_model_manifest_sha256"]
+        == (
+            config["execution"]["completed_stages"]["downstream_gpu_train"]["model_manifest_sha256"]
+        )
     )
 
 
-def test_clean273_dependency_and_source_sha_contracts_are_frozen() -> None:
+def test_clean273_dependency_artifacts_are_frozen() -> None:
     config = load_config()
-    schema = pd.read_csv(
+    schema_path = (
         ROOT
         / "experiments"
         / "exp072_exp063_full_replay_feature_cache"
         / "artifacts"
         / "exp063_full_replay_feature_cache_feature_schema.csv"
     )
+    allowlist_path = (
+        PARENT / "artifacts" / "feature_availability_audit" / "exp218_clean_273_allowlist.csv"
+    )
+    missing = [path for path in (schema_path, allowlist_path) if not path.is_file()]
+    if missing:
+        pytest.skip(
+            "requires Git-ignored saved artifacts: "
+            + ", ".join(str(path.relative_to(ROOT)) for path in missing)
+        )
+
+    schema = pd.read_csv(schema_path)
     base_likpf = [
         feature for feature in schema["feature"].astype(str) if "likpf" in feature.lower()
     ]
-    assert base_likpf == config["data"]["exp072_train_feature_cache"][
-        "expected_likpf_dependency_columns"
-    ]
-    allowlist = pd.read_csv(
-        PARENT / "artifacts" / "feature_availability_audit" / "exp218_clean_273_allowlist.csv"
+    assert (
+        base_likpf
+        == config["data"]["exp072_train_feature_cache"]["expected_likpf_dependency_columns"]
     )
+    allowlist = pd.read_csv(allowlist_path)
     assert (
         allowlist["feature"].astype(str).str.contains("likpf", case=False).sum()
         == config["data"]["clean_base_allowlist"]["expected_likpf_named_feature_count"]
         == 22
     )
+
+
+def test_tracked_source_sha_contracts_are_frozen() -> None:
+    config = load_config()
     source_specs = (
         (
             ROOT
@@ -591,20 +581,26 @@ def test_clean273_dependency_and_source_sha_contracts_are_frozen() -> None:
             / "pf_multi_observation_likelihood_probe.py",
             config["data"]["exp145_source"]["multiobs_script_sha256"],
         ),
-        (
-            ROOT
-            / "experiments"
-            / "exp111_learned_pf_observation_likelihood_probe"
-            / "kaggle"
-            / "output"
-            / "train_v1"
-            / "artifacts"
-            / "exp111_learned_pf_observation_likelihood_probe_model_manifest.json",
-            config["data"]["exp111_saved_models"]["manifest_sha256"],
-        ),
     )
     for path, expected_sha in source_specs:
         assert sha256_file(path) == expected_sha
+
+
+def test_saved_model_manifest_sha_contract_is_frozen() -> None:
+    config = load_config()
+    manifest_path = (
+        ROOT
+        / "experiments"
+        / "exp111_learned_pf_observation_likelihood_probe"
+        / "kaggle"
+        / "output"
+        / "train_v1"
+        / "artifacts"
+        / "exp111_learned_pf_observation_likelihood_probe_model_manifest.json"
+    )
+    if not manifest_path.is_file():
+        pytest.skip("requires Git-ignored saved artifact: " + str(manifest_path.relative_to(ROOT)))
+    assert sha256_file(manifest_path) == config["data"]["exp111_saved_models"]["manifest_sha256"]
 
 
 def test_stage_0_lineage_verifier_rejects_partition_tampering(tmp_path: Path) -> None:
@@ -653,16 +649,10 @@ def test_stage_0_lineage_verifier_rejects_partition_tampering(tmp_path: Path) ->
             {
                 "fold": fold,
                 "rows": 3 if fold == 0 else 0,
-                "value_path": str(
-                    value_path.relative_to(
-                        tmp_path / "replacement_candidate_cache"
-                    )
-                ),
+                "value_path": str(value_path.relative_to(tmp_path / "replacement_candidate_cache")),
                 "value_file_sha256": sha256_file(value_path),
                 "confidence_path": str(
-                    confidence_path.relative_to(
-                        tmp_path / "replacement_candidate_cache"
-                    )
+                    confidence_path.relative_to(tmp_path / "replacement_candidate_cache")
                 ),
                 "confidence_file_sha256": sha256_file(confidence_path),
             }

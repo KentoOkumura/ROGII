@@ -43,6 +43,76 @@ def test_current_result_template_matches_validator_contract() -> None:
     assert validator.NEW_RESULT_HEADINGS <= validator.markdown_headings(result_template)
 
 
+def test_current_requirements_template_matches_validator_contract() -> None:
+    validator = load_validator()
+    requirements_template = (ROOT / "templates" / "experiment" / "requirements.md").read_text()
+
+    assert validator.NEW_REQUIREMENTS_HEADINGS <= validator.markdown_headings(requirements_template)
+
+
+def test_current_experiment_requires_requirements_record(tmp_path: Path) -> None:
+    validator = load_validator()
+    errors: list[str] = []
+
+    validator.validate_requirements_record(
+        tmp_path,
+        "exp002_current",
+        "# exp002_current\n\n## 概要\n\n## 正の記録\n\n## 実行入口\n",
+        new_layout=True,
+        legacy_layout=False,
+        allow_todo=True,
+        errors=errors,
+    )
+
+    assert errors == ["missing required file: requirements.md"]
+
+
+def test_explicit_legacy_contract_link_allows_missing_requirements(
+    tmp_path: Path,
+    capsys,
+) -> None:
+    validator = load_validator()
+    errors: list[str] = []
+
+    validator.validate_requirements_record(
+        tmp_path,
+        "exp002_legacy",
+        (
+            "# exp002_legacy\n\n## 概要\n\n## 正の記録\n\n"
+            "[legacy](../../docs/legacy/steering/20260801-exp002-legacy/)\n\n"
+            "## 実行入口\n"
+        ),
+        new_layout=True,
+        legacy_layout=False,
+        allow_todo=True,
+        errors=errors,
+    )
+
+    assert errors == []
+    assert "WARNING: legacy experiment has no requirements.md" in capsys.readouterr().out
+
+
+def test_current_requirements_reject_unresolved_todo(tmp_path: Path) -> None:
+    validator = load_validator()
+    errors: list[str] = []
+    headings = "\n\n".join(sorted(validator.NEW_REQUIREMENTS_HEADINGS))
+    (tmp_path / "requirements.md").write_text(
+        f"# exp002_current 要件と実装方法\n\n{headings}\n\n- 仮説: TODO\n"
+    )
+
+    validator.validate_requirements_record(
+        tmp_path,
+        "exp002_current",
+        "# exp002_current\n\n## 概要\n\n## 正の記録\n\n[要件](requirements.md)\n\n## 実行入口\n",
+        new_layout=True,
+        legacy_layout=False,
+        allow_todo=False,
+        errors=errors,
+    )
+
+    assert errors == ["requirements.md still contains TODO values"]
+
+
 def test_lineage_accepts_tracked_hypothesis_and_candidate() -> None:
     validator = load_validator()
     errors: list[str] = []

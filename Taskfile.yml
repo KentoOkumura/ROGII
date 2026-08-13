@@ -77,7 +77,7 @@ tasks:
       - uv run python scripts/update_survey_index.py --check
 
   validate-exp:
-    desc: Validate one experiment folder and fail on TODO config values.
+    desc: Validate one experiment folder and fail on TODO config or requirements values.
     cmds:
       - uv run python scripts/validate_experiment.py --experiment {{.EXP}} {{.EXTRA_ARGS}}
 

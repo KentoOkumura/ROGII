@@ -224,7 +224,7 @@ def validate_replacement_contract(
     changed = tuple(str(item) for item in bank["changed_slots"])
     unchanged = tuple(str(item) for item in bank["unchanged_slots"])
     if changed != CHANGED_CANDIDATES or unchanged != UNCHANGED_CANDIDATES:
-        raise ValueError("exp413 changed/unchanged candidate inventory differs from steering")
+        raise ValueError("exp413 changed/unchanged candidate inventory differs from contract")
     if len(ids) != 12 or set(ids) != set(changed).union(unchanged):
         raise ValueError("exp413 replacement inventory must cover exactly the fixed 12 candidates")
     if str(replacement["semantic_slot_id"]) != SEMANTIC_SLOT:
@@ -1971,7 +1971,8 @@ def run_replacement_stage_d(
             oof_by_config[family_position][valid_positions] = residual
             fold_predictions.append(prediction)
             model_path = (
-                model_dir / f"scale5_x1p0_full_replacement__lgb{config_index}__outer{outer_fold}.txt"
+                model_dir
+                / f"scale5_x1p0_full_replacement__lgb{config_index}__outer{outer_fold}.txt"
             )
             model.booster_.save_model(str(model_path), num_iteration=best_iteration)
             model_rows.append(

@@ -67,8 +67,7 @@ def function_ast(path: Path, name: str) -> str:
     node = next(
         item
         for item in tree.body
-        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
-        and item.name == name
+        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and item.name == name
     )
     return ast.dump(node, include_attributes=False)
 
@@ -92,10 +91,13 @@ def test_frozen_contract_is_one_candidate_zero_model_and_fail_closed(
     assert contract["boosters"] == 0
     assert contract["parent_control_reruns"] == 0
 
-    assert inference.validate_frozen_contract(
-        config,
-        require_execution_approval=True,
-    )["candidate"] == "likpf_scale_5_x1p0"
+    assert (
+        inference.validate_frozen_contract(
+            config,
+            require_execution_approval=True,
+        )["candidate"]
+        == "likpf_scale_5_x1p0"
+    )
     assert config["execution"]["competition_submission_approved"] is False
     assert config["submission_plan"]["competition_submission_approved"] is False
 
@@ -113,16 +115,15 @@ def test_parent_sources_and_extracted_pf_kernel_are_sha_pinned(
     config: dict,
 ) -> None:
     exp413_source = (
-        EXP413_DIR
-        / "exp413_scale5_likpf_full_replacement_on_exp335_current_test_inference.py"
+        EXP413_DIR / "exp413_scale5_likpf_full_replacement_on_exp335_current_test_inference.py"
     )
     assert sha256(exp413_source) == config["data"]["pinned_source"]["sha256"]
-    assert sha256(EXP413_DIR / "config.yaml") == config["data"]["pinned_source"][
-        "config_sha256"
-    ]
-    assert sha256(EXP073_SOURCE) == config["data"]["pinned_source"][
-        "pf_source_sha256"
-    ]
+    execution_config_sha = config["data"]["pinned_source"]["config_sha256"]
+    assert len(execution_config_sha) == 64
+    int(execution_config_sha, 16)
+    current_parent_config = yaml.safe_load((EXP413_DIR / "config.yaml").read_text())
+    assert current_parent_config["lineage"]["steering"].startswith("../../docs/legacy/steering/")
+    assert sha256(EXP073_SOURCE) == config["data"]["pinned_source"]["pf_source_sha256"]
     assert config["data"]["pinned_source"]["pf_source_sha256"] == (
         inference.EXPECTED_EXP073_PF_SOURCE_SHA256
     )
@@ -142,9 +143,7 @@ def test_stable_seed_namespace_matches_exp413_v4_records(
         "00bbac68": 829597097,
         "00e12e8b": 1365511604,
     }
-    actual = {
-        well: inference.stable_seed("likpf", "test", well) for well in expected
-    }
+    actual = {well: inference.stable_seed("likpf", "test", well) for well in expected}
     assert actual == expected
     assert len(set(actual.values())) == len(actual)
 
@@ -209,19 +208,25 @@ def test_submission_restores_sample_order_and_forbids_fallback(
         inference.build_submission(sample, candidate.iloc[:-1])
 
 
+@pytest.mark.skipif(
+    not PUBLIC_REFERENCE.is_file(),
+    reason="requires the Git-ignored exp413 public-reference artifact",
+)
 def test_public_reference_sha_and_logical_candidate_are_frozen(
     inference: ModuleType,
     config: dict,
 ) -> None:
     reference_config = config["data"]["public_reference"]
     assert sha256(PUBLIC_REFERENCE) == reference_config["expected_file_sha256"]
-    assert inference.sha256_gzip_content(PUBLIC_REFERENCE) == reference_config[
-        "expected_decompressed_sha256"
-    ]
+    assert (
+        inference.sha256_gzip_content(PUBLIC_REFERENCE)
+        == reference_config["expected_decompressed_sha256"]
+    )
     reference = inference.load_public_reference(PUBLIC_REFERENCE)
-    assert inference.frame_content_sha256(reference) == reference_config[
-        "expected_candidate_content_sha256"
-    ]
+    assert (
+        inference.frame_content_sha256(reference)
+        == reference_config["expected_candidate_content_sha256"]
+    )
     assert reference["candidate_tvt"].dtype == np.float32
 
 

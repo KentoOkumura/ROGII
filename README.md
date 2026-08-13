@@ -94,7 +94,7 @@ make validate-exp EXP=exp001_baseline EXTRA_ARGS="--allow-todo"
 - 新規実験ディレクトリをテンプレートまたは既存実験から作成できます。
 - 複数の未着手候補・実験を共通の上位仮説IDで追跡できます。
 - 実験の`requirements.md`に仮説、実装方法、成功条件を明文化できます。
-- `project.yml` と各実験の `config.yaml` を検証し、TODO や設定漏れを検出できます。
+- `project.yml`、各実験の`config.yaml`、新規形式の`requirements.md`を検証し、TODOや設定漏れを検出できます。
 - 実験契約に必要な Kaggle Notebook の実行、提出形式チェックを `task` で統一して実行できます。
 - Kaggle 実行用の notebook ディレクトリと `kernel-metadata.json` を生成できます。
 - 実験結果と提出履歴を Markdown と JSON に記録し、比較表を更新できます。

@@ -73,6 +73,16 @@ NEW_RESULT_HEADINGS = {
     "## 解釈",
     "## ユーザー判断",
 }
+NEW_REQUIREMENTS_HEADINGS = {
+    "## 実験化の入口・引き継ぎ・承認",
+    "## 判断履歴",
+    "## 手法契約",
+    "## 実装方法",
+    "## 探索幅とpivot判定",
+    "## 再現性・リスク",
+    "## 受け入れ基準",
+}
+LEGACY_CONTRACT_PATH = "docs/legacy/steering/"
 
 
 def parse_args() -> argparse.Namespace:
@@ -81,7 +91,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--allow-todo",
         action="store_true",
-        help="Only validate structure; allow TODO values in config.yaml",
+        help="Only validate structure; allow TODO values in config.yaml and requirements.md",
     )
     return parser.parse_args()
 
@@ -123,6 +133,58 @@ def validate_required_directories(
         return
     for dirname in missing_dirs:
         errors.append(f"missing required directory: {dirname}")
+
+
+def validate_requirements_record(
+    experiment_dir: Path,
+    experiment_name: str,
+    readme: str,
+    *,
+    new_layout: bool,
+    legacy_layout: bool,
+    allow_todo: bool,
+    errors: list[str],
+) -> None:
+    requirements_path = experiment_dir / "requirements.md"
+    has_current_link = bool(re.search(r"\]\((?:\./)?requirements\.md\)", readme))
+    has_legacy_link = LEGACY_CONTRACT_PATH in readme
+
+    if not requirements_path.exists():
+        if new_layout and not has_legacy_link:
+            errors.append("missing required file: requirements.md")
+        elif new_layout:
+            print(
+                "WARNING: legacy experiment has no requirements.md; use the explicitly "
+                "linked docs/legacy/steering record only when the current records are "
+                "insufficient, and migrate the contract when this experiment is next updated"
+            )
+        elif legacy_layout:
+            print(
+                "WARNING: legacy experiment has no requirements.md; consult "
+                "docs/legacy/steering only when the current records are insufficient, and "
+                "migrate the contract when this experiment is next updated"
+            )
+        return
+
+    if new_layout and has_current_link and has_legacy_link:
+        errors.append(
+            "README.md must not present both requirements.md and docs/legacy/steering as "
+            "current contract sources"
+        )
+    if new_layout and not has_current_link:
+        errors.append("README.md current layout must link to requirements.md")
+
+    requirements = requirements_path.read_text()
+    missing_headings = NEW_REQUIREMENTS_HEADINGS - markdown_headings(requirements)
+    if missing_headings:
+        errors.append(
+            "requirements.md missing current sections: " + ", ".join(sorted(missing_headings))
+        )
+    requirements_heading = first_h1(requirements)
+    if requirements_heading is None or experiment_name not in requirements_heading:
+        errors.append("requirements.md H1 does not match the experiment directory")
+    if not allow_todo and re.search(r"\bTODO\b", requirements):
+        errors.append("requirements.md still contains TODO values")
 
 
 def validate_lineage(
@@ -296,6 +358,16 @@ def main() -> None:
             result_heading = first_h1(result)
             if result_heading is None or args.experiment not in result_heading:
                 errors.append("result.md H1 does not match the experiment directory")
+
+        validate_requirements_record(
+            experiment_dir,
+            args.experiment,
+            readme,
+            new_layout=new_layout,
+            legacy_layout=legacy_layout,
+            allow_todo=args.allow_todo,
+            errors=errors,
+        )
 
     validate_required_directories(
         experiment_dir,

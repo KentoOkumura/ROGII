@@ -5,7 +5,11 @@ import math
 from pathlib import Path
 
 from config_utils import ROOT, get_nested, is_todo, load_project_config
-from validate_experiment import NEW_RESULT_HEADINGS, markdown_headings
+from validate_experiment import (
+    NEW_REQUIREMENTS_HEADINGS,
+    NEW_RESULT_HEADINGS,
+    markdown_headings,
+)
 
 REQUIRED_SCHEMA_KEYS = [
     "competition.name",
@@ -74,17 +78,21 @@ def main() -> None:
         if get_nested(config, key) is None:
             errors.append(f"missing required key: {key}")
 
-    result_template_path = ROOT / "templates" / "experiment" / "result.md"
-    if not result_template_path.exists():
-        errors.append("missing experiment result template: templates/experiment/result.md")
-    else:
-        missing_result_headings = NEW_RESULT_HEADINGS - markdown_headings(
-            result_template_path.read_text()
-        )
-        if missing_result_headings:
+    experiment_template_dir = ROOT / "templates" / "experiment"
+    template_contracts = {
+        "requirements.md": NEW_REQUIREMENTS_HEADINGS,
+        "result.md": NEW_RESULT_HEADINGS,
+    }
+    for filename, required_headings in template_contracts.items():
+        template_path = experiment_template_dir / filename
+        if not template_path.exists():
+            errors.append(f"missing experiment template: templates/experiment/{filename}")
+            continue
+        missing_headings = required_headings - markdown_headings(template_path.read_text())
+        if missing_headings:
             errors.append(
-                "experiment result template missing current sections: "
-                + ", ".join(sorted(missing_result_headings))
+                f"experiment {filename} template missing current sections: "
+                + ", ".join(sorted(missing_headings))
             )
 
     if args.strict:
