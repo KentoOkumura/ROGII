@@ -24,7 +24,7 @@ GR mode slip後の持続offsetに弱い復元力が効くかを1 fixed variant�
 ## 変更点
 
 - `docs/legacy/steering/20260718-exp279-exp226-geop-centered-exact-hmm-redecode/`を作成。
-- `KAGGLE_DIRECTION.md`の「実装済み・Kaggle train待ち」にbacklogを追加。
+- `backlog/KAGGLE_DIRECTION.md`の「実装済み・Kaggle train待ち」にbacklogを追加。
 - exp270 exact `_hmm2_fb`とAST一致するkernelをself-contained train sourceへ展開。
 - exp209固定grammarへexp226 `tvt_geop` Gaussian unary `sigma=20 / lambda=0.50 / clip=600`を追加。
 - exp226 `tvt_pred` / `gr_delta` / truth/error列をdecoder入力から除外。
@@ -83,7 +83,7 @@ make test
 2. guard FAILのためsigma/lambda救済やinferenceへ進まずbranchを閉じた。
 3. 完了済みexp279をbacklogから削除し、同一unaryの直接救済backlogは追加しない。
 4. 後続のユーザー指示により、修正版exp264の既存12候補を維持したまま`geop_hmm`を疎な
-   13番目候補として評価する別仮説を`KAGGLE_DIRECTION.md`へ追加した。これはexp279の再開ではない。
+   13番目候補として評価する別仮説を`backlog/KAGGLE_DIRECTION.md`へ追加した。これはexp279の再開ではない。
 
 ## 2026-07-18 Kaggle CPU実行承認
 

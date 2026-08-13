@@ -2,7 +2,7 @@
 
 ## 目的
 
-`KAGGLE_DIRECTION.md` の最優先 backlog `prefix_backtest_tvt_confidence` を実装する。PF/Beam / likelihood-PF の confidence / disagreement signal が、TVT error の大きい row / distance bucket を fold-safe に識別できるかを診断する。
+`backlog/KAGGLE_DIRECTION.md` の最優先 backlog `prefix_backtest_tvt_confidence` を実装する。PF/Beam / likelihood-PF の confidence / disagreement signal が、TVT error の大きい row / distance bucket を fold-safe に識別できるかを診断する。
 
 ## 現在の状態
 

@@ -103,7 +103,7 @@ kaggle kernels status kentookumura/exp210-hmdn-full-well-path-generation-train
 - last checked status: `KernelWorkerStatus.RUNNING`
 - monitoring: ユーザー指示により停止
 
-次アクション: ユーザーから完了連絡を受けたら、同じ kernel id の logs を取得し、必要なら output archive を取得して full-well contract metrics / candidate union metrics / SHA を `result.md`、`metrics.json`、`experiment_summary.md`、`KAGGLE_DIRECTION.md` に反映する。
+次アクション: ユーザーから完了連絡を受けたら、同じ kernel id の logs を取得し、必要なら output archive を取得して full-well contract metrics / candidate union metrics / SHA を `result.md`、`metrics.json`、`experiment_summary.md`、`backlog/KAGGLE_DIRECTION.md` に反映する。
 
 ## 2026-07-07 Kaggle train v1 完了記録
 

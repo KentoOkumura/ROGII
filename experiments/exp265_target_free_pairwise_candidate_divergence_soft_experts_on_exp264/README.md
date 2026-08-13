@@ -105,4 +105,4 @@ Stage 1は`enabled=false`であり、Stage 0全guard通過後も別の実行承�
 
 ## 表記
 
-用語は`KAGGLE_DIRECTION.md`の表記方針と`docs/glossary.md`に合わせ、実験名や設定名を除いて日本語優先で記録する。
+用語は`backlog/KAGGLE_DIRECTION.md`の表記方針と`docs/glossary.md`に合わせ、実験名や設定名を除いて日本語優先で記録する。

@@ -57,7 +57,7 @@ def test_repository_control_files_exist() -> None:
     required = [
         "AGENTS.md",
         ".github/workflows/template-check.yml",
-        "KAGGLE_DIRECTION.md",
+        "backlog/KAGGLE_DIRECTION.md",
         "Taskfile.yml",
         "Makefile",
         "uv.lock",

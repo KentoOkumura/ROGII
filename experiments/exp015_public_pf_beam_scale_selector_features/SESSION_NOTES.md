@@ -56,6 +56,6 @@ PF/beam add-only features は control から +0.893486 悪化したため採用�
 
 ## 次のアクション
 
-1. `KAGGLE_DIRECTION.md` から実装済み `public_pf_beam_scale_selector_features` を削除する。
+1. `backlog/KAGGLE_DIRECTION.md` から実装済み `public_pf_beam_scale_selector_features` を削除する。
 2. 次の最優先を `public_postprocess_ablation` に上げる。
 3. PF/beam は再投入する場合でも、add-only ではなく candidate quality audit / feature pruning / router に限定する。

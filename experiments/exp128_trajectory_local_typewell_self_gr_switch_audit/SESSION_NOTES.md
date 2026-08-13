@@ -137,5 +137,5 @@ task kaggle-logs KERNEL=kentookumura/exp128-trajectory-local-switch-train
 
 ## 次のアクション
 
-1. `experiment_summary.md` と `KAGGLE_DIRECTION.md` に反映する。
+1. `experiment_summary.md` と `backlog/KAGGLE_DIRECTION.md` に反映する。
 2. self-GR local switch は閉じ、self-GR 由来情報は補助 confidence に限定する。

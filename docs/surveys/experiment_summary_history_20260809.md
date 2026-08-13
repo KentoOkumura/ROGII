@@ -248,7 +248,7 @@ summary: "旧experiment_summary.mdから退避した、主な発見と変更履�
 
 ## 変更履歴
 
-- 2026-06-16: exp068_equivalent_pixiux_inference_port はユーザー指示により破棄。CV-only train v4 と invalid ref `53654439` は履歴として残し、修正版 Kaggle rerun は行わない。代替として `KAGGLE_DIRECTION.md` に backlog `exp073_exp039_cv_reassessment` を追加し、元バックログの対象だけを exp063 から exp073 に差し替えた。
+- 2026-06-16: exp068_equivalent_pixiux_inference_port はユーザー指示により破棄。CV-only train v4 と invalid ref `53654439` は履歴として残し、修正版 Kaggle rerun は行わない。代替として `backlog/KAGGLE_DIRECTION.md` に backlog `exp073_exp039_cv_reassessment` を追加し、元バックログの対象だけを exp063 から exp073 に差し替えた。
 - 2026-06-14: exp068_equivalent_pixiux_inference_port をレビュー結果に基づき修正。目的を exp068 再学習モデルの提出に固定し、train notebook に full LightGBM booster 保存を追加、inference notebook を exp068 full model artifact + hidden-test exp063 replay feature generation に変更した。旧 inference v2 / ref `53654439` の Public LB 762.715 は静的 exp063 public-sample prediction artifact 依存による hidden fallback 疑いとして採用しない。この設計変更は 2026-06-16 に exp068 ごと破棄済み。
 - 2026-06-14: exp068_equivalent_pixiux_inference_port の Kaggle train v4 を完了。exp039/exp038 系 CV surface に exp063 tracker/PF/Beam output features を join し、exp063 Pixiux LightGBM family を再学習評価した。`lgb_mean` は original-fold 11.878856、well-hash 11.994729。joined rows は 1,781,963、features は 65。この v4 は full model artifact 保存前の CV-only 実行。
 - 2026-06-14: exp068_equivalent_pixiux_inference_port の旧 Kaggle inference v2 と submit-check を完了。`submission.csv` は 14,151 rows、fallback 0、SHA256 `26e3238a29ff37d4193cfec073d507fc840082b33fd82be10a0cc619302739c4`。public sample 上では exp063 inference v2 submission との差分が RMSE 0.000277 / max abs 0.000484 で丸め差程度に同一だったが、code-submission hidden scoring 用としては不適切なため current flow から廃止。

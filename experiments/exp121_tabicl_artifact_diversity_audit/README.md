@@ -73,4 +73,4 @@ TabICL / 保存済み artifact-stack 予測は、単体本命ではなく後続�
 
 ## 表記
 
-用語は `KAGGLE_DIRECTION.md` の表記方針と `docs/glossary.md` に合わせ、実験名や設定名を除いて日本語優先で記録する。
+用語は `backlog/KAGGLE_DIRECTION.md` の表記方針と `docs/glossary.md` に合わせ、実験名や設定名を除いて日本語優先で記録する。

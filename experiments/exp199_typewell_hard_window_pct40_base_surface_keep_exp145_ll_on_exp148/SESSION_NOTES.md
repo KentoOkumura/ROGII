@@ -2,7 +2,7 @@
 
 ## 概要
 
-`KAGGLE_DIRECTION.md` の backlog `typewell_hard_window_pct40_base_surface_keep_exp145_ll_on_exp148` を実験化する。目的は、exp196 pct40 hard-window base surface を exp148 ML surface に差し替えつつ、既存 exp145 `ll_*` learned-likelihood features を残したときの train-side 効果を低コストに診断すること。
+`backlog/KAGGLE_DIRECTION.md` の backlog `typewell_hard_window_pct40_base_surface_keep_exp145_ll_on_exp148` を実験化する。目的は、exp196 pct40 hard-window base surface を exp148 ML surface に差し替えつつ、既存 exp145 `ll_*` learned-likelihood features を残したときの train-side 効果を低コストに診断すること。
 
 ## 実装方針
 

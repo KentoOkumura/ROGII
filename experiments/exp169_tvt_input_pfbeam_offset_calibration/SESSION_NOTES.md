@@ -56,7 +56,7 @@ uv run python scripts/new_experiment.py --name exp169_tvt_input_pfbeam_offset_ca
 
 1. Jupytext 変換、構文チェック、ruff、validate-exp を通す。
 2. Kaggle train package を作成する。
-3. Kaggle train を実行し、結果に基づいて `result.md`、`metrics.json`、`KAGGLE_DIRECTION.md`、`experiment_summary.md` を更新する。
+3. Kaggle train を実行し、結果に基づいて `result.md`、`metrics.json`、`backlog/KAGGLE_DIRECTION.md`、`experiment_summary.md` を更新する。
 
 ### 2026-07-02 JST Kaggle train v1 push / running
 

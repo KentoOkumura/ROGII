@@ -7,7 +7,7 @@
 `exp305_tempered_raw_smoothed_exact_hmm_emission`として設計・実装・Kaggle CPU実行を完了し、全promotion gate FAILで閉じた。
 案3は開始条件不成立、案4は案2 FAILにより未採番のまま閉鎖済み。
 別セッションで再開しても、入力、式、自由度、gate、分岐、禁止事項を暗黙に変更しない。変更が必要なら、
-実装前にこの文書、exp304 steering、KAGGLE_DIRECTION.mdを明示改訂する。
+実装前にこの文書、exp304 steering、backlog/KAGGLE_DIRECTION.mdを明示改訂する。
 
 ## 2026-07-21 分岐状態
 

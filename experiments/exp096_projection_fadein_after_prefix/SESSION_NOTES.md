@@ -113,7 +113,7 @@ make prepare-kaggle-notebooks EXP=exp096_projection_fadein_after_prefix EXTRA_AR
 make validate-exp EXP=exp096_projection_fadein_after_prefix
 ```
 
-- `metrics.json`、`result.md`、`README.md`、`experiment_summary.md`、`KAGGLE_DIRECTION.md` を更新。
+- `metrics.json`、`result.md`、`README.md`、`experiment_summary.md`、`backlog/KAGGLE_DIRECTION.md` を更新。
 - `config.yaml` の `inference.selected_variant` を `degree4_beta0.75_c2_fade250_750` に固定。
 - inference package を再生成し、metadata は `enable_gpu=false`、`enable_internet=false`、`kernel_sources=["kentookumura/exp073-full-replay-repro-guard-infer"]`。
 - `make validate-exp` は strict で PASS。

@@ -50,7 +50,7 @@ make new-exp EXP=exp293_physics_only_candidate_bank_headroom_contract
 
 ## 変更点
 
-- `KAGGLE_DIRECTION.md`未着手backlogへexp293を最優先physical-only 0-booster設計として追加した。
+- `backlog/KAGGLE_DIRECTION.md`未着手backlogへexp293を最優先physical-only 0-booster設計として追加した。
 - steering requirements/design/tasklistの未記入placeholderを解消した。
 - `config.yaml`へcandidate identity/formula、oracle定義、support条件、分岐、再現性を固定した。
 - README/result/metricsを初回design-only状態へ更新した。

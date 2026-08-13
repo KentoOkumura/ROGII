@@ -80,4 +80,4 @@ raw-test parity checklist は pass 5 / fail 3。fail は full-train coverage 155
 
 - direct inference port / submit はしない。
 - exp112 learned likelihood feature の raw-test target-free generator と schema parity audit を作れるか検討する。
-- `experiment_summary.md` と `KAGGLE_DIRECTION.md` を更新する。
+- `experiment_summary.md` と `backlog/KAGGLE_DIRECTION.md` を更新する。

@@ -1,6 +1,6 @@
 # exp254 Numba all-seed PF speed reproduction
 
-`KAGGLE_DIRECTION.md` の `numba_allseed_pf_speed_reproduction` を実装する、
+`backlog/KAGGLE_DIRECTION.md` の `numba_allseed_pf_speed_reproduction` を実装する、
 PF/Beam route の速度・再現性監査です。
 
 ## 状態

@@ -27,7 +27,7 @@
 - 2026-06-01: `python -m py_compile experiments/exp005_gr_gate_recalibration/baseline.py experiments/exp005_gr_gate_recalibration/settings.py` が通過。
 - 2026-06-01: `.venv/bin/pytest` が通過。9 tests passed。
 - 2026-06-01: `.venv/bin/python scripts/record_experiment.py --experiment exp005_gr_gate_recalibration --status scaffold_completed ...` で `metrics.json` と `experiment_summary.md` を更新。
-- 2026-06-01: `KAGGLE_DIRECTION.md` のアイデアバックログから実装済みの GR coverage gate 見直しを外し、現在の重点に exp005 の Kaggle CV 待ちを追加。
+- 2026-06-01: `backlog/KAGGLE_DIRECTION.md` のアイデアバックログから実装済みの GR coverage gate 見直しを外し、現在の重点に exp005 の Kaggle CV 待ちを追加。
 - 2026-06-01: `make push-kaggle-train EXP=exp005_gr_gate_recalibration` は sandbox 内 DNS 制限で失敗後、承認済み escalated `kaggle kernels push -p experiments/exp005_gr_gate_recalibration/kaggle/train` で成功。Kaggle kernel version 1、URL: https://www.kaggle.com/code/kentookumura/exp005-gr-gate-recalibration-train
 - 2026-06-01: `kaggle kernels status kentookumura/exp005-gr-gate-recalibration-train` を監視し、`KernelWorkerStatus.COMPLETE` を確認。
 - 2026-06-01: `kaggle kernels output kentookumura/exp005-gr-gate-recalibration-train -p /tmp/kaggle-output/exp005_gr_gate_recalibration/train` で output と kernel log を取得。

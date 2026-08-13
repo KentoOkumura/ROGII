@@ -452,5 +452,5 @@ fold / by-well / episode / support / block diagnosticだけを取得して確認
 - `make update-summary`:
   429 experimentsを更新し、exp433を
   `completed_scientific_failed_closed / CV 9.692148251575704`として反映
-- `KAGGLE_DIRECTION.md`:
+- `backlog/KAGGLE_DIRECTION.md`:
   完了結果を判断メモへ移し、exp433をアイデアバックログから削除

@@ -180,7 +180,7 @@ AGENTS.mdの取得最小化方針に従い、Kaggle output archive全体は取�
 
 range内rowの改善よりrange外rowの悪化が大きく、「candidate stateがprefix known TVT range外ならself-GR evidenceを参照しない」というhard conditionは支持されない。same-well motifはrange外でも有益な場合があり、strict zeroは大きなmode errorを増やした。
 
-事前登録どおりpadding、nearest/hole-aware/soft gate、alpha/clip/window/top-k/threshold救済を行わずbranchを閉じる。inference、submissionも行わない。`KAGGLE_DIRECTION.md`からexp296未着手行を削除し、既存`self_gr_quality_addonly_features_on_exp092`へtarget-free quality / posterior outside-support mass / known-range overlapのfeature-only診断として証拠を統合した。これはexp296の直接救済ではない。
+事前登録どおりpadding、nearest/hole-aware/soft gate、alpha/clip/window/top-k/threshold救済を行わずbranchを閉じる。inference、submissionも行わない。`backlog/KAGGLE_DIRECTION.md`からexp296未着手行を削除し、既存`self_gr_quality_addonly_features_on_exp092`へtarget-free quality / posterior outside-support mass / known-range overlapのfeature-only診断として証拠を統合した。これはexp296の直接救済ではない。
 
 ### 完了時validation
 

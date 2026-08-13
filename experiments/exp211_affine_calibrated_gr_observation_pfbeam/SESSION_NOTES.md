@@ -147,6 +147,6 @@ Affine diagnostics:
 
 ## 次アクション
 
-1. `KAGGLE_DIRECTION.md` の P0-A backlog を完了/不採用として外す。
+1. `backlog/KAGGLE_DIRECTION.md` の P0-A backlog を完了/不採用として外す。
 2. P0-C は P0-B 完了後も、P0-A単独が direct PFで悪化したことを前提に慎重に扱う。
 3. affine signal を使うなら、`topk_path_confidence_features` などの confidence feature 候補に限定する。

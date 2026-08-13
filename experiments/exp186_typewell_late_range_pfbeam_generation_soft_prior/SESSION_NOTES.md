@@ -98,7 +98,7 @@ PY
 - synthetic holdout output: `(4, 16) 1 True True`
 - 目的: 実データ train ではなく、in-memory の極小 holdout で PF / Beam helper API が finite output を返すことだけ確認した。
 - `experiment_summary.md` に exp186 の implemented_pending_kaggle_train 行と主な発見を追記した。
-- `KAGGLE_DIRECTION.md` に exp186 実装済み / Kaggle train 未実行の注記を追加した。backlog 自体は結果未評価のため削除していない。
+- `backlog/KAGGLE_DIRECTION.md` に exp186 実装済み / Kaggle train 未実行の注記を追加した。backlog 自体は結果未評価のため削除していない。
 
 ## 次のアクション
 

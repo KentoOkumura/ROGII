@@ -100,6 +100,6 @@ Interpretation:
 
 ## 次のアクション
 
-1. `experiment_summary.md` と `KAGGLE_DIRECTION.md` を更新する。
+1. `experiment_summary.md` と `backlog/KAGGLE_DIRECTION.md` を更新する。
 2. 直接 submit はしない。
 3. 次に進めるなら `lgbm_pf_confidence_only_features` または `pf_beam_disagreement_sample_weight` を優先する。

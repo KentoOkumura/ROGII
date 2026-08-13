@@ -97,7 +97,7 @@ direct path RMSEを改善できるかもしれない。
 - 再現性:
   `docs/06_reproducibility.md`
 - バックログ:
-  `KAGGLE_DIRECTION.md`
+  `backlog/KAGGLE_DIRECTION.md`
 
 ## 次
 

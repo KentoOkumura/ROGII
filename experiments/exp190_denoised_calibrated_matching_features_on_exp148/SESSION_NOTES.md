@@ -4,7 +4,7 @@
 
 ### 狙い
 
-`KAGGLE_DIRECTION.md` の `denoised_calibrated_matching_features_on_exp148` backlog を `exp190_denoised_calibrated_matching_features_on_exp148` として実装する。
+`backlog/KAGGLE_DIRECTION.md` の `denoised_calibrated_matching_features_on_exp148` backlog を `exp190_denoised_calibrated_matching_features_on_exp148` として実装する。
 
 exp167 では FFT notch は弱く、rolling median / Savitzky-Golay smoothing は matching surface の gap / entropy / decoy gap を改善した。exp170 の heel calibration は不採用、exp171 の posterior candidate direct replacement も不採用だった。したがって本実験では direct TVT 置換をせず、raw/smoothed GR shift-scan の surface sharpness / posterior ambiguity / candidate disagreement を exp148 の ML route anchor に add-only feature として渡す。
 

@@ -34,7 +34,7 @@ exp404の`likpf_scale_5_x1p0`へ候補・特徴量・selector・downstream全段
 - `make new-steering EXP=exp413_scale5_likpf_full_replacement_on_exp335`
 - `make new-exp EXP=exp413_scale5_likpf_full_replacement_on_exp335`
 - `docs/06_reproducibility.md`、親exp335/exp264、根拠exp404、
-  `KAGGLE_DIRECTION.md`、`experiment_summary.md`を確認した。
+  `backlog/KAGGLE_DIRECTION.md`、`experiment_summary.md`を確認した。
 - ユーザー承認はbacklog、実験scaffold、steering、設計確定まで。
   実装、正規Notebook編集、Kaggle package/push/run、推論、提出は行っていない。
 

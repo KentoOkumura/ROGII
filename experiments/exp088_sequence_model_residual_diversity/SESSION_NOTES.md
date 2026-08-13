@@ -2,7 +2,7 @@
 
 ## 目的
 
-`KAGGLE_DIRECTION.md` の backlog `sequence_model_residual_diversity` を、古い exp063 前提ではなく
+`backlog/KAGGLE_DIRECTION.md` の backlog `sequence_model_residual_diversity` を、古い exp063 前提ではなく
 現行の ML route raw deterministic anchor `exp073` に対する軽量 sequence residual diversity 診断として実装する。
 
 ## 現在の状態

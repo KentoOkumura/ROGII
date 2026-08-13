@@ -7,7 +7,7 @@ hidden-test-compatible な `ANCC_hat` と anchor-relative `ANCC_delta_hat` が�
 
 ## 設定
 
-- 親: `KAGGLE_DIRECTION.md` の `ancc_surface_predictability_audit` backlog
+- 親: `backlog/KAGGLE_DIRECTION.md` の `ancc_surface_predictability_audit` backlog
 - 検証: GroupKFold by well。valid fold の真 `ANCC` は評価専用。
 - メトリック: `ANCC_hat` RMSE / MAE / bias、anchor-relative delta RMSE、by-well worst、distance bucket、target distribution summary
 - シード: 42

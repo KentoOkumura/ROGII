@@ -19,7 +19,7 @@
 
 ## 共有仕様
 
-- 検証中の上位仮説と未着手候補の索引: [`KAGGLE_DIRECTION.md`](../KAGGLE_DIRECTION.md)。候補詳細は[`docs/backlog/`](backlog/)。
+- 検証中の上位仮説と未着手候補の索引: [`backlog/KAGGLE_DIRECTION.md`](../backlog/KAGGLE_DIRECTION.md)。候補詳細は[`backlog/`](../backlog/)。
 - 再現性の確認: [`docs/06_reproducibility.md`](06_reproducibility.md)
 - 完了した調査レポートの保存・検索・検証: [`docs/surveys/README.md`](surveys/README.md)
 - 公式コンペ資料: [`docs/official/`](official/)

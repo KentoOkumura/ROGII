@@ -60,5 +60,5 @@ selected `formation_knn_no_gr` は CV 14.558630 で、best control の `control_
 ## 次のアクション
 
 1. exp009 は提出しない。
-2. `experiment_summary.md` と `KAGGLE_DIRECTION.md` を更新する。
+2. `experiment_summary.md` と `backlog/KAGGLE_DIRECTION.md` を更新する。
 3. 次は `exp010_trajectory_drift_ablation` に進む。

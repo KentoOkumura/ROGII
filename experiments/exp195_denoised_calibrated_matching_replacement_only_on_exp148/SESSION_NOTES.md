@@ -4,7 +4,7 @@
 
 ### 狙い
 
-`KAGGLE_DIRECTION.md` の `denoised_calibrated_matching_replacement_only_on_exp148` backlog を `exp195_denoised_calibrated_matching_replacement_only_on_exp148` として実装する。
+`backlog/KAGGLE_DIRECTION.md` の `denoised_calibrated_matching_replacement_only_on_exp148` backlog を `exp195_denoised_calibrated_matching_replacement_only_on_exp148` として実装する。
 
 exp190 add-only は採用基準の `lgb_mean` では exp148 をわずかに下回ったが、`lgb1` 単体は exp148 同 config を改善した。add-only で exp145 learned likelihood confidence と DCM signal が競合した可能性を、full block replacement として切り分ける。
 

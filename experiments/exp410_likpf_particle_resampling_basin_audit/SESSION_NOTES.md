@@ -393,4 +393,4 @@ target-late sentinelから独立した全OOF単一variant検証を別実験・�
 
 1. Kaggle CPU 4 shard version 1を完了まで監視し、outputをstrict mergeする。
 2. `result.md`、`metrics.json`、`experiment_summary.md`、
-   `KAGGLE_DIRECTION.md`、steeringを更新して最終validateする。
+   `backlog/KAGGLE_DIRECTION.md`、steeringを更新して最終validateする。

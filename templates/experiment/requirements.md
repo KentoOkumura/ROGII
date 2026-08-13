@@ -5,7 +5,7 @@
 ## 実験化の入口・引き継ぎ・承認
 
 - 実験化の入口と承認: TODO (`直接承認`、またはbacklog時の状態と、承認日時 / 依頼メッセージ)
-- 移行元backlog: TODO (`N/A` または移行した `docs/backlog/<candidate>.md`。内容の移行確認後、元ファイルと未着手行の削除を`kaggle-strategy`へ引き渡す)
+- 移行元backlog: TODO (`N/A` または移行した `backlog/<candidate>.md`。内容の移行確認後、元ファイルと未着手行の削除を`kaggle-strategy`へ引き渡す)
 - 対応する上位仮説: TODO (`HYP-YYYYMMDD-NN` または `N/A`。backlogから移行する場合は候補詳細と一致させる)
 - 上位仮説のうちこの実験が検証する範囲: TODO
 - この実験だけで上位仮説を判断できるか: TODO

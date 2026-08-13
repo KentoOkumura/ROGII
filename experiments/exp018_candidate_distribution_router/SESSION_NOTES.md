@@ -55,5 +55,5 @@ row distance と候補間 disagreement で切り替え、PF/beam や DTW/DWT を
 
 ## 次のアクション
 
-1. `experiment_summary.md` と `KAGGLE_DIRECTION.md` に反映する。
+1. `experiment_summary.md` と `backlog/KAGGLE_DIRECTION.md` に反映する。
 2. candidate routing は提出実装へ進めず、PF/beam artifact が復元された場合だけ品質監査として再確認する。

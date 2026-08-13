@@ -84,7 +84,7 @@ Stage 0全gate PASSと別承認後だけ実行する。
 - steeringのrequirements / design / tasklistをdesign-onlyで記入。
 - `make new-exp EXP=exp424_exp209_momentum1_exact_hmm_ablation`
 - config、README、SESSION_NOTES、result、metricsをdesign-onlyへ更新。
-- `KAGGLE_DIRECTION.md`の未着手バックログへP3として追加。
+- `backlog/KAGGLE_DIRECTION.md`の未着手バックログへP3として追加。
 - 設計レビューでsample-matched parent rate momentが保存されていないことを確認し、
   Stage 0をbaseline 32 + treatment 32 = 64 HMM runsへ訂正。
   Stage 1は保存済みparent predictionを使うためtreatment 773 runsのまま維持。

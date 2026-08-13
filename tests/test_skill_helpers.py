@@ -60,17 +60,17 @@ def test_strategy_context_only_preloads_high_priority_backlog(tmp_path: Path) ->
         path = tmp_path / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(relative)
-    direction = tmp_path / "KAGGLE_DIRECTION.md"
+    direction = tmp_path / "backlog/KAGGLE_DIRECTION.md"
     direction.write_text(
         "| P2 | `HYP-19000101-91` | "
-        "[`candidate_p2`](docs/backlog/candidate_p2.md) | summary | dep | state |\n"
+        "[`candidate_p2`](candidate_p2.md) | summary | dep | state |\n"
         "| P4 | "
-        "`HYP-19000101-92` | [`candidate_p4`](docs/backlog/candidate_p4.md) | "
+        "`HYP-19000101-92` | [`candidate_p4`](candidate_p4.md) | "
         "summary | dep | state |\n"
         "| 中・P2 | `HYP-19000101-93` | "
-        "[`candidate_invalid`](docs/backlog/candidate_invalid.md) | summary | dep | state |\n"
+        "[`candidate_invalid`](candidate_invalid.md) | summary | dep | state |\n"
     )
-    backlog = tmp_path / "docs" / "backlog"
+    backlog = tmp_path / "backlog"
     backlog.mkdir(parents=True, exist_ok=True)
     (backlog / "candidate_p2.md").write_text("# P2")
     (backlog / "candidate_p4.md").write_text("# P4")
@@ -79,9 +79,9 @@ def test_strategy_context_only_preloads_high_priority_backlog(tmp_path: Path) ->
     selected = collector.candidate_files(tmp_path, max_files=10)
     relative = [path.relative_to(tmp_path).as_posix() for path in selected]
 
-    assert "docs/backlog/candidate_p2.md" in relative
-    assert "docs/backlog/candidate_p4.md" not in relative
-    assert "docs/backlog/candidate_invalid.md" not in relative
+    assert "backlog/candidate_p2.md" in relative
+    assert "backlog/candidate_p4.md" not in relative
+    assert "backlog/candidate_invalid.md" not in relative
 
 
 def test_experiment_reviewer_uses_current_canonical_paths(tmp_path: Path) -> None:
@@ -119,7 +119,8 @@ def test_experiment_reviewer_does_not_treat_global_context_as_target_evidence(
         "review_exp_docs_scopes",
         ROOT / ".agents/skills/kaggle-review-exp/scripts/review_exp_docs.py",
     )
-    global_record = tmp_path / "KAGGLE_DIRECTION.md"
+    global_record = tmp_path / "backlog/KAGGLE_DIRECTION.md"
+    global_record.parent.mkdir(parents=True)
     global_record.write_text("objective baseline CV result artifact next action exp010")
     experiment = tmp_path / "experiments" / "exp010_candidate"
     experiment.mkdir(parents=True)

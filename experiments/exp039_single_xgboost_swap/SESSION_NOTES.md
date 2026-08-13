@@ -99,6 +99,6 @@ cp /tmp/kaggle-output/exp039_single_xgboost_swap/train_v1/exp039-single-xgb-swap
 
 ## 次のアクション
 
-1. `result.md` / `experiment_summary.md` / `KAGGLE_DIRECTION.md` に反映する。
+1. `result.md` / `experiment_summary.md` / `backlog/KAGGLE_DIRECTION.md` に反映する。
 2. `exp039_single_xgboost_swap` は推論移植しない。
 3. Ravaghi/public PF 系の次候補は、直接 model replacement ではなく confidence-only features / error map / weight 調整に限定する。

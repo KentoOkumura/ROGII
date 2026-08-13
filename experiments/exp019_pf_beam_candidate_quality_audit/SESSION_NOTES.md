@@ -65,5 +65,5 @@ direct candidate quality、scale/confidence/GR gap、hurt/help wells を診断�
 
 ## 次のアクション
 
-1. `experiment_summary.md` と `KAGGLE_DIRECTION.md` に反映する。
+1. `experiment_summary.md` と `backlog/KAGGLE_DIRECTION.md` に反映する。
 2. PF/beam 再投入は止め、次は距離 bucket の raw residual bias/variance と near-row damping/training weight を診断する。

@@ -60,4 +60,4 @@ Exact duplicate CSV だけでは説明できない共通 typewell が、GR 曲�
 
 ## 表記
 
-用語は `KAGGLE_DIRECTION.md` の表記方針と `docs/glossary.md` に合わせ、実験名や設定名を除いて日本語優先で記録する。
+用語は `backlog/KAGGLE_DIRECTION.md` の表記方針と `docs/glossary.md` に合わせ、実験名や設定名を除いて日本語優先で記録する。

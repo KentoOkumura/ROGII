@@ -155,6 +155,6 @@ uv run python scripts/validate_experiment.py --experiment exp077_full_replay_pos
 
 ## 2026-06-20 exp084 への分離
 
-- `pf_confidence_residual_clip` は `KAGGLE_DIRECTION.md` の独立 backlog 項目だったため、exp077 の variant として実行するのではなく `exp084_pf_confidence_residual_clip` に分離した。
+- `pf_confidence_residual_clip` は `backlog/KAGGLE_DIRECTION.md` の独立 backlog 項目だったため、exp077 の variant として実行するのではなく `exp084_pf_confidence_residual_clip` に分離した。
 - exp077 の source config と local Kaggle inference package config は、submitted anchor policy の `longtail_likpf_tiny_gate_w006` に戻した。
 - 注意: 分離前に exp077 inference kernel version 2 を `pf_confidence_residual_clip_q995` config で push してしまった。以後の記録では exp077 submitted anchor は Kaggle inference v1 / submission ref `53809333` / Public LB `8.611` として扱い、`pf_confidence_residual_clip_q995` の検証結果は exp084 に集約する。

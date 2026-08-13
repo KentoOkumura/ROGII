@@ -9,7 +9,7 @@
 
 ## 実装メモ
 
-- `KAGGLE_DIRECTION.md` の `normalized_shape_addonly_features_on_exp092` を実験化した。
+- `backlog/KAGGLE_DIRECTION.md` の `normalized_shape_addonly_features_on_exp092` を実験化した。
 - exp130 を派生元にしたが、`normalized_diagnostic_score`、shape score probability、high/low confidence flag は削除した。
 - 追加特徴は shape 表現に限定する。
   - `md_since_norm`、`tail_md_scale`、target-free `u_scale`

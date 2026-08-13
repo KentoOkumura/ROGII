@@ -9,7 +9,7 @@
 - Private LB: なし
 - Submit ID: なし
 - 作成日: 2026-07-07
-- 親/参照: `KAGGLE_DIRECTION.md` backlog `affine_shift_landscape_ruler_readout`、`exp167_fft_denoised_gr_matching_audit`、`exp072_exp063_full_replay_feature_cache`
+- 親/参照: `backlog/KAGGLE_DIRECTION.md` backlog `affine_shift_landscape_ruler_readout`、`exp167_fft_denoised_gr_matching_audit`、`exp072_exp063_full_replay_feature_cache`
 
 ## 仮説
 

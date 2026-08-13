@@ -75,4 +75,4 @@ matched typewell GR window を重ね描きすると、良い match / decoy / pri
 
 ## 表記
 
-用語は `KAGGLE_DIRECTION.md` の表記方針と `docs/glossary.md` に合わせ、実験名や設定名を除いて日本語優先で記録する。
+用語は `backlog/KAGGLE_DIRECTION.md` の表記方針と `docs/glossary.md` に合わせ、実験名や設定名を除いて日本語優先で記録する。

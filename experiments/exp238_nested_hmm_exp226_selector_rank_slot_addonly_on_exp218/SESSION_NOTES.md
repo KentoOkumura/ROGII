@@ -669,7 +669,7 @@ global metrics不変を確認する。別slugは作らない。
   `0.3192525804042816 / 0.15628385543823242 / 0.7142080307006837`。
 - 学習、candidate再生成、prediction変更、submission生成、competition submitは0。この実行は
   diagnostic PNGの並びだけを変え、exp238評価、ML route anchor、`experiment_summary.md`、
-  `KAGGLE_DIRECTION.md`を変更しない。
+  `backlog/KAGGLE_DIRECTION.md`を変更しない。
 - SHA: exp065 assignments
   `dcda8588cc1dd9261bafae7de00c890393e38b8a0ca0eb86fbba18a2cffc4a50`、manifest
   `c93ba17662279dfbcfb557599c86a64308a2ffb52da3f6e69595e24354176614`、distribution

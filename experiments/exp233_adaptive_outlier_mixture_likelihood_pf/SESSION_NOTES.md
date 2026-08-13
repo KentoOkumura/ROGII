@@ -2,7 +2,7 @@
 
 ## 目的
 
-`KAGGLE_DIRECTION.md` の backlog `adaptive_outlier_mixture_likelihood_pf` を、
+`backlog/KAGGLE_DIRECTION.md` の backlog `adaptive_outlier_mixture_likelihood_pf` を、
 temperature-only の exp232 と独立した mixture-only PF/Beam train-side audit として
 実装する。目的は、target-free gate が発火した row のみで state-neutral な outlier
 mixture を使い、誤った GR motif に起因する particle collapse を抑えることである。

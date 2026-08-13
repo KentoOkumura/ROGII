@@ -26,4 +26,4 @@ Kaggle version 4 が完了。PF/beam direct candidates と PF/beam feature model
 
 ## 次のアクション
 
-`KAGGLE_DIRECTION.md` から PF/beam candidate quality audit を削除し、次は距離 bucket の raw residual bias/variance と near-row damping/training weight を診断する。
+`backlog/KAGGLE_DIRECTION.md` から PF/beam candidate quality audit を削除し、次は距離 bucket の raw residual bias/variance と near-row damping/training weight を診断する。

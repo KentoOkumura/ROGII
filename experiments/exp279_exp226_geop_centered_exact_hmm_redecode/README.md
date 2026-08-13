@@ -75,4 +75,4 @@ sigma / lambda / grid / process-noiseの救済探索、PF追加、raw-test infer
 本branchをnegative resultとして閉じ、同一unaryのparameter救済や直接置換は追加しない。
 ただし2026-07-19のユーザー指示により、この直接枝とは分離して、修正版exp264の既存候補を
 維持したまま`geop_hmm`を疎なadd-only selector候補として評価するbacklogを
-`KAGGLE_DIRECTION.md`へ追加した。
+`backlog/KAGGLE_DIRECTION.md`へ追加した。

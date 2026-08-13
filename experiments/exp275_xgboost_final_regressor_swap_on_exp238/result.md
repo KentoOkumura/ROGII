@@ -114,5 +114,5 @@ Kaggle T4 train version 2は完走したが、XGBoost単体と固定0.25 blend�
 ## 次
 
 - reference-only current-test推論、raw XGBoost 1件のsubmit、Public LB記録は完了。
-- `KAGGLE_DIRECTION.md`のtrain待ちbacklogからexp275を削除済み。
+- `backlog/KAGGLE_DIRECTION.md`のtrain待ちbacklogからexp275を削除済み。
 - parameter / early-stopping / blend rescueやanchor更新は行わず、scoring記録後もnegative resultを維持する。

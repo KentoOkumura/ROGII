@@ -184,7 +184,7 @@ kaggle kernels logs kentookumura/exp204-hmdn-topk-selector-train
 
 - 旧 exp204 実装は exp202 row-interpolated heatmap paths を selectable candidate にする設計なので、このまま再実行しない。
 - 当時の status は `deferred_pending_exp212_full_grid_artifact` とした。exp212 完了後に `deferred_ready_for_guarded_exp212_artifact` へ更新したが、後続判断で最終 status は `closed_rejected_heatmap_path_generation_route` になった。
-- `KAGGLE_DIRECTION.md` に `exp212_heatmap_mdn_full_grid_path_generation_probe` を追加し、当時は exp204 系 selector candidate route を exp212 artifact の full-row coverage / continuity / oracle headroom が成立した後に再設計する想定だった。
+- `backlog/KAGGLE_DIRECTION.md` に `exp212_heatmap_mdn_full_grid_path_generation_probe` を追加し、当時は exp204 系 selector candidate route を exp212 artifact の full-row coverage / continuity / oracle headroom が成立した後に再設計する想定だった。
 
 ## 2026-07-07 Kaggle train v2 timeout/ERROR と GPU 化
 

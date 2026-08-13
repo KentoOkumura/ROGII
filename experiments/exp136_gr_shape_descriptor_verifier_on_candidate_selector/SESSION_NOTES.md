@@ -82,7 +82,7 @@ make prepare-kaggle-notebooks EXP=exp136_gr_shape_descriptor_verifier_on_candida
 ### 次
 
 1. Kaggle train notebook を push する。
-2. output を取得し、summary / metrics を `result.md`、`metrics.json`、`experiment_summary.md`、`KAGGLE_DIRECTION.md` に反映する。
+2. output を取得し、summary / metrics を `result.md`、`metrics.json`、`experiment_summary.md`、`backlog/KAGGLE_DIRECTION.md` に反映する。
 
 ## 2026-06-26 Kaggle train v1 running
 

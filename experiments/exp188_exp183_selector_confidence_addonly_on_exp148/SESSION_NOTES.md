@@ -4,7 +4,7 @@
 
 ### 狙い
 
-`KAGGLE_DIRECTION.md` の `exp183_selector_confidence_addonly_on_exp148` backlog を実験化する。実験開始時点で番号を確定し、`exp188_exp183_selector_confidence_addonly_on_exp148` とする。
+`backlog/KAGGLE_DIRECTION.md` の `exp183_selector_confidence_addonly_on_exp148` backlog を実験化する。実験開始時点で番号を確定し、`exp188_exp183_selector_confidence_addonly_on_exp148` とする。
 
 exp183 の cluster-outlier prior 入り selector selected path が、exp148 の ML route anchor に add-only confidence feature として効くかを確認する。
 

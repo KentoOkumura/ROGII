@@ -63,4 +63,4 @@ exp148 OOF の誤差には、共通 typewell group、XY 近傍、true TVT の急
 
 ## 表記
 
-用語は `KAGGLE_DIRECTION.md` の表記方針と `docs/glossary.md` に合わせ、実験名や設定名を除いて日本語優先で記録する。
+用語は `backlog/KAGGLE_DIRECTION.md` の表記方針と `docs/glossary.md` に合わせ、実験名や設定名を除いて日本語優先で記録する。

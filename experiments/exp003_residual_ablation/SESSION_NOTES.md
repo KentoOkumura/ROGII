@@ -29,7 +29,7 @@
 - 2026-05-31: `uv run python scripts/prepare_kaggle_notebooks.py --experiment exp003_residual_ablation --notebook inference --run-on-push --title "exp003 residual ablation inference" --strict` が通過。
 - 2026-05-31: train/inference notebook の code cell AST parse と `py_compile` が通過。
 - 2026-05-31: `uv run python scripts/update_experiment_summary.py` で exp003 を実験サマリーに追加。
-- 2026-05-31: `KAGGLE_DIRECTION.md` の先頭バックログを exp003 full CV 取得待ちに更新。
+- 2026-05-31: `backlog/KAGGLE_DIRECTION.md` の先頭バックログを exp003 full CV 取得待ちに更新。
 - 2026-05-31: `kaggle kernels push -p experiments/exp003_residual_ablation/kaggle/train` は sandbox 内 DNS 制限で失敗後、承認済み escalated 実行で成功。Kaggle kernel version 1、URL: https://www.kaggle.com/code/kentookumura/exp003-residual-ablation-train
 - 2026-05-31: `kaggle kernels status kentookumura/exp003-residual-ablation-train` は `KernelWorkerStatus.RUNNING`。
 - 2026-05-31: 複数回 status を確認し、train kernel は継続して `KernelWorkerStatus.RUNNING`。Kaggle output は未取得。

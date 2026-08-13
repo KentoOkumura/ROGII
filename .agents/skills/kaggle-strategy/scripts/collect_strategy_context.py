@@ -9,7 +9,7 @@ import re
 from pathlib import Path
 
 CANONICAL_FILES = (
-    "KAGGLE_DIRECTION.md",
+    "backlog/KAGGLE_DIRECTION.md",
     "experiment_summary.md",
     "SUBMISSIONS.md",
     "docs/surveys/README.md",
@@ -24,7 +24,7 @@ EXPERIMENT_NUMBER_RE = re.compile(r"^exp(\d+)")
 BACKLOG_LINK_RE = re.compile(
     r"^\| (?P<priority>P[0-4]) \| `(?:HYP-\d{8}-\d{2}|未整理)` \| "
     r"\[`(?P<name>[a-z0-9_]+)`\]"
-    r"\(docs/backlog/(?P=name)\.md\) \|"
+    r"\((?P=name)\.md\) \|"
 )
 ACTIVE_PRIORITIES = {"P0", "P1", "P2"}
 
@@ -36,14 +36,14 @@ def experiment_sort_key(path: Path) -> tuple[int, int, str]:
 
 
 def prioritized_backlog_files(root: Path) -> list[Path]:
-    direction = root / "KAGGLE_DIRECTION.md"
+    direction = root / "backlog/KAGGLE_DIRECTION.md"
     if not direction.is_file():
         return []
     selected: list[Path] = []
     for line in direction.read_text(errors="replace").splitlines():
         match = BACKLOG_LINK_RE.match(line)
         if match and match.group("priority") in ACTIVE_PRIORITIES:
-            selected.append(root / "docs" / "backlog" / f"{match.group('name')}.md")
+            selected.append(root / "backlog" / f"{match.group('name')}.md")
     return selected
 
 

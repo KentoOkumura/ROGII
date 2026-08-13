@@ -2,7 +2,7 @@
 
 Kaggle コンペの調査、実験、検証、提出、記録を一貫して管理するためのテンプレートです。
 
-作業単位は`experiments/expXXX_title/`にまとめ、実装前の要件と実装方法は同じ実験の`requirements.md`に残します。コンペ単位の設定は`project.yml`、現在の戦略は`KAGGLE_DIRECTION.md`、実験比較は`experiment_summary.md`、完了した調査・判断履歴の検索入口は`docs/surveys/README.md`に集約します。
+作業単位は`experiments/expXXX_title/`にまとめ、実装前の要件と実装方法は同じ実験の`requirements.md`に残します。コンペ単位の設定は`project.yml`、現在の戦略は`backlog/KAGGLE_DIRECTION.md`、実験比較は`experiment_summary.md`、完了した調査・判断履歴の検索入口は`docs/surveys/README.md`に集約します。
 
 この README は人間向けの入口です。エージェント向けの詳細ルールは `AGENTS.md`、作業別の参照入口は `docs/agent-playbooks.md`、実際の手順は各 `.agents/skills/*/SKILL.md` を参照してください。
 
@@ -78,8 +78,8 @@ make validate-exp EXP=exp001_baseline EXTRA_ARGS="--allow-todo"
 | 領域 | 管理する内容 |
 | --- | --- |
 | コンペ設定 | `project.yml` に competition、data、defaults、submission、metadata、runtime.kaggle を記録。リポジトリ構成を変える場合だけ paths も更新 |
-| 検証中の上位仮説 | `KAGGLE_DIRECTION.md` で複数の未着手候補・実験と残っている問いを対応付ける |
-| 未着手候補 | `KAGGLE_DIRECTION.md` を索引、`docs/backlog/<candidate>.md` を候補詳細の正として管理 |
+| 検証中の上位仮説 | `backlog/KAGGLE_DIRECTION.md` で複数の未着手候補・実験と残っている問いを対応付ける |
+| 未着手候補 | `backlog/KAGGLE_DIRECTION.md` を索引、`backlog/<candidate>.md` を候補詳細の正として管理 |
 | 実験計画 | `experiments/<exp>/requirements.md` に要件、実装方法、受け入れ条件を記録 |
 | 実験コード | `experiments/<exp>/` に `config.yaml`、`settings.py`、実験に必要なtrain/inference/audit/diagnostic notebook、記録ファイルを配置 |
 | 共通コード | 複数実験で使う処理を `src/` に集約 |
@@ -158,8 +158,9 @@ Kaggle outputを取得する条件とNotebook-only code submissionの操作手�
 - `.github/workflows/`: リポジトリテンプレートのCI設定
 - `docs/legacy/steering/`: 廃止前の実験計画を保存する読み取り専用履歴。通常作業では参照しません
 - `app/`: 実験や OOF を確認する Streamlit アプリ
+- `backlog/`: 検証中の上位仮説、未着手候補の索引、候補ごとの設計
 - `data/`: ローカルデータキャッシュ。Git には入れません
-- `docs/`: 公式情報、候補詳細、保存資料、調査レポート。保存先の一覧は [docs/README.md](docs/README.md)
+- `docs/`: 公式情報、保存資料、調査レポート。保存先の一覧は [docs/README.md](docs/README.md)
 - `experiments/`: 実験ごとのコード、設定、出力、記録
 - `experiments/<exp>/artifacts/`: その実験が生成した出力。必要な分類はこの下のサブディレクトリで表現
 - `experiments/<exp>/assets/`: その実験で参照する小規模な固定データ
@@ -178,7 +179,7 @@ Kaggle outputを取得する条件とNotebook-only code submissionの操作手�
 - `Makefile`: `task` が使えない環境向けの代替コマンド
 - `project.yml`: コンペ単位の competition、data、defaults、submission、metadata、runtime.kaggle の正。リポジトリ構成を変える場合だけ paths も更新
 - `SUBMISSIONS.md`: submission refを専用列に持つ提出履歴
-- `KAGGLE_DIRECTION.md`: 現在の重点、比較基準、検証中の上位仮説、未着手候補の索引
+- `backlog/KAGGLE_DIRECTION.md`: 現在の重点、比較基準、検証中の上位仮説、未着手候補の索引
 - `experiment_summary.md`: 実験比較と自動更新される要約
 - `docs/surveys/README.md`: 完了した調査レポートの生成索引
 - `docs/agent-playbooks.md`: 実験、提出、レビュー、分析の作業別参照索引

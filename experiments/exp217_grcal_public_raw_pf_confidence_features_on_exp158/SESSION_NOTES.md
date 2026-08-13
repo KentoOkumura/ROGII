@@ -2,7 +2,7 @@
 
 ## 2026-07-07 実装
 
-`KAGGLE_DIRECTION.md` の backlog `grcal_public_raw_pf_confidence_features_on_exp158` を実装する。
+`backlog/KAGGLE_DIRECTION.md` の backlog `grcal_public_raw_pf_confidence_features_on_exp158` を実装する。
 
 ### 狙い
 
@@ -268,7 +268,7 @@ exp214 の public-like raw PF diagnostics では `pf_raw_scale_12` が scoped tr
 
 - User requested closing the experiment.
 - Final status: `closed_train_side_positive_vs_exp158_not_anchor_no_submit`.
-- `kaggle-review-exp` reviewer was run for `exp217`; core evidence categories are present across steering, experiment docs, `metrics.json`, `result.md`, `experiment_summary.md`, and `KAGGLE_DIRECTION.md`.
-- `KAGGLE_DIRECTION.md` status was changed from `完了・保留` to `完了・不採用`.
+- `kaggle-review-exp` reviewer was run for `exp217`; core evidence categories are present across steering, experiment docs, `metrics.json`, `result.md`, `experiment_summary.md`, and `backlog/KAGGLE_DIRECTION.md`.
+- `backlog/KAGGLE_DIRECTION.md` status was changed from `完了・保留` to `完了・不採用`.
 - No inference notebook execution, submission generation, or additional Kaggle run is planned for exp217.
 - Follow-up, if the signal is reused later, should be a new scoped hypothesis: add-only `pubraw_` confidence features on a stronger surface such as exp184/exp191+, or a limited high-spread/high-likpf-gap guard. Do not revive exp217 as a direct replacement/blend/submission path.

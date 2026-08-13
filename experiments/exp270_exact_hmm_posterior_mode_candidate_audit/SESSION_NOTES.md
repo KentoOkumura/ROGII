@@ -438,7 +438,7 @@ version 3の高速化自体はversion 2より有効だったが、単一notebook
 ### Final record validation
 
 - root `metrics.json`のJSON parse、root configとのstatus一致、prediction SHA、summary row、
-  `KAGGLE_DIRECTION.md`実装待ち表からの削除を再確認した。
+  `backlog/KAGGLE_DIRECTION.md`実装待ち表からの削除を再確認した。
 - `make validate-exp EXP=exp270_exact_hmm_posterior_mode_candidate_audit`は
   `experiment validation passed (strict)`、`make validate-template`はPASS。
 - `review_exp_docs.py exp270 --root .`はcore evidence categoryが全項目存在すると判定した。

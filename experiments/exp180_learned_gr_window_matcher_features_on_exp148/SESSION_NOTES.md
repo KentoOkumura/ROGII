@@ -2,7 +2,7 @@
 
 ## 目的
 
-`KAGGLE_DIRECTION.md` の `learned_gr_window_matcher_features_on_exp148` を実験化する。exp178 で positive だった known-prefix supervised GR window matcher を、候補 TVT の直接置換ではなく exp148 ML anchor への hidden-safe confidence feature として add-only 評価する。
+`backlog/KAGGLE_DIRECTION.md` の `learned_gr_window_matcher_features_on_exp148` を実験化する。exp178 で positive だった known-prefix supervised GR window matcher を、候補 TVT の直接置換ではなく exp148 ML anchor への hidden-safe confidence feature として add-only 評価する。
 
 ## 現在の状態
 
@@ -116,5 +116,5 @@
 
 ## 次アクション
 
-1. `metrics.json`、`result.md`、`README.md`、`experiment_summary.md`、`KAGGLE_DIRECTION.md` の negative close 記録を確認する。
+1. `metrics.json`、`result.md`、`README.md`、`experiment_summary.md`、`backlog/KAGGLE_DIRECTION.md` の negative close 記録を確認する。
 2. `learned_gr_window_matcher_features_on_exp148` は完了/不採用として閉じる。同じ exp148 add-only 設計では追加拡張しない。

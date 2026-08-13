@@ -4,7 +4,7 @@
 
 ### 狙い
 
-`KAGGLE_DIRECTION.md` の `exp184_heatmap_selector_compact_addonly_on_exp148` backlog を実装する。exp184 の heatmap selector signal を、exp148 の ML route anchor に compact add-only feature として足す。
+`backlog/KAGGLE_DIRECTION.md` の `exp184_heatmap_selector_compact_addonly_on_exp148` backlog を実装する。exp184 の heatmap selector signal を、exp148 の ML route anchor に compact add-only feature として足す。
 
 ### 実装方針
 

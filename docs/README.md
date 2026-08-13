@@ -11,7 +11,7 @@
 - `agent-playbooks.md`: 作業内容から利用するskillを選ぶための参照入口。
 - `pf_beam_explainer.md`: このコンペで使うPF/Beam実装の説明。
 - `glossary.md`: コンペや実験管理で使う用語。
-- `backlog/`: 未着手の実験候補の詳細。`KAGGLE_DIRECTION.md`を優先度と要約の索引とする。
+- 未着手候補と戦略索引はリポジトリ直下の [`backlog/`](../backlog/) に置く。
 - `official/`: 公式ルール、データ説明、メトリックメモ、Kaggle API で取得した公式ページ要約。
 - `discussions/`: Kaggle ディスカッションのアーカイブと要約。
 - `notebooks/`: `kaggle-notebook-fetch`で取得した公開Notebookとmetadata。

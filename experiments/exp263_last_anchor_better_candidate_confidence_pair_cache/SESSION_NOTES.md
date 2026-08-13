@@ -2,7 +2,7 @@
 
 ## 目的
 
-`KAGGLE_DIRECTION.md`の`last_anchor_better_candidate_confidence_pair_cache`実装契約を、known 33
+`backlog/KAGGLE_DIRECTION.md`の`last_anchor_better_candidate_confidence_pair_cache`実装契約を、known 33
 reference / core 12 primitive / raw-test 6 primitive / 8 pair / w500 alias / 3 named formula / virtual
 loaderとして実装する。
 

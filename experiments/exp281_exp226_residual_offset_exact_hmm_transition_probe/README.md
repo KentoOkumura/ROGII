@@ -96,4 +96,4 @@ exp279の固定absolute unaryより安全にpersistent offsetを減らせる可�
 
 ## 表記
 
-用語は`KAGGLE_DIRECTION.md`の表記方針と`docs/glossary.md`に合わせる。
+用語は`backlog/KAGGLE_DIRECTION.md`の表記方針と`docs/glossary.md`に合わせる。

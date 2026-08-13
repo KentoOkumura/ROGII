@@ -4,7 +4,7 @@
 
 ### 狙い
 
-`KAGGLE_DIRECTION.md` の `exp183_selector_confidence_replacement_only_on_exp148` backlog を実験化する。実験番号は次の未使用番号として `exp194_exp183_selector_confidence_replacement_only_on_exp148` を使う。
+`backlog/KAGGLE_DIRECTION.md` の `exp183_selector_confidence_replacement_only_on_exp148` backlog を実験化する。実験番号は次の未使用番号として `exp194_exp183_selector_confidence_replacement_only_on_exp148` を使う。
 
 exp188 は exp148 anchor に exp183 selector confidence features を add-only して悪化した。今回は別仮説として、exp148 の既存 `learned_likelihood_confidence` block を外し、exp183 selector confidence block へ置換する。
 

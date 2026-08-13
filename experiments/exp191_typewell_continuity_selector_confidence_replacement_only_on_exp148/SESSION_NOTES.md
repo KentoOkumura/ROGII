@@ -7,7 +7,7 @@
 - `exp191_typewell_continuity_selector_confidence_replacement_only_on_exp148` backlog を実装する。
 - CPU 実行で timeout 対策のため、学習コードを `lgb0`、`lgb1`、`lgb2` に分ける。
 
-既に `exp191_typewell_late_range_continuity_selector_on_exp176` が存在するが、`KAGGLE_DIRECTION.md` の backlog がこの slug を明示しているため、親 exp191 continuity artifact を使う replacement-only 実験として同名番号の別 directory を作成した。
+既に `exp191_typewell_late_range_continuity_selector_on_exp176` が存在するが、`backlog/KAGGLE_DIRECTION.md` の backlog がこの slug を明示しているため、親 exp191 continuity artifact を使う replacement-only 実験として同名番号の別 directory を作成した。
 
 ## 実験設計
 

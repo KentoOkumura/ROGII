@@ -87,4 +87,4 @@ make push-kaggle-train EXP=exp133_gr_bimodal_match_ambiguity_detector
 
 ## 次のアクション
 
-1. `KAGGLE_DIRECTION.md` と `experiment_summary.md` を結果で更新する。
+1. `backlog/KAGGLE_DIRECTION.md` と `experiment_summary.md` を結果で更新する。

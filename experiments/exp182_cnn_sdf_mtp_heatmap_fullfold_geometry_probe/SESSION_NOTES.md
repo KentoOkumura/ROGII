@@ -161,5 +161,5 @@ Artifact SHA:
 
 ## 次のアクション
 
-1. `result.md`、`metrics.json`、`experiment_summary.md`、`KAGGLE_DIRECTION.md` を完了結果で更新する。
+1. `result.md`、`metrics.json`、`experiment_summary.md`、`backlog/KAGGLE_DIRECTION.md` を完了結果で更新する。
 2. 後続候補は selector / confidence feature 化に限定し、direct inference / submit には進めない。

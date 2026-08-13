@@ -76,7 +76,7 @@
     make new-exp EXP=exp266_pf_ancc_pf_z_multiseed_stability_audit
 
 - steering: `docs/legacy/steering/20260717-exp266-pf-ancc-pf-z-multiseed-stability-audit/`
-- `KAGGLE_DIRECTION.md`未着手バックログへ高優先・実装中として追加した。
+- `backlog/KAGGLE_DIRECTION.md`未着手バックログへ高優先・実装中として追加した。
 
 ## 次のアクション
 
@@ -303,4 +303,4 @@ v3修正:
 - exp266はtrain-side stability auditとして完了。
 - `11d0f5ac`の単一seed偶然仮説は棄却。
 - strong 53 wells全体への無条件一般化、元seedphenotype gate、inference、submissionは不採用。
-- 実装済みbacklogを`KAGGLE_DIRECTION.md`から削除し、少数seed PF ANCC mean候補を別の中優先backlogへ整理する。
+- 実装済みbacklogを`backlog/KAGGLE_DIRECTION.md`から削除し、少数seed PF ANCC mean候補を別の中優先backlogへ整理する。

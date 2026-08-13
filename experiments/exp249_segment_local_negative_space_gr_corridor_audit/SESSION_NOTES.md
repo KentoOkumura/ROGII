@@ -92,7 +92,7 @@ make prepare-kaggle-notebooks EXP=exp249_segment_local_negative_space_gr_corrido
 
 - 本実験は、復元した初期contract（128 rows × 64 bins、±192 ft、stride 64、segment-local normalization/reset）だけを実装する。
 - 後から追加されたMD 256 ft / 有向グラフ / shuffled-control契約は、進行中の別作業として変更しない。
-- `KAGGLE_DIRECTION.md`の後発backlog行・詳細契約と、別途作成されたsteeringには触れない。
+- `backlog/KAGGLE_DIRECTION.md`の後発backlog行・詳細契約と、別途作成されたsteeringには触れない。
 
 ## 次のアクション
 

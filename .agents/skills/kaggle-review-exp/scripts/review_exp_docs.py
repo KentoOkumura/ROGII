@@ -21,7 +21,7 @@ IGNORE_PARTS = {
     "kaggle",
 }
 GLOBAL_RECORDS = (
-    "KAGGLE_DIRECTION.md",
+    "backlog/KAGGLE_DIRECTION.md",
     "experiment_summary.md",
     "SUBMISSIONS.md",
     "docs/surveys/README.md",

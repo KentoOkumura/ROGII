@@ -1,6 +1,6 @@
 ---
 name: kaggle-review-exp
-description: "ユーザーが実験化を承認した Kaggle 実験を、`docs/backlog/` 経由または直接承認から`experiments/expXXX_name/requirements.md`へ引き継ぎ、実験を作成、コピー、実装、実行、debug、記録、要約、レビューする。backlog候補と上位仮説の系譜移行、直接承認からの実験開始、実験契約に必要な train・inference・audit・diagnostic などの Notebook 実装と Kaggle 実行、Code competitionのhidden test対応、過去実験のコピー、`SESSION_NOTES`/result/metricsの記録、`expXXX`のレビュー、実験ドキュメント確認、実験結果の信頼性監査を求められたときに使う。"
+description: "ユーザーが実験化を承認した Kaggle 実験を、`backlog/` 経由または直接承認から`experiments/expXXX_name/requirements.md`へ引き継ぎ、実験を作成、コピー、実装、実行、debug、記録、要約、レビューする。backlog候補と上位仮説の系譜移行、直接承認からの実験開始、実験契約に必要な train・inference・audit・diagnostic などの Notebook 実装と Kaggle 実行、Code competitionのhidden test対応、過去実験のコピー、`SESSION_NOTES`/result/metricsの記録、`expXXX`のレビュー、実験ドキュメント確認、実験結果の信頼性監査を求められたときに使う。"
 ---
 
 # Kaggle 実験ワークフローとレビュー
@@ -36,15 +36,20 @@ Kaggle GPU を使う train push の前に、必ず次を確認する。
 ## 実験ライフサイクル
 
 1. 実験化の入口を特定し、必要最小限の文脈だけを読む。
-   - 対象名が指定された設計済みbacklogでは、最初に対応する`docs/backlog/<candidate>.md`を読む。次に、その文書から直接参照される根拠、親実験の`requirements.md`と`config.yaml`、変更対象コードだけを読む。
-   - この経路では、実装に必要だと判明するまで`KAGGLE_DIRECTION.md`全体、`experiment_summary.md`、`docs/surveys/README.md`、最近の`SESSION_NOTES.md`、無関係な候補・実験、リポジトリ全体のファイル一覧を読まない。exp番号の採番には`experiments/`直下の名前だけを確認する。
+   - 対象名が指定された設計済みbacklogを「実装してください」と依頼された場合は、次の順序を固定する。
+     1. 対応する`backlog/<candidate>.md`を読み、状態、未決事項、固定事項、変更事項、検証条件を確認する。
+     2. 候補詳細から直接参照される根拠だけを読む。
+     3. 親実験の`requirements.md`を読む。
+     4. 親実験の`config.yaml`を読む。
+     5. 変更対象コードと、その変更を直接検証するテストだけを読む。
+   - この経路では、上記の文書から必要だと判明するまで`backlog/KAGGLE_DIRECTION.md`全体、`experiment_summary.md`、`docs/surveys/README.md`、最近の`SESSION_NOTES.md`、無関係な候補・実験、リポジトリ全体のファイル一覧を読まない。候補名の検索を理由に`backlog/`全体を列挙せず、exp番号の採番には`experiments/`直下の名前だけを確認する。
    - 直接承認では、依頼原文、明示された一次資料、親実験の`requirements.md`と`config.yaml`、変更対象コードだけを読む。形式的なbacklogは作らない。
    - 対象候補や親実験が特定されていない戦略相談、依存関係の矛盾、参照切れ、現行記録だけでは契約を復元できない場合に限り、目的を明示して追加ファイルを読む。
    - 実装区分と変更classの判定には`docs/glossary.md`を読む。廃止前の`docs/legacy/steering/`は、対象実験に`requirements.md`がなく、過去契約の確認が実際に必要な場合だけ読む。
 2. 承認と未決事項を確認する。
    - 候補が`設計可能・実験化未承認`で未決事項が`なし`なら、ユーザーの「実装してください」を実験化承認として扱い、同じ内容を再確認せず進める。
    - backlog候補から実験化する場合は、固定するもの、変更するもの、最小検証、成功条件、停止条件、実行しないことを短く提示する。重要な解釈差または未決事項がある場合だけ、コード作成前にユーザーへ確認する。
-   - 導入前の候補で詳細ファイルがない場合は、`kaggle-strategy`を使って詳細ファイルを作り、推測できない事項を未決としてユーザーへ確認する。このskillから`docs/backlog/`を直接更新しない。
+   - 導入前の候補で詳細ファイルがない場合は、`kaggle-strategy`を使って詳細ファイルを作り、推測できない事項を未決としてユーザーへ確認する。このskillから`backlog/`を直接更新しない。
 3. 実験を作成またはコピーし、同じ実験の`requirements.md`を埋める。
 
 ```bash
@@ -235,7 +240,7 @@ task update-summary
 - すべての結果に、コマンド、config、CV、生成物、解釈、次アクションがあること。
 - 結果と次アクションが `ml_model` / `pf_beam` / `ensemble` のどの route の anchor を更新するのか明確であること。
 - 実装済みの backlog 項目を残さないため、必要な削除を `kaggle-strategy` へ引き渡して反映済みであること。
-- 新規 backlog 候補は、完了した実験の証拠、非使用条件、未決事項を `kaggle-strategy` へ引き渡し、`docs/backlog/<candidate>.md` と `KAGGLE_DIRECTION.md` の整合および既存候補との優先度見直しが完了していること。
+- 新規 backlog 候補は、完了した実験の証拠、非使用条件、未決事項を `kaggle-strategy` へ引き渡し、`backlog/<candidate>.md` と `backlog/KAGGLE_DIRECTION.md` の整合および既存候補との優先度見直しが完了していること。
 - backlogから始めた実験は、`requirements.md`と`config.yaml`に上位仮説IDと候補名が引き継がれ、`requirements.md`に検証範囲、残る検証、固定事項、変更事項、実装方法、最小検証、成功条件、停止条件、実行しないこと、判断履歴が欠落せず、重要な未決事項が`なし`であること。
 
 ## 実験レイアウト
@@ -281,7 +286,7 @@ Kaggle Notebook が実行の正なので、実験契約に必要な`<exp>_train.
 uv run python .agents/skills/kaggle-review-exp/scripts/review_exp_docs.py EXP_ID --root .
 ```
 
-reviewer の `target evidence` は対象実験直下の `README.md`、`requirements.md`、`SESSION_NOTES.md`、`result.md`、`metrics.json`、`config.yaml`だけを指す。実験内の補助資料は `supporting material`、`KAGGLE_DIRECTION.md`、全体summary、提出履歴、surveyは `context` として表示され、対象実験の不足を補った扱いにはしない。記録の不足を終了コードでも検出する場合は `--strict` を付ける。
+reviewer の `target evidence` は対象実験直下の `README.md`、`requirements.md`、`SESSION_NOTES.md`、`result.md`、`metrics.json`、`config.yaml`だけを指す。実験内の補助資料は `supporting material`、`backlog/KAGGLE_DIRECTION.md`、全体summary、提出履歴、surveyは `context` として表示され、対象実験の不足を補った扱いにはしない。記録の不足を終了コードでも検出する場合は `--strict` を付ける。
 
 4. スクリプトが関連ありと判断したファイルを読む。
 5. 次をレビューする。

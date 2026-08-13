@@ -72,7 +72,7 @@
 | exp061_seedbag_anchor_model_diff_distance_gate | MLモデル | exp059_pf_model_diff_foldsafe_surface_shrink | submitted_complete | - | 11.826 | - | 2026-06-11 |
 | exp062_ravaghi_vs_pixiux_lgbm_features | MLモデル | TODO | 計画中 | - | - | - | 2026-06-12 |
 | exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit | MLモデル | public_notebooks | 完了 | - | - | - | 2026-06-12 |
-| exp064_train_test_well_id_assert_probe | PF/Beam | KAGGLE_DIRECTION.md train_test_well_id_assert_probe backlog | 完了 | - | 11551.955 | - | 2026-06-13 |
+| exp064_train_test_well_id_assert_probe | PF/Beam | backlog/KAGGLE_DIRECTION.md train_test_well_id_assert_probe backlog | 完了 | - | 11551.955 | - | 2026-06-13 |
 | exp065_typewell_supertype_cluster_cv_audit | PF/Beam | studies/typewell_group_audit.py | 完了 | - | - | - | 2026-06-13 |
 | exp066_cv_submit_gate | MLモデル | exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit | 完了 | 9.630105123038494 | - | - | 2026-06-13 |
 | exp068_equivalent_pixiux_inference_port | MLモデル | exp063_ravaghi_vs_pixiux_lgbm_feature_parity_audit | 破棄 | 11.878856 original-fold / 11.994729 well-hash | - | - | 2026-06-16 |

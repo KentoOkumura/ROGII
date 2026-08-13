@@ -86,5 +86,5 @@ submissionへ進まない。exp386 route棄却の独立原因分解はP4候補�
 
 ## 表記
 
-用語は`KAGGLE_DIRECTION.md`と`docs/glossary.md`に合わせ、
+用語は`backlog/KAGGLE_DIRECTION.md`と`docs/glossary.md`に合わせ、
 実験名・設定名以外は日本語優先で記録する。

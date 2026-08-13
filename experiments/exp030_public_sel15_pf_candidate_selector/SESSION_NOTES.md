@@ -52,5 +52,5 @@ uv run python scripts/update_experiment_summary.py
 
 ## 次のアクション
 
-1. `experiment_summary.md` と `KAGGLE_DIRECTION.md` を更新する。
+1. `experiment_summary.md` と `backlog/KAGGLE_DIRECTION.md` を更新する。
 2. `pf090_hold010` の inference 移植可否を確認する。

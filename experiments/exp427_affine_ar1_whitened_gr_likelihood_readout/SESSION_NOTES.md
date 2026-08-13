@@ -89,7 +89,7 @@ Stage 0 PASSでもHMM / PFの実装権限は発生しない。decoder化は別�
 - steeringのrequirements / design / tasklistを記入。
 - `make new-exp EXP=exp427_affine_ar1_whitened_gr_likelihood_readout`
 - config、README、SESSION_NOTES、result、metricsをdesign-onlyへ更新。
-- `KAGGLE_DIRECTION.md`の未着手backlogへ低-中P3として追加。
+- `backlog/KAGGLE_DIRECTION.md`の未着手backlogへ低-中P3として追加。
 - `make validate-exp EXP=exp427_affine_ar1_whitened_gr_likelihood_readout`:
   strict PASS。
 - `make validate-template`: PASS。

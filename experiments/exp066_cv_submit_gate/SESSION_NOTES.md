@@ -55,4 +55,4 @@ kaggle competitions submit rogii-wellbore-geology-prediction -k kentookumura/exp
 ## 次のアクション
 
 1. 提出回数を使う判断をしたら、上記の `exp063` inference v2 を code submit する。
-2. 提出後は `SUBMISSIONS.md`、`exp063` / `exp066` の result、`experiment_summary.md`、`KAGGLE_DIRECTION.md` に Public LB と解釈を記録する。
+2. 提出後は `SUBMISSIONS.md`、`exp063` / `exp066` の result、`experiment_summary.md`、`backlog/KAGGLE_DIRECTION.md` に Public LB と解釈を記録する。

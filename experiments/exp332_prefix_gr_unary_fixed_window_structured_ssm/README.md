@@ -71,4 +71,4 @@ Stage 0完了後は`execution.selected_stage=implementation_only`、`kaggle_push
 
 ## 表記
 
-用語は`KAGGLE_DIRECTION.md`と`docs/glossary.md`に合わせる。
+用語は`backlog/KAGGLE_DIRECTION.md`と`docs/glossary.md`に合わせる。

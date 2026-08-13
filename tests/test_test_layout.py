@@ -442,7 +442,7 @@ def test_viewer_automation_reads_raw_dir_from_project_config() -> None:
 
 
 def test_strategy_and_glossary_distinguish_numeric_sources_and_legacy_terms() -> None:
-    direction = (ROOT / "KAGGLE_DIRECTION.md").read_text()
+    direction = (ROOT / "backlog/KAGGLE_DIRECTION.md").read_text()
     glossary = (ROOT / "docs" / "glossary.md").read_text()
 
     numeric_source = (
@@ -533,6 +533,23 @@ def test_approved_experiment_entry_supports_direct_and_backlog_paths() -> None:
     assert "## 実験化の入口・引き継ぎ・承認" in requirements
     assert "`直接承認`、またはbacklog時の状態" in requirements
     assert "when applicable" in review_ui["interface"]["default_prompt"]
+
+
+def test_backlog_implementation_skill_uses_minimal_read_order() -> None:
+    review_skill = (ROOT / ".agents/skills/kaggle-review-exp/SKILL.md").read_text()
+    strategy_skill = (ROOT / ".agents/skills/kaggle-strategy/SKILL.md").read_text()
+    ordered_steps = (
+        "1. 対応する`backlog/<candidate>.md`",
+        "2. 候補詳細から直接参照される根拠",
+        "3. 親実験の`requirements.md`",
+        "4. 親実験の`config.yaml`",
+        "5. 変更対象コード",
+    )
+    positions = [review_skill.index(step) for step in ordered_steps]
+
+    assert positions == sorted(positions)
+    assert "`backlog/KAGGLE_DIRECTION.md`全体" in review_skill
+    assert "全体戦略の収集手順を先に実行しない" in strategy_skill
 
 
 def test_validation_scope_uses_agents_as_canonical_source() -> None:
@@ -706,8 +723,8 @@ def test_repository_setup_reviews_all_competition_specific_fields() -> None:
         "docs/01_competition.md",
         "docs/04_data.md",
         "docs/official/evaluation.md",
-        "KAGGLE_DIRECTION.md",
-        "docs/backlog/",
+        "backlog/KAGGLE_DIRECTION.md",
+        "backlog/",
         "SUBMISSIONS.md",
     ):
         assert f"`{document}`" in platform_skill
@@ -768,10 +785,10 @@ def test_completed_studies_delegate_interpretation_to_surveys() -> None:
 
 
 def test_post_deadline_backlog_candidates_do_not_advance_to_submission() -> None:
-    direction = (ROOT / "KAGGLE_DIRECTION.md").read_text()
+    direction = (ROOT / "backlog/KAGGLE_DIRECTION.md").read_text()
     candidate_paths = (
-        ROOT / "docs/backlog/candidate_rmse_prior_current_test_contract.md",
-        ROOT / "docs/backlog/outer_train_selector_well_risk_discriminator.md",
+        ROOT / "backlog/candidate_rmse_prior_current_test_contract.md",
+        ROOT / "backlog/outer_train_selector_well_risk_discriminator.md",
     )
 
     assert "現在は新しい最終提出の探索ではなく" in direction
@@ -788,12 +805,12 @@ def test_strategy_prompt_and_direction_respect_canonical_sources() -> None:
     strategy_ui = yaml.safe_load(
         (ROOT / ".agents/skills/kaggle-strategy/agents/openai.yaml").read_text()
     )
-    direction = (ROOT / "KAGGLE_DIRECTION.md").read_text()
+    direction = (ROOT / "backlog/KAGGLE_DIRECTION.md").read_text()
     workflow = (ROOT / "docs" / "05_workflow.md").read_text()
 
     assert "only when requested" in strategy_ui["interface"]["default_prompt"]
     assert "## 参照する前提" in direction
-    assert "[`project.yml`](project.yml)を正とする" in direction
+    assert "[`project.yml`](../project.yml)を正とする" in direction
     assert "## コンペ設定" not in direction
     assert "## 検証方針" not in direction
     assert "実験前の文献・公開Notebook調査" in workflow

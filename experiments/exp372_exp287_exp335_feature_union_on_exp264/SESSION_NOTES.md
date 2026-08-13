@@ -293,7 +293,7 @@ make update-summary
 ## 最終記録・検証
 
 1. 実験状態、CV、gate、model/OOF/SHAを実験文書と台帳へ反映した。
-2. 完了済みunionを`KAGGLE_DIRECTION.md`のアイデアバックログから削除し、
+2. 完了済みunionを`backlog/KAGGLE_DIRECTION.md`のアイデアバックログから削除し、
    科学的negative resultを判断メモへ移した。
 3. Jupytext、構文、Ruff、専用9 tests、関連44 tests、strict validationをPASSした。
    実験文書レビューもcore evidence categoriesの存在を確認した。

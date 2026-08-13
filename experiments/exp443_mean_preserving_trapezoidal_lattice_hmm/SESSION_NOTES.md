@@ -220,6 +220,6 @@ post-run local package lock:
 ## 次のアクション
 
 1. ローカルconfig / packageをfail-closed状態へロックする。
-2. `experiment_summary.md`と`KAGGLE_DIRECTION.md`へterminal結果を反映する。
+2. `experiment_summary.md`と`backlog/KAGGLE_DIRECTION.md`へterminal結果を反映する。
 3. 必要性と別承認がある場合だけ、保存済みvariance auditを使う0-HMM原因分解を
    別実験として設計する。

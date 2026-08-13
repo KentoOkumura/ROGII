@@ -4,7 +4,7 @@
 
 ## 実験の流れ
 
-1. 実験化の入口を確認する。既存backlog候補を実験化する場合は、`docs/backlog/<candidate>.md`とそこから直接参照される根拠を引き継ぐ。ユーザーが直接実験化を承認した場合は、形式的なbacklogを作らない。
+1. 実験化の入口を確認する。既存backlog候補を実験化する場合は、`backlog/<candidate>.md`とそこから直接参照される根拠を引き継ぐ。ユーザーが直接実験化を承認した場合は、形式的なbacklogを作らない。
 2. `kaggle-review-exp`が`experiments/<exp>/`を作り、同じディレクトリの`requirements.md`に契約、根拠、実装方法、受け入れ条件をまとめる。作業順序と進捗は`SESSION_NOTES.md`へ記録する。backlog経由では上位仮説ID、候補名、判断履歴を`requirements.md`と`config.yaml`へ移し、移行確認後に`kaggle-strategy`が元のbacklog項目を削除して検証中の仮説を更新する。直接実験化では、明示的に紐づける既存仮説がなければ`lineage.hypothesis_id`と`lineage.backlog_candidate`を`N/A`とする。
 3. 同じ `EXP=expXXX_name` の中で、実験契約に必要な train、inference、audit、diagnostic のnotebookだけを実装し、必要なnotebookをKaggleでフル実行して評価する。雛形にtrainとinferenceの両方があっても、学習を伴わない監査や提出を目的としない実験へ不要な実装・pushを追加しない。
 4. 実行証拠と比較結果を`AGENTS.md`の記録責務に従って一度ずつ記録し、完了・採用・不採用はユーザーの判断後に確定する。

@@ -90,5 +90,5 @@ RMSE offset treatmentの有効性はKaggle Stage B実行後にだけ判定する
 
 ## 表記
 
-用語は `KAGGLE_DIRECTION.md` の表記方針と `docs/glossary.md` に合わせ、
+用語は `backlog/KAGGLE_DIRECTION.md` の表記方針と `docs/glossary.md` に合わせ、
 実験名や設定名を除いて日本語優先で記録する。

@@ -2,7 +2,7 @@
 
 ## 目的
 
-`KAGGLE_DIRECTION.md` の `typewell_late_range_ml_posthoc_clip_audit` を実装する。`exp148` の保存済み OOF prediction に対して、typewell range 内位置に基づく条件付き lower-bound shrink / clip を no-training で監査する。
+`backlog/KAGGLE_DIRECTION.md` の `typewell_late_range_ml_posthoc_clip_audit` を実装する。`exp148` の保存済み OOF prediction に対して、typewell range 内位置に基づく条件付き lower-bound shrink / clip を no-training で監査する。
 
 ## 現在の状態
 
@@ -141,6 +141,6 @@ kaggle kernels output kentookumura/exp174-typewell-late-clip-train -p /tmp/kaggl
 
 ## 完了時の整理
 
-- `KAGGLE_DIRECTION.md` から `typewell_late_range_ml_posthoc_clip_audit` を完了/不採用として外した。
+- `backlog/KAGGLE_DIRECTION.md` から `typewell_late_range_ml_posthoc_clip_audit` を完了/不採用として外した。
 - 関連する `typewell_late_range_pfbeam_candidate_prior`、`typewell_late_range_pfbeam_generation_soft_prior`、`typewell_late_range_clipped_candidate_augmentation` は exp174 の負例を反映して低優先 / hard clip 禁止の扱いに更新した。
 - `experiment_summary.md` に exp174 の完了結果を記録した。

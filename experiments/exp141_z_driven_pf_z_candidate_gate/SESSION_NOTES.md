@@ -128,6 +128,6 @@ kaggle kernels logs kentookumura/exp141-z-pfz-gate-train > experiments/exp141_z_
 
 ## 次のアクション
 
-1. `result.md`、`metrics.json`、`experiment_summary.md`、`KAGGLE_DIRECTION.md` は完了結果で更新済み。
+1. `result.md`、`metrics.json`、`experiment_summary.md`、`backlog/KAGGLE_DIRECTION.md` は完了結果で更新済み。
 2. `z_driven_pf_z_candidate_gate` backlog は完了 / 不採用として閉じた。
 3. `pf_z` を使う場合は hard switch ではなく、segment-level verifier / confidence feature / `z_slope_posthoc_correction_on_pfbeam_candidates` の小補正方向に限定する。

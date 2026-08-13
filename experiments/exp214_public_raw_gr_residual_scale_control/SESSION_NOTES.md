@@ -2,7 +2,7 @@
 
 ## 目的
 
-`KAGGLE_DIRECTION.md` の backlog `public_raw_gr_residual_scale_control` を実装する。公開 PF lineage に近い raw GR + known-prefix residual scale を、`exp211/213` と同じ exp072-compatible pseudo-tail 評価面で固定 control として保存する。
+`backlog/KAGGLE_DIRECTION.md` の backlog `public_raw_gr_residual_scale_control` を実装する。公開 PF lineage に近い raw GR + known-prefix residual scale を、`exp211/213` と同じ exp072-compatible pseudo-tail 評価面で固定 control として保存する。
 
 これは改善実験ではなく、GRCAL-PFBEAM 系の affine / structural / denoise 変更を測るための物差しである。直接 inference、submit、ML 学習は行わない。
 
@@ -174,7 +174,7 @@ SHA:
 
 更新:
 
-- `result.md`、`metrics.json`、`README.md`、`experiment_summary.md`、`KAGGLE_DIRECTION.md`、steering tasklist を更新した。
+- `result.md`、`metrics.json`、`README.md`、`experiment_summary.md`、`backlog/KAGGLE_DIRECTION.md`、steering tasklist を更新した。
 
 ## 次アクション
 

@@ -105,4 +105,4 @@ truth-before-freeze 0、固定input SHA、score再計算を含むtechnical check
 
 ## 表記
 
-用語は`KAGGLE_DIRECTION.md`の表記方針と`docs/glossary.md`に合わせる。
+用語は`backlog/KAGGLE_DIRECTION.md`の表記方針と`docs/glossary.md`に合わせる。

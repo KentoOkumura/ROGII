@@ -36,4 +36,4 @@
 
 この README は実験フォルダの入口です。仮説、変更点、実行コマンド、出力、失敗理由、次のアクションは `SESSION_NOTES.md` と `result.md` を正とします。
 
-用語は `KAGGLE_DIRECTION.md` の表記方針と `docs/glossary.md` に合わせ、実験名や設定名を除いて日本語優先で記録します。
+用語は `backlog/KAGGLE_DIRECTION.md` の表記方針と `docs/glossary.md` に合わせ、実験名や設定名を除いて日本語優先で記録します。

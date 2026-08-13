@@ -65,7 +65,7 @@
 
 1. validation / Jupytext 変換を通す。
 2. Kaggle train を push する場合は、canonical kernel id を `kentookumura/exp200-pf-step-delta-prior-train` にする。
-3. Kaggle output 取得後、`direct_pfbeam_comparison.py` を実行して `metrics.json`、`result.md`、`experiment_summary.md`、`KAGGLE_DIRECTION.md` を更新する。
+3. Kaggle output 取得後、`direct_pfbeam_comparison.py` を実行して `metrics.json`、`result.md`、`experiment_summary.md`、`backlog/KAGGLE_DIRECTION.md` を更新する。
 
 ## local validation
 
@@ -112,7 +112,7 @@ uv run python scripts/validate_experiment.py --experiment exp200_pf_step_delta_s
 ```
 
 - result: PASS
-- 2026-07-05 pre-Kaggle check: この時点では実装済み・評価待ちとして `KAGGLE_DIRECTION.md` に記録した。後続の Kaggle train / direct comparison 完了により、この扱いは下の最終判定で supersede された。
+- 2026-07-05 pre-Kaggle check: この時点では実装済み・評価待ちとして `backlog/KAGGLE_DIRECTION.md` に記録した。後続の Kaggle train / direct comparison 完了により、この扱いは下の最終判定で supersede された。
 - 2026-07-05 final check: `uv run python scripts/validate_experiment.py --experiment exp200_pf_step_delta_soft_prior_full_replay_replacement` を再実行し、strict validation PASS。
 
 ## Kaggle train v1

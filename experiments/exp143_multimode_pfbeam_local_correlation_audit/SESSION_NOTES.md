@@ -114,7 +114,7 @@ timeout 300 kaggle kernels logs -f --interval 20 kentookumura/exp143-multimode-p
 ## 次のアクション
 
 1. ユーザーから Kaggle 完了連絡を受けたら output / logs を取得する。
-2. output 取得後に `result.md`、`metrics.json`、`experiment_summary.md`、`KAGGLE_DIRECTION.md` を更新する。
+2. output 取得後に `result.md`、`metrics.json`、`experiment_summary.md`、`backlog/KAGGLE_DIRECTION.md` を更新する。
 
 ## Kaggle v1 timeout 対応
 
@@ -289,7 +289,7 @@ PY
   - `README.md`
   - `metrics.json`
   - `experiment_summary.md`
-  - `KAGGLE_DIRECTION.md`
+  - `backlog/KAGGLE_DIRECTION.md`
 
 ## Interpretation correction
 
@@ -310,4 +310,4 @@ PY
   - `README.md`
   - `metrics.json`
   - `experiment_summary.md`
-  - `KAGGLE_DIRECTION.md`
+  - `backlog/KAGGLE_DIRECTION.md`

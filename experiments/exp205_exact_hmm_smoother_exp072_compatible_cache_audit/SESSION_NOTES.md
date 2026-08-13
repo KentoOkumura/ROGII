@@ -159,7 +159,7 @@ make prepare-kaggle-notebooks EXP=exp205_exact_hmm_smoother_exp072_compatible_ca
 - 状態: implemented / pending Kaggle train
 - Kaggle train は未 push。
 - output / metrics は未生成。
-- `KAGGLE_DIRECTION.md` の backlog は結果待ちとして残し、実行完了後に完了/不採用/支持を判断する。
+- `backlog/KAGGLE_DIRECTION.md` の backlog は結果待ちとして残し、実行完了後に完了/不採用/支持を判断する。
 
 ## Kaggle train v1
 

@@ -242,7 +242,7 @@ print("cache", cache.exists(), cache.stat().st_size if cache.exists() else None)
    - Store retained Colab output with the experiment artifacts, for example
      `experiments/<exp>/artifacts/colab_runs/<run_id>/`, and add a
      `minimal_output_manifest.json`.
-   - Validate downloaded JSON locally and hand the evidence to `kaggle-review-exp` for recording under the source-of-truth split in `AGENTS.md`. If the experiment lifecycle requires a change to the active-hypothesis or idea-backlog sections of `KAGGLE_DIRECTION.md`, pass the evidence and requested change to `kaggle-strategy`; do not edit those sections from this skill.
+   - Validate downloaded JSON locally and hand the evidence to `kaggle-review-exp` for recording under the source-of-truth split in `AGENTS.md`. If the experiment lifecycle requires a change to the active-hypothesis or idea-backlog sections of `backlog/KAGGLE_DIRECTION.md`, pass the evidence and requested change to `kaggle-strategy`; do not edit those sections from this skill.
 
 ## Validation Before Full Run
 

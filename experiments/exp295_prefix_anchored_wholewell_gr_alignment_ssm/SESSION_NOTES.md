@@ -195,7 +195,7 @@ python3 .agents/skills/kaggle-review-exp/scripts/review_exp_docs.py exp295 --roo
 
 ## 変更点
 
-- `KAGGLE_DIRECTION.md`へ最優先・高リスク・stage-gated exp295を追加した。
+- `backlog/KAGGLE_DIRECTION.md`へ最優先・高リスク・stage-gated exp295を追加した。
 - 旧`heatmap_unary_exact_hmm_redecode_probe`は、exp295のlineage/evidenceへ統合して独立backlogから削除する設計にした。
 - steering 3文書、`architecture_contract.md`、`config.yaml`、README、SESSION_NOTES、result、metricsへ同じ固定契約を反映した。
 - 設計確定時点ではscaffold train/inference Notebook、`settings.py`を変更せず、実験コード、Jupytext source、tests、package、Kaggle run、output、prediction、submissionを作成しなかった。

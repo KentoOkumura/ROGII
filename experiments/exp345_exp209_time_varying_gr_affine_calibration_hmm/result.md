@@ -83,4 +83,4 @@ gzip 2生成物の展開後SHAはKaggle summary記録とローカル再計算で
 
 ## 結論と次のアクション
 
-事前契約どおり`stage_failed_close_without_rescue`とし、このfamilyを閉じる。Stage 1を実行せず、affine/process-noise/grid、transition、sigma、missing weight、blendによる同一実験内救済も行わない。実装済み項目は`KAGGLE_DIRECTION.md`のアイデアバックログから削除する。再訪する場合は、独立した新しい根拠、別実験の事前設計、ユーザー確認を必要とする。
+事前契約どおり`stage_failed_close_without_rescue`とし、このfamilyを閉じる。Stage 1を実行せず、affine/process-noise/grid、transition、sigma、missing weight、blendによる同一実験内救済も行わない。実装済み項目は`backlog/KAGGLE_DIRECTION.md`のアイデアバックログから削除する。再訪する場合は、独立した新しい根拠、別実験の事前設計、ユーザー確認を必要とする。

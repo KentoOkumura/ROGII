@@ -322,7 +322,7 @@ task push-kaggle-train EXP=exp264_exp263_candidate_confidence_dual_selector  # �
 ## 2026-07-17 Stage B記録同期・検証
 
 - `config.yaml`、`metrics.json`、`result.md`、`README.md`、steering tasklistをStage B結果へ同期した。
-- `KAGGLE_DIRECTION.md`はhard selector branchを閉じ、Stage C compact add-onlyを別承認候補として更新した。
+- `backlog/KAGGLE_DIRECTION.md`はhard selector branchを閉じ、Stage C compact add-onlyを別承認候補として更新した。
   sequence decoder案はscore guard通過済みだが、保存scoreによる0-booster switch attribution待ちへ下げた。
 - `make update-summary`で262実験の`experiment_summary.md`を再生成し、exp264 statusを
   `stage_b_score_guard_passed_hard_readout_failed`へ反映した。
@@ -411,7 +411,7 @@ task push-kaggle-train EXP=exp264_exp263_candidate_confidence_dual_selector  # �
 ## 2026-07-17 Stage C記録同期・検証
 
 - `config.yaml`、`metrics.json`、`README.md`、`result.md`、`output_contract.md`、
-  `selector_feature_readout.md`、steering 3文書、調査docs、`KAGGLE_DIRECTION.md`を実測値へ同期した。
+  `selector_feature_readout.md`、steering 3文書、調査docs、`backlog/KAGGLE_DIRECTION.md`を実測値へ同期した。
 - `make update-summary`で263実験の`experiment_summary.md`を再生成し、exp264 statusを
   `stage_c_completed_score_guard_passed_nested_compact_ready`へ反映した。
 - config YAML / metrics JSON parse、strict experiment validation、exp264契約テスト6件、

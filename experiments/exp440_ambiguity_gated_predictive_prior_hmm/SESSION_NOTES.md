@@ -307,7 +307,7 @@ make validate-template
 - model / LightGBM config / trained fold / booster / PF / Beam / GPUは
   Stage 0/1とも`0 / 0 / 0 / 0 / 0 / 0 / 0`。
 - `docs/06_reproducibility.md`を読み、truth-late freezeとSHA契約を記録した。
-- `KAGGLE_DIRECTION.md`ではP3とし、exp434 P1 / exp436由来fixed-five P3より後、
+- `backlog/KAGGLE_DIRECTION.md`ではP3とし、exp434 P1 / exp436由来fixed-five P3より後、
   P4原因分解より前に置く。
 
 ## 実装内容

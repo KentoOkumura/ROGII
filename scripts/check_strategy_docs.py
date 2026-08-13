@@ -13,8 +13,8 @@ except ImportError:  # Direct execution: `uv run python scripts/check_strategy_d
     from update_survey_index import EXCLUDED_REPORTS, load_report
 
 
-DIRECTION_PATH = Path("KAGGLE_DIRECTION.md")
-BACKLOG_DIR = Path("docs/backlog")
+DIRECTION_PATH = Path("backlog/KAGGLE_DIRECTION.md")
+BACKLOG_DIR = Path("backlog")
 MAX_DIRECTION_BYTES = 50_000
 MAX_DIRECTION_LINES = 220
 MAX_LINE_LENGTH = 800
@@ -25,9 +25,9 @@ UNASSIGNED_HYPOTHESIS = "未整理"
 HYPOTHESIS_ID_RE = re.compile(r"HYP-\d{8}-\d{2}")
 EXPERIMENT_NAME_RE = re.compile(r"exp\d+_[a-z0-9_]+")
 CANDIDATE_NAME_RE = re.compile(r"[a-z0-9_]+")
-DETAIL_LINK_RE = re.compile(r"^\[`(?P<name>[a-z0-9_]+)`\]\(docs/backlog/(?P=name)\.md\)$")
-DETAIL_LINK_FIND_RE = re.compile(r"\[`(?P<name>[a-z0-9_]+)`\]\(docs/backlog/(?P=name)\.md\)")
-EXPERIMENT_LINK_RE = re.compile(r"^\[`(?P<name>exp\d+_[a-z0-9_]+)`\]\(experiments/(?P=name)/\)$")
+DETAIL_LINK_RE = re.compile(r"^\[`(?P<name>[a-z0-9_]+)`\]\((?P=name)\.md\)$")
+DETAIL_LINK_FIND_RE = re.compile(r"\[`(?P<name>[a-z0-9_]+)`\]\((?P=name)\.md\)")
+EXPERIMENT_LINK_RE = re.compile(r"^\[`(?P<name>exp\d+_[a-z0-9_]+)`\]\(\.\./experiments/(?P=name)/\)$")
 DESIGN_READY_FIELDS = (
     "親実験 / 比較対象",
     "実測済みの事実",
@@ -421,7 +421,7 @@ def validate_strategy_docs(root: Path = ROOT) -> list[str]:
     detail_names = {
         path.stem
         for path in backlog_dir.glob("*.md")
-        if path.name not in {"_TEMPLATE.md", "README.md"}
+        if path.name not in {"_TEMPLATE.md", "KAGGLE_DIRECTION.md", "README.md"}
     }
     orphaned = sorted(detail_names - referenced.keys())
     if orphaned:

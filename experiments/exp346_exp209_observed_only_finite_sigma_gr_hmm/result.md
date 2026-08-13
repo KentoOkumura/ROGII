@@ -108,6 +108,6 @@ small metrics/gate/manifest出力だけを一時領域へ選択取得し、raw S
 
 ## 結論と次のアクション
 
-事前契約どおりbranchを閉じる。sigma multiplier/clip、confidence/threshold、emission、HMM、blendによる救済、raw-test inference、submissionは行わない。実装済みexp346は`KAGGLE_DIRECTION.md`のバックログから削除する。
+事前契約どおりbranchを閉じる。sigma multiplier/clip、confidence/threshold、emission、HMM、blendによる救済、raw-test inference、submissionは行わない。実装済みexp346は`backlog/KAGGLE_DIRECTION.md`のバックログから削除する。
 
 同familyの新しい救済backlogは追加しない。次は既存の独立0-booster候補`exp340_exp226_depth_alias_block_confidence_readout_on_exp264`をP1--P2として維持する。GR evidenceの重複過信を再訪する場合も、直接sigmaを狭めず、既存の低優先Stage 0 `exp343_acf_effective_sample_likelihood_tempering_audit`でknown-prefix ACFの安定性を先に検証し、gate通過と別承認なしにHMMへ進めない。

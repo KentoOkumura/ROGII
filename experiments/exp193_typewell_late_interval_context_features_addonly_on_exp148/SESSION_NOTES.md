@@ -4,7 +4,7 @@
 
 ### 狙い
 
-`KAGGLE_DIRECTION.md` の `typewell_late_interval_context_features_addonly_on_exp148` backlog を `exp193_typewell_late_interval_context_features_addonly_on_exp148` として実装する。
+`backlog/KAGGLE_DIRECTION.md` の `typewell_late_interval_context_features_addonly_on_exp148` backlog を `exp193_typewell_late_interval_context_features_addonly_on_exp148` として実装する。
 
 exp174 で ML 予測の late-range hard clip / shrink は悪化し、exp176 では candidate ranker に `candidate_pct` / `known_last_pct` 系 signal を入れると positive だった。今回は candidate 別 feature を使わず、raw typewell range と observed prefix last-known TVT だけから作る well-context feature が exp148 ML anchor に効くかを小さく見る。
 

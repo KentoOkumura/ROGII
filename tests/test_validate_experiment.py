@@ -138,7 +138,7 @@ def test_lineage_rejects_invalid_candidate_name() -> None:
         {
             "lineage": {
                 "hypothesis_id": "HYP-19000101-91",
-                "backlog_candidate": "docs/backlog/candidate-a.md",
+                "backlog_candidate": "backlog/candidate-a.md",
             }
         },
         errors,
@@ -190,7 +190,7 @@ def test_allow_todo_still_rejects_completed_invalid_lineage() -> None:
         {
             "lineage": {
                 "hypothesis_id": "HYP-19000101-91",
-                "backlog_candidate": "docs/backlog/candidate-a.md",
+                "backlog_candidate": "backlog/candidate-a.md",
             }
         },
         allow_todo=True,

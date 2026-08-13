@@ -9,7 +9,7 @@
 
 ## 実装メモ
 
-- `KAGGLE_DIRECTION.md` の `pfbeam_normalized_diagnostic_score` を実験化した。
+- `backlog/KAGGLE_DIRECTION.md` の `pfbeam_normalized_diagnostic_score` を実験化した。
 - exp127 を派生元にしたが、exp112 learned likelihood feature cache 依存は削除した。
 - exp072 full replay feature cache の `pf_ancc`、`pf_z`、`beam_mean_d`、`beam_med_d`、`likpf_mean_d` から candidate TVT を復元する。
 - candidate TVT を `u = TVT + Z - (T0 + Z0)` に写し、well-local `u_scale` と `md_since_norm` で正規化する。

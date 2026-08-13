@@ -83,7 +83,7 @@ make update-summary
 - exp446 strict validation: PASS。
 - config / metrics / route / status / authorization / 実行量の
   design consistency assertion: PASS。
-- `KAGGLE_DIRECTION.md`未着手backlogと`experiment_summary.md`へ反映済み。
+- `backlog/KAGGLE_DIRECTION.md`未着手backlogと`experiment_summary.md`へ反映済み。
 - train / inference notebookは各6 cellsのテンプレートscaffoldであり、
   candidate HMM実装はない。
 

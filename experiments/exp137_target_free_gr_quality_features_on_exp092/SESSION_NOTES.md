@@ -11,7 +11,7 @@
 
 ## 実装メモ
 
-- `KAGGLE_DIRECTION.md` の `target_free_gr_quality_features_on_exp092` を実験化する。
+- `backlog/KAGGLE_DIRECTION.md` の `target_free_gr_quality_features_on_exp092` を実験化する。
 - exp130 を派生元にし、exp092 相当の U-projection correction / disagreement surface と LightGBM train loop を再利用する。
 - 追加特徴量は GR 品質 / coverage のみに限定する。
   - prefix/eval/full GR missing rate
@@ -142,6 +142,6 @@ timeout 180 kaggle kernels logs -f --interval 15 kentookumura/exp137-gr-quality-
 
 ## 次アクション
 
-1. `KAGGLE_DIRECTION.md` から実装済み backlog を削除する。
+1. `backlog/KAGGLE_DIRECTION.md` から実装済み backlog を削除する。
 2. `experiment_summary.md` を更新する。
 3. GR quality 系の後続は、全 row add-only ではなく near-prefix guard / segment verifier の限定用途に寄せる。

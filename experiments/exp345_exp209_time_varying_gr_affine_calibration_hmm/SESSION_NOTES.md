@@ -259,7 +259,7 @@ Stage 0証拠:
 - `config.yaml`を`stage_0_full_failed_closed`へ更新し、Kaggle push承認と全run flagをfalseへ戻した。
 - failed Stage 0 evidence SHAが存在してもStage 1を有効化できないよう、`stage_0_gate_passed is True`を追加guardにした。
 - Stage 1、affine/process-noise/grid救済、inference、submissionは実行しない。
-- 実装済みexp345を`KAGGLE_DIRECTION.md`のアイデアバックログから削除し、完了判断を判断メモへ移す。
+- 実装済みexp345を`backlog/KAGGLE_DIRECTION.md`のアイデアバックログから削除し、完了判断を判断メモへ移す。
 - 同familyの救済backlogは追加しない。再訪には独立根拠、別実験の事前設計、ユーザー確認を必要とする。
 
 ## 2026-07-22 完了後検証

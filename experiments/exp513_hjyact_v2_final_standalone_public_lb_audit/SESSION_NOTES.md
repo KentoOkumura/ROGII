@@ -18,7 +18,7 @@ Public LBを確認する。今回はexp512のKaggle失敗を反映して実装�
 ## 2026-08-05 設計記録
 
 - `kaggle-review-exp`に従い、steeringを実験ディレクトリより先に作成した。
-- `kaggle-strategy`に従い、exp512、`KAGGLE_DIRECTION.md`、`experiment_summary.md`、
+- `kaggle-strategy`に従い、exp512、`backlog/KAGGLE_DIRECTION.md`、`experiment_summary.md`、
   `SUBMISSIONS.md`、再現性ガードを確認した。
 - 最終境界はexp512の
   `after_complete_hjyact_v2_final_stack_and_pf_seed_branch_hedge`に固定した。

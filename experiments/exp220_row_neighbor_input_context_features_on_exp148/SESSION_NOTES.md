@@ -4,7 +4,7 @@
 
 ### 狙い
 
-`KAGGLE_DIRECTION.md` の `row_neighbor_input_context_features_on_exp148` backlog を exp220 として実装する。
+`backlog/KAGGLE_DIRECTION.md` の `row_neighbor_input_context_features_on_exp148` backlog を exp220 として実装する。
 
 ### 実装方針
 

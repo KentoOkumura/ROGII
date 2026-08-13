@@ -4,7 +4,7 @@
 
 ### 狙い
 
-`KAGGLE_DIRECTION.md` の `gr_wavelet_rotation_confidence_features_on_exp148`
+`backlog/KAGGLE_DIRECTION.md` の `gr_wavelet_rotation_confidence_features_on_exp148`
 backlog を実装する。exp167/189/216 では GR denoise / calibration を direct matching
 や PF/Beam generation に使う方針は弱かったため、本実験では DWT/FFT/denoise signal を
 exp148 learned-likelihood ML surface の add-only confidence feature として評価する。

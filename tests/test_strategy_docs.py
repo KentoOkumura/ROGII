@@ -4,7 +4,7 @@ from scripts.check_strategy_docs import validate_strategy_docs
 
 
 def write_valid_strategy_docs(root: Path) -> None:
-    backlog = root / "docs" / "backlog"
+    backlog = root / "backlog"
     backlog.mkdir(parents=True)
     (backlog / "candidate_a.md").write_text(
         "# candidate_a\n\n- 候補名: `candidate_a`\n"
@@ -13,25 +13,25 @@ def write_valid_strategy_docs(root: Path) -> None:
         "- 優先度: P2\n"
         "- 優先度の理由: next candidate\n"
     )
-    (root / "KAGGLE_DIRECTION.md").write_text(
+    (root / "backlog/KAGGLE_DIRECTION.md").write_text(
         "# Kaggle 方針\n\n"
         "## アイデアバックログ\n\n"
         "### 検証中の仮説\n\n"
         "| 仮説ID | 仮説 | 対応する未着手候補 | 対応する実験 | 残っている問い |\n"
         "| --- | --- | --- | --- | --- |\n"
         "| `HYP-19000101-91` | hypothesis | "
-        "[`candidate_a`](docs/backlog/candidate_a.md) | - | remaining |\n\n"
+        "[`candidate_a`](candidate_a.md) | - | remaining |\n\n"
         "### 未着手バックログ\n\n"
         "| 優先度 | 対応仮説 | アイデア | 短い要約 | 主な先行条件 / 依存 | 状態 |\n"
         "| --- | --- | --- | --- | --- | --- |\n"
-        "| P2 | `HYP-19000101-91` | [`candidate_a`](docs/backlog/candidate_a.md) | "
+        "| P2 | `HYP-19000101-91` | [`candidate_a`](candidate_a.md) | "
         "summary | dependency | "
         "`検討メモ・設計不可` |\n"
     )
 
 
 def make_candidate_design_ready(root: Path) -> None:
-    detail = root / "docs" / "backlog" / "candidate_a.md"
+    detail = root / "backlog" / "candidate_a.md"
     detail.write_text(
         "# candidate_a\n\n"
         "- 候補名: `candidate_a`\n"
@@ -65,7 +65,7 @@ def make_candidate_design_ready(root: Path) -> None:
         "## 未決事項\n\n"
         "- なし\n"
     )
-    direction = root / "KAGGLE_DIRECTION.md"
+    direction = root / "backlog/KAGGLE_DIRECTION.md"
     direction.write_text(
         direction.read_text().replace("`検討メモ・設計不可` |", "`設計可能・実験化未承認` |")
     )
@@ -78,12 +78,12 @@ def add_mapped_experiment(root: Path, *, hypothesis_id: str = "HYP-19000101-91")
     (experiment_dir / "config.yaml").write_text(
         f"lineage:\n  hypothesis_id: {hypothesis_id}\n  backlog_candidate: candidate_a\n"
     )
-    direction = root / "KAGGLE_DIRECTION.md"
+    direction = root / "backlog/KAGGLE_DIRECTION.md"
     direction.write_text(
         direction.read_text().replace(
-            "[`candidate_a`](docs/backlog/candidate_a.md) | - | remaining",
-            "[`candidate_a`](docs/backlog/candidate_a.md) | "
-            "[`exp001_candidate`](experiments/exp001_candidate/) | remaining",
+            "[`candidate_a`](candidate_a.md) | - | remaining",
+            "[`candidate_a`](candidate_a.md) | "
+            "[`exp001_candidate`](../experiments/exp001_candidate/) | remaining",
         )
     )
 
@@ -104,20 +104,20 @@ def test_strategy_docs_accept_matching_index_and_detail(tmp_path: Path) -> None:
 
 def test_strategy_docs_accept_empty_backlog(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
-    direction = tmp_path / "KAGGLE_DIRECTION.md"
+    direction = tmp_path / "backlog/KAGGLE_DIRECTION.md"
     text = direction.read_text()
     text = text.replace(
         "| `HYP-19000101-91` | hypothesis | "
-        "[`candidate_a`](docs/backlog/candidate_a.md) | - | remaining |\n",
+        "[`candidate_a`](candidate_a.md) | - | remaining |\n",
         "",
     )
     text = text.replace(
-        "| P2 | `HYP-19000101-91` | [`candidate_a`](docs/backlog/candidate_a.md) | "
+        "| P2 | `HYP-19000101-91` | [`candidate_a`](candidate_a.md) | "
         "summary | dependency | `検討メモ・設計不可` |\n",
         "",
     )
     direction.write_text(text)
-    (tmp_path / "docs" / "backlog" / "candidate_a.md").unlink()
+    (tmp_path / "backlog" / "candidate_a.md").unlink()
 
     assert validate_strategy_docs(tmp_path) == []
 
@@ -132,7 +132,7 @@ def test_strategy_docs_accept_completed_design_ready_detail(tmp_path: Path) -> N
 def test_strategy_docs_reject_incomplete_design_ready_detail(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
     make_candidate_design_ready(tmp_path)
-    detail = tmp_path / "docs" / "backlog" / "candidate_a.md"
+    detail = tmp_path / "backlog" / "candidate_a.md"
     detail.write_text(
         detail.read_text().replace("- 変更するもの: featureを1列追加する", "- 変更するもの: TODO")
     )
@@ -148,7 +148,7 @@ def test_strategy_docs_reject_design_ready_detail_missing_hypothesis_boundary(
 ) -> None:
     write_valid_strategy_docs(tmp_path)
     make_candidate_design_ready(tmp_path)
-    detail = tmp_path / "docs" / "backlog" / "candidate_a.md"
+    detail = tmp_path / "backlog" / "candidate_a.md"
     detail.write_text(
         detail.read_text().replace(
             "- 上位仮説の判断に残る検証: 別modelでの再現\n",
@@ -164,7 +164,7 @@ def test_strategy_docs_reject_design_ready_detail_missing_hypothesis_boundary(
 def test_strategy_docs_reject_invalid_candidate_only_decision(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
     make_candidate_design_ready(tmp_path)
-    detail = tmp_path / "docs" / "backlog" / "candidate_a.md"
+    detail = tmp_path / "backlog" / "candidate_a.md"
     detail.write_text(
         detail.read_text().replace(
             "- この候補だけで上位仮説を判断できるか: いいえ",
@@ -180,7 +180,7 @@ def test_strategy_docs_reject_invalid_candidate_only_decision(tmp_path: Path) ->
 def test_strategy_docs_reject_design_ready_detail_with_unresolved_items(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
     make_candidate_design_ready(tmp_path)
-    detail = tmp_path / "docs" / "backlog" / "candidate_a.md"
+    detail = tmp_path / "backlog" / "candidate_a.md"
     detail.write_text(detail.read_text().replace("- なし\n", "- thresholdを確認する\n"))
 
     errors = validate_strategy_docs(tmp_path)
@@ -221,7 +221,7 @@ def test_strategy_docs_accept_experiment_hypothesis_archived_in_final_survey(
     write_valid_strategy_docs(tmp_path)
     add_unmapped_experiment(tmp_path, "HYP-19000101-92")
     surveys = tmp_path / "docs" / "surveys"
-    surveys.mkdir()
+    surveys.mkdir(parents=True)
     (surveys / "archived.md").write_text(
         "---\n"
         "title: archived hypothesis\n"
@@ -242,7 +242,7 @@ def test_strategy_docs_accept_experiment_hypothesis_archived_in_final_survey(
 
 def test_strategy_docs_reject_placeholder_hypothesis_content(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
-    direction = tmp_path / "KAGGLE_DIRECTION.md"
+    direction = tmp_path / "backlog/KAGGLE_DIRECTION.md"
     direction.write_text(
         direction.read_text()
         .replace(
@@ -260,7 +260,7 @@ def test_strategy_docs_reject_placeholder_hypothesis_content(tmp_path: Path) -> 
 
 def test_strategy_docs_reject_braced_hypothesis_placeholders(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
-    direction = tmp_path / "KAGGLE_DIRECTION.md"
+    direction = tmp_path / "backlog/KAGGLE_DIRECTION.md"
     direction.write_text(
         direction.read_text()
         .replace(
@@ -281,7 +281,7 @@ def test_strategy_docs_reject_braced_placeholder_in_design_ready_detail(
 ) -> None:
     write_valid_strategy_docs(tmp_path)
     make_candidate_design_ready(tmp_path)
-    detail = tmp_path / "docs" / "backlog" / "candidate_a.md"
+    detail = tmp_path / "backlog" / "candidate_a.md"
     detail.write_text(
         detail.read_text().replace(
             "- 変更するもの: featureを1列追加する",
@@ -296,7 +296,7 @@ def test_strategy_docs_reject_braced_placeholder_in_design_ready_detail(
 
 def test_strategy_docs_reject_orphaned_detail(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
-    (tmp_path / "docs" / "backlog" / "orphan.md").write_text("# orphan\n")
+    (tmp_path / "backlog" / "orphan.md").write_text("# orphan\n")
 
     errors = validate_strategy_docs(tmp_path)
 
@@ -305,7 +305,7 @@ def test_strategy_docs_reject_orphaned_detail(tmp_path: Path) -> None:
 
 def test_strategy_docs_reject_state_mismatch(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
-    detail = tmp_path / "docs" / "backlog" / "candidate_a.md"
+    detail = tmp_path / "backlog" / "candidate_a.md"
     detail.write_text(detail.read_text().replace("検討メモ・設計不可", "設計可能・実験化未承認"))
 
     errors = validate_strategy_docs(tmp_path)
@@ -315,7 +315,7 @@ def test_strategy_docs_reject_state_mismatch(tmp_path: Path) -> None:
 
 def test_strategy_docs_reject_noncanonical_priority(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
-    direction = tmp_path / "KAGGLE_DIRECTION.md"
+    direction = tmp_path / "backlog/KAGGLE_DIRECTION.md"
     direction.write_text(direction.read_text().replace("| P2 |", "| 中・P2 |"))
 
     errors = validate_strategy_docs(tmp_path)
@@ -325,7 +325,7 @@ def test_strategy_docs_reject_noncanonical_priority(tmp_path: Path) -> None:
 
 def test_strategy_docs_reject_priority_mismatch(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
-    detail = tmp_path / "docs" / "backlog" / "candidate_a.md"
+    detail = tmp_path / "backlog" / "candidate_a.md"
     detail.write_text(detail.read_text().replace("- 優先度: P2", "- 優先度: P3"))
 
     errors = validate_strategy_docs(tmp_path)
@@ -335,7 +335,7 @@ def test_strategy_docs_reject_priority_mismatch(tmp_path: Path) -> None:
 
 def test_strategy_docs_reject_missing_priority_reason(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
-    detail = tmp_path / "docs" / "backlog" / "candidate_a.md"
+    detail = tmp_path / "backlog" / "candidate_a.md"
     detail.write_text(detail.read_text().replace("- 優先度の理由: next candidate\n", ""))
 
     errors = validate_strategy_docs(tmp_path)
@@ -345,7 +345,7 @@ def test_strategy_docs_reject_missing_priority_reason(tmp_path: Path) -> None:
 
 def test_strategy_docs_reject_legacy_combined_priority_reason(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
-    detail = tmp_path / "docs" / "backlog" / "candidate_a.md"
+    detail = tmp_path / "backlog" / "candidate_a.md"
     detail.write_text(detail.read_text() + "- 優先度と理由: P2・next candidate\n")
 
     errors = validate_strategy_docs(tmp_path)
@@ -355,7 +355,7 @@ def test_strategy_docs_reject_legacy_combined_priority_reason(tmp_path: Path) ->
 
 def test_strategy_docs_reject_missing_hypothesis(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
-    direction = tmp_path / "KAGGLE_DIRECTION.md"
+    direction = tmp_path / "backlog/KAGGLE_DIRECTION.md"
     direction.write_text(
         direction.read_text().replace(
             "HYP-19000101-91` | hypothesis", "HYP-19000101-92` | hypothesis"
@@ -369,7 +369,7 @@ def test_strategy_docs_reject_missing_hypothesis(tmp_path: Path) -> None:
 
 def test_strategy_docs_reject_hypothesis_detail_mismatch(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
-    detail = tmp_path / "docs" / "backlog" / "candidate_a.md"
+    detail = tmp_path / "backlog" / "candidate_a.md"
     detail.write_text(detail.read_text().replace("HYP-19000101-91", "HYP-19000101-92"))
 
     errors = validate_strategy_docs(tmp_path)
@@ -379,10 +379,10 @@ def test_strategy_docs_reject_hypothesis_detail_mismatch(tmp_path: Path) -> None
 
 def test_strategy_docs_reject_hypothesis_candidate_mapping_mismatch(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
-    direction = tmp_path / "KAGGLE_DIRECTION.md"
+    direction = tmp_path / "backlog/KAGGLE_DIRECTION.md"
     direction.write_text(
         direction.read_text().replace(
-            "[`candidate_a`](docs/backlog/candidate_a.md) | - | remaining",
+            "[`candidate_a`](candidate_a.md) | - | remaining",
             "- | - | remaining",
         )
     )
@@ -394,16 +394,16 @@ def test_strategy_docs_reject_hypothesis_candidate_mapping_mismatch(tmp_path: Pa
 
 def test_strategy_docs_accept_unassigned_legacy_candidate(tmp_path: Path) -> None:
     write_valid_strategy_docs(tmp_path)
-    direction = tmp_path / "KAGGLE_DIRECTION.md"
+    direction = tmp_path / "backlog/KAGGLE_DIRECTION.md"
     text = direction.read_text()
     hypothesis_row = (
         "| `HYP-19000101-91` | hypothesis | "
-        "[`candidate_a`](docs/backlog/candidate_a.md) | - | remaining |\n"
+        "[`candidate_a`](candidate_a.md) | - | remaining |\n"
     )
     text = text.replace(hypothesis_row, "")
     text = text.replace("`HYP-19000101-91` | [`candidate_a`]", "`未整理` | [`candidate_a`]")
     direction.write_text(text)
-    detail = tmp_path / "docs" / "backlog" / "candidate_a.md"
+    detail = tmp_path / "backlog" / "candidate_a.md"
     detail.write_text(detail.read_text().replace("HYP-19000101-91", "未整理"))
 
     assert validate_strategy_docs(tmp_path) == []

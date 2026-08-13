@@ -171,7 +171,7 @@ JUPYTER_DATA_DIR=/tmp/jupyter-data .venv/bin/jupytext --to ipynb --test experime
   `a7a5e9f1897184b0324d812f9961b645808f8e5d21cd5b63898acf1485599bbc`。
 - 16-well preflight対象は5 foldすべてを含む
   (`fold 0..4 = 3 / 2 / 2 / 5 / 4 wells`)。
-- `KAGGLE_DIRECTION.md`のexp383を「未着手バックログ」から
+- `backlog/KAGGLE_DIRECTION.md`のexp383を「未着手バックログ」から
   「実装済み・Kaggle train待ち」へ移し、未実行のpreflightを
   「実行準備完了」として記録した。
 

@@ -6,7 +6,7 @@ hidden / private test に、train と同じ horizontal-well ファイル名 pref
 
 ## 設定
 
-- 親: `KAGGLE_DIRECTION.md` の `train_test_well_id_assert_probe`
+- 親: `backlog/KAGGLE_DIRECTION.md` の `train_test_well_id_assert_probe`
 - 検証: public sample の既知 overlap は許可し、hidden / private test でのみ no-overlap assertion を適用する。
 - メトリック: なし。run status の yes/no 診断。
 - シード: 42

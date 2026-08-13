@@ -250,7 +250,7 @@ make push-kaggle-train EXP=exp435_tvt_memoryless_u_rate_dzonly_hmm
 ### 結果反映後の検証
 
 - `metrics.json`、`result.md`、`README.md`、`experiment_summary.md`、
-  `KAGGLE_DIRECTION.md`、steering tasklistを最終判定へ更新した。
+  `backlog/KAGGLE_DIRECTION.md`、steering tasklistを最終判定へ更新した。
 - 再実行防止のためlocal configの`execution.run_hmm` /
   `execution.create_prediction`をfalseへ戻した。実行済みKaggle packageは
   version 1のread-back証拠として保持した。

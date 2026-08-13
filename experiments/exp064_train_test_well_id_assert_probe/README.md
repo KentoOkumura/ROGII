@@ -9,7 +9,7 @@
 - Private LB: -
 - Submit ID: 53627058
 - 作成日: 2026-06-13
-- 親実験: `KAGGLE_DIRECTION.md` の `train_test_well_id_assert_probe`
+- 親実験: `backlog/KAGGLE_DIRECTION.md` の `train_test_well_id_assert_probe`
 
 ## 仮説
 
@@ -75,4 +75,4 @@ hidden / private test に、train と同じ horizontal-well ファイル名 pref
 
 ## 表記
 
-用語は `KAGGLE_DIRECTION.md` の表記方針と `docs/glossary.md` に合わせ、実験名や設定名を除いて日本語優先で記録する。
+用語は `backlog/KAGGLE_DIRECTION.md` の表記方針と `docs/glossary.md` に合わせ、実験名や設定名を除いて日本語優先で記録する。

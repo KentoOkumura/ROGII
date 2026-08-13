@@ -214,7 +214,7 @@ def validate_lineage(
         )
     ):
         errors.append(
-            "invalid lineage.backlog_candidate: expected a docs/backlog candidate name or N/A"
+            "invalid lineage.backlog_candidate: expected a backlog candidate name or N/A"
         )
 
     if (
@@ -236,7 +236,7 @@ def validate_lineage(
         and hypothesis_id not in registered_ids
     ):
         errors.append(
-            "unregistered lineage.hypothesis_id: register it in KAGGLE_DIRECTION.md or a "
+            "unregistered lineage.hypothesis_id: register it in backlog/KAGGLE_DIRECTION.md or a "
             "final/superseded survey before validating the experiment"
         )
 

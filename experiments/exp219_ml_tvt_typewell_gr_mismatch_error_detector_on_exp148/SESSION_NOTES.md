@@ -4,7 +4,7 @@
 
 ### 狙い
 
-`KAGGLE_DIRECTION.md` の `ml_tvt_typewell_gr_mismatch_error_detector_on_exp148` backlog を実装する。exp148 の ML 予測 TVT を typewell TVT 軸上の仮位置として、horizontal GR と typewell GR の局所 window 類似度を offset 探索し、high-error row を検出できるか確認する。
+`backlog/KAGGLE_DIRECTION.md` の `ml_tvt_typewell_gr_mismatch_error_detector_on_exp148` backlog を実装する。exp148 の ML 予測 TVT を typewell TVT 軸上の仮位置として、horizontal GR と typewell GR の局所 window 類似度を offset 探索し、high-error row を検出できるか確認する。
 
 ### 実装方針
 

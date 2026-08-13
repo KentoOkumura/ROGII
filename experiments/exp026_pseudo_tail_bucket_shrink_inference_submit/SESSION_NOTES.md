@@ -58,5 +58,5 @@
 
 ## 次のアクション
 
-1. `KAGGLE_DIRECTION.md` の次候補に進む。Public LB anchor は exp026 12.102。
+1. `backlog/KAGGLE_DIRECTION.md` の次候補に進む。Public LB anchor は exp026 12.102。
 2. 追加 postprocess は同一 OOF fit ではなく、held-out 監査または seed / cutoff diversity で比較する。

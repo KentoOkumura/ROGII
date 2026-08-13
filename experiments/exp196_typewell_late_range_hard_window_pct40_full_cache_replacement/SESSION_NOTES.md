@@ -145,7 +145,7 @@ uv run python scripts/validate_experiment.py --experiment exp196_typewell_late_r
 
 - result: PASS
 - `experiment_summary.md` に exp196 行を追加。
-- `KAGGLE_DIRECTION.md` は exp196 実装済み / Kaggle train 未実行として更新。結果待ちのため backlog 完了扱いにはしていない。
+- `backlog/KAGGLE_DIRECTION.md` は exp196 実装済み / Kaggle train 未実行として更新。結果待ちのため backlog 完了扱いにはしていない。
 
 ## 2026-07-04 Kaggle train v1 push
 

@@ -70,7 +70,7 @@ same-OOF rescue、support/gate緩和、PF replay、preflight、full run、推論
 ## 次のアクション
 
 なし。exp431を再開しない。exp427の失敗原因を説明する必要が独立に生じた場合だけ、
-`KAGGLE_DIRECTION.md`の低優先度P4
+`backlog/KAGGLE_DIRECTION.md`の低優先度P4
 `affine_ar1_rank_failure_attribution_readout`を別承認で検討する。
 
 ## 最終検証

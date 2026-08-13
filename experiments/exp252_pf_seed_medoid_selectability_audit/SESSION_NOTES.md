@@ -2,7 +2,7 @@
 
 ## 目的
 
-`KAGGLE_DIRECTION.md` の高優先度backlog `pf_seed_medoid_selectability_audit`を実装する。
+`backlog/KAGGLE_DIRECTION.md` の高優先度backlog `pf_seed_medoid_selectability_audit`を実装する。
 exp243 v3 exact-parity K8 medoidがbase8へ追加したtrajectory-mode headroomを、固定した
 target-free PF/cluster scoreで識別できるか監査する。
 

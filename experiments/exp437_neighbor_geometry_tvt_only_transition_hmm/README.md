@@ -134,4 +134,4 @@ exp438 / exp439は独立仮説として扱う。
 
 ## 表記
 
-用語は`KAGGLE_DIRECTION.md`と`docs/glossary.md`に合わせ、日本語優先で記録する。
+用語は`backlog/KAGGLE_DIRECTION.md`と`docs/glossary.md`に合わせ、日本語優先で記録する。

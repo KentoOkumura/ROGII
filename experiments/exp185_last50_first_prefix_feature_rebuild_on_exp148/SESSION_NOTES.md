@@ -155,5 +155,5 @@
 
 ## 次アクション
 
-1. `KAGGLE_DIRECTION.md` から実装済み backlog を削除する。
+1. `backlog/KAGGLE_DIRECTION.md` から実装済み backlog を削除する。
 2. `experiment_summary.md` を更新する。

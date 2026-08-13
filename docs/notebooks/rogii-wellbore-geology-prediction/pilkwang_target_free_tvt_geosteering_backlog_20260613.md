@@ -63,7 +63,7 @@ Exact-match recovery と guarded overlap override は notebook 内にあるが�
 
 ## KAGGLE_DIRECTION update draft
 
-`KAGGLE_DIRECTION.md` に反映する場合は、既存の `public_artifact_replay_integrity_audit` を次のように更新する。
+`backlog/KAGGLE_DIRECTION.md` に反映する場合は、既存の `public_artifact_replay_integrity_audit` を次のように更新する。
 
 - `public_artifact_replay_integrity_audit` の最初の対象を `pilkwang/rogii-target-free-tvt-geosteering` に変更する。
 - 新規 High backlog として `projection_only_on_exp063`、`pilkwang_branch_decomposition`、`modelpkg_tiny_gate_on_exp063` を追加する。

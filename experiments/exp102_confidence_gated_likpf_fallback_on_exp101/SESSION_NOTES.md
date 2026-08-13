@@ -72,7 +72,7 @@ make prepare-kaggle-notebooks EXP=exp102_confidence_gated_likpf_fallback_on_exp1
 ### 次
 
 1. Kaggle train を実行する。
-2. output を取得し、summary / metrics を `result.md`、`metrics.json`、`experiment_summary.md`、`KAGGLE_DIRECTION.md` に反映する。
+2. output を取得し、summary / metrics を `result.md`、`metrics.json`、`experiment_summary.md`、`backlog/KAGGLE_DIRECTION.md` に反映する。
 
 ## 2026-06-21 Kaggle train v1 failed
 

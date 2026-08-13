@@ -85,5 +85,5 @@ selected `trajectory_full_no_gr` は CV 14.236694。best は `control_exp003_no_
 ## 次のアクション
 
 1. exp010 は提出しない。
-2. `experiment_summary.md` と `KAGGLE_DIRECTION.md` を更新する。
+2. `experiment_summary.md` と `backlog/KAGGLE_DIRECTION.md` を更新する。
 3. 次候補は `exp011_tracker_divergence_features`。ただし trajectory full を直接再投入せず、audit の悪化条件を selector と runtime / confidence 設計に使う。

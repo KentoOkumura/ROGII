@@ -2,7 +2,7 @@
 
 ## 目的
 
-`KAGGLE_DIRECTION.md` の `sp45_bimodal_selector_confidence_features_on_exp148` を実験化する。公開上位 notebook の SP45 / PF / Beam / bimodal selector 系 signal を、直接置換・blend・hard gate ではなく、target-free な confidence / disagreement / shape feature として exp148 に add-only する。
+`backlog/KAGGLE_DIRECTION.md` の `sp45_bimodal_selector_confidence_features_on_exp148` を実験化する。公開上位 notebook の SP45 / PF / Beam / bimodal selector 系 signal を、直接置換・blend・hard gate ではなく、target-free な confidence / disagreement / shape feature として exp148 に add-only する。
 
 ## 現在の状態
 

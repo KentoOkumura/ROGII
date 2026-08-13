@@ -101,4 +101,4 @@ absolute anchor自体の不確実性と固定weightが主な限界である。
 本branch内のselector、raw-test inference、submissionは行わず、直接枝を閉じる。
 ただし2026-07-19のユーザー指示により、exp279の直接救済とは分離した後続仮説として、
 修正版exp264へ`geop_hmm`を疎な13番目のadd-only candidateとして接続するbacklogを
-`KAGGLE_DIRECTION.md`へ追加した。既存exact/self-GR HMMの置換や固定blendは行わない。
+`backlog/KAGGLE_DIRECTION.md`へ追加した。既存exact/self-GR HMMの置換や固定blendは行わない。

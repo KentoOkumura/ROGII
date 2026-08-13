@@ -178,5 +178,5 @@ SHA:
 
 ## 次のアクション
 
-1. `experiment_summary.md` と `KAGGLE_DIRECTION.md` を更新する。
+1. `experiment_summary.md` と `backlog/KAGGLE_DIRECTION.md` を更新する。
 2. 次候補は full-fold / larger-window / geometry-channel ablation。direct TVT replacement、inference port、submit はしない。

@@ -90,7 +90,7 @@ make update-summary
   `PASS / PASS / PASS`。
 - config / metrics / route / status / authorization / 実行量の
   design consistency assertion: PASS。
-- `KAGGLE_DIRECTION.md`未着手backlogと`experiment_summary.md`へ反映済み。
+- `backlog/KAGGLE_DIRECTION.md`未着手backlogと`experiment_summary.md`へ反映済み。
 
 ## 2026-07-30 compact self-contained実装
 

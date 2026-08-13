@@ -305,7 +305,7 @@ make prepare-kaggle-notebooks EXP=exp206_discussion711308_dz_dtvt_bpeak_cluster_
 - 状態: implemented / pending Kaggle train
 - Kaggle train / inference は未 push。
 - output / metrics は未生成。
-- `KAGGLE_DIRECTION.md` の backlog は結果待ちとして残し、実行完了後に完了/不採用/支持を判断する。
+- `backlog/KAGGLE_DIRECTION.md` の backlog は結果待ちとして残し、実行完了後に完了/不採用/支持を判断する。
 
 ## Kaggle train push
 
@@ -426,7 +426,7 @@ kaggle competitions submissions rogii-wellbore-geology-prediction
 
 - `metrics.json`、`result.md`、`README.md`、`experiment_summary.md` を submitted / Public LB 41.214 / 要件未達として更新済み。
 - `SUBMISSIONS.md` に ref `54395246` を追加済み。
-- `KAGGLE_DIRECTION.md` の `discussion711308_dz_dtvt_bpeak_cluster_baseline` backlog を、要件未達の失敗結果として判断メモへ移動済み。
+- `backlog/KAGGLE_DIRECTION.md` の `discussion711308_dz_dtvt_bpeak_cluster_baseline` backlog を、要件未達の失敗結果として判断メモへ移動済み。
 - helper の train metrics status を `train_audit_completed` へ更新し、Kaggle package train/inference を短い slug で再 prepare 済み。再 push はしていない。
 - `scripts/validate_experiment.py --experiment exp206_discussion711308_dz_dtvt_bpeak_cluster_baseline` は PASS。
 

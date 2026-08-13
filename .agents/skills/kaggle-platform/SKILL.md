@@ -137,12 +137,12 @@ uv run python .agents/skills/kaggle-platform/modules/kllm/hackathon/scripts/fetc
 
 ## Repository Template Setup
 
-`AGENTS.md`、`project.yml`、`KAGGLE_DIRECTION.md`、`Taskfile.yml`、`Makefile`、`data/raw/`、`docs/official/evaluation.md` のようなファイルを持つ Kaggle 実験リポジトリで作業するときに使う。
+`AGENTS.md`、`project.yml`、`backlog/KAGGLE_DIRECTION.md`、`Taskfile.yml`、`Makefile`、`data/raw/`、`docs/official/evaluation.md` のようなファイルを持つ Kaggle 実験リポジトリで作業するときに使う。
 
 手順:
 
 1. リポジトリの `AGENTS.md` を local source of truth として扱う。
-2. `project.yml`、`KAGGLE_DIRECTION.md`、`docs/official/evaluation.md` を読む。
+2. `project.yml`、`backlog/KAGGLE_DIRECTION.md`、`docs/official/evaluation.md` を読む。
 3. 新しいコンペへ転用する場合は、既存コンペの値を流用せず、次のfieldを公式資料と実データに照らしてすべて確認する。値が未確定なら`TODO`へ戻し、推測で埋めない。
    - `competition`: `name`、`platform`、`slug`、`url`、`is_code_competition`
    - `data`: `raw_dir`、`train_dir`、`test_dir`、`processed_dir`、`target_column`、`group_column`、`score_rows`
@@ -151,7 +151,7 @@ uv run python .agents/skills/kaggle-platform/modules/kllm/hackathon/scripts/fetc
    - `metadata`: `owner`、`notes`
    - `runtime.kaggle`: `enable_gpu`、`enable_internet`、`time_limit_hours`
    - リポジトリ構成を変える場合だけ`paths`も更新する。
-4. `docs/01_competition.md`から`docs/04_data.md`と`docs/official/evaluation.md`を新しい公式情報へ更新する。旧コンペの`KAGGLE_DIRECTION.md`、`docs/backlog/`、`SUBMISSIONS.md`、`experiments/`、`docs/legacy/steering/`、`docs/surveys/`を新コンペの証拠として引き継がない。`docs/legacy/steering/`は廃止済み履歴であり、新しい実験計画の保存先にしない。残す履歴が必要なら新コンペの現行索引から分離する。
+4. `docs/01_competition.md`から`docs/04_data.md`と`docs/official/evaluation.md`を新しい公式情報へ更新する。旧コンペの`backlog/KAGGLE_DIRECTION.md`、`backlog/`、`SUBMISSIONS.md`、`experiments/`、`docs/legacy/steering/`、`docs/surveys/`を新コンペの証拠として引き継がない。`docs/legacy/steering/`は廃止済み履歴であり、新しい実験計画の保存先にしない。残す履歴が必要なら新コンペの現行索引から分離する。
 5. raw competition dataは`data.raw_dir`で設定した場所へ置く。`task dl-kaggle-comp`はcompetition archiveを取得し、path traversalとsymbolic linkを拒否して安全に展開する。既存ファイルはsizeとZIP memberのchecksumが一致する場合だけスキップし、異なる場合は上書きせず停止する。外部データは`data/external/`に分ける。
 6. `data.train_dir`、`data.test_dir`、`submission.sample_file`を`data.raw_dir`内に置き、設定した各パスが存在することを確認する。Kaggle runtimeではcompetition input rootを`data.raw_dir`に対応させ、この3つを相対解決する。
 7. intended competition slugを`--expected-competition`で明示し、strict config validationを実行する。これにより、コピー元のslugやURLが残った状態を検出する。

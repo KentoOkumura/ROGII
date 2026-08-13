@@ -2,7 +2,7 @@
 
 ## 目的
 
-`KAGGLE_DIRECTION.md` の `pf_ancc_small_seed_mean_addonly_selector_audit` を実装する。
+`backlog/KAGGLE_DIRECTION.md` の `pf_ancc_small_seed_mean_addonly_selector_audit` を実装する。
 exp263/exp264系selectorの既存`pf_ancc`をexp271の保存済みmean4/mean8 candidateへ差し替え、
 target-free disagreementをboth variantだけへ加え、exp264 fixed controlに対するdownstream add-only価値をfold-safeに監査する。
 

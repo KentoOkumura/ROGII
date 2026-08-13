@@ -81,7 +81,7 @@ PYTHONPATH=experiments/exp213_prefix_structural_prior_pfbeam .venv/bin/python -c
 
 1. Jupytext / py_compile / ruff / validate-exp / Kaggle train package 生成を通す。
 2. Kaggle train を push する場合は、この note に kernel id / version / runtime / output を追記する。
-3. 結果取得後、`KAGGLE_DIRECTION.md` の P0-B backlog を完了扱いで整理するか判断する。
+3. 結果取得後、`backlog/KAGGLE_DIRECTION.md` の P0-B backlog を完了扱いで整理するか判断する。
 
 ## 2026-07-07 Kaggle train v1 push
 
@@ -118,7 +118,7 @@ timeout 600 kaggle kernels logs -f --interval 30 kentookumura/exp213-prefix-stru
 - status: `KernelWorkerStatus.RUNNING`
 - `logs -f`: 実行中ログなし。ユーザー指示により監視停止。
 
-次アクション: ユーザーから完了連絡を受けたら、同じ kernel id の logs を取得し、必要なら output archive を取得して candidate metrics / PF diagnostics / SHA を `result.md`、`metrics.json`、`experiment_summary.md`、`KAGGLE_DIRECTION.md` に反映する。
+次アクション: ユーザーから完了連絡を受けたら、同じ kernel id の logs を取得し、必要なら output archive を取得して candidate metrics / PF diagnostics / SHA を `result.md`、`metrics.json`、`experiment_summary.md`、`backlog/KAGGLE_DIRECTION.md` に反映する。
 
 ## 2026-07-07 Kaggle train v1 完了記録
 

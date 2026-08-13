@@ -53,5 +53,5 @@ uv run python experiments/exp016_public_postprocess_ablation/audit_public_postpr
 
 ## 次のアクション
 
-1. `experiment_summary.md` と `KAGGLE_DIRECTION.md` に反映する。
+1. `experiment_summary.md` と `backlog/KAGGLE_DIRECTION.md` に反映する。
 2. 次は DWT/DTW route または candidate quality/routing の検証に進む。

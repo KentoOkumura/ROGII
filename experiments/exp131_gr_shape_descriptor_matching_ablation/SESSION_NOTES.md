@@ -119,7 +119,7 @@ kaggle kernels output kentookumura/exp131-gr-shape-descriptor-train -p experimen
 次:
 
 - 完了後に通常 `logs` と `output` を同じ kernel id で再取得する。
-- `summary.json`、score variant metrics、rank metrics、bucket / by-well stress を確認して `metrics.json` / `result.md` / `KAGGLE_DIRECTION.md` を更新する。
+- `summary.json`、score variant metrics、rank metrics、bucket / by-well stress を確認して `metrics.json` / `result.md` / `backlog/KAGGLE_DIRECTION.md` を更新する。
 
 ### 2026-06-26 JST Kaggle train v1 完了後 output 確認
 
@@ -172,4 +172,4 @@ kaggle kernels status kentookumura/exp131-gr-shape-descriptor-train
 - `config.yaml`: status を `completed_train_side_audit` に更新。
 - `metrics.json`: logs 由来 summary で更新。
 - `result.md`: 完了結果と解釈を記録。
-- `KAGGLE_DIRECTION.md`: backlog から `gr_shape_descriptor_matching_ablation` を削除し、exp131 完了メモを追加する。
+- `backlog/KAGGLE_DIRECTION.md`: backlog から `gr_shape_descriptor_matching_ablation` を削除し、exp131 完了メモを追加する。

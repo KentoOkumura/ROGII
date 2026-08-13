@@ -2,7 +2,7 @@
 
 ## 目的
 
-`KAGGLE_DIRECTION.md` の高優先度backlog `pf_seed_medoids` を実装する。exp072互換
+`backlog/KAGGLE_DIRECTION.md` の高優先度backlog `pf_seed_medoids` を実装する。exp072互換
 likelihood-PFの128 seed trajectoryをtarget-free距離でcluster化し、実在trajectoryである
 medoidをcandidate pathとして残す。
 

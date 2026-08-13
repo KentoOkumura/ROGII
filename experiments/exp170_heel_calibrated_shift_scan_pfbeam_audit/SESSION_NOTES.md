@@ -99,5 +99,5 @@ make push-kaggle-train EXP=exp170_heel_calibrated_shift_scan_pfbeam_audit
 
 ### 次アクション
 
-1. `experiment_summary.md` と `KAGGLE_DIRECTION.md` を更新する。
+1. `experiment_summary.md` と `backlog/KAGGLE_DIRECTION.md` を更新する。
 2. GR alignment 系は heel calibration ではなく、rolling/savgol smoothing の小 scoped audit または bimodal posterior diagnostics に寄せる。

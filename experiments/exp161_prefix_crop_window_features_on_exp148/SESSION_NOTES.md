@@ -2,7 +2,7 @@
 
 ## 目的
 
-`KAGGLE_DIRECTION.md` の `prefix_crop_window_features_on_exp148` を実験化する。exp148 の既存 294 feature は置換せず、known prefix 末尾 crop-window 版の統計 / SC-NCC / multiobs confidence を add-only で追加する。
+`backlog/KAGGLE_DIRECTION.md` の `prefix_crop_window_features_on_exp148` を実験化する。exp148 の既存 294 feature は置換せず、known prefix 末尾 crop-window 版の統計 / SC-NCC / multiobs confidence を add-only で追加する。
 
 ## 現在の状態
 

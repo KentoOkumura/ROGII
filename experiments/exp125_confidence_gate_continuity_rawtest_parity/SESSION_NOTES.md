@@ -74,5 +74,5 @@ kaggle kernels status kentookumura/exp125-cg-continuity-train
 
 ## 次のアクション
 
-1. `KAGGLE_DIRECTION.md` の backlog を整理する。
+1. `backlog/KAGGLE_DIRECTION.md` の backlog を整理する。
 2. 必要なら exp112 feature cache の ML add-only 評価、または segment selector 側へ進める。

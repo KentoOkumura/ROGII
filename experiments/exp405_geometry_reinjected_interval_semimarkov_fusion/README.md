@@ -57,5 +57,5 @@ scientific FAIL時はexp405を救済せず閉じ、exp406 Stage 0を解禁する
 
 ## 表記
 
-用語は`KAGGLE_DIRECTION.md`と`docs/glossary.md`に合わせ、
+用語は`backlog/KAGGLE_DIRECTION.md`と`docs/glossary.md`に合わせ、
 実験名・設定名以外は日本語優先で記録する。

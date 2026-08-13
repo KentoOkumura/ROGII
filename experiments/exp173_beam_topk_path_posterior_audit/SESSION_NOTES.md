@@ -112,5 +112,5 @@ make push-kaggle-train EXP=exp173_beam_topk_path_posterior_audit
 
 ## 次のアクション
 
-1. `result.md`、`metrics.json`、`experiment_summary.md`、`KAGGLE_DIRECTION.md` に結果を反映する。
+1. `result.md`、`metrics.json`、`experiment_summary.md`、`backlog/KAGGLE_DIRECTION.md` に結果を反映する。
 2. Beam top-K posterior backlog は完了/不採用として閉じる。

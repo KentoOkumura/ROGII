@@ -2,7 +2,7 @@
 
 ## 目的
 
-`KAGGLE_DIRECTION.md` の `cross_test_prefix_label_context_audit` を実装する。同じ pseudo test batch 内の他 validation wells の finite `TVT_input` prefix label から、batch-level bias / slope / residual scale を診断し、target well tail の prefix-only baseline へ安定して効くかを読む。
+`backlog/KAGGLE_DIRECTION.md` の `cross_test_prefix_label_context_audit` を実装する。同じ pseudo test batch 内の他 validation wells の finite `TVT_input` prefix label から、batch-level bias / slope / residual scale を診断し、target well tail の prefix-only baseline へ安定して効くかを読む。
 
 ## 現在の状態
 

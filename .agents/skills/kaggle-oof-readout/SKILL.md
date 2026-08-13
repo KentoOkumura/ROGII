@@ -85,7 +85,7 @@ In `docs/surveys/`:
 
 For backlog handoff:
 
-- Do not create, update, or remove the `KAGGLE_DIRECTION.md` active hypothesis or idea backlog sections, or `docs/backlog/`, from this skill.
+- Do not create, update, or remove the `backlog/KAGGLE_DIRECTION.md` active hypothesis or idea backlog sections, or `backlog/`, from this skill.
 - Pass the completed readout item, source artifacts, main findings, non-use constraints, specific feature/bucket candidates, risk notes, and requested add/update/remove action to `kaggle-strategy`.
 - Confirm that `kaggle-strategy` applied the backlog change before treating the handoff as complete.
 
