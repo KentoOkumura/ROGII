@@ -7,7 +7,7 @@
 - Codex は、このリポジトリでは `AGENTS.md` の作業ルールを最優先します。
 - このリポジトリ固有の Codex スキルは `.agents/skills/` で管理します。Kaggle 系スキルはここを正とします。
 - `.codex/` ディレクトリには依存しないでください。一部の Codex ランタイムでは、空の管理用ディレクトリとして見えることがあります。
-- リポジトリ全体に常時適用する規約はこのファイル、作業別の実行手順は `.agents/skills/`、長い背景資料や仕様は `docs/`、タスク自動化は `Taskfile.yml`、`Makefile`、`scripts/` に置きます。同じ規則を複数箇所に複製せず、skill や docs からこのファイルの規約を参照します。
+- リポジトリ全体に常時適用する規約はこのファイル、作業別の実行手順は `.agents/skills/`、未着手候補と現在の戦略は`backlog/`、長い背景資料や完了した調査は `docs/`、タスク自動化は `Taskfile.yml`、`Makefile`、`scripts/` に置きます。同じ規則を複数箇所に複製せず、skill や docs からこのファイルの規約を参照します。
 - グローバルの `~/.codex/skills/` は、Codex の system skills などリポジトリ非依存のスキルに使います。Kaggle 系スキルを `~/.codex/skills/` に重複配置しないでください。
 
 ## ユーザーへの説明で使う用語

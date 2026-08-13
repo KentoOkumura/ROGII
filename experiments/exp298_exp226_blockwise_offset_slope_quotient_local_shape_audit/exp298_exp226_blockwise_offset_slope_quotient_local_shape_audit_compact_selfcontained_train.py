@@ -104,6 +104,10 @@ FORBIDDEN_CANDIDATE_COLUMNS = {
 EXPECTED_DOWNSTREAM_CONTRACT_SHA256 = (
     "f07dfb17fedb95fcb6a9df892990da3bd6e35a0108394255278473784a1fe8b8"
 )
+CURRENT_TO_EXECUTED_CONTRACT_TEXT = {
+    "この文書、exp298のrequirements.md、": "この文書、exp298のsteering、",
+    "`backlog/KAGGLE_DIRECTION.md`": "`KAGGLE_DIRECTION.md`",
+}
 
 
 # %% [markdown]
@@ -159,13 +163,16 @@ def downstream_contract_sha256() -> str:
     ):
         if not path.exists():
             continue
-        actual = sha256_file(path)
+        execution_contract = path.read_text()
+        for current_text, executed_text in CURRENT_TO_EXECUTED_CONTRACT_TEXT.items():
+            execution_contract = execution_contract.replace(current_text, executed_text)
+        actual = hashlib.sha256(execution_contract.encode()).hexdigest()
         if actual != EXPECTED_DOWNSTREAM_CONTRACT_SHA256:
             raise ValueError(
-                "downstream_branch_contract.md SHA mismatch: "
+                "executed downstream_branch_contract.md SHA mismatch: "
                 f"expected {EXPECTED_DOWNSTREAM_CONTRACT_SHA256}, got {actual}"
             )
-        return actual
+        return EXPECTED_DOWNSTREAM_CONTRACT_SHA256
     raise FileNotFoundError(
         "downstream_branch_contract.md is required in the exp298 runtime package"
     )

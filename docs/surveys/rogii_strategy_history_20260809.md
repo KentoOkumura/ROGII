@@ -8,14 +8,14 @@ topics:
   - history
   - strategy
 status: final
-summary: "backlog/KAGGLE_DIRECTION.mdから退避した、2026-08-09までの実験横断の判断履歴。"
+summary: "当時のルートKAGGLE_DIRECTION.mdから退避した、2026-08-09までの実験横断の判断履歴。"
 ---
 
 # ROGII 戦略判断履歴（2026-08-09退避）
 
 - 対応する上位仮説: なし
 
-この文書は退避時点までの判断履歴です。現在の戦略とbacklogはルートの backlog/KAGGLE_DIRECTION.md、実験結果は各実験の result.md と metrics.json を正とします。
+この文書は、当時ルートにあった`KAGGLE_DIRECTION.md`から退避した判断履歴です。現在の戦略とbacklogは[`backlog/KAGGLE_DIRECTION.md`](../../backlog/KAGGLE_DIRECTION.md)、実験結果は各実験の`result.md`と`metrics.json`を正とします。
 
 ## 戦略メモ
 

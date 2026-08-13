@@ -1,3 +1,4 @@
+import hashlib
 import importlib.util
 import sys
 from pathlib import Path
@@ -168,6 +169,44 @@ def test_load_report_requires_none_for_non_hypothesis_body_declaration(tmp_path:
     )
 
     with pytest.raises(ValueError, match="対応する上位仮説: なし"):
+        load_report(report_path)
+
+
+def test_load_report_accepts_embedded_snapshot_with_matching_sha(tmp_path: Path) -> None:
+    report_path = tmp_path / "snapshot.md"
+    write_report(report_path, include_hypotheses=False)
+    snapshot = "# 保存時点の文書\n\n変更しない本文。\n"
+    snapshot_sha = hashlib.sha256(snapshot.encode()).hexdigest()
+    report_path.write_text(
+        report_path.read_text()
+        + f"\n- 元ファイルSHA-256: `{snapshot_sha}`\n"
+        + "\n## 移行前の全文\n\n"
+        + snapshot
+    )
+
+    assert load_report(report_path).title == "selector調査"
+
+
+def test_load_report_rejects_modified_embedded_snapshot(tmp_path: Path) -> None:
+    report_path = tmp_path / "snapshot.md"
+    write_report(report_path, include_hypotheses=False)
+    report_path.write_text(
+        report_path.read_text()
+        + "\n- 元ファイルSHA-256: `"
+        + "0" * 64
+        + "`\n\n## 移行前の全文\n\n# 変更された本文\n"
+    )
+
+    with pytest.raises(ValueError, match="embedded snapshot SHA mismatch"):
+        load_report(report_path)
+
+
+def test_load_report_requires_snapshot_body_for_declared_sha(tmp_path: Path) -> None:
+    report_path = tmp_path / "snapshot.md"
+    write_report(report_path, include_hypotheses=False)
+    report_path.write_text(report_path.read_text() + "\n- 元ファイルSHA-256: `" + "0" * 64 + "`\n")
+
+    with pytest.raises(ValueError, match="requires an embedded 移行前の全文"):
         load_report(report_path)
 
 

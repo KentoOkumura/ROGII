@@ -718,7 +718,10 @@ def test_repository_setup_reviews_all_competition_specific_fields() -> None:
     ):
         assert field_group in platform_skill
     assert "competition、data、defaults、submission、metadata、runtime.kaggle" in readme
-    assert "リポジトリ構成を変える場合だけ paths も更新" in readme
+    assert (
+        "`paths`が管理するdata、experiments、docs、submission historyの保存先を"
+        "変える場合だけpathsも更新"
+    ) in readme
     for document in (
         "docs/01_competition.md",
         "docs/04_data.md",

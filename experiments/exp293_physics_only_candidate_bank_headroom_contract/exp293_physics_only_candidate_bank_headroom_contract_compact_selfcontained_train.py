@@ -96,6 +96,7 @@ POST_EXECUTION_EXTENSION_END = "\n## Stage 2:"
 CURRENT_TO_EXECUTED_CONTRACT_TEXT = {
     "この文書、対象実験のrequirements.md、config、": "この文書、steering、config、",
     "新しい実験のrequirements.mdと実験番号へ": "新しいsteeringと実験番号へ",
+    "`backlog/KAGGLE_DIRECTION.md`": "`KAGGLE_DIRECTION.md`",
 }
 
 

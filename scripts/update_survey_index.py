@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import re
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -24,6 +25,8 @@ PLACEHOLDER_PATTERN = re.compile(
     flags=re.IGNORECASE,
 )
 BODY_HYPOTHESIS_PATTERN = re.compile(r"(?m)^- 対応する上位仮説:\s*(?P<value>.+?)\s*$")
+SNAPSHOT_SHA_PATTERN = re.compile(r"(?m)^- 元ファイルSHA-256: `(?P<sha>[0-9a-f]{64})`\s*$")
+SNAPSHOT_BODY_MARKER = "\n## 移行前の全文\n\n"
 
 
 @dataclass(frozen=True)
@@ -152,8 +155,29 @@ def _validate_supersession_chain(path: Path, successor: str) -> None:
         )
 
 
+def _validate_embedded_snapshot(path: Path) -> None:
+    text = path.read_text()
+    sha_match = SNAPSHOT_SHA_PATTERN.search(text)
+    has_snapshot_body = SNAPSHOT_BODY_MARKER in text
+    if sha_match is None and not has_snapshot_body:
+        return
+    if sha_match is None:
+        raise ValueError(f"{path}: embedded snapshot must declare 元ファイルSHA-256")
+    if not has_snapshot_body:
+        raise ValueError(f"{path}: 元ファイルSHA-256 requires an embedded 移行前の全文")
+
+    snapshot = text.split(SNAPSHOT_BODY_MARKER, maxsplit=1)[1]
+    actual_sha = hashlib.sha256(snapshot.encode()).hexdigest()
+    expected_sha = sha_match.group("sha")
+    if actual_sha != expected_sha:
+        raise ValueError(
+            f"{path}: embedded snapshot SHA mismatch: expected {expected_sha}, got {actual_sha}"
+        )
+
+
 def load_report(path: Path) -> SurveyReport:
     metadata, body = _document_parts(path)
+    _validate_embedded_snapshot(path)
     title = _required_text(metadata, "title", path)
     report_date = _iso_date(metadata.get("date"), path)
     types = _string_list(metadata, "types", path, allow_empty=False)

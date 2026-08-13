@@ -9,6 +9,7 @@
 - 調査コードと生の表・図は `studies/`、実験実装・実行記録・公式結果は `experiments/` に残し、レポートからリンクします。
 - 同じテーマの追調査は、原則として既存レポートを更新します。新しい問い・証拠範囲・結論になる場合だけ新しいレポートを作ります。
 - `summary.md` は横断的な短い要約です。個別レポートを探す用途では、このREADMEの索引を使います。
+- `元ファイルSHA-256`と「移行前の全文」を持つ履歴snapshotでは、埋め込んだ全文を後から現行パスや用語へ書き換えません。現行の保存先はsnapshotの外側または現行索引で案内し、埋め込み本文と記録済みSHAの一致を維持します。
 - レポート本文を追加・更新したら、以下の「作成・完了手順」に従います。
 
 ## レポートの状態
@@ -57,8 +58,8 @@ task validate-surveys
 
 | 日付 | レポート | 種類 | 上位仮説 | 実験 | トピック | 状態 | 後継 | 一行要約 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-08-12 | [ROGII方針文書の移行前スナップショット](rogii-direction-migration-snapshot_20260812.md) | `strategy` | - | - | `history` | `final` | - | 2026-08-12の分割移行直前のbacklog/KAGGLE_DIRECTION.md全文を保存した。 |
-| 2026-08-09 | [ROGII戦略判断履歴](rogii_strategy_history_20260809.md) | `strategy` | - | - | `history`, `strategy` | `final` | - | backlog/KAGGLE_DIRECTION.mdから退避した、2026-08-09までの実験横断の判断履歴。 |
+| 2026-08-12 | [ROGII方針文書の移行前スナップショット](rogii-direction-migration-snapshot_20260812.md) | `strategy` | - | - | `history` | `final` | - | 2026-08-12の分割移行直前のKAGGLE_DIRECTION.md全文を保存した。 |
+| 2026-08-09 | [ROGII戦略判断履歴](rogii_strategy_history_20260809.md) | `strategy` | - | - | `history`, `strategy` | `final` | - | 当時のルートKAGGLE_DIRECTION.mdから退避した、2026-08-09までの実験横断の判断履歴。 |
 | 2026-08-09 | [ROGII実験横断メモ履歴](experiment_summary_history_20260809.md) | `comparison` | - | - | `history`, `experiment_summary` | `final` | - | 旧experiment_summary.mdから退避した、主な発見と変更履歴の手書き記録。 |
 | 2026-08-06 | [ROGII 上位解法と agent-driven Kaggle 着想ワークフロー](rogii-top-solutions-agent-idea-workflow_20260806.md) | `survey`, `literature_review`, `comparison` | - | `exp179`, `exp182`, `exp202`, `exp210`, `exp212`, `exp215`, `exp223`, `exp235`, `exp413`, `exp512` | `winning_solution`, `agent_workflow`, `prompt_design`, `skill_design`, `candidate_path`, `validation_shift`, `blind_evaluation`, `idea_generation` | `final` | - | 最終上位8解法を比較し、source-hidden blind benchmark 2回でtop 5の15/16・全12案の16/16機構再発見を確認したkaggle-idea-forgeを実装した。 |
 | 2026-08-04 | [exp490 再利用戦略調査](exp490_reuse_strategy_20260804.md) | `experiment_review`, `model_explanation`, `oof_analysis`, `comparison` | - | `exp357`, `exp413`, `exp490` | `hmm`, `mean_reversion`, `reuse`, `risk`, `ensemble` | `final` | - | exp490の平均回帰機構、OOFでの利点とtailリスクを整理し、直接blendではなく証拠・risk特徴としての再利用方針を定めた。 |

@@ -7,7 +7,7 @@ experiments: []
 topics:
 - history
 status: final
-summary: 2026-08-12の分割移行直前のbacklog/KAGGLE_DIRECTION.md全文を保存した。
+summary: 2026-08-12の分割移行直前のKAGGLE_DIRECTION.md全文を保存した。
 ---
 
 # ROGII方針文書の移行前スナップショット
@@ -15,9 +15,10 @@ summary: 2026-08-12の分割移行直前のbacklog/KAGGLE_DIRECTION.md全文を�
 - 対応する上位仮説: なし
 
 - 保存日: 2026-08-12
-- 元ファイル: `backlog/KAGGLE_DIRECTION.md`
+- 元ファイル: `KAGGLE_DIRECTION.md`
 - 元ファイルSHA-256: `335fecd63a4569918d2ba08d51f685753a2d9920408005015a8e712c0de09838`
 - 用途: 文書分割前の内容確認。現在の方針や未着手候補の正としては使用しない。
+- 現在の方針と未着手候補: [`backlog/KAGGLE_DIRECTION.md`](../../backlog/KAGGLE_DIRECTION.md)
 
 ## 移行前の全文
 
@@ -112,11 +113,11 @@ summary: 2026-08-12の分割移行直前のbacklog/KAGGLE_DIRECTION.md全文を�
 
 ## アイデアバックログ
 
-全実験共通の候補はここに集約します。この節と`backlog/`の作成・更新・削除は`kaggle-strategy`を正規の手順とします。この節は優先度と現行判断の索引とし、新しくバックログ化する未着手候補の詳細は`backlog/<candidate>.md`を正にします。個別実験として着手する場合は、対応する`docs/legacy/steering/YYYYMMDD-expXXX-title/`に詳細を移し、`kaggle-strategy`の手順で元の未着手行と`backlog/<candidate>.md`を削除します。実験記録の役割分担は`AGENTS.md`を正とします。完了済み項目はbacklogから削除し、過去の判断は`docs/surveys/rogii_strategy_history_20260809.md`と各実験記録で追跡します。この規則より前から詳細ファイルなしで存在する候補は一括補完せず、次に更新または実験化するときに作成します。
+全実験共通の候補はここに集約します。この節と`docs/backlog/`の作成・更新・削除は`kaggle-strategy`を正規の手順とします。この節は優先度と現行判断の索引とし、新しくバックログ化する未着手候補の詳細は`docs/backlog/<candidate>.md`を正にします。個別実験として着手する場合は、対応する`.steering/YYYYMMDD-expXXX-title/`に詳細を移し、`kaggle-strategy`の手順で元の未着手行と`docs/backlog/<candidate>.md`を削除します。実験記録の役割分担は`AGENTS.md`を正とします。完了済み項目はbacklogから削除し、過去の判断は`docs/surveys/rogii_strategy_history_20260809.md`と各実験記録で追跡します。この規則より前から詳細ファイルなしで存在する候補は一括補完せず、次に更新または実験化するときに作成します。
 
 ### 未着手バックログ
 
-以下は未着手候補だけを並べます。既存の詳細ファイルがない旧候補は一括補完せず、次に更新または実験化するときに `backlog/<candidate>.md` を作成します。
+以下は未着手候補だけを並べます。既存の詳細ファイルがない旧候補は一括補完せず、次に更新または実験化するときに `docs/backlog/<candidate>.md` を作成します。
 
 | 優先度 | アイデア | 先行条件 / 依存 | 検証方法 | 注意点 |
 | --- | --- | --- | --- | --- |

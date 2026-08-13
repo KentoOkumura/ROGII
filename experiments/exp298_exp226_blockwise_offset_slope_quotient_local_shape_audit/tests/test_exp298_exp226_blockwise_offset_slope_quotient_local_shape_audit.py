@@ -148,11 +148,11 @@ def test_config_locks_zero_booster_implementation_contract(config: dict) -> None
 
 
 def test_downstream_contract_sha_and_branch_order_are_fixed(config: dict) -> None:
-    assert train.sha256_file(EXP_DIR / "downstream_branch_contract.md") == (
-        train.EXPECTED_DOWNSTREAM_CONTRACT_SHA256
-    )
     assert train.downstream_contract_sha256() == train.EXPECTED_DOWNSTREAM_CONTRACT_SHA256
     contract = (EXP_DIR / "downstream_branch_contract.md").read_text()
+    assert "exp298のrequirements.md" in contract
+    assert "`backlog/KAGGLE_DIRECTION.md`" in contract
+    assert "exp298のsteering" not in contract
     assert "exp298 FAIL" in contract
     assert "Stage 2 FAIL" in contract
     assert "Stage 4は自動開始しない" in contract
